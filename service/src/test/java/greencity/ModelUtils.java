@@ -3136,11 +3136,11 @@ public class ModelUtils {
     public static List<Tuple> getTuples(TupleElement<?>[] elements) {
         TupleMetadata tupleMetadata = new TupleMetadata(
             elements, new String[] {eventId, title, tagId, languageCode, tagName,
-            isOpen, organizerId, organizerName, titleImage, creationDate, startDate,
-            finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
-            cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
-            formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
-            isFavorite});
+                isOpen, organizerId, organizerName, titleImage, creationDate, startDate,
+                finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
+                cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
+                formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
+                isFavorite});
 
         Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),

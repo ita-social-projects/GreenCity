@@ -84,7 +84,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
@@ -252,8 +251,8 @@ public class EventServiceImpl implements EventService {
         if (filterEventDto != null) {
             futureTimeStatuses = filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()
                 ? filterEventDto.getEventTime().stream()
-                .map(eventTime -> eventTime == EventTime.FUTURE)
-                .collect(Collectors.toList())
+                    .map(eventTime -> eventTime == EventTime.FUTURE)
+                    .collect(Collectors.toList())
                 : Collections.emptyList();
             if (filterEventDto.getStatuses() != null && !filterEventDto.getStatuses().isEmpty()) {
                 for (EventStatus eventStatus : filterEventDto.getStatuses()) {
@@ -924,7 +923,7 @@ public class EventServiceImpl implements EventService {
     @Nullable
     private static String[] getArrayFromListOrNullIfEmpty(List<String> list) {
         if (list != null) {
-            return  !list.isEmpty()
+            return !list.isEmpty()
                 ? list.stream().map(String::toLowerCase).toArray(String[]::new)
                 : null;
         }

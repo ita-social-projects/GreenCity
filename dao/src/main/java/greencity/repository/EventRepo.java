@@ -366,9 +366,9 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                  (CAST(:isFavorite as boolean) IS NULL OR (ef.user_id IS NOT NULL) = :isFavorite);
                 """)
     Page<Long> findAllEventPreviewDtoByFilters(Long userId, Boolean isSubscribed, Boolean isOrganizedByUser,
-                                               Boolean isFavorite, String titleCriteria, Boolean isOpen,
-                                               Boolean isRelevant, String[] citiesInLower,
-                                               String[] tagsInLower, Pageable pageable);
+        Boolean isFavorite, String titleCriteria, Boolean isOpen,
+        Boolean isRelevant, String[] citiesInLower,
+        String[] tagsInLower, Pageable pageable);
 
     /**
      * Retrieves a list of event preview data for the given event IDs for
