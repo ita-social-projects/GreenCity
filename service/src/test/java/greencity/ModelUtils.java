@@ -213,6 +213,39 @@ import org.hibernate.sql.results.internal.TupleMetadata;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import static greencity.constant.EventTupleConstant.cityEn;
+import static greencity.constant.EventTupleConstant.cityUa;
+import static greencity.constant.EventTupleConstant.countComments;
+import static greencity.constant.EventTupleConstant.countryEn;
+import static greencity.constant.EventTupleConstant.countryUa;
+import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.eventId;
+import static greencity.constant.EventTupleConstant.finishDate;
+import static greencity.constant.EventTupleConstant.formattedAddressEn;
+import static greencity.constant.EventTupleConstant.formattedAddressUa;
+import static greencity.constant.EventTupleConstant.grade;
+import static greencity.constant.EventTupleConstant.houseNumber;
+import static greencity.constant.EventTupleConstant.isFavorite;
+import static greencity.constant.EventTupleConstant.isOpen;
+import static greencity.constant.EventTupleConstant.isOrganizedByFriend;
+import static greencity.constant.EventTupleConstant.isRelevant;
+import static greencity.constant.EventTupleConstant.isSubscribed;
+import static greencity.constant.EventTupleConstant.languageCode;
+import static greencity.constant.EventTupleConstant.latitude;
+import static greencity.constant.EventTupleConstant.likes;
+import static greencity.constant.EventTupleConstant.longitude;
+import static greencity.constant.EventTupleConstant.onlineLink;
+import static greencity.constant.EventTupleConstant.organizerId;
+import static greencity.constant.EventTupleConstant.organizerName;
+import static greencity.constant.EventTupleConstant.regionEn;
+import static greencity.constant.EventTupleConstant.regionUa;
+import static greencity.constant.EventTupleConstant.startDate;
+import static greencity.constant.EventTupleConstant.streetEn;
+import static greencity.constant.EventTupleConstant.streetUa;
+import static greencity.constant.EventTupleConstant.tagId;
+import static greencity.constant.EventTupleConstant.tagName;
+import static greencity.constant.EventTupleConstant.title;
+import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.enums.EventStatus.CLOSED;
 import static greencity.enums.EventStatus.CREATED;
 import static greencity.enums.EventStatus.JOINED;
@@ -3102,30 +3135,30 @@ public class ModelUtils {
 
     public static List<Tuple> getTuples(TupleElement<?>[] elements) {
         TupleMetadata tupleMetadata = new TupleMetadata(
-            elements, new String[] {"eventId", "title", "tagId", "languageCode", "tagName",
-                "is_open", "organizerId", "organizerName", "title_image", "creation_date", "id", "start_date",
-                "finish_date", "online_link", "latitude", "longitude", "street_en", "street_ua", "house_number",
-                "city_en", "city_ua", "region_en", "region_ua", "country_en", "country_ua", "formatted_address_en",
-                "formatted_address_ua", "isRelevant", "likes", "countComments", "grade", "isOrganizedByFriend",
-                "isOrganizedByUser", "isSubscribed", "isFavorite"});
+            elements, new String[] {eventId, title, tagId, languageCode, tagName,
+            isOpen, organizerId, organizerName, titleImage, creationDate, startDate,
+            finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
+            cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
+            formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
+            isFavorite});
 
         Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, 1L,
-            "Test", "image.png", Date.valueOf("2024-04-16"), 1L, Instant.parse("2025-05-15T00:00:03Z"),
+            "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
         Object[] row2 = new Object[] {1L, "test1", 1L, "ua", "Соціальний", true, 1L,
-            "Test", "image.png", Date.valueOf("2024-04-16"), 1L, Instant.parse("2025-05-15T00:00:03Z"),
+            "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
         Object[] row3 = new Object[] {3L, "test3", 2L, "en", "Social1", true, 2L,
-            "Test3", "image.png", Date.valueOf("2024-04-14"), 2L, Instant.parse("2025-05-15T00:00:03Z"),
+            "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
         Object[] row4 = new Object[] {3L, "test3", 2L, "ua", "Соціальний1", true, 2L,
-            "Test3", "image.png", Date.valueOf("2024-04-14"), 2L, Instant.parse("2025-05-15T00:00:03Z"),
+            "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
@@ -3135,40 +3168,39 @@ public class ModelUtils {
 
     public static TupleElement<?>[] getTupleElements() {
         return new TupleElement<?>[] {
-            new TupleElementImpl<>(Long.class, "eventId"),
-            new TupleElementImpl<>(String.class, "title"),
-            new TupleElementImpl<>(Long.class, "tagId"),
-            new TupleElementImpl<>(String.class, "languageCode"),
-            new TupleElementImpl<>(String.class, "tagName"),
-            new TupleElementImpl<>(Boolean.class, "is_open"),
-            new TupleElementImpl<>(Long.class, "organizerId"),
-            new TupleElementImpl<>(String.class, "organizerName"),
-            new TupleElementImpl<>(String.class, "title_image"),
-            new TupleElementImpl<>(Date.class, "creation_date"),
-            new TupleElementImpl<>(Instant.class, "start_date"),
-            new TupleElementImpl<>(Instant.class, "finish_date"),
-            new TupleElementImpl<>(String.class, "online_link"),
-            new TupleElementImpl<>(Double.class, "latitude"),
-            new TupleElementImpl<>(Double.class, "longitude"),
-            new TupleElementImpl<>(String.class, "street_en"),
-            new TupleElementImpl<>(String.class, "street_ua"),
-            new TupleElementImpl<>(String.class, "house_number"),
-            new TupleElementImpl<>(String.class, "city_en"),
-            new TupleElementImpl<>(String.class, "city_ua"),
-            new TupleElementImpl<>(String.class, "region_en"),
-            new TupleElementImpl<>(String.class, "region_ua"),
-            new TupleElementImpl<>(String.class, "country_en"),
-            new TupleElementImpl<>(String.class, "country_ua"),
-            new TupleElementImpl<>(String.class, "formatted_address_en"),
-            new TupleElementImpl<>(String.class, "formatted_address_ua"),
-            new TupleElementImpl<>(Boolean.class, "isRelevant"),
-            new TupleElementImpl<>(Long.class, "likes"),
-            new TupleElementImpl<>(Long.class, "countComments"),
-            new TupleElementImpl<>(BigDecimal.class, "grade"),
-            new TupleElementImpl<>(Boolean.class, "isOrganizedByFriend"),
-            new TupleElementImpl<>(Boolean.class, "isOrganizedByUser"),
-            new TupleElementImpl<>(Boolean.class, "isSubscribed"),
-            new TupleElementImpl<>(Boolean.class, "isFavorite")
+            new TupleElementImpl<>(Long.class, eventId),
+            new TupleElementImpl<>(String.class, title),
+            new TupleElementImpl<>(Long.class, tagId),
+            new TupleElementImpl<>(String.class, languageCode),
+            new TupleElementImpl<>(String.class, tagName),
+            new TupleElementImpl<>(Boolean.class, isOpen),
+            new TupleElementImpl<>(Long.class, organizerId),
+            new TupleElementImpl<>(String.class, organizerName),
+            new TupleElementImpl<>(String.class, titleImage),
+            new TupleElementImpl<>(Date.class, creationDate),
+            new TupleElementImpl<>(Instant.class, startDate),
+            new TupleElementImpl<>(Instant.class, finishDate),
+            new TupleElementImpl<>(String.class, onlineLink),
+            new TupleElementImpl<>(Double.class, latitude),
+            new TupleElementImpl<>(Double.class, longitude),
+            new TupleElementImpl<>(String.class, streetEn),
+            new TupleElementImpl<>(String.class, streetUa),
+            new TupleElementImpl<>(String.class, houseNumber),
+            new TupleElementImpl<>(String.class, cityEn),
+            new TupleElementImpl<>(String.class, cityUa),
+            new TupleElementImpl<>(String.class, regionEn),
+            new TupleElementImpl<>(String.class, regionUa),
+            new TupleElementImpl<>(String.class, countryEn),
+            new TupleElementImpl<>(String.class, countryUa),
+            new TupleElementImpl<>(String.class, formattedAddressEn),
+            new TupleElementImpl<>(String.class, formattedAddressUa),
+            new TupleElementImpl<>(Boolean.class, isRelevant),
+            new TupleElementImpl<>(Long.class, likes),
+            new TupleElementImpl<>(Long.class, countComments),
+            new TupleElementImpl<>(BigDecimal.class, grade),
+            new TupleElementImpl<>(Boolean.class, isOrganizedByFriend),
+            new TupleElementImpl<>(Boolean.class, isSubscribed),
+            new TupleElementImpl<>(Boolean.class, isFavorite)
         };
     }
 

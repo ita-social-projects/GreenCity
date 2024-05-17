@@ -84,6 +84,40 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import static greencity.constant.EventTupleConstant.cityEn;
+import static greencity.constant.EventTupleConstant.cityUa;
+import static greencity.constant.EventTupleConstant.countComments;
+import static greencity.constant.EventTupleConstant.countryEn;
+import static greencity.constant.EventTupleConstant.countryUa;
+import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.eventId;
+import static greencity.constant.EventTupleConstant.finishDate;
+import static greencity.constant.EventTupleConstant.formattedAddressEn;
+import static greencity.constant.EventTupleConstant.formattedAddressUa;
+import static greencity.constant.EventTupleConstant.grade;
+import static greencity.constant.EventTupleConstant.houseNumber;
+import static greencity.constant.EventTupleConstant.isFavorite;
+import static greencity.constant.EventTupleConstant.isOpen;
+import static greencity.constant.EventTupleConstant.isOrganizedByFriend;
+import static greencity.constant.EventTupleConstant.isRelevant;
+import static greencity.constant.EventTupleConstant.isSubscribed;
+import static greencity.constant.EventTupleConstant.languageCode;
+import static greencity.constant.EventTupleConstant.latitude;
+import static greencity.constant.EventTupleConstant.likes;
+import static greencity.constant.EventTupleConstant.longitude;
+import static greencity.constant.EventTupleConstant.onlineLink;
+import static greencity.constant.EventTupleConstant.organizerId;
+import static greencity.constant.EventTupleConstant.organizerName;
+import static greencity.constant.EventTupleConstant.regionEn;
+import static greencity.constant.EventTupleConstant.regionUa;
+import static greencity.constant.EventTupleConstant.startDate;
+import static greencity.constant.EventTupleConstant.streetEn;
+import static greencity.constant.EventTupleConstant.streetUa;
+import static greencity.constant.EventTupleConstant.tagId;
+import static greencity.constant.EventTupleConstant.tagName;
+import static greencity.constant.EventTupleConstant.title;
+import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.enums.EventType.OFFLINE;
 import static greencity.enums.EventType.ONLINE;
 
@@ -210,24 +244,20 @@ public class EventServiceImpl implements EventService {
         }
         List<Boolean> openStatuses = new ArrayList<>();
         List<Boolean> futureTimeStatuses = new ArrayList<>();
-        List<String> citiesInLower = null;
-        List<String> tagsInLower = null;
+        String[] citiesInLower = null;
+        String[] tagsInLower = null;
         Boolean isFavorite = null;
         Boolean isSubscribed = null;
         Boolean isOrganizedByUser = null;
         if (filterEventDto != null) {
-            if (filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()) {
-                for (EventTime eventTime : filterEventDto.getEventTime()) {
-                    if (Objects.requireNonNull(eventTime) == EventTime.FUTURE) {
-                        futureTimeStatuses.add(true);
-                    } else if (eventTime == EventTime.PAST) {
-                        futureTimeStatuses.add(false);
-                    }
-                }
-            }
+            futureTimeStatuses = filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()
+                ? filterEventDto.getEventTime().stream()
+                .map(eventTime -> eventTime == EventTime.FUTURE)
+                .collect(Collectors.toList())
+                : Collections.emptyList();
             if (filterEventDto.getStatuses() != null && !filterEventDto.getStatuses().isEmpty()) {
                 for (EventStatus eventStatus : filterEventDto.getStatuses()) {
-                    if (Objects.requireNonNull(eventStatus) == EventStatus.OPEN) {
+                    if (eventStatus == EventStatus.OPEN) {
                         openStatuses.add(true);
                     } else if (eventStatus == EventStatus.CLOSED) {
                         openStatuses.add(false);
@@ -240,22 +270,12 @@ public class EventServiceImpl implements EventService {
                     }
                 }
             }
-            if (filterEventDto.getCities() != null) {
-                citiesInLower = filterEventDto.getCities().stream().map(String::toLowerCase).toList();
-                if (citiesInLower.isEmpty()) {
-                    citiesInLower = null;
-                }
-            }
-            if (filterEventDto.getTags() != null) {
-                tagsInLower = filterEventDto.getTags().stream().map(String::toLowerCase).toList();
-                if (tagsInLower.isEmpty()) {
-                    tagsInLower = null;
-                }
-            }
+            citiesInLower = getArrayFromListOrNullIfEmpty(filterEventDto.getCities());
+            tagsInLower = getArrayFromListOrNullIfEmpty(filterEventDto.getTags());
         }
 
-        Boolean isOpen = getaBoolean(openStatuses);
-        Boolean isRelevant = getaBoolean(futureTimeStatuses);
+        Boolean isOpen = getBooleanIfAllMatchOrElseNull(openStatuses);
+        Boolean isRelevant = getBooleanIfAllMatchOrElseNull(futureTimeStatuses);
 
         Page<Long> eventPrewiewIdsPage;
         List<Tuple> tuples;
@@ -282,7 +302,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getAllUserEvents(
-        Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
+        Pageable page, String email, String userLatitude, String userLongitude, EventType eventType) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, attender, userLatitude, userLongitude);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
@@ -310,17 +330,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<Event> sortUserEventsByEventType(
-        String eventType, User attender, String userLatitude, String userLongitude) {
-        if (StringUtils.isNotBlank(eventType)) {
-            if (ONLINE.toString().equalsIgnoreCase(eventType)) {
+        EventType eventType, User attender, String userLatitude, String userLongitude) {
+        if (eventType != null) {
+            if (ONLINE == eventType) {
                 return getOnlineUserEventsSortedByDate(attender);
-            }
-            if (OFFLINE.toString().equalsIgnoreCase(eventType)) {
+            } else if (OFFLINE == eventType) {
                 return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
                     ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
                     : getOfflineUserEventsSortedByDate(attender);
-            } else {
-                throw new BadRequestException(ErrorMessage.INVALID_EVENT_TYPE);
             }
         }
         return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
@@ -812,7 +829,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Nullable
-    private static Boolean getaBoolean(List<Boolean> list) {
+    private static Boolean getBooleanIfAllMatchOrElseNull(List<Boolean> list) {
         Boolean result = null;
         if (list.isEmpty()) {
             return null;
@@ -829,25 +846,25 @@ public class EventServiceImpl implements EventService {
         Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
         for (Tuple tuple : page) {
-            long id = tuple.get("eventId", Long.class);
+            long id = tuple.get(eventId, Long.class);
             EventPreviewDto eventPreviewDto;
             if (!eventsMap.containsKey(id)) {
                 eventPreviewDto = EventPreviewDto.builder()
                     .id(id)
-                    .title(tuple.get("title", String.class))
+                    .title(tuple.get(title, String.class))
                     .organizer(
-                        new AuthorDto(tuple.get("organizerId", Long.class), tuple.get("organizerName", String.class)))
-                    .creationDate(tuple.get("creation_date", Date.class).toLocalDate())
-                    .titleImage(tuple.get("title_image", String.class))
-                    .isOpen(tuple.get("is_open", Boolean.class))
-                    .isRelevant(tuple.get("isRelevant", Boolean.class))
-                    .likes(tuple.get("likes", Long.class))
-                    .countComments(tuple.get("countComments", Long.class))
-                    .isOrganizedByFriend(tuple.get("isOrganizedByFriend", Boolean.class))
-                    .isFavorite(tuple.get("isFavorite", Boolean.class))
-                    .isSubscribed(tuple.get("isSubscribed", Boolean.class))
-                    .eventRate(tuple.get("grade", BigDecimal.class) != null
-                        ? tuple.get("grade", BigDecimal.class).doubleValue()
+                        new AuthorDto(tuple.get(organizerId, Long.class), tuple.get(organizerName, String.class)))
+                    .creationDate(tuple.get(creationDate, Date.class).toLocalDate())
+                    .titleImage(tuple.get(titleImage, String.class))
+                    .isOpen(tuple.get(isOpen, Boolean.class))
+                    .isRelevant(tuple.get(isRelevant, Boolean.class))
+                    .likes(tuple.get(likes, Long.class))
+                    .countComments(tuple.get(countComments, Long.class))
+                    .isOrganizedByFriend(tuple.get(isOrganizedByFriend, Boolean.class))
+                    .isFavorite(tuple.get(isFavorite, Boolean.class))
+                    .isSubscribed(tuple.get(isSubscribed, Boolean.class))
+                    .eventRate(tuple.get(grade, BigDecimal.class) != null
+                        ? tuple.get(grade, BigDecimal.class).doubleValue()
                         : 0.0)
                     .dates(new HashSet<>())
                     .tags(new ArrayList<>())
@@ -857,30 +874,30 @@ public class EventServiceImpl implements EventService {
                 eventPreviewDto = eventsMap.get(id);
             }
             eventPreviewDto.getDates().add(EventDateLocationPreviewDto.builder()
-                .startDate(ZonedDateTime.ofInstant(tuple.get("start_date", Instant.class), ZoneId.systemDefault()))
-                .finishDate(ZonedDateTime.ofInstant(tuple.get("finish_date", Instant.class), ZoneId.systemDefault()))
-                .onlineLink(tuple.get("online_link", String.class))
+                .startDate(ZonedDateTime.ofInstant(tuple.get(startDate, Instant.class), ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.ofInstant(tuple.get(finishDate, Instant.class), ZoneId.systemDefault()))
+                .onlineLink(tuple.get(onlineLink, String.class))
                 .coordinates(AddressDto.builder()
-                    .latitude(tuple.get("latitude", Double.class))
-                    .longitude(tuple.get("longitude", Double.class))
-                    .streetEn(tuple.get("street_en", String.class))
-                    .streetUa(tuple.get("street_ua", String.class))
-                    .houseNumber(tuple.get("house_number", String.class))
-                    .cityEn(tuple.get("city_en", String.class))
-                    .cityUa(tuple.get("city_ua", String.class))
-                    .regionEn(tuple.get("region_en", String.class))
-                    .regionUa(tuple.get("region_ua", String.class))
-                    .countryEn(tuple.get("country_en", String.class))
-                    .countryUa(tuple.get("country_ua", String.class))
-                    .formattedAddressEn(tuple.get("formatted_address_en", String.class))
-                    .formattedAddressUa(tuple.get("formatted_address_ua", String.class))
+                    .latitude(tuple.get(latitude, Double.class))
+                    .longitude(tuple.get(longitude, Double.class))
+                    .streetEn(tuple.get(streetEn, String.class))
+                    .streetUa(tuple.get(streetUa, String.class))
+                    .houseNumber(tuple.get(houseNumber, String.class))
+                    .cityEn(tuple.get(cityEn, String.class))
+                    .cityUa(tuple.get(cityUa, String.class))
+                    .regionEn(tuple.get(regionEn, String.class))
+                    .regionUa(tuple.get(regionUa, String.class))
+                    .countryEn(tuple.get(countryEn, String.class))
+                    .countryUa(tuple.get(countryUa, String.class))
+                    .formattedAddressEn(tuple.get(formattedAddressEn, String.class))
+                    .formattedAddressUa(tuple.get(formattedAddressUa, String.class))
                     .build())
                 .build());
             Set<TagDto> tagDtos = tagsMap.getOrDefault(id, new HashSet<>());
             tagDtos.add(TagDto.builder()
-                .id(tuple.get("tagId", Long.class))
-                .name(tuple.get("tagName", String.class))
-                .languageCode(tuple.get("languageCode", String.class))
+                .id(tuple.get(tagId, Long.class))
+                .name(tuple.get(tagName, String.class))
+                .languageCode(tuple.get(languageCode, String.class))
                 .build());
             tagsMap.put(id, tagDtos);
         }
@@ -902,5 +919,15 @@ public class EventServiceImpl implements EventService {
             sortedDtos.add(eventPreviewDto);
         }
         return sortedDtos;
+    }
+
+    @Nullable
+    private static String[] getArrayFromListOrNullIfEmpty(List<String> list) {
+        if (list != null) {
+            return  !list.isEmpty()
+                ? list.stream().map(String::toLowerCase).toArray(String[]::new)
+                : null;
+        }
+        return null;
     }
 }

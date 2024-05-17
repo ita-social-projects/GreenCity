@@ -12,6 +12,7 @@ import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.enums.EventType;
 import greencity.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -188,7 +189,7 @@ public class EventsController {
     public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(
         @Parameter(hidden = true) Pageable pageable, @Parameter(hidden = true) Principal principal,
         @Parameter(description = "Type of event. Example : ONLINE,OFFLINE") @RequestParam(
-            required = false) String eventType,
+            required = false) EventType eventType,
         @Parameter(description = "User location coordinates latitude value. Example : 50.450001",
             in = ParameterIn.QUERY) @RequestParam(required = false) String userLatitude,
         @Parameter(description = "User location coordinates longitude value. Example : 30.523333",

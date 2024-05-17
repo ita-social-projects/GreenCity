@@ -23,24 +23,6 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     Page<Event> findAllByOrderByIdDesc(Pageable page);
 
     /**
-     * Method for getting all events sorted by start date.
-     *
-     * @return list of {@link Event} of future events sorted by start date in
-     *         ascending order, followed by past events sorted by finish date in
-     *         descending order.
-     * @author Anton Bondar
-     */
-    @Query(nativeQuery = true, value = "SELECT e.* FROM events e "
-        + "INNER JOIN events_dates_locations edl ON e.id = edl.event_id "
-        + "WHERE edl.finish_date >= CURRENT_TIMESTAMP "
-        + "UNION "
-        + "SELECT e.* FROM events e "
-        + "INNER JOIN events_dates_locations edl ON e.id = edl.event_id "
-        + "WHERE edl.finish_date < CURRENT_TIMESTAMP "
-        + "ORDER BY edl.finish_date DESC")
-    Page<Event> findAllEventsSortedByStartDate(Pageable page);
-
-    /**
      * Method for getting all events by user.
      *
      * @return list of {@link Event} instances.
@@ -190,9 +172,9 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      *                      true, only relevant events are returned; if false,
      *                      irrelevant events are returned; if null, this filter is
      *                      ignored.
-     * @param citiesInLower A list of city names in lowercase to filter events by
+     * @param citiesInLower An array of city names in lowercase to filter events by
      *                      location.
-     * @param tagsInLower   A list of tags in lowercase to filter events by their
+     * @param tagsInLower   An array of tags in lowercase to filter events by their
      *                      associated tags.
      * @param pageable      The pagination information.
      * @return A paginated list of EventPreviewDto objects that match the specified
@@ -258,8 +240,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
              (CAST(:tagsInLower as varchar[]) IS NULL OR lower(tt.name) in (:tagsInLower))
             """)
     Page<Long> findAllEventPreviewDtoByFilters(String titleCriteria, Boolean isOpen,
-        Boolean isRelevant, List<String> citiesInLower,
-        List<String> tagsInLower, Pageable pageable);
+        Boolean isRelevant, String[] citiesInLower, String[] tagsInLower, Pageable pageable);
 
     /**
      * Retrieves a paginated list of Long in order based on various filter criteria
@@ -288,9 +269,9 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      *                          relevant. If true, only relevant events are
      *                          returned; if false, irrelevant events are returned;
      *                          if null, this filter is ignored.
-     * @param citiesInLower     A list of city names in lowercase to filter events
+     * @param citiesInLower     An array of city names in lowercase to filter events
      *                          by location.
-     * @param tagsInLower       A list of tags in lowercase to filter events by
+     * @param tagsInLower       An array of tags in lowercase to filter events by
      *                          their associated tags.
      * @param pageable          The pagination information.
      * @return A paginated list of EventPreviewDto objects that match the specified
@@ -385,9 +366,9 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                  (CAST(:isFavorite as boolean) IS NULL OR (ef.user_id IS NOT NULL) = :isFavorite);
                 """)
     Page<Long> findAllEventPreviewDtoByFilters(Long userId, Boolean isSubscribed, Boolean isOrganizedByUser,
-        Boolean isFavorite, String titleCriteria, Boolean isOpen,
-        Boolean isRelevant, List<String> citiesInLower,
-        List<String> tagsInLower, Pageable pageable);
+                                               Boolean isFavorite, String titleCriteria, Boolean isOpen,
+                                               Boolean isRelevant, String[] citiesInLower,
+                                               String[] tagsInLower, Pageable pageable);
 
     /**
      * Retrieves a list of event preview data for the given event IDs for
