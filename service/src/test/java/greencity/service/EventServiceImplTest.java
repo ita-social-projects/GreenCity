@@ -530,7 +530,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(new ArrayList<>(eventsOffline));
         when(modelMapper.map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -548,7 +548,7 @@ class EventServiceImplTest {
         assertFalse(actual.isSubscribed());
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -571,7 +571,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(new ArrayList<>(eventsOffline));
         when(modelMapper.map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -589,7 +589,7 @@ class EventServiceImplTest {
         assertFalse(actual.isSubscribed());
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo, times(2)).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo, times(2)).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -610,7 +610,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(user.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(user.getId()))
             .thenReturn(new ArrayList<>(events));
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
@@ -629,7 +629,7 @@ class EventServiceImplTest {
         assertTrue(actual.getFirst().isSubscribed());
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
@@ -653,7 +653,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(new ArrayList<>(eventsOnline));
         when(modelMapper.map(eventsOnline,
             new TypeToken<List<EventDto>>() {
@@ -671,7 +671,7 @@ class EventServiceImplTest {
         });
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(eventsOnline,
             new TypeToken<List<EventDto>>() {
@@ -700,7 +700,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(events);
         when(modelMapper.map(sortedEvents,
             new TypeToken<List<EventDto>>() {
@@ -720,7 +720,7 @@ class EventServiceImplTest {
         });
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo, times(2)).findAllByAttender(user.getId());
+        verify(eventRepo, times(2)).findAllByAttenderOrOrganizer(user.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
@@ -744,7 +744,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(events);
         when(modelMapper.map(sortedEvents,
             new TypeToken<List<EventDto>>() {
@@ -763,7 +763,7 @@ class EventServiceImplTest {
         });
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(user.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(user.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(sortedEvents,
             new TypeToken<List<EventDto>>() {
