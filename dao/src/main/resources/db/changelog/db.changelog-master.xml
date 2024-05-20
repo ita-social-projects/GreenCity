@@ -193,5 +193,6 @@
     <include file="db/changelog/logs/ch-add-new-column-to-habits-is-deleted-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-delete-from-positions_authorities_mapping-authority-for-admin-position-Kizerov.xml"/>
     <include file="db/changelog/logs/ch-delete-from-positions_authorities_mapping-authority-for-service-manager-position-Kizerov.xml"/>
+    <include file="db/changelog/logs/ch-add-unique-constraint-to-user_id-and-achievement_category_id-to-user_action_table.xml"/>
 </databaseChangeLog>
 

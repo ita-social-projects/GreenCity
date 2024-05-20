@@ -301,11 +301,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getAllUserEvents(
-        Pageable page, String email, String userLatitude, String userLongitude, EventType eventType) {
-        User attender = modelMapper.map(restClient.findByEmail(email), User.class);
-        List<Event> events = sortUserEventsByEventType(eventType, attender, userLatitude, userLongitude);
+        Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
+        User participant = modelMapper.map(restClient.findByEmail(email), User.class);
+        List<Event> events = sortUserEventsByEventType(eventType, participant, userLatitude, userLongitude);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
-        return buildPageableAdvancedDto(eventPage, attender.getId());
+        return buildPageableAdvancedDto(eventPage, participant.getId());
     }
 
     @Override
@@ -339,21 +339,21 @@ public class EventServiceImpl implements EventService {
                     : getOfflineUserEventsSortedByDate(attender);
             }
         }
-        return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
+        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream().sorted(getComparatorByDates())
             .collect(Collectors.toList());
     }
 
     private List<Event> getOnlineUserEventsSortedByDate(User attender) {
-        return eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(ONLINE)
+        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
+            .filter(event -> event.getEventType().equals(EventType.ONLINE)
                 || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDates())
             .collect(Collectors.toList());
     }
 
     private List<Event> getOfflineUserEventsSortedByDate(User attender) {
-        return eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(OFFLINE)
+        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
+            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
                 || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDates())
             .collect(Collectors.toList());
@@ -361,8 +361,8 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> getOfflineUserEventsSortedByUserLocation(
         User attender, String userLatitude, String userLongitude) {
-        List<Event> eventsFurtherSorted = eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(OFFLINE)
+        List<Event> eventsFurtherSorted = eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
+            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
                 || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
             .filter(Event::isRelevant)
