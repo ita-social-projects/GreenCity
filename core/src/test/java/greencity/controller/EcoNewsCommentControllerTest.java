@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.UpdateEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 import greencity.service.UserService;
