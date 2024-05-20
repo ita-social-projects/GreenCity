@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @Data
 public class AddressDto {
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private String streetEn;
     private String streetUa;
     private String houseNumber;
