@@ -193,14 +193,14 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     @Transactional
-    public void update(UpdateEcoNewsCommentDtoRequest text, Long id, UserVO userVO) {
+    public void update(String text, Long id, UserVO userVO) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
         comment.setStatus(CommentStatus.EDITED);
-        comment.setText(text.getText());
+        comment.setText(text);
         ecoNewsCommentRepo.save(comment);
     }
 

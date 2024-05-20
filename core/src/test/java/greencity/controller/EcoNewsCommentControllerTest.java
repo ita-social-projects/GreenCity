@@ -184,17 +184,17 @@ class EcoNewsCommentControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        UpdateEcoNewsCommentDtoRequest dtoRequest = new UpdateEcoNewsCommentDtoRequest("updated text");
+        String textComment = "updated text";
 
         mockMvc.perform(patch(ecoNewsCommentControllerLink)
             .param("id", "1")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(dtoRequest))
+            .content(mapper.writeValueAsString(textComment))
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(ecoNewsCommentService).update(dtoRequest, 1L, userVO);
+        verify(ecoNewsCommentService).update(textComment, 1L, userVO);
 
         mockMvc.perform(patch(ecoNewsCommentControllerLink))
             .andExpect(status().isBadRequest());

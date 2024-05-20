@@ -55,7 +55,7 @@ public interface EcoNewsCommentService {
      * @param id   to specify {@link EcoNewsCommentVO} that user wants to change.
      * @param user current {@link UserVO} that wants to change.
      */
-    void update(UpdateEcoNewsCommentDtoRequest text, Long id, UserVO user);
+    void update(String text, Long id, UserVO user);
 
     /**
      * Method to like or dislike {@link EcoNewsCommentVO} specified by id.

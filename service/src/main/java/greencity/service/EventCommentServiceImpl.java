@@ -182,7 +182,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     @Transactional
-    public void update(UpdateEventCommentDtoRequest commentText, Long id, UserVO userVO) {
+    public void update(String commentText, Long id, UserVO userVO) {
         EventComment eventComment = eventCommentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
@@ -190,7 +190,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 
-        eventComment.setText(commentText.getText());
+        eventComment.setText(commentText);
         eventComment.setStatus(CommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
     }

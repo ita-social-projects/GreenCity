@@ -58,7 +58,7 @@ public interface EventCommentService {
      *                    change.
      * @param user        current {@link UserVO} that wants to change.
      */
-    void update(UpdateEventCommentDtoRequest commentText, Long id, UserVO user);
+    void update(String commentText, Long id, UserVO user);
 
     /**
      * Method for deleting the {@link EventCommentVO} instance by its id.
