@@ -301,7 +301,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getAllUserEvents(
-        Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
+        Pageable page, String email, String userLatitude, String userLongitude, EventType eventType) {
         User participant = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, participant, userLatitude, userLongitude);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
