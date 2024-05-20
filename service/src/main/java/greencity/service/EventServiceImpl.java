@@ -12,13 +12,18 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDateLocationPreviewDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.search.SearchEventsDto;
+import greencity.dto.tag.TagDto;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.AuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -26,13 +31,14 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
-import greencity.entity.event.Address;
-import greencity.enums.EventType;
-import greencity.enums.TagType;
-import greencity.enums.Role;
-import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.EventStatus;
+import greencity.enums.EventTime;
+import greencity.enums.EventType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -41,10 +47,30 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
+import jakarta.persistence.Tuple;
+import java.math.BigDecimal;
+import java.security.Principal;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -58,18 +84,41 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.security.Principal;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import static greencity.constant.ErrorMessage.PAGE_NOT_FOUND;
+import static greencity.constant.EventTupleConstant.cityEn;
+import static greencity.constant.EventTupleConstant.cityUa;
+import static greencity.constant.EventTupleConstant.countComments;
+import static greencity.constant.EventTupleConstant.countryEn;
+import static greencity.constant.EventTupleConstant.countryUa;
+import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.eventId;
+import static greencity.constant.EventTupleConstant.finishDate;
+import static greencity.constant.EventTupleConstant.formattedAddressEn;
+import static greencity.constant.EventTupleConstant.formattedAddressUa;
+import static greencity.constant.EventTupleConstant.grade;
+import static greencity.constant.EventTupleConstant.houseNumber;
+import static greencity.constant.EventTupleConstant.isFavorite;
+import static greencity.constant.EventTupleConstant.isOpen;
+import static greencity.constant.EventTupleConstant.isOrganizedByFriend;
+import static greencity.constant.EventTupleConstant.isRelevant;
+import static greencity.constant.EventTupleConstant.isSubscribed;
+import static greencity.constant.EventTupleConstant.languageCode;
+import static greencity.constant.EventTupleConstant.latitude;
+import static greencity.constant.EventTupleConstant.likes;
+import static greencity.constant.EventTupleConstant.longitude;
+import static greencity.constant.EventTupleConstant.onlineLink;
+import static greencity.constant.EventTupleConstant.organizerId;
+import static greencity.constant.EventTupleConstant.organizerName;
+import static greencity.constant.EventTupleConstant.regionEn;
+import static greencity.constant.EventTupleConstant.regionUa;
+import static greencity.constant.EventTupleConstant.startDate;
+import static greencity.constant.EventTupleConstant.streetEn;
+import static greencity.constant.EventTupleConstant.streetUa;
+import static greencity.constant.EventTupleConstant.tagId;
+import static greencity.constant.EventTupleConstant.tagName;
+import static greencity.constant.EventTupleConstant.title;
+import static greencity.constant.EventTupleConstant.titleImage;
+import static greencity.enums.EventType.OFFLINE;
+import static greencity.enums.EventType.ONLINE;
 
 @Service
 @RequiredArgsConstructor
@@ -87,19 +136,6 @@ public class EventServiceImpl implements EventService {
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
-
-    private static final String FUTURE_EVENT = "FUTURE";
-    private static final String PAST_EVENT = "PAST";
-    private static final String ONLINE_EVENT = "ONLINE";
-    private static final String OFFLINE_EVENT = "OFFLINE";
-    private static final String OPEN_STATUS = "OPEN";
-    private static final String CLOSED_STATUS = "CLOSED";
-    private static final String JOINED_STATUS = "JOINED";
-    private static final String CREATED_STATUS = "CREATED";
-    private static final String SAVED_STATUS = "SAVED";
-    private static final String ECONOMIC_TAG = "ECONOMIC";
-    private static final String ENVIRONMENTAL_TAG = "ENVIRONMENTAL";
-    private static final String SOCIAL_TAG = "SOCIAL";
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
@@ -195,64 +231,77 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
+    public PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal,
+        FilterEventDto filterEventDto,
         String title) {
-        if (Objects.isNull(filterEventDto)) {
-            return getAllSortedEvents(page, principal);
-        }
-        return getAllFiltered(principal, page, filterEventDto, title);
-    }
-
-    private PageableAdvancedDto<EventDto> getAllSortedEvents(Pageable page, Principal principal) {
-        Page<Event> events = eventRepo.findAllEventsSortedByStartDate(page);
-
+        Long userId = null;
         if (principal != null) {
-            User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-            return buildPageableAdvancedDto(events, user.getId());
+            userId = restClient.findIdByEmail(principal.getName());
         }
-        return buildPageableAdvancedDto(events);
-    }
-
-    private PageableAdvancedDto<EventDto> getAllFiltered(Principal principal, Pageable page,
-        FilterEventDto filterEventDto, String title) {
-        List<Event> events = title == null ? eventRepo.findAll() : eventRepo.findAllByTitleContainingIgnoreCase(title);
-
-        validatePageNumber(events, page);
-
-        return principal != null
-            ? getFilteredForLoggedInUser(events, page, principal, filterEventDto)
-            : getFilteredForAnonymousUser(events, page, filterEventDto);
-    }
-
-    private void validatePageNumber(List<Event> events, Pageable page) {
-        int pageNumber = page.getPageNumber();
-        int totalPages = (int) Math.ceil((double) events.size() / (double) page.getPageSize());
-
-        if (pageNumber > totalPages) {
-            throw new NotFoundException(PAGE_NOT_FOUND + totalPages);
+        if (title != null) {
+            title = "%" + title.toLowerCase() + "%";
         }
-    }
+        List<Boolean> openStatuses = new ArrayList<>();
+        List<Boolean> futureTimeStatuses = new ArrayList<>();
+        String[] citiesInLower = null;
+        String[] tagsInLower = null;
+        Boolean isFavorite = null;
+        Boolean isSubscribed = null;
+        Boolean isOrganizedByUser = null;
+        if (filterEventDto != null) {
+            futureTimeStatuses = filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()
+                ? filterEventDto.getEventTime().stream()
+                    .map(eventTime -> eventTime == EventTime.FUTURE)
+                    .collect(Collectors.toList())
+                : Collections.emptyList();
+            if (filterEventDto.getStatuses() != null && !filterEventDto.getStatuses().isEmpty()) {
+                for (EventStatus eventStatus : filterEventDto.getStatuses()) {
+                    if (eventStatus == EventStatus.OPEN) {
+                        openStatuses.add(true);
+                    } else if (eventStatus == EventStatus.CLOSED) {
+                        openStatuses.add(false);
+                    } else if (eventStatus == EventStatus.JOINED) {
+                        isSubscribed = true;
+                    } else if (eventStatus == EventStatus.CREATED) {
+                        isOrganizedByUser = true;
+                    } else if (eventStatus == EventStatus.SAVED) {
+                        isFavorite = true;
+                    }
+                }
+            }
+            citiesInLower = getArrayFromListOrNullIfEmpty(filterEventDto.getCities());
+            tagsInLower = getArrayFromListOrNullIfEmpty(filterEventDto.getTags());
+        }
 
-    private PageableAdvancedDto<EventDto> getFilteredForLoggedInUser(List<Event> events, Pageable page,
-        Principal principal, FilterEventDto filterEventDto) {
-        long userId = modelMapper.map(restClient.findByEmail(principal.getName()), User.class).getId();
-        events = getAllFilteredAndSorted(events, userId, filterEventDto);
-        validatePageNumber(events, page);
-        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
-        return buildPageableAdvancedDto(eventPage, userId);
-    }
+        Boolean isOpen = getBooleanIfAllMatchOrElseNull(openStatuses);
+        Boolean isRelevant = getBooleanIfAllMatchOrElseNull(futureTimeStatuses);
 
-    private PageableAdvancedDto<EventDto> getFilteredForAnonymousUser(List<Event> events, Pageable page,
-        FilterEventDto filterEventDto) {
-        events = getAllFilteredAndSorted(events, null, filterEventDto);
-        validatePageNumber(events, page);
-        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
-        return buildPageableAdvancedDto(eventPage);
+        Page<Long> eventPrewiewIdsPage;
+        List<Tuple> tuples;
+        if (userId != null) {
+            eventPrewiewIdsPage = eventRepo.findAllEventPreviewDtoByFilters(userId, isSubscribed,
+                isOrganizedByUser, isFavorite, title, isOpen, isRelevant, citiesInLower, tagsInLower, page);
+            tuples = eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent(), userId);
+        } else {
+            eventPrewiewIdsPage = eventRepo.findAllEventPreviewDtoByFilters(title,
+                isOpen, isRelevant, citiesInLower, tagsInLower, page);
+            tuples = eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent());
+        }
+        return new PageableAdvancedDto<>(
+            mapTupleListToEventPreviewDtoList(tuples, eventPrewiewIdsPage.toList()),
+            eventPrewiewIdsPage.getTotalElements(),
+            page.getPageNumber(),
+            eventPrewiewIdsPage.getTotalPages(),
+            eventPrewiewIdsPage.getNumber(),
+            eventPrewiewIdsPage.hasPrevious(),
+            eventPrewiewIdsPage.hasNext(),
+            eventPrewiewIdsPage.isFirst(),
+            eventPrewiewIdsPage.isLast());
     }
 
     @Override
     public PageableAdvancedDto<EventDto> getAllUserEvents(
-        Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
+        Pageable page, String email, String userLatitude, String userLongitude, EventType eventType) {
         User participant = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, participant, userLatitude, userLongitude);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
@@ -280,17 +329,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<Event> sortUserEventsByEventType(
-        String eventType, User attender, String userLatitude, String userLongitude) {
-        if (StringUtils.isNotBlank(eventType)) {
-            if (ONLINE_EVENT.equalsIgnoreCase(eventType)) {
+        EventType eventType, User attender, String userLatitude, String userLongitude) {
+        if (eventType != null) {
+            if (ONLINE == eventType) {
                 return getOnlineUserEventsSortedByDate(attender);
-            }
-            if (OFFLINE_EVENT.equalsIgnoreCase(eventType)) {
+            } else if (OFFLINE == eventType) {
                 return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
                     ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
                     : getOfflineUserEventsSortedByDate(attender);
-            } else {
-                throw new BadRequestException(ErrorMessage.INVALID_EVENT_TYPE);
             }
         }
         return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream().sorted(getComparatorByDates())
@@ -666,173 +712,6 @@ public class EventServiceImpl implements EventService {
             .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 
-    private List<Event> getAllFilteredAndSorted(
-        List<Event> allEvents, Long userId, FilterEventDto filterEventDto) {
-        List<Event> filtered = getFilteredByEventTimeAndCitiesAndTags(allEvents, filterEventDto);
-
-        if (CollectionUtils.isNotEmpty(filterEventDto.getStatuses())) {
-            if (userId != null) {
-                filtered = filterByAllStatuses(filtered, filterEventDto.getStatuses(), userId);
-            } else {
-                filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
-            }
-        }
-        return sortEvents(filtered);
-    }
-
-    private List<Event> getFilteredByEventTimeAndCitiesAndTags(List<Event> allEvents, FilterEventDto filterEventDto) {
-        List<Event> filtered = getEventsByEventTimeCondition(allEvents, filterEventDto.getEventTime());
-
-        if (CollectionUtils.isNotEmpty(filterEventDto.getCities())) {
-            filtered = filterByLocation(filtered, filterEventDto.getCities());
-        }
-        if (CollectionUtils.isNotEmpty(filterEventDto.getTags())) {
-            filtered = filterByTags(filtered, filterEventDto.getTags());
-        }
-        return filtered;
-    }
-
-    private List<Event> getEventsByEventTimeCondition(List<Event> allEvents, List<String> eventTimes) {
-        return (CollectionUtils.isNotEmpty(eventTimes))
-            ? filterByTime(allEvents, eventTimes)
-            : allEvents;
-    }
-
-    private List<Event> filterByTime(List<Event> events, List<String> eventTimes) {
-        List<Event> filteredByTime = new ArrayList<>();
-        for (String time : eventTimes) {
-            if (FUTURE_EVENT.equalsIgnoreCase(time)) {
-                filteredByTime.addAll(getFutureEvents(events));
-            }
-            if (PAST_EVENT.equalsIgnoreCase(time)) {
-                filteredByTime.addAll(getPastEvents(events));
-            }
-        }
-        return filteredByTime;
-    }
-
-    private List<Event> filterByLocation(List<Event> events, List<String> locations) {
-        return events.stream()
-            .filter(event -> event.getDates().stream()
-                .map(EventDateLocation::getAddress)
-                .filter(Objects::nonNull)
-                .map(Address::getCityEn)
-                .anyMatch(locations::contains))
-            .collect(Collectors.toList());
-    }
-
-    private List<Event> filterByAllStatuses(List<Event> events, List<String> statuses, Long userId) {
-        List<Event> filteredByStatus = new ArrayList<>();
-        for (String status : statuses) {
-            if (OPEN_STATUS.equalsIgnoreCase(status)) {
-                filteredByStatus.addAll(getOpenEvents(events));
-            }
-            if (CLOSED_STATUS.equalsIgnoreCase(status)) {
-                filteredByStatus.addAll(getClosedEvents(events));
-            }
-            if (JOINED_STATUS.equalsIgnoreCase(status)) {
-                filteredByStatus.addAll(getJoinedEvents(events, userId));
-            }
-            if (CREATED_STATUS.equalsIgnoreCase(status)) {
-                filteredByStatus.addAll(getCreatedEvents(events, userId));
-            }
-            if (SAVED_STATUS.equalsIgnoreCase(status)) {
-                filteredByStatus.addAll(getSavedEvents(events, userId));
-            }
-        }
-        return filteredByStatus;
-    }
-
-    private List<Event> filterByStatusOpenClosed(List<Event> events, List<String> statuses) {
-        List<Event> filteredByStatus = new ArrayList<>();
-        for (String status : statuses) {
-            if (OPEN_STATUS.equalsIgnoreCase(status)) {
-                filteredByStatus.addAll(getOpenEvents(events));
-            }
-            if (CLOSED_STATUS.equalsIgnoreCase(status)) {
-                filteredByStatus.addAll(getClosedEvents(events));
-            }
-        }
-        return filteredByStatus;
-    }
-
-    private List<Event> filterByTags(List<Event> events, List<String> tags) {
-        List<Event> filteredByTags = new ArrayList<>();
-        tags.stream().filter(Objects::nonNull).map(String::toUpperCase).forEach(tag -> {
-            switch (tag) {
-                case ECONOMIC_TAG:
-                    filteredByTags.addAll(getEventsByTagName(events, ECONOMIC_TAG));
-                    break;
-                case ENVIRONMENTAL_TAG:
-                    filteredByTags.addAll(getEventsByTagName(events, ENVIRONMENTAL_TAG));
-                    break;
-                case SOCIAL_TAG:
-                    filteredByTags.addAll(getEventsByTagName(events, SOCIAL_TAG));
-                    break;
-                default:
-                    break;
-            }
-        });
-        return filteredByTags;
-    }
-
-    private List<Event> getFutureEvents(List<Event> events) {
-        return events.stream().filter(Event::isRelevant).collect(Collectors.toList());
-    }
-
-    private List<Event> getPastEvents(List<Event> events) {
-        return events.stream().filter(event -> !event.isRelevant()).collect(Collectors.toList());
-    }
-
-    private List<Event> getOpenEvents(List<Event> events) {
-        return events.stream().filter(Event::isOpen).collect(Collectors.toList());
-    }
-
-    private List<Event> getClosedEvents(List<Event> events) {
-        return events.stream().filter(event -> !event.isOpen()).collect(Collectors.toList());
-    }
-
-    private List<Event> getJoinedEvents(List<Event> events, Long userId) {
-        return events.stream().filter(event -> event.getAttenders().stream().map(User::getId)
-            .collect(Collectors.toList()).contains(userId)).collect(Collectors.toList());
-    }
-
-    private List<Event> getCreatedEvents(List<Event> events, Long userId) {
-        return events.stream().filter(event -> event.getOrganizer().getId().equals(userId))
-            .collect(Collectors.toList());
-    }
-
-    private List<Event> getSavedEvents(List<Event> events, Long userId) {
-        return events.stream().filter(event -> event.getFollowers().stream().map(User::getId)
-            .collect(Collectors.toList()).contains(userId)).collect(Collectors.toList());
-    }
-
-    private List<Event> getEventsByTagName(final List<Event> events, final String tag) {
-        return events.stream().filter(event -> event.getTags().stream()
-            .map(Tag::getTagTranslations)
-            .flatMap(Collection::stream)
-            .anyMatch(tagTranslation -> tag.equalsIgnoreCase(tagTranslation.getName())))
-            .collect(Collectors.toList());
-    }
-
-    private List<Event> sortEvents(List<Event> unsorted) {
-        ZonedDateTime now = ZonedDateTime.now();
-
-        List<Event> events = unsorted.stream()
-            .filter(event -> event.getDates().stream().noneMatch(date -> date.getFinishDate().isBefore(now)))
-            .sorted(Comparator.comparing(event -> event.getDates().getFirst().getStartDate()))
-            .collect(Collectors.toList());
-
-        List<Event> pastEvents = unsorted.stream()
-            .filter(event -> event.getDates().stream().anyMatch(date -> date.getFinishDate().isBefore(now)))
-            .sorted(
-                Comparator.comparing(event -> event.getDates().getLast().getFinishDate(), Comparator.reverseOrder()))
-            .toList();
-
-        events.addAll(pastEvents);
-        return events;
-    }
-
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {
         List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
             new TypeToken<List<EventDto>>() {
@@ -946,5 +825,108 @@ public class EventServiceImpl implements EventService {
     @Override
     public Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId) {
         return eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(userId);
+    }
+
+    @Nullable
+    private static Boolean getBooleanIfAllMatchOrElseNull(List<Boolean> list) {
+        Boolean result = null;
+        if (list.isEmpty()) {
+            return null;
+        }
+        if (list.stream().allMatch(s -> s)) {
+            result = true;
+        } else if (list.stream().noneMatch(s -> s)) {
+            result = false;
+        }
+        return result;
+    }
+
+    private List<EventPreviewDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
+        Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
+        Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
+        for (Tuple tuple : page) {
+            long id = tuple.get(eventId, Long.class);
+            EventPreviewDto eventPreviewDto;
+            if (!eventsMap.containsKey(id)) {
+                eventPreviewDto = EventPreviewDto.builder()
+                    .id(id)
+                    .title(tuple.get(title, String.class))
+                    .organizer(
+                        new AuthorDto(tuple.get(organizerId, Long.class), tuple.get(organizerName, String.class)))
+                    .creationDate(tuple.get(creationDate, Date.class).toLocalDate())
+                    .titleImage(tuple.get(titleImage, String.class))
+                    .isOpen(tuple.get(isOpen, Boolean.class))
+                    .isRelevant(tuple.get(isRelevant, Boolean.class))
+                    .likes(tuple.get(likes, Long.class))
+                    .countComments(tuple.get(countComments, Long.class))
+                    .isOrganizedByFriend(tuple.get(isOrganizedByFriend, Boolean.class))
+                    .isFavorite(tuple.get(isFavorite, Boolean.class))
+                    .isSubscribed(tuple.get(isSubscribed, Boolean.class))
+                    .eventRate(tuple.get(grade, BigDecimal.class) != null
+                        ? tuple.get(grade, BigDecimal.class).doubleValue()
+                        : 0.0)
+                    .dates(new HashSet<>())
+                    .tags(new ArrayList<>())
+                    .build();
+                eventsMap.put(id, eventPreviewDto);
+            } else {
+                eventPreviewDto = eventsMap.get(id);
+            }
+            eventPreviewDto.getDates().add(EventDateLocationPreviewDto.builder()
+                .startDate(ZonedDateTime.ofInstant(tuple.get(startDate, Instant.class), ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.ofInstant(tuple.get(finishDate, Instant.class), ZoneId.systemDefault()))
+                .onlineLink(tuple.get(onlineLink, String.class))
+                .coordinates(AddressDto.builder()
+                    .latitude(tuple.get(latitude, Double.class))
+                    .longitude(tuple.get(longitude, Double.class))
+                    .streetEn(tuple.get(streetEn, String.class))
+                    .streetUa(tuple.get(streetUa, String.class))
+                    .houseNumber(tuple.get(houseNumber, String.class))
+                    .cityEn(tuple.get(cityEn, String.class))
+                    .cityUa(tuple.get(cityUa, String.class))
+                    .regionEn(tuple.get(regionEn, String.class))
+                    .regionUa(tuple.get(regionUa, String.class))
+                    .countryEn(tuple.get(countryEn, String.class))
+                    .countryUa(tuple.get(countryUa, String.class))
+                    .formattedAddressEn(tuple.get(formattedAddressEn, String.class))
+                    .formattedAddressUa(tuple.get(formattedAddressUa, String.class))
+                    .build())
+                .build());
+            Set<TagDto> tagDtos = tagsMap.getOrDefault(id, new HashSet<>());
+            tagDtos.add(TagDto.builder()
+                .id(tuple.get(tagId, Long.class))
+                .name(tuple.get(tagName, String.class))
+                .languageCode(tuple.get(languageCode, String.class))
+                .build());
+            tagsMap.put(id, tagDtos);
+        }
+        List<EventPreviewDto> sortedDtos = new ArrayList<>();
+        for (Long id : sortedIds) {
+            // Temporary mapping in TagUaEnDto
+            Set<TagDto> tags = tagsMap.get(id);
+            TagDto enTag =
+                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("en")).findAny().orElse(new TagDto());
+            TagDto uaTag =
+                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("ua")).findAny().orElse(new TagDto());
+            TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
+                .id(enTag.getId())
+                .nameEn(enTag.getName())
+                .nameUa(uaTag.getName())
+                .build();
+            EventPreviewDto eventPreviewDto = eventsMap.get(id);
+            eventPreviewDto.setTags(List.of(tagUaEnDto));
+            sortedDtos.add(eventPreviewDto);
+        }
+        return sortedDtos;
+    }
+
+    @Nullable
+    private static String[] getArrayFromListOrNullIfEmpty(List<String> list) {
+        if (list != null) {
+            return !list.isEmpty()
+                ? list.stream().map(String::toLowerCase).toArray(String[]::new)
+                : null;
+        }
+        return null;
     }
 }

@@ -7,9 +7,11 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.search.SearchEventsDto;
+import greencity.enums.EventType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
@@ -52,7 +54,7 @@ public interface EventService {
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
+    PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
         String title);
 
     /**
@@ -61,7 +63,7 @@ public interface EventService {
      * @return List of {@link EventDto} instance.
      */
     PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String latitude,
-        String longitude, String eventType);
+        String longitude, EventType eventType);
 
     /**
      * Method for getting page of events which were created user.
