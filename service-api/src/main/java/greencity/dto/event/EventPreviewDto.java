@@ -1,5 +1,6 @@
 package greencity.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.AuthorDto;
 import java.time.LocalDate;
@@ -35,6 +36,7 @@ public class EventPreviewDto {
 
     private String titleImage;
 
+    @JsonProperty("open")
     private Boolean isOpen;
 
     private Boolean isSubscribed;
