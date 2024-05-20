@@ -559,7 +559,7 @@ class EventsControllerTest {
                     .longitude(30.5058935778292d).build())
                 .build()))
             .tags(List.of(TagUaEnDto.builder()
-                .id(20)
+                .id(20L)
                 .nameEn("Name")
                 .nameUa("Назва").build()))
             .titleImage("https://csb10032000a548f571.blob.core.windows.net/all/8f09887c.png")
