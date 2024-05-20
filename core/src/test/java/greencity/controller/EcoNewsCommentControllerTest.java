@@ -188,7 +188,7 @@ class EcoNewsCommentControllerTest {
         mockMvc.perform(patch(ecoNewsCommentControllerLink)
             .param("id", "1")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(textComment))
+            .content(textComment)
             .principal(principal))
             .andExpect(status().isOk());
 
