@@ -828,8 +828,7 @@ public class EventServiceImpl implements EventService {
         return eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(userId);
     }
 
-    @Nullable
-    private static Boolean getBooleanIfAllMatchOrElseNull(List<Boolean> list) {
+    private Boolean getBooleanIfAllMatchOrElseNull(List<Boolean> list) {
         Boolean result = null;
         if (list.isEmpty()) {
             return null;
@@ -928,8 +927,7 @@ public class EventServiceImpl implements EventService {
         return sortedDtos;
     }
 
-    @Nullable
-    private static String[] getArrayFromListOrNullIfEmpty(List<String> list) {
+    private String[] getArrayFromListOrNullIfEmpty(List<String> list) {
         if (list != null) {
             return !list.isEmpty()
                 ? list.stream().map(String::toLowerCase).toArray(String[]::new)

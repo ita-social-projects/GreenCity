@@ -305,7 +305,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                           left join events_attenders ea on e.id = ea.event_id and ea.user_id = :userId
                  WHERE (edl.finish_date >= now() and l.code='en')
                  GROUP BY e.id, uf.friend_id, tt.name, ea.user_id, edl.city_en, ef.user_id
-                 ORDER BY isSubscribed, isFavorite, isOrganizedByUser, isOrganizedByFriend, lastFinishDate,
+                 ORDER BY isSubscribed desc, isFavorite desc, isOrganizedByUser desc, isOrganizedByFriend desc,
                     grade DESC, likes DESC)
                  UNION ALL
                  (SELECT distinct e.id as eventId, e.title, max(edl.finish_date) as lastFinishDate,
@@ -336,7 +336,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                                                                     on e1.id = edl2.event_id
                                                                     where edl2.finish_date >= now()))
                   GROUP BY e.id, uf.friend_id, tt.name, ea.user_id, edl.city_en, ef.user_id
-                  ORDER BY isSubscribed, isFavorite, isOrganizedByUser, isOrganizedByFriend,
+                  ORDER BY isSubscribed desc, isFavorite desc, isOrganizedByUser desc, isOrganizedByFriend desc,
                     lastFinishDate desc, grade DESC, likes DESC)
              ) as combined
         WHERE (CAST(:titleCriteria as varchar) IS NULL OR lower(combined.title) like (:titleCriteria)) AND
