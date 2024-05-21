@@ -71,6 +71,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -840,6 +841,7 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
+    @Nullable
     private List<EventPreviewDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
         Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
@@ -926,6 +928,7 @@ public class EventServiceImpl implements EventService {
         return sortedDtos;
     }
 
+    @Nullable
     private String[] getArrayFromListOrNullIfEmpty(List<String> list) {
         if (list != null) {
             return !list.isEmpty()
