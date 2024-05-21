@@ -5,6 +5,7 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
+import greencity.constant.RedirectUrl;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -19,6 +20,7 @@ import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitAssignService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -55,6 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/habit/assign")
 public class HabitAssignController {
     private final HabitAssignService habitAssignService;
+    private final RedirectUrl redirectUrl;
 
     /**
      * Method which assigns habit for {@link UserVO} with default props.
@@ -603,5 +606,54 @@ public class HabitAssignController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userVO.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method send request to assign on habit via email notification.
+     *
+     * @param habitId  - id of {@link HabitAssignVO}.
+     * @param friendId - id of user friend {@link UserVO}.
+     * @param userVO   - user who send request {@link UserVO}.
+     * @param locale   - current language {@link greencity.dto.language.LanguageVO}.
+     */
+    @Operation(summary = "Inviting friend on habit with email notification")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/{habitId}/{friendId}/invite")
+    public ResponseEntity<ResponseEntity.BodyBuilder> inviteFriendRequest(@PathVariable Long habitId,
+        @PathVariable Long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habitId, locale);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to confirm invite from friend request.
+     *
+     * @param habitAssignId - id {@link HabitAssignVO}.
+     */
+    @Operation(summary = "Confirm invite for habit by email link")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = HttpStatuses.FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FOUND))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/confirm/{habitAssignId}")
+    public ResponseEntity<Void> confirmInvitation(@PathVariable Long habitAssignId) {
+        habitAssignService.confirmHabitInvitation(habitAssignId);
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .location(URI.create(redirectUrl.getClintAddress() + "/#/profile"))
+            .build();
     }
 }

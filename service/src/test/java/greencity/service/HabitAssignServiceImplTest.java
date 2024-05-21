@@ -2471,4 +2471,37 @@ class HabitAssignServiceImplTest {
             () -> habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId));
 
     }
+
+    @Test
+    void confirmHabitInvitation() {
+        Long habitAssignId = 1L;
+        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+
+        habitAssignService.confirmHabitInvitation(habitAssignId);
+
+        verify(habitAssignRepo).save(habitAssign);
+        assertEquals(HabitAssignStatus.INPROGRESS, habitAssign.getStatus());
+    }
+
+    @Test
+    void confirmHabitInvitationWithInvalidId() {
+        Long habitAssignId = 100L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.confirmHabitInvitation(habitAssignId));
+    }
+
+    @Test
+    void confirmHabitInvitationWithInvalidHabitStatus() {
+        Long habitAssignId = 100L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+
+        assertThrows(BadRequestException.class,
+            () -> habitAssignService.confirmHabitInvitation(habitAssignId));
+    }
 }

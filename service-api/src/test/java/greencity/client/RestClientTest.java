@@ -20,6 +20,7 @@ import greencity.message.GeneralEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
+import greencity.message.HabitAssignNotificationMessage;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
@@ -571,5 +572,22 @@ class RestClientTest {
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendHabitAssignNotification() {
+        String accessToken = "Bearer null";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HabitAssignNotificationMessage notification = ModelUtils.getHabitAssignNotificationMessage();
+        HttpEntity<HabitAssignNotificationMessage> entity = new HttpEntity<>(notification, headers);
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_HABIT_ASSIGN_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(Object));
+        restClient.sendHabitAssignNotification(notification);
+
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_HABIT_ASSIGN_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

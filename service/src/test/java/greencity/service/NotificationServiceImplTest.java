@@ -21,6 +21,7 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -238,5 +239,22 @@ class NotificationServiceImplTest {
         assertEquals(email, capturedEmailMessage.getEmail());
         assertEquals(subject, capturedEmailMessage.getSubject());
         assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
+    void sendHabitAssignEmailNotification() {
+        HabitAssignNotificationMessage message = new HabitAssignNotificationMessage(
+            "sender", "receiver", "receiver@example.com", "habit", "en", 123L);
+        ArgumentCaptor<HabitAssignNotificationMessage> emailMessageCaptor =
+            ArgumentCaptor.forClass(HabitAssignNotificationMessage.class);
+        notificationService.sendHabitAssignEmailNotification(message);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendHabitAssignNotification(emailMessageCaptor.capture()));
+        HabitAssignNotificationMessage capturedMessage = emailMessageCaptor.getValue();
+        assertEquals(message.getReceiverEmail(), capturedMessage.getReceiverEmail());
+        assertEquals(message.getHabitAssignId(), capturedMessage.getHabitAssignId());
+        assertEquals(message.getHabitName(), capturedMessage.getHabitName());
+        assertEquals(message.getLanguage(), capturedMessage.getLanguage());
+        assertEquals(message.getSenderName(), capturedMessage.getSenderName());
     }
 }

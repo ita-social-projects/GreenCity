@@ -3,6 +3,7 @@ package greencity.controller;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.constant.RedirectUrl;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
@@ -23,8 +24,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Locale;
 import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -41,6 +41,9 @@ class HabitAssignControllerTest {
 
     @Mock
     HabitAssignService habitAssignService;
+
+    @Mock
+    private RedirectUrl redirectUrl;
 
     @InjectMocks
     HabitAssignController habitAssignController;
@@ -243,5 +246,13 @@ class HabitAssignControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateProgressNotificationHasDisplayed(1L, null);
+    }
+
+    @Test
+    void confirmInvitation() throws Exception {
+        when(redirectUrl.getClintAddress()).thenReturn("http://localhost:8080/");
+        mockMvc.perform(get(habitLink + "/confirm/{habitAssignId}", 1L))
+            .andExpect(status().is3xxRedirection());
+        verify(habitAssignService).confirmHabitInvitation(1L);
     }
 }

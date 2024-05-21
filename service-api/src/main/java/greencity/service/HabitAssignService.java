@@ -14,6 +14,7 @@ import greencity.enums.HabitAssignStatus;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Locale;
 
 public interface HabitAssignService {
     /**
@@ -310,4 +311,21 @@ public interface HabitAssignService {
      * @param userId        {@link Long} item id.
      */
     HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId, Integer duration);
+
+    /**
+     * Method invite friend to your habit with email notification.
+     *
+     * @param userVO   {@link UserVO} user.
+     * @param friendId {@link Long} User friend id.
+     * @param habitId  {@link Long} habit id.
+     * @param locale   {@link Locale} language.
+     */
+    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId, Locale locale);
+
+    /**
+     * Method to confirm friend request to habit.
+     *
+     * @param habitAssignId {@link Long} habit assign id.
+     */
+    void confirmHabitInvitation(Long habitAssignId);
 }
