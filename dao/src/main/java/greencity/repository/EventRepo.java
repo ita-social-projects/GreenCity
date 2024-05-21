@@ -184,7 +184,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     @Query(nativeQuery = true, value = """
         SELECT combined.eventId
         FROM (
-                 (SELECT distinct e.id as eventId, e.title, max(edl.finish_date) as lastFinishDate,
+                 (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
                                   edl.city_en, tt.name as ttName, e.is_open,
                                   (true)             AS isRelevant,
                                   COUNT(DISTINCT eul) AS likes,
@@ -200,9 +200,9 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                            LEFT JOIN languages l ON tt.language_id = l.id
                   WHERE (edl.finish_date >= now() and l.code='en')
                   GROUP BY e.id, tt.name, edl.city_en
-                  ORDER BY lastFinishDate, grade DESC, likes DESC)
+                  ORDER BY firstFinishDate, grade DESC, likes DESC)
                  UNION ALL
-                 (SELECT distinct e.id as eventId, e.title, max(edl.finish_date) as lastFinishDate,
+                 (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
                                   edl.city_en, tt.name as ttName, e.is_open,
                                   (false)             AS isRelevant,
                                   COUNT(DISTINCT eul) AS likes,
@@ -222,7 +222,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                                                                      on e1.id = edl2.event_id
                                                                      where edl2.finish_date >= now()))
                   GROUP BY e.id, tt.name, edl.city_en
-                  ORDER BY lastFinishDate desc, grade DESC, likes DESC)) as combined
+                  ORDER BY firstFinishDate desc, grade DESC, likes DESC)) as combined
         WHERE (CAST(:titleCriteria as varchar) IS NULL OR lower(combined.title) like (:titleCriteria)) AND
             (CAST(:isOpen as boolean) IS NULL OR combined.is_open = :isOpen) AND
             (CAST(:isRelevant as boolean) IS NULL OR combined.isRelevant = :isRelevant) AND
@@ -278,76 +278,77 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      * @return A paginated list of EventPreviewDto objects that match the specified
      *         filters.
      */
-    @Query(nativeQuery = true, value = """
-        SELECT combined.eventId
-        FROM (
-                 (SELECT distinct e.id as eventId, e.title, max(edl.finish_date) as lastFinishDate,
-                         edl.city_en, tt.name as ttName, e.is_open,
-                         (true)             AS isRelevant,
-                         COUNT(DISTINCT eul) AS likes,
-                         COUNT(DISTINCT ec)  AS countComments,
-                         AVG(eg.grade)       AS grade,
-                         (uf.friend_id IS NOT NULL)    AS isOrganizedByFriend,
-                         (e.organizer_id = :userId) AS isOrganizedByUser,
-                         (ea.user_id = :userId and ea.user_id is not null) AS isSubscribed,
-                         (ef.user_id IS NOT NULL) AS isFavorite
-                 FROM events e
-                          LEFT JOIN events_grades eg ON e.id = eg.event_id
-                          LEFT JOIN events_comment ec ON e.id = ec.event_id
-                          LEFT JOIN events_users_likes eul ON e.id = eul.event_id
-                          LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
-                          LEFT JOIN events_tags et ON e.id = et.event_id
-                          LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
-                          LEFT JOIN languages l ON tt.language_id = l.id
-                          left join users_friends uf on uf.user_id = :userId and uf.friend_id=e.organizer_id
-                                and uf.status='FRIEND'
-                          left join events_followers ef on e.id = ef.event_id and ef.user_id = :userId
-                          left join events_attenders ea on e.id = ea.event_id and ea.user_id = :userId
-                 WHERE (edl.finish_date >= now() and l.code='en')
-                 GROUP BY e.id, uf.friend_id, tt.name, ea.user_id, edl.city_en, ef.user_id
-                 ORDER BY isSubscribed desc, isFavorite desc, isOrganizedByUser desc, isOrganizedByFriend desc,
-                    grade DESC, likes DESC)
-                 UNION ALL
-                 (SELECT distinct e.id as eventId, e.title, max(edl.finish_date) as lastFinishDate,
-                                  edl.city_en, tt.name as ttName, e.is_open,
-                                  (false)             AS isRelevant,
-                                  COUNT(DISTINCT eul) AS likes,
-                                  COUNT(DISTINCT ec)  AS countComments,
-                                  AVG(eg.grade)       AS grade,
-                                  (uf.friend_id IS NOT NULL)    AS isOrganizedByFriend,
-                                  (e.organizer_id = :userId) AS isOrganizedByUser,
-                                  (ea.user_id = :userId and ea.user_id is not null) AS isSubscribed,
-                                  (ef.user_id IS NOT NULL) AS isFavorite
-                  FROM events e
-                           LEFT JOIN events_grades eg ON e.id = eg.event_id
-                           LEFT JOIN events_comment ec ON e.id = ec.event_id
-                           LEFT JOIN events_users_likes eul ON e.id = eul.event_id
-                           LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
-                           LEFT JOIN events_tags et ON e.id = et.event_id
-                           LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
-                           LEFT JOIN languages l ON tt.language_id = l.id
-                           left join users_friends uf on uf.user_id = :userId and uf.friend_id=e.organizer_id
-                                and uf.status='FRIEND'
-                           left join events_followers ef on e.id = ef.event_id and ef.user_id = :userId
-                           left join events_attenders ea on e.id = ea.event_id and ea.user_id = :userId
-                 WHERE (edl.finish_date < now() and l.code='en' and e.id not in
-                                                                    (select e1.id from events e1
-                                                                    left join events_dates_locations edl2
-                                                                    on e1.id = edl2.event_id
-                                                                    where edl2.finish_date >= now()))
-                  GROUP BY e.id, uf.friend_id, tt.name, ea.user_id, edl.city_en, ef.user_id
-                  ORDER BY isSubscribed desc, isFavorite desc, isOrganizedByUser desc, isOrganizedByFriend desc,
-                    lastFinishDate desc, grade DESC, likes DESC)
-             ) as combined
-        WHERE (CAST(:titleCriteria as varchar) IS NULL OR lower(combined.title) like (:titleCriteria)) AND
-            (CAST(:isOpen as boolean) IS NULL OR combined.is_open = :isOpen) AND
-            (CAST(:isRelevant as boolean) IS NULL OR combined.isRelevant = :isRelevant) AND
-            (CAST(:citiesInLower as varchar[]) IS NULL OR lower(combined.city_en) in (:citiesInLower)) AND
-            (CAST(:tagsInLower as varchar[]) IS NULL OR lower(combined.ttName) in (:tagsInLower)) AND
-            (CAST(:isSubscribed as boolean) IS NULL OR combined.isSubscribed = :isSubscribed) AND
-            (CAST(:isOrganizedByUser as boolean) IS NULL OR combined.isOrganizedByUser = :isOrganizedByUser) AND
-            (CAST(:isFavorite as boolean) IS NULL OR combined.isFavorite = :isFavorite);
-            """,
+    @Query(nativeQuery = true,
+        value = """
+            SELECT combined.eventId
+            FROM (
+                     (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
+                             edl.city_en, tt.name as ttName, e.is_open,
+                             (true)             AS isRelevant,
+                             COUNT(DISTINCT eul) AS likes,
+                             COUNT(DISTINCT ec)  AS countComments,
+                             AVG(eg.grade)       AS grade,
+                             (uf.friend_id IS NOT NULL)    AS isOrganizedByFriend,
+                             (e.organizer_id = :userId) AS isOrganizedByUser,
+                             (ea.user_id = :userId and ea.user_id is not null) AS isSubscribed,
+                             (ef.user_id IS NOT NULL) AS isFavorite
+                     FROM events e
+                              LEFT JOIN events_grades eg ON e.id = eg.event_id
+                              LEFT JOIN events_comment ec ON e.id = ec.event_id
+                              LEFT JOIN events_users_likes eul ON e.id = eul.event_id
+                              LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
+                              LEFT JOIN events_tags et ON e.id = et.event_id
+                              LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
+                              LEFT JOIN languages l ON tt.language_id = l.id
+                              left join users_friends uf on uf.user_id = :userId and uf.friend_id=e.organizer_id
+                                    and uf.status='FRIEND'
+                              left join events_followers ef on e.id = ef.event_id and ef.user_id = :userId
+                              left join events_attenders ea on e.id = ea.event_id and ea.user_id = :userId
+                     WHERE (edl.finish_date >= now() and l.code='en')
+                     GROUP BY e.id, uf.friend_id, tt.name, ea.user_id, edl.city_en, ef.user_id
+                     ORDER BY isSubscribed desc, isFavorite desc, isOrganizedByUser desc, isOrganizedByFriend desc,
+                        firstFinishDate, grade DESC, likes DESC)
+                     UNION ALL
+                     (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
+                                      edl.city_en, tt.name as ttName, e.is_open,
+                                      (false)             AS isRelevant,
+                                      COUNT(DISTINCT eul) AS likes,
+                                      COUNT(DISTINCT ec)  AS countComments,
+                                      AVG(eg.grade)       AS grade,
+                                      (uf.friend_id IS NOT NULL)    AS isOrganizedByFriend,
+                                      (e.organizer_id = :userId) AS isOrganizedByUser,
+                                      (ea.user_id = :userId and ea.user_id is not null) AS isSubscribed,
+                                      (ef.user_id IS NOT NULL) AS isFavorite
+                      FROM events e
+                               LEFT JOIN events_grades eg ON e.id = eg.event_id
+                               LEFT JOIN events_comment ec ON e.id = ec.event_id
+                               LEFT JOIN events_users_likes eul ON e.id = eul.event_id
+                               LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
+                               LEFT JOIN events_tags et ON e.id = et.event_id
+                               LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
+                               LEFT JOIN languages l ON tt.language_id = l.id
+                               left join users_friends uf on uf.user_id = :userId and uf.friend_id=e.organizer_id
+                                    and uf.status='FRIEND'
+                               left join events_followers ef on e.id = ef.event_id and ef.user_id = :userId
+                               left join events_attenders ea on e.id = ea.event_id and ea.user_id = :userId
+                     WHERE (edl.finish_date < now() and l.code='en' and e.id not in
+                                                                        (select e1.id from events e1
+                                                                        left join events_dates_locations edl2
+                                                                        on e1.id = edl2.event_id
+                                                                        where edl2.finish_date >= now()))
+                      GROUP BY e.id, uf.friend_id, tt.name, ea.user_id, edl.city_en, ef.user_id
+                      ORDER BY isSubscribed desc, isFavorite desc, isOrganizedByUser desc, isOrganizedByFriend desc,
+                        firstFinishDate desc, grade DESC, likes DESC)
+                 ) as combined
+            WHERE (CAST(:titleCriteria as varchar) IS NULL OR lower(combined.title) like (:titleCriteria)) AND
+                (CAST(:isOpen as boolean) IS NULL OR combined.is_open = :isOpen) AND
+                (CAST(:isRelevant as boolean) IS NULL OR combined.isRelevant = :isRelevant) AND
+                (CAST(:citiesInLower as varchar[]) IS NULL OR lower(combined.city_en) in (:citiesInLower)) AND
+                (CAST(:tagsInLower as varchar[]) IS NULL OR lower(combined.ttName) in (:tagsInLower)) AND
+                (CAST(:isSubscribed as boolean) IS NULL OR combined.isSubscribed = :isSubscribed) AND
+                (CAST(:isOrganizedByUser as boolean) IS NULL OR combined.isOrganizedByUser = :isOrganizedByUser) AND
+                (CAST(:isFavorite as boolean) IS NULL OR combined.isFavorite = :isFavorite);
+                """,
         countQuery = """
             SELECT count(distinct e.id)
              FROM events e
