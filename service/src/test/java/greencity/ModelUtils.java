@@ -2584,12 +2584,12 @@ public class ModelUtils {
 
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
         return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-            .coordinates(AddressDto.builder().latitude(1.).longitude(1.).build()).build());
+            .coordinates(AddressDto.builder().latitude(1L).longitude(1L).build()).build());
     }
 
     public static EventDateLocation getUpdatedEventDateLocation() {
         return EventDateLocation.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-            .address(Address.builder().latitude(1D).longitude(1D).build()).build();
+            .address(Address.builder().latitude(1L).longitude(1L).build()).build();
     }
 
     public static Event getEventWithGrades() {
@@ -3225,7 +3225,7 @@ public class ModelUtils {
                             .build())
                         .build()))
                 .tags(List.of(TagUaEnDto.builder()
-                    .id(2L)
+                    .id(2)
                     .nameUa("Соціальний1")
                     .nameEn("Social1")
                     .build()))
@@ -3258,7 +3258,7 @@ public class ModelUtils {
                             .build())
                         .build()))
                 .tags(List.of(TagUaEnDto.builder()
-                    .id(1L)
+                    .id(1)
                     .nameUa("Соціальний")
                     .nameEn("Social")
                     .build()))

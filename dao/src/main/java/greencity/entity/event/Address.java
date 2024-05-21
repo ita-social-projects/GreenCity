@@ -14,10 +14,10 @@ import jakarta.persistence.Embeddable;
 @Data
 public final class Address {
     @Column
-    private Double latitude;
+    private double latitude;
 
     @Column
-    private Double longitude;
+    private double longitude;
 
     @Column
     private String streetEn;
