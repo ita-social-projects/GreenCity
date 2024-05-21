@@ -69,7 +69,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.locationtech.jts.geom.Coordinate;
@@ -873,32 +872,25 @@ public class EventServiceImpl implements EventService {
             } else {
                 eventPreviewDto = eventsMap.get(id);
             }
-            AddressDto addressDto = AddressDto.builder()
-                .latitude(tuple.get(latitude, Double.class))
-                .longitude(tuple.get(longitude, Double.class))
-                .streetEn(tuple.get(streetEn, String.class))
-                .streetUa(tuple.get(streetUa, String.class))
-                .houseNumber(tuple.get(houseNumber, String.class))
-                .cityEn(tuple.get(cityEn, String.class))
-                .cityUa(tuple.get(cityUa, String.class))
-                .regionEn(tuple.get(regionEn, String.class))
-                .regionUa(tuple.get(regionUa, String.class))
-                .countryEn(tuple.get(countryEn, String.class))
-                .countryUa(tuple.get(countryUa, String.class))
-                .formattedAddressEn(tuple.get(formattedAddressEn, String.class))
-                .formattedAddressUa(tuple.get(formattedAddressUa, String.class))
-                .build();
-            if (ObjectUtils.allNull(addressDto.getLatitude(), addressDto.getLongitude(), addressDto.getStreetEn(),
-                addressDto.getStreetUa(), addressDto.getCityEn(), addressDto.getCityUa(), addressDto.getCountryEn(),
-                addressDto.getCountryUa(), addressDto.getRegionEn(), addressDto.getRegionUa(),
-                addressDto.getHouseNumber(), addressDto.getFormattedAddressEn(), addressDto.getFormattedAddressUa())) {
-                addressDto = null;
-            }
             eventPreviewDto.getDates().add(EventDateLocationPreviewDto.builder()
                 .startDate(ZonedDateTime.ofInstant(tuple.get(startDate, Instant.class), ZoneId.systemDefault()))
                 .finishDate(ZonedDateTime.ofInstant(tuple.get(finishDate, Instant.class), ZoneId.systemDefault()))
                 .onlineLink(tuple.get(onlineLink, String.class))
-                .coordinates(addressDto)
+                .coordinates(AddressDto.builder()
+                    .latitude(tuple.get(latitude, Double.class))
+                    .longitude(tuple.get(longitude, Double.class))
+                    .streetEn(tuple.get(streetEn, String.class))
+                    .streetUa(tuple.get(streetUa, String.class))
+                    .houseNumber(tuple.get(houseNumber, String.class))
+                    .cityEn(tuple.get(cityEn, String.class))
+                    .cityUa(tuple.get(cityUa, String.class))
+                    .regionEn(tuple.get(regionEn, String.class))
+                    .regionUa(tuple.get(regionUa, String.class))
+                    .countryEn(tuple.get(countryEn, String.class))
+                    .countryUa(tuple.get(countryUa, String.class))
+                    .formattedAddressEn(tuple.get(formattedAddressEn, String.class))
+                    .formattedAddressUa(tuple.get(formattedAddressUa, String.class))
+                    .build())
                 .build());
             Set<TagDto> tagDtos = tagsMap.getOrDefault(id, new HashSet<>());
             tagDtos.add(TagDto.builder()
