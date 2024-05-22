@@ -12,6 +12,7 @@ import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -143,6 +144,22 @@ public class NotificationServiceImpl implements NotificationService {
             try {
                 RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 restClient.sendEmailNotification(generalEmailMessage);
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sendHabitAssignEmailNotification(HabitAssignNotificationMessage message) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                restClient.sendHabitAssignNotification(message);
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }

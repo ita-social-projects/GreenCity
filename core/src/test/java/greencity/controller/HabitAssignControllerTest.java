@@ -3,6 +3,7 @@ package greencity.controller;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.constant.RedirectUrl;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
@@ -41,6 +42,9 @@ class HabitAssignControllerTest {
 
     @Mock
     HabitAssignService habitAssignService;
+
+    @Mock
+    private RedirectUrl redirectUrl;
 
     @InjectMocks
     HabitAssignController habitAssignController;
@@ -243,5 +247,22 @@ class HabitAssignControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateProgressNotificationHasDisplayed(1L, null);
+    }
+
+    @Test
+    void inviteFriendRequest() throws Exception {
+        UserVO userVO = new UserVO();
+        mockMvc.perform(post(habitLink + "/{habitId}/{friendId}/invite", 1L, 2L)
+            .locale(Locale.forLanguageTag("ua")))
+            .andExpect(status().isOk());
+        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, 2L, 1L,
+            Locale.forLanguageTag("ua"));
+    }
+
+    @Test
+    void confirmInvitation() throws Exception {
+        mockMvc.perform(get(habitLink + "/confirm/{habitAssignId}", 1L))
+            .andExpect(status().is3xxRedirection());
+        verify(habitAssignService).confirmHabitInvitation(1L);
     }
 }

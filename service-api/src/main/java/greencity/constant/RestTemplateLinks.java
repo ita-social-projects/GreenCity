@@ -36,7 +36,8 @@ public class RestTemplateLinks {
     public static final String FIND_ALL_REGISTRATION_MONTHS_MAP = "/user/findAllRegistrationMonthsMap";
     public static final String FIND_ALL_USERS_CITIES = "/user/findAllUsersCities";
     public static final String ADD_EVENT_COMMENT = "/email/addEventComment";
-    public static final String SEND_GENERAL_EMAIL_NOTIFICATION = "email/general/notification";
+    public static final String SEND_GENERAL_EMAIL_NOTIFICATION = "/email/general/notification";
+    public static final String SEND_HABIT_ASSIGN_NOTIFICATION = "/email/habitAssign/notification";
 
     private RestTemplateLinks() {
     }
