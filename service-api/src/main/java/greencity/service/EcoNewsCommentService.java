@@ -53,9 +53,9 @@ public interface EcoNewsCommentService {
     void deleteById(Long id, UserVO user);
 
     /**
-     * Method to change the existing {@link EcoNewsCommentVO}.
+     * Method to update the text of an existing {@link EcoNewsCommentVO}.
      *
-     * @param text new text of {@link EcoNewsCommentVO}.
+     * @param text new text for {@link EcoNewsCommentVO}.
      * @param id   to specify {@link EcoNewsCommentVO} that user wants to change.
      * @param user current {@link UserVO} that wants to change.
      */

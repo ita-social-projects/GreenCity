@@ -357,7 +357,8 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.update(newText, commentId, userVO));
+            assertThrows(NotFoundException.class,
+                () -> ecoNewsCommentService.update(newText, commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -375,7 +376,8 @@ class EcoNewsCommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> ecoNewsCommentService.update(newText, commentId, userToUpdateVO));
+                () -> ecoNewsCommentService.update(newText, commentId,
+                    userToUpdateVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 
