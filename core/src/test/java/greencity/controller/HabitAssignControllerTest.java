@@ -24,7 +24,8 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Locale;
 import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -249,8 +250,17 @@ class HabitAssignControllerTest {
     }
 
     @Test
+    void inviteFriendRequest() throws Exception {
+        UserVO userVO = new UserVO();
+        mockMvc.perform(post(habitLink + "/{habitId}/{friendId}/invite", 1L, 2L)
+            .locale(Locale.forLanguageTag("ua")))
+            .andExpect(status().isOk());
+        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, 2L, 1L,
+            Locale.forLanguageTag("ua"));
+    }
+
+    @Test
     void confirmInvitation() throws Exception {
-        when(redirectUrl.getClintAddress()).thenReturn("http://localhost:8080/");
         mockMvc.perform(get(habitLink + "/confirm/{habitAssignId}", 1L))
             .andExpect(status().is3xxRedirection());
         verify(habitAssignService).confirmHabitInvitation(1L);

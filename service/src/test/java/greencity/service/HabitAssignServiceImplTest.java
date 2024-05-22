@@ -45,6 +45,7 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.message.HabitAssignNotificationMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -68,6 +69,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Locale;
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
@@ -76,11 +78,21 @@ import static greencity.ModelUtils.getHabitDto;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getShoppingListItemTranslationList;
 import static greencity.ModelUtils.getUserShoppingListItem;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getHabitTranslation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -114,6 +126,8 @@ class HabitAssignServiceImplTest {
     private CustomShoppingListItemService customShoppingListItemService;
     @Mock
     private UserService userService;
+    @Mock
+    private NotificationService notificationService;
 
     @Mock
     private RatingCalculation ratingCalculation;
@@ -2470,6 +2484,99 @@ class HabitAssignServiceImplTest {
         assertThrows(NotFoundException.class,
             () -> habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId));
 
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationUserHasNoFriend() {
+        Long friendId = 10L;
+        Long habitId = 1L;
+        Locale locale = Locale.of("en");
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(false);
+
+        assertThrows(UserHasNoFriendWithIdException.class,
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habitId, locale));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationFriendNotFound() {
+        Long friendId = 10L;
+        Locale locale = Locale.of("en");
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, 1L, locale));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationHabitNotFound() {
+        Long friendId = 10L;
+        Locale locale = Locale.of("en");
+        UserVO friendVO = getUserVO();
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.of(getUser()));
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.empty());
+        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(friendVO);
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, 1L, locale));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationSuccessfulAssign() {
+        Long friendId = 1L;
+        Locale locale = Locale.of("en");
+        User friend = getUser();
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
+
+        HabitAssign habitAssign = new HabitAssign();
+        habitAssign.setId(1L);
+        habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+        habitAssign.setHabit(Habit.builder()
+            .id(1L)
+            .habitTranslations(List.of(getHabitTranslation()))
+            .build());
+
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendId)).thenReturn(
+            habitAssign);
+        when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
+
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habit.getId(), locale);
+
+        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationNewHabitAssign() {
+        Locale locale = Locale.of("en");
+        User friend = getUser();
+        Habit habit = Habit.builder()
+            .id(1L)
+            .habitTranslations(List.of(getHabitTranslation()))
+            .build();
+
+        when(userRepo.isFriend(userVO.getId(), friend.getId())).thenReturn(true);
+        when(userRepo.findById(friend.getId())).thenReturn(Optional.of(friend));
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friend.getId())).thenReturn(
+            null);
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId())).thenReturn(List.of(1L));
+        when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
+
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friend.getId(), habit.getId(), locale);
+
+        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
+        verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
     }
 
     @Test
