@@ -124,6 +124,9 @@ public class EventsController {
             description = SwaggerExampleModel.UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventDto eventDto,
         @Parameter(hidden = true) Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        if (eventDto.getTitle().length() > 70) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
             eventService.update(eventDto, principal.getName(), images));
     }

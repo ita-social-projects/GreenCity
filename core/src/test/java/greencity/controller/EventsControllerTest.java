@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -349,6 +350,56 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
+        verify(eventService).update(updateEventDto, principal.getName(), null);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateTestTitleExceedsMaxLength() {
+        UpdateEventDto updateEventDto = getUpdateEventDto();
+        updateEventDto.setTitle(
+            "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax q%");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        String json = objectMapper.writeValueAsString(updateEventDto);
+        MockMultipartFile jsonFile = new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
+
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+        mockMvc.perform(builder
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateTestTitleWithinMaxLength() {
+        UpdateEventDto updateEventDto = getUpdateEventDto();
+        updateEventDto.setTitle("Short title within 70 characters");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        String json = objectMapper.writeValueAsString(updateEventDto);
+        MockMultipartFile jsonFile = new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
+
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+        mockMvc.perform(builder
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
         verify(eventService).update(updateEventDto, principal.getName(), null);
     }
 
