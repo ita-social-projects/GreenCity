@@ -71,7 +71,7 @@ public class RestClient {
         @Value("${greencityuser.server.address}") String greenCityUserServerAddress,
         HttpServletRequest httpServletRequest,
         JwtTool jwtTool,
-        @Value("${sender.email.address}") String systemEmail) {
+        @Value("${spring.liquibase.parameters.service-email}") String systemEmail) {
         this.restTemplate = restTemplate;
         this.greenCityUserServerAddress = greenCityUserServerAddress;
         this.httpServletRequest = httpServletRequest;
