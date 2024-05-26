@@ -45,7 +45,10 @@ import greencity.dto.event.EventDateLocationPreviewDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
+import greencity.dto.event.UpdateAddressDto;
+import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
@@ -2574,6 +2577,12 @@ public class ModelUtils {
         return updateEventDto;
     }
 
+    public static UpdateEventRequestDto getUpdateEventRequestDto() {
+        return UpdateEventRequestDto.builder()
+            .id(1L)
+            .build();
+    }
+
     public static List<String> getUpdatedEventTags() {
         return List.of("Social");
     }
@@ -2585,6 +2594,11 @@ public class ModelUtils {
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
         return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
             .coordinates(AddressDto.builder().latitude(1.).longitude(1.).build()).build());
+    }
+
+    public static List<UpdateEventDateLocationDto> getUpdateEventDateLocationDto() {
+        return List.of(UpdateEventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+            .coordinates(UpdateAddressDto.builder().latitude(1.).longitude(1.).build()).build());
     }
 
     public static EventDateLocation getUpdatedEventDateLocation() {

@@ -17,6 +17,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.search.SearchEventsDto;
@@ -85,6 +86,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
@@ -509,7 +511,9 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     @Transactional
-    public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
+    public EventDto update(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
+        UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
+
         Event toUpdate = eventRepo.findById(eventDto.getId())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);

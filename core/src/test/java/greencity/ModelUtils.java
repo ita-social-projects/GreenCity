@@ -23,7 +23,8 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDateLocationPreviewDto;
 import greencity.dto.event.EventPreviewDto;
-import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.UpdateEventDateLocationDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
@@ -685,17 +686,17 @@ public class ModelUtils {
         return AddEventDtoRequest.builder().title("Title").description("Desc").isOpen(true).build();
     }
 
-    public static UpdateEventDto getUpdateEventDtoWithoutDates() {
-        return UpdateEventDto.builder().title("Title").description("Desc").isOpen(true).build();
+    public static UpdateEventRequestDto getUpdateEventDtoWithoutDates() {
+        return UpdateEventRequestDto.builder().title("Title").description("Desc").isOpen(true).build();
     }
 
-    public static UpdateEventDto getUpdateEventDto() {
-        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+    public static UpdateEventRequestDto getUpdateEventDto() {
+        return UpdateEventRequestDto.builder().datesLocations(List.of(UpdateEventDateLocationDto.builder()
             .startDate(ZonedDateTime.now().plusDays(5))
             .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
             .onlineLink("http://localhost:8060/swagger-ui.html#/")
             .build(),
-            EventDateLocationDto.builder()
+            UpdateEventDateLocationDto.builder()
                 .startDate(ZonedDateTime.now().plusDays(6))
                 .finishDate(ZonedDateTime.now().plusDays(6).plusHours(1))
                 .onlineLink("http://localhost:8060/swagger-ui.html#/")
@@ -703,20 +704,20 @@ public class ModelUtils {
             .tags(List.of("first", "second", "third")).build();
     }
 
-    public static UpdateEventDto getUpdateEventDtoWithTooManyDates() {
-        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
+    public static UpdateEventRequestDto getUpdateEventDtoWithTooManyDates() {
+        List<UpdateEventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            eventDateLocationDtos.add(EventDateLocationDto.builder().id((long) i).build());
+            eventDateLocationDtos.add(UpdateEventDateLocationDto.builder().onlineLink(String.valueOf(i)).build());
         }
-        return UpdateEventDto.builder().datesLocations(eventDateLocationDtos).build();
+        return UpdateEventRequestDto.builder().datesLocations(eventDateLocationDtos).build();
     }
 
-    public static UpdateEventDto getUpdateEventDtoWithEmptyDateLocations() {
-        return UpdateEventDto.builder().datesLocations(new ArrayList<>()).build();
+    public static UpdateEventRequestDto getUpdateEventDtoWithEmptyDateLocations() {
+        return UpdateEventRequestDto.builder().datesLocations(new ArrayList<>()).build();
     }
 
-    public static UpdateEventDto getUpdateEventWithoutAddressAndLink() {
-        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+    public static UpdateEventRequestDto getUpdateEventWithoutAddressAndLink() {
+        return UpdateEventRequestDto.builder().datesLocations(List.of(UpdateEventDateLocationDto.builder()
             .startDate(ZonedDateTime.now().plusDays(5))
             .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).build())).build();
     }

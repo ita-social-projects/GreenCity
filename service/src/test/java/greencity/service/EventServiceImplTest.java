@@ -13,6 +13,7 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -211,7 +212,7 @@ class EventServiceImplTest {
         EventDto eventDto = ModelUtils.getEventDto();
         Event expectedEvent = ModelUtils.getEvent();
         List<Long> eventIds = List.of(eventDto.getId());
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
@@ -238,7 +239,7 @@ class EventServiceImplTest {
 
     @Test
     void updateThrowsUserHasNoPermissionToAccessException() {
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         UserVO userVO = ModelUtils.getTestUserVo();
         User user = ModelUtils.getTestUser();
         String userVoEmail = userVO.getEmail();
@@ -261,7 +262,7 @@ class EventServiceImplTest {
     @Test
     void updateFinishedEvent() {
         Event actualEvent = ModelUtils.getEventWithFinishedDate();
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         String userEmail = ModelUtils.getUser().getEmail();
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
@@ -384,7 +385,7 @@ class EventServiceImplTest {
     @Test
     void updateTitleImage() {
         EventDto eventDto = ModelUtils.getEventDto();
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         Event event = ModelUtils.getEvent();
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
@@ -406,7 +407,7 @@ class EventServiceImplTest {
         eventToUpdateDto.setDescription("New description");
         eventToUpdateDto.setIsOpen(false);
         eventToUpdateDto.setTags(ModelUtils.getUpdatedEventTags());
-        eventToUpdateDto.setDatesLocations(ModelUtils.getUpdatedEventDateLocationDto());
+        eventToUpdateDto.setDatesLocations(ModelUtils.getUpdateEventDateLocationDto());
 
         eventDto.setTitle("New title");
         eventDto.setDescription("New description");

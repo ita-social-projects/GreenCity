@@ -3,19 +3,19 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.UpdateEventDto;
-import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.enums.EventType;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.Set;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface EventService {
     /**
@@ -130,7 +130,7 @@ public interface EventService {
      * @param images   - new images of event
      * @return EventDto
      */
-    EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images);
+    EventDto update(UpdateEventRequestDto eventDto, String email, MultipartFile[] images);
 
     /**
      * Rate Event.

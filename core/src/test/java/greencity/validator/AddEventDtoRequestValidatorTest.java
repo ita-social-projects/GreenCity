@@ -2,23 +2,22 @@ package greencity.validator;
 
 import greencity.ModelUtils;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.UpdateEventDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.InvalidURLException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-class EventDtoRequestValidatorTest {
+class AddEventDtoRequestValidatorTest {
     @InjectMocks
-    private EventDtoRequestValidator validator;
+    private AddEventDtoRequestValidator validator;
 
     @Test
     void withoutDatesException() {
@@ -69,48 +68,9 @@ class EventDtoRequestValidatorTest {
     }
 
     @Test
-    void updateWithTooManyTagsException() {
-        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithTooManyDates();
-        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
-    }
-
-    @Test
-    void updateWithEmptyDateLocations() {
-        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithEmptyDateLocations();
-        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
-    }
-
-    @Test
-    void updateEventDtoWithoutDates() {
-        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithoutDates();
-        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
-
-    }
-
-    @Test
-    void updateWithInvalidLinkException() {
-        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventWithoutAddressAndLink();
-        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
-    }
-
-    @Test
-    void updateWithoutLinkAndCoordinates() {
-        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
-        updateEventDto.getDatesLocations().forEach(e -> e.setOnlineLink(null));
-        updateEventDto.getDatesLocations().forEach(e -> e.setCoordinates(null));
-        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
-    }
-
-    @Test
     void validEvent() {
         AddEventDtoRequest addEventDtoRequest = ModelUtils.getAddEventDtoRequest();
         assertTrue(validator.isValid(addEventDtoRequest, null));
-    }
-
-    @Test
-    void validEventUpdate() {
-        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
-        assertTrue(validator.isValid(updateEventDto, null));
     }
 
     @Test
@@ -119,13 +79,6 @@ class EventDtoRequestValidatorTest {
         addEventDto.getDatesLocations().forEach(e -> e.setStartDate(ZonedDateTime.now(ZoneOffset.UTC).plusHours(2L)));
         addEventDto.getDatesLocations().forEach(e -> e.setFinishDate(ZonedDateTime.now(ZoneOffset.UTC).plusHours(2L)));
         assertThrows(EventDtoValidationException.class, () -> validator.isValid(addEventDto, null));
-    }
-
-    @Test
-    void updateEventWithSameDates() {
-        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
-        updateEventDto.getDatesLocations().forEach(e -> e.setStartDate(ZonedDateTime.now(ZoneOffset.UTC)));
-        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
     }
 
     @Test
