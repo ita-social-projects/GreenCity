@@ -9,6 +9,7 @@ import greencity.exception.exceptions.EventDtoValidationException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -62,12 +63,12 @@ public class UpdateEventDtoRequestValidator implements ConstraintValidator<Valid
     }
 
     private void validateEventDateLocations(List<UpdateEventDateLocationDto> eventDateLocationDtos) {
-        Set<LocalDate> startDateSet = new HashSet<>();
-        Set<LocalDate> finishDateSet = new HashSet<>();
+        Set<LocalDateTime> startDateSet = new HashSet<>();
+        Set<LocalDateTime> finishDateSet = new HashSet<>();
 
         for (var eventDateLocationDto : eventDateLocationDtos) {
-            LocalDate startDate = eventDateLocationDto.getStartDate().toLocalDate();
-            LocalDate finishDate = eventDateLocationDto.getFinishDate().toLocalDate();
+            LocalDateTime startDate = eventDateLocationDto.getStartDate().toLocalDateTime();
+            LocalDateTime finishDate = eventDateLocationDto.getFinishDate().toLocalDateTime();
 
             if (!startDateSet.add(startDate) || !finishDateSet.add(finishDate)) {
                 throw new EventDtoValidationException(ErrorMessage.SAME_EVENT_DATES);
