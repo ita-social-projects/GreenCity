@@ -1,8 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
-import greencity.annotations.ValidAddEventDtoRequest;
-import greencity.annotations.ValidUpdateEventDtoRequest;
+import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
@@ -71,7 +70,7 @@ public class EventsController {
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> save(
         @Parameter(description = SwaggerExampleModel.ADD_EVENT,
-            required = true) @ValidAddEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
+            required = true) @ValidEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
         @Parameter(hidden = true) Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -123,7 +122,7 @@ public class EventsController {
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> update(
         @Parameter(required = true,
-            description = UPDATE_EVENT) @ValidUpdateEventDtoRequest @RequestPart UpdateEventRequestDto eventDto,
+            description = UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventRequestDto eventDto,
         @Parameter(hidden = true) Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.OK).body(

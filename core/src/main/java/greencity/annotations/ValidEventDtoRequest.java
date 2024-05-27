@@ -1,6 +1,6 @@
 package greencity.annotations;
 
-import greencity.validator.UpdateEventDtoRequestValidator;
+import greencity.validator.EventDtoRequestValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;
@@ -8,10 +8,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = UpdateEventDtoRequestValidator.class)
+@Constraint(validatedBy = EventDtoRequestValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface ValidUpdateEventDtoRequest {
+public @interface ValidEventDtoRequest {
     /**
      * Defines the message that will be showed when the input data is not valid.
      *

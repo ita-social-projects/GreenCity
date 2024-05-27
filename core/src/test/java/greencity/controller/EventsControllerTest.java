@@ -46,6 +46,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -255,7 +257,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
-        verify(eventService).save(addEventDtoRequest, principal.getName(), null);
+        verify(eventService).save(eq(addEventDtoRequest), eq(principal.getName()), isNull());
     }
 
     @Test
@@ -350,7 +352,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(eventService).update(updateEventDto, principal.getName(), null);
+        verify(eventService).update(eq(updateEventDto), eq(principal.getName()), isNull());
     }
 
     @Test

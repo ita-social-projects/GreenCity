@@ -2079,22 +2079,26 @@ public class ModelUtils {
     }
 
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            "/url",
-            getAddressDto())))
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink("/url")
+            .coordinates(getAddressDto()).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
         .build();
 
     public static AddEventDtoRequest addEventDtoWithoutLinkRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null,
-            getAddressDto())))
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDto()).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
@@ -2169,33 +2173,39 @@ public class ModelUtils {
     }
 
     public static AddEventDtoRequest addEventDtoRequestWithNullRegionUa = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null,
-            getAddressDtoWithNullRegionUa())))
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDtoWithNullRegionUa()).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
         .build();
 
     public static AddEventDtoRequest addEventDtoRequestWithNullCountryUa = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null,
-            getAddressDtoWithNullCountryUa())))
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDtoWithNullCountryUa()).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
         .build();
 
     public static AddEventDtoRequest addEventDtoRequestWithNullData = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null,
-            getAddressDtoWithoutData())))
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDtoWithoutData()).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
@@ -2212,33 +2222,39 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
-            .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                "/url",
-                null)))
+            .dates(List.of(EventDateLocationDto.builder()
+                .id(1L)
+                .event(null)
+                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .onlineLink(null)
+                .coordinates(null).build()))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
     }
 
     public static AddEventDtoRequest addEventDtoWithoutAddressRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            "/url",
-            null)))
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink("/url")
+            .coordinates(null).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
         .build();
 
     public static AddEventDtoRequest addEventDtoWithoutAddressAndLinkRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null,
-            null)))
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(null).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
@@ -2255,11 +2271,13 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
-            .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2023, 12, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                "/url",
-                getAddressDtoCorrect())))
+            .dates(List.of(EventDateLocationDto.builder()
+                .id(1L)
+                .event(null)
+                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .onlineLink("/url")
+                .coordinates(getAddressDtoCorrect()).build()))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .isFavorite(false)
@@ -2278,11 +2296,13 @@ public class ModelUtils {
                 .id(2L)
                 .build())
             .title("Title2")
-            .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                "/url",
-                getSecondAddressDtoCorrect())))
+            .dates(List.of(EventDateLocationDto.builder()
+                .id(1L)
+                .event(null)
+                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .onlineLink("/url")
+                .coordinates(getSecondAddressDtoCorrect()).build()))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2299,11 +2319,13 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
-            .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                "/url",
-                AddressDto.builder().build())))
+            .dates(List.of(EventDateLocationDto.builder()
+                .id(1L)
+                .event(null)
+                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .onlineLink("/url")
+                .coordinates(AddressDto.builder().build()).build()))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2320,11 +2342,13 @@ public class ModelUtils {
             .title("Title")
             .countComments(2)
             .likes(1)
-            .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                null,
-                getSecondAddressDtoCorrect())))
+            .dates(List.of(EventDateLocationDto.builder()
+                .id(1L)
+                .event(null)
+                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+                .onlineLink(null)
+                .coordinates(getSecondAddressDtoCorrect()).build()))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
