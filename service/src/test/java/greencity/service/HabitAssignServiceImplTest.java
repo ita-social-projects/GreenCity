@@ -505,13 +505,14 @@ class HabitAssignServiceImplTest {
                     new HabitEnrollDto(2L, "", "", false)))
                 .build());
 
-        when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
-            eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(anyLong()))
             .thenReturn(habitAssignList);
 
         assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
             "en"));
+
+        verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
     }
 
     @Test
@@ -526,7 +527,7 @@ class HabitAssignServiceImplTest {
 
         assertEquals(ErrorMessage.INVALID_DATE_RANGE, exception.getMessage());
 
-        verify(habitAssignRepo, times(0)).findAllHabitAssignsBetweenDates(anyLong(), any(), any());
+        verify(habitAssignRepo, times(0)).findAllInProgressHabitAssignsRelatedToUser(anyLong());
     }
 
     @Test
