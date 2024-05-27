@@ -214,6 +214,7 @@ class EventServiceImplTest {
         List<Long> eventIds = List.of(eventDto.getId());
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
@@ -222,6 +223,7 @@ class EventServiceImplTest {
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
         when(eventRepo.save(expectedEvent)).thenReturn(expectedEvent);
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
 
         EventDto actualEvent = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
 
@@ -244,9 +246,11 @@ class EventServiceImplTest {
         User user = ModelUtils.getTestUser();
         String userVoEmail = userVO.getEmail();
         Event expectedEvent = ModelUtils.getEvent();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
 
         assertThrows(UserHasNoPermissionToAccessException.class,
@@ -263,9 +267,11 @@ class EventServiceImplTest {
     void updateFinishedEvent() {
         Event actualEvent = ModelUtils.getEventWithFinishedDate();
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
         String userEmail = ModelUtils.getUser().getEmail();
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
 
@@ -389,6 +395,7 @@ class EventServiceImplTest {
         Event event = ModelUtils.getEvent();
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
@@ -397,6 +404,7 @@ class EventServiceImplTest {
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
 
         EventDto updatedEventDto = eventService.update(eventToUpdateDto, user.getEmail(), null);
         assertEquals(updatedEventDto, eventDto);
