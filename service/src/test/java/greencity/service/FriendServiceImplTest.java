@@ -14,8 +14,12 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,19 +30,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class FriendServiceImplTest {
@@ -578,38 +579,23 @@ class FriendServiceImplTest {
         });
     }
 
-    @Test
-    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenNameIsNullTest() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenNameIsNullTest(String name) {
         long userId = 1L;
-        int page = 0;
-        int size = 1;
-        long totalElements = 50;
-        Pageable pageable = PageRequest.of(page, size);
-        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
-        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+        Pageable pageable = PageRequest.of(0, 10);
 
         when(userRepo.existsById(userId)).thenReturn(true);
-        when(userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, "", pageable))
-            .thenReturn(userPage);
-        when(
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-            .thenReturn(List.of(expectedResult));
 
-        PageableDto<UserFriendDto> pageableDto =
-            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, null, pageable);
+        PageableDto<UserFriendDto> result =
+            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, pageable);
 
-        assertNotNull(pageableDto);
-        assertNotNull(pageableDto.getPage());
-        assertEquals(1, pageableDto.getPage().size());
-        assertEquals(expectedResult, pageableDto.getPage().get(0));
-        assertEquals(totalElements, pageableDto.getTotalElements());
-        assertEquals(totalElements, pageableDto.getTotalPages());
-        assertEquals(page, pageableDto.getCurrentPage());
+        verify(userRepo, times(1)).existsById(userId);
 
-        verify(userRepo).existsById(userId);
-        verify(userRepo).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, "", pageable);
-        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
-            userPage.getContent());
+        assertEquals(0, result.getPage().size());
+        assertEquals(0, result.getTotalElements());
+        assertEquals(0, result.getCurrentPage());
+        assertEquals(0, result.getTotalPages());
     }
 
     @Test
