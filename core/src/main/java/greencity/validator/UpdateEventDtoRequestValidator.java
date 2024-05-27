@@ -8,14 +8,12 @@ import greencity.dto.event.UpdateEventRequestDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import static greencity.validator.UrlValidator.isUrlValid;
 
 public class UpdateEventDtoRequestValidator implements ConstraintValidator<ValidUpdateEventDtoRequest, Object> {

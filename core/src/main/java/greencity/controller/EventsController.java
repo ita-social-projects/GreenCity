@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
 @Validated
 @RestController
@@ -122,8 +123,7 @@ public class EventsController {
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> update(
         @Parameter(required = true,
-            description = SwaggerExampleModel.UPDATE_EVENT) @ValidUpdateEventDtoRequest @RequestPart
-        UpdateEventRequestDto eventDto,
+            description = UPDATE_EVENT) @ValidUpdateEventDtoRequest @RequestPart UpdateEventRequestDto eventDto,
         @Parameter(hidden = true) Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.OK).body(

@@ -2597,8 +2597,9 @@ public class ModelUtils {
     }
 
     public static List<UpdateEventDateLocationDto> getUpdateEventDateLocationDto() {
-        return List.of(UpdateEventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-            .coordinates(UpdateAddressDto.builder().latitude(1.).longitude(1.).build()).build());
+        return List
+            .of(UpdateEventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+                .coordinates(UpdateAddressDto.builder().latitude(1.).longitude(1.).build()).build());
     }
 
     public static EventDateLocation getUpdatedEventDateLocation() {

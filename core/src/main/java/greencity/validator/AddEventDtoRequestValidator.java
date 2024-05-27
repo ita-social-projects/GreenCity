@@ -9,7 +9,6 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
