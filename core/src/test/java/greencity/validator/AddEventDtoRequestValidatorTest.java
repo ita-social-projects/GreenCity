@@ -76,8 +76,9 @@ class AddEventDtoRequestValidatorTest {
     @Test
     void saveEventWithSameDates() {
         AddEventDtoRequest addEventDto = ModelUtils.getAddEventDtoRequest();
-        addEventDto.getDatesLocations().forEach(e -> e.setStartDate(ZonedDateTime.now(ZoneOffset.UTC).plusHours(2L)));
-        addEventDto.getDatesLocations().forEach(e -> e.setFinishDate(ZonedDateTime.now(ZoneOffset.UTC).plusHours(2L)));
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC).plusHours(2L);
+        addEventDto.getDatesLocations().forEach(e -> e.setStartDate(zonedDateTime));
+        addEventDto.getDatesLocations().forEach(e -> e.setFinishDate(zonedDateTime));
         assertThrows(EventDtoValidationException.class, () -> validator.isValid(addEventDto, null));
     }
 
