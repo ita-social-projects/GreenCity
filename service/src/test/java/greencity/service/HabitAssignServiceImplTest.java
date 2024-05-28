@@ -477,10 +477,10 @@ class HabitAssignServiceImplTest {
 
     @Test
     void findHabitAssignsBetweenDatesTest() {
-        HabitAssign habit = ModelUtils.getHabitAssignForCurrentUser();
+        HabitAssign habitForCurrentUser = ModelUtils.getHabitAssignForCurrentUser();
 
         HabitAssign additionalHabit = ModelUtils.getAdditionalHabitAssignForCurrentUser();
-        List<HabitAssign> habitAssignsList = Arrays.asList(habit, additionalHabit);
+        List<HabitAssign> habitAssignsList = Arrays.asList(habitForCurrentUser, additionalHabit);
 
         List<HabitsDateEnrollmentDto> dtos = getHabitsDateEnrollmentDtos();
 
@@ -498,8 +498,8 @@ class HabitAssignServiceImplTest {
 
     @Test
     void findHabitAssignsBetweenDatesWhenStartDateIsEarlierThanFromTest() {
-        HabitAssign habit = ModelUtils.getHabitAssignForCurrentUser();
-        habit.setCreateDate(ZonedDateTime.of(
+        HabitAssign habitForCurrentUser = ModelUtils.getHabitAssignForCurrentUser();
+        habitForCurrentUser.setCreateDate(ZonedDateTime.of(
             2010,
             12,
             28,
@@ -518,7 +518,44 @@ class HabitAssignServiceImplTest {
             12,
             12, ZoneId.of("Europe/Kiev")));
 
-        List<HabitAssign> habitAssignsList = Arrays.asList(habit, additionalHabit);
+        List<HabitAssign> habitAssignsList = Arrays.asList(habitForCurrentUser, additionalHabit);
+
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(1L))
+            .thenReturn(habitAssignsList);
+
+        List<HabitsDateEnrollmentDto> habitsDateEnrollmentDtos = habitAssignService.findHabitAssignsBetweenDates(
+            1L,
+            LocalDate.of(2020, 12, 27),
+            LocalDate.of(2020, 12, 29),
+            "en");
+
+        assertEquals(Collections.emptyList(), habitsDateEnrollmentDtos.getFirst().getHabitAssigns());
+        verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
+    }
+
+    @Test
+    void findHabitAssignsBetweenDatesWhenStartDateIsLaterThanFromTest() {
+        HabitAssign habitForCurrentUser = ModelUtils.getHabitAssignForCurrentUser();
+        habitForCurrentUser.setCreateDate(ZonedDateTime.of(
+            2040,
+            12,
+            28,
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
+
+        HabitAssign additionalHabit = ModelUtils.getAdditionalHabitAssignForCurrentUser();
+        additionalHabit.setCreateDate(ZonedDateTime.of(
+            2040,
+            12,
+            28,
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
+
+        List<HabitAssign> habitAssignsList = Arrays.asList(habitForCurrentUser, additionalHabit);
 
         when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(1L))
             .thenReturn(habitAssignsList);
