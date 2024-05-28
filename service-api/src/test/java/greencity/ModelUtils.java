@@ -29,7 +29,6 @@ import greencity.message.AddEcoNewsMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
