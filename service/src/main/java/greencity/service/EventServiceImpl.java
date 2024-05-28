@@ -17,6 +17,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.search.SearchEventsDto;
@@ -509,7 +510,9 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     @Transactional
-    public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
+    public EventDto update(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
+        UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
+
         Event toUpdate = eventRepo.findById(eventDto.getId())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);

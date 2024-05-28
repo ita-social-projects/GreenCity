@@ -3,22 +3,22 @@ package greencity.validator;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
+import greencity.dto.event.AbstractEventDateLocationDto;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import static greencity.validator.UrlValidator.isUrlValid;
 
-public class EventDtoRequestValidator implements ConstraintValidator<ValidEventDtoRequest, Object> {
+public class EventDtoRequestValidator
+    implements ConstraintValidator<ValidEventDtoRequest, Object> {
     private static final int MAX_YEARS_OF_PLANNING = 10;
 
     /**
@@ -38,54 +38,42 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
      */
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (!(value instanceof AddEventDtoRequest || value instanceof UpdateEventDto)) {
+        if (value instanceof AddEventDtoRequest addEventDtoRequest) {
+            validateDateLocations(addEventDtoRequest.getDatesLocations());
+            convertToUTC(addEventDtoRequest.getDatesLocations());
+            validateEventDateLocations(addEventDtoRequest.getDatesLocations());
+            validateTags(addEventDtoRequest.getTags());
+        } else if (value instanceof UpdateEventRequestDto updateEventDto) {
+            validateDateLocations(updateEventDto.getDatesLocations());
+            convertToUTC(updateEventDto.getDatesLocations());
+            validateEventDateLocations(updateEventDto.getDatesLocations());
+            validateTags(updateEventDto.getTags());
+        } else {
             return false;
         }
-
-        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
-
-        if (value instanceof AddEventDtoRequest addEventDtoRequest) {
-            if (addEventDtoRequest.getDatesLocations() == null || addEventDtoRequest.getDatesLocations().isEmpty()
-                || addEventDtoRequest.getDatesLocations().size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
-                throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
-            } else {
-                eventDateLocationDtos = convertToUTC(addEventDtoRequest.getDatesLocations());
-            }
-        } else if (value instanceof UpdateEventDto updateEventDto) {
-            if (updateEventDto.getDatesLocations() == null || updateEventDto.getDatesLocations().isEmpty()
-                || updateEventDto.getDatesLocations().size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
-                throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
-            } else {
-                eventDateLocationDtos = convertToUTC(updateEventDto.getDatesLocations());
-            }
-        }
-        validateEventDateLocations(eventDateLocationDtos);
-        validateTags(value);
         return true;
     }
 
-    private List<EventDateLocationDto> convertToUTC(List<EventDateLocationDto> dates) {
-        return dates.stream()
-            .map(e -> e.setStartDate(e.getStartDate().withZoneSameInstant(ZoneOffset.UTC)))
-            .map(e -> e.setFinishDate(e.getFinishDate().withZoneSameInstant(ZoneOffset.UTC)))
-            .toList();
+    private <T extends AbstractEventDateLocationDto> void validateDateLocations(List<T> dates) {
+        if (dates == null || dates.isEmpty() || dates.size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
+            throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
+        }
     }
 
-    /**
-     * Validates a list of EventDateLocationDto objects. Checks if the start date is
-     * before the current time plus an hour, if the start date is before the finish
-     * date minus a day, if the start date is after the finish date, and if the
-     * start date is after the current time plus a year. Throws an
-     * EventDtoValidationException with an appropriate error message if any of the
-     * conditions are met.
-     */
-    private void validateEventDateLocations(List<EventDateLocationDto> eventDateLocationDtos) {
-        Set<LocalDate> startDateSet = new HashSet<>();
-        Set<LocalDate> finishDateSet = new HashSet<>();
+    private <T extends AbstractEventDateLocationDto> void convertToUTC(List<T> dates) {
+        dates.forEach(e -> {
+            e.setStartDate(e.getStartDate().withZoneSameInstant(ZoneOffset.UTC));
+            e.setFinishDate(e.getFinishDate().withZoneSameInstant(ZoneOffset.UTC));
+        });
+    }
 
-        for (var eventDateLocationDto : eventDateLocationDtos) {
-            LocalDate startDate = eventDateLocationDto.getStartDate().toLocalDate();
-            LocalDate finishDate = eventDateLocationDto.getFinishDate().toLocalDate();
+    private <T extends AbstractEventDateLocationDto> void validateEventDateLocations(List<T> eventDateLocationDtos) {
+        Set<LocalDateTime> startDateSet = new HashSet<>();
+        Set<LocalDateTime> finishDateSet = new HashSet<>();
+
+        for (T eventDateLocationDto : eventDateLocationDtos) {
+            LocalDateTime startDate = eventDateLocationDto.getStartDate().toLocalDateTime();
+            LocalDateTime finishDate = eventDateLocationDto.getFinishDate().toLocalDateTime();
 
             if (!startDateSet.add(startDate) || !finishDateSet.add(finishDate)) {
                 throw new EventDtoValidationException(ErrorMessage.SAME_EVENT_DATES);
@@ -109,10 +97,8 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
         }
     }
 
-    private void validateTags(Object value) {
-        int tagsSize = (value instanceof AddEventDtoRequest addEventDtoRequest) ? (addEventDtoRequest.getTags().size())
-            : ((UpdateEventDto) value).getTags().size();
-
+    private void validateTags(List<String> tags) {
+        int tagsSize = tags.size();
         if (tagsSize > ValidationConstants.MAX_AMOUNT_OF_TAGS) {
             throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_TAGS_EXCEPTION);
         }
