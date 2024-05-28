@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.ActionDto;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,5 +56,13 @@ public class AchievementController {
                 required = false) String achievementStatus) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(achievementService.findAllByType(principal.getName(), achievementStatus));
+    }
+
+    /**
+     * Method to test socket (delete).
+     */
+    @MessageMapping("/achieve")
+    public void achieve(@Payload ActionDto user) {
+        achievementService.achieve(user);
     }
 }

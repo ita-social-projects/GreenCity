@@ -125,6 +125,8 @@ class EventServiceImplTest {
 
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private UserNotificationService userNotificationService;
 
     @Test
     void save() {

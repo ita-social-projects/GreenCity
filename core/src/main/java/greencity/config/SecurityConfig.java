@@ -254,7 +254,10 @@ public class SecurityConfig {
                     FRIENDS + "/mutual-friends",
                     FRIENDS + "/friendRequests",
                     FRIENDS + "/{userId}/all-user-friends",
-                    FRIENDS)
+                    FRIENDS,
+                    "/notification",
+                    "/notification/all",
+                    "/notification/new")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     "/category",
@@ -318,6 +321,8 @@ public class SecurityConfig {
                     USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
+                    "/notification/unread/{notificationId}",
+                    "/notification/view/{notificationId}",
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
@@ -340,7 +345,9 @@ public class SecurityConfig {
                     "/habit/delete/{customHabitId}",
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    FRIENDS + "/")
+                    FRIENDS + "/",
+                    FRIENDS + "/{friendId}/cancelRequest",
+                    "/notification/{notificationId}")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",

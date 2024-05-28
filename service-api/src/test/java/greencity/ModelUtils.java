@@ -10,7 +10,6 @@ import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
-import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
@@ -25,11 +24,9 @@ import greencity.message.GeneralEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
-import greencity.message.AddEcoNewsMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -90,13 +87,6 @@ public class ModelUtils {
         return headers;
     }
 
-    public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
-        return NewsSubscriberResponseDto.builder()
-            .email("test@gmail.com")
-            .unsubscribeToken("someUnsubscribeToken")
-            .build();
-    }
-
     public static CategoryDto getCategoryDto() {
         return CategoryDto.builder()
             .name("name")
@@ -118,13 +108,6 @@ public class ModelUtils {
             "text", "shortInfo", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
             ZonedDateTime.now(), TestConst.SITE, null,
             Arrays.asList("Новини", "News", "Новины"));
-    }
-
-    public static AddEcoNewsMessage getAddEcoNewsMessage() {
-        return AddEcoNewsMessage.builder()
-            .subscribers(Collections.singletonList(getNewsSubscriberResponseDto()))
-            .addEcoNewsDtoResponse(getAddEcoNewsDtoResponse())
-            .build();
     }
 
     public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto() {

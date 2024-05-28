@@ -21,7 +21,6 @@ public interface AdviceRepo extends JpaRepository<Advice, Long>, JpaSpecificatio
      * @return list of {@link Advice}'s
      * @author Markiyan Derevetslyi
      */
-
     @Query(value = "select a from Advice a left join fetch a.translations join fetch a.habit order by a.id",
         countQuery = "select count(a) from Advice a")
     Page<Advice> findAll(Pageable pageable);
