@@ -179,7 +179,6 @@ class EcoNewsServiceImplTest {
     void saveWithExistedImageTest() throws IOException {
         var image = ModelUtils.getFile();
         var imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
-        var ecoNews = ModelUtils.getEcoNews();
         var tagVOList = Collections.singletonList(ModelUtils.getTagVO());
 
         addEcoNewsDtoRequest.setImage(imageToEncode);
