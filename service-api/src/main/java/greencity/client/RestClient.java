@@ -7,6 +7,11 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
+import greencity.message.GeneralEmailMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.SendReportEmailMessage;
+import greencity.message.HabitAssignNotificationMessage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +19,8 @@ import java.util.Optional;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.message.GeneralEmailMessage;
 import greencity.security.jwt.JwtTool;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -36,12 +41,10 @@ import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.place.PlaceVO;
 import greencity.enums.EmailNotification;
-import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendHabitNotification;
-import greencity.message.SendReportEmailMessage;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Component
+@Slf4j
 public class RestClient {
     private final RestTemplate restTemplate;
     private final String greenCityUserServerAddress;
@@ -225,6 +228,7 @@ public class RestClient {
         HttpEntity<UserManagementUpdateDto> entity = new HttpEntity<>(updateDto, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER + "/" + userDto.getId(), HttpMethod.PUT, entity, Object.class);
+        log.info("User with id {} has been updated", userDto.getId());
     }
 
     private UserManagementUpdateDto managementDtoToUpdateDto(UserManagementDto userDto) {
@@ -328,6 +332,7 @@ public class RestClient {
         HttpEntity<List<String>> entity = new HttpEntity<>(userReasons, headers);
         restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + userId, HttpMethod.PUT, entity, Object.class);
+        log.info("User with id {} has been deactivated", userId);
     }
 
     /**
@@ -576,5 +581,19 @@ public class RestClient {
         HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
+        log.info("Email notification has been sent to {}", notification.getEmail());
+    }
+
+    /**
+     * Method sends habit assign email notification.
+     *
+     * @param message {@link HabitAssignNotificationMessage}.
+     */
+    public void sendHabitAssignNotification(HabitAssignNotificationMessage message) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<HabitAssignNotificationMessage> entity = new HttpEntity<>(message, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_HABIT_ASSIGN_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

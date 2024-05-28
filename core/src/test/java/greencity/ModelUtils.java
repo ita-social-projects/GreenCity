@@ -20,19 +20,23 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.EventDateLocationPreviewDto;
+import greencity.dto.event.EventPreviewDto;
+import greencity.dto.event.UpdateEventDateLocationDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
@@ -54,8 +58,10 @@ import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
+import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.UserManagementDto;
@@ -111,7 +117,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.sql.Date;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -122,6 +130,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -683,17 +694,17 @@ public class ModelUtils {
         return AddEventDtoRequest.builder().title("Title").description("Desc").isOpen(true).build();
     }
 
-    public static UpdateEventDto getUpdateEventDtoWithoutDates() {
-        return UpdateEventDto.builder().title("Title").description("Desc").isOpen(true).build();
+    public static UpdateEventRequestDto getUpdateEventDtoWithoutDates() {
+        return UpdateEventRequestDto.builder().title("Title").description("Desc").isOpen(true).build();
     }
 
-    public static UpdateEventDto getUpdateEventDto() {
-        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+    public static UpdateEventRequestDto getUpdateEventDto() {
+        return UpdateEventRequestDto.builder().datesLocations(List.of(UpdateEventDateLocationDto.builder()
             .startDate(ZonedDateTime.now().plusDays(5))
             .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
             .onlineLink("http://localhost:8060/swagger-ui.html#/")
             .build(),
-            EventDateLocationDto.builder()
+            UpdateEventDateLocationDto.builder()
                 .startDate(ZonedDateTime.now().plusDays(6))
                 .finishDate(ZonedDateTime.now().plusDays(6).plusHours(1))
                 .onlineLink("http://localhost:8060/swagger-ui.html#/")
@@ -701,20 +712,20 @@ public class ModelUtils {
             .tags(List.of("first", "second", "third")).build();
     }
 
-    public static UpdateEventDto getUpdateEventDtoWithTooManyDates() {
-        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
+    public static UpdateEventRequestDto getUpdateEventDtoWithTooManyDates() {
+        List<UpdateEventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            eventDateLocationDtos.add(EventDateLocationDto.builder().id((long) i).build());
+            eventDateLocationDtos.add(UpdateEventDateLocationDto.builder().onlineLink(String.valueOf(i)).build());
         }
-        return UpdateEventDto.builder().datesLocations(eventDateLocationDtos).build();
+        return UpdateEventRequestDto.builder().datesLocations(eventDateLocationDtos).build();
     }
 
-    public static UpdateEventDto getUpdateEventDtoWithEmptyDateLocations() {
-        return UpdateEventDto.builder().datesLocations(new ArrayList<>()).build();
+    public static UpdateEventRequestDto getUpdateEventDtoWithEmptyDateLocations() {
+        return UpdateEventRequestDto.builder().datesLocations(new ArrayList<>()).build();
     }
 
-    public static UpdateEventDto getUpdateEventWithoutAddressAndLink() {
-        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+    public static UpdateEventRequestDto getUpdateEventWithoutAddressAndLink() {
+        return UpdateEventRequestDto.builder().datesLocations(List.of(UpdateEventDateLocationDto.builder()
             .startDate(ZonedDateTime.now().plusDays(5))
             .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).build())).build();
     }
@@ -820,5 +831,88 @@ public class ModelUtils {
     public static FilterNotificationDto getFilterNotificationDto() {
         return FilterNotificationDto.builder().projectName(new ProjectName[] {})
             .notificationType(new NotificationType[] {}).build();
+    }
+
+    public static PageableAdvancedDto<EventPreviewDto> getEventPreviewDtoPageableAdvancedDto(Pageable pageable) {
+        return new PageableAdvancedDto<>(
+            ModelUtils.getEventPreviewDtos(),
+            2,
+            pageable.getPageNumber(),
+            1,
+            0,
+            false,
+            false,
+            true,
+            true);
+    }
+
+    public static List<EventPreviewDto> getEventPreviewDtos() {
+        return List.of(
+            EventPreviewDto.builder()
+                .id(3L)
+                .title("test3")
+                .organizer(AuthorDto.builder().id(2L).name("Test3").build())
+                .creationDate(Date.valueOf("2024-04-14").toLocalDate())
+                .dates(Set.of(
+                    EventDateLocationPreviewDto.builder()
+                        .startDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
+                        .finishDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-16T00:00:03Z"), ZoneId.systemDefault()))
+                        .onlineLink("testtesttesttest")
+                        .coordinates(AddressDto.builder()
+                            .latitude(0.0)
+                            .longitude(1.0)
+                            .cityEn("Kyiv")
+                            .build())
+                        .build()))
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(2L)
+                    .nameUa("Соціальний1")
+                    .nameEn("Social1")
+                    .build()))
+                .titleImage("image.png")
+                .isOpen(true)
+                .isSubscribed(true)
+                .isFavorite(true)
+                .isRelevant(true)
+                .likes(0L)
+                .countComments(2L)
+                .isOrganizedByFriend(false)
+                .eventRate(3.5)
+                .build(),
+            EventPreviewDto.builder()
+                .id(1L)
+                .title("test1")
+                .organizer(AuthorDto.builder().id(1L).name("Test").build())
+                .creationDate(Date.valueOf("2024-04-16").toLocalDate())
+                .dates(Set.of(
+                    EventDateLocationPreviewDto.builder()
+                        .startDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
+                        .finishDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-16T00:00:03Z"), ZoneId.systemDefault()))
+                        .onlineLink("testtesttesttest")
+                        .coordinates(AddressDto.builder()
+                            .latitude(0.0)
+                            .longitude(1.0)
+                            .cityEn("Kyiv")
+                            .build())
+                        .build()))
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(1L)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build()))
+                .titleImage("image.png")
+                .isOpen(true)
+                .isSubscribed(true)
+                .isFavorite(true)
+                .isRelevant(true)
+                .likes(0L)
+                .countComments(2L)
+                .isOrganizedByFriend(false)
+                .eventRate(3.5)
+                .build());
     }
 }

@@ -70,6 +70,7 @@ public class HabitServiceImpl implements HabitService {
     private final TagsRepo tagsRepo;
     private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
+    private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
     private static final String EN_LANGUAGE_CODE = "en";
 
@@ -111,10 +112,11 @@ public class HabitServiceImpl implements HabitService {
         long userId = userVO.getId();
         List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
+        String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
 
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-                requestedCustomHabitIds, userId, EN_LANGUAGE_CODE);
+                requestedCustomHabitIds, userId, languageCode);
         return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO);
     }
 
@@ -344,6 +346,7 @@ public class HabitServiceImpl implements HabitService {
         }
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         habit.setUserId(user.getId());
+        habit.setIsDeleted(false);
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
         setCustomShoppingListItemToHabit(addCustomHabitDtoRequest, habit, user);
@@ -505,5 +508,27 @@ public class HabitServiceImpl implements HabitService {
             && !user.getId().equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteCustomHabit(Long customHabitId, String ownerEmail) {
+        Habit toDelete = habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId));
+        User owner = userRepo.findByEmail(ownerEmail)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + ownerEmail));
+        unAssignOwnerFromCustomHabit(toDelete, owner.getId());
+        toDelete.setIsDeleted(true);
+        habitRepo.save(toDelete);
+    }
+
+    private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {
+        if (!userId.equals(habit.getUserId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(habit.getId(), userId)
+            .forEach(haId -> habitAssignService.deleteHabitAssign(haId, userId));
     }
 }

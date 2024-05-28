@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import static greencity.enums.EmailNotification.*;
@@ -66,6 +67,7 @@ public class ScheduleConfig {
         List<UserVO> users = restClient.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(restClient.findAllByEmailNotification(DAILY));
         sendHabitNotificationIfNeed(users);
+        log.info("Notification sent at {} about not marked habits to {} users", LocalDateTime.now(), users.size());
     }
 
     /**
@@ -76,6 +78,7 @@ public class ScheduleConfig {
     void sendHabitNotificationEveryWeek() {
         List<UserVO> users = restClient.findAllByEmailNotification(WEEKLY);
         sendHabitNotificationIfNeed(users);
+        log.info("Notification sent at {} about not marked habits to {} users", LocalDateTime.now(), users.size());
     }
 
     /**
@@ -87,6 +90,7 @@ public class ScheduleConfig {
     void sendHabitNotificationEveryMonth() {
         List<UserVO> users = restClient.findAllByEmailNotification(MONTHLY);
         sendHabitNotificationIfNeed(users);
+        log.info("Habit notifications has been sent to {} users", users.size());
     }
 
     /**
@@ -107,6 +111,7 @@ public class ScheduleConfig {
             list = habitFactTranslationRepo.findRandomHabitFact();
         }
         habitFactTranslationRepo.updateFactOfDayStatusByHabitFactId(CURRENT, list.getFirst().getHabitFact().getId());
+        log.info("New fact of the day {}", list.getFirst().getHabitFact().getId());
     }
 
     /**
@@ -144,7 +149,7 @@ public class ScheduleConfig {
         List<HabitAssign> habitsInProgress = habitAssignRepo.findAllInProgressHabitAssigns();
         habitsInProgress.forEach(h -> {
             if (h.getCreateDate().plusDays(h.getDuration().longValue()).isBefore(now)) {
-                log.info("Set status expired");
+                log.info("Habit status is expired from {}. Count of habits {}", now, habitsInProgress.size());
                 h.setStatus(HabitAssignStatus.EXPIRED);
             }
         });

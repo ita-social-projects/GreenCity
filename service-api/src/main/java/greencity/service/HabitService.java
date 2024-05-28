@@ -140,4 +140,14 @@ public interface HabitService {
      */
     CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest, Long habitId,
         String userEmail, MultipartFile image);
+
+    /**
+     * Method for deleting of custom habit by its id.
+     *
+     * @param customHabitId - id of custom habit to be deleted.
+     * @param ownerEmail    - email of user who owns the habit.
+     *
+     * @author Olena Sotnik.
+     */
+    void deleteCustomHabit(Long customHabitId, String ownerEmail);
 }

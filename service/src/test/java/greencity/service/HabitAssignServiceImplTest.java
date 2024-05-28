@@ -11,10 +11,8 @@ import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
@@ -40,13 +38,13 @@ import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.message.HabitAssignNotificationMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -62,7 +60,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -71,20 +68,31 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Locale;
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitAssignUserDurationDto;
 import static greencity.ModelUtils.getHabitDto;
 import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getHabitsDateEnrollmentDtos;
 import static greencity.ModelUtils.getShoppingListItemTranslationList;
 import static greencity.ModelUtils.getUserShoppingListItem;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getHabitTranslation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -118,6 +126,8 @@ class HabitAssignServiceImplTest {
     private CustomShoppingListItemService customShoppingListItemService;
     @Mock
     private UserService userService;
+    @Mock
+    private NotificationService notificationService;
 
     @Mock
     private RatingCalculation ratingCalculation;
@@ -466,42 +476,98 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitAssignsBetweenDates() {
-        HabitAssign habit1 = ModelUtils.getHabitAssign();
-        HabitAssign habit2 = ModelUtils.getHabitAssign();
-        habit2.setId(2L);
-        habit2.getHabit().setId(2L);
-        habit1.setDuration(3);
-        habit2.setDuration(3);
-        ZonedDateTime creation = ZonedDateTime.of(2020, 12, 28,
-            12, 12, 12, 12, ZoneId.of("Europe/Kiev"));
-        habit1.setCreateDate(creation);
-        habit2.setCreateDate(creation);
-        habit1.setHabitStatusCalendars(Collections.singletonList(HabitStatusCalendar
-            .builder().enrollDate(LocalDate.of(2020, 12, 28)).build()));
-        habit2.setHabitStatusCalendars(Collections.emptyList());
-        List<HabitAssign> habitAssignList = Arrays.asList(habit1, habit2);
-        List<HabitsDateEnrollmentDto> dtos = Arrays.asList(
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 27))
-                .habitAssigns(Collections.emptyList()).build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 28))
-                .habitAssigns(Arrays.asList(
-                    new HabitEnrollDto(1L, "", "", true),
-                    new HabitEnrollDto(2L, "", "", false)))
-                .build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 29))
-                .habitAssigns(Arrays.asList(
-                    new HabitEnrollDto(1L, "", "", false),
-                    new HabitEnrollDto(2L, "", "", false)))
-                .build());
+    void findHabitAssignsBetweenDatesTest() {
+        HabitAssign habitForCurrentUser = ModelUtils.getHabitAssignForCurrentUser();
 
-        when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
-            eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
-            .thenReturn(habitAssignList);
+        HabitAssign additionalHabit = ModelUtils.getAdditionalHabitAssignForCurrentUser();
+        List<HabitAssign> habitAssignsList = Arrays.asList(habitForCurrentUser, additionalHabit);
 
-        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
-            LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
+        List<HabitsDateEnrollmentDto> dtos = getHabitsDateEnrollmentDtos();
+
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(1L))
+            .thenReturn(habitAssignsList);
+
+        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(
+            1L,
+            LocalDate.of(2020, 12, 27),
+            LocalDate.of(2020, 12, 29),
             "en"));
+
+        verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
+    }
+
+    @Test
+    void findHabitAssignsBetweenDatesWhenStartDateIsEarlierThanFromTest() {
+        HabitAssign habitForCurrentUser = ModelUtils.getHabitAssignForCurrentUser();
+        habitForCurrentUser.setCreateDate(ZonedDateTime.of(
+            2010,
+            12,
+            28,
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
+
+        HabitAssign additionalHabit = ModelUtils.getAdditionalHabitAssignForCurrentUser();
+        additionalHabit.setCreateDate(ZonedDateTime.of(
+            2010,
+            12,
+            28,
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
+
+        List<HabitAssign> habitAssignsList = Arrays.asList(habitForCurrentUser, additionalHabit);
+
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(1L))
+            .thenReturn(habitAssignsList);
+
+        List<HabitsDateEnrollmentDto> habitsDateEnrollmentDtos = habitAssignService.findHabitAssignsBetweenDates(
+            1L,
+            LocalDate.of(2020, 12, 27),
+            LocalDate.of(2020, 12, 29),
+            "en");
+
+        assertEquals(Collections.emptyList(), habitsDateEnrollmentDtos.getFirst().getHabitAssigns());
+        verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
+    }
+
+    @Test
+    void findHabitAssignsBetweenDatesWhenStartDateIsLaterThanFromTest() {
+        HabitAssign habitForCurrentUser = ModelUtils.getHabitAssignForCurrentUser();
+        habitForCurrentUser.setCreateDate(ZonedDateTime.of(
+            2040,
+            12,
+            28,
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
+
+        HabitAssign additionalHabit = ModelUtils.getAdditionalHabitAssignForCurrentUser();
+        additionalHabit.setCreateDate(ZonedDateTime.of(
+            2040,
+            12,
+            28,
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
+
+        List<HabitAssign> habitAssignsList = Arrays.asList(habitForCurrentUser, additionalHabit);
+
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(1L))
+            .thenReturn(habitAssignsList);
+
+        List<HabitsDateEnrollmentDto> habitsDateEnrollmentDtos = habitAssignService.findHabitAssignsBetweenDates(
+            1L,
+            LocalDate.of(2020, 12, 27),
+            LocalDate.of(2020, 12, 29),
+            "en");
+
+        assertEquals(Collections.emptyList(), habitsDateEnrollmentDtos.getFirst().getHabitAssigns());
+        verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
     }
 
     @Test
@@ -516,7 +582,7 @@ class HabitAssignServiceImplTest {
 
         assertEquals(ErrorMessage.INVALID_DATE_RANGE, exception.getMessage());
 
-        verify(habitAssignRepo, times(0)).findAllHabitAssignsBetweenDates(anyLong(), any(), any());
+        verify(habitAssignRepo, times(0)).findAllInProgressHabitAssignsRelatedToUser(anyLong());
     }
 
     @Test
@@ -761,18 +827,20 @@ class HabitAssignServiceImplTest {
     @Test
     void getAllHabitAssignsByUserIdAndStatusNotCancelled() {
         UserShoppingListItem userShoppingListItemCustom = ModelUtils.getFullUserShoppingListItem();
-        HabitAssignDto habitAssignDtoCustom = ModelUtils.getHabitAssignDto();
-        habitAssignDtoCustom.setCreateDateTime(zonedDateTime);
+        HabitAssignDto habitAssignDtoCustom = ModelUtils.getHabitAssignDtoWithFriendsIds();
+        List<HabitAssignDto> expected = List.of(habitAssignDtoCustom);
 
         when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDtoCustom);
         when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(any()))
             .thenReturn(List.of(userShoppingListItemCustom));
+        when(habitAssignRepo.findFriendsIdsTrackingHabit(anyLong(), anyLong())).thenReturn(List.of(1L, 2L));
 
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitAssignDto().getHabit());
+        when(modelMapper.map(habitTranslation, HabitDto.class))
+            .thenReturn(ModelUtils.getHabitAssignDtoWithFriendsIds().getHabit());
 
-        habitAssignDtos.getFirst().getHabit().setShoppingListItems(
+        expected.getFirst().getHabit().setShoppingListItems(
             List.of(ShoppingListItemDto.builder()
                 .id(userShoppingListItemCustom.getId())
                 .status(userShoppingListItemCustom.getStatus().toString())
@@ -780,7 +848,7 @@ class HabitAssignServiceImplTest {
                 .build()));
 
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusNotCancelled(1L, "en");
-        assertEquals(habitAssignDtos, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -2472,5 +2540,131 @@ class HabitAssignServiceImplTest {
         assertThrows(NotFoundException.class,
             () -> habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId));
 
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationUserHasNoFriend() {
+        Long friendId = 10L;
+        Long habitId = 1L;
+        Locale locale = Locale.of("en");
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(false);
+
+        assertThrows(UserHasNoFriendWithIdException.class,
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habitId, locale));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationFriendNotFound() {
+        Long friendId = 10L;
+        Locale locale = Locale.of("en");
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, 1L, locale));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationHabitNotFound() {
+        Long friendId = 10L;
+        Locale locale = Locale.of("en");
+        UserVO friendVO = getUserVO();
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.of(getUser()));
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.empty());
+        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(friendVO);
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, 1L, locale));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationSuccessfulAssign() {
+        Long friendId = 1L;
+        Locale locale = Locale.of("en");
+        User friend = getUser();
+
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
+
+        HabitAssign habitAssign = new HabitAssign();
+        habitAssign.setId(1L);
+        habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+        habitAssign.setHabit(Habit.builder()
+            .id(1L)
+            .habitTranslations(List.of(getHabitTranslation()))
+            .build());
+
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendId)).thenReturn(
+            habitAssign);
+        when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
+
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habit.getId(), locale);
+
+        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
+    }
+
+    @Test
+    void testInviteFriendForYourHabitWithEmailNotificationNewHabitAssign() {
+        Locale locale = Locale.of("en");
+        User friend = getUser();
+        Habit habit = Habit.builder()
+            .id(1L)
+            .habitTranslations(List.of(getHabitTranslation()))
+            .build();
+
+        when(userRepo.isFriend(userVO.getId(), friend.getId())).thenReturn(true);
+        when(userRepo.findById(friend.getId())).thenReturn(Optional.of(friend));
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friend.getId())).thenReturn(
+            null);
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId())).thenReturn(List.of(1L));
+        when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
+
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friend.getId(), habit.getId(), locale);
+
+        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
+        verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
+    }
+
+    @Test
+    void confirmHabitInvitation() {
+        Long habitAssignId = 1L;
+        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+
+        habitAssignService.confirmHabitInvitation(habitAssignId);
+
+        verify(habitAssignRepo).save(habitAssign);
+        assertEquals(HabitAssignStatus.INPROGRESS, habitAssign.getStatus());
+    }
+
+    @Test
+    void confirmHabitInvitationWithInvalidId() {
+        Long habitAssignId = 100L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.confirmHabitInvitation(habitAssignId));
+    }
+
+    @Test
+    void confirmHabitInvitationWithInvalidHabitStatus() {
+        Long habitAssignId = 100L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+
+        assertThrows(BadRequestException.class,
+            () -> habitAssignService.confirmHabitInvitation(habitAssignId));
     }
 }

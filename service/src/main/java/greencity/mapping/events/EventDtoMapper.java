@@ -9,6 +9,7 @@ import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
@@ -70,6 +71,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             eventDto.setAdditionalImages(event.getAdditionalImages().stream()
                 .map(EventImages::getLink).collect(Collectors.toList()));
         }
+        eventDto.setEventRate(calculateEventRate(event.getEventGrades()));
         return eventDto;
     }
 
@@ -99,5 +101,12 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             eventDateLocationDto.setCoordinates(addressDto);
         }
         return eventDateLocationDto;
+    }
+
+    private double calculateEventRate(List<EventGrade> eventGrades) {
+        return eventGrades.stream()
+            .mapToInt(EventGrade::getGrade)
+            .average()
+            .orElse(0.0);
     }
 }

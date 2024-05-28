@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.place.PlaceVO;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.HabitAssignNotificationMessage;
 import java.util.Set;
 
 public interface NotificationService {
@@ -50,4 +51,11 @@ public interface NotificationService {
      * @author Yurii Midianyi
      */
     void sendEmailNotification(GeneralEmailMessage generalEmailMessage);
+
+    /**
+     * Method send a habit notification message to user.
+     *
+     * @param message {@link HabitAssignNotificationMessage}.
+     */
+    void sendHabitAssignEmailNotification(HabitAssignNotificationMessage message);
 }

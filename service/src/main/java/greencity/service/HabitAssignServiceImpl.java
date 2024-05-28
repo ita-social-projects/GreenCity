@@ -26,31 +26,40 @@ import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
-import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.entity.UserShoppingListItem;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.HabitTranslation;
+import greencity.entity.HabitStatusCalendar;
 import greencity.enums.AchievementAction;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.AchievementCategoryType;
+import greencity.message.HabitAssignNotificationMessage;
+import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitStatusCalendarRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.UserRepo;
+import greencity.repository.ShoppingListItemRepo;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.Map;
+import java.util.Comparator;
+import java.util.Locale;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
@@ -62,16 +71,10 @@ import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.rating.RatingCalculation;
-import greencity.repository.CustomShoppingListItemRepo;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitStatusCalendarRepo;
-import greencity.repository.ShoppingListItemRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
-import greencity.repository.UserRepo;
-import greencity.repository.UserShoppingListItemRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -82,6 +85,7 @@ import org.springframework.util.CollectionUtils;
 @Service
 @AllArgsConstructor
 public class HabitAssignServiceImpl implements HabitAssignService {
+    private static final Logger log = LoggerFactory.getLogger(HabitAssignServiceImpl.class);
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
     private final UserRepo userRepo;
@@ -98,6 +102,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final RatingCalculation ratingCalculation;
+    private final NotificationService notificationService;
 
     /**
      * {@inheritDoc}
@@ -415,8 +420,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
         HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
+        habitAssignDto.setFriendsIdsTrackingHabit(getFriendsIdsTrackingHabitList(habitAssign));
         setShoppingListItems(habitAssignDto, habitAssign, language);
         return habitAssignDto;
+    }
+
+    private List<Long> getFriendsIdsTrackingHabitList(HabitAssign habitAssign) {
+        return habitAssignRepo
+            .findFriendsIdsTrackingHabit(habitAssign.getHabit().getId(), habitAssign.getUser().getId());
     }
 
     private void setShoppingListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
@@ -879,11 +890,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         if (from.isAfter(to)) {
             throw new BadRequestException(ErrorMessage.INVALID_DATE_RANGE);
         }
-        List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
-            .findAllHabitAssignsBetweenDates(userId, from, to);
+
+        List<HabitAssign> allHabitAssigns = habitAssignRepo
+            .findAllInProgressHabitAssignsRelatedToUser(userId);
+
+        List<HabitAssign> habitAssignsBetweenDates = allHabitAssigns.stream()
+            .filter(ha -> isWithinDateRange(ha, from, to)).toList();
+
         List<LocalDate> dates = Stream.iterate(from, date -> date.plusDays(1))
             .limit(ChronoUnit.DAYS.between(from, to.plusDays(1)))
-            .collect(Collectors.toList());
+            .toList();
 
         List<HabitsDateEnrollmentDto> dtos = dates.stream()
             .map(date -> HabitsDateEnrollmentDto.builder().enrollDate(date)
@@ -893,6 +909,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
         return dtos;
+    }
+
+    private boolean isWithinDateRange(HabitAssign habitAssign, LocalDate from, LocalDate to) {
+        LocalDate createDate = habitAssign.getCreateDate().toLocalDate();
+        LocalDate endDate = createDate.plusDays(habitAssign.getDuration());
+
+        boolean createDateWithinRange = !createDate.isBefore(from) && !createDate.isAfter(to);
+        boolean endDateWithinRange = !endDate.isBefore(from) && !endDate.isAfter(to);
+        boolean rangeEncompassesDates = createDate.isBefore(from) && endDate.isAfter(to);
+
+        return createDateWithinRange || endDateWithinRange || rangeEncompassesDates;
     }
 
     /**
@@ -985,7 +1012,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
                 userVO);
             achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
+                AchievementCategoryType.HABIT, AchievementAction.DELETE, habitAssign.getHabit().getId());
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
@@ -1423,5 +1450,75 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssign.setDuration(duration);
         habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
         return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserDurationDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId,
+        Locale locale) {
+        if (!userRepo.isFriend(userVO.getId(), friendId)) {
+            throw new UserHasNoFriendWithIdException(
+                ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
+        }
+        User friend = userRepo.findById(friendId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId));
+        UserVO friendVO = modelMapper.map(friend, UserVO.class);
+        checkStatusInProgressExists(habitId, friendVO);
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+
+        validateHabitForAssign(habitId, friend);
+        HabitAssign habitAssign =
+            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
+
+        if (habitAssign != null) {
+            habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+            habitAssign.setCreateDate(ZonedDateTime.now());
+            habitAssignRepo.save(habitAssign);
+            notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
+                .senderName(userVO.getName())
+                .receiverName(friendVO.getName())
+                .receiverEmail(friendVO.getEmail())
+                .habitAssignId(habitAssign.getId())
+                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
+                .language(locale.getLanguage())
+                .build());
+        } else {
+            List<Long> allShoppingListItemId =
+                shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
+            habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
+            notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
+                .senderName(userVO.getName())
+                .receiverName(friendVO.getName())
+                .receiverEmail(friendVO.getEmail())
+                .habitAssignId(habitAssign.getId())
+                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
+                .language(locale.getLanguage())
+                .build());
+            if (!allShoppingListItemId.isEmpty()) {
+                List<ShoppingListItem> shoppingList =
+                    shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
+                saveUserShoppingListItems(shoppingList, habitAssign);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void confirmHabitInvitation(Long habitAssignId) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+        if (!habitAssign.getStatus().equals(HabitAssignStatus.REQUESTED)) {
+            throw new BadRequestException(
+                ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS);
+        }
+        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+        habitAssign.setCreateDate(ZonedDateTime.now());
+        habitAssignRepo.save(habitAssign);
     }
 }

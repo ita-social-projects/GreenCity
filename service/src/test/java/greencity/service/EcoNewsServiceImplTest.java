@@ -814,6 +814,16 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void findByFilters_ReturnsCorrectResult_WhenTagsAndTitleAreEmpty() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, ecoNews.size());
+        when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
+        ecoNewsService.findByFilters(pageable, null, null);
+        verify(ecoNewsRepo, times(1)).findAll(any(Pageable.class));
+    }
+
+    @Test
     void getContentAndSourceForEcoNewsById() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));

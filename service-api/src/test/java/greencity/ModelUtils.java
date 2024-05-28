@@ -26,6 +26,7 @@ import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.AddEcoNewsMessage;
+import greencity.message.HabitAssignNotificationMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -231,6 +232,16 @@ public class ModelUtils {
             .email("test@gmail.com")
             .subject("Congratulations")
             .message("You have successfully done something")
+            .build();
+    }
+
+    public static HabitAssignNotificationMessage getHabitAssignNotificationMessage() {
+        return HabitAssignNotificationMessage.builder()
+            .senderName("sender")
+            .receiverName("receiver")
+            .habitAssignId(1L)
+            .language("en")
+            .receiverEmail("receiver@email.com")
             .build();
     }
 

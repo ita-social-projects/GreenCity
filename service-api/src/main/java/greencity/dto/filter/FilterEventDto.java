@@ -1,5 +1,7 @@
 package greencity.dto.filter;
 
+import greencity.enums.EventStatus;
+import greencity.enums.EventTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class FilterEventDto {
-    private List<String> eventTime;
+    private List<EventTime> eventTime;
     private List<String> cities;
-    private List<String> statuses;
+    private List<EventStatus> statuses;
     private List<String> tags;
 }

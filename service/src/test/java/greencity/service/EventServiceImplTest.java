@@ -7,11 +7,13 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.UpdateEventDto;
-import greencity.dto.event.AddressDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -31,6 +33,17 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
+import java.lang.reflect.Method;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,21 +62,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Method;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 import static greencity.ModelUtils.TEST_USER_VO;
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.enums.EventType.OFFLINE;
+import static greencity.enums.EventType.ONLINE;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static greencity.ModelUtils.getCloseEvent;
-import static greencity.ModelUtils.getFilterEventDtoWithOpenStatus;
-import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -210,8 +214,9 @@ class EventServiceImplTest {
         EventDto eventDto = ModelUtils.getEventDto();
         Event expectedEvent = ModelUtils.getEvent();
         List<Long> eventIds = List.of(eventDto.getId());
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
@@ -220,6 +225,7 @@ class EventServiceImplTest {
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
         when(eventRepo.save(expectedEvent)).thenReturn(expectedEvent);
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
 
         EventDto actualEvent = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
 
@@ -237,14 +243,16 @@ class EventServiceImplTest {
 
     @Test
     void updateThrowsUserHasNoPermissionToAccessException() {
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         UserVO userVO = ModelUtils.getTestUserVo();
         User user = ModelUtils.getTestUser();
         String userVoEmail = userVO.getEmail();
         Event expectedEvent = ModelUtils.getEvent();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
 
         assertThrows(UserHasNoPermissionToAccessException.class,
@@ -260,10 +268,12 @@ class EventServiceImplTest {
     @Test
     void updateFinishedEvent() {
         Event actualEvent = ModelUtils.getEventWithFinishedDate();
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
         String userEmail = ModelUtils.getUser().getEmail();
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
 
@@ -304,7 +314,7 @@ class EventServiceImplTest {
         when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(ModelUtils.getEventTags());
         doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
-        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().getFirst(), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
@@ -321,8 +331,8 @@ class EventServiceImplTest {
         expectedEvent.setAdditionalImages(List.of(EventImages.builder().link("New addition image").build()));
 
         method.invoke(eventService, event, eventToUpdateDto, null);
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
-            event.getAdditionalImages().get(0).getLink());
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
+            event.getAdditionalImages().getFirst().getLink());
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
 
         eventToUpdateDto.setImagesToDelete(List.of("New addition image"));
@@ -330,8 +340,8 @@ class EventServiceImplTest {
 
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
-            event.getAdditionalImages().get(0).getLink());
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
+            event.getAdditionalImages().getFirst().getLink());
 
         eventToUpdateDto.setAdditionalImages(null);
         method.invoke(eventService, event, eventToUpdateDto, null);
@@ -353,8 +363,8 @@ class EventServiceImplTest {
 
         method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
-            event.getAdditionalImages().get(0).getLink());
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
+            event.getAdditionalImages().getFirst().getLink());
 
         eventToUpdateDto.setImagesToDelete(null);
         eventToUpdateDto.setTitleImage("url");
@@ -364,7 +374,7 @@ class EventServiceImplTest {
             EventImages.builder().event(expectedEvent).link("Add img 2").build()));
         method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
             event.getAdditionalImages().get(0).getLink());
         assertEquals("url2", event.getAdditionalImages().get(3).getLink());
 
@@ -383,10 +393,11 @@ class EventServiceImplTest {
     @Test
     void updateTitleImage() {
         EventDto eventDto = ModelUtils.getEventDto();
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         Event event = ModelUtils.getEvent();
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
@@ -395,6 +406,7 @@ class EventServiceImplTest {
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
 
         EventDto updatedEventDto = eventService.update(eventToUpdateDto, user.getEmail(), null);
         assertEquals(updatedEventDto, eventDto);
@@ -405,7 +417,7 @@ class EventServiceImplTest {
         eventToUpdateDto.setDescription("New description");
         eventToUpdateDto.setIsOpen(false);
         eventToUpdateDto.setTags(ModelUtils.getUpdatedEventTags());
-        eventToUpdateDto.setDatesLocations(ModelUtils.getUpdatedEventDateLocationDto());
+        eventToUpdateDto.setDatesLocations(ModelUtils.getUpdateEventDateLocationDto());
 
         eventDto.setTitle("New title");
         eventDto.setDescription("New description");
@@ -420,7 +432,7 @@ class EventServiceImplTest {
         when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(ModelUtils.getEventTags());
         doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
-        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().getFirst(), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
@@ -523,7 +535,6 @@ class EventServiceImplTest {
 
     @Test
     void getAllUserOfflineEventsWithoutUserGeoPosition() {
-        String eventType = "OFFLINE";
         List<Event> eventsOffline = List.of(ModelUtils.getEvent());
         List<Long> eventIds = List.of(eventsOffline.getFirst().getId());
         EventDto expected = ModelUtils.getEventDto();
@@ -533,7 +544,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(new ArrayList<>(eventsOffline));
         when(modelMapper.map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -543,15 +554,15 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
-                pageRequest, principal.getName(), "", "", eventType);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+                pageRequest, principal.getName(), "", "", OFFLINE);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected, actual);
         assertTrue(actual.isFavorite());
         assertFalse(actual.isSubscribed());
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -562,7 +573,6 @@ class EventServiceImplTest {
 
     @Test
     void getAllUserOfflineEventsWithUserGeoPositionIfEventFinishesToday() {
-        String eventType = "OFFLINE";
         String userLatitude = "50.42929";
         String userLongitude = "30.53806";
         List<Event> eventsOffline = List.of(ModelUtils.getOfflineOnlineEventIfEventFinalDateToday());
@@ -574,7 +584,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(new ArrayList<>(eventsOffline));
         when(modelMapper.map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -584,15 +594,15 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
-                pageRequest, principal.getName(), userLatitude, userLongitude, eventType);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+                pageRequest, principal.getName(), userLatitude, userLongitude, OFFLINE);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertSame(expected, actual);
         assertFalse(actual.isFavorite());
         assertFalse(actual.isSubscribed());
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo, times(2)).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo, times(2)).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(eventsOffline,
             new TypeToken<List<EventDto>>() {
@@ -603,7 +613,6 @@ class EventServiceImplTest {
 
     @Test
     void getAllUserEventsWithoutParams() {
-        String eventType = "";
         List<Event> events = List.of(ModelUtils.getOnlineEvent());
         List<Long> eventIds = List.of(events.getFirst().getId());
         List<EventDto> expected = List.of(ModelUtils.getEventDto());
@@ -613,7 +622,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(user.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(user.getId()))
             .thenReturn(new ArrayList<>(events));
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
@@ -624,7 +633,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
-                pageRequest, principal.getName(), "", "", eventType);
+                pageRequest, principal.getName(), "", "", null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
 
         assertEquals(expected.size(), actual.size());
@@ -632,7 +641,7 @@ class EventServiceImplTest {
         assertTrue(actual.getFirst().isSubscribed());
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
@@ -643,7 +652,6 @@ class EventServiceImplTest {
 
     @Test
     void getAllUserOnlineEvents() {
-        String eventType = "ONLINE";
         List<Event> eventsOnline = List.of(ModelUtils.getOnlineEvent(),
             ModelUtils.getSecondEvent());
         List<Long> eventIds = List.of(eventsOnline.getFirst().getId(), eventsOnline.get(1).getId());
@@ -656,7 +664,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(new ArrayList<>(eventsOnline));
         when(modelMapper.map(eventsOnline,
             new TypeToken<List<EventDto>>() {
@@ -666,7 +674,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
-                pageRequest, principal.getName(), "", "", eventType);
+                pageRequest, principal.getName(), "", "", ONLINE);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         actual.forEach(eventDto -> {
             assertFalse(eventDto.isFavorite());
@@ -674,7 +682,7 @@ class EventServiceImplTest {
         });
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(TEST_USER_VO.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(TEST_USER_VO.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(eventsOnline,
             new TypeToken<List<EventDto>>() {
@@ -685,7 +693,6 @@ class EventServiceImplTest {
 
     @Test
     void getAllUserOfflineEventsSortedByCoordinates() {
-        String eventType = "OFFLINE";
         String userLatitude = "50.42929";
         String userLongitude = "30.53806";
         Event firstEvent = ModelUtils.getEvent();
@@ -703,7 +710,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(events);
         when(modelMapper.map(sortedEvents,
             new TypeToken<List<EventDto>>() {
@@ -713,7 +720,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
-                pageRequest, principal.getName(), userLatitude, userLongitude, eventType);
+                pageRequest, principal.getName(), userLatitude, userLongitude, OFFLINE);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
 
         assertEquals(expected, actual);
@@ -723,7 +730,7 @@ class EventServiceImplTest {
         });
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo, times(2)).findAllByAttender(user.getId());
+        verify(eventRepo, times(2)).findAllByAttenderOrOrganizer(user.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
@@ -734,7 +741,6 @@ class EventServiceImplTest {
 
     @Test
     void getAllUserOfflineEventsSortedByDates() {
-        String eventType = "OFFLINE";
         Event firstEvent = ModelUtils.getCloseEvent();
         Event secondEvent = ModelUtils.getSecondEvent();
         List<Event> events = List.of(secondEvent, firstEvent);
@@ -747,7 +753,7 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+        when(eventRepo.findAllByAttenderOrOrganizer(TEST_USER_VO.getId()))
             .thenReturn(events);
         when(modelMapper.map(sortedEvents,
             new TypeToken<List<EventDto>>() {
@@ -757,7 +763,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
-                pageRequest, principal.getName(), "", "", eventType);
+                pageRequest, principal.getName(), "", "", OFFLINE);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         assertTrue(expected.contains(actual.get(1)));
         actual.forEach(eventDto -> {
@@ -766,27 +772,13 @@ class EventServiceImplTest {
         });
 
         verify(restClient).findByEmail(principal.getName());
-        verify(eventRepo).findAllByAttender(user.getId());
+        verify(eventRepo).findAllByAttenderOrOrganizer(user.getId());
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(modelMapper).map(sortedEvents,
             new TypeToken<List<EventDto>>() {
             }.getType());
         verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
-    }
-
-    @Test
-    void getAllUserEventsThrowsBadRequestExceptionTest() {
-        String eventType = "invalid event type";
-        Principal principal = ModelUtils.getPrincipal();
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        String email = principal.getName();
-
-        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
-
-        assertThrows(BadRequestException.class,
-            () -> eventService.getAllUserEvents(pageRequest, email, "", "", eventType));
-        verify(restClient).findByEmail(principal.getName());
     }
 
     @Test
@@ -810,7 +802,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getEventsCreatedByUser(pageRequest, principal.getName());
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
         assertEquals(expected, actual);
         assertTrue(actual.isFavorite());
         assertTrue(actual.isSubscribed());
@@ -1141,7 +1133,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(List.of(expected));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, null);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1175,7 +1167,7 @@ class EventServiceImplTest {
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1205,7 +1197,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(List.of(expected));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1243,7 +1235,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(List.of(expected));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1264,9 +1256,11 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<Event> page = new PageImpl<>(events, pageRequest, events.size());
         when(eventRepo.searchEventsBy(pageRequest, "query")).thenReturn(page);
-        PageableAdvancedDto<EventDto> expected = new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
-            0, false, false, true, true);
-        assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query").getTotalPages());
+        PageableAdvancedDto<EventDto> expected =
+            new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
+                0, false, false, true, true);
+        assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query")
+            .getTotalPages());
     }
 
     @Test
@@ -1315,258 +1309,73 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getEventsWithAllFilters() {
-        List<Event> events = List.of(ModelUtils.getEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        User user = ModelUtils.getUser();
-        Principal principal = ModelUtils.getPrincipal();
-        List<EventDto> expected = List.of(ModelUtils.getEventDto());
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
-
-        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDto(), null);
-        long actual = eventDtoPageableAdvancedDto.getTotalElements();
-        assertEquals(1, actual);
-        assertEquals(expected, eventDtoPageableAdvancedDto.getPage());
-
-        verify(eventRepo).findAll();
-        verify(restClient).findByEmail(principal.getName());
-        verify(modelMapper).map(TEST_USER_VO, User.class);
-    }
-
-    @Test
-    void getEventsWithSomeFilters() {
-        List<Event> events = List.of(ModelUtils.getSecondEvent(), ModelUtils.getCloseEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        User user = ModelUtils.getUser();
-        Principal principal = ModelUtils.getPrincipal();
-
-        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithSomeFilters(), null);
-        long actual = eventDtoPageableAdvancedDto.getTotalElements();
-        assertEquals(0, actual);
-
-        verify(eventRepo).findAll();
-        verify(restClient).findByEmail(principal.getName());
-        verify(modelMapper).map(TEST_USER_VO, User.class);
-    }
-
-    @Test
-    void getEventsWithoutFilters() {
-        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
-
-        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
-            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, null, null);
-        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
-
-        assertEquals(expected, actual);
-        assertEquals(expected.size(), actualSize);
-
-        verify(eventRepo).findAllByOrderByIdDesc(pageRequest);
-        verify(modelMapper).map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType());
-    }
-
-    @Test
-    void getEventsWithFilterEventDtoWithCities() {
-        List<Event> events = List.of(ModelUtils.getSecondEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        User user = ModelUtils.getUser();
-        Principal principal = ModelUtils.getPrincipal();
-        List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
-
-        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithCities(), null);
-        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
-
-        assertEquals(expected.size(), actualSize);
-        assertEquals(expected, actual);
-
-        verify(eventRepo).findAll();
-        verify(restClient).findByEmail(principal.getName());
-        verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(modelMapper).map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType());
-    }
-
-    @Test
-    void getEventsWithFilterEventDtoWithTagsAndWrongTag() {
-        List<Event> events = List.of(ModelUtils.getEventWithTags());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        User user = ModelUtils.getUser();
-        Principal principal = ModelUtils.getPrincipal();
-        List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
-
-        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithTags(), null);
-        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
-
-        assertEquals(expected.size(), actualSize);
-        assertEquals(expected, actual);
-
-        verify(eventRepo).findAll();
-        verify(restClient).findByEmail(principal.getName());
-        verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(modelMapper).map(events, new TypeToken<List<EventDto>>() {
-        }.getType());
-    }
-
-    @Test
-    void getEventsWithNullEventTime() {
-        List<Event> events = List.of(ModelUtils.getCloseEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        User user = ModelUtils.getUser();
-        Principal principal = ModelUtils.getPrincipal();
-
-        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithOpenStatus(), null);
-        long actual = eventDtoPageableAdvancedDto.getTotalElements();
-        assertEquals(0, actual);
-
-        verify(eventRepo).findAll();
-        verify(restClient).findByEmail(principal.getName());
-        verify(modelMapper).map(TEST_USER_VO, User.class);
-    }
-
-    @Test
-    void getEventsWithInvalidPageNumberTest() {
-        List<Event> events = List.of(getCloseEvent());
-        PageRequest pageRequest = PageRequest.of(100500, 2);
-        FilterEventDto filterEventDto = getFilterEventDtoWithOpenStatus();
+    void getEventsForAuthorizedUserTest() {
+        Pageable pageable = PageRequest.of(0, 6);
         Principal principal = getPrincipal();
-        when(eventRepo.findAll()).thenReturn(events);
-        assertThrows(NotFoundException.class,
-            () -> eventService.getEvents(pageRequest, principal, filterEventDto, null));
-        verify(eventRepo).findAll();
+        String title = "Test Title";
+        String titleCriteria = "%" + title.toLowerCase() + "%";
+        Long userId = 1L;
+        FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
+        Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
+        TupleElement<?>[] elements;
+        elements = ModelUtils.getTupleElements();
+
+        List<Tuple> tuples = ModelUtils.getTuples(elements);
+        List<EventPreviewDto> eventPreviewDtoList = ModelUtils.getEventPreviewDtos();
+        PageableAdvancedDto<EventPreviewDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+            eventPreviewDtoList,
+            idsPage.getTotalElements(),
+            pageable.getPageNumber(),
+            idsPage.getTotalPages(),
+            idsPage.getNumber(),
+            idsPage.hasPrevious(),
+            idsPage.hasNext(),
+            idsPage.isFirst(),
+            idsPage.isLast());
+        when(restClient.findIdByEmail(principal.getName())).thenReturn(userId);
+        when(eventRepo.findAllEventPreviewDtoByFilters(userId, true, true, true,
+            titleCriteria, null, null,
+            filterEventDto.getCities().stream().map(String::toLowerCase).toArray(String[]::new),
+            filterEventDto.getTags().stream().map(String::toLowerCase).toArray(String[]::new), pageable))
+            .thenReturn(idsPage);
+        when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
+
+        PageableAdvancedDto<EventPreviewDto> result =
+            eventService.getEvents(pageable, principal, filterEventDto, title);
+        assertEquals(eventPreviewDtoPage, result);
     }
 
     @Test
-    void getEventsFilteredWithAnonymousUser() {
-        List<Event> events = List.of(ModelUtils.getCloseEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
+    void getEventsForUnauthorizedUserTest() {
+        Pageable pageable = PageRequest.of(0, 6);
+        String title = "Test Title";
+        String titleCriteria = "%" + title.toLowerCase() + "%";
+        FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
+        Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
+        TupleElement<?>[] elements;
+        elements = ModelUtils.getTupleElements();
 
-        when(eventRepo.findAll()).thenReturn(events);
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
+        List<Tuple> tuples = ModelUtils.getTuples(elements);
+        List<EventPreviewDto> eventPreviewDtoList = ModelUtils.getEventPreviewDtos();
+        PageableAdvancedDto<EventPreviewDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+            eventPreviewDtoList,
+            idsPage.getTotalElements(),
+            pageable.getPageNumber(),
+            idsPage.getTotalPages(),
+            idsPage.getNumber(),
+            idsPage.hasPrevious(),
+            idsPage.hasNext(),
+            idsPage.isFirst(),
+            idsPage.isLast());
+        when(eventRepo.findAllEventPreviewDtoByFilters(titleCriteria, null, null,
+            filterEventDto.getCities().stream().map(String::toLowerCase).toArray(String[]::new),
+            filterEventDto.getTags().stream().map(String::toLowerCase).toArray(String[]::new), pageable))
+            .thenReturn(idsPage);
+        when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent())).thenReturn(tuples);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus(), null);
-        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
-
-        assertEquals(expected.size(), actualSize);
-        assertEquals(expected, actual);
-
-        verify(eventRepo).findAll();
-        verify(modelMapper).map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType());
-    }
-
-    @Test
-    void getEventsByTitleFilteredWithAnonymousUser() {
-        List<Event> events = List.of(ModelUtils.getCloseEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
-
-        when(eventRepo.findAllByTitleContainingIgnoreCase("title")).thenReturn(events);
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus(), "title");
-        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
-
-        assertEquals(expected.size(), actualSize);
-        assertEquals(expected, actual);
-
-        verify(eventRepo).findAllByTitleContainingIgnoreCase("title");
-        verify(modelMapper).map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType());
-    }
-
-    @Test
-    void getEventsFilteredWithAnonymousUserAndClosedStatus() {
-        List<Event> events = List.of(ModelUtils.getCloseEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        when(eventRepo.findAll()).thenReturn(events);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, ModelUtils.getFilterEventDtoWithOpenStatus(), null);
-        long actual = eventDtoPageableAdvancedDto.getTotalElements();
-        assertEquals(0, actual);
-
-        verify(eventRepo).findAll();
-    }
-
-    @Test
-    void getEventsWithoutFilterEventDtoAndAnonymousUser() {
-        List<Event> events = List.of(ModelUtils.getCloseEvent());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
-
-        when(modelMapper.map(events, new TypeToken<List<EventDto>>() {
-        }.getType())).thenReturn(expected);
-        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
-            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, null, null);
-        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
-
-        assertEquals(expected.size(), actualSize);
-        assertEquals(expected, actual);
-
-        verify(eventRepo).findAllByOrderByIdDesc(pageRequest);
-        verify(modelMapper).map(events, new TypeToken<List<EventDto>>() {
-        }.getType());
+        PageableAdvancedDto<EventPreviewDto> result =
+            eventService.getEvents(pageable, null, filterEventDto, title);
+        assertEquals(eventPreviewDtoPage, result);
     }
 
     @Test
@@ -1588,7 +1397,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllFavoriteEventsByUser(pageable, user.getEmail());
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
         assertEquals(expected, actual);
         assertTrue(actual.isFavorite());
         assertTrue(actual.isSubscribed());

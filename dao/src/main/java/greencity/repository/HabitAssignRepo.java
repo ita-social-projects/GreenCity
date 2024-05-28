@@ -141,10 +141,9 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param habitId {@link Habit} id.
      * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
      */
-    @Query(value = "SELECT ha FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
-        + " JOIN FETCH ht.language l"
-        + " WHERE h.id = :habitId AND ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign AS ha "
+        + "WHERE ha.habit.id = :habitId AND ha.user.id = :userId "
+        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
     Optional<HabitAssign> findByHabitIdAndUserId(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
@@ -157,10 +156,9 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
      * @author Anton Bondar
      */
-    @Query(value = "SELECT ha FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
-        + " JOIN FETCH ht.language l"
-        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign AS ha "
+        + "WHERE ha.id = :habitAssignId AND ha.user.id= :userId "
+        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
     Optional<HabitAssign> findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(
         @Param("habitAssignId") Long habitAssignId,
         @Param("userId") Long userId);
@@ -222,26 +220,17 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllByUserIdAndStatusIsInProgress(@Param("userId") Long userId);
 
     /**
-     * Method to find all inprogress habit assigns between the specified
-     * {@link LocalDate}s.
+     * Method to find all inprogress habit assigns related to user.
      *
      * @param userId {@link User} id.
-     * @param from   {@link LocalDate} instance.
-     * @param to     {@link LocalDate} instance.
      * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
+    @Query("SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
         + "WHERE upper(ha.status) = 'INPROGRESS' "
-        + "AND ha.user.id = :userId "
-        + "AND cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
-        + "OR cast(FUNCTION('DATEADD', DAY, ha.duration, ha.createDate) as date) "
-        + "BETWEEN cast(:from as date) AND cast(:to as date) "
-        + "OR cast(ha.createDate as date) <= cast(:from as date) "
-        + "AND cast(:to as date) <= cast(FUNCTION('DATEADD', DAY, ha.duration, ha.createDate) as date)")
-    List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
-        @Param("to") LocalDate to);
+        + "AND ha.user.id = :userId")
+    List<HabitAssign> findAllInProgressHabitAssignsRelatedToUser(@Param("userId") Long userId);
 
     /**
      * Method to find all inprogress, habit assigns.
@@ -303,7 +292,27 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return list of {@link Long} habit ids requested by friends of current user.
      * @author Olena Sotnik
      */
-    @Query(value = "SELECT DISTINCT ha.habit.id FROM HabitAssign ha"
-        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'REQUESTED'")
+    @Query(value = "SELECT DISTINCT ha.habit.id FROM HabitAssign ha "
+        + "WHERE ha.user.id = :userId AND upper(ha.status) = 'REQUESTED'")
     List<Long> findAllHabitIdsByUserIdAndStatusIsRequested(@Param("userId") Long userId);
+
+    /**
+     * Method to find list of friends ids of current user who tracks the same Habit.
+     *
+     * @param userId  {@link Long} userId of current user.
+     * @param habitId {@link Long} habitId.
+     * @return list of {@link Long} user ids of user's friends tracking current
+     *         habit.
+     * @author Olena Sotnik
+     */
+    @Query(value = "SELECT DISTINCT ha.user_id "
+        + "FROM habit_assign AS ha "
+        + "JOIN users_friends AS uf "
+        + "ON ha.user_id = uf.friend_id "
+        + "WHERE uf.user_id = :userId "
+        + "AND uf.status = 'FRIEND' "
+        + "AND ha.habit_id = :habitId "
+        + "AND ha.user_id != :userId "
+        + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')", nativeQuery = true)
+    List<Long> findFriendsIdsTrackingHabit(@Param("habitId") Long habitId, @Param("userId") Long userId);
 }

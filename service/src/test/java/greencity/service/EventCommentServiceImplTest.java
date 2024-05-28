@@ -286,7 +286,8 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> eventCommentService.update(editedText, commentId, userVO));
+            assertThrows(NotFoundException.class,
+                () -> eventCommentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
