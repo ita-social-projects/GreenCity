@@ -119,13 +119,6 @@ public class ModelUtils {
             Arrays.asList("Новини", "News", "Новины"));
     }
 
-    public static AddEcoNewsMessage getAddEcoNewsMessage() {
-        return AddEcoNewsMessage.builder()
-            .subscribers(Collections.singletonList(getNewsSubscriberResponseDto()))
-            .addEcoNewsDtoResponse(getAddEcoNewsDtoResponse())
-            .build();
-    }
-
     public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto() {
         return EcoNewsForSendEmailDto.builder()
             .unsubscribeToken("string")
