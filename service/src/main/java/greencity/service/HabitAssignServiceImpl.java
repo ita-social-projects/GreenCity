@@ -890,11 +890,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         if (from.isAfter(to)) {
             throw new BadRequestException(ErrorMessage.INVALID_DATE_RANGE);
         }
-        List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
-            .findAllHabitAssignsBetweenDates(userId, from, to);
+
+        List<HabitAssign> allHabitAssigns = habitAssignRepo
+            .findAllInProgressHabitAssignsRelatedToUser(userId);
+
+        List<HabitAssign> habitAssignsBetweenDates = allHabitAssigns.stream()
+            .filter(ha -> isWithinDateRange(ha, from, to)).toList();
+
         List<LocalDate> dates = Stream.iterate(from, date -> date.plusDays(1))
             .limit(ChronoUnit.DAYS.between(from, to.plusDays(1)))
-            .collect(Collectors.toList());
+            .toList();
 
         List<HabitsDateEnrollmentDto> dtos = dates.stream()
             .map(date -> HabitsDateEnrollmentDto.builder().enrollDate(date)
@@ -904,6 +909,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
         return dtos;
+    }
+
+    private boolean isWithinDateRange(HabitAssign habitAssign, LocalDate from, LocalDate to) {
+        LocalDate createDate = habitAssign.getCreateDate().toLocalDate();
+        LocalDate endDate = createDate.plusDays(habitAssign.getDuration());
+
+        boolean createDateWithinRange = !createDate.isBefore(from) && !createDate.isAfter(to);
+        boolean endDateWithinRange = !endDate.isBefore(from) && !endDate.isAfter(to);
+        boolean rangeEncompassesDates = createDate.isBefore(from) && endDate.isAfter(to);
+
+        return createDateWithinRange || endDateWithinRange || rangeEncompassesDates;
     }
 
     /**

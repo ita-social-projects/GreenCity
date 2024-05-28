@@ -72,8 +72,10 @@ import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
@@ -678,6 +680,112 @@ public class ModelUtils {
             .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
             .lastEnrollmentDate(ZonedDateTime.now())
             .build();
+    }
+
+    public static HabitAssign getHabitAssignForCurrentUser() {
+        return HabitAssign.builder()
+            .id(1L)
+            .status(HabitAssignStatus.ACQUIRED)
+            .createDate(ZonedDateTime.of(2020, 12, 28,
+                12, 12, 12, 12, ZoneId.of("Europe/Kiev")))
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .userId(2L)
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .build()))
+                .build())
+            .user(getUser())
+            .userShoppingListItems(new ArrayList<>())
+            .workingDays(0)
+            .duration(3)
+            .habitStreak(0)
+            .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .habitStatusCalendars(Collections.singletonList(HabitStatusCalendar
+                .builder().enrollDate(LocalDate.of(2020, 12, 28)).build()))
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
+    public static HabitAssign getAdditionalHabitAssignForCurrentUser() {
+        return HabitAssign.builder()
+            .id(2L)
+            .status(HabitAssignStatus.ACQUIRED)
+            .createDate(ZonedDateTime.of(2020, 12, 28,
+                12, 12, 12, 12, ZoneId.of("Europe/Kiev")))
+            .habit(Habit.builder()
+                .id(2L)
+                .image("")
+                .userId(2L)
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .build()))
+                .build())
+            .user(getUser())
+            .userShoppingListItems(new ArrayList<>())
+            .workingDays(0)
+            .duration(3)
+            .habitStreak(0)
+            .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .habitStatusCalendars(Collections.emptyList())
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
+    public static List<HabitsDateEnrollmentDto> getHabitsDateEnrollmentDtos() {
+        return Arrays.asList(
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 27))
+                .habitAssigns(Collections.emptyList())
+                .build(),
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 28))
+                .habitAssigns(Arrays.asList(
+                    new HabitEnrollDto(1L, "", "", true),
+                    new HabitEnrollDto(2L, "", "", false)))
+                .build(),
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 29))
+                .habitAssigns(Arrays.asList(
+                    new HabitEnrollDto(1L, "", "", false),
+                    new HabitEnrollDto(2L, "", "", false)))
+                .build());
+    }
+
+    public static List<HabitsDateEnrollmentDto> getAdditionalHabitsDateEnrollmentDtos() {
+        return Arrays.asList(
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 27))
+                .habitAssigns(Collections.emptyList()).build(),
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 28))
+                .habitAssigns(Collections.singletonList(
+                    new HabitEnrollDto(1L, "", "", true)))
+                .build(),
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 29))
+                .habitAssigns(Collections.singletonList(
+                    new HabitEnrollDto(1L, "", "", false)))
+                .build());
     }
 
     public static HabitAssign getHabitAssignWithStatusInprogress() {
