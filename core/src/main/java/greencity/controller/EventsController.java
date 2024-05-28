@@ -6,11 +6,11 @@ import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventPreviewDto;
-import greencity.dto.event.UpdateEventDto;
-import greencity.dto.event.AddressDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.enums.EventType;
 import greencity.service.EventService;
@@ -22,6 +22,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.security.Principal;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -35,13 +37,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import java.security.Principal;
-import java.util.Set;
+import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
 @Validated
 @RestController
@@ -121,7 +122,7 @@ public class EventsController {
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> update(
         @Parameter(required = true,
-            description = SwaggerExampleModel.UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventDto eventDto,
+            description = UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventRequestDto eventDto,
         @Parameter(hidden = true) Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.OK).body(
