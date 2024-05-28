@@ -10,7 +10,6 @@ import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
-import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
@@ -25,7 +24,6 @@ import greencity.message.GeneralEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
-import greencity.message.AddEcoNewsMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -87,13 +85,6 @@ public class ModelUtils {
         headers.set("Authorization", "Bearer accessToken");
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
-    }
-
-    public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
-        return NewsSubscriberResponseDto.builder()
-            .email("test@gmail.com")
-            .unsubscribeToken("someUnsubscribeToken")
-            .build();
     }
 
     public static CategoryDto getCategoryDto() {
