@@ -11,7 +11,6 @@ import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
@@ -71,7 +70,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Locale;
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
-import static greencity.ModelUtils.getAdditionalHabitsDateEnrollmentDtos;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitAssignUserDurationDto;
@@ -480,16 +478,17 @@ class HabitAssignServiceImplTest {
     @Test
     void findHabitAssignsBetweenDatesTest() {
         HabitAssign habit = ModelUtils.getHabitAssignForCurrentUser();
+
         HabitAssign additionalHabit = ModelUtils.getAdditionalHabitAssignForCurrentUser();
         List<HabitAssign> habitAssignsList = Arrays.asList(habit, additionalHabit);
 
         List<HabitsDateEnrollmentDto> dtos = getHabitsDateEnrollmentDtos();
 
-        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(anyLong()))
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(1L))
             .thenReturn(habitAssignsList);
 
         assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(
-            13L,
+            1L,
             LocalDate.of(2020, 12, 27),
             LocalDate.of(2020, 12, 29),
             "en"));
@@ -498,29 +497,39 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitAssignsBetweenDatesCreateDateWithinRangeTest() {
+    void findHabitAssignsBetweenDatesWhenStartDateIsEarlierThanFromTest() {
         HabitAssign habit = ModelUtils.getHabitAssignForCurrentUser();
         habit.setCreateDate(ZonedDateTime.of(
-            2020,
+            2010,
             12,
             28,
-            0,
-            0,
-            0,
-            0, ZoneId.of("Europe/Kiev")));
-        habit.setDuration(3);
-        List<HabitAssign> habitAssignsList = Collections.singletonList(habit);
-        List<HabitsDateEnrollmentDto> dtos = getAdditionalHabitsDateEnrollmentDtos();
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
 
-        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(anyLong()))
+        HabitAssign additionalHabit = ModelUtils.getAdditionalHabitAssignForCurrentUser();
+        additionalHabit.setCreateDate(ZonedDateTime.of(
+            2010,
+            12,
+            28,
+            12,
+            12,
+            12,
+            12, ZoneId.of("Europe/Kiev")));
+
+        List<HabitAssign> habitAssignsList = Arrays.asList(habit, additionalHabit);
+
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(1L))
             .thenReturn(habitAssignsList);
 
-        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(
-            13L,
+        List<HabitsDateEnrollmentDto> habitsDateEnrollmentDtos = habitAssignService.findHabitAssignsBetweenDates(
+            1L,
             LocalDate.of(2020, 12, 27),
             LocalDate.of(2020, 12, 29),
-            "en"));
+            "en");
 
+        assertEquals(Collections.emptyList(), habitsDateEnrollmentDtos.getFirst().getHabitAssigns());
         verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
     }
 

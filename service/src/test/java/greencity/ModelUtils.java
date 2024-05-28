@@ -740,14 +740,23 @@ public class ModelUtils {
 
     public static List<HabitsDateEnrollmentDto> getHabitsDateEnrollmentDtos() {
         return Arrays.asList(
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 27))
-                .habitAssigns(Collections.emptyList()).build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 28))
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 27))
+                .habitAssigns(Collections.emptyList())
+                .build(),
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 28))
                 .habitAssigns(Arrays.asList(
                     new HabitEnrollDto(1L, "", "", true),
                     new HabitEnrollDto(2L, "", "", false)))
                 .build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 29))
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 29))
                 .habitAssigns(Arrays.asList(
                     new HabitEnrollDto(1L, "", "", false),
                     new HabitEnrollDto(2L, "", "", false)))
@@ -756,13 +765,21 @@ public class ModelUtils {
 
     public static List<HabitsDateEnrollmentDto> getAdditionalHabitsDateEnrollmentDtos() {
         return Arrays.asList(
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 27))
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 27))
                 .habitAssigns(Collections.emptyList()).build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 28))
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 28))
                 .habitAssigns(Collections.singletonList(
                     new HabitEnrollDto(1L, "", "", true)))
                 .build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 29))
+
+            HabitsDateEnrollmentDto
+                .builder()
+                .enrollDate(LocalDate.of(2020, 12, 29))
                 .habitAssigns(Collections.singletonList(
                     new HabitEnrollDto(1L, "", "", false)))
                 .build());
