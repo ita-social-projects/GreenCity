@@ -5,44 +5,54 @@ import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.*;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-
 import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
-
-import java.util.*;
-
 import greencity.repository.UserAchievementRepo;
 import greencity.repository.UserRepo;
-import org.junit.jupiter.api.Assertions;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+import static greencity.ModelUtils.getActionDto;
+import static greencity.ModelUtils.getUserAchievement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.*;
-
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class AchievementServiceImplTest {
@@ -69,6 +79,8 @@ class AchievementServiceImplTest {
     private UserService userService;
     @Mock
     HttpServletRequest httpServletRequest;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @Test
     void findAllWithEmptyListTest() {
@@ -127,7 +139,7 @@ class AchievementServiceImplTest {
         when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(achievementRepo.searchAchievementsUnAchieved(anyLong()))
-            .thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+            .thenReturn(List.of(ModelUtils.getAchievement()));
         when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
         List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "UNACHIEVED");
@@ -203,7 +215,7 @@ class AchievementServiceImplTest {
         achievementRepo.deleteById(1L);
         verify(achievementRepo, times(1)).deleteById(1L);
         long expected = achievementService.delete(1L);
-        Assertions.assertEquals(expected, achievement.getId());
+        assertEquals(expected, achievement.getId());
     }
 
     @Test
@@ -243,5 +255,16 @@ class AchievementServiceImplTest {
             any(AchievementCategoryType.class),
             eq(AchievementAction.ASSIGN));
         verify(userService).findById(anyLong());
+    }
+
+    @Test
+    void achieveTest() {
+        var userAchievement = getUserAchievement();
+        var dto = getActionDto();
+        when(userAchievementRepo.getUserAchievementByUserId(dto.getUserId())).thenReturn(List.of(userAchievement));
+        achievementService.achieve(dto);
+
+        verify(messagingTemplate).convertAndSend("/topic/" + dto.getUserId() + "/notification", true);
+        verify(userAchievementRepo).getUserAchievementByUserId(dto.getUserId());
     }
 }

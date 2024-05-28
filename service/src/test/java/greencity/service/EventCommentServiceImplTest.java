@@ -82,6 +82,9 @@ class EventCommentServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private UserNotificationService userNotificationService;
+
     @Test
     void save() {
         UserVO userVO = getUserVO();
@@ -101,6 +104,7 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+        when(modelMapper.map(eventComment.getUser(), UserVO.class)).thenReturn(userVO);
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());
@@ -160,7 +164,7 @@ class EventCommentServiceImplTest {
                 () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO));
 
         String expectedErrorMessage = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
-            + " in event with id:" + event.getId();
+            + " in event with id: " + event.getId();
         assertEquals(expectedErrorMessage, notFoundException.getMessage());
     }
 

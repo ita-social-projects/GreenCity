@@ -10,6 +10,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
@@ -62,6 +63,7 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
@@ -94,6 +96,7 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.notification.NotificationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.AddPlaceDto;
@@ -158,6 +161,7 @@ import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.entity.Location;
+import greencity.entity.Notification;
 import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.Place;
@@ -182,7 +186,9 @@ import greencity.enums.EmailNotification;
 import greencity.enums.FactOfDayStatus;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
+import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
+import greencity.enums.ProjectName;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
@@ -212,12 +218,28 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import static greencity.enums.NotificationType.ECONEWS_COMMENT;
+import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
+import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
+import static greencity.enums.NotificationType.ECONEWS_CREATED;
+import static greencity.enums.NotificationType.ECONEWS_LIKE;
+import static greencity.enums.NotificationType.EVENT_CANCELED;
+import static greencity.enums.NotificationType.EVENT_COMMENT;
+import static greencity.enums.NotificationType.EVENT_COMMENT_LIKE;
+import static greencity.enums.NotificationType.EVENT_COMMENT_REPLY;
+import static greencity.enums.NotificationType.EVENT_CREATED;
+import static greencity.enums.NotificationType.EVENT_JOINED;
+import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
+import static greencity.enums.NotificationType.EVENT_UPDATED;
+import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
+import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
+import static greencity.enums.ProjectName.GREENCITY;
+import static greencity.enums.ProjectName.PICKUP;
 import org.hibernate.sql.results.internal.TupleElementImpl;
 import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
@@ -3419,5 +3441,93 @@ public class ModelUtils {
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
                 .build());
+    }
+
+    public static ActionDto getActionDto() {
+        return ActionDto.builder().userId(1L).build();
+    }
+
+    public static NotificationDto getNotificationDto() {
+        return NotificationDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(String.valueOf(EVENT_CREATED))
+            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .viewed(true)
+            .titleText("You have created event")
+            .bodyText("You successfully created event {message}.")
+            .actionUserId(1L)
+            .actionUserText("Taras")
+            .targetId(1L)
+            .message("Message")
+            .secondMessage("Second message")
+            .secondMessageId(2L)
+            .build();
+    }
+
+    public static Notification getNotification() {
+        return Notification.builder()
+            .id(1L)
+            .customMessage("Message")
+            .targetId(1L)
+            .secondMessage("Second message")
+            .secondMessageId(2L)
+            .notificationType(EVENT_CREATED)
+            .projectName(GREENCITY)
+            .viewed(true)
+            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .actionUsers(List.of(getUser()))
+            .build();
+    }
+
+    public static Notification getNotificationWithSeveralActionUsers(int numberOfUsers) {
+        long userIdCounter = 0L;
+        List<User> actionUsers = new ArrayList<>();
+        for (int i = 0; i < numberOfUsers; i++) {
+            User user = new User();
+            user.setId(userIdCounter++);
+            actionUsers.add(user);
+        }
+
+        return Notification.builder()
+            .id(1L)
+            .customMessage("Message")
+            .targetId(1L)
+            .secondMessage("Second message")
+            .secondMessageId(2L)
+            .notificationType(EVENT_CREATED)
+            .projectName(GREENCITY)
+            .viewed(true)
+            .time(LocalDateTime.of(2100, 1, 31, 12, 0))
+            .actionUsers(actionUsers)
+            .build();
+    }
+
+    public static FilterNotificationDto getFilterNotificationDto() {
+        return FilterNotificationDto.builder()
+            .projectName(new ProjectName[] {GREENCITY, PICKUP})
+            .notificationType(new NotificationType[] {
+                ECONEWS_COMMENT_REPLY,
+                ECONEWS_COMMENT_LIKE,
+                ECONEWS_LIKE,
+                ECONEWS_CREATED,
+                ECONEWS_COMMENT,
+                EVENT_COMMENT_REPLY,
+                EVENT_COMMENT_LIKE,
+                EVENT_CREATED,
+                EVENT_CANCELED,
+                EVENT_NAME_UPDATED,
+                EVENT_UPDATED,
+                EVENT_JOINED,
+                EVENT_COMMENT,
+                FRIEND_REQUEST_ACCEPTED,
+                FRIEND_REQUEST_RECEIVED})
+            .build();
+    }
+
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationDto() {
+        return new PageableAdvancedDto<>(Collections.singletonList(getNotificationDto()),
+            1, 0, 1, 0,
+            false, false, true, true);
     }
 }

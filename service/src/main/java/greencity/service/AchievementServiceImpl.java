@@ -7,6 +7,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
@@ -14,6 +15,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.User;
+import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -30,6 +32,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,18 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserAchievementRepo userAchievementRepo;
     private static final String ACHIEVED = "ACHIEVED";
     private static final String UNACHIEVED = "UNACHIEVED";
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Override
+    @Transactional
+    public void achieve(ActionDto user) {
+        List<UserAchievement> userAchievements =
+            userAchievementRepo.getUserAchievementByUserId(user.getUserId())
+                .stream()
+                .filter(userAchievement -> !userAchievement.isNotified())
+                .toList();
+        messagingTemplate.convertAndSend("/topic/" + user.getUserId() + "/notification", !userAchievements.isEmpty());
+    }
 
     /**
      * {@inheritDoc}

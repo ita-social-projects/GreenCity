@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 public class CustomShoppingListMapper
     extends AbstractConverter<CustomShoppingListItemResponseDto, CustomShoppingListItem> {
     @Override
-    public CustomShoppingListItem convert(
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto) {
+    public CustomShoppingListItem convert(CustomShoppingListItemResponseDto customShoppingListItemResponseDto) {
         return CustomShoppingListItem.builder()
             .id(customShoppingListItemResponseDto.getId())
             .text(customShoppingListItemResponseDto.getText())

@@ -31,6 +31,7 @@ import greencity.entity.localization.TagTranslation;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.CommentStatus;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
@@ -87,6 +88,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
+    private final UserNotificationService userNotificationService;
 
     private static final String ECO_NEWS_TITLE = "title";
     private static final String ECO_NEWS_JOIN_TAG = "tags";
@@ -112,6 +114,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
+        userNotificationService.createNewNotification(userVO, NotificationType.ECONEWS_CREATED, toSave.getId(),
+            toSave.getTitle());
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
@@ -534,6 +538,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+            userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO,
+                id, NotificationType.ECONEWS_LIKE);
         } else {
             if (ecoNewsVO.getAuthor().getId().equals(userVO.getId())) {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -562,6 +568,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNewsVO ecoNewsVO = findById(id);
         if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+            userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO, id,
+                NotificationType.ECONEWS_LIKE);
         }
         if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));

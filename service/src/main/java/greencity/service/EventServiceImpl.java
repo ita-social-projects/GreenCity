@@ -32,14 +32,15 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
+import greencity.enums.EventType;
+import greencity.enums.NotificationType;
+import greencity.enums.TagType;
+import greencity.enums.Role;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
-import greencity.enums.EventType;
 import greencity.enums.RatingCalculationEnum;
-import greencity.enums.Role;
-import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -138,6 +139,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
+    private final UserNotificationService userNotificationService;
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
@@ -178,6 +180,8 @@ public class EventServiceImpl implements EventService {
             .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
                 savedEvent.getTitle()))
             .build());
+        userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
+            savedEvent.getTitle());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -201,6 +205,11 @@ public class EventServiceImpl implements EventService {
                 attendersEmails,
                 EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
                 String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
+            List<UserVO> userVOList = toDelete.getAttenders().stream()
+                .map(user -> modelMapper.map(user, UserVO.class))
+                .collect(Collectors.toList());
+            userNotificationService.createNotificationForAttenders(userVOList, toDelete.getTitle(),
+                NotificationType.EVENT_CANCELED, null);
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -436,6 +445,8 @@ public class EventServiceImpl implements EventService {
             .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()))
             .build());
+        userNotificationService.createNotification(modelMapper.map(event.getOrganizer(), UserVO.class), userVO,
+            NotificationType.EVENT_JOINED, eventId, event.getTitle());
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -524,6 +535,16 @@ public class EventServiceImpl implements EventService {
 
         if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
+        }
+        List<UserVO> userVOList = toUpdate.getAttenders().stream()
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .collect(Collectors.toList());
+        if (toUpdate.getTitle().equals(eventDto.getTitle())) {
+            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
+                NotificationType.EVENT_UPDATED, toUpdate.getId());
+        } else {
+            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
+                NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
         }
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
