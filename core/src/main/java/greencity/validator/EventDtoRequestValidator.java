@@ -58,6 +58,13 @@ public class EventDtoRequestValidator
         if (dates == null || dates.isEmpty() || dates.size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
             throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
         }
+
+        dates.stream()
+            .filter(date -> date.getStartDate() == null || date.getFinishDate() == null)
+            .findAny()
+            .ifPresent(date -> {
+                throw new EventDtoValidationException(ErrorMessage.INVALID_DATE);
+            });
     }
 
     private <T extends AbstractEventDateLocationDto> void convertToUTC(List<T> dates) {
