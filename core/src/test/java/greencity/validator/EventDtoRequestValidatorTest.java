@@ -2,11 +2,13 @@ package greencity.validator;
 
 import greencity.ModelUtils;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.InvalidURLException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -135,5 +137,18 @@ class EventDtoRequestValidatorTest {
     void invalidObjectType() {
         Object value = new Object();
         assertFalse(validator.isValid(value, null));
+    }
+
+    @Test
+    void invalidDates() {
+        UpdateEventRequestDto updateEventRequestDto =
+            UpdateEventRequestDto.builder().datesLocations(List.of(UpdateEventDateLocationDto.builder()
+                .startDate(null)
+                .finishDate(null)
+                .onlineLink("http://localhost:8060/swagger-ui.html#/")
+                .build()))
+                .tags(List.of("first", "second", "third")).build();
+        assertThrows(EventDtoValidationException.class,
+            () -> validator.isValid(updateEventRequestDto, null));
     }
 }
