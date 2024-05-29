@@ -893,4 +893,13 @@ public class ModelUtils {
                 .eventRate(3.5)
                 .build());
     }
+
+    public static UpdateEventDto getEventDtoWithIncorrectDates() {
+        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(null)
+            .finishDate(null)
+            .onlineLink("http://localhost:8060/swagger-ui.html#/")
+            .build()))
+            .tags(List.of("first", "second", "third")).build();
+    }
 }

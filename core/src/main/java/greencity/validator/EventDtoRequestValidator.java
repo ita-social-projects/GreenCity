@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collections;
 import static greencity.validator.UrlValidator.isUrlValid;
 
 public class EventDtoRequestValidator implements ConstraintValidator<ValidEventDtoRequest, Object> {
@@ -57,6 +58,9 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
                 throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
             } else {
                 eventDateLocationDtos = convertToUTC(updateEventDto.getDatesLocations());
+                if (eventDateLocationDtos.isEmpty()) {
+                    throw new EventDtoValidationException(ErrorMessage.INVALID_DATE);
+                }
             }
         }
         validateEventDateLocations(eventDateLocationDtos);
@@ -65,6 +69,11 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
     }
 
     private List<EventDateLocationDto> convertToUTC(List<EventDateLocationDto> dates) {
+        for (EventDateLocationDto eventDateLocationDto : dates) {
+            if (eventDateLocationDto.getStartDate() == null || eventDateLocationDto.getFinishDate() == null) {
+                return Collections.emptyList();
+            }
+        }
         return dates.stream()
             .map(e -> e.setStartDate(e.getStartDate().withZoneSameInstant(ZoneOffset.UTC)))
             .map(e -> e.setFinishDate(e.getFinishDate().withZoneSameInstant(ZoneOffset.UTC)))

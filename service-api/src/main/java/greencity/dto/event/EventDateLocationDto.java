@@ -1,5 +1,6 @@
 package greencity.dto.event;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -21,9 +22,11 @@ public class EventDateLocationDto {
     private EventDto event;
 
     @NotEmpty
+    @NotNull
     private ZonedDateTime startDate;
 
     @NotEmpty
+    @NotNull
     private ZonedDateTime finishDate;
 
     private String onlineLink;

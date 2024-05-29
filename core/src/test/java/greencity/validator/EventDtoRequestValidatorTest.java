@@ -5,13 +5,12 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.UpdateEventDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.InvalidURLException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -132,5 +131,11 @@ class EventDtoRequestValidatorTest {
     void invalidObjectType() {
         Object value = new Object();
         assertFalse(validator.isValid(value, null));
+    }
+
+    @Test
+    void invalidDate() {
+        UpdateEventDto updateEventDto = ModelUtils.getEventDtoWithIncorrectDates();
+        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
     }
 }
