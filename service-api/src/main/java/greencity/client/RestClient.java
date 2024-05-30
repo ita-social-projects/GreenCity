@@ -550,10 +550,6 @@ public class RestClient {
         }
 
         if (!StringUtils.hasLength(accessToken)) {
-            accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        }
-
-        if (!StringUtils.hasLength(accessToken)) {
             accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
         }
 
