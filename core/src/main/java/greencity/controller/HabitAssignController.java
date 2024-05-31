@@ -5,7 +5,6 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
-import greencity.constant.RedirectUrl;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -34,7 +33,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,12 +51,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
-@AllArgsConstructor
 @RestController
 @RequestMapping("/habit/assign")
 public class HabitAssignController {
     private final HabitAssignService habitAssignService;
-    private final RedirectUrl redirectUrl;
+    @Value("${client.address}")
+    private String redirectUrl;
+
+    public HabitAssignController(HabitAssignService habitAssignService) {
+        this.habitAssignService = habitAssignService;
+    }
 
     /**
      * Method which assigns habit for {@link UserVO} with default props.
@@ -653,7 +656,7 @@ public class HabitAssignController {
     public ResponseEntity<Void> confirmInvitation(@PathVariable Long habitAssignId) {
         habitAssignService.confirmHabitInvitation(habitAssignId);
         return ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(redirectUrl.getClintAddress() + "/#/profile"))
+            .location(URI.create(redirectUrl + "/#/profile"))
             .build();
     }
 }

@@ -3,7 +3,6 @@ package greencity.controller;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
-import greencity.constant.RedirectUrl;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
@@ -42,9 +41,6 @@ class HabitAssignControllerTest {
 
     @Mock
     HabitAssignService habitAssignService;
-
-    @Mock
-    private RedirectUrl redirectUrl;
 
     @InjectMocks
     HabitAssignController habitAssignController;
