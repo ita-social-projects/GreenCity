@@ -27,8 +27,11 @@ import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
-import lombok.AllArgsConstructor;
+import greencity.repository.UserRepo;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -39,7 +42,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class EventCommentServiceImpl implements EventCommentService {
     private EventCommentRepo eventCommentRepo;
     private EventService eventService;
@@ -50,6 +52,33 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
+    private final UserRepo userRepo;
+    private static final String LINK = "/#/events/";
+    @Value("${client.address}")
+    private String clientAddress;
+
+    public EventCommentServiceImpl(
+        EventCommentRepo eventCommentRepo,
+        EventService eventService,
+        ModelMapper modelMapper,
+        EventRepo eventRepo,
+        RatingCalculation ratingCalculation,
+        AchievementCalculation achievementCalculation,
+        SimpMessagingTemplate messagingTemplate,
+        NotificationService notificationService,
+        UserNotificationService userNotificationService,
+        UserRepo userRepo) {
+        this.eventCommentRepo = eventCommentRepo;
+        this.eventService = eventService;
+        this.modelMapper = modelMapper;
+        this.eventRepo = eventRepo;
+        this.ratingCalculation = ratingCalculation;
+        this.achievementCalculation = achievementCalculation;
+        this.messagingTemplate = messagingTemplate;
+        this.notificationService = notificationService;
+        this.userNotificationService = userNotificationService;
+        this.userRepo = userRepo;
+    }
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -95,6 +124,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                 userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText(),
                 eventId, eventVO.getTitle());
         }
+
+        sendNotificationToTaggedUser(eventId, userVO, addEventCommentDtoRequest.getText());
+
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
@@ -357,5 +389,41 @@ public class EventCommentServiceImpl implements EventCommentService {
         amountCommentLikesDto.setAmountLikes(size);
         messagingTemplate.convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/eventComment",
             amountCommentLikesDto);
+    }
+
+    /**
+     * Method to send email notification if user tagged in comment.
+     *
+     * @param eventId {@link Long} event id.
+     * @param userVO  {@link UserVO} comment author.
+     * @param comment {@link String} comment.
+     */
+    private void sendNotificationToTaggedUser(Long eventId, UserVO userVO, String comment) {
+        Long userId = getUserIdFromComment(comment);
+        if (userId != null) {
+            User user = userRepo.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+                .email(user.getEmail())
+                .subject(String.format(EmailNotificationMessagesConstants.EVENT_TAGGED_SUBJECT, userVO.getName()))
+                .message(clientAddress + LINK + eventId)
+                .build());
+        }
+    }
+
+    /**
+     * Method to extract user id from comment.
+     *
+     * @param message comment from {@link AddEventCommentDtoResponse}.
+     * @return user id if present or null.
+     */
+    private Long getUserIdFromComment(String message) {
+        String regEx = "data-userid=\"(\\d+)\"";
+        Pattern pattern = Pattern.compile(regEx);
+        Matcher matcher = pattern.matcher(message);
+        if (matcher.find()) {
+            return Long.valueOf(matcher.group(1));
+        }
+        return null;
     }
 }
