@@ -2,7 +2,9 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
@@ -14,6 +16,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
+import jakarta.persistence.Tuple;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -30,9 +33,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
@@ -1168,5 +1173,57 @@ class FriendServiceImplTest {
         verify(userRepo).isFriend(userId, friendId);
         verify(userRepo).isFriendRequestedByCurrentUser(userId, friendId);
         verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void getUserAsFriendTest() {
+        UserAsFriendDto expected = ModelUtils.getUserAsFriendDto();
+        Long userId = 2L;
+        Long friendId = expected.getId();
+        Tuple tuple = mock(Tuple.class);
+
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.findUsersFriendByUserIdAndFriendId(userId, friendId))
+            .thenReturn(tuple);
+        when(userRepo.findIdOfPrivateChatOfUsers(userId, friendId))
+            .thenReturn(expected.getChatId());
+
+        when(tuple.get(FriendTupleConstant.STATUS, String.class)).thenReturn(expected.getFriendStatus());
+        when(tuple.get(FriendTupleConstant.REQUESTER_ID, Long.class)).thenReturn(expected.getRequesterId());
+
+        assertEquals(expected, friendService.getUserAsFriend(userId, friendId));
+
+        verify(userRepo).existsById(anyLong());
+        verify(userRepo).findUsersFriendByUserIdAndFriendId(anyLong(), anyLong());
+        verify(userRepo).findIdOfPrivateChatOfUsers(anyLong(), anyLong());
+        verify(tuple).get(FriendTupleConstant.STATUS, String.class);
+        verify(tuple).get(FriendTupleConstant.REQUESTER_ID, Long.class);
+    }
+
+    @Test
+    void getUserAsFriendIfUsersAreNotFriendsAndDoNotHaveChatTest() {
+        UserAsFriendDto expected = new UserAsFriendDto(1L, null);
+        ;
+        Long userId = 2L;
+        Long friendId = expected.getId();
+
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.findUsersFriendByUserIdAndFriendId(userId, friendId)).thenReturn(null);
+        when(userRepo.findIdOfPrivateChatOfUsers(userId, friendId)).thenReturn(null);
+
+        assertEquals(expected, friendService.getUserAsFriend(userId, friendId));
+        verify(userRepo).existsById(anyLong());
+        verify(userRepo).findUsersFriendByUserIdAndFriendId(anyLong(), anyLong());
+        verify(userRepo).findIdOfPrivateChatOfUsers(anyLong(), anyLong());
+    }
+
+    @Test
+    void getUserAsFriendIfUsersThrowsNotFoundExceptionTest() {
+        Long friendId = 2L;
+
+        when(userRepo.existsById(friendId)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> friendService.getUserAsFriend(1L, friendId));
+        verify(userRepo).existsById(anyLong());
     }
 }
