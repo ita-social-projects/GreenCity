@@ -147,7 +147,7 @@ public interface FriendService {
      * Get user data as friend.
      *
      * @param currentUserId user id
-     * @param friendId friend id
+     * @param friendId      friend id
      * @author Denys Ryhal
      */
     UserAsFriendDto getUserAsFriend(Long currentUserId, Long friendId);

@@ -498,7 +498,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method finds friends status and requesterId.
      *
-     * @param userId {@link Long} current user's id.
+     * @param userId   {@link Long} current user's id.
      * @param friendId {@link Long} friend`s id.
      *
      * @return {@link Tuple}.
@@ -513,7 +513,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method finds chatId of two users.
      *
-     * @param userId {@link Long} current user's id.
+     * @param userId   {@link Long} current user's id.
      * @param friendId {@link Long} friend`s id.
      *
      * @return {@link Long}.
