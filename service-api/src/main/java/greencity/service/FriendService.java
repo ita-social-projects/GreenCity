@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RecommendedFriendDto;
 import greencity.dto.user.UserManagementDto;
@@ -141,4 +142,13 @@ public interface FriendService {
      * @author Marian Datsko
      */
     void deleteRequestOfCurrentUserToFriend(long userId, long friendId);
+
+    /**
+     * Get user data as friend.
+     *
+     * @param currentUserId user id
+     * @param friendId      friend id
+     * @author Denys Ryhal
+     */
+    UserAsFriendDto getUserAsFriend(Long currentUserId, Long friendId);
 }

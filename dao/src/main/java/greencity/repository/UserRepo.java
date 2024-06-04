@@ -4,6 +4,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import jakarta.persistence.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -493,4 +494,35 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "ON u.language_id = l.id "
         + "WHERE u.id = :userId", nativeQuery = true)
     String findUserLanguageCodeByUserId(Long userId);
+
+    /**
+     * Method finds friends status and requesterId.
+     *
+     * @param userId   {@link Long} current user's id.
+     * @param friendId {@link Long} friend`s id.
+     *
+     * @return {@link Tuple}.
+     * @author Denys Ryhal.
+     */
+    @Query(nativeQuery = true, value = "SELECT uf.status as status, uf.user_id as requesterId "
+        + "FROM users_friends uf "
+        + "WHERE (uf.user_id = :userId AND uf.friend_id = :friendId) "
+        + "OR (uf.friend_id = :userId AND uf.user_id = :friendId)")
+    Tuple findUsersFriendByUserIdAndFriendId(Long userId, Long friendId);
+
+    /**
+     * Method finds chatId of two users.
+     *
+     * @param userId   {@link Long} current user's id.
+     * @param friendId {@link Long} friend`s id.
+     *
+     * @return {@link Long}.
+     * @author Denys Ryhal.
+     */
+    @Query(nativeQuery = true, value = "SELECT crp.room_id FROM chat_rooms r "
+        + "INNER JOIN chat_rooms_participants crp on r.id = crp.room_id "
+        + "WHERE r.type = 'PRIVATE' AND crp.participant_id in (:userId,:friendId) "
+        + "GROUP BY crp.room_id "
+        + "HAVING COUNT(crp) = 2 LIMIT 1;")
+    Long findIdOfPrivateChatOfUsers(Long userId, Long friendId);
 }

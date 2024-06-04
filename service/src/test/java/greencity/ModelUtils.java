@@ -64,6 +64,7 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.filter.FilterNotificationDto;
+import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
@@ -3529,5 +3530,14 @@ public class ModelUtils {
         return new PageableAdvancedDto<>(Collections.singletonList(getNotificationDto()),
             1, 0, 1, 0,
             false, false, true, true);
+    }
+
+    public static UserAsFriendDto getUserAsFriendDto() {
+        return UserAsFriendDto.builder()
+            .id(1L)
+            .requesterId(1L)
+            .friendStatus("FRIEND")
+            .chatId(1L)
+            .build();
     }
 }
