@@ -31,6 +31,7 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -911,5 +912,14 @@ public class ModelUtils {
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
                 .build());
+    }
+
+    public static UserAsFriendDto getUserAsFriendDto() {
+        return UserAsFriendDto.builder()
+            .id(1L)
+            .requesterId(1L)
+            .friendStatus("FRIEND")
+            .chatId(1L)
+            .build();
     }
 }

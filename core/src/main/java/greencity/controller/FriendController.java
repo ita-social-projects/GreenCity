@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
@@ -370,5 +371,33 @@ public class FriendController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         friendService.deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for getting common data of users.
+     *
+     * @param friendId id of user.
+     * @param userVO   {@link UserVO} user.
+     *
+     * @return {@link UserAsFriendDto}
+     * @author Denys Ryhal.
+     */
+    @Operation(summary = "Get user as friend")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/user-data-as-friend/{friendId}")
+    public ResponseEntity<UserAsFriendDto> getUserAsFriend(
+        @PathVariable Long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(friendService.getUserAsFriend(userVO.getId(), friendId));
     }
 }

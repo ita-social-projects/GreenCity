@@ -2,7 +2,9 @@ package greencity.service;
 
 import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
+import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
@@ -285,6 +287,24 @@ public class FriendServiceImpl implements FriendService {
 
     private Page<User> getAllUsersExceptMainUserAndFriends(long userId, Pageable pageable) {
         return userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+    }
+
+    @Override
+    public UserAsFriendDto getUserAsFriend(Long currentUserId, Long friendId) {
+        validateUserExistence(friendId);
+        return getUserAsFriendDto(currentUserId, friendId);
+    }
+
+    private UserAsFriendDto getUserAsFriendDto(Long id, Long friendId) {
+        var tuple = userRepo.findUsersFriendByUserIdAndFriendId(id, friendId);
+        var chatId = userRepo.findIdOfPrivateChatOfUsers(id, friendId);
+        var userAsFriend = new UserAsFriendDto(friendId, chatId);
+
+        if (Objects.nonNull(tuple)) {
+            userAsFriend.setFriendStatus(tuple.get(FriendTupleConstant.STATUS, String.class));
+            userAsFriend.setRequesterId(tuple.get(FriendTupleConstant.REQUESTER_ID, Long.class));
+        }
+        return userAsFriend;
     }
 
     private void validateUserAndFriends(Long userId, Long friendId) {
