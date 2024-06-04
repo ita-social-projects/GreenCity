@@ -68,6 +68,8 @@ public final class ErrorMessage {
         "There is no inprogress habit assign for current user: ";
     public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
         "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
+    public static final String HABIT_ASSIGN_ENROLL_RANGE_REACHED =
+        "Can't enroll habit because working days enrolled can not be greater than habit duration";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
         "Current user does not have habit statistic with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";

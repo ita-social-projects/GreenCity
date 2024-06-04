@@ -732,6 +732,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitStatusCalendarVO habitCalendarVO =
             habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(
                 date, habitAssignVO);
+        if (habitAssign.getWorkingDays() >= habitAssign.getDuration()) {
+            throw new UserHasReachedOutOfEnrollRange(ErrorMessage.HABIT_ASSIGN_ENROLL_RANGE_REACHED);
+        }
         if (habitCalendarVO != null) {
             throw new UserAlreadyHasEnrolledHabitAssign(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
