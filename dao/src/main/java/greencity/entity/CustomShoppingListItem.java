@@ -30,9 +30,11 @@ public class CustomShoppingListItem {
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "habit_id")
     private Habit habit;
 
     @Column(nullable = false)
