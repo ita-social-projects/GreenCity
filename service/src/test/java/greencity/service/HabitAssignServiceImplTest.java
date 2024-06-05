@@ -14,7 +14,7 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.MutualHabitAssignDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
@@ -865,7 +865,7 @@ class HabitAssignServiceImplTest {
         Pageable pageable = PageRequest.of(0, 6);
         List<HabitAssign> habitAssignList = List.of(habitAssign);
         Page<HabitAssign> returnedPage = new PageImpl<>(habitAssignList, pageable, habitAssignList.size());
-        MutualHabitAssignDto mutualHabitAssignDto = MutualHabitAssignDto.builder()
+        HabitAssignPreviewDto habitAssignPreviewDto = HabitAssignPreviewDto.builder()
             .id(habitAssign.getId())
             .status(habitAssign.getStatus())
             .userId(habitAssign.getUser().getId())
@@ -887,19 +887,63 @@ class HabitAssignServiceImplTest {
                 .description("descriptionUa")
                 .language(Language.builder().id(1L).code("en").build())
                 .build()));
-        PageableAdvancedDto<MutualHabitAssignDto> expected =
-            new PageableAdvancedDto<>(List.of(mutualHabitAssignDto), returnedPage.getTotalElements(),
+        PageableAdvancedDto<HabitAssignPreviewDto> expected =
+            new PageableAdvancedDto<>(List.of(habitAssignPreviewDto), returnedPage.getTotalElements(),
                 returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
                 returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
 
-        when(habitAssignRepo.findAllBy(userId, currentUserId, pageable)).thenReturn(returnedPage);
-        when(modelMapper.map(habitAssign, MutualHabitAssignDto.class)).thenReturn(mutualHabitAssignDto);
+        when(habitAssignRepo.findAllMutual(userId, currentUserId, pageable)).thenReturn(returnedPage);
+        when(modelMapper.map(habitAssign, HabitAssignPreviewDto.class)).thenReturn(habitAssignPreviewDto);
 
         var actual =
             habitAssignService.getAllMutualHabitAssignsWithUserAndStatusNotCancelled(userId, currentUserId, pageable);
 
-        verify(habitAssignRepo).findAllBy(userId, currentUserId, pageable);
-        verify(modelMapper).map(habitAssign, MutualHabitAssignDto.class);
+        verify(habitAssignRepo).findAllMutual(userId, currentUserId, pageable);
+        verify(modelMapper).map(habitAssign, HabitAssignPreviewDto.class);
+        assertArrayEquals(expected.getPage().toArray(), actual.getPage().toArray());
+    }
+
+    @Test
+    void getMyHabitsOfCurrentUserAndStatusNotCancelledTest() {
+        Long userId = 1L, currentUserId = 2L;
+        Pageable pageable = PageRequest.of(0, 6);
+        List<HabitAssign> habitAssignList = List.of(habitAssign);
+        Page<HabitAssign> returnedPage = new PageImpl<>(habitAssignList, pageable, habitAssignList.size());
+        HabitAssignPreviewDto habitAssignPreviewDto = HabitAssignPreviewDto.builder()
+            .id(habitAssign.getId())
+            .status(habitAssign.getStatus())
+            .userId(habitAssign.getUser().getId())
+            .duration(habitAssign.getDuration())
+            .workingDays(habitAssign.getWorkingDays())
+            .build();
+        habitAssign.getHabit().setHabitTranslations(List.of(
+            HabitTranslation.builder()
+                .id(1L)
+                .name("name")
+                .habitItem("habitItem")
+                .description("description")
+                .language(Language.builder().id(1L).code("ua").build())
+                .build(),
+            HabitTranslation.builder()
+                .id(2L)
+                .name("nameUa")
+                .habitItem("habitItemUa")
+                .description("descriptionUa")
+                .language(Language.builder().id(1L).code("en").build())
+                .build()));
+        PageableAdvancedDto<HabitAssignPreviewDto> expected =
+            new PageableAdvancedDto<>(List.of(habitAssignPreviewDto), returnedPage.getTotalElements(),
+                returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
+                returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
+
+        when(habitAssignRepo.findAllOfCurrentUser(userId, currentUserId, pageable)).thenReturn(returnedPage);
+        when(modelMapper.map(habitAssign, HabitAssignPreviewDto.class)).thenReturn(habitAssignPreviewDto);
+
+        var actual =
+            habitAssignService.getMyHabitsOfCurrentUserAndStatusNotCancelled(userId, currentUserId, pageable);
+
+        verify(habitAssignRepo).findAllOfCurrentUser(userId, currentUserId, pageable);
+        verify(modelMapper).map(habitAssign, HabitAssignPreviewDto.class);
         assertArrayEquals(expected.getPage().toArray(), actual.getPage().toArray());
     }
 

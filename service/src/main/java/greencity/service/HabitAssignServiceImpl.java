@@ -15,7 +15,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.MutualHabitAssignDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
@@ -74,6 +74,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -597,14 +598,20 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<MutualHabitAssignDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
+    public PageableAdvancedDto<HabitAssignPreviewDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
         Long userId, Long currentUserId, Pageable pageable) {
-        Page<HabitAssign> returnedPage = habitAssignRepo.findAllBy(userId, currentUserId, pageable);
-        List<MutualHabitAssignDto> mutualHabitAssignDtos = returnedPage.getContent().stream()
-            .map(habitAssign -> modelMapper.map(habitAssign, MutualHabitAssignDto.class)).toList();
-        return new PageableAdvancedDto<>(mutualHabitAssignDtos, returnedPage.getTotalElements(),
-            returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
-            returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
+        Page<HabitAssign> returnedPage = habitAssignRepo.findAllMutual(userId, currentUserId, pageable);
+        return mapHabitAssignPageToPageableAdvancedDtoOfMutualHabitAssignDto(returnedPage);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableAdvancedDto<HabitAssignPreviewDto> getMyHabitsOfCurrentUserAndStatusNotCancelled(
+        Long userId, Long currentUserId, Pageable pageable) {
+        Page<HabitAssign> returnedPage = habitAssignRepo.findAllOfCurrentUser(userId, currentUserId, pageable);
+        return mapHabitAssignPageToPageableAdvancedDtoOfMutualHabitAssignDto(returnedPage);
     }
 
     /**
@@ -1542,5 +1549,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
         habitAssign.setCreateDate(ZonedDateTime.now());
         habitAssignRepo.save(habitAssign);
+    }
+
+    @NotNull
+    private PageableAdvancedDto<HabitAssignPreviewDto> mapHabitAssignPageToPageableAdvancedDtoOfMutualHabitAssignDto(
+        Page<HabitAssign> returnedPage) {
+        List<HabitAssignPreviewDto> habitAssignPreviewDtos = returnedPage.getContent().stream()
+            .map(habitAssign -> modelMapper.map(habitAssign, HabitAssignPreviewDto.class)).toList();
+        return new PageableAdvancedDto<>(habitAssignPreviewDtos, returnedPage.getTotalElements(),
+            returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
+            returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
     }
 }

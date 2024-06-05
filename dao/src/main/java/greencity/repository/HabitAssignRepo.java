@@ -339,6 +339,19 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
             and (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED') AND ha.habit.id IN
             (SELECT ha1.habit.id FROM HabitAssign ha1 where ha1.user.id = :currentUserId
             AND (ha1.status = 'INPROGRESS' OR ha1.status = 'ACQUIRED'))
+            ORDER BY ha.createDate
         """)
-    Page<HabitAssign> findAllBy(Long userId, Long currentUserId, Pageable pageable);
+    Page<HabitAssign> findAllMutual(Long userId, Long currentUserId, Pageable pageable);
+
+    @Query("""
+            SELECT ha FROM HabitAssign ha
+            left join fetch ha.habit h
+            left join fetch h.habitTranslations ht
+            left join fetch ht.language l
+            WHERE ha.user.id = :userId
+            and (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED') AND ha.habit.id IN
+            (SELECT h1.id FROM Habit h1 WHERE h1.userId = :currentUserId)
+            ORDER BY ha.createDate
+        """)
+    Page<HabitAssign> findAllOfCurrentUser(Long userId, Long currentUserId, Pageable pageable);
 }

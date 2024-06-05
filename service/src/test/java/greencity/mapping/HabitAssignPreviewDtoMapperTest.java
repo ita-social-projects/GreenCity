@@ -1,8 +1,8 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.habit.MutualHabitAssignDto;
-import greencity.dto.habit.MutualHabitDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
+import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
@@ -17,9 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class MutualHabitAssignDtoMapperTest {
+class HabitAssignPreviewDtoMapperTest {
     @InjectMocks
-    private MutualHabitAssignDtoMapper mutualHabitAssignDtoMapper;
+    private HabitAssignPreviewDtoMapper habitAssignPreviewDtoMapper;
 
     @Test
     void convertTest() {
@@ -54,21 +54,21 @@ class MutualHabitAssignDtoMapperTest {
             .description(habitTranslation.getDescription())
             .descriptionUa(habitTranslationUa.getDescription())
             .build();
-        MutualHabitDto mutualHabitDto = MutualHabitDto.builder()
+        HabitPreviewDto habitPreviewDto = HabitPreviewDto.builder()
             .id(habit.getId())
             .image(habit.getImage())
             .habitTranslation(habitTranslationDto)
             .build();
-        MutualHabitAssignDto expected = MutualHabitAssignDto.builder()
+        HabitAssignPreviewDto expected = HabitAssignPreviewDto.builder()
             .id(habitAssign.getId())
             .status(habitAssign.getStatus())
             .userId(habitAssign.getUser().getId())
             .duration(habitAssign.getDuration())
             .workingDays(habitAssign.getWorkingDays())
-            .habit(mutualHabitDto)
+            .habit(habitPreviewDto)
             .build();
 
-        MutualHabitAssignDto actual = mutualHabitAssignDtoMapper.convert(habitAssign);
+        HabitAssignPreviewDto actual = habitAssignPreviewDtoMapper.convert(habitAssign);
 
         assertEquals(expected, actual);
     }
