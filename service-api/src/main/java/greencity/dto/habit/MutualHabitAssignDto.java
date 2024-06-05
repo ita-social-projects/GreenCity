@@ -1,6 +1,5 @@
 package greencity.dto.habit;
 
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.enums.HabitAssignStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +24,3 @@ public class MutualHabitAssignDto {
     private Long userId;
     private Integer workingDays;
 }
-

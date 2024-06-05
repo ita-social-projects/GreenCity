@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -13,6 +14,7 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.MutualHabitAssignDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
@@ -34,8 +36,8 @@ import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
@@ -54,12 +56,6 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -67,20 +63,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Locale;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
+import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitAssignUserDurationDto;
 import static greencity.ModelUtils.getHabitDto;
-import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getHabitTranslation;
 import static greencity.ModelUtils.getHabitsDateEnrollmentDtos;
 import static greencity.ModelUtils.getShoppingListItemTranslationList;
+import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserShoppingListItem;
 import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getHabitTranslation;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -89,10 +97,10 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -849,6 +857,50 @@ class HabitAssignServiceImplTest {
 
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusNotCancelled(1L, "en");
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void getAllMutualHabitAssignsWithUserAndStatusNotCancelledTest() {
+        Long userId = 1L, currentUserId = 2L;
+        Pageable pageable = PageRequest.of(0, 6);
+        List<HabitAssign> habitAssignList = List.of(habitAssign);
+        Page<HabitAssign> returnedPage = new PageImpl<>(habitAssignList, pageable, habitAssignList.size());
+        MutualHabitAssignDto mutualHabitAssignDto = MutualHabitAssignDto.builder()
+            .id(habitAssign.getId())
+            .status(habitAssign.getStatus())
+            .userId(habitAssign.getUser().getId())
+            .duration(habitAssign.getDuration())
+            .workingDays(habitAssign.getWorkingDays())
+            .build();
+        habitAssign.getHabit().setHabitTranslations(List.of(
+            HabitTranslation.builder()
+                .id(1L)
+                .name("name")
+                .habitItem("habitItem")
+                .description("description")
+                .language(Language.builder().id(1L).code("ua").build())
+                .build(),
+            HabitTranslation.builder()
+                .id(2L)
+                .name("nameUa")
+                .habitItem("habitItemUa")
+                .description("descriptionUa")
+                .language(Language.builder().id(1L).code("en").build())
+                .build()));
+        PageableAdvancedDto<MutualHabitAssignDto> expected =
+            new PageableAdvancedDto<>(List.of(mutualHabitAssignDto), returnedPage.getTotalElements(),
+                returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
+                returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
+
+        when(habitAssignRepo.findAllBy(userId, currentUserId, pageable)).thenReturn(returnedPage);
+        when(modelMapper.map(habitAssign, MutualHabitAssignDto.class)).thenReturn(mutualHabitAssignDto);
+
+        var actual =
+            habitAssignService.getAllMutualHabitAssignsWithUserAndStatusNotCancelled(userId, currentUserId, pageable);
+
+        verify(habitAssignRepo).findAllBy(userId, currentUserId, pageable);
+        verify(modelMapper).map(habitAssign, MutualHabitAssignDto.class);
+        assertArrayEquals(expected.getPage().toArray(), actual.getPage().toArray());
     }
 
     @Test

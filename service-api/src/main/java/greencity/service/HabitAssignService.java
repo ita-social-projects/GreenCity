@@ -120,13 +120,16 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
 
     /**
-     * Finds all mutual non-cancelled {@code HabitAssign} entities between a given {@code User}
-     * and the current user, with pagination support.
+     * Finds all mutual non-cancelled {@code HabitAssign} entities between a given
+     * {@code User} and the current user, with pagination support.
      *
-     * @param userId        the {@code User} id to find mutual {@code HabitAssign} entities for.
-     * @param currentUserId the id of the current user to find mutual habit assignments with.
+     * @param userId        the {@code User} id to find mutual {@code HabitAssign}
+     *                      entities for.
+     * @param currentUserId the id of the current user to find mutual habit
+     *                      assignments with.
      * @param pageable      the {@link Pageable} object for pagination information.
-     * @return a {@link PageableAdvancedDto} containing a list of {@link MutualHabitAssignDto}.
+     * @return a {@link PageableAdvancedDto} containing a list of
+     *         {@link MutualHabitAssignDto}.
      */
     PageableAdvancedDto<MutualHabitAssignDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
         Long userId, Long currentUserId, Pageable pageable);
