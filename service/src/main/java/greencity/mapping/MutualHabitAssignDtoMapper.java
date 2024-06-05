@@ -37,7 +37,7 @@ public class MutualHabitAssignDtoMapper extends AbstractConverter<HabitAssign, M
                 .nameUa(habitTranslationUa.getName())
                 .habitItem(habitTranslation.getHabitItem())
                 .habitItemUa(habitTranslationUa.getHabitItem())
-                .description(habitTranslation.getHabitItem())
+                .description(habitTranslation.getDescription())
                 .descriptionUa(habitTranslationUa.getDescription())
                 .build();
             mutualHabitDto = MutualHabitDto.builder()
