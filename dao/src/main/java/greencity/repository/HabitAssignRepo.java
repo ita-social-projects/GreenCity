@@ -3,11 +3,13 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
+import greencity.enums.HabitAssignStatus;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import greencity.enums.HabitAssignStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -315,4 +317,28 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "AND ha.user_id != :userId "
         + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')", nativeQuery = true)
     List<Long> findFriendsIdsTrackingHabit(@Param("habitId") Long habitId, @Param("userId") Long userId);
+
+    /**
+     * Retrieves a page of {@link HabitAssign} entities for a specified user where
+     * the habit is either 'INPROGRESS' or 'ACQUIRED', and where the habit is also
+     * assigned to a current user with the same statuses.
+     *
+     * @param userId        the ID of the user for whom the habit assignments are
+     *                      being retrieved
+     * @param currentUserId the ID of the current user to cross-reference habit
+     *                      assignments
+     * @param pageable      the pagination information
+     * @return a page of {@link HabitAssign} entities that match the criteria
+     */
+    @Query("""
+            SELECT ha FROM HabitAssign ha
+            left join fetch ha.habit h
+            left join fetch h.habitTranslations ht
+            left join fetch ht.language l
+            WHERE ha.user.id = :userId
+            and (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED') AND ha.habit.id IN
+            (SELECT ha1.habit.id FROM HabitAssign ha1 where ha1.user.id = :currentUserId
+            AND (ha1.status = 'INPROGRESS' OR ha1.status = 'ACQUIRED'))
+        """)
+    Page<HabitAssign> findAllBy(Long userId, Long currentUserId, Pageable pageable);
 }

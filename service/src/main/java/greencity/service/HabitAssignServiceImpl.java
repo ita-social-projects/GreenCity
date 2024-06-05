@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -14,6 +15,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.MutualHabitAssignDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
@@ -26,42 +28,22 @@ import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
-import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.UserShoppingListItem;
-import greencity.entity.CustomShoppingListItem;
-import greencity.entity.HabitTranslation;
-import greencity.entity.HabitStatusCalendar;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.AchievementAction;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.ShoppingListItemStatus;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.AchievementCategoryType;
-import greencity.message.HabitAssignNotificationMessage;
-import greencity.repository.CustomShoppingListItemRepo;
-import greencity.repository.HabitStatusCalendarRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
-import greencity.repository.UserShoppingListItemRepo;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.UserRepo;
-import greencity.repository.ShoppingListItemRepo;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.Optional;
-import java.util.Map;
-import java.util.Comparator;
-import java.util.Locale;
-import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
@@ -70,11 +52,33 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.message.HabitAssignNotificationMessage;
 import greencity.rating.RatingCalculation;
+import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.HabitStatusCalendarRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserRepo;
+import greencity.repository.UserShoppingListItemRepo;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -84,6 +88,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class HabitAssignServiceImpl implements HabitAssignService {
     private static final Logger log = LoggerFactory.getLogger(HabitAssignServiceImpl.class);
     private final HabitAssignRepo habitAssignRepo;
@@ -592,6 +597,20 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    public PageableAdvancedDto<MutualHabitAssignDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
+        Long userId, Long currentUserId, Pageable pageable) {
+        Page<HabitAssign> returnedPage = habitAssignRepo.findAllBy(userId, currentUserId, pageable);
+        List<MutualHabitAssignDto> mutualHabitAssignDtos = returnedPage.getContent().stream()
+            .map(habitAssign -> modelMapper.map(habitAssign, MutualHabitAssignDto.class)).toList();
+        return new PageableAdvancedDto<>(mutualHabitAssignDtos, returnedPage.getTotalElements(),
+            returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
+            returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId,
         String language) {
         return habitAssignRepo.findAllByHabitId(habitId)
@@ -697,6 +716,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
@@ -1025,6 +1045,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssignId      {@link Long} habit id.
      * @param shoppingListItemId {@link Long} item id.
      */
+    @Transactional
     public void updateShoppingItem(Long habitAssignId, Long shoppingListItemId) {
         Optional<UserShoppingListItem> optionalUserShoppingListItem =
             userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
@@ -1510,6 +1531,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void confirmHabitInvitation(Long habitAssignId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
