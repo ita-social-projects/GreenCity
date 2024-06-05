@@ -205,6 +205,7 @@ public class SecurityConfig {
                     "/favorite_place/",
                     "/shopping-list-items",
                     "/habit/assign/allForCurrentUser",
+                    "/habit/assign/allMutualHabits/{userId}",
                     "/habit/assign/active/{date}",
                     "/habit/assign/{habitAssignId}/more",
                     "/habit/assign/activity/{from}/to/{to}",

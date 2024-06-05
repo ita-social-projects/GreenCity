@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -8,6 +9,7 @@ import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.MutualHabitAssignDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
+import org.springframework.data.domain.Pageable;
 
 public interface HabitAssignService {
     /**
@@ -115,6 +118,18 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto}.
      */
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
+
+    /**
+     * Finds all mutual non-cancelled {@code HabitAssign} entities between a given {@code User}
+     * and the current user, with pagination support.
+     *
+     * @param userId        the {@code User} id to find mutual {@code HabitAssign} entities for.
+     * @param currentUserId the id of the current user to find mutual habit assignments with.
+     * @param pageable      the {@link Pageable} object for pagination information.
+     * @return a {@link PageableAdvancedDto} containing a list of {@link MutualHabitAssignDto}.
+     */
+    PageableAdvancedDto<MutualHabitAssignDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
+        Long userId, Long currentUserId, Pageable pageable);
 
     /**
      * Method that return user shopping list and custom shopping list by

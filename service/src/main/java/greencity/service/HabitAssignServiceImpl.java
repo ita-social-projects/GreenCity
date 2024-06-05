@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -14,8 +15,11 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.MutualHabitAssignDto;
+import greencity.dto.habit.MutualHabitDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
@@ -75,6 +79,8 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -84,6 +90,7 @@ import org.springframework.util.CollectionUtils;
  */
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class HabitAssignServiceImpl implements HabitAssignService {
     private static final Logger log = LoggerFactory.getLogger(HabitAssignServiceImpl.class);
     private final HabitAssignRepo habitAssignRepo;
@@ -181,7 +188,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public List<HabitAssignManagementDto> assignCustomHabitForUser(Long habitId, UserVO userVO,
-        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
+                                                                   HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
         User user = modelMapper.map(userVO, User.class);
 
         checkStatusInProgressExists(habitId, userVO);
@@ -224,7 +231,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void saveCustomShoppingListItemList(List<CustomShoppingListItemSaveRequestDto> saveList,
-        User user, Habit habit) {
+                                                User user, Habit habit) {
         if (!CollectionUtils.isEmpty(saveList)) {
             saveList.forEach(item -> {
                 CustomShoppingListItem customShoppingListItem = modelMapper.map(item, CustomShoppingListItem.class);
@@ -245,9 +252,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void assignFriendsForCustomHabit(Habit habit,
-        Long userId,
-        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto,
-        List<HabitAssignManagementDto> habitAssignManagementDtoList) {
+                                             Long userId,
+                                             HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto,
+                                             List<HabitAssignManagementDto> habitAssignManagementDtoList) {
         List<User> usersWhoShouldBeFriendList = habitAssignCustomPropertiesDto.getFriendsIdsList().stream()
             .map(id -> userRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id: " + id + " doesn't exist")))
@@ -278,7 +285,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void setDefaultShoppingListItemsIntoCustomHabit(HabitAssign habitAssign,
-        List<Long> defaultShoppingListItems) {
+                                                            List<Long> defaultShoppingListItems) {
         if (!defaultShoppingListItems.isEmpty()) {
             List<ShoppingListItem> shoppingList =
                 shoppingListItemRepo.getShoppingListByListOfId(defaultShoppingListItems);
@@ -383,7 +390,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param props       {@link HabitAssignPropertiesDto} instance.
      */
     private void enhanceAssignWithCustomProperties(HabitAssign habitAssign,
-        HabitAssignPropertiesDto props) {
+                                                   HabitAssignPropertiesDto props) {
         habitAssign.setDuration(props.getDuration());
     }
 
@@ -453,7 +460,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private List<UserShoppingListItemAdvanceDto> buildUserShoppingListItemAdvanceDto(HabitAssign habitAssign,
-        String language) {
+                                                                                     String language) {
         List<UserShoppingListItemAdvanceDto> userItemsDTO = new ArrayList<>();
         boolean isContains;
         List<ShoppingListItemTranslation> listItemTranslations = shoppingListItemTranslationRepo
@@ -565,7 +572,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param shoppingListItems list with habit's items.
      */
     private void changeStatuses(String status, Long habitAssignId,
-        List<ShoppingListItemDto> shoppingListItems) {
+                                List<ShoppingListItemDto> shoppingListItems) {
         List<Long> otherStatusItems = userShoppingListItemRepo
             .getShoppingListItemsByHabitAssignIdAndStatus(habitAssignId, status);
         if (!otherStatusItems.isEmpty()) {
@@ -592,8 +599,47 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    public PageableAdvancedDto<MutualHabitAssignDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
+        Long userId, Long currentUserId, Pageable pageable) {
+        Page<HabitAssign> returnedPage = habitAssignRepo.findAllBy(userId, currentUserId, pageable);
+        List<MutualHabitAssignDto> habitAssignDtos = returnedPage.getContent().stream().map(habitAssign -> {
+            MutualHabitAssignDto mutualHabitAssignDto = modelMapper.map(habitAssign, MutualHabitAssignDto.class);
+            Habit habit = habitAssign.getHabit();
+            HabitTranslation habitTranslationUa = habit.getHabitTranslations().stream()
+                .filter(translation -> translation.getLanguage().getCode().equalsIgnoreCase("ua"))
+                .findFirst().orElse(null);
+            HabitTranslation habitTranslation = habit.getHabitTranslations().stream()
+                .filter(translation -> !translation.getLanguage().getCode().equalsIgnoreCase("en"))
+                .findFirst().orElse(null);
+            if (habitTranslation != null && habitTranslationUa != null) {
+                HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
+                    .name(habitTranslation.getName())
+                    .nameUa(habitTranslationUa.getName())
+                    .habitItem(habitTranslation.getHabitItem())
+                    .habitItemUa(habitTranslationUa.getHabitItem())
+                    .description(habitTranslation.getHabitItem())
+                    .descriptionUa(habitTranslationUa.getDescription())
+                    .build();
+                MutualHabitDto mutualHabitDto = MutualHabitDto.builder()
+                    .id(habit.getId())
+                    .image(habit.getImage())
+                    .habitTranslation(habitTranslationDto)
+                    .build();
+                mutualHabitAssignDto.setHabit(mutualHabitDto);
+            }
+            return mutualHabitAssignDto;
+        }).toList();
+        return new PageableAdvancedDto<>(habitAssignDtos, returnedPage.getTotalElements(),
+            returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
+            returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId,
-        String language) {
+                                                                                 String language) {
         return habitAssignRepo.findAllByHabitId(habitId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -658,7 +704,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId,
-        String language) {
+                                                                             String language) {
         return habitAssignRepo.findAllByUserIdAndStatusIsCancelled(userId)
             .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
             .collect(Collectors.toList());
@@ -670,7 +716,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto updateStatusByHabitAssignId(Long habitAssignId,
-        HabitAssignStatDto dto) {
+                                                                HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
@@ -697,6 +743,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
@@ -750,7 +797,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-        HabitStatusCalendar habitCalendar) {
+                                              HabitStatusCalendar habitCalendar) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
@@ -886,7 +933,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
-        String language) {
+                                                                      String language) {
         if (from.isAfter(to)) {
             throw new BadRequestException(ErrorMessage.INVALID_DATE_RANGE);
         }
@@ -932,7 +979,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param list        of {@link HabitsDateEnrollmentDto} instances.
      */
     private void buildHabitsDateEnrollmentDto(HabitAssign habitAssign, String language,
-        List<HabitsDateEnrollmentDto> list) {
+                                              List<HabitsDateEnrollmentDto> list) {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
 
         list.stream().filter(dto -> checkIfHabitIsActiveOnDay(dto, habitAssign))
@@ -949,7 +996,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign      {@link HabitAssign} contains habit id.
      */
     private void markHabitOnHabitsEnrollmentDto(HabitsDateEnrollmentDto dto, boolean isEnrolled,
-        HabitTranslation habitTranslation, HabitAssign habitAssign) {
+                                                HabitTranslation habitTranslation, HabitAssign habitAssign) {
         dto.getHabitAssigns().add(HabitEnrollDto.builder()
             .habitDescription(habitTranslation.getDescription()).habitName(habitTranslation.getName())
             .isEnrolled(isEnrolled).habitAssignId(habitAssign.getId()).build());
@@ -978,7 +1025,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return dto.getEnrollDate()
             .isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1L))
             && dto.getEnrollDate()
-                .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L));
+            .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L));
     }
 
     /**
@@ -1025,6 +1072,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssignId      {@link Long} habit id.
      * @param shoppingListItemId {@link Long} item id.
      */
+    @Transactional
     public void updateShoppingItem(Long habitAssignId, Long shoppingListItemId) {
         Optional<UserShoppingListItem> optionalUserShoppingListItem =
             userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
@@ -1436,7 +1484,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId,
-        Integer duration) {
+                                                                           Integer duration) {
         Optional<HabitAssign> habitAssignOptional = habitAssignRepo.findById(habitAssignId);
         HabitAssign habitAssign;
 
@@ -1458,7 +1506,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     @Transactional
     public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId,
-        Locale locale) {
+                                                              Locale locale) {
         if (!userRepo.isFriend(userVO.getId(), friendId)) {
             throw new UserHasNoFriendWithIdException(
                 ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
@@ -1510,6 +1558,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void confirmHabitInvitation(Long habitAssignId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
