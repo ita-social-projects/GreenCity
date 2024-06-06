@@ -124,7 +124,8 @@ public interface HabitAssignService {
      *
      * @param userId   {@code User} id.
      * @param pageable the {@link Pageable} object for pagination information.
-     * @return a {@link PageableAdvancedDto} containing a list of {@link HabitAssignPreviewDto}.
+     * @return a {@link PageableAdvancedDto} containing a list of
+     *         {@link HabitAssignPreviewDto}.
      */
     PageableAdvancedDto<HabitAssignPreviewDto> getAllByUserIdAndStatusNotCancelled(Long userId, Pageable pageable);
 
