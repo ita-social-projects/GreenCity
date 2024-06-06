@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class MutualHabitDto {
+public class HabitPreviewDto {
     private Long id;
     private String image;
     private HabitTranslationDto habitTranslation;

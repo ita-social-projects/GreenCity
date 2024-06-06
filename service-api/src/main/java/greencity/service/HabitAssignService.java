@@ -9,7 +9,7 @@ import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.MutualHabitAssignDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -129,9 +129,26 @@ public interface HabitAssignService {
      *                      assignments with.
      * @param pageable      the {@link Pageable} object for pagination information.
      * @return a {@link PageableAdvancedDto} containing a list of
-     *         {@link MutualHabitAssignDto}.
+     *         {@link HabitAssignPreviewDto}.
      */
-    PageableAdvancedDto<MutualHabitAssignDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
+    PageableAdvancedDto<HabitAssignPreviewDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
+        Long userId, Long currentUserId, Pageable pageable);
+
+    /**
+     * Retrieves all mutual, non-cancelled {@code HabitAssign} entities shared
+     * between a specified {@code User} and the current user, with support for
+     * pagination.
+     *
+     * @param userId        the ID of the {@code User} whose mutual
+     *                      {@code HabitAssign} entities are to be retrieved.
+     * @param currentUserId the ID of the current user to find mutual habit
+     *                      assignments with.
+     * @param pageable      the {@link Pageable} object containing pagination
+     *                      information.
+     * @return a {@link PageableAdvancedDto} containing a list of
+     *         {@link HabitAssignPreviewDto}.
+     */
+    PageableAdvancedDto<HabitAssignPreviewDto> getMyHabitsOfCurrentUserAndStatusNotCancelled(
         Long userId, Long currentUserId, Pageable pageable);
 
     /**
