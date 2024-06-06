@@ -233,6 +233,34 @@ public class HabitAssignController {
     }
 
     /**
+     * Method for finding all inprogress, acquired {@link HabitAssignDto}'s for user
+     * by id.
+     *
+     * @param userId   the {@code User} id of the other user to find habit
+     *                 assignments with.
+     * @param pageable the {@link Pageable} object for pagination information.
+     * @return list of {@link HabitAssignDto}.
+     */
+    @Operation(summary = "Get (inprogress, acquired) assigned habits for user by id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
+            array = @ArraySchema(schema = @Schema(implementation = HabitAssignDto.class)))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @ApiLocale
+    @GetMapping("/allUser/{userId}")
+    public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getUserHabitAssignsByIdAndAcquired(
+        @PathVariable Long userId,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .getAllByUserIdAndStatusNotCancelled(userId, pageable));
+    }
+
+    /**
      * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
      * the current user and another specified user, with pagination.
      *
