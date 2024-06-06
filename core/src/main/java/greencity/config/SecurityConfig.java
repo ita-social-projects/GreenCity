@@ -239,7 +239,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/database/backup")
-                .hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
                 "/econews",

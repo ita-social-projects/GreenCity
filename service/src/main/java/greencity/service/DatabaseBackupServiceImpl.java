@@ -59,7 +59,8 @@ public class DatabaseBackupServiceImpl implements DatabaseBackupService {
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(
-            "pg_dump", "-h", host, "-p", port, "-U", datasourceUser, "-b", "-v", "-f", BACKUP_FILE_PATH, dbName);
+            "pg_dump", "-h", host, "-p", port, "-U", datasourceUser, "-F", "p", "-b", "-v", "-f", BACKUP_FILE_PATH,
+            dbName);
         processBuilder.environment().put("PGPASSWORD", datasourcePassword);
 
         try {
