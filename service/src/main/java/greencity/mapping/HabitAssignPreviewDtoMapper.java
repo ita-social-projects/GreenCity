@@ -1,7 +1,7 @@
 package greencity.mapping;
 
-import greencity.dto.habit.MutualHabitAssignDto;
-import greencity.dto.habit.MutualHabitDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
+import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link HabitAssign} into
- * {@link MutualHabitAssignDto}.
+ * {@link HabitAssignPreviewDto}.
  */
 @Component
-public class MutualHabitAssignDtoMapper extends AbstractConverter<HabitAssign, MutualHabitAssignDto> {
+public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, HabitAssignPreviewDto> {
     /**
-     * Method convert {@link HabitAssign} to {@link MutualHabitAssignDto}.
+     * Method convert {@link HabitAssign} to {@link HabitAssignPreviewDto}.
      *
-     * @return {@link MutualHabitAssignDto}
+     * @return {@link HabitAssignPreviewDto}
      */
     @Override
-    protected MutualHabitAssignDto convert(HabitAssign habitAssign) {
+    protected HabitAssignPreviewDto convert(HabitAssign habitAssign) {
         Habit habit = habitAssign.getHabit();
         HabitTranslation habitTranslationUa = habit.getHabitTranslations().stream()
             .filter(translation -> translation.getLanguage().getCode().equalsIgnoreCase("ua"))
@@ -30,7 +30,7 @@ public class MutualHabitAssignDtoMapper extends AbstractConverter<HabitAssign, M
         HabitTranslation habitTranslation = habit.getHabitTranslations().stream()
             .filter(translation -> !translation.getLanguage().getCode().equalsIgnoreCase("en"))
             .findFirst().orElse(null);
-        MutualHabitDto mutualHabitDto = null;
+        HabitPreviewDto habitPreviewDto = null;
         if (habitTranslation != null && habitTranslationUa != null) {
             HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
                 .name(habitTranslation.getName())
@@ -40,19 +40,19 @@ public class MutualHabitAssignDtoMapper extends AbstractConverter<HabitAssign, M
                 .description(habitTranslation.getDescription())
                 .descriptionUa(habitTranslationUa.getDescription())
                 .build();
-            mutualHabitDto = MutualHabitDto.builder()
+            habitPreviewDto = HabitPreviewDto.builder()
                 .id(habit.getId())
                 .image(habit.getImage())
                 .habitTranslation(habitTranslationDto)
                 .build();
         }
-        return MutualHabitAssignDto.builder()
+        return HabitAssignPreviewDto.builder()
             .id(habitAssign.getId())
             .status(habitAssign.getStatus())
             .userId(habitAssign.getUser().getId())
             .duration(habitAssign.getDuration())
             .workingDays(habitAssign.getWorkingDays())
-            .habit(mutualHabitDto)
+            .habit(habitPreviewDto)
             .build();
     }
 }

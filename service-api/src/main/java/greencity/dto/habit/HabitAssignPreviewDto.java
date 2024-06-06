@@ -16,9 +16,9 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Builder
 @ToString
-public class MutualHabitAssignDto {
+public class HabitAssignPreviewDto {
     private Integer duration;
-    private MutualHabitDto habit;
+    private HabitPreviewDto habit;
     private Long id;
     private HabitAssignStatus status;
     private Long userId;

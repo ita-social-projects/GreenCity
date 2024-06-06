@@ -15,7 +15,7 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.MutualHabitAssignDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
@@ -233,15 +233,15 @@ public class HabitAssignController {
     }
 
     /**
-     * Finds all mutual in-progress and acquired {@link HabitAssignDto} for the
-     * current user and another specified user, with pagination.
+     * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
+     * the current user and another specified user, with pagination.
      *
      * @param userId   the {@code User} id of the other user to find mutual habit
      *                 assignments with.
      * @param userVO   {@link UserVO} instance representing the current user.
      * @param pageable the {@link Pageable} object for pagination information.
      * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
-     *         with a list of {@link MutualHabitAssignDto} representing the found
+     *         with a list of {@link HabitAssignPreviewDto} representing the found
      *         mutual habit assignments and pagination information.
      */
     @Operation(summary = "Get all mutual (inprogress, acquired) assigned habits for current user with another user")
@@ -253,13 +253,43 @@ public class HabitAssignController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/allMutualHabits/{userId}")
-    public ResponseEntity<PageableAdvancedDto<MutualHabitAssignDto>> getAllMutualHabitsWithUser(
+    public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getAllMutualHabitsWithUser(
         @PathVariable Long userId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
                 .getAllMutualHabitAssignsWithUserAndStatusNotCancelled(userId, userVO.getId(), pageable));
+    }
+
+    /**
+     * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
+     * user made by current user, with pagination.
+     *
+     * @param userId   the {@code User} id of the other user to find habit
+     *                 assignments with.
+     * @param userVO   {@link UserVO} instance representing the current user.
+     * @param pageable the {@link Pageable} object for pagination information.
+     * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
+     *         with a list of {@link HabitAssignPreviewDto} representing the found
+     *         assignments and pagination information.
+     */
+    @Operation(summary = "Get all (inprogress, acquired) assigned habits for user made by current user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/myHabits/{userId}")
+    public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getMyHabitsOfCurrentUser(
+        @PathVariable Long userId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .getMyHabitsOfCurrentUserAndStatusNotCancelled(userId, userVO.getId(), pageable));
     }
 
     /**
