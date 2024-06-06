@@ -1005,6 +1005,8 @@ class HabitAssignServiceImplTest {
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
         habitAssign.getUser().setId(userId);
+        habitAssign.setDuration(14);
+        habitAssign.setWorkingDays(0);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
@@ -1138,18 +1140,16 @@ class HabitAssignServiceImplTest {
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
         habitAssign.getUser().setId(userId);
-        habitAssign.setWorkingDays(10);
-        habitAssign.setDuration(10);
+        habitAssign.setDuration(14);
+        habitAssign.setWorkingDays(14);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-
-        HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
-            .thenReturn(habitStatusCalendarVO);
+            .thenReturn(null);
 
         UserHasReachedOutOfEnrollRange exception = assertThrows(UserHasReachedOutOfEnrollRange.class,
             () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
