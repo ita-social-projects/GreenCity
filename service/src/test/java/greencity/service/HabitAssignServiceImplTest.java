@@ -948,6 +948,50 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void getAllByUserIdAndStatusNotCancelledTest() {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 6);
+        List<HabitAssign> habitAssignList = List.of(habitAssign);
+        Page<HabitAssign> returnedPage = new PageImpl<>(habitAssignList, pageable, habitAssignList.size());
+        HabitAssignPreviewDto habitAssignPreviewDto = HabitAssignPreviewDto.builder()
+            .id(habitAssign.getId())
+            .status(habitAssign.getStatus())
+            .userId(habitAssign.getUser().getId())
+            .duration(habitAssign.getDuration())
+            .workingDays(habitAssign.getWorkingDays())
+            .build();
+        habitAssign.getHabit().setHabitTranslations(List.of(
+            HabitTranslation.builder()
+                .id(1L)
+                .name("name")
+                .habitItem("habitItem")
+                .description("description")
+                .language(Language.builder().id(1L).code("ua").build())
+                .build(),
+            HabitTranslation.builder()
+                .id(2L)
+                .name("nameUa")
+                .habitItem("habitItemUa")
+                .description("descriptionUa")
+                .language(Language.builder().id(1L).code("en").build())
+                .build()));
+        PageableAdvancedDto<HabitAssignPreviewDto> expected =
+            new PageableAdvancedDto<>(List.of(habitAssignPreviewDto), returnedPage.getTotalElements(),
+                returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
+                returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
+
+        when(habitAssignRepo.findAllByUserId(userId, pageable)).thenReturn(returnedPage);
+        when(modelMapper.map(habitAssign, HabitAssignPreviewDto.class)).thenReturn(habitAssignPreviewDto);
+
+        var actual =
+            habitAssignService.getAllByUserIdAndStatusNotCancelled(userId, pageable);
+
+        verify(habitAssignRepo).findAllByUserId(userId, pageable);
+        verify(modelMapper).map(habitAssign, HabitAssignPreviewDto.class);
+        assertArrayEquals(expected.getPage().toArray(), actual.getPage().toArray());
+    }
+
+    @Test
     void getUserShoppingAndCustomShoppingLists() {
         Long habitAssignId = 2L;
         Long userId = 3L;

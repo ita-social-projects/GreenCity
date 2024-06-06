@@ -120,11 +120,19 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
 
     /**
-     * Finds all mutual non-cancelled {@code HabitAssign} entities between a given
-     * {@code User} and the current user, with pagination support.
+     * Method to find all (not cancelled) id and acquired status.
      *
-     * @param userId        the {@code User} id to find mutual {@code HabitAssign}
-     *                      entities for.
+     * @param userId   {@code User} id.
+     * @param pageable the {@link Pageable} object for pagination information.
+     * @return a {@link PageableAdvancedDto} containing a list of
+     *         {@link HabitAssignPreviewDto}.
+     */
+    PageableAdvancedDto<HabitAssignPreviewDto> getAllByUserIdAndStatusNotCancelled(Long userId, Pageable pageable);
+
+    /**
+     * Finds all mutual non-cancelled {@link HabitAssignPreviewDto}.
+     *
+     * @param userId        the {@code User} id
      * @param currentUserId the id of the current user to find mutual habit
      *                      assignments with.
      * @param pageable      the {@link Pageable} object for pagination information.
@@ -135,14 +143,11 @@ public interface HabitAssignService {
         Long userId, Long currentUserId, Pageable pageable);
 
     /**
-     * Retrieves all mutual, non-cancelled {@code HabitAssign} entities shared
-     * between a specified {@code User} and the current user, with support for
-     * pagination.
+     * Retrieves all non-cancelled {@link HabitAssignPreviewDto} for user that made
+     * by current user.
      *
-     * @param userId        the ID of the {@code User} whose mutual
-     *                      {@code HabitAssign} entities are to be retrieved.
-     * @param currentUserId the ID of the current user to find mutual habit
-     *                      assignments with.
+     * @param userId        the {@code User} id
+     * @param currentUserId the ID of the current user that is an author of habits.
      * @param pageable      the {@link Pageable} object containing pagination
      *                      information.
      * @return a {@link PageableAdvancedDto} containing a list of
