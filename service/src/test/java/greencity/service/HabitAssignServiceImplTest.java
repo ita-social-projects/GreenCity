@@ -1131,7 +1131,7 @@ class HabitAssignServiceImplTest {
         Long userId = 3L;
         Long habitTranslationId = 4L;
         LocalDate localDate = LocalDate.now();
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+        String lang = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
         translation.setId(habitTranslationId);
@@ -1152,7 +1152,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(null);
 
         UserHasReachedOutOfEnrollRange exception = assertThrows(UserHasReachedOutOfEnrollRange.class,
-            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, lang));
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_ENROLL_RANGE_REACHED, exception.getMessage());
 
@@ -1160,7 +1160,7 @@ class HabitAssignServiceImplTest {
         habitAssign.setDuration(10);
 
         UserHasReachedOutOfEnrollRange exception2 = assertThrows(UserHasReachedOutOfEnrollRange.class,
-            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, lang));
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_ENROLL_RANGE_REACHED, exception2.getMessage());
 
