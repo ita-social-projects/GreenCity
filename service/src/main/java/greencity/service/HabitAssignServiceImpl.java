@@ -779,6 +779,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasReachedOutOfEnrollRange(
                 ErrorMessage.HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE);
         }
+        if (habitAssign.getWorkingDays() >= habitAssign.getDuration()) {
+            throw new UserHasReachedOutOfEnrollRange(ErrorMessage.HABIT_ASSIGN_ENROLL_RANGE_REACHED);
+        }
     }
 
     /**

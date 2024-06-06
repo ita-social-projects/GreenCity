@@ -1145,6 +1145,8 @@ class HabitAssignServiceImplTest {
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
         habitAssign.getUser().setId(userId);
+        habitAssign.setDuration(14);
+        habitAssign.setWorkingDays(0);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
@@ -1256,6 +1258,56 @@ class HabitAssignServiceImplTest {
         verify(habitAssignRepo).findById(habitAssignId);
         verify(modelMapper).map(habitAssign, HabitAssignVO.class);
         verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
+        verify(habitAssignRepo, times(0)).save(any());
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignDto.class));
+        verify(modelMapper, times(0)).map(any(), eq(HabitDto.class));
+        verify(userShoppingListItemRepo, times(0))
+            .getAllAssignedShoppingListItemsFull(anyLong());
+    }
+
+    @Test
+    void enrollHabitThrowsExceptionWhenWorkingDaysEqualOrGreaterThanDuration() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long habitTranslationId = 4L;
+        LocalDate localDate = LocalDate.now();
+        String lang = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        translation.setId(habitTranslationId);
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.setHabit(habit);
+        habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+        habitAssign.getUser().setId(userId);
+        habitAssign.setDuration(14);
+        habitAssign.setWorkingDays(14);
+
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(habitStatusCalendarService
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
+            .thenReturn(null);
+
+        UserHasReachedOutOfEnrollRange exception = assertThrows(UserHasReachedOutOfEnrollRange.class,
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, lang));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_ENROLL_RANGE_REACHED, exception.getMessage());
+
+        habitAssign.setWorkingDays(11);
+        habitAssign.setDuration(10);
+
+        UserHasReachedOutOfEnrollRange exception2 = assertThrows(UserHasReachedOutOfEnrollRange.class,
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, lang));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_ENROLL_RANGE_REACHED, exception2.getMessage());
+
+        verify(habitAssignRepo, times(2)).findById(habitAssignId);
+        verify(modelMapper, times(2)).map(habitAssign, HabitAssignVO.class);
+        verify(habitStatusCalendarService, times(2)).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate,
+            habitAssignVO);
         verify(habitAssignRepo, times(0)).save(any());
         verify(modelMapper, times(0)).map(any(), eq(HabitAssignDto.class));
         verify(modelMapper, times(0)).map(any(), eq(HabitDto.class));
