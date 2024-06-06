@@ -46,6 +46,28 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
 
     /**
+     * Retrieves a paginated list of {@code HabitAssign} entities for a specified
+     * user that are in progress or acquired. This method includes fetching
+     * associated {@code Habit}, {@code HabitTranslations}, and {@code Language}
+     * entities.
+     *
+     * @param userId   the ID of the {@code User} whose {@code HabitAssign} entities
+     *                 are to be retrieved.
+     * @param pageable the {@link Pageable} object containing pagination
+     *                 information.
+     * @return a {@link Page} of {@code HabitAssign} entities.
+     */
+    @Query("""
+            SELECT ha FROM HabitAssign ha
+            left join fetch ha.habit h
+            left join fetch h.habitTranslations ht
+            left join fetch ht.language l
+            WHERE ha.user.id = :userId and (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')
+            ORDER BY ha.createDate
+        """)
+    Page<HabitAssign> findAllByUserId(Long userId, Pageable pageable);
+
+    /**
      * Method to find all {@link HabitAssign} by {@link Habit} id (not canceled and
      * not expired).
      *
@@ -343,6 +365,20 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         """)
     Page<HabitAssign> findAllMutual(Long userId, Long currentUserId, Pageable pageable);
 
+    /**
+     * Retrieves a paginated list of {@code HabitAssign} entities for a specified
+     * user that are in progress or acquired, and are shared with the current user.
+     * This method includes fetching associated {@code Habit},
+     * {@code HabitTranslations}, and {@code Language} entities.
+     *
+     * @param userId        the ID of the {@code User} whose {@code HabitAssign}
+     *                      entities are to be retrieved.
+     * @param currentUserId the ID of the current user to find mutual habit
+     *                      assignments with.
+     * @param pageable      the {@link Pageable} object containing pagination
+     *                      information.
+     * @return a {@link Page} of {@code HabitAssign} entities.
+     */
     @Query("""
             SELECT ha FROM HabitAssign ha
             left join fetch ha.habit h

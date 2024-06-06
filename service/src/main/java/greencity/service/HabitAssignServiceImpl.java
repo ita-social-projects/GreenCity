@@ -628,6 +628,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    public PageableAdvancedDto<HabitAssignPreviewDto> getAllByUserIdAndStatusNotCancelled(Long userId,
+        Pageable pageable) {
+        Page<HabitAssign> returnedPage = habitAssignRepo.findAllByUserId(userId, pageable);
+        return mapHabitAssignPageToPageableAdvancedDtoOfMutualHabitAssignDto(returnedPage);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Long getNumberHabitAssignsByHabitIdAndStatus(Long habitId, HabitAssignStatus status) {
         List<HabitAssign> habitAssigns =
             habitAssignRepo.findAllHabitAssignsByStatusAndHabitId(status, habitId);

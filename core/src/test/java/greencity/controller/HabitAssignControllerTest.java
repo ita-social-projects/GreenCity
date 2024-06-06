@@ -206,6 +206,16 @@ class HabitAssignControllerTest {
     }
 
     @Test
+    void getUserHabitAssignsByIdAndAcquiredTest() throws Exception {
+        long friendId = 2L;
+        mockMvc.perform(get(habitLink + "/allUser/{userId}", friendId)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).getAllByUserIdAndStatusNotCancelled(friendId, PageRequest.of(0, 20));
+    }
+
+    @Test
     void deleteHabitAssignTest() throws Exception {
         Long habitAssignId = 1L;
 
