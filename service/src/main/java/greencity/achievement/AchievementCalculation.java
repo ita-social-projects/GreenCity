@@ -67,7 +67,7 @@ public class AchievementCalculation {
      */
     @Transactional
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
-                                     AchievementAction achievementAction) {
+        AchievementAction achievementAction) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, null);
         if (AchievementAction.ASSIGN == achievementAction) {
@@ -88,7 +88,7 @@ public class AchievementCalculation {
      */
     @Transactional
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
-                                     AchievementAction achievementAction, Long habitId) {
+        AchievementAction achievementAction, Long habitId) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, habitId);
         if (AchievementAction.ASSIGN == achievementAction) {
@@ -145,7 +145,7 @@ public class AchievementCalculation {
     }
 
     private int updateUserActionCount(UserVO user, Long achievementCategoryVOId,
-                                      AchievementAction achievementAction, Long habitId) {
+        AchievementAction achievementAction, Long habitId) {
         UserActionVO userActionVO =
             habitId == null ? (userActionService.findUserAction(user.getId(), achievementCategoryVOId))
                 : (userActionService.findUserAction(user.getId(), achievementCategoryVOId, habitId));
