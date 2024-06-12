@@ -8,8 +8,8 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
-import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.rating.RatingCalculation;
@@ -19,11 +19,12 @@ import greencity.repository.UserAchievementRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
+import jakarta.transaction.Transactional;
+import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import jakarta.transaction.Transactional;
-import java.util.List;
+import static greencity.constant.AppConstant.SELF_ACHIEVEMENT_CATEGORY_ID;
 
 @Component
 public class AchievementCalculation {
@@ -66,7 +67,7 @@ public class AchievementCalculation {
      */
     @Transactional
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
-        AchievementAction achievementAction) {
+                                     AchievementAction achievementAction) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, null);
         if (AchievementAction.ASSIGN == achievementAction) {
@@ -87,7 +88,7 @@ public class AchievementCalculation {
      */
     @Transactional
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
-        AchievementAction achievementAction, Long habitId) {
+                                     AchievementAction achievementAction, Long habitId) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, habitId);
         if (AchievementAction.ASSIGN == achievementAction) {
@@ -116,7 +117,7 @@ public class AchievementCalculation {
             ratingCalculation.ratingCalculation(reason, userVO);
             userAchievementRepo.save(userAchievement);
 
-            if (achievement.getAchievementCategory().getId() != 6) {
+            if (achievement.getAchievementCategory().getId() != SELF_ACHIEVEMENT_CATEGORY_ID) {
                 calculateAchievement(userVO, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
             }
         }
@@ -137,14 +138,14 @@ public class AchievementCalculation {
                 userAchievementRepo.deleteByUserAndAchievementId(user.getId(), achievement.getId());
             });
 
-            if (achievementCategoryId != 6) {
+            if (achievementCategoryId != SELF_ACHIEVEMENT_CATEGORY_ID) {
                 calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
             }
         }
     }
 
     private int updateUserActionCount(UserVO user, Long achievementCategoryVOId,
-        AchievementAction achievementAction, Long habitId) {
+                                      AchievementAction achievementAction, Long habitId) {
         UserActionVO userActionVO =
             habitId == null ? (userActionService.findUserAction(user.getId(), achievementCategoryVOId))
                 : (userActionService.findUserAction(user.getId(), achievementCategoryVOId, habitId));
