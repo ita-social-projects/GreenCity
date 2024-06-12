@@ -115,7 +115,10 @@ public class AchievementCalculation {
             RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
             ratingCalculation.ratingCalculation(reason, userVO);
             userAchievementRepo.save(userAchievement);
-            calculateAchievement(userVO, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
+
+            if (achievement.getAchievementCategory().getId() != 6) {
+                calculateAchievement(userVO, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
+            }
         }
     }
 
@@ -133,7 +136,10 @@ public class AchievementCalculation {
                 ratingCalculation.ratingCalculation(reason, user);
                 userAchievementRepo.deleteByUserAndAchievementId(user.getId(), achievement.getId());
             });
-            calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
+
+            if (achievementCategoryId != 6) {
+                calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
+            }
         }
     }
 
