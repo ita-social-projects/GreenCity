@@ -618,6 +618,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void enhanceWithNewData(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+
         if (updateEventDto.getTitle() != null) {
             toUpdate.setTitle(updateEventDto.getTitle());
         }
@@ -651,6 +652,9 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        if (updateEventDto.getImagesToDelete().contains(updateEventDto.getTitleImage())) {
+            updateEventDto.setTitleImage(null);
+        }
         eventRepo.deleteEventAdditionalImagesByEventId(updateEventDto.getId());
         if (ArrayUtils.isEmpty(images) && updateEventDto.getImagesToDelete() == null) {
             changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
