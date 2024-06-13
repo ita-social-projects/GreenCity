@@ -651,15 +651,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
-        if (updateEventDto.getImagesToDelete().contains(updateEventDto.getTitleImage())) {
-            if (updateEventDto.getAdditionalImages() != null){
-                updateEventDto.setTitleImage(updateEventDto.getAdditionalImages().getFirst());
-                updateEventDto.getAdditionalImages().removeFirst();
-            }else {
-                updateEventDto.setTitleImage(null);
-            }
-        }
         eventRepo.deleteEventAdditionalImagesByEventId(updateEventDto.getId());
+        checkTitleImageInImagesToDelete(updateEventDto);
         if (ArrayUtils.isEmpty(images) && updateEventDto.getImagesToDelete() == null) {
             changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
         } else if (images == null || images.length == 0) {
@@ -669,6 +662,17 @@ public class EventServiceImpl implements EventService {
         } else {
             deleteImagesFromServer(updateEventDto.getImagesToDelete());
             addNewImages(toUpdate, updateEventDto, images);
+        }
+    }
+
+    private void checkTitleImageInImagesToDelete (UpdateEventDto updateEventDto){
+        if (updateEventDto.getImagesToDelete().contains(updateEventDto.getTitleImage())) {
+            if (!updateEventDto.getAdditionalImages().isEmpty()){
+                updateEventDto.setTitleImage(updateEventDto.getAdditionalImages().getFirst());
+                updateEventDto.getAdditionalImages().removeFirst();
+            } else {
+                updateEventDto.setTitleImage(null);
+            }
         }
     }
 
