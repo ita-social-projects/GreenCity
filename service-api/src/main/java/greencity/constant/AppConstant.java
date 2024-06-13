@@ -24,7 +24,7 @@ public final class AppConstant {
     public static final Integer MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL = 8;
     public static final String DEFAULT_HABIT_IMAGE = "img/habit-default.png";
     public static final String DEFAULT_EVENT_IMAGES = "img/habits/default-habit-image.png";
-    public static final long SELF_ACHIEVEMENT_CATEGORY_ID = 6;
+    public static final String SELF_ACHIEVEMENT_CATEGORY = "ACHIEVEMENT";
 
     private AppConstant() {
     }
