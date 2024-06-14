@@ -670,9 +670,10 @@ public class EventServiceImpl implements EventService {
         String titleImage = updateEventDto.getTitleImage();
 
         if (imagesToDelete != null && titleImage != null && imagesToDelete.contains(titleImage)) {
-            List<String> additionalImages = updateEventDto.getAdditionalImages();
+            List<String> additionalImages = new ArrayList<>(updateEventDto.getAdditionalImages());
             if (additionalImages != null && !additionalImages.isEmpty()) {
-                updateEventDto.setTitleImage(updateEventDto.getAdditionalImages().removeFirst());
+                updateEventDto.setTitleImage(additionalImages.removeFirst());
+                updateEventDto.setAdditionalImages(additionalImages);
             } else {
                 updateEventDto.setTitleImage(null);
             }

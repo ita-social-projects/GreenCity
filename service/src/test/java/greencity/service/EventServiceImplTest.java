@@ -1436,4 +1436,80 @@ class EventServiceImplTest {
         assertEquals(100L, actual);
         verify(eventRepo).getAmountOfOrganizedAndAttendedEventsByUserId(anyLong());
     }
+
+    @Test
+    void testCheckTitleImageInImagesToDelete_TitleImageInImagesToDelete_AdditionalImagesNotEmpty() throws Exception {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setImagesToDelete(List.of("titleImage"));
+        updateEventDto.setTitleImage("titleImage");
+        updateEventDto.setAdditionalImages(List.of("newTitleImage", "additionalImage"));
+
+        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        method.setAccessible(true);
+        method.invoke(eventService, updateEventDto);
+
+        assertEquals("newTitleImage", updateEventDto.getTitleImage());
+        assertEquals(1, updateEventDto.getAdditionalImages().size());
+        assertEquals("additionalImage", updateEventDto.getAdditionalImages().getFirst());
+    }
+
+    @Test
+    void testCheckTitleImageInImagesToDelete_TitleImageInImagesToDelete_AdditionalImagesEmpty() throws Exception {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setImagesToDelete(List.of("titleImage"));
+        updateEventDto.setTitleImage("titleImage");
+        updateEventDto.setAdditionalImages(Collections.emptyList());
+
+        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        method.setAccessible(true);
+        method.invoke(eventService, updateEventDto);
+
+        assertNull(updateEventDto.getTitleImage());
+    }
+
+    @Test
+    void testCheckTitleImageInImagesToDelete_TitleImageNotInImagesToDelete() throws Exception {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setImagesToDelete(List.of("anotherImage"));
+        updateEventDto.setTitleImage("titleImage");
+        updateEventDto.setAdditionalImages(List.of("additionalImage"));
+
+        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        method.setAccessible(true);
+        method.invoke(eventService, updateEventDto);
+
+        assertEquals("titleImage", updateEventDto.getTitleImage());
+        assertEquals(1, updateEventDto.getAdditionalImages().size());
+        assertEquals("additionalImage", updateEventDto.getAdditionalImages().getFirst());
+    }
+
+    @Test
+    void testCheckTitleImageInImagesToDelete_NoTitleImage() throws Exception {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setImagesToDelete(List.of("titleImage"));
+        updateEventDto.setTitleImage(null);
+        updateEventDto.setAdditionalImages(List.of("additionalImage"));
+
+        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        method.setAccessible(true);
+        method.invoke(eventService, updateEventDto);
+
+        assertNull(updateEventDto.getTitleImage());
+    }
+
+    @Test
+    void testCheckTitleImageInImagesToDelete_NoImagesToDelete() throws Exception {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setImagesToDelete(null);
+        updateEventDto.setTitleImage("titleImage");
+        updateEventDto.setAdditionalImages(List.of("additionalImage"));
+
+        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        method.setAccessible(true);
+        method.invoke(eventService, updateEventDto);
+
+        assertEquals("titleImage", updateEventDto.getTitleImage());
+        assertEquals(1, updateEventDto.getAdditionalImages().size());
+        assertEquals("additionalImage", updateEventDto.getAdditionalImages().getFirst());
+    }
 }
