@@ -1614,7 +1614,7 @@ public class ModelUtils {
         return new Achievement(1L,
             "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
             Collections.emptyList(),
-            new AchievementCategory(), 1);
+            new AchievementCategory(1L, "CREATE_NEWS", new ArrayList<>()), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
