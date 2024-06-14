@@ -257,6 +257,7 @@ public class SecurityConfig {
                     FRIENDS + "/mutual-friends",
                     FRIENDS + "/friendRequests",
                     FRIENDS + "/{userId}/all-user-friends",
+                    FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     "/notification",
                     "/notification/all",
