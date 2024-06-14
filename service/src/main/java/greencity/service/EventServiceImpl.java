@@ -87,6 +87,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import static greencity.constant.ErrorMessage.PAGE_NOT_FOUND;
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
@@ -233,7 +234,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
         Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
-
+        validatePageNumber(events.getTotalElements(), page);
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildPageableAdvancedDto(events, user.getId());
@@ -298,6 +299,7 @@ public class EventServiceImpl implements EventService {
                 isOpen, isRelevant, citiesInLower, tagsInLower, page);
             tuples = eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent());
         }
+        validatePageNumber(eventPrewiewIdsPage.getTotalElements(), page);
         return new PageableAdvancedDto<>(
             mapTupleListToEventPreviewDtoList(tuples, eventPrewiewIdsPage.toList()),
             eventPrewiewIdsPage.getTotalElements(),
@@ -308,6 +310,15 @@ public class EventServiceImpl implements EventService {
             eventPrewiewIdsPage.hasNext(),
             eventPrewiewIdsPage.isFirst(),
             eventPrewiewIdsPage.isLast());
+    }
+
+    private void validatePageNumber(Long totalElements, Pageable page) {
+        int pageNumber = page.getPageNumber();
+        int totalPages = (int) Math.ceil((double) totalElements / (double) page.getPageSize());
+
+        if (pageNumber > totalPages) {
+            throw new BadRequestException(PAGE_NOT_FOUND + totalPages);
+        }
     }
 
     @Override

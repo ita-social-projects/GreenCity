@@ -182,7 +182,7 @@ public final class ErrorMessage {
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
     public static final String INVALID_EVENT_TYPE = "Invalid event type, please specify - online or offline.";
-    public static final String PAGE_NOT_FOUND = "Page not found. Page number should be between 0 and ";
+    public static final String PAGE_NOT_FOUND = "Bad request. Page number should be between 0 and ";
     public static final String INVALID_DATE = "Date can't be null or empty";
 
     private ErrorMessage() {
