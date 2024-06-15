@@ -1444,7 +1444,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage("titleImage");
         updateEventDto.setAdditionalImages(List.of("newTitleImage", "additionalImage"));
 
-        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        Method method =
+            EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
         method.setAccessible(true);
         method.invoke(eventService, updateEventDto);
 
@@ -1460,7 +1461,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage("titleImage");
         updateEventDto.setAdditionalImages(Collections.emptyList());
 
-        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        Method method =
+            EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
         method.setAccessible(true);
         method.invoke(eventService, updateEventDto);
 
@@ -1474,7 +1476,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage("titleImage");
         updateEventDto.setAdditionalImages(List.of("additionalImage"));
 
-        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        Method method =
+            EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
         method.setAccessible(true);
         method.invoke(eventService, updateEventDto);
 
@@ -1490,7 +1493,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage(null);
         updateEventDto.setAdditionalImages(List.of("additionalImage"));
 
-        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        Method method =
+            EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
         method.setAccessible(true);
         method.invoke(eventService, updateEventDto);
 
@@ -1504,7 +1508,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage("titleImage");
         updateEventDto.setAdditionalImages(List.of("additionalImage"));
 
-        Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
+        Method method =
+            EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete", UpdateEventDto.class);
         method.setAccessible(true);
         method.invoke(eventService, updateEventDto);
 
