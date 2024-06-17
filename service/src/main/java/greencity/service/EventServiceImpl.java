@@ -144,6 +144,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
+        checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         toSave.setCreationDate(LocalDate.now());
@@ -523,6 +524,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventDto update(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
         UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
+        checkingEqualityDateTimeInEventDateLocationDto(eventDto.getDatesLocations());
 
         Event toUpdate = eventRepo.findById(eventDto.getId())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
@@ -960,5 +962,18 @@ public class EventServiceImpl implements EventService {
                 : null;
         }
         return null;
+    }
+
+    private void checkingEqualityDateTimeInEventDateLocationDto(List<EventDateLocationDto> eventDateLocationDtos) {
+        if (eventDateLocationDtos != null && !eventDateLocationDtos.isEmpty()) {
+            eventDateLocationDtos
+                .stream()
+                .filter(eventDateLocationDto -> eventDateLocationDto.getStartDate()
+                    .isEqual(eventDateLocationDto.getFinishDate()))
+                .findAny()
+                .ifPresent(eventDateLocationDto -> {
+                    throw new IllegalArgumentException(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE);
+                });
+        }
     }
 }
