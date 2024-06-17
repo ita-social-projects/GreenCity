@@ -332,8 +332,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha.user_id "
         + "FROM habit_assign AS ha "
         + "JOIN users_friends AS uf "
-        + "ON ha.user_id = uf.friend_id "
-        + "WHERE uf.user_id = :userId "
+        + "ON (ha.user_id = uf.friend_id OR ha.user_id = uf.user_id) "
+        + "WHERE (uf.user_id = :userId OR uf.friend_id = :userId) "
         + "AND uf.status = 'FRIEND' "
         + "AND ha.habit_id = :habitId "
         + "AND ha.user_id != :userId "
@@ -390,4 +390,22 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
             ORDER BY ha.createDate
         """)
     Page<HabitAssign> findAllOfCurrentUser(Long userId, Long currentUserId, Pageable pageable);
+
+    /**
+     * Returns a list of HabitAssign objects that match the given user IDs and habit
+     * ID, provided that the status of HabitAssign is either 'INPROGRESS' or
+     * 'ACQUIRED'.
+     *
+     * @param userIds list of user IDs for which to find HabitAssign records
+     * @param habitId the ID of the habit for which to find HabitAssign records
+     * @return list of HabitAssign objects that meet the specified conditions
+     */
+    @Query("""
+            SELECT ha
+            FROM HabitAssign ha
+            WHERE ha.user.id IN :userIds
+            AND ha.habit.id = :habitId
+            AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')
+        """)
+    List<HabitAssign> findByUserIdsAndHabitId(List<Long> userIds, Long habitId);
 }
