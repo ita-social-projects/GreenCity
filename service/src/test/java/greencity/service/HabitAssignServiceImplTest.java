@@ -16,6 +16,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
@@ -2858,5 +2859,43 @@ class HabitAssignServiceImplTest {
 
         assertThrows(BadRequestException.class,
             () -> habitAssignService.confirmHabitInvitation(habitAssignId));
+    }
+
+    @Test
+    void getAllHabitsWorkingDaysInfoForCurrentUserFriendsTest() {
+        Long userId = 2L;
+        Long habitId = 1L;
+        List<Long> friendsIds = List.of(1L);
+        List<HabitAssign> assignList = List.of(getHabitAssign());
+        HabitWorkingDaysDto expected = HabitWorkingDaysDto.builder()
+            .userId(1L)
+            .duration(0)
+            .workingDays(0)
+            .build();
+
+        when(habitAssignRepo.findFriendsIdsTrackingHabit(habitId, userId))
+            .thenReturn(friendsIds);
+        when(habitAssignRepo.findByUserIdsAndHabitId(friendsIds, habitId))
+            .thenReturn(assignList);
+
+        List<HabitWorkingDaysDto> allHabitsWorkingDaysInfoForCurrentUserFriends =
+            habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitId);
+
+        assertEquals(expected.getUserId(), allHabitsWorkingDaysInfoForCurrentUserFriends.getFirst().getUserId());
+        assertEquals(expected.getWorkingDays(),
+            allHabitsWorkingDaysInfoForCurrentUserFriends.getFirst().getWorkingDays());
+        assertEquals(expected.getDuration(), allHabitsWorkingDaysInfoForCurrentUserFriends.getFirst().getDuration());
+    }
+
+    @Test
+    void getAllHabitsWorkingDaysInfoForCurrentUserFriendsTestWithNoFriendAssigned() {
+        Long userId = 2L;
+        Long habitId = 1L;
+
+        when(habitAssignRepo.findFriendsIdsTrackingHabit(habitId, userId))
+            .thenReturn(Collections.emptyList());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitId));
     }
 }

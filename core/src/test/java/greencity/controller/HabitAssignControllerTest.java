@@ -347,4 +347,14 @@ class HabitAssignControllerTest {
             .andExpect(status().is3xxRedirection());
         verify(habitAssignService).confirmHabitInvitation(1L);
     }
+
+    @Test
+    void getFriendsHabitsStreakTest() throws Exception {
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        mockMvc.perform(get(habitLink + "/{habitId}/friends/habit-duration-info", 1L)
+                .principal(principal)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitAssignService).getAllHabitsWorkingDaysInfoForCurrentUserFriends(1L, 1L);
+    }
 }
