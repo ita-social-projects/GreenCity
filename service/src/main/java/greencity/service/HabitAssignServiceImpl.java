@@ -17,6 +17,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
@@ -1562,6 +1563,32 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
         habitAssign.setCreateDate(ZonedDateTime.now());
         habitAssignRepo.save(habitAssign);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitId) {
+        List<Long> friendsIdsTrackingHabit = habitAssignRepo.findFriendsIdsTrackingHabit(habitId, userId);
+        if (friendsIdsTrackingHabit.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT + habitId);
+        }
+
+        List<HabitAssign> habitAssigns = habitAssignRepo.findByUserIdsAndHabitId(friendsIdsTrackingHabit, habitId);
+
+        return habitAssigns.stream()
+            .map(this::convert)
+            .toList();
+    }
+
+    private HabitWorkingDaysDto convert(HabitAssign habitAssign) {
+        return HabitWorkingDaysDto.builder()
+            .userId(habitAssign.getUser().getId())
+            .duration(habitAssign.getDuration())
+            .workingDays(habitAssign.getWorkingDays())
+            .build();
     }
 
     @NotNull

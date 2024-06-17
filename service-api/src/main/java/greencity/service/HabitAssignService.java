@@ -12,6 +12,7 @@ import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.enums.HabitAssignStatus;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -368,4 +369,17 @@ public interface HabitAssignService {
      * @param habitAssignId {@link Long} habit assign id.
      */
     void confirmHabitInvitation(Long habitAssignId);
+
+    /**
+     * Retrieves a list of HabitWorkingDaysDto objects that contain information
+     * about the working days of habits for the current user's friends, based on the
+     * given user ID and habit ID.
+     *
+     * @param userId  the ID of the current user
+     * @param habitId the ID of the habit for which to retrieve working days
+     *                information
+     * @return a list of HabitWorkingDaysDto objects containing the working days
+     *         information for the specified habit and the user's friends
+     */
+    List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitId);
 }

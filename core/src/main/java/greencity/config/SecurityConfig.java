@@ -261,7 +261,8 @@ public class SecurityConfig {
                     FRIENDS,
                     "/notification",
                     "/notification/all",
-                    "/notification/new")
+                    "/notification/new",
+                    HABIT_ASSIGN_ID + "/friends/habit-duration-info")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     "/category",
