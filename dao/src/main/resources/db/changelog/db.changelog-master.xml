@@ -192,5 +192,6 @@
     <include file="db/changelog/logs/ch-update-users-set-new-main-email-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-add-column-tariffid-chat-rooms-Klopov.xml"/>
     <include file="db/changelog/logs/ch-add-column-chat-status-Klopov.xml"/>
+    <include file="/db/changelog/logs/ch-delete-values-positions-authorities-mapping-Kizerov.xml"/>
 </databaseChangeLog>
 
