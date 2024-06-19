@@ -654,6 +654,7 @@ public class EventServiceImpl implements EventService {
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
         eventRepo.deleteEventAdditionalImagesByEventId(updateEventDto.getId());
+        checkTitleImageInImagesToDelete(updateEventDto);
         if (ArrayUtils.isEmpty(images) && updateEventDto.getImagesToDelete() == null) {
             changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
         } else if (images == null || images.length == 0) {
@@ -663,6 +664,21 @@ public class EventServiceImpl implements EventService {
         } else {
             deleteImagesFromServer(updateEventDto.getImagesToDelete());
             addNewImages(toUpdate, updateEventDto, images);
+        }
+    }
+
+    private void checkTitleImageInImagesToDelete(UpdateEventDto updateEventDto) {
+        List<String> imagesToDelete = updateEventDto.getImagesToDelete();
+        String titleImage = updateEventDto.getTitleImage();
+
+        if (imagesToDelete != null && titleImage != null && imagesToDelete.contains(titleImage)) {
+            List<String> additionalImages = new ArrayList<>(updateEventDto.getAdditionalImages());
+            if (additionalImages != null && !additionalImages.isEmpty()) {
+                updateEventDto.setTitleImage(additionalImages.removeFirst());
+                updateEventDto.setAdditionalImages(additionalImages);
+            } else {
+                updateEventDto.setTitleImage(null);
+            }
         }
     }
 
