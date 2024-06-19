@@ -1511,8 +1511,8 @@ class EventServiceImplTest {
         assertEquals("titleImage", updateEventDto.getTitleImage());
         assertEquals(1, updateEventDto.getAdditionalImages().size());
         assertEquals("additionalImage", updateEventDto.getAdditionalImages().getFirst());
-     }
-      
+    }
+
     @Test
     void testCheckingEqualityDateTimeInEventDateLocationDto() throws Exception {
         List<EventDateLocationDto> eventDateLocationDtos = ModelUtils.getEventDateLocationDtoWithSameDateTime();
