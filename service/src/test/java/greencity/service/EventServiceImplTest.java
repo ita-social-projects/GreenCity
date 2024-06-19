@@ -5,15 +5,9 @@ import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddressDto;
-import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventAuthorDto;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.EventPreviewDto;
-import greencity.dto.event.UpdateEventDto;
-import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.event.*;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -35,6 +29,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -1516,5 +1511,22 @@ class EventServiceImplTest {
         assertEquals("titleImage", updateEventDto.getTitleImage());
         assertEquals(1, updateEventDto.getAdditionalImages().size());
         assertEquals("additionalImage", updateEventDto.getAdditionalImages().getFirst());
+    }
+
+    @Test
+    void testCheckingEqualityDateTimeInEventDateLocationDto() throws Exception {
+        List<EventDateLocationDto> eventDateLocationDtos = ModelUtils.getEventDateLocationDtoWithSameDateTime();
+
+        Method method =
+            EventServiceImpl.class.getDeclaredMethod("checkingEqualityDateTimeInEventDateLocationDto", List.class);
+        method.setAccessible(true);
+
+        InvocationTargetException exception = assertThrows(InvocationTargetException.class, () -> {
+            method.invoke(eventService, eventDateLocationDtos);
+        });
+
+        Throwable cause = exception.getCause();
+        assertTrue(cause instanceof IllegalArgumentException);
+        assertEquals(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE, cause.getMessage());
     }
 }
