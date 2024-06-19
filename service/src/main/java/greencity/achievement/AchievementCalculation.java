@@ -8,8 +8,8 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
-import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.rating.RatingCalculation;
@@ -19,11 +19,12 @@ import greencity.repository.UserAchievementRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
+import jakarta.transaction.Transactional;
+import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import jakarta.transaction.Transactional;
-import java.util.List;
+import static greencity.constant.AppConstant.SELF_ACHIEVEMENT_CATEGORY;
 
 @Component
 public class AchievementCalculation {
@@ -70,9 +71,9 @@ public class AchievementCalculation {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, null);
         if (AchievementAction.ASSIGN == achievementAction) {
-            saveAchievementToUser(user, achievementCategoryVO.getId(), count, null);
+            saveAchievementToUser(user, achievementCategoryVO, count, null);
         } else if (AchievementAction.DELETE == achievementAction) {
-            deleteAchievementFromUser(user, achievementCategoryVO.getId(), null);
+            deleteAchievementFromUser(user, achievementCategoryVO, null);
         }
     }
 
@@ -91,13 +92,14 @@ public class AchievementCalculation {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, habitId);
         if (AchievementAction.ASSIGN == achievementAction) {
-            saveAchievementToUser(user, achievementCategoryVO.getId(), count, habitId);
+            saveAchievementToUser(user, achievementCategoryVO, count, habitId);
         } else if (AchievementAction.DELETE == achievementAction) {
-            deleteAchievementFromUser(user, achievementCategoryVO.getId(), habitId);
+            deleteAchievementFromUser(user, achievementCategoryVO, habitId);
         }
     }
 
-    private void saveAchievementToUser(UserVO userVO, Long achievementCategoryId, int count, Long habitId) {
+    private void saveAchievementToUser(UserVO userVO, AchievementCategoryVO ac, int count, Long habitId) {
+        var achievementCategoryId = ac.getId();
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             Achievement achievement =
@@ -115,12 +117,16 @@ public class AchievementCalculation {
             RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
             ratingCalculation.ratingCalculation(reason, userVO);
             userAchievementRepo.save(userAchievement);
-            calculateAchievement(userVO, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
+
+            if (!ac.getName().equals(SELF_ACHIEVEMENT_CATEGORY)) {
+                calculateAchievement(userVO, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
+            }
         }
     }
 
-    private void deleteAchievementFromUser(UserVO user, Long achievementCategoryId, Long habitId) {
+    private void deleteAchievementFromUser(UserVO user, AchievementCategoryVO ac, Long habitId) {
         List<Achievement> achievements;
+        var achievementCategoryId = ac.getId();
         if (habitId != null) {
             achievements =
                 achievementRepo.findUnAchieved(user.getId(), achievementCategoryId, habitId);
@@ -133,7 +139,10 @@ public class AchievementCalculation {
                 ratingCalculation.ratingCalculation(reason, user);
                 userAchievementRepo.deleteByUserAndAchievementId(user.getId(), achievement.getId());
             });
-            calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
+
+            if (!ac.getName().equals(SELF_ACHIEVEMENT_CATEGORY)) {
+                calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
+            }
         }
     }
 

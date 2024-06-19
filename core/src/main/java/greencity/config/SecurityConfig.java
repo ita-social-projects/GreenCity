@@ -257,10 +257,12 @@ public class SecurityConfig {
                     FRIENDS + "/mutual-friends",
                     FRIENDS + "/friendRequests",
                     FRIENDS + "/{userId}/all-user-friends",
+                    FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     "/notification",
                     "/notification/all",
-                    "/notification/new")
+                    "/notification/new",
+                    HABIT_ASSIGN_ID + "/friends/habit-duration-info")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     "/category",

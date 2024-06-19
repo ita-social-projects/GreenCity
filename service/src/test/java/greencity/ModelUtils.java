@@ -1614,7 +1614,7 @@ public class ModelUtils {
         return new Achievement(1L,
             "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
             Collections.emptyList(),
-            new AchievementCategory(), 1);
+            new AchievementCategory(1L, "CREATE_NEWS", new ArrayList<>()), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
@@ -2214,7 +2214,7 @@ public class ModelUtils {
             .id(1L)
             .event(null)
             .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 2, 1, 1, 1, ZoneId.systemDefault()))
             .onlineLink("/url")
             .coordinates(getAddressDto()).build()))
         .description("Description")
@@ -2370,7 +2370,7 @@ public class ModelUtils {
             .id(1L)
             .event(null)
             .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 2, 1, 1, 1, ZoneId.systemDefault()))
             .onlineLink("/url")
             .coordinates(null).build()))
         .description("Description")
@@ -2747,7 +2747,15 @@ public class ModelUtils {
     }
 
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
-        return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+        return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now().plusDays(1))
+            .finishDate(ZonedDateTime.now().plusDays(1).plusHours(2))
+            .coordinates(AddressDto.builder().latitude(1.).longitude(1.).build()).build());
+    }
+
+    public static List<EventDateLocationDto> getEventDateLocationDtoWithSameDateTime() {
+        ZonedDateTime sameDateTime = ZonedDateTime.now().plusDays(1);
+        return List.of(EventDateLocationDto.builder().startDate(sameDateTime)
+            .finishDate(sameDateTime)
             .coordinates(AddressDto.builder().latitude(1.).longitude(1.).build()).build());
     }
 

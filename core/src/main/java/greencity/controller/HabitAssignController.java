@@ -17,6 +17,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitAssignService;
@@ -748,5 +749,21 @@ public class HabitAssignController {
         return ResponseEntity.status(HttpStatus.FOUND)
             .location(URI.create(redirectUrl + "/#/profile"))
             .build();
+    }
+
+    @Operation(summary = "Get all friends habits working days for current habit")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
+            array = @ArraySchema(schema = @Schema(implementation = HabitWorkingDaysDto.class)))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/{habitId}/friends/habit-duration-info")
+    public ResponseEntity<List<HabitWorkingDaysDto>> getFriendsHabitsStreak(@PathVariable Long habitId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity
+            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userVO.getId(), habitId));
     }
 }
