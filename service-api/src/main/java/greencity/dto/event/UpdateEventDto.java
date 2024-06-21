@@ -38,8 +38,6 @@ public class UpdateEventDto {
 
     private List<String> additionalImages;
 
-    private List<String> imagesToDelete;
-
     private List<String> tags;
 
     @JsonProperty(value = "open")

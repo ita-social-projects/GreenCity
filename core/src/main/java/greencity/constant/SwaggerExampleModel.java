@@ -106,7 +106,6 @@ public final class SwaggerExampleModel {
         + "\t],\n"
         + "\t\"titleImage\":\"string\",\n"
         + "\t\"additionalImages\":[\"string\"],\n"
-        + "\t\"imagesToDelete\":[\"string\"],\n"
         + "\t\"tags\":[\"Social\"],\n"
         + "\t\"isOpen\":true\n"
         + "}";
