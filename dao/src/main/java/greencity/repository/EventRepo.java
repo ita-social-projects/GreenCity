@@ -452,4 +452,19 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
         GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id, uf.friend_id, ea.user_id, ef.user_id;
         """)
     List<Tuple> loadEventPreviewDataByIds(List<Long> ids, Long userId);
+
+    /**
+     * Method returns all images of events by event id.
+     *
+     * @param eventId {@link Long} event id.
+     * @return List of {@link String} links of event images.
+     *
+     * @author Olena Sotnik
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT eim.link FROM events AS e "
+            + "JOIN events_images AS eim "
+            + "ON e.id = eim.event_id "
+            + "WHERE e.id = :eventId")
+    List<String> findAllImagesLinksByEventId(Long eventId);
 }
