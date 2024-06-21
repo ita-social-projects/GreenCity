@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import greencity.enums.HabitAssignStatus;
+import jakarta.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -71,9 +72,11 @@ public class HabitAssign {
     private List<UserShoppingListItem> userShoppingListItems;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "habit_id")
     private Habit habit;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)

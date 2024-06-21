@@ -6,7 +6,6 @@ import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -20,9 +19,11 @@ import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
@@ -53,6 +54,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class EventCommentServiceImplTest {
@@ -76,12 +78,17 @@ class EventCommentServiceImplTest {
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementCalculation achievementCalculation;
+    @Mock
+    private UserRepo userRepo;
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
 
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private UserNotificationService userNotificationService;
 
     @Test
     void save() {
@@ -102,10 +109,41 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+        when(modelMapper.map(eventComment.getUser(), UserVO.class)).thenReturn(userVO);
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
+    }
+
+    @Test
+    void sendNotificationIfUserTaggedInComment() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        EventVO eventVO = ModelUtils.getEventVO();
+        Event event = ModelUtils.getEvent();
+        AddEventCommentDtoRequest addEventCommentDtoRequest = AddEventCommentDtoRequest.builder()
+            .text("<a contenteditable=\"false\" data-userid=\"5\" style=\"font-weight: 700;\">@Dmytro</a> test")
+            .build();
+        EventComment eventComment = getEventComment();
+        EventCommentAuthorDto eventCommentAuthorDto = ModelUtils.getEventCommentAuthorDto();
+
+        when(eventService.findById(anyLong())).thenReturn(eventVO);
+        when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
+            .id(5L)
+            .email("test@email.com")
+            .build()));
+        when(modelMapper.map(userVO, EventCommentAuthorDto.class)).thenReturn(eventCommentAuthorDto);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
+        when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
+        when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
+            .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+
+        eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
+
+        verify(notificationService, times(2)).sendEmailNotification(any(GeneralEmailMessage.class));
     }
 
     @Test
@@ -161,7 +199,7 @@ class EventCommentServiceImplTest {
                 () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO));
 
         String expectedErrorMessage = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
-            + " in event with id:" + event.getId();
+            + " in event with id: " + event.getId();
         assertEquals(expectedErrorMessage, notFoundException.getMessage());
     }
 
@@ -283,7 +321,8 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> eventCommentService.update(editedText, commentId, userVO));
+            assertThrows(NotFoundException.class,
+                () -> eventCommentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 

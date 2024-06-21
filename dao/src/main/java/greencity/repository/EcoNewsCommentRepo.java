@@ -59,7 +59,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      */
     @Query(value = "SELECT count(ec.id) FROM econews_comment ec "
         + "JOIN eco_news en ON en.id = ec.eco_news_id "
-        + "WHERE en.id = :ecoNewsId", nativeQuery = true)
+        + "WHERE en.id = :ecoNewsId and ec.status <>'DELETED'", nativeQuery = true)
     int countEcoNewsCommentByEcoNews(Long ecoNewsId);
 
     /**

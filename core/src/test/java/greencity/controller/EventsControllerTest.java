@@ -3,20 +3,25 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import greencity.ModelUtils;
+import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.EventPreviewDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.converters.UserArgumentResolver;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.UpdateEventDto;
 import greencity.service.EventService;
 import greencity.service.UserService;
+import java.security.Principal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,21 +43,20 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.security.Principal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
+
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -105,17 +109,18 @@ class EventsControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        PageableAdvancedDto<EventDto> pageableAdvancedDto = getPageableAdvancedDtoEventDto();
+        PageableAdvancedDto<EventPreviewDto> eventPreviewDtoPageableAdvancedDto =
+            ModelUtils.getEventPreviewDtoPageableAdvancedDto(pageable);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         ObjectWriter ow = objectMapper.writer();
-        String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
+        String expectedJson = ow.writeValueAsString(eventPreviewDtoPageableAdvancedDto);
 
         FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
 
         when(eventService.getEvents(pageable, principal, filterEventDto, null))
-            .thenReturn(pageableAdvancedDto);
+            .thenReturn(eventPreviewDtoPageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
             .contentType(MediaType.APPLICATION_JSON)
@@ -132,7 +137,6 @@ class EventsControllerTest {
     void getUserEventsTest() {
         int pageNumber = 0;
         int pageSize = 20;
-        String eventType = "";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         PageableAdvancedDto<EventDto> pageableAdvancedDto = getPageableAdvancedDtoEventDto();
@@ -142,7 +146,7 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        when(eventService.getAllUserEvents(pageable, principal.getName(), "", "", eventType))
+        when(eventService.getAllUserEvents(pageable, principal.getName(), "", "", null))
             .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents?eventType=&userLatitude=&userLongitude=")
@@ -152,7 +156,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAllUserEvents(pageable, principal.getName(), "", "", eventType);
+        verify(eventService).getAllUserEvents(pageable, principal.getName(), "", "", null);
     }
 
     @Test
@@ -253,7 +257,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
-        verify(eventService).save(addEventDtoRequest, principal.getName(), null);
+        verify(eventService).save(eq(addEventDtoRequest), eq(principal.getName()), isNull());
     }
 
     @Test
@@ -325,7 +329,7 @@ class EventsControllerTest {
     @Test
     @SneakyThrows
     void updateTest() {
-        UpdateEventDto updateEventDto = getUpdateEventDto();
+        UpdateEventRequestDto updateEventDto = getUpdateEventDto();
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
@@ -348,7 +352,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(eventService).update(updateEventDto, principal.getName(), null);
+        verify(eventService).update(eq(updateEventDto), eq(principal.getName()), isNull());
     }
 
     @Test
@@ -558,7 +562,7 @@ class EventsControllerTest {
                     .longitude(30.5058935778292d).build())
                 .build()))
             .tags(List.of(TagUaEnDto.builder()
-                .id(20)
+                .id(20L)
                 .nameEn("Name")
                 .nameUa("Назва").build()))
             .titleImage("https://csb10032000a548f571.blob.core.windows.net/all/8f09887c.png")
@@ -603,7 +607,7 @@ class EventsControllerTest {
     }
 
     @SneakyThrows
-    private UpdateEventDto getUpdateEventDto() {
+    private UpdateEventRequestDto getUpdateEventDto() {
         String json = "{\n" +
             "    \"id\":0,\n" +
             "    \"title\":\"string\",\n" +
@@ -624,7 +628,7 @@ class EventsControllerTest {
             "}   ";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        return objectMapper.readValue(json, UpdateEventDto.class);
+        return objectMapper.readValue(json, UpdateEventRequestDto.class);
     }
 
     @SneakyThrows

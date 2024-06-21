@@ -7,6 +7,11 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
+import greencity.message.GeneralEmailMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.SendReportEmailMessage;
+import greencity.message.HabitAssignNotificationMessage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +19,6 @@ import java.util.Optional;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.message.GeneralEmailMessage;
 import greencity.security.jwt.JwtTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,9 +41,6 @@ import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.place.PlaceVO;
 import greencity.enums.EmailNotification;
-import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendHabitNotification;
-import greencity.message.SendReportEmailMessage;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Component
@@ -549,10 +550,6 @@ public class RestClient {
         }
 
         if (!StringUtils.hasLength(accessToken)) {
-            accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        }
-
-        if (!StringUtils.hasLength(accessToken)) {
             accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
         }
 
@@ -581,5 +578,18 @@ public class RestClient {
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
         log.info("Email notification has been sent to {}", notification.getEmail());
+    }
+
+    /**
+     * Method sends habit assign email notification.
+     *
+     * @param message {@link HabitAssignNotificationMessage}.
+     */
+    public void sendHabitAssignNotification(HabitAssignNotificationMessage message) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<HabitAssignNotificationMessage> entity = new HttpEntity<>(message, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_HABIT_ASSIGN_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

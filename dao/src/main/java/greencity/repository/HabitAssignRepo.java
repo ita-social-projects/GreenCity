@@ -3,11 +3,13 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
+import greencity.enums.HabitAssignStatus;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import greencity.enums.HabitAssignStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -42,6 +44,28 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + " JOIN FETCH ht.language l"
         + " WHERE ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
     List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
+
+    /**
+     * Retrieves a paginated list of {@code HabitAssign} entities for a specified
+     * user that are in progress or acquired. This method includes fetching
+     * associated {@code Habit}, {@code HabitTranslations}, and {@code Language}
+     * entities.
+     *
+     * @param userId   the ID of the {@code User} whose {@code HabitAssign} entities
+     *                 are to be retrieved.
+     * @param pageable the {@link Pageable} object containing pagination
+     *                 information.
+     * @return a {@link Page} of {@code HabitAssign} entities.
+     */
+    @Query("""
+            SELECT ha FROM HabitAssign ha
+            left join fetch ha.habit h
+            left join fetch h.habitTranslations ht
+            left join fetch ht.language l
+            WHERE ha.user.id = :userId and (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')
+            ORDER BY ha.createDate
+        """)
+    Page<HabitAssign> findAllByUserId(Long userId, Pageable pageable);
 
     /**
      * Method to find all {@link HabitAssign} by {@link Habit} id (not canceled and
@@ -220,26 +244,17 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllByUserIdAndStatusIsInProgress(@Param("userId") Long userId);
 
     /**
-     * Method to find all inprogress habit assigns between the specified
-     * {@link LocalDate}s.
+     * Method to find all inprogress habit assigns related to user.
      *
      * @param userId {@link User} id.
-     * @param from   {@link LocalDate} instance.
-     * @param to     {@link LocalDate} instance.
      * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
+    @Query("SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
         + "WHERE upper(ha.status) = 'INPROGRESS' "
-        + "AND ha.user.id = :userId "
-        + "AND cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
-        + "OR cast(FUNCTION('DATEADD', DAY, ha.duration, ha.createDate) as date) "
-        + "BETWEEN cast(:from as date) AND cast(:to as date) "
-        + "OR cast(ha.createDate as date) <= cast(:from as date) "
-        + "AND cast(:to as date) <= cast(FUNCTION('DATEADD', DAY, ha.duration, ha.createDate) as date)")
-    List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
-        @Param("to") LocalDate to);
+        + "AND ha.user.id = :userId")
+    List<HabitAssign> findAllInProgressHabitAssignsRelatedToUser(@Param("userId") Long userId);
 
     /**
      * Method to find all inprogress, habit assigns.
@@ -317,11 +332,80 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha.user_id "
         + "FROM habit_assign AS ha "
         + "JOIN users_friends AS uf "
-        + "ON ha.user_id = uf.friend_id "
-        + "WHERE uf.user_id = :userId "
+        + "ON (ha.user_id = uf.friend_id OR ha.user_id = uf.user_id) "
+        + "WHERE (uf.user_id = :userId OR uf.friend_id = :userId) "
         + "AND uf.status = 'FRIEND' "
         + "AND ha.habit_id = :habitId "
         + "AND ha.user_id != :userId "
         + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')", nativeQuery = true)
     List<Long> findFriendsIdsTrackingHabit(@Param("habitId") Long habitId, @Param("userId") Long userId);
+
+    /**
+     * Retrieves a page of {@link HabitAssign} entities for a specified user where
+     * the habit is either 'INPROGRESS' or 'ACQUIRED', and where the habit is also
+     * assigned to a current user with the same statuses.
+     *
+     * @param userId        the ID of the user for whom the habit assignments are
+     *                      being retrieved
+     * @param currentUserId the ID of the current user to cross-reference habit
+     *                      assignments
+     * @param pageable      the pagination information
+     * @return a page of {@link HabitAssign} entities that match the criteria
+     */
+    @Query("""
+            SELECT ha FROM HabitAssign ha
+            left join fetch ha.habit h
+            left join fetch h.habitTranslations ht
+            left join fetch ht.language l
+            WHERE ha.user.id = :userId
+            and (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED') AND ha.habit.id IN
+            (SELECT ha1.habit.id FROM HabitAssign ha1 where ha1.user.id = :currentUserId
+            AND (ha1.status = 'INPROGRESS' OR ha1.status = 'ACQUIRED'))
+            ORDER BY ha.createDate
+        """)
+    Page<HabitAssign> findAllMutual(Long userId, Long currentUserId, Pageable pageable);
+
+    /**
+     * Retrieves a paginated list of {@code HabitAssign} entities for a specified
+     * user that are in progress or acquired, and are shared with the current user.
+     * This method includes fetching associated {@code Habit},
+     * {@code HabitTranslations}, and {@code Language} entities.
+     *
+     * @param userId        the ID of the {@code User} whose {@code HabitAssign}
+     *                      entities are to be retrieved.
+     * @param currentUserId the ID of the current user to find mutual habit
+     *                      assignments with.
+     * @param pageable      the {@link Pageable} object containing pagination
+     *                      information.
+     * @return a {@link Page} of {@code HabitAssign} entities.
+     */
+    @Query("""
+            SELECT ha FROM HabitAssign ha
+            left join fetch ha.habit h
+            left join fetch h.habitTranslations ht
+            left join fetch ht.language l
+            WHERE ha.user.id = :userId
+            and (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED') AND ha.habit.id IN
+            (SELECT h1.id FROM Habit h1 WHERE h1.userId = :currentUserId)
+            ORDER BY ha.createDate
+        """)
+    Page<HabitAssign> findAllOfCurrentUser(Long userId, Long currentUserId, Pageable pageable);
+
+    /**
+     * Returns a list of HabitAssign objects that match the given user IDs and habit
+     * ID, provided that the status of HabitAssign is either 'INPROGRESS' or
+     * 'ACQUIRED'.
+     *
+     * @param userIds list of user IDs for which to find HabitAssign records
+     * @param habitId the ID of the habit for which to find HabitAssign records
+     * @return list of HabitAssign objects that meet the specified conditions
+     */
+    @Query("""
+            SELECT ha
+            FROM HabitAssign ha
+            WHERE ha.user.id IN :userIds
+            AND ha.habit.id = :habitId
+            AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')
+        """)
+    List<HabitAssign> findByUserIdsAndHabitId(List<Long> userIds, Long habitId);
 }

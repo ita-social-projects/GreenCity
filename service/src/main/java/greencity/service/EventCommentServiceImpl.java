@@ -17,6 +17,7 @@ import greencity.entity.event.EventComment;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.CommentStatus;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -26,8 +27,11 @@ import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
-import lombok.AllArgsConstructor;
+import greencity.repository.UserRepo;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -38,7 +42,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class EventCommentServiceImpl implements EventCommentService {
     private EventCommentRepo eventCommentRepo;
     private EventService eventService;
@@ -48,6 +51,34 @@ public class EventCommentServiceImpl implements EventCommentService {
     private AchievementCalculation achievementCalculation;
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationService notificationService;
+    private final UserNotificationService userNotificationService;
+    private final UserRepo userRepo;
+    private static final String LINK = "/#/events/";
+    @Value("${client.address}")
+    private String clientAddress;
+
+    public EventCommentServiceImpl(
+        EventCommentRepo eventCommentRepo,
+        EventService eventService,
+        ModelMapper modelMapper,
+        EventRepo eventRepo,
+        RatingCalculation ratingCalculation,
+        AchievementCalculation achievementCalculation,
+        SimpMessagingTemplate messagingTemplate,
+        NotificationService notificationService,
+        UserNotificationService userNotificationService,
+        UserRepo userRepo) {
+        this.eventCommentRepo = eventCommentRepo;
+        this.eventService = eventService;
+        this.modelMapper = modelMapper;
+        this.eventRepo = eventRepo;
+        this.ratingCalculation = ratingCalculation;
+        this.achievementCalculation = achievementCalculation;
+        this.messagingTemplate = messagingTemplate;
+        this.notificationService = notificationService;
+        this.userNotificationService = userNotificationService;
+        this.userRepo = userRepo;
+    }
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -79,7 +110,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
             if (!parentEventComment.getEvent().getId().equals(eventId)) {
                 String message = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
-                    + " in event with id:" + eventId;
+                    + " in event with id: " + eventId;
                 throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
@@ -89,7 +120,13 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .message(
                     String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()))
                 .build());
+            userNotificationService.createNotification(modelMapper.map(parentEventComment.getUser(), UserVO.class),
+                userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText(),
+                eventId, eventVO.getTitle());
         }
+
+        sendNotificationToTaggedUser(eventId, userVO, addEventCommentDtoRequest.getText());
+
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
@@ -103,6 +140,8 @@ public class EventCommentServiceImpl implements EventCommentService {
             .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
             .build());
+        userNotificationService.createNotification(eventVO.getOrganizer(), userVO, NotificationType.EVENT_COMMENT,
+            eventId, eventVO.getTitle());
         return addEventCommentDtoResponse;
     }
 
@@ -282,12 +321,13 @@ public class EventCommentServiceImpl implements EventCommentService {
     public void like(Long commentId, UserVO userVO) {
         EventComment comment = eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
-
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                userVO, commentId, NotificationType.EVENT_COMMENT_LIKE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
@@ -299,6 +339,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
                     userVO.getName()))
                 .build());
+            Event event = comment.getEvent();
+            userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class), userVO,
+                NotificationType.EVENT_COMMENT_LIKE, commentId, comment.getText(), event.getId(), event.getTitle());
         }
         eventCommentRepo.save(comment);
     }
@@ -346,5 +389,41 @@ public class EventCommentServiceImpl implements EventCommentService {
         amountCommentLikesDto.setAmountLikes(size);
         messagingTemplate.convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/eventComment",
             amountCommentLikesDto);
+    }
+
+    /**
+     * Method to send email notification if user tagged in comment.
+     *
+     * @param eventId {@link Long} event id.
+     * @param userVO  {@link UserVO} comment author.
+     * @param comment {@link String} comment.
+     */
+    private void sendNotificationToTaggedUser(Long eventId, UserVO userVO, String comment) {
+        Long userId = getUserIdFromComment(comment);
+        if (userId != null) {
+            User user = userRepo.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+                .email(user.getEmail())
+                .subject(String.format(EmailNotificationMessagesConstants.EVENT_TAGGED_SUBJECT, userVO.getName()))
+                .message(clientAddress + LINK + eventId)
+                .build());
+        }
+    }
+
+    /**
+     * Method to extract user id from comment.
+     *
+     * @param message comment from {@link AddEventCommentDtoResponse}.
+     * @return user id if present or null.
+     */
+    private Long getUserIdFromComment(String message) {
+        String regEx = "data-userid=\"(\\d+)\"";
+        Pattern pattern = Pattern.compile(regEx);
+        Matcher matcher = pattern.matcher(message);
+        if (matcher.find()) {
+            return Long.valueOf(matcher.group(1));
+        }
+        return null;
     }
 }

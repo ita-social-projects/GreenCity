@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -8,12 +9,16 @@ import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.enums.HabitAssignStatus;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Locale;
+import org.springframework.data.domain.Pageable;
 
 public interface HabitAssignService {
     /**
@@ -114,6 +119,43 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto}.
      */
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
+
+    /**
+     * Method to find all (not cancelled) id and acquired status.
+     *
+     * @param userId   {@code User} id.
+     * @param pageable the {@link Pageable} object for pagination information.
+     * @return a {@link PageableAdvancedDto} containing a list of
+     *         {@link HabitAssignPreviewDto}.
+     */
+    PageableAdvancedDto<HabitAssignPreviewDto> getAllByUserIdAndStatusNotCancelled(Long userId, Pageable pageable);
+
+    /**
+     * Finds all mutual non-cancelled {@link HabitAssignPreviewDto}.
+     *
+     * @param userId        the {@code User} id
+     * @param currentUserId the id of the current user to find mutual habit
+     *                      assignments with.
+     * @param pageable      the {@link Pageable} object for pagination information.
+     * @return a {@link PageableAdvancedDto} containing a list of
+     *         {@link HabitAssignPreviewDto}.
+     */
+    PageableAdvancedDto<HabitAssignPreviewDto> getAllMutualHabitAssignsWithUserAndStatusNotCancelled(
+        Long userId, Long currentUserId, Pageable pageable);
+
+    /**
+     * Retrieves all non-cancelled {@link HabitAssignPreviewDto} for user that made
+     * by current user.
+     *
+     * @param userId        the {@code User} id
+     * @param currentUserId the ID of the current user that is an author of habits.
+     * @param pageable      the {@link Pageable} object containing pagination
+     *                      information.
+     * @return a {@link PageableAdvancedDto} containing a list of
+     *         {@link HabitAssignPreviewDto}.
+     */
+    PageableAdvancedDto<HabitAssignPreviewDto> getMyHabitsOfCurrentUserAndStatusNotCancelled(
+        Long userId, Long currentUserId, Pageable pageable);
 
     /**
      * Method that return user shopping list and custom shopping list by
@@ -310,4 +352,34 @@ public interface HabitAssignService {
      * @param userId        {@link Long} item id.
      */
     HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId, Integer duration);
+
+    /**
+     * Method invite friend to your habit with email notification.
+     *
+     * @param userVO   {@link UserVO} user.
+     * @param friendId {@link Long} User friend id.
+     * @param habitId  {@link Long} habit id.
+     * @param locale   {@link Locale} language.
+     */
+    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId, Locale locale);
+
+    /**
+     * Method to confirm friend request to habit.
+     *
+     * @param habitAssignId {@link Long} habit assign id.
+     */
+    void confirmHabitInvitation(Long habitAssignId);
+
+    /**
+     * Retrieves a list of HabitWorkingDaysDto objects that contain information
+     * about the working days of habits for the current user's friends, based on the
+     * given user ID and habit ID.
+     *
+     * @param userId  the ID of the current user
+     * @param habitId the ID of the habit for which to retrieve working days
+     *                information
+     * @return a list of HabitWorkingDaysDto objects containing the working days
+     *         information for the specified habit and the user's friends
+     */
+    List<HabitWorkingDaysDto> getAllHabitsWorkingDaysInfoForCurrentUserFriends(Long userId, Long habitId);
 }

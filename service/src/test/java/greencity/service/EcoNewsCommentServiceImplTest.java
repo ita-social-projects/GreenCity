@@ -90,6 +90,9 @@ class EcoNewsCommentServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private UserNotificationService userNotificationService;
+
     private String token = "token";
 
     @Test
@@ -139,6 +142,7 @@ class EcoNewsCommentServiceImplTest {
         when(modelMapper.map(any(EcoNewsComment.class), eq(AddEcoNewsCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEcoNewsCommentDtoResponse());
         when(ecoNewsCommentRepo.findById(anyLong())).thenReturn(Optional.ofNullable(ecoNewsCommentParent));
+        when(modelMapper.map(ecoNewsComment.getUser(), UserVO.class)).thenReturn(userVO);
 
         ecoNewsCommentService.save(1L, addEcoNewsCommentDtoRequest, userVO);
         verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
@@ -357,7 +361,8 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.update(newText, commentId, userVO));
+            assertThrows(NotFoundException.class,
+                () -> ecoNewsCommentService.update(newText, commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -375,7 +380,8 @@ class EcoNewsCommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> ecoNewsCommentService.update(newText, commentId, userToUpdateVO));
+                () -> ecoNewsCommentService.update(newText, commentId,
+                    userToUpdateVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 
@@ -394,6 +400,7 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentVO.class)).thenReturn(ecoNewsCommentVO);
         when(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class)).thenReturn(ecoNewsComment);
+        when(modelMapper.map(ecoNewsComment.getUser(), UserVO.class)).thenReturn(userVO);
 
         ecoNewsCommentService.like(commentId, userVO);
 
@@ -414,6 +421,7 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentVO.class)).thenReturn(ecoNewsCommentVO);
         when(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class)).thenReturn(ecoNewsComment);
+        when(modelMapper.map(ecoNewsComment.getUser(), UserVO.class)).thenReturn(userVO);
 
         ecoNewsCommentService.like(commentId, userVO);
 

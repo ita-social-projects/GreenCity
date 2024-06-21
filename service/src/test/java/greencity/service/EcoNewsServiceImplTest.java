@@ -23,6 +23,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -61,7 +62,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
@@ -74,7 +74,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -139,6 +138,9 @@ class EcoNewsServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private UserNotificationService userNotificationService;
+
     private final AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
     private final EcoNews ecoNews = ModelUtils.getEcoNews();
     private final AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
@@ -174,23 +176,35 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void saveWithExistedImage() throws IOException {
-        MultipartFile image = ModelUtils.getFile();
-        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+    void saveWithExistedImageTest() throws IOException {
+        var image = ModelUtils.getFile();
+        var imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        var tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+
         addEcoNewsDtoRequest.setImage(imageToEncode);
+
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
-        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        doNothing().when(userNotificationService).createNewNotification(ModelUtils.getUserVO(),
+            NotificationType.EVENT_CREATED, ecoNews.getId(), ecoNews.getTitle());
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         addEcoNewsDtoResponse.setEcoNewsAuthorDto(ModelUtils.getEcoNewsAuthorDto());
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
+
         AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
         assertEquals(addEcoNewsDtoResponse, actual);
+
+        verify(modelMapper).map(addEcoNewsDtoRequest, EcoNews.class);
+        verify(restClient).findByEmail(TestConst.EMAIL);
+        verify(tagService).findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS));
+        verify(ecoNewsRepo).save(any(EcoNews.class));
+        verify(modelMapper).map(ecoNews, AddEcoNewsDtoResponse.class);
+        verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
         verify(userService).findById(anyLong());
     }
 
@@ -796,6 +810,16 @@ class EcoNewsServiceImplTest {
 
         ecoNewsService.findByFilters(pageable, tags, "1");
         verify(ecoNewsRepo, times(1)).findAll(any(Specification.class), any(Pageable.class));
+    }
+
+    @Test
+    void findByFilters_ReturnsCorrectResult_WhenTagsAndTitleAreEmpty() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, ecoNews.size());
+        when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
+        ecoNewsService.findByFilters(pageable, null, null);
+        verify(ecoNewsRepo, times(1)).findAll(any(Pageable.class));
     }
 
     @Test

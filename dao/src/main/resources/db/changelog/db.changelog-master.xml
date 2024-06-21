@@ -190,8 +190,10 @@
     <include file="db/changelog/logs/ch-update-online-link-column-length-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-add-column-user_actions-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-update-users-set-new-main-email-Midianyi.xml"/>
+    <include file="db/changelog/logs/ch-add-table-notification-Mladonov.xml"/>
     <include file="db/changelog/logs/ch-add-new-column-to-habits-is-deleted-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-delete-from-positions_authorities_mapping-authority-for-admin-position-Kizerov.xml"/>
     <include file="db/changelog/logs/ch-delete-from-positions_authorities_mapping-authority-for-service-manager-position-Kizerov.xml"/>
+    <include file="db/changelog/logs/ch-add-unique-constraint-to-user_id-and-achievement_category_id-to-user_action_table.xml"/>
 </databaseChangeLog>
 

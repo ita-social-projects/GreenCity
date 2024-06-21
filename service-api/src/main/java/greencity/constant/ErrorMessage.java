@@ -68,6 +68,8 @@ public final class ErrorMessage {
         "There is no inprogress habit assign for current user: ";
     public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
         "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
+    public static final String HABIT_ASSIGN_ENROLL_RANGE_REACHED =
+        "Can't enroll habit because working days enrolled can not be greater than habit duration";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
         "Current user does not have habit statistic with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
@@ -163,6 +165,8 @@ public final class ErrorMessage {
         "Start date must be in future and before finish date";
     public static final String SAME_EVENT_DATES =
         "User shouldn't be able to create event with the same event dates for two days within one event";
+    public static final String SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE =
+        "The start time coincides with the end time on one of the event dates";
     public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
@@ -181,6 +185,9 @@ public final class ErrorMessage {
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
     public static final String INVALID_EVENT_TYPE = "Invalid event type, please specify - online or offline.";
     public static final String PAGE_NOT_FOUND = "Page not found. Page number should be between 0 and ";
+    public static final String INVALID_DATE = "Date can't be null or empty";
+    public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT =
+        "No friends are assigned on current habit with id: ";
 
     private ErrorMessage() {
     }

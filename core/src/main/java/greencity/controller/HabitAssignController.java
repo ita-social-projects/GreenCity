@@ -5,6 +5,7 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -14,25 +15,30 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitAssignService;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,11 +56,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/habit/assign")
 public class HabitAssignController {
     private final HabitAssignService habitAssignService;
+
+    @Value("${client.address}")
+    private String redirectUrl;
 
     /**
      * Method which assigns habit for {@link UserVO} with default props.
@@ -222,6 +231,94 @@ public class HabitAssignController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
                 .getAllHabitAssignsByUserIdAndStatusNotCancelled(userVO.getId(), locale.getLanguage()));
+    }
+
+    /**
+     * Method for finding all inprogress, acquired {@link HabitAssignDto}'s for user
+     * by id.
+     *
+     * @param userId   the {@code User} id of the other user to find habit
+     *                 assignments with.
+     * @param pageable the {@link Pageable} object for pagination information.
+     * @return list of {@link HabitAssignDto}.
+     */
+    @Operation(summary = "Get (inprogress, acquired) assigned habits for user by id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
+            array = @ArraySchema(schema = @Schema(implementation = HabitAssignDto.class)))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @ApiLocale
+    @GetMapping("/allUser/{userId}")
+    public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getUserHabitAssignsByIdAndAcquired(
+        @PathVariable Long userId,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .getAllByUserIdAndStatusNotCancelled(userId, pageable));
+    }
+
+    /**
+     * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
+     * the current user and another specified user, with pagination.
+     *
+     * @param userId   the {@code User} id of the other user to find mutual habit
+     *                 assignments with.
+     * @param userVO   {@link UserVO} instance representing the current user.
+     * @param pageable the {@link Pageable} object for pagination information.
+     * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
+     *         with a list of {@link HabitAssignPreviewDto} representing the found
+     *         mutual habit assignments and pagination information.
+     */
+    @Operation(summary = "Get all mutual (inprogress, acquired) assigned habits for current user with another user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/allMutualHabits/{userId}")
+    public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getAllMutualHabitsWithUser(
+        @PathVariable Long userId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .getAllMutualHabitAssignsWithUserAndStatusNotCancelled(userId, userVO.getId(), pageable));
+    }
+
+    /**
+     * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
+     * user made by current user, with pagination.
+     *
+     * @param userId   the {@code User} id of the other user to find habit
+     *                 assignments with.
+     * @param userVO   {@link UserVO} instance representing the current user.
+     * @param pageable the {@link Pageable} object for pagination information.
+     * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
+     *         with a list of {@link HabitAssignPreviewDto} representing the found
+     *         assignments and pagination information.
+     */
+    @Operation(summary = "Get all (inprogress, acquired) assigned habits for user made by current user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/myHabits/{userId}")
+    public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getMyHabitsOfCurrentUser(
+        @PathVariable Long userId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .getMyHabitsOfCurrentUserAndStatusNotCancelled(userId, userVO.getId(), pageable));
     }
 
     /**
@@ -603,5 +700,70 @@ public class HabitAssignController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userVO.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method send request to assign on habit via email notification.
+     *
+     * @param habitId  - id of {@link HabitAssignVO}.
+     * @param friendId - id of user friend {@link UserVO}.
+     * @param userVO   - user who send request {@link UserVO}.
+     * @param locale   - current language {@link greencity.dto.language.LanguageVO}.
+     */
+    @Operation(summary = "Inviting friend on habit with email notification")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/{habitId}/{friendId}/invite")
+    public ResponseEntity<ResponseEntity.BodyBuilder> inviteFriendRequest(@PathVariable Long habitId,
+        @PathVariable Long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habitId, locale);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to confirm invite from friend request.
+     *
+     * @param habitAssignId - id {@link HabitAssignVO}.
+     */
+    @Operation(summary = "Confirm invite for habit by email link")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = HttpStatuses.FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FOUND))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/confirm/{habitAssignId}")
+    public ResponseEntity<Void> confirmInvitation(@PathVariable Long habitAssignId) {
+        habitAssignService.confirmHabitInvitation(habitAssignId);
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .location(URI.create(redirectUrl + "/#/profile"))
+            .build();
+    }
+
+    @Operation(summary = "Get all friends habits working days for current habit")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
+            array = @ArraySchema(schema = @Schema(implementation = HabitWorkingDaysDto.class)))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/{habitId}/friends/habit-duration-info")
+    public ResponseEntity<List<HabitWorkingDaysDto>> getFriendsHabitsStreak(@PathVariable Long habitId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity
+            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userVO.getId(), habitId));
     }
 }
