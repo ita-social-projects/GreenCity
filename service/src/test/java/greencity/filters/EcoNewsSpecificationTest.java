@@ -123,8 +123,9 @@ class EcoNewsSpecificationTest {
 
         when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
 
-        when(criteriaBuilderMock.like(ecoNewsRootMock.get(EcoNews_.TITLE), "%" + criteriaList.getFirst().getValue() + "%"))
-            .thenReturn(andTitlePredicate);
+        when(criteriaBuilderMock.like(ecoNewsRootMock.get(EcoNews_.TITLE),
+            "%" + criteriaList.getFirst().getValue() + "%"))
+                .thenReturn(andTitlePredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andTitlePredicate)).thenReturn(andTitlePredicate);
 
