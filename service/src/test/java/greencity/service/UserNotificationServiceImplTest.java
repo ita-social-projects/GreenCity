@@ -164,14 +164,13 @@ class UserNotificationServiceImplTest {
     @Test
     void notificationSocketTest() {
         var dto = getActionDto();
-        var notification = getNotification();
 
-        when(notificationRepo.findNotificationByTargetUserIdAndViewedIsFalse(dto.getUserId()))
-            .thenReturn(Optional.of(notification));
+        when(notificationRepo.existsByTargetUserIdAndViewedIsFalse(dto.getUserId()))
+            .thenReturn(true);
         userNotificationService.notificationSocket(dto);
 
         verify(messagingTemplate).convertAndSend("/topic/" + dto.getUserId() + "/notification", true);
-        verify(notificationRepo).findNotificationByTargetUserIdAndViewedIsFalse(dto.getUserId());
+        verify(notificationRepo).existsByTargetUserIdAndViewedIsFalse(dto.getUserId());
     }
 
     @Test

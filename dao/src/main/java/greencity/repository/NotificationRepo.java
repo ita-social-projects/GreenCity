@@ -47,12 +47,13 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
         ProjectName[] projectNames, NotificationType[] notificationTypes, Pageable pageable);
 
     /**
-     * This method return unread notification.
+     * Checks if there are any unread notifications for the specified user.
      *
-     * @param targetUserId user, which should return notification
-     * @return Notification for user, where viewed is false
+     * @param targetUserId the ID of the user for whom to check for unread
+     *                     notifications
+     * @return true if there are unread notifications for the user, false otherwise
      */
-    Optional<Notification> findNotificationByTargetUserIdAndViewedIsFalse(Long targetUserId);
+    boolean existsByTargetUserIdAndViewedIsFalse(Long targetUserId);
 
     /**
      * Changes {@link Notification} `viewed` as true.
