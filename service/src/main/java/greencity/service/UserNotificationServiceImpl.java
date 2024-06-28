@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -112,10 +111,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void notificationSocket(ActionDto user) {
-        Optional<Notification> userNotification =
-            notificationRepo.findNotificationByTargetUserIdAndViewedIsFalse(user.getUserId());
+        boolean isExist =
+            notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
         messagingTemplate
-            .convertAndSend("/topic/" + user.getUserId() + "/notification", userNotification.isPresent());
+            .convertAndSend("/topic/" + user.getUserId() + "/notification", isExist);
     }
 
     /**
