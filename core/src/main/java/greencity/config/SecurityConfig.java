@@ -237,6 +237,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 FRIENDS + "/{userId}/all-user-friends",
                 FRIENDS)
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .antMatchers(HttpMethod.GET,
+                "/database/backup")
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
                 "/econews",
