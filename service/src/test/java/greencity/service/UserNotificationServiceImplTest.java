@@ -28,6 +28,7 @@ import static greencity.ModelUtils.getPageableAdvancedDtoForNotificationDto;
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -179,6 +180,7 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
             NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(messagingTemplate,times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
     }
 
     @Test
@@ -187,6 +189,7 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
             NotificationType.EVENT_CREATED, 1L, "Title");
         verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
     }
 
     @Test
@@ -194,6 +197,7 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO, NotificationType.EVENT_CREATED);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
     }
 
     @Test
@@ -209,6 +213,7 @@ class UserNotificationServiceImplTest {
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
     }
 
     @Test
@@ -225,6 +230,7 @@ class UserNotificationServiceImplTest {
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
     }
 
     @Test
@@ -233,6 +239,7 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNewNotification(TEST_USER_VO, NotificationType.EVENT_CREATED,
             1L, "Custom Message");
         verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
     }
 
     @Test
