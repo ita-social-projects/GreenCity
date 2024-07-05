@@ -133,6 +133,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .customMessage(message)
                 .build();
             notificationRepo.save(notification);
+            sendNotification(notification.getTargetUser().getId());
         }
     }
 
@@ -153,6 +154,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .secondMessage(title)
                 .build();
             notificationRepo.save(notification);
+            sendNotification(notification.getTargetUser().getId());
         }
     }
 
@@ -169,6 +171,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
             .build();
         notificationRepo.save(notification);
+        sendNotification(notification.getTargetUser().getId());
     }
 
     /**
@@ -191,6 +194,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
         notificationRepo.save(notification);
+        sendNotification(notification.getTargetUser().getId());
     }
 
     /**
@@ -215,6 +219,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
         notificationRepo.save(notification);
+        sendNotification(notification.getTargetUser().getId());
     }
 
     /**
@@ -232,6 +237,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .time(LocalDateTime.now())
             .build();
         notificationRepo.save(notification);
+        sendNotification(notification.getTargetUser().getId());
     }
 
     /**
@@ -318,5 +324,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             dto.setActionUserText(size + " " + bundle.getString("USERS"));
         }
         return dto;
+    }
+
+    /**
+     * Sends a new notification to a specified user.
+     *
+     * @param userId the ID of the user to whom the notification will be sent
+     */
+    private void sendNotification(Long userId) {
+        messagingTemplate.convertAndSend("/topic/" + userId + "/notification", true);
     }
 }
