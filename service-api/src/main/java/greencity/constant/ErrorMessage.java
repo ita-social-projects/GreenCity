@@ -188,6 +188,8 @@ public final class ErrorMessage {
     public static final String INVALID_DATE = "Date can't be null or empty";
     public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT =
         "No friends are assigned on current habit with id: ";
+    public static final String INVALID_TIME_RANGE = "Start date and end date must be greater than end date";
+    public static final String NOT_FOUND_IN_CURRENT_TIME_RANGE = "Not found backups in current time range";
 
     private ErrorMessage() {
     }

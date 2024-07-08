@@ -182,7 +182,9 @@ public class SecurityConfig {
                     "/token",
                     "/socket/**",
                     FRIENDS + "/user/{userId}",
-                    "/habit/assign/confirm/{habitAssignId}")
+                    "/habit/assign/confirm/{habitAssignId}",
+                    "/database/backup",
+                    "/database/backupFiles")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
                     "/ownSecurity/signUp",
