@@ -72,14 +72,15 @@ public class DatabaseBackupServiceImpl implements DataBaseBackUpService {
 
             Process process = processBuilder.start();
 
-            ExecutorService executorService = Executors.newFixedThreadPool(2);
+            int exitCode;
+            try (ExecutorService executorService = Executors.newFixedThreadPool(2)) {
+                executorService.submit(() -> readProcessOutput(process.getInputStream(), byteArrayOutputStream));
+                executorService.submit(() -> logProcessErrors(process.getErrorStream()));
 
-            executorService.submit(() -> readProcessOutput(process.getInputStream(), byteArrayOutputStream));
-            executorService.submit(() -> logProcessErrors(process.getErrorStream()));
-
-            int exitCode = process.waitFor();
-            executorService.shutdown();
-            executorService.awaitTermination(2, TimeUnit.MINUTES);
+                exitCode = process.waitFor();
+                executorService.shutdown();
+                executorService.awaitTermination(2, TimeUnit.MINUTES);
+            }
 
             if (exitCode == 0) {
                 uploadToAzureBlobStorage(byteArrayOutputStream);
