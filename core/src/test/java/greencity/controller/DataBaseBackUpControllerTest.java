@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -22,7 +21,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class DataBaseBackUpControllerTest {
+class DataBaseBackUpControllerTest {
 
     private MockMvc mockMvc;
 
@@ -39,7 +38,7 @@ public class DataBaseBackUpControllerTest {
     }
 
     @Test
-    public void testBackupDatabase() throws Exception {
+    void testBackupDatabase() throws Exception {
         doNothing().when(dataBaseBackUpService).backupDatabase();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/database/backup")
@@ -49,7 +48,7 @@ public class DataBaseBackUpControllerTest {
     }
 
     @Test
-    public void testGetBackupFiles() throws Exception {
+    void testGetBackupFiles() throws Exception {
         LocalDateTime start = LocalDateTime.now().minusHours(1);
         LocalDateTime end = LocalDateTime.now();
         List<String> urls = Arrays.asList("http://backup1.com", "http://backup2.com");
