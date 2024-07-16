@@ -46,6 +46,8 @@ class UserNotificationServiceImplTest {
     private UserService userService;
     @Mock
     private SimpMessagingTemplate messagingTemplate;
+    private static String TOPIC = "/topic/";
+    private static String NOTIFICATION = "/notification";
 
     @Test
     void getThreeLastNotificationsTest() {
@@ -171,7 +173,7 @@ class UserNotificationServiceImplTest {
             .thenReturn(true);
         userNotificationService.notificationSocket(dto);
 
-        verify(messagingTemplate).convertAndSend("/topic/" + dto.getUserId() + "/notification", true);
+        verify(messagingTemplate).convertAndSend(TOPIC + dto.getUserId() + NOTIFICATION, true);
         verify(notificationRepo).existsByTargetUserIdAndViewedIsFalse(dto.getUserId());
     }
 
@@ -181,7 +183,8 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
             NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(messagingTemplate,times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
+        verify(messagingTemplate,times(1))
+            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
     }
 
     @Test
@@ -190,7 +193,8 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
             NotificationType.EVENT_CREATED, 1L, "Title");
         verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
+        verify(messagingTemplate, times(1))
+            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
     }
 
     @Test
@@ -198,7 +202,8 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO, NotificationType.EVENT_CREATED);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
-        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
+        verify(messagingTemplate, times(1))
+            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
     }
 
     @Test
@@ -214,7 +219,8 @@ class UserNotificationServiceImplTest {
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
-        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
+        verify(messagingTemplate, times(1))
+            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
     }
 
     @Test
@@ -231,7 +237,8 @@ class UserNotificationServiceImplTest {
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
-        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
+        verify(messagingTemplate, times(1))
+            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
     }
 
     @Test
@@ -240,7 +247,8 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNewNotification(TEST_USER_VO, NotificationType.EVENT_CREATED,
             1L, "Custom Message");
         verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(messagingTemplate, times(1)).convertAndSend("/topic/" + TEST_USER.getId() + "/notification",true);
+        verify(messagingTemplate, times(1))
+            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
     }
 
     @Test
@@ -310,7 +318,7 @@ class UserNotificationServiceImplTest {
 
         verify(notificationRepo).findById(notificationId);
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
-        verify(messagingTemplate).convertAndSend("/topic/" + userId + "/notification", true);
+        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, true);
         verify(notificationRepo).markNotificationAsNotViewed(notificationId);
     }
 
@@ -330,7 +338,7 @@ class UserNotificationServiceImplTest {
 
         verify(notificationRepo).findById(notificationId);
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
-        verify(messagingTemplate).convertAndSend("/topic/" + userId + "/notification", false);
+        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, false);
         verify(notificationRepo).markNotificationAsViewed(notificationId);
     }
 }
