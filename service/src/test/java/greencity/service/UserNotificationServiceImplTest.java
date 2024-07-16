@@ -46,8 +46,8 @@ class UserNotificationServiceImplTest {
     private UserService userService;
     @Mock
     private SimpMessagingTemplate messagingTemplate;
-    private static String TOPIC = "/topic/";
-    private static String NOTIFICATION = "/notification";
+    private static final String TOPIC = "/topic/";
+    private static final String NOTIFICATION = "/notification";
 
     @Test
     void getThreeLastNotificationsTest() {
@@ -318,7 +318,7 @@ class UserNotificationServiceImplTest {
 
         verify(notificationRepo).findById(notificationId);
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
-        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, true);
+        verify(messagingTemplate).convertAndSend(TOPIC + userId + notification, true);
         verify(notificationRepo).markNotificationAsNotViewed(notificationId);
     }
 
@@ -338,7 +338,7 @@ class UserNotificationServiceImplTest {
 
         verify(notificationRepo).findById(notificationId);
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
-        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, false);
+        verify(messagingTemplate).convertAndSend(TOPIC + userId + notification, false);
         verify(notificationRepo).markNotificationAsViewed(notificationId);
     }
 }
