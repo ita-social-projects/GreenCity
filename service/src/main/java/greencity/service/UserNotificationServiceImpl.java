@@ -272,6 +272,13 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void unreadNotification(Long notificationId) {
+        Long userId = notificationRepo.findById(notificationId)
+            .orElseThrow().getTargetUser().getId();
+        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        if (count == 0) {
+            messagingTemplate
+                .convertAndSend("/topic/" + userId + "/notification", true);
+        }
         notificationRepo.markNotificationAsNotViewed(notificationId);
     }
 
@@ -280,6 +287,13 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void viewNotification(Long notificationId) {
+        Long userId = notificationRepo.findById(notificationId)
+            .orElseThrow().getTargetUser().getId();
+        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        if (count == 1) {
+            messagingTemplate
+                .convertAndSend("/topic/" + userId + "/notification", false);
+        }
         notificationRepo.markNotificationAsViewed(notificationId);
     }
 

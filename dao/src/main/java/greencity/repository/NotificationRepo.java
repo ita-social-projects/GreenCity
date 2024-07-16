@@ -113,4 +113,14 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
      * @param targetUserId   id of user
      */
     void deleteNotificationByIdAndTargetUserId(Long notificationId, Long targetUserId);
+
+    /**
+     * Counts the number of unread notifications for a specific user. This method
+     * retrieves the count of notifications that have `viewed` set to `false` for
+     * the user identified by the given `userId`.
+     *
+     * @param userId the ID of the user whose unread notifications are to be counted
+     * @return the number of unread notifications for the specified user
+     */
+    long countByTargetUserIdAndViewedIsFalse(Long userId);
 }
