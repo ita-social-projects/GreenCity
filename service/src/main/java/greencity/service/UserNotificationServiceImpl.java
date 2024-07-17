@@ -38,6 +38,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private SimpMessagingTemplate messagingTemplate;
+    private static final String TOPIC = "/topic/";
+    private static final String NOTIFICATION = "/notification";
 
     /**
      * {@inheritDoc}
@@ -114,7 +116,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         boolean isExist =
             notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
         messagingTemplate
-            .convertAndSend("/topic/" + user.getUserId() + "/notification", isExist);
+            .convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, isExist);
     }
 
     /**
@@ -272,6 +274,13 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void unreadNotification(Long notificationId) {
+        Long userId = notificationRepo.findById(notificationId)
+            .orElseThrow().getTargetUser().getId();
+        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        if (count == 0) {
+            messagingTemplate
+                .convertAndSend(TOPIC + userId + NOTIFICATION, true);
+        }
         notificationRepo.markNotificationAsNotViewed(notificationId);
     }
 
@@ -280,6 +289,13 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void viewNotification(Long notificationId) {
+        Long userId = notificationRepo.findById(notificationId)
+            .orElseThrow().getTargetUser().getId();
+        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        if (count == 1) {
+            messagingTemplate
+                .convertAndSend(TOPIC + userId + NOTIFICATION, false);
+        }
         notificationRepo.markNotificationAsViewed(notificationId);
     }
 
@@ -332,6 +348,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * @param userId the ID of the user to whom the notification will be sent
      */
     private void sendNotification(Long userId) {
-        messagingTemplate.convertAndSend("/topic/" + userId + "/notification", true);
+        messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, true);
     }
 }
