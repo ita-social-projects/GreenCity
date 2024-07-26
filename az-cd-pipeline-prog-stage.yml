@@ -1,0 +1,114 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - prodstage
+  paths:
+    exclude:
+    - README.md
+
+pr: none
+
+variables:
+  agentOS: ubuntu-latest
+  
+  azKeyVault: key-vault-greencity
+  jsonSecret: google-credentials
+  jsonFile: google-creds.json
+  jsonLocation: /site/wwwroot
+  
+  artifactName: drop
+  coreRepoName: core
+  onbootJarName: app.jar
+  
+  azureSub: GreenCity2022
+  resourceGroup: GreenCity
+  coreServiceName: greencity
+
+stages:
+- stage: Build
+  jobs: 
+  - job: Build
+    pool:
+      vmImage: $(agentOS)
+    steps:
+    - task: Maven@3
+      displayName: Maven package
+      inputs:
+        mavenPomFile: 'pom.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.11'
+        mavenVersionOption: 'Default'
+        options: '-Dmaven.test.skip=true'
+
+        
+    - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
+      displayName: Rename core jar to app
+
+    - task: CopyFiles@2
+      displayName: Copy Files
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/target/*.jar'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+    
+    - task: CopyFiles@2
+      displayName: Copy Files
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)/greencity-chart'
+        Contents: '**'
+        TargetFolder: '$(build.artifactstagingdirectory)/greencity-chart'
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifact
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+        artifactName: '$(artifactName)'
+        
+    - task: Docker@2
+      displayName: Build image
+      inputs:
+        containerRegistry: 'Dockerhub_Skyere'
+        repository: 'skyere/greencity'
+        command: 'buildAndPush'
+        Dockerfile: 'Dockerfile'
+        tags: |
+          prod-$(Build.BuildId)
+          latest
+
+- stage: Deploy
+  jobs:
+    - deployment: DeployCore
+      displayName: Deploy core app service
+      pool:
+        vmImage: $(agentOS)
+      environment: 'production'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: none
+            
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: '$(artifactName)'
+                downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: HelmInstaller@0
+              inputs:
+                helmVersion: '3.9.0'
+                installKubectl: true
+                
+            - task: HelmDeploy@0
+              inputs:
+                connectionType: 'Kubernetes Service Connection'
+                kubernetesServiceConnection: 'production'
+                namespace: 'default'
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
+                releaseName: 'greencity'
+                overrideValues: 'ingress.hostname=greencity.test.greencity.cx.ua,deployment.image=skyere/greencity:prod-$(Build.BuildId),externalSecret.vaultUrl=https://greencity.vault.azure.net/'
+                arguments: '--debug'
