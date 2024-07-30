@@ -57,16 +57,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -895,7 +886,7 @@ public class EventServiceImpl implements EventService {
 
     @Nullable
     private List<EventPreviewDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
-        Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
+        Map<Long, EventPreviewDto> eventsMap = new TreeMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
         List<EventPreviewDto> sortedDtos = new ArrayList<>();
         for (Tuple tuple : page) {
@@ -961,9 +952,8 @@ public class EventServiceImpl implements EventService {
                 .build());
             tagsMap.put(id, tagDtos);
         }
-        for (Map.Entry<Long, EventPreviewDto> entry : eventsMap.entrySet()) {
-            long id = entry.getKey();
-            EventPreviewDto eventPreviewDto = entry.getValue();
+        for (Long id : sortedIds) {
+            EventPreviewDto eventPreviewDto = eventsMap.get(id);
             Set<TagDto> tags = tagsMap.get(id);
             List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
 
