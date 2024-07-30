@@ -962,19 +962,30 @@ public class EventServiceImpl implements EventService {
         }
         List<EventPreviewDto> sortedDtos = new ArrayList<>();
         for (Long id : sortedIds) {
-            // Temporary mapping in TagUaEnDto
             Set<TagDto> tags = tagsMap.get(id);
-            TagDto enTag =
-                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("en")).findAny().orElse(new TagDto());
-            TagDto uaTag =
-                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("ua")).findAny().orElse(new TagDto());
-            TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
-                .id(enTag.getId())
-                .nameEn(enTag.getName())
-                .nameUa(uaTag.getName())
-                .build();
+            List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
+
+            Map<Long, List<TagDto>> groupedTags = tags.stream()
+                .collect(Collectors.groupingBy(TagDto::getId));
+
+            groupedTags.forEach((tagId, tagList) -> {
+                Map<String, TagDto> uaEnMap = new HashMap<>();
+                for (TagDto tag : tagList) {
+                    if (!uaEnMap.containsKey(tag.getLanguageCode())) {
+                        uaEnMap.put(tag.getLanguageCode(), tag);
+                    }
+                }
+                if (uaEnMap.containsKey("ua") && uaEnMap.containsKey("en")) {
+                    TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
+                        .id(tagId)
+                        .nameUa(uaEnMap.get("ua").getName())
+                        .nameEn(uaEnMap.get("en").getName())
+                        .build();
+                    tagUaEnDtos.add(tagUaEnDto);
+                }
+            });
             EventPreviewDto eventPreviewDto = eventsMap.get(id);
-            eventPreviewDto.setTags(List.of(tagUaEnDto));
+            eventPreviewDto.setTags(tagUaEnDtos);
             sortedDtos.add(eventPreviewDto);
         }
         return sortedDtos;
