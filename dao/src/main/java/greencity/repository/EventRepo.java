@@ -182,9 +182,9 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      *         filters.
      */
     @Query(nativeQuery = true, value = """
-        SELECT combined.eventId
+        SELECT distinct combined.eventId
         FROM (
-                 (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
+                 (SELECT e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
                                   edl.city_en, tt.name as ttName, e.is_open,
                                   (true)             AS isRelevant,
                                   COUNT(DISTINCT eul) AS likes,
@@ -202,7 +202,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                   GROUP BY e.id, tt.name, edl.city_en
                   ORDER BY firstFinishDate, grade DESC, likes DESC)
                  UNION ALL
-                 (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
+                 (SELECT e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
                                   edl.city_en, tt.name as ttName, e.is_open,
                                   (false)             AS isRelevant,
                                   COUNT(DISTINCT eul) AS likes,
@@ -280,9 +280,9 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      */
     @Query(nativeQuery = true,
         value = """
-            SELECT combined.eventId
+            SELECT distinct combined.eventId
             FROM (
-                     (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
+                     (SELECT e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
                              edl.city_en, tt.name as ttName, e.is_open,
                              (true)             AS isRelevant,
                              COUNT(DISTINCT eul) AS likes,
@@ -309,7 +309,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                      ORDER BY isSubscribed desc, isFavorite desc, isOrganizedByUser desc, isOrganizedByFriend desc,
                         firstFinishDate, grade DESC, likes DESC)
                      UNION ALL
-                     (SELECT distinct e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
+                     (SELECT e.id as eventId, e.title, min(edl.finish_date) as firstFinishDate,
                                       edl.city_en, tt.name as ttName, e.is_open,
                                       (false)             AS isRelevant,
                                       COUNT(DISTINCT eul) AS likes,
