@@ -897,6 +897,7 @@ public class EventServiceImpl implements EventService {
     private List<EventPreviewDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
         Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
+        List<EventPreviewDto> sortedDtos = new ArrayList<>();
         for (Tuple tuple : page) {
             long id = tuple.get(eventId, Long.class);
             EventPreviewDto eventPreviewDto;
@@ -960,8 +961,9 @@ public class EventServiceImpl implements EventService {
                 .build());
             tagsMap.put(id, tagDtos);
         }
-        List<EventPreviewDto> sortedDtos = new ArrayList<>();
-        for (Long id : sortedIds) {
+        for (Map.Entry<Long, EventPreviewDto> entry : eventsMap.entrySet()) {
+            long id = entry.getKey();
+            EventPreviewDto eventPreviewDto = entry.getValue();
             Set<TagDto> tags = tagsMap.get(id);
             List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
 
@@ -970,11 +972,9 @@ public class EventServiceImpl implements EventService {
 
             groupedTags.forEach((tagId, tagList) -> {
                 Map<String, TagDto> uaEnMap = new HashMap<>();
-                for (TagDto tag : tagList) {
-                    if (!uaEnMap.containsKey(tag.getLanguageCode())) {
-                        uaEnMap.put(tag.getLanguageCode(), tag);
-                    }
-                }
+                tagList.stream()
+                    .filter(tag -> !uaEnMap.containsKey(tag.getLanguageCode()))
+                    .forEach(tag -> uaEnMap.put(tag.getLanguageCode(), tag));
                 if (uaEnMap.containsKey("ua") && uaEnMap.containsKey("en")) {
                     TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
                         .id(tagId)
@@ -984,7 +984,6 @@ public class EventServiceImpl implements EventService {
                     tagUaEnDtos.add(tagUaEnDto);
                 }
             });
-            EventPreviewDto eventPreviewDto = eventsMap.get(id);
             eventPreviewDto.setTags(tagUaEnDtos);
             sortedDtos.add(eventPreviewDto);
         }
