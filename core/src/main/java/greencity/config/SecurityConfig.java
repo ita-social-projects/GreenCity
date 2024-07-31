@@ -350,9 +350,9 @@ public class SecurityConfig {
                     "/user/{userId}/userFriend/{friendId}",
                     "/habit/assign/delete/{habitAssignId}",
                     "/habit/delete/{customHabitId}",
+                    FRIENDS,
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    FRIENDS + "/",
                     FRIENDS + "/{friendId}/cancelRequest",
                     "/notification/{notificationId}")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
