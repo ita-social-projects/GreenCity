@@ -122,69 +122,75 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception
-     * {@link UserHasNoAvailableHabitTranslationException}.
+     * Method interceptor for exceptions such as {@link BadRequestException},
+     * {@link UserHasNoAvailableHabitTranslationException},{@link NotDeleteLastHabit}
+     * {@link UserAlreadyHasHabitAssignedException}, {@link NotSavedException}
+     * {@link UserHasReachedOutOfEnrollRange},{@link WrongIdException},
+     * {@link UserAlreadyHasEnrolledHabitAssign}, {@link BadRefreshTokenException},
+     * {@link BadPlaceRequestException}, {@link BadSocialNetworkLinksException},
+     * {@link InvalidURLException}, {@link BadCategoryRequestException},
+     * {@link UserShoppingListItemNotSavedException},{@link NotDeletedException}
+     * {@link EventDtoValidationException}, {@link UnsupportedSortException},
+     * {@link NotUpdatedException}, {@link UserHasNoShoppingListItemsException},
+     * {@link InvalidStatusException},
+     * {@link UserShoppingListItemStatusNotUpdatedException}.
      *
-     * @param ex      Exception witch should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return ResponseEntity which contains the HTTP status and body with the
+     *         message of the exception.
+     */
+    @ExceptionHandler({
+        BadRequestException.class, UserHasNoAvailableHabitTranslationException.class,
+        UserAlreadyHasHabitAssignedException.class, UserHasReachedOutOfEnrollRange.class,
+        UserAlreadyHasEnrolledHabitAssign.class, BadRefreshTokenException.class,
+        BadPlaceRequestException.class, BadSocialNetworkLinksException.class,
+        InvalidURLException.class, BadCategoryRequestException.class,
+        UserShoppingListItemNotSavedException.class, EventDtoValidationException.class,
+        WrongIdException.class, NotDeletedException.class,
+        UnsupportedSortException.class, NotUpdatedException.class,
+        UserHasNoShoppingListItemsException.class, InvalidStatusException.class,
+        UserShoppingListItemStatusNotUpdatedException.class, NotDeleteLastHabit.class,
+        NotSavedException.class
+    })
+    public final ResponseEntity<Object> handleBadRequestException(WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor exception {@link UserHasNoFriendWithIdException},
+     * {@link NotFoundException}, {@link ShoppingListItemNotFoundException},
+     * {@link ShoppingListItemNotFoundException}, {@link TagNotFoundException}.
+     *
      * @param request contain detail about occur exception.
-     * @return ResponseEntity which contains http status and body with message of
-     *         exception.
-     * @author Yurii Savchenko
-     */
-    @ExceptionHandler(UserHasNoAvailableHabitTranslationException.class)
-    public final ResponseEntity<Object> handleUserHasNoAvailableHabitDictionaryException(
-        UserHasNoAvailableHabitTranslationException ex, WebRequest request) {
-        log.warn(ex.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link UserAlreadyHasHabitAssignedException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
      * @return ResponseEntity which contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(UserAlreadyHasHabitAssignedException.class)
-    public final ResponseEntity<Object> handleUserAlreadyHasHabitAssignedException(
-        UserAlreadyHasHabitAssignedException ex, WebRequest request) {
-        log.warn(ex.getMessage());
+    @ExceptionHandler({NotFoundException.class,
+        UserHasNoFriendWithIdException.class, ShoppingListItemNotFoundException.class,
+        ShoppingListItemNotFoundException.class, TagNotFoundException.class})
+    public final ResponseEntity<Object> handleNotFoundException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
     /**
-     * Method intercept exception {@link UserAlreadyHasHabitAssignedException}.
+     * Method interceptor exception {@link NotCurrentUserException},
+     * {@link UserHasNoPermissionToAccessException}, {@link EmailNotVerified}.
      *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
+     * @param request contain detail about occur exception.
      * @return ResponseEntity which contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(UserHasReachedOutOfEnrollRange.class)
-    public final ResponseEntity<Object> handleUserHasReachedMaxDaysInPastToEnrollHabit(
-        UserHasReachedOutOfEnrollRange ex, WebRequest request) {
-        log.warn(ex.getMessage());
+    @ExceptionHandler({
+        NotCurrentUserException.class, UserHasNoPermissionToAccessException.class,
+        EmailNotVerified.class})
+    public final ResponseEntity<Object> handleForbiddenException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link UserAlreadyHasHabitAssignedException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity which contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(UserAlreadyHasEnrolledHabitAssign.class)
-    public final ResponseEntity<Object> handleUserAlreadyHasEnrolledHabitAssign(
-        UserAlreadyHasEnrolledHabitAssign ex, WebRequest request) {
-        log.warn(ex.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 
     /**
@@ -228,38 +234,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link BadRequestException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     * @author Yurii Savchenko
-     */
-    @ExceptionHandler(BadRequestException.class)
-    public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
-        log.warn(ex.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link NotFoundException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     * @author Marian Milian
-     */
-    @ExceptionHandler(NotFoundException.class)
-    public final ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
-    }
-
-    /**
      * Method intercept exception {@link WrongEmailOrPasswordException}.
      *
      * @param request contain detail about occur exception
@@ -298,20 +272,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link BadRefreshTokenException}.
-     *
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     * @author Nazar Stasyuk
-     */
-    @ExceptionHandler(BadRefreshTokenException.class)
-    public final ResponseEntity<Object> handleBadRefreshTokenException(WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
      * Method intercept exception {@link UserAlreadyRegisteredException}.
      *
      * @param ex Exception witch should be intercepted.
@@ -325,54 +285,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             new ValidationExceptionDto(AppConstant.REGISTRATION_EMAIL_FIELD_NAME, ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(Collections.singletonList(validationExceptionDto));
-    }
-
-    /**
-     * Method intercept exception {@link BadPlaceRequestException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(BadPlaceRequestException.class)
-    public final ResponseEntity<Object> handleBadPlaceRequestException(BadPlaceRequestException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link BadSocialNetworkLinksException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(BadSocialNetworkLinksException.class)
-    public final ResponseEntity<Object> handleBadSocialNetworkLinkException(BadSocialNetworkLinksException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link InvalidURLException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(InvalidURLException.class)
-    public final ResponseEntity<Object> handleBadSocialNetworkLinkException(InvalidURLException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
@@ -391,276 +303,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    /**
-     * Method intercept exception {@link BadCategoryRequestException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(BadCategoryRequestException.class)
-    public final ResponseEntity<Object> handleBadCategoryRequestException(BadCategoryRequestException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link NotCurrentUserException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(NotCurrentUserException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(NotCurrentUserException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link UserShoppingListItemNotSavedException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(ShoppingListItemNotFoundException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
-        ShoppingListItemNotFoundException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link UserShoppingListItemNotSavedException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(UserShoppingListItemNotSavedException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
-        UserShoppingListItemNotSavedException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link UserHasNoShoppingListItemsException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(UserHasNoShoppingListItemsException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
-        UserHasNoShoppingListItemsException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception
-     * {@link UserShoppingListItemStatusNotUpdatedException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(UserShoppingListItemStatusNotUpdatedException.class)
-    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
-        UserShoppingListItemStatusNotUpdatedException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link NotDeleteLastHabit}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception.
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(NotDeleteLastHabit.class)
-    public final ResponseEntity<Object> handleUserHabitWhereNotDeleteException(NotDeleteLastHabit ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.OK).body(exceptionResponse);
-    }
-
-    /**
-     * Method interceptor exception {@link EmailNotVerified}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(EmailNotVerified.class)
-    public final ResponseEntity<Object> handleEmailNotVerified(EmailNotVerified ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link TagNotFoundException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(TagNotFoundException.class)
-    public final ResponseEntity<Object> handleTagNotFoundException(TagNotFoundException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercept exception {@link UserHasNoPermissionToAccessException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler(UserHasNoPermissionToAccessException.class)
-    public final ResponseEntity<Object> handleUserHasNoPermissionToAccessException(
-        UserHasNoPermissionToAccessException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for NotSavedException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(NotSavedException.class)
-    public final ResponseEntity<Object> handleNotSavedException(
-        NotSavedException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for NotUpdatedException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(NotUpdatedException.class)
-    public final ResponseEntity<Object> handleNotUpdatedException(
-        NotUpdatedException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for NotDeletedException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(NotDeletedException.class)
-    public final ResponseEntity<Object> handleNotDeletedException(
-        NotDeletedException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
         HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for InvalidStatusException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(InvalidStatusException.class)
-    public final ResponseEntity<Object> handleInvalidStatusException(InvalidStatusException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for UnsupportedSortException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(UnsupportedSortException.class)
-    public final ResponseEntity<Object> handleUnsuportedSortException(
-        UnsupportedSortException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for EventDtoValidationException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(EventDtoValidationException.class)
-    public final ResponseEntity<Object> handleEventDtoValidationException(
-        EventDtoValidationException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for WrongIdException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(WrongIdException.class)
-    public final ResponseEntity<Object> handleWrongIdException(
-        WrongIdException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -680,20 +325,5 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         return new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
             ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)));
-    }
-
-    /**
-     * Customize the response for UserHasNoFriendWithIdException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(UserHasNoFriendWithIdException.class)
-    public final ResponseEntity<Object> handleUserHasNoFriendWithIdException(
-        UserHasNoFriendWithIdException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 }
