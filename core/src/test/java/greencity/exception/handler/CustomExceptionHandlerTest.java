@@ -1,10 +1,7 @@
 package greencity.exception.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import greencity.exception.exceptions.*;
 import jakarta.validation.ConstraintDeclarationException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,16 +18,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 
-import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -112,6 +106,17 @@ class CustomExceptionHandlerTest {
         assertEquals(customExceptionHandler.handleForbiddenException(
             webRequest),
             ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse));
+    }
+
+    @Test
+    void handleNotFoundException() {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleNotFoundException(
+            webRequest),
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse));
     }
 
     @Test
