@@ -1,6 +1,11 @@
 package greencity.exception.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import greencity.exception.exceptions.*;
+import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,16 +17,24 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
+
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomExceptionHandlerTest {
@@ -52,6 +65,133 @@ class CustomExceptionHandlerTest {
     }
 
     @Test
+    void handleTooLargeMultipartFileRequest() {
+        MultipartException multipartException = new MultipartException("test");
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleTooLargeMultipartFileRequest(
+            multipartException, webRequest),
+            ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(exceptionResponse));
+    }
+
+    @Test
+    void handleConstraintDeclarationException() {
+        ConstraintDeclarationException constraintDeclarationException = new ConstraintDeclarationException("test");
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleConstraintDeclarationException(
+            constraintDeclarationException, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
+    void handleValidationException() {
+        ValidationException validationException = new ValidationException("test");
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleValidationException(
+            validationException, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
+    void handleForbiddenException() {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleForbiddenException(
+            webRequest),
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse));
+    }
+
+    @Test
+    void handleIllegalArgumentException() {
+        IllegalArgumentException illegalArgumentException = new IllegalArgumentException("test");
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleIllegalArgumentException(
+            illegalArgumentException, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
+    void handleAuthenticationException() {
+        AuthenticationException authenticationException = new AuthenticationException("test") {
+        };
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleAuthenticationException(
+            authenticationException, webRequest),
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse));
+    }
+
+    @Test
+    void handleStatusException() {
+        InvalidStatusException statusException = new InvalidStatusException("test");
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleStatusException(
+            statusException, webRequest),
+            ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse));
+    }
+
+    @Test
+    void handleOperationException() {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleOperationException(
+            webRequest),
+            ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse));
+    }
+
+    @Test
+    void handleUnsupportedOperationException() {
+        UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException("test");
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleUnsupportedOperationException(
+            unsupportedOperationException, webRequest),
+            ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(exceptionResponse));
+    }
+
+    @Test
+    void handleImageUrlParseException() {
+        ImageUrlParseException imageUrlParseException = new ImageUrlParseException("test");
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+
+        assertEquals(customExceptionHandler.handleImageUrlParseException(
+            imageUrlParseException, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
     void handleMethodArgumentNotValid() {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         FieldError fieldError = new FieldError("G", "field", "default");
@@ -75,80 +215,16 @@ class CustomExceptionHandlerTest {
         assertEquals(customExceptionHandler.handleBadEmailException(actual), body);
     }
 
-    /*
-     * @Test void handleEmailNotVerified() { EmailNotVerified emailNotVerified = new
-     * EmailNotVerified("email"); ExceptionResponse exceptionResponse = new
-     * ExceptionResponse(objectMap);
-     * when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-     * any(ErrorAttributeOptions.class))) .thenReturn(objectMap);
-     * assertEquals(customExceptionHandler.handleEmailNotVerified(emailNotVerified,
-     * webRequest),
-     * ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse)); }
-     */
-
-    /*
-     * @Test void handleBadSocialNetworkLinkException() { InvalidURLException
-     * invalidURLException = new InvalidURLException("test"); ExceptionResponse
-     * exceptionResponse = new ExceptionResponse(objectMap);
-     * when(errorAttributes.getErrorAttributes(any(), any())).thenReturn(objectMap);
-     * assertEquals(customExceptionHandler.handleBadSocialNetworkLinkException(
-     * invalidURLException, webRequest),
-     * ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse)); }
-     */
-
-    /*
-     * @Test void testHandleBadSocialNetworkLinkException() {
-     * BadSocialNetworkLinksException badSocialNetworkLinksException = new
-     * BadSocialNetworkLinksException("test"); ExceptionResponse exceptionResponse =
-     * new ExceptionResponse(objectMap);
-     * when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-     * any(ErrorAttributeOptions.class))) .thenReturn(objectMap); assertEquals(
-     * customExceptionHandler.handleBadSocialNetworkLinkException(
-     * badSocialNetworkLinksException, webRequest),
-     * ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse)); }
-     */
-
-    /*
-     * @Test void testHandleBadRefreshTokenException() { ExceptionResponse
-     * exceptionResponse = new ExceptionResponse(objectMap);
-     * when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-     * any(ErrorAttributeOptions.class))) .thenReturn(objectMap);
-     * assertEquals(customExceptionHandler.handleBadRefreshTokenException(webRequest
-     * ), ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse)); }
-     */
-
-    /*
-     * @Test void handleBadRequestException() { BadRequestException
-     * badRequestException = new BadRequestException("test"); ExceptionResponse
-     * exceptionResponse = new ExceptionResponse(objectMap);
-     * when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-     * any(ErrorAttributeOptions.class))) .thenReturn(objectMap);
-     * assertEquals(customExceptionHandler.handleBadRequestException(
-     * badRequestException, webRequest),
-     * ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse)); }
-     */
-
-    /*
-     * @Test void handleNotFoundException() { NotFoundException notFoundException =
-     * new NotFoundException("test"); ExceptionResponse exceptionResponse = new
-     * ExceptionResponse(objectMap);
-     * when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-     * any(ErrorAttributeOptions.class))) .thenReturn(objectMap);
-     * assertEquals(customExceptionHandler.handleNotFoundException(
-     * notFoundException, webRequest),
-     * ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse)); }
-     */
-
-    /*
-     * @Test void handleWrongIdException() { WrongIdException wrongIdException = new
-     * WrongIdException("test"); ExceptionResponse exceptionResponse = new
-     * ExceptionResponse(objectMap);
-     * when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-     * any(ErrorAttributeOptions.class))) .thenReturn(objectMap);
-     * assertEquals(customExceptionHandler.handleWrongIdException(wrongIdException,
-     * webRequest),
-     * ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse)); }
-     */
+    @Test
+    void handleBadRequestException() {
+        BadRequestException badRequestException = new BadRequestException("test");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+        assertEquals(customExceptionHandler.handleBadRequestException(
+            badRequestException, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
 
     @Test
     void handleHttpMessageNotReadable() {

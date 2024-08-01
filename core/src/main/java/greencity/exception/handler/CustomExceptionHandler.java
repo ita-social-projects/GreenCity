@@ -111,7 +111,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Prots
      */
     @ExceptionHandler(BadRequestException.class)
-    public final ResponseEntity<Object> handleBadRequestExceptions(BadRequestException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -129,7 +129,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Prots
      */
     @ExceptionHandler(ConstraintDeclarationException.class)
-    public final ResponseEntity<Object> handleConstraintDeclarationExceptions(ConstraintDeclarationException ex,
+    public final ResponseEntity<Object> handleConstraintDeclarationException(ConstraintDeclarationException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
@@ -146,7 +146,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Prots
      */
     @ExceptionHandler(ValidationException.class)
-    public final ResponseEntity<Object> handleValidationExceptions(ValidationException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleValidationException(ValidationException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -245,7 +245,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Stasyuk
      */
     @ExceptionHandler(AuthenticationException.class)
-    public final ResponseEntity<Object> authenticationException(AuthenticationException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
@@ -269,7 +269,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Method interceptor for exceptions related to unsuccessful operations such as
-     * {@link NotDeletedException}, {@link NotUpdatedException}, and
+     * {@link NotDeletedException}, {@link NotUpdatedException},
      * {@link NotSavedException},
      * {@link UserShoppingListItemStatusNotUpdatedException},
      * {@link CustomShoppingListItemNotSavedException}.
@@ -284,7 +284,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         NotUpdatedException.class,
         NotSavedException.class
     })
-    public final ResponseEntity<Object> handleOperationExceptions(WebRequest request) {
+    public final ResponseEntity<Object> handleOperationException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
