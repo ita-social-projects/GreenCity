@@ -7,6 +7,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.exception.exceptions.*;
+import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -94,92 +95,105 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method interceptor for user-related exceptions such as
-     * {@link UserAlreadyHasHabitAssignedException},
-     * {@link UserHasReachedOutOfEnrollRange},
+     * Method interceptor for BadRequest-related exceptions such as
+     * {@link BadRequestException}, {@link BadCategoryRequestException},
+     * {@link BadSocialNetworkLinksException}, {@link BadUpdateRequestException},
+     * {@link InvalidUnsubscribeToken}, {@link NewsSubscriberPresentException},
      * {@link UserAlreadyHasEnrolledHabitAssign},
-     * {@link UserHasNoShoppingListItemsException}
-     * {@link UserShoppingListItemStatusNotUpdatedException}.
+     * {@link UserAlreadyHasHabitAssignedException}.
+     * {@link UserAlreadyHasMaxNumberOfActiveHabitAssigns},
+     * {@link UserHasReachedOutOfEnrollRange}, {@link WrongEmailException},
+     * {@link WrongIdException}.
      *
      * @param request Contains details about the occurred exception.
      * @return ResponseEntity which contains the HTTP status and body with the
      *         message of the exception.
+     * @author Nazar Prots
      */
-    @ExceptionHandler({
-        UserAlreadyHasHabitAssignedException.class,
-        UserHasReachedOutOfEnrollRange.class,
-        UserAlreadyHasEnrolledHabitAssign.class,
-        UserHasNoShoppingListItemsException.class,
-        UserShoppingListItemStatusNotUpdatedException.class,
-    })
-    public final ResponseEntity<Object> handleUserExceptions(WebRequest request) {
+    @ExceptionHandler(BadRequestException.class)
+    public final ResponseEntity<Object> handleBadRequestExceptions(BadRequestException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
-     * Method interceptor for validation-related exceptions such as
-     * {@link BadRequestException}, {@link EventDtoValidationException},
-     * {@link WrongIdException}, {@link NotDeletedException},
-     * {@link UnsupportedSortException}, {@link NotUpdatedException},
-     * {@link NotSavedException}, {@link BadUpdateRequestException},
-     * {@link PlaceStatusException}, {@link WrongCountOfTagsException},
-     * {@link BadCategoryRequestException}, {@link BadSocialNetworkLinksException}.
+     * Method interceptor for ConstraintDeclaration-related exceptions such as
+     * {@link ConstraintDeclarationException}, {@link DuplicatedTagException},
+     * {@link InvalidNumOfTagsException}, {@link InvalidURLException},
+     * {@link WrongCountOfTagsException}.
      *
      * @param request Contains details about the occurred exception.
      * @return ResponseEntity which contains the HTTP status and body with the
      *         message of the exception.
+     * @author Nazar Prots
      */
-    @ExceptionHandler({
-        BadRequestException.class,
-        ValidationException.class,
-        NotDeletedException.class,
-        UnsupportedSortException.class,
-        NotUpdatedException.class,
-        NotSavedException.class,
-        PlaceStatusException.class
-    })
-    public final ResponseEntity<Object> handleValidationExceptions(WebRequest request) {
+    @ExceptionHandler(ConstraintDeclarationException.class)
+    public final ResponseEntity<Object> handleConstraintDeclarationExceptions(ConstraintDeclarationException ex,
+        WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
-     * Method interceptor exception {@link UserHasNoFriendWithIdException},
-     * {@link NotFoundException}, {@link ShoppingListItemNotFoundException},
-     * {@link TagNotFoundException}. .
+     * Method interceptor for Validation-related exceptions such as
+     * {@link ValidationException}, {@link EventDtoValidationException}.
+     *
+     * @param request Contains details about the occurred exception.
+     * @return ResponseEntity which contains the HTTP status and body with the
+     *         message of the exception.
+     * @author Nazar Prots
+     */
+    @ExceptionHandler(ValidationException.class)
+    public final ResponseEntity<Object> handleValidationExceptions(ValidationException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor exception {@link NotCurrentUserException},
+     * {@link UserHasNoPermissionToAccessException}, {@link UserBlockedException},
+     * {@link LowRoleLevelException}.
      *
      * @param request contain detail about occur exception.
      * @return ResponseEntity which contain http status and body with message of
      *         exception.
+     * @author Nazar Prots
+     */
+    @ExceptionHandler({
+        NotCurrentUserException.class,
+        UserHasNoPermissionToAccessException.class,
+        UserBlockedException.class,
+        LowRoleLevelException.class})
+    public final ResponseEntity<Object> handleForbiddenException(WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor exception {@link NotFoundException},
+     * {@link UserHasNoFriendWithIdException},
+     * {@link UserHasNoShoppingListItemsException},
+     * {@link ShoppingListItemNotFoundException}, {@link TagNotFoundException},
+     * {@link LanguageNotFoundException}.
+     *
+     * @param request contain detail about occur exception.
+     * @return ResponseEntity which contain http status and body with message of
+     *         exception.
+     * @author Nazar Prots
      */
     @ExceptionHandler({
         NotFoundException.class,
         UserHasNoFriendWithIdException.class,
+        UserHasNoShoppingListItemsException.class
     })
     public final ResponseEntity<Object> handleNotFoundException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
-    }
-
-    /**
-     * Method interceptor exception {@link NotCurrentUserException},
-     * {@link UserHasNoPermissionToAccessException}.
-     *
-     * @param request contain detail about occur exception.
-     * @return ResponseEntity which contain http status and body with message of
-     *         exception.
-     */
-    @ExceptionHandler({
-        NotCurrentUserException.class,
-        UserHasNoPermissionToAccessException.class})
-    public final ResponseEntity<Object> handleForbiddenException(WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 
     /**
@@ -238,6 +252,62 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Method intercept exception {@link InvalidStatusException}
+     * {@link PlaceStatusException}.
+     *
+     * @param request contain detail about occur exception
+     * @return ResponseEntity witch contain http status and body with message of
+     *         exception.
+     * @author Nazar Prots
+     */
+    @ExceptionHandler(InvalidStatusException.class)
+    public final ResponseEntity<Object> handleStatusException(InvalidStatusException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor for exceptions related to unsuccessful operations such as
+     * {@link NotDeletedException}, {@link NotUpdatedException}, and
+     * {@link NotSavedException},
+     * {@link UserShoppingListItemStatusNotUpdatedException},
+     * {@link CustomShoppingListItemNotSavedException}.
+     *
+     * @param request Contains details about the occurred exception.
+     * @return ResponseEntity which contains HTTP status and body with the message
+     *         of the exception.
+     * @author Nazar Prots
+     */
+    @ExceptionHandler({
+        NotDeletedException.class,
+        NotUpdatedException.class,
+        NotSavedException.class
+    })
+    public final ResponseEntity<Object> handleOperationExceptions(WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor for {@link UnsupportedOperationException},
+     * {@link UnsupportedSortException}.
+     *
+     * @param ex      Exception which should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return ResponseEntity which contains HTTP status and body with the message
+     *         of the exception.
+     */
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public final ResponseEntity<Object> handleUnsupportedOperationException(UnsupportedOperationException ex,
+        WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(exceptionResponse);
+    }
+
+    /**
      * Method intercept exception {@link MethodArgumentTypeMismatchException}.
      *
      * @param request contain detail about occur exception
@@ -289,6 +359,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleDateTimeParseException(DateTimeParseException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ErrorMessage.WRONG_DATE_TIME_FORMAT);
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercept exception {@link ImageUrlParseException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain detail about occur exception
+     * @return ResponseEntity witch contain http status and body with message of
+     *         exception.
+     */
+    @ExceptionHandler(ImageUrlParseException.class)
+    public ResponseEntity<Object> handleImageUrlParseException(ImageUrlParseException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }

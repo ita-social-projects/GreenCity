@@ -1,8 +1,14 @@
 package greencity.exception.exceptions;
 
-public class UserShoppingListItemStatusNotUpdatedException extends RuntimeException {
+/**
+ * Exception thrown when the status of a user's shopping list item could not be
+ * updated.
+ *
+ * @version 1.0
+ */
+public class UserShoppingListItemStatusNotUpdatedException extends NotUpdatedException {
     /**
-     * Constructor.
+     * Constructor for UserShoppingListItemStatusNotUpdatedException.
      */
     public UserShoppingListItemStatusNotUpdatedException(String message) {
         super(message);

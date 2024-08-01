@@ -1,6 +1,6 @@
 package greencity.exception.exceptions;
 
-public class CustomShoppingListItemNotSavedException extends RuntimeException {
+public class CustomShoppingListItemNotSavedException extends NotSavedException {
     /**
      * Constructor.
      */
