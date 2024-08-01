@@ -1,6 +1,6 @@
 package greencity.exception.exceptions;
 
-public class ShoppingListItemNotFoundException extends RuntimeException {
+public class ShoppingListItemNotFoundException extends NotFoundException {
     /**
      * Constructor.
      */

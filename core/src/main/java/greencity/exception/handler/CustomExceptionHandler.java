@@ -6,36 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
-import greencity.exception.exceptions.BadCategoryRequestException;
-import greencity.exception.exceptions.BadPlaceRequestException;
-import greencity.exception.exceptions.BadRefreshTokenException;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.BadSocialNetworkLinksException;
-import greencity.exception.exceptions.EmailNotVerified;
-import greencity.exception.exceptions.EventDtoValidationException;
-import greencity.exception.exceptions.InvalidStatusException;
-import greencity.exception.exceptions.InvalidURLException;
-import greencity.exception.exceptions.NotCurrentUserException;
-import greencity.exception.exceptions.NotDeleteLastHabit;
-import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.NotUpdatedException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
-import greencity.exception.exceptions.TagNotFoundException;
-import greencity.exception.exceptions.UnsupportedSortException;
-import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
-import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserAlreadyRegisteredException;
-import greencity.exception.exceptions.UserHasNoAvailableHabitTranslationException;
-import greencity.exception.exceptions.UserHasNoFriendWithIdException;
-import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
-import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
-import greencity.exception.exceptions.UserShoppingListItemNotSavedException;
-import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
-import greencity.exception.exceptions.WrongEmailOrPasswordException;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.*;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -122,17 +94,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method interceptor for exceptions such as {@link BadRequestException},
-     * {@link UserHasNoAvailableHabitTranslationException},{@link NotDeleteLastHabit}
-     * {@link UserAlreadyHasHabitAssignedException}, {@link NotSavedException}
-     * {@link UserHasReachedOutOfEnrollRange},{@link WrongIdException},
-     * {@link UserAlreadyHasEnrolledHabitAssign}, {@link BadRefreshTokenException},
-     * {@link BadPlaceRequestException}, {@link BadSocialNetworkLinksException},
-     * {@link InvalidURLException}, {@link BadCategoryRequestException},
-     * {@link UserShoppingListItemNotSavedException},{@link NotDeletedException}
-     * {@link EventDtoValidationException}, {@link UnsupportedSortException},
-     * {@link NotUpdatedException}, {@link UserHasNoShoppingListItemsException},
-     * {@link InvalidStatusException},
+     * Method interceptor for user-related exceptions such as
+     * {@link UserAlreadyHasHabitAssignedException},
+     * {@link UserHasReachedOutOfEnrollRange},
+     * {@link UserAlreadyHasEnrolledHabitAssign},
+     * {@link UserHasNoShoppingListItemsException}
      * {@link UserShoppingListItemStatusNotUpdatedException}.
      *
      * @param request Contains details about the occurred exception.
@@ -140,19 +106,41 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      *         message of the exception.
      */
     @ExceptionHandler({
-        BadRequestException.class, UserHasNoAvailableHabitTranslationException.class,
-        UserAlreadyHasHabitAssignedException.class, UserHasReachedOutOfEnrollRange.class,
-        UserAlreadyHasEnrolledHabitAssign.class, BadRefreshTokenException.class,
-        BadPlaceRequestException.class, BadSocialNetworkLinksException.class,
-        InvalidURLException.class, BadCategoryRequestException.class,
-        UserShoppingListItemNotSavedException.class, EventDtoValidationException.class,
-        WrongIdException.class, NotDeletedException.class,
-        UnsupportedSortException.class, NotUpdatedException.class,
-        UserHasNoShoppingListItemsException.class, InvalidStatusException.class,
-        UserShoppingListItemStatusNotUpdatedException.class, NotDeleteLastHabit.class,
-        NotSavedException.class
+        UserAlreadyHasHabitAssignedException.class,
+        UserHasReachedOutOfEnrollRange.class,
+        UserAlreadyHasEnrolledHabitAssign.class,
+        UserHasNoShoppingListItemsException.class,
+        UserShoppingListItemStatusNotUpdatedException.class,
     })
-    public final ResponseEntity<Object> handleBadRequestException(WebRequest request) {
+    public final ResponseEntity<Object> handleUserExceptions(WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor for validation-related exceptions such as
+     * {@link BadRequestException}, {@link EventDtoValidationException},
+     * {@link WrongIdException}, {@link NotDeletedException},
+     * {@link UnsupportedSortException}, {@link NotUpdatedException},
+     * {@link NotSavedException}, {@link BadUpdateRequestException},
+     * {@link PlaceStatusException}, {@link WrongCountOfTagsException},
+     * {@link BadCategoryRequestException}, {@link BadSocialNetworkLinksException}.
+     *
+     * @param request Contains details about the occurred exception.
+     * @return ResponseEntity which contains the HTTP status and body with the
+     *         message of the exception.
+     */
+    @ExceptionHandler({
+        BadRequestException.class,
+        ValidationException.class,
+        NotDeletedException.class,
+        UnsupportedSortException.class,
+        NotUpdatedException.class,
+        NotSavedException.class,
+        PlaceStatusException.class
+    })
+    public final ResponseEntity<Object> handleValidationExceptions(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -161,15 +149,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Method interceptor exception {@link UserHasNoFriendWithIdException},
      * {@link NotFoundException}, {@link ShoppingListItemNotFoundException},
-     * {@link ShoppingListItemNotFoundException}, {@link TagNotFoundException}.
+     * {@link TagNotFoundException}. .
      *
      * @param request contain detail about occur exception.
      * @return ResponseEntity which contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler({NotFoundException.class,
-        UserHasNoFriendWithIdException.class, ShoppingListItemNotFoundException.class,
-        ShoppingListItemNotFoundException.class, TagNotFoundException.class})
+    @ExceptionHandler({
+        NotFoundException.class,
+        UserHasNoFriendWithIdException.class,
+    })
     public final ResponseEntity<Object> handleNotFoundException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
@@ -178,15 +167,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Method interceptor exception {@link NotCurrentUserException},
-     * {@link UserHasNoPermissionToAccessException}, {@link EmailNotVerified}.
+     * {@link UserHasNoPermissionToAccessException}.
      *
      * @param request contain detail about occur exception.
      * @return ResponseEntity which contain http status and body with message of
      *         exception.
      */
     @ExceptionHandler({
-        NotCurrentUserException.class, UserHasNoPermissionToAccessException.class,
-        EmailNotVerified.class})
+        NotCurrentUserException.class,
+        UserHasNoPermissionToAccessException.class})
     public final ResponseEntity<Object> handleForbiddenException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
@@ -234,7 +223,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link WrongEmailOrPasswordException}.
+     * Method intercept exception {@link AuthenticationException}.
      *
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
@@ -242,8 +231,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Nazar Stasyuk
      */
     @ExceptionHandler(AuthenticationException.class)
-    public final ResponseEntity<Object> authenticationException(WebRequest request) {
+    public final ResponseEntity<Object> authenticationException(AuthenticationException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 

@@ -5,7 +5,7 @@ package greencity.exception.exceptions;
  *
  * @author Nazar Stasyuk
  */
-public class WrongIdException extends RuntimeException {
+public class WrongIdException extends BadRequestException {
     /**
      * Constructor.
      *
