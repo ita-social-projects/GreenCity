@@ -97,8 +97,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Method interceptor for BadRequest-related exceptions such as
      * {@link BadRequestException}, {@link BadCategoryRequestException},
-     * {@link BadSocialNetworkLinksException}, {@link BadUpdateRequestException},
-     * {@link InvalidUnsubscribeToken}, {@link NewsSubscriberPresentException},
+     * {@link BadUpdateRequestException}, {@link InvalidUnsubscribeToken},
+     * {@link NewsSubscriberPresentException},
      * {@link UserAlreadyHasEnrolledHabitAssign},
      * {@link UserAlreadyHasHabitAssignedException}.
      * {@link UserAlreadyHasMaxNumberOfActiveHabitAssigns},
@@ -121,7 +121,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * Method interceptor for ConstraintDeclaration-related exceptions such as
      * {@link ConstraintDeclarationException}, {@link DuplicatedTagException},
      * {@link InvalidNumOfTagsException}, {@link InvalidURLException},
-     * {@link WrongCountOfTagsException}.
+     * {@link WrongCountOfTagsException}, {@link BadSocialNetworkLinksException}.
      *
      * @param request Contains details about the occurred exception.
      * @return ResponseEntity which contains the HTTP status and body with the
