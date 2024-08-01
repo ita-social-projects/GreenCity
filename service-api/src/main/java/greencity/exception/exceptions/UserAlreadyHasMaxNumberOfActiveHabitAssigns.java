@@ -1,7 +1,8 @@
 package greencity.exception.exceptions;
 
 /**
- * Exception thrown when a user already has the maximum number of active habit assignments.
+ * Exception thrown when a user already has the maximum number of active habit
+ * assignments.
  *
  * @version 1.0
  */
