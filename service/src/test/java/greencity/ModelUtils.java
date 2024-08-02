@@ -219,21 +219,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
-import static greencity.enums.NotificationType.ECONEWS_CREATED;
-import static greencity.enums.NotificationType.ECONEWS_LIKE;
-import static greencity.enums.NotificationType.EVENT_CANCELED;
-import static greencity.enums.NotificationType.EVENT_COMMENT;
-import static greencity.enums.NotificationType.EVENT_COMMENT_LIKE;
-import static greencity.enums.NotificationType.EVENT_COMMENT_REPLY;
-import static greencity.enums.NotificationType.EVENT_CREATED;
-import static greencity.enums.NotificationType.EVENT_JOINED;
-import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
-import static greencity.enums.NotificationType.EVENT_UPDATED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
+
+import static greencity.enums.NotificationType.*;
 import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.ProjectName.PICKUP;
 import org.hibernate.sql.results.internal.TupleElementImpl;
@@ -3530,7 +3517,8 @@ public class ModelUtils {
                 EVENT_JOINED,
                 EVENT_COMMENT,
                 FRIEND_REQUEST_ACCEPTED,
-                FRIEND_REQUEST_RECEIVED})
+                FRIEND_REQUEST_RECEIVED,
+                HABIT_LIKE})
             .build();
     }
 

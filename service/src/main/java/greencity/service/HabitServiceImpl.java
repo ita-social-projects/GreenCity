@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.constant.AppConstant;
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
@@ -16,7 +17,9 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.enums.Role;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventComment;
+import greencity.enums.*;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
@@ -25,6 +28,7 @@ import greencity.mapping.CustomShoppingListMapper;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
+import greencity.message.GeneralEmailMessage;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
@@ -73,6 +77,7 @@ public class HabitServiceImpl implements HabitService {
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
     private static final String EN_LANGUAGE_CODE = "en";
+    private final UserNotificationService userNotificationService;
 
     /**
      * Method returns Habit by its id.
@@ -522,6 +527,42 @@ public class HabitServiceImpl implements HabitService {
         unAssignOwnerFromCustomHabit(toDelete, owner.getId());
         toDelete.setIsDeleted(true);
         habitRepo.save(toDelete);
+    }
+
+
+    /**
+     * Method to like or dislike {@link Habit} specified by id.
+     *
+     * @param habitId id of {@link Habit} to like/dislike.
+     * @param userVO current {@link User} that wants to like/dislike.
+     */
+    @Override
+    public void like(Long habitId, UserVO userVO) {
+        // todo: add achievements
+
+        Habit habit = habitRepo.findById(habitId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+
+        if(habit.getUserId() != null){
+            User habitAuthor = userRepo.findById(habit.getUserId()).orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+
+            if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+                habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+                userNotificationService.removeActionUserFromNotification(modelMapper.map(habitAuthor, UserVO.class),
+                        userVO, habitId, NotificationType.HABIT_LIKE);
+            } else {
+                habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
+                userNotificationService.createNotification(modelMapper.map(habitAuthor, UserVO.class), userVO,
+                        NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
+            }
+        } else {
+            if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+                habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            } else {
+                habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
+            }
+        }
+        habitRepo.save(habit);
     }
 
     private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {
