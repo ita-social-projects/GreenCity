@@ -48,7 +48,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
     private final RatingCalculation ratingCalculation;
-    private AchievementCalculation achievementCalculation;
+    private final AchievementCalculation achievementCalculation;
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
