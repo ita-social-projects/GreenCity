@@ -1530,6 +1530,7 @@ public class ModelUtils {
 
     public static Habit getHabit() {
         return Habit.builder().id(1L).image("image.png")
+                .usersLiked(new HashSet<>())
             .complexity(1).tags(new HashSet<>(getTags())).build();
     }
 

@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
@@ -18,13 +19,16 @@ import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.HabitAssign;
+import greencity.entity.event.EventComment;
 import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
+import greencity.rating.RatingCalculation;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
@@ -59,10 +63,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Stream;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import static greencity.ModelUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -123,6 +126,11 @@ class HabitServiceImplTest {
 
     @Mock
     private HabitAssignService habitAssignService;
+
+    @Mock
+    private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -1249,5 +1257,34 @@ class HabitServiceImplTest {
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo, times(0)).save(any(Habit.class));
+    }
+
+    @Test
+    void likeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = getHabit();
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        habitService.like(habit.getId(), userVO);
+
+        assertTrue(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+    }
+
+    @Test
+    void removeLikeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = getHabit();
+        habit.getUsersLiked().add(user);
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        habitService.like(habit.getId(), userVO);
+
+        assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
     }
 }
