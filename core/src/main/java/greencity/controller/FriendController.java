@@ -67,13 +67,11 @@ public class FriendController {
     /**
      * Exception for deleting friend with null id.
      *
-     * @param userVO {@link UserVO} user.
      * @author Oleksandr Sokil
      */
-    @DeleteMapping
+    @DeleteMapping({"", "/"})
     @Operation(hidden = true)
-    public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriendWithoutParams(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+    public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriendWithoutParams() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 

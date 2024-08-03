@@ -897,6 +897,7 @@ public class EventServiceImpl implements EventService {
     private List<EventPreviewDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
         Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
+        List<EventPreviewDto> sortedDtos = new ArrayList<>();
         for (Tuple tuple : page) {
             long id = tuple.get(eventId, Long.class);
             EventPreviewDto eventPreviewDto;
@@ -960,21 +961,29 @@ public class EventServiceImpl implements EventService {
                 .build());
             tagsMap.put(id, tagDtos);
         }
-        List<EventPreviewDto> sortedDtos = new ArrayList<>();
         for (Long id : sortedIds) {
-            // Temporary mapping in TagUaEnDto
-            Set<TagDto> tags = tagsMap.get(id);
-            TagDto enTag =
-                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("en")).findAny().orElse(new TagDto());
-            TagDto uaTag =
-                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("ua")).findAny().orElse(new TagDto());
-            TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
-                .id(enTag.getId())
-                .nameEn(enTag.getName())
-                .nameUa(uaTag.getName())
-                .build();
             EventPreviewDto eventPreviewDto = eventsMap.get(id);
-            eventPreviewDto.setTags(List.of(tagUaEnDto));
+            Set<TagDto> tags = tagsMap.get(id);
+            List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
+
+            Map<Long, List<TagDto>> groupedTags = tags.stream()
+                .collect(Collectors.groupingBy(TagDto::getId));
+
+            groupedTags.forEach((tagId, tagList) -> {
+                Map<String, TagDto> uaEnMap = new HashMap<>();
+                tagList.stream()
+                    .filter(tag -> !uaEnMap.containsKey(tag.getLanguageCode()))
+                    .forEach(tag -> uaEnMap.put(tag.getLanguageCode(), tag));
+                if (uaEnMap.containsKey("ua") && uaEnMap.containsKey("en")) {
+                    TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
+                        .id(tagId)
+                        .nameUa(uaEnMap.get("ua").getName())
+                        .nameEn(uaEnMap.get("en").getName())
+                        .build();
+                    tagUaEnDtos.add(tagUaEnDto);
+                }
+            });
+            eventPreviewDto.setTags(tagUaEnDtos);
             sortedDtos.add(eventPreviewDto);
         }
         return sortedDtos;
