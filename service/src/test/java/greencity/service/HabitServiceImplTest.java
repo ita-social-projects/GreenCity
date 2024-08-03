@@ -19,9 +19,7 @@ import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.HabitAssign;
-import greencity.entity.event.EventComment;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -1111,7 +1109,7 @@ class HabitServiceImplTest {
         newItem.setId(null);
 
         CustomHabitDtoRequest customHabitDtoRequest = ModelUtils
-            .getСustomHabitDtoRequestWithNewCustomShoppingListItem();
+            .getCustomHabitDtoRequestWithNewCustomShoppingListItem();
         CustomHabitDtoResponse customHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
         when(customShoppingListMapper.mapAllToList(any()))
             .thenReturn(List.of(newItem));

@@ -255,7 +255,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 notificationRepo.delete(notification);
                 return;
             }
-            notification.getActionUsers().remove(modelMapper.map(actionUserVO, User.class));
+            notification.getActionUsers().removeIf(u -> u.getId().equals(modelMapper.map(actionUserVO, User.class).getId()));
             notificationRepo.save(notification);
         }
     }
@@ -333,7 +333,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         dto.setBodyText(bundle.getString(dto.getNotificationType()));
         int size = notification.getActionUsers().size();
         if (size == 1) {
-            User actionUser = notification.getActionUsers().get(0);
+            User actionUser = notification.getActionUsers().getFirst();
             dto.setActionUserId(actionUser.getId());
             dto.setActionUserText(actionUser.getName());
         } else {

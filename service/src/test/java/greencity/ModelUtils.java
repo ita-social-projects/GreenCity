@@ -3020,7 +3020,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithNewCustomShoppingListItem() {
+    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithNewCustomShoppingListItem() {
         return CustomHabitDtoRequest.builder()
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
