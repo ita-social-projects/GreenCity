@@ -529,39 +529,40 @@ public class HabitServiceImpl implements HabitService {
         habitRepo.save(toDelete);
     }
 
-
     /**
      * Method to like or dislike {@link Habit} specified by id.
      *
      * @param habitId id of {@link Habit} to like/dislike.
-     * @param userVO current {@link User} that wants to like/dislike.
+     * @param userVO  current {@link User} that wants to like/dislike.
      */
     @Override
     public void like(Long habitId, UserVO userVO) {
         Habit habit = habitRepo.findById(habitId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
         User habitAuthor = null;
 
         if (habit.getUserId() != null) {
             habitAuthor = userRepo.findById(habit.getUserId())
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         }
         if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_HABIT, userVO);
-            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT, AchievementAction.DELETE);
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
+                AchievementAction.DELETE);
             if (habitAuthor != null) {
                 userNotificationService.removeActionUserFromNotification(modelMapper.map(habitAuthor, UserVO.class),
-                        userVO, habitId, NotificationType.HABIT_LIKE);
+                    userVO, habitId, NotificationType.HABIT_LIKE);
             }
         } else {
             habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_HABIT, userVO);
-            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT, AchievementAction.ASSIGN);
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
+                AchievementAction.ASSIGN);
             if (habitAuthor != null) {
                 userNotificationService.createNotification(modelMapper.map(habitAuthor, UserVO.class), userVO,
-                        NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
+                    NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
             }
         }
         habitRepo.save(habit);

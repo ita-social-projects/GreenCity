@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
@@ -152,12 +151,11 @@ public interface HabitService {
      */
     void deleteCustomHabit(Long customHabitId, String ownerEmail);
 
-
     /**
      * Method to like or dislike {@link HabitVO} specified by id.
      *
      * @param habitId id of {@link HabitVO} to like/dislike.
-     * @param userVO    current {@link UserVO} that wants to like/dislike.
+     * @param userVO  current {@link UserVO} that wants to like/dislike.
      */
     void like(Long habitId, UserVO userVO);
 }

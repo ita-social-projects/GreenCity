@@ -255,7 +255,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 notificationRepo.delete(notification);
                 return;
             }
-            notification.getActionUsers().removeIf(u -> u.getId().equals(modelMapper.map(actionUserVO, User.class).getId()));
+            notification.getActionUsers()
+                .removeIf(u -> u.getId().equals(modelMapper.map(actionUserVO, User.class).getId()));
             notificationRepo.save(notification);
         }
     }

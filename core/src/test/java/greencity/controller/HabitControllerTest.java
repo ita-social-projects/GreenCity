@@ -356,9 +356,9 @@ class HabitControllerTest {
         UserVO userVO = new UserVO();
 
         mockMvc.perform(post(habitLink + "/like")
-                .param("habitId", habitId.toString())
-                .principal(getPrincipal()))
-                .andExpect(status().isOk());
+            .param("habitId", habitId.toString())
+            .principal(getPrincipal()))
+            .andExpect(status().isOk());
 
         verify(habitService).like(habitId, userVO);
     }

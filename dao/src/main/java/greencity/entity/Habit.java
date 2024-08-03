@@ -2,7 +2,6 @@ package greencity.entity;
 
 import java.util.List;
 import java.util.Set;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,8 +74,8 @@ public class Habit {
 
     @ManyToMany
     @JoinTable(
-            name = "habits_users_likes",
-            joinColumns = @JoinColumn(name = "habit_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+        name = "habits_users_likes",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> usersLiked;
 }
