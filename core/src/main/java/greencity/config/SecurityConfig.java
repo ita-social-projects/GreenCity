@@ -106,6 +106,7 @@ public class SecurityConfig {
                 .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities.")))
             .authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
                 .requestMatchers("/management/**")
                 .hasAnyRole(ADMIN)
