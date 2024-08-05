@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -35,8 +34,6 @@ class HabitStatisticControllerTest {
 
     @InjectMocks
     HabitStatisticController habitStatisticController;
-
-    private Principal principal = getPrincipal();
 
     private static final String habitLink = "/habit/statistic";
 

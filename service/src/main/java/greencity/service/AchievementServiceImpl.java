@@ -143,7 +143,7 @@ public class AchievementServiceImpl implements AchievementService {
         List<Long> achievemnetsId = userAchievementRepo.getUserAchievementByUserId(userId)
             .stream()
             .map(userAchievement -> userAchievement.getAchievement().getId())
-            .collect(Collectors.toList());
+            .toList();
         return achievemnetsId
             .stream()
             .map(achievementRepo::findById)

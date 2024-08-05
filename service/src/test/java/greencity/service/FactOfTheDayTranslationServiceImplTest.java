@@ -2,8 +2,6 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
-import greencity.dto.factoftheday.FactOfTheDayVO;
-import greencity.dto.language.LanguageVO;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.Language;
@@ -34,8 +32,6 @@ class FactOfTheDayTranslationServiceImplTest {
     @InjectMocks
     private FactOfTheDayTranslationServiceImpl factOfTheDayTranslationService;
 
-    Language language = ModelUtils.getLanguage();
-    FactOfTheDay factOfTheDay = ModelUtils.getFactOfTheDay();
     FactOfTheDayTranslationVO factOfTheDayTranslationVO = ModelUtils.getFactOfTheDayTranslationVO();
 
     @Test

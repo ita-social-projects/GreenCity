@@ -7,21 +7,14 @@ import greencity.entity.User;
 import greencity.entity.User_;
 import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotFoundException;
-import lombok.NoArgsConstructor;
 import jakarta.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class RatingStatisticsSpecification implements MySpecification<RatingStatistics> {
-    private transient List<SearchCriteria> searchCriteriaList;
-
-    /**
-     * Constructor.
-     */
-    public RatingStatisticsSpecification(List<SearchCriteria> searchCriteriaList) {
-        this.searchCriteriaList = searchCriteriaList;
-    }
+    private final transient List<SearchCriteria> searchCriteriaList;
 
     @Override
     public Predicate toPredicate(Root<RatingStatistics> root, CriteriaQuery<?> criteriaQuery,
@@ -87,7 +80,7 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
         try {
             return criteriaBuilder.equal(userJoin.get(User_.id), searchCriteria.getValue());
         } catch (NumberFormatException ex) {
-            return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+            return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
                 : criteriaBuilder.disjunction();
         }
     }

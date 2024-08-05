@@ -1,24 +1,19 @@
 package greencity.filters;
 
-import static greencity.entity.localization.AdviceTranslation_.content;
 import greencity.entity.Advice;
 import greencity.entity.Advice_;
 import greencity.entity.Habit;
 import greencity.entity.Habit_;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.AdviceTranslation_;
+import static greencity.entity.localization.AdviceTranslation_.content;
 import jakarta.persistence.criteria.*;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class AdviceSpecification implements MySpecification<Advice> {
-    private transient List<SearchCriteria> searchCriteriaList;
-
-    /**
-     * Constructor.
-     */
-    public AdviceSpecification(List<SearchCriteria> searchCriteriaList) {
-        this.searchCriteriaList = searchCriteriaList;
-    }
+    private final transient List<SearchCriteria> searchCriteriaList;
 
     @Override
     public Predicate toPredicate(Root<Advice> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -49,7 +44,7 @@ public class AdviceSpecification implements MySpecification<Advice> {
         CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
         Join<Advice, AdviceTranslation> translationJoin = root.join(Advice_.translations);
 
-        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+        return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
             : criteriaBuilder.and(criteriaBuilder.like(translationJoin.get(content),
                 "%" + searchCriteria.getValue() + "%"),
                 criteriaBuilder.equal(translationJoin.get(AdviceTranslation_.advice).get(Advice_.id),

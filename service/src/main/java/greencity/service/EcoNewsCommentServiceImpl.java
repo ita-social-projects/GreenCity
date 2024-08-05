@@ -121,16 +121,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             pageable, ecoNewsId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
-            .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                    .anyMatch(u -> u.getId().equals(userVO.getId())));
-                return comment;
-            })
+            .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(userVO.getId()))))
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
-            .map(comment -> {
-                comment.setReplies(ecoNewsCommentRepo.countByParentCommentId(comment.getId()));
-                return comment;
-            })
+            .peek(comment -> comment.setReplies(ecoNewsCommentRepo.countByParentCommentId(comment.getId())))
             .collect(Collectors.toList());
 
         return new PageableDto<>(
@@ -157,11 +151,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         }
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
-            .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                    .anyMatch(u -> u.getId().equals(userVO.getId())));
-                return comment;
-            })
+            .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(userVO.getId()))))
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
             .collect(Collectors.toList());
 
@@ -315,16 +306,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
-            .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                    .anyMatch(u -> u.getId().equals(user.getId())));
-                return comment;
-            })
+            .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(user.getId()))))
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
-            .map(comment -> {
-                comment.setReplies(ecoNewsCommentRepo.countByParentCommentId(comment.getId()));
-                return comment;
-            })
+            .peek(comment -> comment.setReplies(ecoNewsCommentRepo.countByParentCommentId(comment.getId())))
             .collect(Collectors.toList());
 
         return new PageableDto<>(
@@ -354,11 +339,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
-            .map(comment -> {
-                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                    .anyMatch(u -> u.getId().equals(user.getId())));
-                return comment;
-            })
+            .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(user.getId()))))
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
             .collect(Collectors.toList());
 

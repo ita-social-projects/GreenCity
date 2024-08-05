@@ -138,7 +138,7 @@ class ManagementAdvicesControllerTest {
 
     @Test
     void deleteAdviceById() throws Exception {
-        Long adviceId = 1L;
+        long adviceId = 1L;
         mockMvc.perform(delete(managementAdvicesLink + "/" + adviceId))
             .andExpect(status().isOk());
 

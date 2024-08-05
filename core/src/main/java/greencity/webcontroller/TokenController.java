@@ -33,7 +33,6 @@ public class TokenController {
     @GetMapping
     public String passTokenToCookies(@RequestParam String accessToken, HttpServletResponse response) {
         tokenService.passTokenToCookies(accessToken, response);
-
         return "redirect:/management";
     }
 }

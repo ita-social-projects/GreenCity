@@ -72,7 +72,6 @@ public class HabitServiceImpl implements HabitService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
-    private static final String EN_LANGUAGE_CODE = "en";
 
     /**
      * Method returns Habit by its id.
@@ -445,7 +444,7 @@ public class HabitServiceImpl implements HabitService {
         List<CustomShoppingListItem> customShoppingListItems = customShoppingListItemRepo
             .findAllByUserIdAndHabitId(user.getId(), habit.getId());
 
-        customShoppingListItems.stream()
+        customShoppingListItems
             .forEach(item -> habitDto.getCustomShoppingListItemDto().stream()
                 .filter(itemToUpdate -> item.getId().equals(itemToUpdate.getId()))
                 .forEach(itemToUpdate -> {

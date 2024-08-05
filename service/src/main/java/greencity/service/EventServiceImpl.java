@@ -178,8 +178,7 @@ public class EventServiceImpl implements EventService {
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(organizer.getEmail())
             .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
-                savedEvent.getTitle()))
+            .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE, savedEvent.getTitle()))
             .build());
         userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
             savedEvent.getTitle());
@@ -189,13 +188,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public void delete(Long eventId, String email) {
         UserVO userVO = restClient.findByEmail(email);
-        Event toDelete =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event toDelete = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         List<String> eventImages = new ArrayList<>();
         eventImages.add(toDelete.getTitleImage());
         if (toDelete.getAdditionalImages() != null) {
             eventImages.addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink)
-                .collect(Collectors.toList()));
+                .toList());
         }
 
         if (toDelete.getOrganizer().getId().equals(userVO.getId()) || userVO.getRole() == Role.ROLE_ADMIN) {
@@ -222,8 +221,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto getEvent(Long eventId, Principal principal) {
-        Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         if (principal != null) {
             User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildEventDto(event, currentUser.getId());
@@ -234,7 +233,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
         Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
-
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildPageableAdvancedDto(events, user.getId());
@@ -381,7 +379,7 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toList());
         List<Event> eventsPassed = getOfflineUserEventsSortedByDate(attender).stream()
             .filter(event -> !event.isRelevant())
-            .collect(Collectors.toList());
+            .toList();
         eventsFurtherSorted.addAll(eventsPassed);
         return eventsFurtherSorted;
     }
@@ -389,22 +387,22 @@ public class EventServiceImpl implements EventService {
     private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
         return (e1, e2) -> {
             double distance1 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
-                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                Objects.requireNonNull(e1.getDates().getLast()
                     .getAddress()).getLatitude(),
-                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                Objects.requireNonNull(e1.getDates().getLast()
                     .getAddress()).getLongitude());
             double distance2 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
-                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                Objects.requireNonNull(e2.getDates().getLast()
                     .getAddress()).getLatitude(),
-                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                Objects.requireNonNull(e2.getDates().getLast()
                     .getAddress()).getLongitude());
             return Double.compare(distance1, distance2);
         };
     }
 
     private Comparator<Event> getComparatorByDates() {
-        return (e1, e2) -> e2.getDates().get(e2.getDates().size() - 1).getStartDate()
-            .compareTo(e1.getDates().get(e1.getDates().size() - 1).getStartDate());
+        return (e1, e2) -> e2.getDates().getLast().getStartDate()
+            .compareTo(e1.getDates().getLast().getStartDate());
     }
 
     private double calculateDistanceBetweenUserAndEventCoordinates(
@@ -431,8 +429,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void addAttender(Long eventId, String email) {
-        Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         UserVO userVO = restClient.findByEmail(email);
         User currentUser = modelMapper.map(userVO, User.class);
         checkAttenderToJoinTheEvent(event, currentUser);
@@ -463,8 +461,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void removeAttender(Long eventId, String email) {
-        Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         UserVO userVO = restClient.findByEmail(email);
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(userVO.getId()))
             .collect(Collectors.toSet()));
@@ -564,18 +562,18 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public void rateEvent(Long eventId, String email, int grade) {
-        Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_FINISHED);
         }
-        if (!event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
+        if (!event.getAttenders().stream().map(User::getId).toList()
             .contains(currentUser.getId())) {
             throw new BadRequestException(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
         }
-        if (event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).collect(Collectors.toList())
+        if (event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).toList()
             .contains(currentUser.getId())) {
             throw new BadRequestException(ErrorMessage.HAVE_ALREADY_RATED);
         }
@@ -589,8 +587,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Set<EventAttenderDto> getAllEventAttenders(Long eventId) {
-        Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         return event.getAttenders().stream().map(attender -> modelMapper.map(attender, EventAttenderDto.class))
             .collect(Collectors.toSet());
     }
@@ -644,10 +642,7 @@ public class EventServiceImpl implements EventService {
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
                 .map(d -> modelMapper.map(d, EventDateLocation.class))
-                .map(d -> {
-                    d.setEvent(toUpdate);
-                    return d;
-                })
+                .peek(d -> d.setEvent(toUpdate))
                 .collect(Collectors.toList()));
         }
     }
@@ -676,7 +671,7 @@ public class EventServiceImpl implements EventService {
 
         if (imagesToDelete != null && titleImage != null && imagesToDelete.contains(titleImage)) {
             List<String> additionalImages = new ArrayList<>(updateEventDto.getAdditionalImages());
-            if (additionalImages != null && !additionalImages.isEmpty()) {
+            if (!additionalImages.isEmpty()) {
                 updateEventDto.setTitleImage(additionalImages.removeFirst());
                 updateEventDto.setAdditionalImages(additionalImages);
             } else {
@@ -761,8 +756,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private ZonedDateTime findLastEventDateTime(Event event) {
-        return Collections
-            .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
+        return Collections.max(event.getDates().stream().map(EventDateLocation::getFinishDate).toList());
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {
@@ -825,7 +819,7 @@ public class EventServiceImpl implements EventService {
         List<Event> subscribedEvents = eventRepo.findSubscribedAmongEventIds(eventIds, userId);
         List<Long> subscribedEventIds = subscribedEvents.stream()
             .map(Event::getId)
-            .collect(Collectors.toList());
+            .toList();
         eventDtos.forEach(eventDto -> eventDto.setSubscribed(subscribedEventIds.contains(eventDto.getId())));
     }
 
@@ -834,7 +828,7 @@ public class EventServiceImpl implements EventService {
         List<Event> followedEvents = eventRepo.findFavoritesAmongEventIds(eventIds, userId);
         List<Long> followedEventIds = followedEvents.stream()
             .map(Event::getId)
-            .collect(Collectors.toList());
+            .toList();
         eventDtos.forEach(eventDto -> eventDto.setFavorite(followedEventIds.contains(eventDto.getId())));
     }
 
@@ -893,7 +887,6 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-    @Nullable
     private List<EventPreviewDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
         Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();

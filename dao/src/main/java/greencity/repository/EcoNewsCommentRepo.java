@@ -42,15 +42,6 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
     int countByParentCommentId(Long parentCommentId);
 
     /**
-     * The method returns the count of not deleted comments, specified by ecoNewsId.
-     *
-     * @return count of comments, specified by {@link greencity.entity.EcoNews}.
-     */
-    @Query("SELECT count(ec) FROM EcoNewsComment ec "
-        + "WHERE ec.parentComment IS NULL AND ec.ecoNews.id = ?1 AND ec.status <> 'DELETED'")
-    int countOfComments(Long ecoNewsId);
-
-    /**
      * The method returns the count of not deleted comments, specified by.
      *
      * @param ecoNewsId {@link Long} - id of ecoNews.

@@ -151,15 +151,6 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
 
     /**
-     * Method returns all events by their title.
-     *
-     * @param title {@link String} title of desired events.
-     * @return List of {@link Event}.
-     * @author Yurii Midianyi
-     */
-    List<Event> findAllByTitleContainingIgnoreCase(String title);
-
-    /**
      * Retrieves a paginated list of Long in order based on various filter criteria
      * for unauthorized user.
      *
@@ -228,7 +219,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
             (CAST(:isRelevant as boolean) IS NULL OR combined.isRelevant = :isRelevant) AND
             (CAST(:citiesInLower as varchar[]) IS NULL OR lower(combined.city_en) in (:citiesInLower)) AND
             (CAST(:tagsInLower as varchar[]) IS NULL OR lower(combined.ttName) in (:tagsInLower));
-            """, countQuery = """
+        """, countQuery = """
         SELECT count(distinct e.id)
          FROM events e
                   LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
@@ -239,7 +230,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
              (CAST(:isRelevant as boolean) IS NULL OR (edl.finish_date >= now()) = :isRelevant) AND
              (CAST(:citiesInLower as varchar[]) IS NULL OR lower(edl.city_en) in (:citiesInLower)) AND
              (CAST(:tagsInLower as varchar[]) IS NULL OR lower(tt.name) in (:tagsInLower))
-            """)
+        """)
     Page<Long> findAllEventPreviewDtoByFilters(String titleCriteria, Boolean isOpen,
         Boolean isRelevant, String[] citiesInLower, String[] tagsInLower, Pageable pageable);
 
@@ -348,7 +339,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                 (CAST(:isSubscribed as boolean) IS NULL OR combined.isSubscribed = :isSubscribed) AND
                 (CAST(:isOrganizedByUser as boolean) IS NULL OR combined.isOrganizedByUser = :isOrganizedByUser) AND
                 (CAST(:isFavorite as boolean) IS NULL OR combined.isFavorite = :isFavorite);
-                """,
+            """,
         countQuery = """
             SELECT count(distinct e.id)
              FROM events e
@@ -366,7 +357,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
                  (ea.user_id = :userId and ea.user_id is not null) = :isSubscribed) AND
                  (CAST(:isOrganizedByUser as boolean) IS NULL OR (e.organizer_id = :userId) = :isOrganizedByUser) AND
                  (CAST(:isFavorite as boolean) IS NULL OR (ef.user_id IS NOT NULL) = :isFavorite);
-                """)
+            """)
     Page<Long> findAllEventPreviewDtoByFilters(Long userId, Boolean isSubscribed, Boolean isOrganizedByUser,
         Boolean isFavorite, String titleCriteria, Boolean isOpen,
         Boolean isRelevant, String[] citiesInLower,

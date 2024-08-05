@@ -1,6 +1,9 @@
 package greencity.constant;
 
-public final class RepoConstants {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class RepoConstants {
     public static final String LOCATION = "location";
     public static final String LOCATION_LAT = "lat";
     public static final String LOCATION_LNG = "lng";
@@ -22,7 +25,4 @@ public final class RepoConstants {
     public static final String NAME = "name";
     public static final String AUTHOR = "author";
     public static final String ID = "id";
-
-    RepoConstants() {
-    }
 }

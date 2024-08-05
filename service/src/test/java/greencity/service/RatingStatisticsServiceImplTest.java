@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.enums.RatingCalculationEnum;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;

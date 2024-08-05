@@ -1,10 +1,7 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
+@StandardException
 public class UserHasNoShoppingListItemsException extends RuntimeException {
-    /**
-     * Constructor.
-     */
-    public UserHasNoShoppingListItemsException(String message) {
-        super(message);
-    }
 }

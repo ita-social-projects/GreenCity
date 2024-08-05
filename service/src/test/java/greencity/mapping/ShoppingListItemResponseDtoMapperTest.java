@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.shoppinglistitem.ShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemTranslationDTO;
-import greencity.dto.language.LanguageVO;
 import greencity.entity.ShoppingListItem;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

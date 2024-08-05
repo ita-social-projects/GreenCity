@@ -1441,47 +1441,8 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void addDefaultHabitIf() {
-
-        UserVO userVo = ModelUtils.createUserVO2();
-        UserVO userVo2 = new UserVO();
-        User user = new User();
-        Habit habit = new Habit();
-        habit.setId(1L);
-        HabitAssign habitAssign = getHabitAssign();
-
-        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(new ArrayList<>());
-        when(modelMapper.map(userVo, UserVO.class)).thenReturn(userVo2);
-        when(modelMapper.map(userVo2, User.class)).thenReturn(user);
-        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(1L, user.getId())).thenReturn(habitAssign);
-        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(new HabitAssignManagementDto());
-
-        habitAssignService.addDefaultHabit(userVo, "eu");
-
-        verify(habitRepo).findById(1L);
-    }
-
-    @Test
-    void addDefaultHabitWithNotEmptyUsersHabitAssign() {
-        UserVO userVo = ModelUtils.createUserVO2();
-
-        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
-
-        habitAssignService.addDefaultHabit(userVo, "eu");
-
-        verify(modelMapper, times(0)).map(any(), any());
-        verify(modelMapper, times(0)).map(any(), any());
-        verify(modelMapper, times(0)).map(any(), any());
-        verify(habitRepo, times(0)).findById(anyLong());
-        verify(habitAssignRepo, times(0)).findByHabitIdAndUserIdAndStatusIsCancelled(anyLong(), anyLong());
-        verify(modelMapper, times(0)).map(any(), any());
-    }
-
-    @Test
     void updateStatusAndDurationOfHabitAssignTest() {
         HabitAssign habitAssign = getHabitAssign();
-        HabitAssign habitAssign1 = getHabitAssign();
         habitAssign.setStatus(HabitAssignStatus.REQUESTED);
         habitAssign.setDuration(20);
         when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));

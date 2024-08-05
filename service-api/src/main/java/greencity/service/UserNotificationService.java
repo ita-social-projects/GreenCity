@@ -18,7 +18,7 @@ public interface UserNotificationService {
      *
      * @param principal user to get notifications
      * @param language  language code
-     * @return set of 3 last new notifications
+     * @return list of 3 last new notifications
      * @author Volodymyr Mladonov
      */
     List<NotificationDto> getThreeLastNotifications(Principal principal, String language);

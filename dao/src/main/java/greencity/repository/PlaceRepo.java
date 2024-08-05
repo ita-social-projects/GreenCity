@@ -46,38 +46,6 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
     Double getAverageRate(@Param("id") Long id);
 
     /**
-     * Generated javadoc, must be replaced with real one.
-     */
-    @Query("FROM Place p WHERE p.status = :status")
-    List<Place> getPlacesByStatus(@Param("status") PlaceStatus status);
-
-    /**
-     * Method return a list {@code Place} depends on the map bounds.
-     *
-     * @param northEastLat latitude of extreme North-East point of the map.
-     * @param northEastLng longitude of extreme North-East point of the map.
-     * @param southWestLat latitude of South-West point of the map.
-     * @param southWestLng longitude of South-West point of the map.
-     * @param status       status of places witch should be presented.
-     * @return a list of {@code Place}
-     * @author Marian Milian.
-     */
-    @Query(
-        value = "FROM Place p "
-            + " LEFT JOIN"
-            + " Location l  ON p.location.id = l.id "
-            + " WHERE l.lat > :southWestLat  AND l.lat< :northEastLat"
-            + " AND l.lng >:southWestLng AND l.lng<:northEastLng "
-            + " AND p.status = :status"
-            + " ORDER BY p.name")
-    List<Place> findPlacesByMapsBounds(
-        @Param("northEastLat") Double northEastLat,
-        @Param("northEastLng") Double northEastLng,
-        @Param("southWestLat") Double southWestLat,
-        @Param("southWestLng") Double southWestLng,
-        @Param("status") PlaceStatus status);
-
-    /**
      * The method to find all {@link Place}'s which was added between 2 dates and
      * has {@link PlaceStatus}.
      *

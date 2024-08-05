@@ -30,6 +30,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -42,13 +43,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class EventCommentServiceImpl implements EventCommentService {
-    private EventCommentRepo eventCommentRepo;
-    private EventService eventService;
-    private ModelMapper modelMapper;
+    private final EventCommentRepo eventCommentRepo;
+    private final EventService eventService;
+    private final ModelMapper modelMapper;
     private final EventRepo eventRepo;
     private final RatingCalculation ratingCalculation;
-    private AchievementCalculation achievementCalculation;
+    private final AchievementCalculation achievementCalculation;
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
@@ -56,29 +58,6 @@ public class EventCommentServiceImpl implements EventCommentService {
     private static final String LINK = "/#/events/";
     @Value("${client.address}")
     private String clientAddress;
-
-    public EventCommentServiceImpl(
-        EventCommentRepo eventCommentRepo,
-        EventService eventService,
-        ModelMapper modelMapper,
-        EventRepo eventRepo,
-        RatingCalculation ratingCalculation,
-        AchievementCalculation achievementCalculation,
-        SimpMessagingTemplate messagingTemplate,
-        NotificationService notificationService,
-        UserNotificationService userNotificationService,
-        UserRepo userRepo) {
-        this.eventCommentRepo = eventCommentRepo;
-        this.eventService = eventService;
-        this.modelMapper = modelMapper;
-        this.eventRepo = eventRepo;
-        this.ratingCalculation = ratingCalculation;
-        this.achievementCalculation = achievementCalculation;
-        this.messagingTemplate = messagingTemplate;
-        this.notificationService = notificationService;
-        this.userNotificationService = userNotificationService;
-        this.userRepo = userRepo;
-    }
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
