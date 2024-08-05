@@ -97,8 +97,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
-                .requestMatchers("/management/**")
-                .hasAnyRole(ADMIN)
+                .requestMatchers("/management/**").hasAnyRole(ADMIN)
                 .requestMatchers("/v2/api-docs/**",
                     "/v3/api-docs/**",
                     "/swagger.json",
@@ -113,12 +112,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, ECONEWS_COMMENTS)
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.GET,
-                    "/ownSecurity/verifyEmail",
-                    "/ownSecurity/updateAccessToken",
-                    "/ownSecurity/restorePassword",
-                    "/googleSecurity",
-                    "/facebookSecurity/generateFacebookAuthorizeURL",
-                    "/facebookSecurity/facebook",
                     "/factoftheday/",
                     "/factoftheday/all",
                     "/factoftheday/find",
@@ -177,9 +170,6 @@ public class SecurityConfig {
                     "/database/backupFiles")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
-                    "/ownSecurity/signUp",
-                    "/ownSecurity/signIn",
-                    "/ownSecurity/changePassword",
                     "/place/getListPlaceLocationByMapsBounds",
                     "/place/filter")
                 .permitAll()
@@ -297,7 +287,6 @@ public class SecurityConfig {
                     "/habit/statistic/{id}",
                     "/econews/update",
                     "/favorite_place/",
-                    "/ownSecurity",
                     "/user/profile",
                     EVENTS + "/update",
                     "/habit/update/{habitId}",
