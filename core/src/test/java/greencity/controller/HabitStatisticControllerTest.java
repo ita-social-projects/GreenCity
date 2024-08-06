@@ -1,12 +1,10 @@
 package greencity.controller;
 
 import com.google.gson.Gson;
-import static greencity.ModelUtils.getPrincipal;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import static greencity.enums.HabitRate.GOOD;
 import greencity.service.HabitStatisticService;
-import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;

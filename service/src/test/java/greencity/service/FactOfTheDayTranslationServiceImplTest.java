@@ -2,9 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
-import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.Language;
 import greencity.repository.FactOfTheDayTranslationRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

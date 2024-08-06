@@ -642,9 +642,13 @@ public class EventServiceImpl implements EventService {
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
                 .map(d -> modelMapper.map(d, EventDateLocation.class))
-                .peek(d -> d.setEvent(toUpdate))
+                .map(location -> setEventToEventDateLocation(location, toUpdate))
                 .collect(Collectors.toList()));
         }
+    }
+
+    private EventDateLocation setEventToEventDateLocation(EventDateLocation location, Event e) {
+        return location.setEvent(e);
     }
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
