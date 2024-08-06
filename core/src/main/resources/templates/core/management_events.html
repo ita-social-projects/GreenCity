@@ -44,10 +44,8 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="d-flex justify-content-end">
-                                    <a href="#addEcoNewsModal" addEventForm id="addEventModalBtn"
-                                       class="btn btn-success" data-toggle="modal" th:onclick="addBtnDisabled()">
-                                        <!-- -->
-                                        <div style="width: 100px;">[[#{greenCity.events.page.add.event}]]</div>
+                                    <a href="#addEventModal" id="addEventModalBtn" class="btn btn-secondary" data-toggle="modal">
+                                        <div>[[#{greenCity.events.page.add.event}]]</div>
                                     </a>
                                     <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled"
                                        data-toggle="modal">
@@ -245,7 +243,7 @@
         </div>
     </div>
     <!-- Add Modal HTML -->
-    <div id="addEventsModal" class="modal fade">
+    <div id="addEventModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form th:action="@{management/events}" method="post" id="addEventsForm">
