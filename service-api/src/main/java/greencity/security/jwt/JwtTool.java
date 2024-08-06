@@ -76,8 +76,7 @@ public class JwtTool {
      * @return {@link String} of token or null.
      */
     public String getTokenFromHttpServletRequest(HttpServletRequest servletRequest) {
-        return Optional
-            .ofNullable(servletRequest.getHeader("Authorization"))
+        return Optional.ofNullable(servletRequest.getHeader("Authorization"))
             .filter(authHeader -> authHeader.startsWith("Bearer "))
             .map(token -> token.substring(7))
             .orElse(null);

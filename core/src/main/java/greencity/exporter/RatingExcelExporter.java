@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
  *
  * @author Dovganyuk Taras
  */
-@SuppressWarnings("JavadocReference")
 @Slf4j
 @Component
 public class RatingExcelExporter {
@@ -29,7 +28,6 @@ public class RatingExcelExporter {
      *
      * @author Dovganyuk Taras
      */
-    @SuppressWarnings("JavadocReference")
     public void export(OutputStream outputStream, List<RatingStatisticsDto> ratingStatisticsDtoList) {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
             CellStyle style = workbook.createCellStyle();
