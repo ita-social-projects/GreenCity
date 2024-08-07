@@ -41,3 +41,18 @@ function sendDataFromSearchForm() {
         }
     });
 }
+
+function saveItemsOnPage(itemsOnPage) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    localStorage.setItem("size", itemsOnPage);
+    let url = "/management/events?";
+    urlSearch.set("size", itemsOnPage);
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
