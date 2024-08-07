@@ -3001,6 +3001,14 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitTranslationDto getHabitTranslationUaDto() {
+        return HabitTranslationDto.builder()
+            .descriptionUa(HABIT_TRANSLATION_DESCRIPTION)
+            .habitItemUa(HABIT_ITEM)
+            .nameUa(HABIT_TRANSLATION_NAME)
+            .build();
+    }
+
     public static HabitTranslation getHabitTranslationForServiceTest() {
         return HabitTranslation.builder()
             .id(1L)

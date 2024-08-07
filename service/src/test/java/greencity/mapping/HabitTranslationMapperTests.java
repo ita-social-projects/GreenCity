@@ -42,4 +42,45 @@ class HabitTranslationMapperTests {
         List<HabitTranslation> expectedList = List.of(expected);
         assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList));
     }
+
+    @Test
+    void mapAllToListTest2() {
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
+
+        HabitTranslation expected = HabitTranslation.builder()
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
+            .build();
+        List<HabitTranslation> expectedList = List.of(expected);
+        assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList, "en"));
+    }
+
+    @Test
+    void mapAllToListTest3() {
+        HabitTranslationDto habitTranslationDtoUa = ModelUtils.getHabitTranslationUaDto();
+
+        List<HabitTranslationDto> habitTranslationDtoListUa = List.of(habitTranslationDtoUa);
+
+        HabitTranslation expectedUa = HabitTranslation.builder()
+            .description(habitTranslationDtoUa.getDescriptionUa())
+            .habitItem(habitTranslationDtoUa.getHabitItemUa())
+            .name(habitTranslationDtoUa.getNameUa())
+            .build();
+        List<HabitTranslation> expectedUaList = List.of(expectedUa);
+        assertEquals(expectedUaList, habitTranslationMapper.mapAllToList(habitTranslationDtoListUa, "ua"));
+    }
+
+    @Test
+    void convertUaTest() {
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationUaDto();
+
+        HabitTranslation expected = HabitTranslation.builder()
+            .description(habitTranslationDto.getDescriptionUa())
+            .habitItem(habitTranslationDto.getHabitItemUa())
+            .name(habitTranslationDto.getNameUa())
+            .build();
+        assertEquals(expected, habitTranslationMapper.convertUa(habitTranslationDto));
+    }
 }
