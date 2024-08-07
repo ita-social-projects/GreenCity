@@ -540,6 +540,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
             userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO,
                 id, NotificationType.ECONEWS_LIKE);
+            userNotificationService.checkUnreadNotification(ecoNewsVO.getAuthor().getId());
         } else {
             if (ecoNewsVO.getAuthor().getId().equals(userVO.getId())) {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -548,13 +549,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                .email(ecoNewsVO.getAuthor().getEmail())
-                .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
-                .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
-                .build());
+            sendNotification(ecoNewsVO, userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+    }
+
+    private void sendNotification(EcoNewsVO ecoNewsVO, UserVO actionUser) {
+        UserVO targetUser = userService.findById(ecoNewsVO.getAuthor().getId());
+        userNotificationService.createNotification(
+            targetUser, actionUser, NotificationType.ECONEWS_LIKE,
+            ecoNewsVO.getId(), ecoNewsVO.getTitle());
     }
 
     /**

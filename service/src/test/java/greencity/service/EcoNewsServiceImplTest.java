@@ -23,9 +23,14 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.TagType;
+import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -45,6 +50,7 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -874,5 +880,79 @@ class EcoNewsServiceImplTest {
         // then
         assertEquals(1, usersWhoDislikedPost.size());
         assertTrue(usersWhoDislikedPost.contains(user1VO));
+    }
+
+    @Test
+    void testLikeAddLike() {
+        UserVO actionUser = ModelUtils.getUserVO();
+        UserVO targetUser = ModelUtils.getAuthorVO();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setAuthor(targetUser);
+        ecoNewsVO.setUsersLikedNews(new HashSet<>());
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        ecoNews.setAuthor(User.builder()
+            .id(targetUser.getId())
+            .build());
+
+        when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(any(EcoNews.class), eq(EcoNewsVO.class))).thenReturn(ecoNewsVO);
+        when(userService.findById(anyLong())).thenReturn(targetUser);
+
+        ecoNewsService.like(actionUser, ecoNewsVO.getId());
+
+        assertTrue(ecoNewsVO.getUsersLikedNews().contains(actionUser));
+        verify(userNotificationService, times(1)).createNotification(
+            targetUser, actionUser, NotificationType.ECONEWS_LIKE, ecoNewsVO.getId(), ecoNewsVO.getTitle());
+        verify(achievementCalculation, times(1)).calculateAchievement(actionUser,
+            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+        verify(ratingCalculation, times(1))
+            .ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, actionUser);
+    }
+
+    @Test
+    void testLikeUndoLike() {
+        User author = ModelUtils.getUser();
+        User action = User.builder()
+            .id(2L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastActivityTime(LocalDateTime.now())
+            .verifyEmail(new VerifyEmail())
+            .dateOfRegistration(LocalDateTime.now())
+            .subscribedEvents(new HashSet<>())
+            .favoriteEvents(new HashSet<>())
+            .build();
+
+        ModelMapper mapper = new ModelMapper();
+        UserVO userVO = mapper.map(action, UserVO.class);
+        UserVO targetUser = mapper.map(author, UserVO.class);
+        UserVO actionUser = mapper.map(action, UserVO.class);
+
+        EcoNews news = EcoNews.builder()
+            .id(1L)
+            .author(author)
+            .usersLikedNews(new HashSet<>(Set.of(action)))
+            .build();
+        EcoNewsVO ecoNewsVO = mapper.map(news, EcoNewsVO.class);
+
+        ecoNewsVO.setUsersLikedNews(new HashSet<>(ecoNewsVO.getUsersLikedNews()));
+
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(news));
+        when(modelMapper.map(any(EcoNews.class), eq(EcoNewsVO.class))).thenReturn(ecoNewsVO);
+
+        ecoNewsService.like(userVO, news.getId());
+
+        assertFalse(ecoNewsVO.getUsersLikedNews().contains(actionUser));
+
+        verify(userNotificationService, times(1))
+            .removeActionUserFromNotification(targetUser, actionUser, ecoNewsVO.getId(), NotificationType.ECONEWS_LIKE);
+        verify(userNotificationService, times(1)).checkUnreadNotification(author.getId());
+        verify(achievementCalculation, times(1))
+            .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+        verify(ratingCalculation, times(1))
+            .ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, actionUser);
     }
 }
