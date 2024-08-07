@@ -44,7 +44,8 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="d-flex justify-content-end">
-                                    <a href="#addEventModal" id="addEventModalBtn" class="btn btn-secondary" data-toggle="modal">
+                                    <a href="#addEventModal" id="addEventModalBtn" class="btn btn-secondary"
+                                       data-toggle="modal">
                                         <div>[[#{greenCity.events.page.add.event}]]</div>
                                     </a>
                                     <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled"
@@ -59,16 +60,16 @@
                 </div>
                 <div class="row" style="margin-top: 3%">
                     <div class="col-sm-10">
-                        <div class="row">
-                            <div class="col-sm-12">
-                               <span class="custom-checkbox">
-                                   <span class="modal-checkbox">
-                                       <input type="checkbox" id="selectAll">
-                                        <label for="selectAll"></label>
-                                   </span>
-                                </span>
-                            </div>
-                        </div>
+                        <!--                        <div class="row">-->
+                        <!--                            <div class="col-sm-12">-->
+                        <!--                               <span class="custom-checkbox">-->
+                        <!--                                   <span class="modal-checkbox">-->
+                        <!--                                       <input type="checkbox" id="selectAll">-->
+                        <!--                                        <label for="selectAll"></label>-->
+                        <!--                                   </span>-->
+                        <!--                                </span>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
                     </div>
                     <div class="col-sm-2">
                         <!--                SOME BUTTONS TO SHANGE FORM-->
@@ -101,29 +102,34 @@
                                 </th>
                                 <th style="width: 120px;">
                                     <span>[[#{greenCity.pages.table.id}]]</span>
-                                    <img id="id-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('id')">
+                                    <img id="id-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                         onclick="sortByFieldName('id')">
                                     <span class="table-filter-icon"></span>
                                 </th>
                                 <th style="width: 180px;">
                                     <span>[[#{greenCity.pages.table.author}]]</span>
-                                    <img id="author-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('author.name')">
+                                    <img id="author-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                         onclick="sortByFieldName('author.name')">
                                     <span class="table-filter-icon"></span>
                                 </th>
                                 <th style="width: 120px;">
                                     <span>[[#{greenCity.pages.table.title}]]</span>
-                                    <img id="title-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('title')">
+                                    <img id="title-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                         onclick="sortByFieldName('title')">
                                     <span class="table-filter-icon"></span>
                                 </th>
 
                                 <th style="width: 120px;">
                                     <span>[[#{greenCity.pages.table.text}]]</span>
-                                    <img id="text-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('text')">
+                                    <img id="text-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                         onclick="sortByFieldName('text')">
                                     <span class="table-filter-icon"></span>
                                 </th>
 
                                 <th style="width: 150px;">
                                     <span>[[#{greenCity.pages.table.tags}]]</span>
-                                    <img id="tags-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('tags')">
+                                    <img id="tags-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"
+                                         onclick="sortByFieldName('tags')">
                                     <span class="table-filter-icon"></span>
                                 </th>
                                 <th>
@@ -133,46 +139,50 @@
                             </thead>
 
                             <tbody>
-<!--                            <form>-->
-<!--                                <tr>-->
-<!--                                    <td>-->
-<!--                                        <input id="idSearchForm" placeholder="" class="input-search-form" type="search"-->
-<!--                                               th:value="${fields eq null ? '' : fields.getId()}"/>-->
-<!--                                    </td>-->
-<!--                                    <td>-->
-<!--                                        <input id="authorSearchForm" class="input-search-form" type="search"-->
-<!--                                               th:value="${fields eq null ? '' : fields.getAuthor()}"-->
-<!--                                        />-->
-<!--                                    </td>-->
-<!--                                    <td>-->
-<!--                                        <input id="titleSearchForm" class="input-search-form" type="search"-->
-<!--                                               th:value="${fields eq null ? '' : fields.getTitle()}"-->
-<!--                                        />-->
-<!--                                    </td>-->
-<!--                                    <td>-->
-<!--                                        <input id="textSearchForm" class="input-search-form" type="search"-->
-<!--                                               th:value="${fields eq null ? '' : fields.getDescription()}"/>-->
-<!--                                    </td>-->
-<!--                                    <td>-->
-<!--                                        <input id="tagSearchForm" class="input-search-form" type="search"/>-->
-<!--                                    </td>-->
-<!--                                    <td>-->
-<!--                                            <span id="searchBy" onclick="sendDataFromSearchForm()">-->
-<!--                                                <img alt="search" src="/img/search.png">-->
-<!--                                            </span>-->
-<!--                                    </td>-->
-<!--                                </tr>-->
-<!--                            </form>-->
+                            <!--                            <form>-->
+                            <!--                                <tr>-->
+                            <!--                                    <td>-->
+                            <!--                                        <input id="idSearchForm" placeholder="" class="input-search-form" type="search"-->
+                            <!--                                               th:value="${fields eq null ? '' : fields.getId()}"/>-->
+                            <!--                                    </td>-->
+                            <!--                                    <td>-->
+                            <!--                                        <input id="authorSearchForm" class="input-search-form" type="search"-->
+                            <!--                                               th:value="${fields eq null ? '' : fields.getAuthor()}"-->
+                            <!--                                        />-->
+                            <!--                                    </td>-->
+                            <!--                                    <td>-->
+                            <!--                                        <input id="titleSearchForm" class="input-search-form" type="search"-->
+                            <!--                                               th:value="${fields eq null ? '' : fields.getTitle()}"-->
+                            <!--                                        />-->
+                            <!--                                    </td>-->
+                            <!--                                    <td>-->
+                            <!--                                        <input id="textSearchForm" class="input-search-form" type="search"-->
+                            <!--                                               th:value="${fields eq null ? '' : fields.getDescription()}"/>-->
+                            <!--                                    </td>-->
+                            <!--                                    <td>-->
+                            <!--                                        <input id="tagSearchForm" class="input-search-form" type="search"/>-->
+                            <!--                                    </td>-->
+                            <!--                                    <td>-->
+                            <!--                                            <span id="searchBy" onclick="sendDataFromSearchForm()">-->
+                            <!--                                                <img alt="search" src="/img/search.png">-->
+                            <!--                                            </span>-->
+                            <!--                                    </td>-->
+                            <!--                                </tr>-->
+                            <!--                            </form>-->
 
                             <th:block th:each="allEvents, iterStatus :${pageable.getPage()}">
                                 <tr>
-                                    <td style="width: 8%">
+                                    <td style="width: 48px">
                                         <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                                name="options[]" th:value="${allEvents.getId()}"
                                                th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                         </span>
+                                    </td>
+                                    >
+                                    <td style="width: 8%">
+
                                         <span>[[${allEvents.getId()}]]</span>
                                     </td>
                                     <td th:text="${allEvents.organizer.name}" style="white-space: nowrap; /* Заборона переносу */
