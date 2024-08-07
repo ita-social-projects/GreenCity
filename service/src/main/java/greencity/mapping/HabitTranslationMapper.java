@@ -20,10 +20,10 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
 
     protected HabitTranslation convertUa(HabitTranslationDto habitTranslationDto) {
         return HabitTranslation.builder()
-                .description(habitTranslationDto.getDescriptionUa())
-                .habitItem(habitTranslationDto.getHabitItemUa())
-                .name(habitTranslationDto.getNameUa())
-                .build();
+            .description(habitTranslationDto.getDescriptionUa())
+            .habitItem(habitTranslationDto.getHabitItemUa())
+            .name(habitTranslationDto.getNameUa())
+            .build();
     }
 
     /**
@@ -38,19 +38,20 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
         return dtoList.stream().map(this::convert).collect(Collectors.toList());
     }
 
-
     /**
      * Method that build {@link List} of {@link HabitTranslation} from {@link List}
-     * of {@link HabitTranslationDto} depending on language
+     * of {@link HabitTranslationDto} depending on language.
      *
-     * @param dtoList {@link List} of {@link HabitTranslationDto}
+     * @param dtoList  {@link List} of {@link HabitTranslationDto}
      * @param language {@link String}
      * @return {@link List} of {@link HabitTranslation}
      * @author Dmytro Fedotov
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, String language) {
-        if(language.equals("ua")){
+        if (language.equals("ua")) {
             return dtoList.stream().map(this::convertUa).collect(Collectors.toList());
-        } else return dtoList.stream().map(this::convert).collect(Collectors.toList());
+        } else {
+            return dtoList.stream().map(this::convert).collect(Collectors.toList());
+        }
     }
 }

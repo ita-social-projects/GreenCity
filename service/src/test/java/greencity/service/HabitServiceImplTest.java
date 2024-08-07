@@ -671,7 +671,7 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(eq(List.of(habitTranslationDto)), anyString()))
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
@@ -693,7 +693,7 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(habitTranslationMapper, times(2)).mapAllToList(eq(List.of(habitTranslationDto)), anyString());
         verify(languageRepo, times(2)).findByCode(anyString());
         verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customShoppingListMapper).mapAllToList(anyList());
@@ -739,7 +739,7 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(eq(List.of(habitTranslationDto)), anyString()))
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
@@ -761,7 +761,7 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(habitTranslationMapper, times(2)).mapAllToList(eq(List.of(habitTranslationDto)), anyString());
         verify(languageRepo, times(2)).findByCode(anyString());
         verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customShoppingListMapper).mapAllToList(anyList());
@@ -807,7 +807,7 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(eq(List.of(habitTranslationDto)), anyString()))
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
@@ -829,7 +829,7 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(habitTranslationMapper, times(2)).mapAllToList(eq(List.of(habitTranslationDto)), anyString());
         verify(languageRepo, times(2)).findByCode(anyString());
         verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customShoppingListMapper).mapAllToList(anyList());
@@ -859,7 +859,7 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(eq(List.of(habitTranslationDto)), anyString()))
             .thenReturn(List.of(habitTranslation));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.empty());
 
@@ -870,7 +870,7 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper).mapAllToList(addCustomHabitDtoRequest.getHabitTranslations());
+        verify(habitTranslationMapper).mapAllToList(eq(addCustomHabitDtoRequest.getHabitTranslations()), anyString());
         verify(languageRepo).findByCode(anyString());
     }
 
@@ -894,7 +894,7 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+        when(habitTranslationMapper.mapAllToList(eq(List.of(habitTranslationDto)), anyString()))
             .thenReturn(List.of(habitTranslationUa));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.empty());
@@ -907,7 +907,8 @@ class HabitServiceImplTest {
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
 
-        verify(habitTranslationMapper, times(2)).mapAllToList(addCustomHabitDtoRequest.getHabitTranslations());
+        verify(habitTranslationMapper, times(2)).mapAllToList(eq(addCustomHabitDtoRequest.getHabitTranslations()),
+            anyString());
         verify(languageRepo, times(2)).findByCode(anyString());
     }
 

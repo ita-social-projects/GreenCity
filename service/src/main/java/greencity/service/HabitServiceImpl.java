@@ -472,20 +472,23 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
-        List<HabitTranslation> habitTranslationListForUa = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, UKRAINIAN);
+        List<HabitTranslation> habitTranslationListForUa =
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, UKRAINIAN);
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
             languageRepo.findByCode(UKRAINIAN).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForUa);
 
-        List<HabitTranslation> habitTranslationListForEn = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, ENGLISH);
+        List<HabitTranslation> habitTranslationListForEn =
+            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, ENGLISH);
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
             languageRepo.findByCode(ENGLISH).orElseThrow(NoSuchElementException::new)));
         habitTranslationRepo.saveAll(habitTranslationListForEn);
     }
 
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto, String language) {
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,
+        String language) {
         return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language);
     }
 
