@@ -9,7 +9,6 @@ import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
-
 import java.util.Locale;
 
 public interface EventCommentService {

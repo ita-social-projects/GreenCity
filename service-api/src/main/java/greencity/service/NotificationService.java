@@ -4,7 +4,6 @@ import greencity.dto.place.PlaceVO;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.UserTaggedInCommentMessage;
-
 import java.util.Set;
 
 public interface NotificationService {

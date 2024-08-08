@@ -29,7 +29,6 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -41,7 +40,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.stream.Collectors;
 
 @Service
@@ -404,7 +402,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @param eventId     {@link Long} event id.
      * @param userVO      {@link UserVO} comment author.
      * @param comment     {@link String} comment.
-     * @param createdDate
+     * @param createdDate {@link LocalDateTime} date and time of creation
      */
     private void sendNotificationToTaggedUser(Long eventId, UserVO userVO, String comment, LocalDateTime createdDate,
         Locale locale) {
@@ -453,7 +451,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     /**
-     * Method to replace regex data-userid="<userId>" with @+username in comment and
+     * Method to replace regex data-userid="userId" with @+username in comment and
      * makes username bold.
      *
      * @param comment is comment to format.
