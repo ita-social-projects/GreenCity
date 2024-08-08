@@ -10,6 +10,8 @@ import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Locale;
+
 public interface EventCommentService {
     /**
      * Method to save {@link EventCommentVO}.
@@ -23,7 +25,7 @@ public interface EventCommentService {
      * @author Inna Yashna
      */
     AddEventCommentDtoResponse save(Long eventId, AddEventCommentDtoRequest addEventCommentDtoRequest,
-        UserVO user);
+        UserVO user, Locale locale);
 
     /**
      * Method to get certain comment to {@link EventVO} specified by commentId.
@@ -61,7 +63,7 @@ public interface EventCommentService {
      *                    change.
      * @param user        current {@link UserVO} that wants to change.
      */
-    void update(String commentText, Long id, UserVO user);
+    void update(String commentText, Long id, UserVO user, Locale locale);
 
     /**
      * Method for deleting the {@link EventCommentVO} instance by its id.
