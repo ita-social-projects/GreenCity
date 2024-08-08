@@ -186,10 +186,10 @@ public class SecurityConfig {
                     "/database/backup",
                     "/database/backupFiles")
                 .permitAll()
-                    .requestMatchers(HttpMethod.DELETE,
-                            "/place/{id}",
-                            "/place")
-                    .permitAll()
+                .requestMatchers(HttpMethod.DELETE,
+                    "/place/{id}",
+                    "/place")
+                .permitAll()
                 .requestMatchers(HttpMethod.POST,
                     "/ownSecurity/signUp",
                     "/ownSecurity/signIn",
