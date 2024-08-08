@@ -20,6 +20,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
@@ -37,8 +38,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 import static greencity.ModelUtils.getAmountCommentLikesDto;
 import static greencity.ModelUtils.getUser;
@@ -111,19 +115,21 @@ class EventCommentServiceImplTest {
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
         when(modelMapper.map(eventComment.getUser(), UserVO.class)).thenReturn(userVO);
 
-        eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
+        eventCommentService.save(1L, addEventCommentDtoRequest, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 
     @Test
     void sendNotificationIfUserTaggedInComment() {
+        String comment = "test data-userid=\"5\" test";
         UserVO userVO = getUserVO();
         User user = getUser();
         EventVO eventVO = ModelUtils.getEventVO();
         Event event = ModelUtils.getEvent();
+        AddEventCommentDtoResponse response = ModelUtils.getAddEventCommentDtoResponse().setText(comment);
         AddEventCommentDtoRequest addEventCommentDtoRequest = AddEventCommentDtoRequest.builder()
-            .text("<a contenteditable=\"false\" data-userid=\"5\" style=\"font-weight: 700;\">@Dmytro</a> test")
+            .text(comment)
             .build();
         EventComment eventComment = getEventComment();
         EventCommentAuthorDto eventCommentAuthorDto = ModelUtils.getEventCommentAuthorDto();
@@ -137,13 +143,14 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(userVO, EventCommentAuthorDto.class)).thenReturn(eventCommentAuthorDto);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
-        when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
-        when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
-            .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+        when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment.setText(comment));
+        when(modelMapper.map(eventComment, AddEventCommentDtoResponse.class)).thenReturn(response);
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
 
-        eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
+        eventCommentService.save(1L, addEventCommentDtoRequest, userVO, Locale.of("en"));
 
-        verify(notificationService, times(2)).sendEmailNotification(any(GeneralEmailMessage.class));
+        verify(notificationService, times(1))
+            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
     }
 
     @Test
@@ -165,7 +172,7 @@ class EventCommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> eventCommentService.save(1L, addEventCommentDtoRequest, userVO));
+                () -> eventCommentService.save(1L, addEventCommentDtoRequest, userVO, Locale.of("en")));
 
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
     }
@@ -196,7 +203,7 @@ class EventCommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO));
+                () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO, Locale.of("en")));
 
         String expectedErrorMessage = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
             + " in event with id: " + event.getId();
@@ -231,7 +238,7 @@ class EventCommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO));
+                () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO, Locale.of("en")));
 
         String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;
 
@@ -306,7 +313,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.ofNullable(eventComment));
 
-        eventCommentService.update(editedText, commentId, userVO);
+        eventCommentService.update(editedText, commentId, userVO, Locale.of("en"));
 
         assertEquals(CommentStatus.EDITED, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
@@ -322,7 +329,7 @@ class EventCommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> eventCommentService.update(editedText, commentId, userVO));
+                () -> eventCommentService.update(editedText, commentId, userVO, Locale.of("en")));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -342,7 +349,7 @@ class EventCommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> eventCommentService.update(editedText, commentId, userVO));
+                () -> eventCommentService.update(editedText, commentId, userVO, Locale.of("en")));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 
