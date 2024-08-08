@@ -60,16 +60,7 @@
                 </div>
                 <div class="row" style="margin-top: 3%">
                     <div class="col-sm-10">
-                        <!--                        <div class="row">-->
-                        <!--                            <div class="col-sm-12">-->
-                        <!--                               <span class="custom-checkbox">-->
-                        <!--                                   <span class="modal-checkbox">-->
-                        <!--                                       <input type="checkbox" id="selectAll">-->
-                        <!--                                        <label for="selectAll"></label>-->
-                        <!--                                   </span>-->
-                        <!--                                </span>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
+
                     </div>
                     <div class="col-sm-2">
                         <!--                SOME BUTTONS TO SHANGE FORM-->
@@ -139,36 +130,6 @@
                             </thead>
 
                             <tbody>
-                            <!--                            <form>-->
-                            <!--                                <tr>-->
-                            <!--                                    <td>-->
-                            <!--                                        <input id="idSearchForm" placeholder="" class="input-search-form" type="search"-->
-                            <!--                                               th:value="${fields eq null ? '' : fields.getId()}"/>-->
-                            <!--                                    </td>-->
-                            <!--                                    <td>-->
-                            <!--                                        <input id="authorSearchForm" class="input-search-form" type="search"-->
-                            <!--                                               th:value="${fields eq null ? '' : fields.getAuthor()}"-->
-                            <!--                                        />-->
-                            <!--                                    </td>-->
-                            <!--                                    <td>-->
-                            <!--                                        <input id="titleSearchForm" class="input-search-form" type="search"-->
-                            <!--                                               th:value="${fields eq null ? '' : fields.getTitle()}"-->
-                            <!--                                        />-->
-                            <!--                                    </td>-->
-                            <!--                                    <td>-->
-                            <!--                                        <input id="textSearchForm" class="input-search-form" type="search"-->
-                            <!--                                               th:value="${fields eq null ? '' : fields.getDescription()}"/>-->
-                            <!--                                    </td>-->
-                            <!--                                    <td>-->
-                            <!--                                        <input id="tagSearchForm" class="input-search-form" type="search"/>-->
-                            <!--                                    </td>-->
-                            <!--                                    <td>-->
-                            <!--                                            <span id="searchBy" onclick="sendDataFromSearchForm()">-->
-                            <!--                                                <img alt="search" src="/img/search.png">-->
-                            <!--                                            </span>-->
-                            <!--                                    </td>-->
-                            <!--                                </tr>-->
-                            <!--                            </form>-->
 
                             <th:block th:each="allEvents, iterStatus :${pageable.getPage()}">
                                 <tr>
@@ -256,176 +217,20 @@
                             </div>
                         </div>
 
-                        <!--                            End of Pagination-->
+                        <!-- End of Pagination-->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Add Modal HTML -->
-    <div id="addEventModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{management/events}" method="post" id="addEventsForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.events.page.add.event}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.title}]]</label>
-                            <textarea type="text" class="form-control" name="title" required></textarea>
-                            <span th:id="errorModalSavetitle" id="errorModalSavetitle" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.text}]]</label>
-                            <textarea type="text" class="form-control" name="text" required></textarea>
-                            <span th:id="errorModalSavetext" id="errorModalSavetext" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.tags}]]</label>
-                            <div style="width: 100%; display: inline-block;">
-                                <th:block th:each="allTags, iterStatus :${eventsTag}">
-                                    <div style="margin-right: 5%" class="custom-checkbox">
-                                            <span class="modal-checkbox">
-                                                <input class="tag-checkbox" type="checkbox"
-                                                       th:id="checkboxTag+${iterStatus.count}" id="checkboxTag1"
-                                                       name="Tags[]" th:value="${allTags.getName()}"
-                                                       th:onclick="tagClick()">
-                                                <label th:for="checkboxTag+${iterStatus.count}"
-                                                       th:text="${allTags.getName()}" for="checkboxTag1"></label>
-                                            </span>
-                                    </div>
-                                    <span th:id="errorModalAddTags" class="errorSpan"></span>
-                                </th:block>
-                            </div>
-                            <span th:id="errorModalSavetags" id="errorModalSavetags" class="errorSpan"></span>
-
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.source}]]</label>
-                            <textarea type="text" class="form-control" name="source"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.image}]]</label>
-                            <input type="file" class="form-control" name="file" id="creationFile" placeholder="ferf">
-                            <span th:id="errorModalSavefile" class="errorSpan"></span>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Create Event Modal Window-->
+    <div th:replace="core/fragments/modals/create_event_modal.html"></div>
     <!-- Edit Modal HTML -->
-    <div id="editEventsModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="editEcoNewsForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.events.page.edit.events}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="id">[[#{greenCity.pages.table.id}]]</label>
-                            <input type="text" class="form-control" id="id" name="id" readonly required>
-                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="title">[[#{greenCity.pages.table.title}]]</label>
-                            <textarea type="text" class="form-control" id="title" name="title" required></textarea>
-                            <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="text">[[#{greenCity.pages.table.text}]]</label>
-                            <textarea type="text" class="form-control" id="text" name="text" required></textarea>
-                            <span th:id="errorModalUpdatetext" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="tagsEdit">[[#{greenCity.pages.table.tags}]]</label>
-                            <div id="tagsEdit" style="width: 100%; display: inline-block;">
-
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="imagePath">[[#{greenCity.pages.table.image.path}]]</label>
-                            <textarea type="text" class="form-control" id="imagePath" name="imagePath"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="source">[[#{greenCity.pages.table.source}]]</label>
-                            <textarea type="text" class="form-control" id="source" name="source"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="file">[[#{greenCity.pages.table.image}]]</label>
-                            <input type="file" class="form-control" id="file" name="file">
-                            <span th:id="errorModalUpdatefile" class="errorSpan"></span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-info btn-primary" th:value="#{greenCity.pages.popup.save.}"
-                               id="submitEditBtn">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <div th:replace="core/fragments/modals/edit_event_modal.html">
     <!-- Delete Modal HTML -->
-    <div id="deleteEventsModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="deleteEventsForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.events.page.delete.events}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
-                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <a href="" id="deleteOneSubmit" class="btn btn-remove">
-                            <div>[[#{greenCity.pages.delete}]]</div>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <div th:replace="core/fragments/modals/delete_event_modal.html">
     <!-- Delete all selected Modal HTML -->
-    <div id="deleteAllSelectedModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
-                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <a href="" id="deleteAllSubmit" class="btn btn-danger">
-                            <div>[[#{greenCity.pages.delete}]]</div>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <div th:replace="core/fragments/modals/delete_all_selected_events_modal.html">
 </div>
 
 <div id="footer" th:insert="core/footer"></div>
