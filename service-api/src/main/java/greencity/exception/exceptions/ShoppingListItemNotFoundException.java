@@ -1,8 +1,15 @@
 package greencity.exception.exceptions;
 
-public class ShoppingListItemNotFoundException extends RuntimeException {
+/**
+ * Exception that is thrown when a shopping list item is not found.
+ *
+ * @version 1.0
+ */
+public class ShoppingListItemNotFoundException extends NotFoundException {
     /**
-     * Constructor.
+     * Constructor for ShoppingListItemNotFoundException.
+     *
+     * @param message - giving message.
      */
     public ShoppingListItemNotFoundException(String message) {
         super(message);

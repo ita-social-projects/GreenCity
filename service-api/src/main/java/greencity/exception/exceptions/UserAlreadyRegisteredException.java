@@ -8,7 +8,9 @@ package greencity.exception.exceptions;
  */
 public class UserAlreadyRegisteredException extends RuntimeException {
     /**
-     * Generated javadoc, must be replaced with real one.
+     * Constructor for UserAlreadyRegisteredException.
+     *
+     * @param message - giving message.
      */
     public UserAlreadyRegisteredException(String message) {
         super(message);

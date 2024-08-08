@@ -5,7 +5,7 @@ package greencity.exception.exceptions;
  *
  * @author Kateryna Horokh
  */
-public class BadCategoryRequestException extends RuntimeException {
+public class BadCategoryRequestException extends BadRequestException {
     /**
      * Constructor for BadCategoryRequestException.
      *
