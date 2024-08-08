@@ -14,6 +14,7 @@ import greencity.enums.PlaceStatus;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.SendReportEmailMessage;
+import greencity.message.UserTaggedInCommentMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -160,6 +161,24 @@ public class NotificationServiceImpl implements NotificationService {
             try {
                 RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 restClient.sendHabitAssignNotification(message);
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dmytruk
+     */
+    @Override
+    public void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                restClient.sendUserTaggedInCommentNotification(message);
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }

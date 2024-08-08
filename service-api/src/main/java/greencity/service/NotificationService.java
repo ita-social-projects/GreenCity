@@ -3,6 +3,8 @@ package greencity.service;
 import greencity.dto.place.PlaceVO;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
+import greencity.message.UserTaggedInCommentMessage;
+
 import java.util.Set;
 
 public interface NotificationService {
@@ -58,4 +60,11 @@ public interface NotificationService {
      * @param message {@link HabitAssignNotificationMessage}.
      */
     void sendHabitAssignEmailNotification(HabitAssignNotificationMessage message);
+
+    /**
+     * Method send a notification message when user is mentioned in comment.
+     *
+     * @param message {@link UserTaggedInCommentMessage}.
+     */
+    void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message);
 }
