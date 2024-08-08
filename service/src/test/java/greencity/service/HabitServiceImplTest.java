@@ -1294,11 +1294,12 @@ class HabitServiceImplTest {
     void likeHabitHabitNotFoundTest() {
         UserVO userVO = getUserVO();
         Habit habit = getHabit();
+        Long habitId = habit.getId();
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.empty());
 
         NotFoundException exception =
-            assertThrows(NotFoundException.class, () -> habitService.like(habit.getId(), userVO));
+            assertThrows(NotFoundException.class, () -> habitService.like(habitId, userVO));
         assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habit.getId(), exception.getMessage());
 
         verify(habitRepo).findById(habit.getId());
@@ -1308,6 +1309,7 @@ class HabitServiceImplTest {
     void likeHabitUserNotFoundTest() {
         UserVO userVO = getUserVO();
         Habit habit = getHabit();
+        Long habitId = habit.getId();
         User user = getUser();
         habit.setUserId(user.getId());
 
@@ -1315,7 +1317,7 @@ class HabitServiceImplTest {
         when(userRepo.findById(habit.getUserId())).thenReturn(Optional.empty());
 
         NotFoundException exception =
-            assertThrows(NotFoundException.class, () -> habitService.like(habit.getId(), userVO));
+            assertThrows(NotFoundException.class, () -> habitService.like(habitId, userVO));
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId(), exception.getMessage());
 
         verify(habitRepo).findById(habit.getId());
