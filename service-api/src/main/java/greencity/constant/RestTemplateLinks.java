@@ -38,6 +38,7 @@ public class RestTemplateLinks {
     public static final String ADD_EVENT_COMMENT = "/email/addEventComment";
     public static final String SEND_GENERAL_EMAIL_NOTIFICATION = "/email/general/notification";
     public static final String SEND_HABIT_ASSIGN_NOTIFICATION = "/email/habitAssign/notification";
+    public static final String SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION = "/email/taggedUserInComment/notification";
 
     private RestTemplateLinks() {
     }
