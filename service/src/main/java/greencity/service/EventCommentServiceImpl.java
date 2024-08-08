@@ -54,7 +54,6 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
     private final UserRepo userRepo;
-    private static final String LINK = "/#/events/";
     @Value("${client.address}")
     private String clientAddress;
 
@@ -407,7 +406,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private void sendNotificationToTaggedUser(Long eventId, UserVO userVO, String comment, LocalDateTime createdDate,
         Locale locale) {
         Set<Long> usersId = getUserIdFromComment(comment);
-        if (usersId != null) {
+        if (!usersId.isEmpty()) {
             String formattedComment = formatComment(comment);
             Event event = eventRepo.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
@@ -441,7 +440,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         Matcher matcher = pattern.matcher(message);
         Set<Long> userIds = new HashSet<>();
         if (!matcher.find()) {
-            return null;
+            return userIds;
         }
         matcher.reset();
         while (matcher.find()) {
