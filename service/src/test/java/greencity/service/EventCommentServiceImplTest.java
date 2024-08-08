@@ -37,7 +37,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
