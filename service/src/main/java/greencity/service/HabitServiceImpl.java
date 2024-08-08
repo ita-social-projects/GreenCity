@@ -545,7 +545,7 @@ public class HabitServiceImpl implements HabitService {
 
         if (habit.getUserId() != null) {
             habitAuthor = userRepo.findById(habit.getUserId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + habitId));
         }
         if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));

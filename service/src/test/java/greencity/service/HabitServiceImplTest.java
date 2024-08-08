@@ -1289,4 +1289,36 @@ class HabitServiceImplTest {
 
         verify(habitRepo).findById(habit.getId());
     }
+
+    @Test
+    void likeHabitHabitNotFoundTest() {
+        UserVO userVO = getUserVO();
+        Habit habit = getHabit();
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitService.like(habit.getId(), userVO));
+        assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habit.getId(), exception.getMessage());
+
+        verify(habitRepo).findById(habit.getId());
+    }
+
+    @Test
+    void likeHabitUserNotFoundTest() {
+        UserVO userVO = getUserVO();
+        Habit habit = getHabit();
+        User user = getUser();
+        habit.setUserId(user.getId());
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitService.like(habit.getId(), userVO));
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId(), exception.getMessage());
+
+        verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(habit.getUserId());
+    }
 }
