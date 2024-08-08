@@ -436,7 +436,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @return user id if present or null.
      */
     private Set<Long> getUserIdFromComment(String message) {
-        String regEx = "\\s*data-userid=\"(\\d+)\"\\s*";
+        String regEx = "data-userid=\"(\\d+)\"";
         Pattern pattern = Pattern.compile(regEx);
         Matcher matcher = pattern.matcher(message);
         Set<Long> userIds = new HashSet<>();
@@ -458,7 +458,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @return formatted comment.
      */
     private String formatComment(String comment) {
-        String regEx = "\\s*data-userid=\"(\\d+)\"\\s*";
+        String regEx = "data-userid=\"(\\d+)\"";
         Pattern pattern = Pattern.compile(regEx);
         Matcher matcher = pattern.matcher(comment);
         StringBuilder formattedCommentBuilder = new StringBuilder();
