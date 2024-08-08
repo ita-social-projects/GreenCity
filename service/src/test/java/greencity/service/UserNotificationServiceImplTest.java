@@ -33,6 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class UserNotificationServiceImplTest {
@@ -340,5 +341,25 @@ class UserNotificationServiceImplTest {
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
         verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, false);
         verify(notificationRepo).markNotificationAsViewed(notificationId);
+    }
+
+    @Test
+    void testCheckUnreadNotificationWhenUnreadExists() {
+        Long userId = 1L;
+        when(notificationRepo.countByTargetUserIdAndViewedIsFalse(userId)).thenReturn(3L);
+
+        userNotificationService.checkUnreadNotification(userId);
+
+        verify(messagingTemplate, never()).convertAndSend(TOPIC + userId + NOTIFICATION, false);
+    }
+
+    @Test
+    void testCheckUnreadNotificationWhenNoUnreadExists() {
+        Long userId = 2L;
+        when(notificationRepo.countByTargetUserIdAndViewedIsFalse(userId)).thenReturn(0L);
+
+        userNotificationService.checkUnreadNotification(userId);
+
+        verify(messagingTemplate, times(1)).convertAndSend(TOPIC + userId + NOTIFICATION, false);
     }
 }
