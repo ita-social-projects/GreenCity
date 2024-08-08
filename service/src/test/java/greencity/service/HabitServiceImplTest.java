@@ -1269,6 +1269,9 @@ class HabitServiceImplTest {
         habitService.like(habit.getId(), userVO);
 
         assertTrue(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(modelMapper).map(userVO, User.class);
+        verify(habitRepo).findById(habit.getId());
     }
 
     @Test
@@ -1279,10 +1282,11 @@ class HabitServiceImplTest {
         habit.getUsersLiked().add(user);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         habitService.like(habit.getId(), userVO);
 
         assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(habitRepo).findById(habit.getId());
     }
 }

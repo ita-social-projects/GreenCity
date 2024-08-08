@@ -477,7 +477,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
             new TypeToken<List<Tag>>() {
             }.getType()));
-        if (StringUtils.isNotBlank(updateEcoNewsDto.getImage())) {
+        if (updateEcoNewsDto.getImage() != null) {
             image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
         }
         if (image != null) {

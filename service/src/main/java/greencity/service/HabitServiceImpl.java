@@ -534,10 +534,7 @@ public class HabitServiceImpl implements HabitService {
     }
 
     /**
-     * Method to like or dislike {@link Habit} specified by id.
-     *
-     * @param habitId id of {@link Habit} to like/dislike.
-     * @param userVO  current {@link User} that wants to like/dislike.
+     * {@inheritDoc}
      */
     @Override
     public void like(Long habitId, UserVO userVO) {
