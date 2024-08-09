@@ -4,7 +4,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.shoppinglistitem.*;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserShoppingListItemDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserVO;
@@ -93,7 +92,8 @@ public interface ShoppingListItemService {
      * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
      * @param habitId  id of the {@link HabitVO}.
-     * @return List of saved {@link UserShoppingListItemDto} with specific language.
+     * @return List of saved {@link UserShoppingListItemResponseDto} with specific
+     *         language.
      */
     List<UserShoppingListItemResponseDto> saveUserShoppingListItems(Long userId, Long habitId,
         List<ShoppingListItemRequestDto> dto, String language);
@@ -103,7 +103,7 @@ public interface ShoppingListItemService {
      *
      * @param userId   id of the {@link UserVO} current user.
      * @param language needed language code.
-     * @return List of {@link UserShoppingListItemDto}.
+     * @return List of {@link UserShoppingListItemResponseDto}.
      */
     List<UserShoppingListItemResponseDto> getUserShoppingList(Long userId, Long habitId, String language);
 
@@ -144,7 +144,7 @@ public interface ShoppingListItemService {
      * @param userId   id of the {@link UserVO} current user.
      * @param itemId   - {@link UserShoppingListItemVO}'s id that should be updated.
      * @param language needed language code.
-     * @return {@link UserShoppingListItemDto} with specific language.
+     * @return {@link UserShoppingListItemResponseDto} with specific language.
      */
     UserShoppingListItemResponseDto updateUserShopingListItemStatus(Long userId, Long itemId, String language);
 
@@ -156,7 +156,7 @@ public interface ShoppingListItemService {
      *                               should be updated.
      * @param language               needed language code.
      * @param status                 needed language code.
-     * @return {@link UserShoppingListItemDto} with specific language.
+     * @return {@link UserShoppingListItemResponseDto} with specific language.
      */
     List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId,
         Long userShoppingListItemId,

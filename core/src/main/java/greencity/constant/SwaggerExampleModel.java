@@ -1,6 +1,9 @@
 package greencity.constant;
 
-public final class SwaggerExampleModel {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class SwaggerExampleModel {
     private static final String IMAGE_DESCRIPTION = "pass image as base64 or upload image\n";
 
     private static final String BEFORE_EXAMPLE = """
@@ -34,15 +37,6 @@ public final class SwaggerExampleModel {
 
     private static final String AFTER_EXAMPLE = "\t</pre>\n"
         + "</div>";
-
-    public static final String USER_PROFILE_PICTURE_DTO =
-        "User Profile Picture\n"
-            + BEFORE_EXAMPLE
-            + "{\n"
-            + "  \"id\": 0,\n"
-            + "  \"profilePicturePath\": \"string\"\n"
-            + "}\n"
-            + AFTER_EXAMPLE;
 
     public static final String ADD_ECO_NEWS_REQUEST =
         "Add Eco News Request\n"
@@ -109,7 +103,4 @@ public final class SwaggerExampleModel {
         + "\t\"tags\":[\"Social\"],\n"
         + "\t\"isOpen\":true\n"
         + "}";
-
-    private SwaggerExampleModel() {
-    }
 }

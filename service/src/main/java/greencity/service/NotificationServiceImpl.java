@@ -7,7 +7,6 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
-import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
@@ -17,18 +16,13 @@ import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
@@ -36,23 +30,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
     private static final ZoneId ZONE_ID = ZoneId.of(AppConstant.UKRAINE_TIMEZONE);
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-
-    /**
-     * Constructor.
-     */
-    @Autowired
-    public NotificationServiceImpl(PlaceRepo placeRepo,
-        ModelMapper modelMapper, RestClient restClient) {
-        this.placeRepo = placeRepo;
-        this.modelMapper = modelMapper;
-        this.restClient = restClient;
-    }
 
     @Override
     public void sendImmediatelyReport(PlaceVO newPlace) {
@@ -192,12 +176,12 @@ public class NotificationServiceImpl implements NotificationService {
     private Map<CategoryDto, List<PlaceNotificationDto>> getCategoriesDtoWithPlacesDtoMap(List<Place> places) {
         log.info(LogMessage.IN_GET_CATEGORIES_WITH_PLACES_MAP, places.toString());
         List<PlaceNotificationDto> placeDto = places.stream()
-            .map(o -> modelMapper.map(o, PlaceNotificationDto.class)).collect(Collectors.toList());
+            .map(o -> modelMapper.map(o, PlaceNotificationDto.class))
+            .toList();
         Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlacesMap = new HashMap<>();
         List<CategoryDto> categories = getUniqueCategoriesFromPlaces(places);
-        List<PlaceNotificationDto> placesByCategory;
+        List<PlaceNotificationDto> placesByCategory = new ArrayList<>();
         for (CategoryDto category : categories) {
-            placesByCategory = new ArrayList<>();
             for (PlaceNotificationDto place : placeDto) {
                 if (place.getCategory().equals(category)) {
                     placesByCategory.add(place);
@@ -210,12 +194,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     private List<CategoryDto> getUniqueCategoriesFromPlaces(List<Place> places) {
         log.info(LogMessage.IN_GET_UNIQUE_CATEGORIES_FROM_PLACES, places);
-        List<Category> collect = places.stream()
+        return places.stream()
             .map(Place::getCategory)
-            .collect(Collectors.toList()).stream()
             .distinct()
-            .collect(Collectors.toList());
-        return collect.stream()
-            .map(o -> modelMapper.map(o, CategoryDto.class)).collect(Collectors.toList());
+            .map(o -> modelMapper.map(o, CategoryDto.class))
+            .toList();
     }
 }

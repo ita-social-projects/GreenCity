@@ -65,8 +65,8 @@ public class FriendServiceImpl implements FriendService {
         validateFriendRequestNotSent(userId, friendId);
         validateFriendNotExists(userId, friendId);
         userRepo.addNewFriend(userId, friendId);
-        User emailReceiver = userRepo.getOne(friendId);
-        User friendRequestSender = userRepo.getOne(userId);
+        User emailReceiver = userRepo.getReferenceById(friendId);
+        User friendRequestSender = userRepo.getReferenceById(userId);
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(emailReceiver.getEmail())
             .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
@@ -88,8 +88,8 @@ public class FriendServiceImpl implements FriendService {
         validateFriendNotExists(userId, friendId);
         validateFriendRequestSentByFriend(userId, friendId);
         userRepo.acceptFriendRequest(userId, friendId);
-        User user = userRepo.getOne(userId);
-        User friend = userRepo.getOne(friendId);
+        User user = userRepo.getReferenceById(userId);
+        User friend = userRepo.getReferenceById(friendId);
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(friend.getEmail())
             .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)

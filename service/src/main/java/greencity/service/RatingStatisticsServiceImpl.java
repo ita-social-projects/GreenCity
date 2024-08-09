@@ -30,7 +30,7 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         Page<RatingStatistics> ratingStatistics) {
         List<RatingStatisticsDto> ratingStatisticsDtos = ratingStatistics.get()
             .map(ratingStat -> modelMapper.map(ratingStat, RatingStatisticsDto.class))
-            .collect(Collectors.toList());
+            .toList();
         List<RatingStatisticsDtoForTables> ratingStatisticsDtoForTablesDtos = ratingStatisticsDtos.stream()
             .map(x -> RatingStatisticsDtoForTables.builder()
                 .id(x.getId())

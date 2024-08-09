@@ -294,13 +294,6 @@ public interface HabitAssignService {
         LocalDate from, LocalDate to, String language);
 
     /**
-     * Method add default habit.
-     *
-     * @param user {@link UserVO} instance.
-     */
-    void addDefaultHabit(UserVO user, String language);
-
-    /**
      * Method delete HabitAssign by habitAssignId for current User.
      *
      * @param habitAssignId {@link Long} id.

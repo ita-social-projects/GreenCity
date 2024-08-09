@@ -476,7 +476,7 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     public List<Long> deleteUserShoppingListItems(String ids) {
         List<Long> arrayId = Arrays.stream(ids.split(","))
             .map(Long::valueOf)
-            .collect(Collectors.toList());
+            .toList();
 
         List<Long> deleted = new ArrayList<>();
         for (Long id : arrayId) {

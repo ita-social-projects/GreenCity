@@ -11,7 +11,7 @@ import greencity.message.SendHabitNotification;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +33,7 @@ import static greencity.enums.FactOfDayStatus.*;
 @Slf4j
 @Configuration
 @EnableScheduling
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScheduleConfig {
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;

@@ -1,6 +1,5 @@
 package greencity.service;
 
-import com.azure.core.annotation.Get;
 import greencity.ModelUtils;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
@@ -23,7 +22,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -207,7 +205,7 @@ class HabitStatisticServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatisticRepo.findAllByHabitAssignId(1L)).thenReturn(habitAssign.getHabitStatistic());
         habitStatisticService.deleteAllStatsByHabitAssign(habitAssignVO);
-        verify(habitStatisticRepo, times(1)).delete(habitAssign.getHabitStatistic().get(0));
+        verify(habitStatisticRepo, times(1)).deleteAll(habitAssign.getHabitStatistic());
     }
 
     @Test

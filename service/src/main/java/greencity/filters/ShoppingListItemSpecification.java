@@ -1,21 +1,20 @@
 package greencity.filters;
 
-import greencity.entity.*;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.ShoppingListItem_;
+import greencity.entity.Translation_;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation_;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
-import static greencity.entity.Translation_.content;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class ShoppingListItemSpecification implements MySpecification<ShoppingListItem> {
-    private transient List<SearchCriteria> searchCriteriaList;
-
-    /**
-     * Constructor.
-     */
-    public ShoppingListItemSpecification(List<SearchCriteria> searchCriteriaList) {
-        this.searchCriteriaList = searchCriteriaList;
-    }
+    private final transient List<SearchCriteria> searchCriteriaList;
 
     @Override
     public Predicate toPredicate(Root<ShoppingListItem> root, CriteriaQuery<?> criteriaQuery,
@@ -37,8 +36,8 @@ public class ShoppingListItemSpecification implements MySpecification<ShoppingLi
     private Predicate getTranslationPredicate(Root<ShoppingListItem> root, CriteriaQuery<?> criteriaQuery,
         CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
         Root<ShoppingListItemTranslation> itemTranslationroot = criteriaQuery.from(ShoppingListItemTranslation.class);
-        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
-            : criteriaBuilder.and(criteriaBuilder.like(itemTranslationroot.get(content),
+        return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
+            : criteriaBuilder.and(criteriaBuilder.like(itemTranslationroot.get(Translation_.content),
                 "%" + searchCriteria.getValue() + "%"),
                 criteriaBuilder.equal(
                     itemTranslationroot.get(ShoppingListItemTranslation_.shoppingListItem).get(ShoppingListItem_.id),
