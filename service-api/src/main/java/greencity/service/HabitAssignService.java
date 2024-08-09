@@ -349,12 +349,12 @@ public interface HabitAssignService {
     /**
      * Method invite friends to your habit with email notification.
      *
-     * @param userVO    {@link UserVO} user.
-     * @param friendIds {@link Long} User friends ids.
-     * @param habitId   {@link Long} habit ids.
-     * @param locale    {@link Locale} language.
+     * @param userVO     {@link UserVO} user.
+     * @param friendsIds {@link Long} User friends ids.
+     * @param habitId    {@link Long} habit id.
+     * @param locale     {@link Locale} language.
      */
-    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendIds, Long habitId,
+    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
         Locale locale);
 
     /**

@@ -43,7 +43,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RequiredArgsConstructor
@@ -695,11 +705,11 @@ public class HabitAssignController {
     /**
      * Method send request to assign on habit via email notification.
      *
-     * @param habitId   - id of {@link HabitAssignVO}.
-     * @param friendIds - list of ids of user friends {@link UserVO} to invite.
-     * @param userVO    - user who send request {@link UserVO}.
-     * @param locale    - current language
-     *                  {@link greencity.dto.language.LanguageVO}.
+     * @param habitId    - id of {@link HabitAssignVO}.
+     * @param friendsIds - list of ids of user friends {@link UserVO} to invite.
+     * @param userVO     - user who send request {@link UserVO}.
+     * @param locale     - current language
+     *                   {@link greencity.dto.language.LanguageVO}.
      */
     @Operation(summary = "Inviting friends on habit with email notification")
     @ApiResponses(value = {
@@ -711,10 +721,10 @@ public class HabitAssignController {
     })
     @PostMapping("/{habitId}/invite")
     public ResponseEntity<ResponseEntity.BodyBuilder> inviteFriendRequest(@PathVariable Long habitId,
-        @Parameter(description = "List of friends ids to invite") @RequestParam List<Long> friendIds,
+        @Parameter(description = "List of friends ids to invite") @RequestParam List<Long> friendsIds,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendIds, habitId, locale);
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendsIds, habitId, locale);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

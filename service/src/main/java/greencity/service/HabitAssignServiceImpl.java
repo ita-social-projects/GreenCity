@@ -1484,9 +1484,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional
-    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendIds, Long habitId,
+    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
         Locale locale) {
-        friendIds.forEach(friendId -> {
+        friendsIds.forEach(friendId -> {
             checkIfUserIsAFriend(userVO.getId(), friendId);
             User friend = getUserById(friendId);
             UserVO friendVO = mapToUserVO(friend);
