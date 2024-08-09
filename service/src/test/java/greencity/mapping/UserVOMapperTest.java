@@ -1,8 +1,6 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.socialnetwork.SocialNetworkImageVO;
-import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 

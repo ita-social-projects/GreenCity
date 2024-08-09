@@ -86,7 +86,7 @@ class ManagementHabitServiceImplTest {
             Language.class)).thenReturn(Language.builder().id(1L).code("en").build());
         HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L)
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
-            .habitTranslations(Arrays.asList(
+            .habitTranslations(List.of(
                 HabitTranslationManagementDto.builder().habitItem("Item").description("Description").languageCode("en")
                     .name("Name").build()))
             .build();
@@ -115,13 +115,13 @@ class ManagementHabitServiceImplTest {
 
     @Test
     void updateTest() {
-        when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1L).habitTranslations(Arrays
-            .asList(HabitTranslation.builder().habitItem("Item").description("Description")
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1L).habitTranslations(List
+            .of(HabitTranslation.builder().habitItem("Item").description("Description")
                 .language(Language.builder().id(1L).code("en").build()).name("Name").build()))
             .build()));
-        HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1l).image("image")
-            .habitTranslations(Arrays
-                .asList(HabitTranslationManagementDto.builder().habitItem("Item").description("Description")
+        HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L).image("image")
+            .habitTranslations(List.of(
+                HabitTranslationManagementDto.builder().habitItem("Item").description("Description")
                     .languageCode("en").name("Name").build()))
             .build();
         Map<String, HabitTranslationManagementDto> managementDtoMap = habitManagementDto.getHabitTranslations().stream()
@@ -144,7 +144,7 @@ class ManagementHabitServiceImplTest {
 
     @Test
     void deleteTest() {
-        when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1l).build()));
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1L).build()));
         Habit habit = habitRepo.findById(1L).orElse(null);
         when(modelMapper.map(habit, HabitVO.class)).thenReturn(HabitVO.builder().id(1L).build());
         managementHabitService.delete(1L);

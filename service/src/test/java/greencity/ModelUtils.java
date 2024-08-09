@@ -454,6 +454,18 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserVO getAuthorVO() {
+        return UserVO.builder()
+            .id(2L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(Role.ROLE_USER)
+            .lastActivityTime(localDateTime)
+            .verifyEmail(new VerifyEmailVO())
+            .dateOfRegistration(localDateTime)
+            .build();
+    }
+
     public static UserManagementVO getUserManagementVO() {
         return UserManagementVO.builder()
             .id(1L)
@@ -2910,7 +2922,7 @@ public class ModelUtils {
             .user(getUser())
             .event(getEvent())
             .status(CommentStatus.ORIGINAL)
-            .comments(Arrays.asList(getSubEventComment()))
+            .comments(List.of(getSubEventComment()))
             .build();
     }
 

@@ -4,15 +4,15 @@ import greencity.entity.EcoNews;
 import greencity.entity.EcoNews_;
 import greencity.entity.Tag_;
 import greencity.entity.localization.TagTranslation_;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Scope {@code prototype} is used for creation new bean
@@ -21,16 +21,9 @@ import java.util.List;
 @Component
 @Scope("prototype")
 @Slf4j
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class EcoNewsSpecification implements MySpecification<EcoNews> {
-    private transient List<SearchCriteria> searchCriteriaList;
-
-    /**
-     * Constructor.
-     */
-    public EcoNewsSpecification(List<SearchCriteria> searchCriteriaList) {
-        this.searchCriteriaList = searchCriteriaList;
-    }
+    private final transient List<SearchCriteria> searchCriteriaList;
 
     @Override
     public Predicate toPredicate(Root<EcoNews> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -63,7 +56,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
 
     private Predicate getTagsPredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        if (searchCriteria.getValue().toString().trim().equals("")) {
+        if (searchCriteria.getValue().toString().trim().isEmpty()) {
             return criteriaBuilder.conjunction();
         }
         return criteriaBuilder.like(

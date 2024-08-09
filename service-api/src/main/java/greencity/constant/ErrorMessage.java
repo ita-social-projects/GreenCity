@@ -1,6 +1,9 @@
 package greencity.constant;
 
-public final class ErrorMessage {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class ErrorMessage {
     public static final String RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME =
         "RatingCalculationEnum with such name does not exist: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
@@ -44,9 +47,6 @@ public final class ErrorMessage {
     public static final String TAG_NOT_DELETED = "Tag not deleted by id : ";
     public static final String TAG_NOT_FOUND = "Tag not found by id : ";
     public static final String TAGS_NOT_FOUND = "There should be at least one valid tag";
-    public static final String DUPLICATED_TAG = "Tags should be unique";
-    public static final String INVALID_NUM_OF_TAGS =
-        "Invalid tags. You must have less than " + ServiceValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
     public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
@@ -183,14 +183,9 @@ public final class ErrorMessage {
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
-    public static final String INVALID_EVENT_TYPE = "Invalid event type, please specify - online or offline.";
-    public static final String PAGE_NOT_FOUND = "Page not found. Page number should be between 0 and ";
     public static final String INVALID_DATE = "Date can't be null or empty";
     public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT =
         "No friends are assigned on current habit with id: ";
     public static final String INVALID_TIME_RANGE = "Start date and end date must be greater than end date";
     public static final String NOT_FOUND_IN_CURRENT_TIME_RANGE = "Not found backups in current time range";
-
-    private ErrorMessage() {
-    }
 }

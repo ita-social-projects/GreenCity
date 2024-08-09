@@ -352,4 +352,15 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private void sendNotification(Long userId) {
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, true);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void checkUnreadNotification(Long userId) {
+        long unreadNotifications = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        if (unreadNotifications == 0) {
+            messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, false);
+        }
+    }
 }

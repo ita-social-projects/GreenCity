@@ -22,6 +22,7 @@ import greencity.service.UserService;
 import greencity.service.UserActionService;
 import greencity.service.AchievementService;
 import greencity.service.AchievementCategoryService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,11 +35,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -197,17 +196,14 @@ class AchievementCalculationTest {
         UserVO userVO = ModelUtils.getUserVO();
         UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
         User user = ModelUtils.getUser();
-        Achievement achievement = ModelUtils.getAchievement();
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
-        AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementRepo.findUnAchieved(1L, 2L)).thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(achievementRepo.findUnAchieved(1L, 2L)).thenReturn(List.of(ModelUtils.getAchievement()));
         when(achievementRepo.findUnAchieved(1L, 1L)).thenReturn(Collections.emptyList());
 
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
@@ -342,7 +338,7 @@ class AchievementCalculationTest {
         when(userActionService.findUserAction(any(), any(), any())).thenReturn(userActionVO);
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementRepo.findUnAchieved(1L, 2L, 1L)).thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(achievementRepo.findUnAchieved(1L, 2L, 1L)).thenReturn(List.of(ModelUtils.getAchievement()));
         when(achievementRepo.findUnAchieved(1L, 1L)).thenReturn(Collections.emptyList());
         when(userActionService.createUserAction(any(), any(), any()))
             .thenReturn(userActionVO);

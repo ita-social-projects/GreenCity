@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.event.EventDto;
 import greencity.entity.event.Event;
-import greencity.entity.event.EventComment;
 import greencity.enums.CommentStatus;
 import greencity.mapping.events.EventDtoMapper;
 import org.junit.jupiter.api.Test;
@@ -11,10 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

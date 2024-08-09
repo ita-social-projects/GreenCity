@@ -18,7 +18,7 @@ public interface UserNotificationService {
      *
      * @param principal user to get notifications
      * @param language  language code
-     * @return set of 3 last new notifications
+     * @return list of 3 last new notifications
      * @author Volodymyr Mladonov
      */
     List<NotificationDto> getThreeLastNotifications(Principal principal, String language);
@@ -177,4 +177,12 @@ public interface UserNotificationService {
      * @param notificationId id of notification, that should be marked
      */
     void viewNotification(Long notificationId);
+
+    /**
+     * Checks for any unread notifications for the specified user.
+     *
+     * @param userId the ID of the user whose unread notifications are to be
+     *               checked.
+     */
+    void checkUnreadNotification(Long userId);
 }

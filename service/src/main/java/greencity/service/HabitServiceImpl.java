@@ -454,7 +454,7 @@ public class HabitServiceImpl implements HabitService {
         List<CustomShoppingListItem> customShoppingListItems = customShoppingListItemRepo
             .findAllByUserIdAndHabitId(user.getId(), habit.getId());
 
-        customShoppingListItems.stream()
+        customShoppingListItems
             .forEach(item -> habitDto.getCustomShoppingListItemDto().stream()
                 .filter(itemToUpdate -> item.getId().equals(itemToUpdate.getId()))
                 .forEach(itemToUpdate -> {

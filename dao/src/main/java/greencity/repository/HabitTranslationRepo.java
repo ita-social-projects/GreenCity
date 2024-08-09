@@ -99,7 +99,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -128,7 +127,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -159,7 +157,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -181,7 +178,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -206,7 +202,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -235,7 +230,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -262,7 +256,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -293,7 +286,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -327,7 +319,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
-
     @Query("SELECT DISTINCT  ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -351,7 +342,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
-
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
@@ -371,7 +361,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
-
     @Query("SELECT ht FROM HabitTranslation AS ht "
         + "WHERE ht.habit = :habit "
         + "AND ht.habit.isDeleted = false")

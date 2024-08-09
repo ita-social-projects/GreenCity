@@ -16,6 +16,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -25,17 +26,9 @@ import org.springframework.data.jpa.domain.Specification;
  *
  * @author Roman Zahouri, Nazar Stasyuk
  */
+@RequiredArgsConstructor
 public class PlaceFilter implements Specification<Place> {
     private final transient FilterPlaceDto filterPlaceDto;
-
-    /**
-     * The constructor takes {@link FilterPlaceDto} object.
-     *
-     * @param filterPlaceDto object contains fields to filter by.
-     */
-    public PlaceFilter(FilterPlaceDto filterPlaceDto) {
-        this.filterPlaceDto = filterPlaceDto;
-    }
 
     /**
      * {@inheritDoc} Forms a list of {@link Predicate} based on type of the classes

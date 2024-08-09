@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,18 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/newsSubscriber")
+@RequiredArgsConstructor
 public class NewsSubscriberController {
     public final NewsSubscriberService newsSubscriberService;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Bogdan Kuzenko
-     */
-    @Autowired
-    public NewsSubscriberController(NewsSubscriberService newsSubscriberService) {
-        this.newsSubscriberService = newsSubscriberService;
-    }
 
     /**
      * Method returns all news subscriber.
@@ -51,7 +42,7 @@ public class NewsSubscriberController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<NewsSubscriberResponseDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(newsSubscriberService.findAll());
     }
@@ -73,7 +64,7 @@ public class NewsSubscriberController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<NewsSubscriberRequestDto> save(
         @RequestBody @Valid NewsSubscriberRequestDto dto) {
         return ResponseEntity.status(HttpStatus.OK)

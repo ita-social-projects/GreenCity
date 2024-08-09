@@ -1,8 +1,6 @@
 package greencity.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
@@ -395,8 +393,8 @@ class PlaceServiceImplTest {
 
     @Test
     void findAllTest() {
-        List<Place> list = Arrays.asList(ModelUtils.getPlace());
-        List<PlaceVO> expectedList = Arrays.asList(ModelUtils.getPlaceVO());
+        List<Place> list = List.of(ModelUtils.getPlace());
+        List<PlaceVO> expectedList = List.of(ModelUtils.getPlaceVO());
         when(placeRepo.findAll()).thenReturn(list);
         when(modelMapper.map(list, new TypeToken<List<PlaceVO>>() {
         }.getType())).thenReturn(expectedList);
