@@ -1282,11 +1282,23 @@ class HabitServiceImplTest {
         habit.getUsersLiked().add(user);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-
         habitService.like(habit.getId(), userVO);
-
         assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+        verify(habitRepo).findById(habit.getId());
+    }
 
+    @Test
+    void removeLikeRemoveIfTest() {
+        User user = getUser();
+        Habit habit = getHabit();
+        habit.getUsersLiked().add(user);
+
+        UserVO userVO = getUserVO();
+        userVO.setName("New Name");
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        habitService.like(habit.getId(), userVO);
+        assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
         verify(habitRepo).findById(habit.getId());
     }
 
