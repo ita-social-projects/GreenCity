@@ -1484,51 +1484,79 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional
-    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId,
+    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendIds, Long habitId,
         Locale locale) {
-        if (!userRepo.isFriend(userVO.getId(), friendId)) {
+        friendIds.forEach(friendId -> {
+            checkIfUserIsAFriend(userVO.getId(), friendId);
+            User friend = getUserById(friendId);
+            UserVO friendVO = mapToUserVO(friend);
+            checkStatusInProgressExists(habitId, friendVO);
+            Habit habit = getHabitById(habitId);
+            validateHabitForAssign(habitId, friend);
+
+            HabitAssign habitAssign = getOrCreateHabitAssign(habit, friend);
+            sendHabitAssignNotification(userVO, friendVO, habitAssign, locale);
+
+            if (habitAssign.getStatus() != HabitAssignStatus.REQUESTED) {
+                updateHabitAssign(habitAssign);
+            } else {
+                assignShoppingListToUser(habitId, habitAssign);
+            }
+        });
+    }
+
+    private void checkIfUserIsAFriend(Long userId, Long friendId) {
+        if (!userRepo.isFriend(userId, friendId)) {
             throw new UserHasNoFriendWithIdException(ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
         }
-        User friend = userRepo.findById(friendId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId));
-        UserVO friendVO = modelMapper.map(friend, UserVO.class);
-        checkStatusInProgressExists(habitId, friendVO);
-        Habit habit = habitRepo.findById(habitId)
+    }
+
+    private User getUserById(Long userId) {
+        return userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+    }
+
+    private UserVO mapToUserVO(User user) {
+        return modelMapper.map(user, UserVO.class);
+    }
+
+    private Habit getHabitById(Long habitId) {
+        return habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+    }
 
-        validateHabitForAssign(habitId, friend);
-        HabitAssign habitAssign =
-            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
-
-        if (habitAssign != null) {
-            habitAssign.setStatus(HabitAssignStatus.REQUESTED);
-            habitAssign.setCreateDate(ZonedDateTime.now());
-            habitAssignRepo.save(habitAssign);
-            notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
-                .senderName(userVO.getName())
-                .receiverName(friendVO.getName())
-                .receiverEmail(friendVO.getEmail())
-                .habitAssignId(habitAssign.getId())
-                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
-                .language(locale.getLanguage())
-                .build());
-        } else {
-            List<Long> allShoppingListItemId =
-                shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
+    private HabitAssign getOrCreateHabitAssign(Habit habit, User friend) {
+        HabitAssign habitAssign = habitAssignRepo
+            .findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friend.getId());
+        if (habitAssign == null) {
             habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
-            notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
-                .senderName(userVO.getName())
-                .receiverName(friendVO.getName())
-                .receiverEmail(friendVO.getEmail())
+        }
+        return habitAssign;
+    }
+
+    private void updateHabitAssign(HabitAssign habitAssign) {
+        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+        habitAssign.setCreateDate(ZonedDateTime.now());
+        habitAssignRepo.save(habitAssign);
+    }
+
+    private void sendHabitAssignNotification(UserVO sender, UserVO receiver, HabitAssign habitAssign, Locale locale) {
+        notificationService.sendHabitAssignEmailNotification(
+            HabitAssignNotificationMessage.builder()
+                .senderName(sender.getName())
+                .receiverName(receiver.getName())
+                .receiverEmail(receiver.getEmail())
                 .habitAssignId(habitAssign.getId())
                 .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
                 .language(locale.getLanguage())
                 .build());
-            if (!allShoppingListItemId.isEmpty()) {
-                List<ShoppingListItem> shoppingList =
-                    shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
-                saveUserShoppingListItems(shoppingList, habitAssign);
-            }
+    }
+
+    private void assignShoppingListToUser(Long habitId, HabitAssign habitAssign) {
+        List<Long> allShoppingListItemId = shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
+        if (!allShoppingListItemId.isEmpty()) {
+            List<ShoppingListItem> shoppingList = shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
+            saveUserShoppingListItems(shoppingList, habitAssign);
         }
     }
 

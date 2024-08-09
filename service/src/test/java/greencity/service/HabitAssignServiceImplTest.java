@@ -76,7 +76,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
@@ -2705,7 +2704,8 @@ class HabitAssignServiceImplTest {
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(false);
 
         assertThrows(UserHasNoFriendWithIdException.class,
-            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habitId, locale));
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
+                locale));
     }
 
     @Test
@@ -2717,7 +2717,8 @@ class HabitAssignServiceImplTest {
         when(userRepo.findById(friendId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, 1L, locale));
+            () -> habitAssignService
+                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), 1L, locale));
     }
 
     @Test
@@ -2732,7 +2733,8 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(friendVO);
 
         assertThrows(NotFoundException.class,
-            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, 1L, locale));
+            () -> habitAssignService
+                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), 1L, locale));
     }
 
     @Test
@@ -2758,7 +2760,8 @@ class HabitAssignServiceImplTest {
             habitAssign);
         when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
 
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habit.getId(), locale);
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habit.getId(),
+            locale);
 
         verify(habitAssignRepo).save(any(HabitAssign.class));
         verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
@@ -2772,21 +2775,19 @@ class HabitAssignServiceImplTest {
             .id(1L)
             .habitTranslations(List.of(getHabitTranslation()))
             .build();
-
-        when(userRepo.isFriend(userVO.getId(), friend.getId())).thenReturn(true);
-        when(userRepo.findById(friend.getId())).thenReturn(Optional.of(friend));
+        Long friendId = friend.getId();
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friend.getId())).thenReturn(
-            null);
-        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId())).thenReturn(List.of(1L));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendId)).thenReturn(null);
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
 
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friend.getId(), habit.getId(), locale);
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habit.getId(),
+            locale);
 
-        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(habitAssignRepo, times(2)).save(any(HabitAssign.class));
         verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
-        verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
     }
 
     @Test

@@ -13,6 +13,7 @@ import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -332,11 +332,12 @@ class HabitAssignControllerTest {
     void inviteFriendRequest() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-        mockMvc.perform(post(habitLink + "/{habitId}/{friendId}/invite", 1L, 2L)
-                .principal(principal)
-                .locale(Locale.forLanguageTag("ua")))
-            .andExpect(status().isOk());
-        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, 2L, 1L,
+        mockMvc.perform(post(habitLink + "/{habitId}/invite", 1L)
+                        .param("friendIds", "2", "3", "4")
+                        .principal(principal)
+                        .locale(Locale.forLanguageTag("ua")))
+                .andExpect(status().isOk());
+        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, List.of(2L,3L,4L), 1L,
             Locale.forLanguageTag("ua"));
     }
 
