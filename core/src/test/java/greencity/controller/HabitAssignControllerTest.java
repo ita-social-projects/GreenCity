@@ -333,7 +333,7 @@ class HabitAssignControllerTest {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(post(habitLink + "/{habitId}/invite", 1L)
-                        .param("friendIds", "2", "3", "4")
+                        .param("friendsIds", "2", "3", "4")
                         .principal(principal)
                         .locale(Locale.forLanguageTag("ua")))
                 .andExpect(status().isOk());
