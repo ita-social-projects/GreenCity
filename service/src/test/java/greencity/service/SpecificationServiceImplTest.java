@@ -15,7 +15,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,16 +59,14 @@ class SpecificationServiceImplTest {
 
     @Test
     void findByIdGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            specificationService.findById(null);
-        });
+        assertThrows(NotFoundException.class, () -> specificationService.findById(null));
     }
 
     @Test
     void findAllTest() {
-        List<Specification> expected = new ArrayList<>(Arrays.asList(
+        List<Specification> expected = new ArrayList<>(List.of(
             new Specification(1L, "spec", null)));
-        List<SpecificationVO> expectedVO = Arrays.asList(new SpecificationVO(1L, "spec"));
+        List<SpecificationVO> expectedVO = List.of(new SpecificationVO(1L, "spec"));
 
         when(specificationRepo.findAll()).thenReturn(expected);
         when(modelMapper.map(expected, new TypeToken<List<SpecificationVO>>() {
@@ -87,9 +84,7 @@ class SpecificationServiceImplTest {
 
     @Test
     void deleteByIdGivenIdNullThenThrowException() {
-        assertThrows(NotFoundException.class, () -> {
-            specificationService.deleteById(null);
-        });
+        assertThrows(NotFoundException.class, () -> specificationService.deleteById(null));
     }
 
     @Test

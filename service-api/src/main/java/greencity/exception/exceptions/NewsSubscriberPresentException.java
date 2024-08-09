@@ -1,10 +1,7 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
+@StandardException
 public class NewsSubscriberPresentException extends BadRequestException {
-    /**
-     * Constructor.
-     */
-    public NewsSubscriberPresentException(String message) {
-        super(message);
-    }
 }

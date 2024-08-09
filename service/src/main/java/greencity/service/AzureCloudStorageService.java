@@ -8,17 +8,16 @@ import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.ImageUrlParseException;
 import greencity.exception.exceptions.NotSavedException;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.PropertyResolver;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.UUID;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class AzureCloudStorageService implements FileService {
@@ -29,17 +28,18 @@ public class AzureCloudStorageService implements FileService {
     /**
      * Constructor with parameters.
      */
-    public AzureCloudStorageService(@Autowired PropertyResolver propertyResolver,
+    public AzureCloudStorageService(
+        @Value("${azure.connection.string}") String connectionString,
+        @Value("${azure.container.name}") String containerName,
         ModelMapper modelMapper) {
-        this.connectionString = propertyResolver.getProperty("azure.connection.string");
-        this.containerName = propertyResolver.getProperty("azure.container.name");
+        this.connectionString = connectionString;
+        this.containerName = containerName;
         this.modelMapper = modelMapper;
     }
 
     /**
      * {@inheritDoc}
      */
-
     public String upload(MultipartFile multipartFile) {
         final String blob = UUID.randomUUID().toString();
         BlobClient client = containerClient()

@@ -6,6 +6,7 @@ import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableGlobalAuthentication
+@RequiredArgsConstructor
 public class SecurityConfig {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String EVENTS = "/events";
@@ -58,18 +60,6 @@ public class SecurityConfig {
 
     @Value("${spring.messaging.stomp.websocket.allowed-origins}")
     private String[] allowedOrigins;
-
-    /**
-     * Constructor.
-     */
-
-    @Autowired
-    public SecurityConfig(JwtTool jwtTool, UserService userService,
-        AuthenticationConfiguration authenticationConfiguration) {
-        this.jwtTool = jwtTool;
-        this.userService = userService;
-        this.authenticationConfiguration = authenticationConfiguration;
-    }
 
     /**
      * Bean {@link PasswordEncoder} that uses in coding password.
@@ -108,8 +98,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
-                .requestMatchers("/management/**")
-                .hasAnyRole(ADMIN)
+                .requestMatchers("/management/**").hasAnyRole(ADMIN)
                 .requestMatchers("/v2/api-docs/**",
                     "/v3/api-docs/**",
                     "/swagger.json",
@@ -124,12 +113,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, ECONEWS_COMMENTS)
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.GET,
-                    "/ownSecurity/verifyEmail",
-                    "/ownSecurity/updateAccessToken",
-                    "/ownSecurity/restorePassword",
-                    "/googleSecurity",
-                    "/facebookSecurity/generateFacebookAuthorizeURL",
-                    "/facebookSecurity/facebook",
                     "/factoftheday/",
                     "/factoftheday/all",
                     "/factoftheday/find",
@@ -188,9 +171,6 @@ public class SecurityConfig {
                     "/database/backupFiles")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
-                    "/ownSecurity/signUp",
-                    "/ownSecurity/signIn",
-                    "/ownSecurity/changePassword",
                     "/place/getListPlaceLocationByMapsBounds",
                     "/place/filter")
                 .permitAll()
@@ -308,7 +288,6 @@ public class SecurityConfig {
                     "/habit/statistic/{id}",
                     "/econews/update",
                     "/favorite_place/",
-                    "/ownSecurity",
                     "/user/profile",
                     EVENTS + "/update",
                     "/habit/update/{habitId}",

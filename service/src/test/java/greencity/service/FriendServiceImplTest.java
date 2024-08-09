@@ -145,15 +145,15 @@ class FriendServiceImplTest {
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.isFriendRequested(userId, friendId)).thenReturn(false);
         when(userRepo.isFriend(userId, friendId)).thenReturn(false);
-        when(userRepo.getOne(userId)).thenReturn(ModelUtils.getUser());
-        when(userRepo.getOne(friendId)).thenReturn(ModelUtils.getTestUser());
+        when(userRepo.getReferenceById(userId)).thenReturn(ModelUtils.getUser());
+        when(userRepo.getReferenceById(friendId)).thenReturn(ModelUtils.getTestUser());
         friendService.addNewFriend(userId, friendId);
         verify(userRepo).existsById(userId);
         verify(userRepo).existsById(friendId);
         verify(userRepo).isFriendRequested(userId, friendId);
         verify(userRepo).isFriend(userId, friendId);
         verify(userRepo).addNewFriend(userId, friendId);
-        verify(userRepo, times(2)).getOne(anyLong());
+        verify(userRepo, times(2)).getReferenceById(anyLong());
     }
 
     @Test
@@ -263,15 +263,15 @@ class FriendServiceImplTest {
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.isFriend(userId, friendId)).thenReturn(false);
         when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(true);
-        when(userRepo.getOne(userId)).thenReturn(ModelUtils.getUser());
-        when(userRepo.getOne(friendId)).thenReturn(ModelUtils.getTestUser());
+        when(userRepo.getReferenceById(userId)).thenReturn(ModelUtils.getUser());
+        when(userRepo.getReferenceById(friendId)).thenReturn(ModelUtils.getTestUser());
         friendService.acceptFriendRequest(userId, friendId);
         verify(userRepo).existsById(userId);
         verify(userRepo).existsById(friendId);
         verify(userRepo).isFriend(userId, friendId);
         verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
         verify(userRepo).acceptFriendRequest(userId, friendId);
-        verify(userRepo, times(2)).getOne(anyLong());
+        verify(userRepo, times(2)).getReferenceById(anyLong());
     }
 
     @Test
@@ -518,7 +518,6 @@ class FriendServiceImplTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
         verify(userRepo).existsById(userId);
-        verify(userRepo, never()).getAllUserFriends(anyLong());
         verify(modelMapper, never()).map(anyLong(), any());
     }
 

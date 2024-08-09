@@ -4,32 +4,25 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.NewsSubscriber;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.InvalidUnsubscribeToken;
+import greencity.exception.exceptions.NewsSubscriberPresentException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NewsSubscriberRepo;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     private final NewsSubscriberRepo newsSubscriberRepo;
     private final ModelMapper modelMapper;
-
-    /**
-     * Constructor with parameters.
-     */
-    @Autowired
-    public NewsSubscriberServiceImpl(NewsSubscriberRepo newsSubscriberRepo, ModelMapper modelMapper) {
-        this.newsSubscriberRepo = newsSubscriberRepo;
-        this.modelMapper = modelMapper;
-    }
 
     /**
      * {@inheritDoc}
@@ -55,8 +48,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
      */
     public Long unsubscribe(String email, String unsubscribeToken) {
         NewsSubscriber newsSubscriber = findByEmail(email)
-            .orElseThrow(
-                () -> new NotFoundException(ErrorMessage.NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND + email));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND + email));
         if (newsSubscriber.getUnsubscribeToken().equals(unsubscribeToken)) {
             newsSubscriberRepo.delete(newsSubscriber);
         } else {
@@ -74,7 +66,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     public List<NewsSubscriberResponseDto> findAll() {
         return newsSubscriberRepo.findAll().stream()
             .map(el -> modelMapper.map(el, NewsSubscriberResponseDto.class))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**

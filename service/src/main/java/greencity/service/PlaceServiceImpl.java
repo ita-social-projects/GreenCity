@@ -149,21 +149,19 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
-     * Method for getting {@link User} and set this {@link User} to place.
+     * Method for setting this {@link User} to place.
      *
      * @param email   - String, user's email.
      * @param placeVO - {@link Place} entity.
-     * @return user - {@link User}.
      * @author Kateryna Horokh
      */
-    private UserVO setUserToPlaceByEmail(String email, PlaceVO placeVO) {
+    private void setUserToPlaceByEmail(String email, PlaceVO placeVO) {
         UserVO userVO = restClient.findByEmail(email);
         placeVO.setAuthor(userVO);
         if (userVO.getRole() == Role.ROLE_ADMIN || userVO.getRole() == Role.ROLE_MODERATOR) {
             placeVO.setStatus(PlaceStatus.APPROVED);
             notificationService.sendImmediatelyReport(placeVO);
         }
-        return userVO;
     }
 
     /**
@@ -517,8 +515,7 @@ public class PlaceServiceImpl implements PlaceService {
     private void checkPlaceStatuses(PlaceStatus currentStatus, PlaceStatus updatedStatus, Long placeId) {
         if (currentStatus.equals(updatedStatus)) {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, updatedStatus);
-            throw new PlaceStatusException(
-                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT.formatted(placeId, updatedStatus));
+            throw new PlaceStatusException(ErrorMessage.PLACE_STATUS_NOT_DIFFERENT.formatted(placeId, updatedStatus));
         }
     }
 

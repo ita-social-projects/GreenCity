@@ -17,8 +17,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,13 +36,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @Controller
-@AllArgsConstructor
 @RequestMapping("/management/factoftheday")
+@RequiredArgsConstructor
 public class ManagementFactOfTheDayController {
-    @Autowired
-    private FactOfTheDayService factOfTheDayService;
-    @Autowired
-    private LanguageService languageService;
+    private final FactOfTheDayService factOfTheDayService;
+    private final LanguageService languageService;
 
     /**
      * Returns management page with all facts of the day.

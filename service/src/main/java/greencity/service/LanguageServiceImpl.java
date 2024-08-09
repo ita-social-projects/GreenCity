@@ -6,12 +6,11 @@ import greencity.dto.language.LanguageDTO;
 import greencity.entity.Language;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepo;
-import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,24 +20,11 @@ import org.springframework.stereotype.Service;
  * @author Vitaliy Dzen
  */
 @Service
+@RequiredArgsConstructor
 public class LanguageServiceImpl implements LanguageService {
     private final LanguageRepo languageRepo;
     private final ModelMapper modelMapper;
     private final HttpServletRequest request;
-
-    /**
-     * Constructor with parameters.
-     *
-     * @author Vitaliy Dzen
-     */
-    @Autowired
-    public LanguageServiceImpl(
-        LanguageRepo languageRepo,
-        @Lazy ModelMapper modelMapper, HttpServletRequest request) {
-        this.languageRepo = languageRepo;
-        this.modelMapper = modelMapper;
-        this.request = request;
-    }
 
     /**
      * Method finds all {@link Language}.
@@ -91,7 +77,6 @@ public class LanguageServiceImpl implements LanguageService {
      *
      * @param tagTranslationId id of tag translation object.
      * @return {@link LanguageDTO}.
-     *
      * @author Vira Maksymets
      */
     @Override

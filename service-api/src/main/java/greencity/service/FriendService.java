@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.user.RecommendedFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.RecommendedFriendsType;
@@ -106,7 +105,7 @@ public interface FriendService {
      * @param name     filtering name.
      * @param pageable pageable, must not be null.
      *
-     * @return {@link PageableDto} of {@link RecommendedFriendDto} instances.
+     * @return {@link PageableDto} of {@link UserFriendDto} instances.
      */
     PageableDto<UserFriendDto> findAllFriendsOfUser(long userId, @Nullable String name, Pageable pageable);
 

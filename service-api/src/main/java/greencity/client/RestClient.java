@@ -180,7 +180,7 @@ public class RestClient {
         StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl + order.getProperty() + "," + order.getDirection());
+                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
             }
         }
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -415,7 +415,7 @@ public class RestClient {
     }
 
     /**
-     * send AddEcoNewsMessage to GreenCityUser.
+     * send EcoNewsForSendEmailDto to GreenCityUser.
      *
      * @param message with information for sending email about adding new eco news.
      * @author Taras Kavkalo
@@ -425,8 +425,7 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class);
     }
 
     /**
@@ -456,8 +455,7 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class);
     }
 
     /**
@@ -469,7 +467,7 @@ public class RestClient {
     public void scheduleDeleteDeactivatedUsers() {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
         restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
-            HttpMethod.POST, entity, Object.class).getBody();
+            HttpMethod.POST, entity, Object.class);
     }
 
     /**
@@ -486,8 +484,7 @@ public class RestClient {
         HttpEntity<SendChangePlaceStatusEmailMessage> entity =
             new HttpEntity<>(changePlaceStatusEmailMessage, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class);
     }
 
     /**
@@ -502,8 +499,7 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 
     /**
@@ -519,7 +515,7 @@ public class RestClient {
         StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl + order.getProperty() + "," + order.getDirection());
+                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
             }
         }
         HttpHeaders headers = setHeader();
@@ -576,7 +572,7 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
+            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class);
         log.info("Email notification has been sent to {}", notification.getEmail());
     }
 

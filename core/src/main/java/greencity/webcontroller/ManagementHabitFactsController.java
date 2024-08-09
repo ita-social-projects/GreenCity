@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +33,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/management/facts")
+@RequiredArgsConstructor
 public class ManagementHabitFactsController {
-    @Autowired
-    private HabitFactService habitFactService;
-    @Autowired
-    private LanguageService languageService;
+    private final HabitFactService habitFactService;
+    private final LanguageService languageService;
 
     /**
      * Method for getting habit facts by id.

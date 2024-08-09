@@ -25,7 +25,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -89,10 +88,7 @@ class FavoritePlaceServiceImplTest {
         when(placeService.existsById(any())).thenReturn(false);
 
         Exception exception = assertThrows(
-            WrongIdException.class,
-            () -> {
-                favoritePlaceService.save(dto, userEmail);
-            });
+            WrongIdException.class, () -> favoritePlaceService.save(dto, userEmail));
         String expectedMessage = ErrorMessage.PLACE_NOT_FOUND_BY_ID;
         String actualMessage = exception.getMessage();
 
