@@ -107,6 +107,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final UserService userService;
     private final RatingCalculation ratingCalculation;
     private final NotificationService notificationService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
@@ -1485,51 +1486,56 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     @Transactional
     public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId,
-        Locale locale) {
+                                                              Locale locale) {
         if (!userRepo.isFriend(userVO.getId(), friendId)) {
-            throw new UserHasNoFriendWithIdException(ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
+            throw new UserHasNoFriendWithIdException(
+                    ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
         }
         User friend = userRepo.findById(friendId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId));
         UserVO friendVO = modelMapper.map(friend, UserVO.class);
         checkStatusInProgressExists(habitId, friendVO);
         Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
         validateHabitForAssign(habitId, friend);
         HabitAssign habitAssign =
-            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
+                habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
 
         if (habitAssign != null) {
             habitAssign.setStatus(HabitAssignStatus.REQUESTED);
             habitAssign.setCreateDate(ZonedDateTime.now());
             habitAssignRepo.save(habitAssign);
             notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
-                .senderName(userVO.getName())
-                .receiverName(friendVO.getName())
-                .receiverEmail(friendVO.getEmail())
-                .habitAssignId(habitAssign.getId())
-                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
-                .language(locale.getLanguage())
-                .build());
+                    .senderName(userVO.getName())
+                    .receiverName(friendVO.getName())
+                    .receiverEmail(friendVO.getEmail())
+                    .habitAssignId(habitAssign.getId())
+                    .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
+                    .language(locale.getLanguage())
+                    .build());
         } else {
             List<Long> allShoppingListItemId =
-                shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
+                    shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
             habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
             notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
-                .senderName(userVO.getName())
-                .receiverName(friendVO.getName())
-                .receiverEmail(friendVO.getEmail())
-                .habitAssignId(habitAssign.getId())
-                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
-                .language(locale.getLanguage())
-                .build());
+                    .senderName(userVO.getName())
+                    .receiverName(friendVO.getName())
+                    .receiverEmail(friendVO.getEmail())
+                    .habitAssignId(habitAssign.getId())
+                    .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
+                    .language(locale.getLanguage())
+                    .build());
             if (!allShoppingListItemId.isEmpty()) {
                 List<ShoppingListItem> shoppingList =
-                    shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
+                        shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
                 saveUserShoppingListItems(shoppingList, habitAssign);
             }
         }
+
+        String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
+        userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
+
     }
 
     /**
