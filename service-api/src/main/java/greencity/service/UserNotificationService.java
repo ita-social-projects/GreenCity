@@ -8,6 +8,7 @@ import greencity.dto.user.UserVO;
 import greencity.enums.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.security.Principal;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
-        FilterNotificationDto filterNotificationDto, String language);
+                                                                  FilterNotificationDto filterNotificationDto, String language);
 
     /**
      * Method for getting page of Notification instances.
@@ -76,7 +77,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String message,
-        NotificationType notificationType, Long targetId);
+                                        NotificationType notificationType, Long targetId);
 
     /**
      * Method to create Notification for many Users.
@@ -90,7 +91,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String message,
-        NotificationType notificationType, Long targetId, String secondMessage);
+                                        NotificationType notificationType, Long targetId, String secondMessage);
 
     /**
      * Method to create Notification without CustomMessage.
@@ -113,7 +114,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
-        Long targetId, String customMessage);
+                            Long targetId, String customMessage);
 
     /**
      * Method to create Notification.
@@ -128,7 +129,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
-        Long targetId, String customMessage, Long secondMessageId, String secondMessageText);
+                            Long targetId, String customMessage, Long secondMessageId, String secondMessageText);
 
     /**
      * Method to create Notification without actionUser.
@@ -140,7 +141,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
-        String customMessage);
+                               String customMessage);
 
     /**
      * Method to remove ActionUser from Notification or delete Notification if that
@@ -153,7 +154,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void removeActionUserFromNotification(UserVO targetUser, UserVO actionUser, Long targetId,
-        NotificationType notificationType);
+                                          NotificationType notificationType);
 
     /**
      * Method to delete specific Notification.

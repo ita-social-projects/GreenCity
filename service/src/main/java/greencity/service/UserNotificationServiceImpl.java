@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,8 +53,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         Long userId = currentUser.getId();
         List<Notification> notifications = notificationRepo.findTop3ByTargetUserIdAndViewedFalseOrderByTimeDesc(userId);
         return notifications.stream()
-            .map(notification -> createNotificationDto(notification, language))
-            .collect(Collectors.toList());
+                .map(notification -> createNotificationDto(notification, language))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -63,7 +64,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
-        FilterNotificationDto filter, String language) {
+                                                                         FilterNotificationDto filter, String language) {
         User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
         Long userId = currentUser.getId();
         if (filter.getProjectName().length == 0) {
@@ -73,9 +74,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             filter.setNotificationType(NotificationType.values());
         }
         Page<Notification> notifications =
-            notificationRepo.findByTargetUserIdAndProjectNameInAndNotificationTypeInOrderByTimeDesc(userId,
-                filter.getProjectName(),
-                filter.getNotificationType(), page);
+                notificationRepo.findByTargetUserIdAndProjectNameInAndNotificationTypeInOrderByTimeDesc(userId,
+                        filter.getProjectName(),
+                        filter.getNotificationType(), page);
         return buildPageableAdvancedDto(notifications, language);
     }
 
@@ -86,7 +87,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal,
-        String language) {
+                                                                 String language) {
         User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
         Long userId = currentUser.getId();
         Page<Notification> notifications = notificationRepo.findByTargetUserId(userId, pageable);
@@ -115,9 +116,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void notificationSocket(ActionDto user) {
         boolean isExist =
-            notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
+                notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
         messagingTemplate
-            .convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, isExist);
+                .convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, isExist);
     }
 
     /**
@@ -125,16 +126,16 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void createNotificationForAttenders(List<UserVO> attendersList, String message,
-        NotificationType notificationType, Long targetId) {
+                                               NotificationType notificationType, Long targetId) {
         for (UserVO targetUserVO : attendersList) {
             Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .projectName(ProjectName.GREENCITY)
-                .targetUser(modelMapper.map(targetUserVO, User.class))
-                .time(LocalDateTime.now())
-                .targetId(targetId)
-                .customMessage(message)
-                .build();
+                    .notificationType(notificationType)
+                    .projectName(ProjectName.GREENCITY)
+                    .targetUser(modelMapper.map(targetUserVO, User.class))
+                    .time(LocalDateTime.now())
+                    .targetId(targetId)
+                    .customMessage(message)
+                    .build();
             notificationRepo.save(notification);
             sendNotification(notification.getTargetUser().getId());
         }
@@ -145,17 +146,17 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void createNotificationForAttenders(List<UserVO> attendersList, String message,
-        NotificationType notificationType, Long targetId, String title) {
+                                               NotificationType notificationType, Long targetId, String title) {
         for (UserVO targetUserVO : attendersList) {
             Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .projectName(ProjectName.GREENCITY)
-                .targetUser(modelMapper.map(targetUserVO, User.class))
-                .time(LocalDateTime.now())
-                .targetId(targetId)
-                .customMessage(message)
-                .secondMessage(title)
-                .build();
+                    .notificationType(notificationType)
+                    .projectName(ProjectName.GREENCITY)
+                    .targetUser(modelMapper.map(targetUserVO, User.class))
+                    .time(LocalDateTime.now())
+                    .targetId(targetId)
+                    .customMessage(message)
+                    .secondMessage(title)
+                    .build();
             notificationRepo.save(notification);
             sendNotification(notification.getTargetUser().getId());
         }
@@ -167,12 +168,12 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType) {
         Notification notification = Notification.builder()
-            .notificationType(notificationType)
-            .projectName(ProjectName.GREENCITY)
-            .targetUser(modelMapper.map(targetUser, User.class))
-            .time(LocalDateTime.now())
-            .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
-            .build();
+                .notificationType(notificationType)
+                .projectName(ProjectName.GREENCITY)
+                .targetUser(modelMapper.map(targetUser, User.class))
+                .time(LocalDateTime.now())
+                .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
+                .build();
         notificationRepo.save(notification);
         sendNotification(notification.getTargetUser().getId());
     }
@@ -182,18 +183,18 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void createNotification(UserVO targetUserVO, UserVO actionUserVO, NotificationType notificationType,
-        Long targetId, String customMessage) {
+                                   Long targetId, String customMessage) {
         Notification notification = notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                notificationType, targetId)
-            .orElse(Notification.builder()
-                .notificationType(notificationType)
-                .projectName(ProjectName.GREENCITY)
-                .targetUser(modelMapper.map(targetUserVO, User.class))
-                .actionUsers(new ArrayList<>())
-                .targetId(targetId)
-                .customMessage(customMessage)
-                .build());
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                        notificationType, targetId)
+                .orElse(Notification.builder()
+                        .notificationType(notificationType)
+                        .projectName(ProjectName.GREENCITY)
+                        .targetUser(modelMapper.map(targetUserVO, User.class))
+                        .actionUsers(new ArrayList<>())
+                        .targetId(targetId)
+                        .customMessage(customMessage)
+                        .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
         notificationRepo.save(notification);
@@ -205,20 +206,20 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void createNotification(UserVO targetUserVO, UserVO actionUserVO, NotificationType notificationType,
-        Long targetId, String customMessage, Long secondMessageId, String secondMessageText) {
+                                   Long targetId, String customMessage, Long secondMessageId, String secondMessageText) {
         Notification notification = notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                notificationType, targetId)
-            .orElse(Notification.builder()
-                .notificationType(notificationType)
-                .projectName(ProjectName.GREENCITY)
-                .targetUser(modelMapper.map(targetUserVO, User.class))
-                .actionUsers(new ArrayList<>())
-                .targetId(targetId)
-                .customMessage(customMessage)
-                .secondMessageId(secondMessageId)
-                .secondMessage(secondMessageText)
-                .build());
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                        notificationType, targetId)
+                .orElse(Notification.builder()
+                        .notificationType(notificationType)
+                        .projectName(ProjectName.GREENCITY)
+                        .targetUser(modelMapper.map(targetUserVO, User.class))
+                        .actionUsers(new ArrayList<>())
+                        .targetId(targetId)
+                        .customMessage(customMessage)
+                        .secondMessageId(secondMessageId)
+                        .secondMessage(secondMessageText)
+                        .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
         notificationRepo.save(notification);
@@ -230,15 +231,15 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void createNewNotification(UserVO targetUserVO, NotificationType notificationType, Long targetId,
-        String customMessage) {
+                                      String customMessage) {
         Notification notification = Notification.builder()
-            .notificationType(notificationType)
-            .projectName(ProjectName.GREENCITY)
-            .targetUser(modelMapper.map(targetUserVO, User.class))
-            .targetId(targetId)
-            .customMessage(customMessage)
-            .time(LocalDateTime.now())
-            .build();
+                .notificationType(notificationType)
+                .projectName(ProjectName.GREENCITY)
+                .targetUser(modelMapper.map(targetUserVO, User.class))
+                .targetId(targetId)
+                .customMessage(customMessage)
+                .time(LocalDateTime.now())
+                .build();
         notificationRepo.save(notification);
         sendNotification(notification.getTargetUser().getId());
     }
@@ -248,9 +249,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void removeActionUserFromNotification(UserVO targetUserVO, UserVO actionUserVO, Long targetId,
-        NotificationType notificationType) {
+                                                 NotificationType notificationType) {
         Notification notification = notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(
-            targetUserVO.getId(), notificationType, targetId);
+                targetUserVO.getId(), notificationType, targetId);
         if (notification != null) {
             if (notification.getActionUsers().size() == 1) {
                 notificationRepo.delete(notification);
@@ -276,11 +277,11 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void unreadNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
-            .orElseThrow().getTargetUser().getId();
+                .orElseThrow().getTargetUser().getId();
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         if (count == 0) {
             messagingTemplate
-                .convertAndSend(TOPIC + userId + NOTIFICATION, true);
+                    .convertAndSend(TOPIC + userId + NOTIFICATION, true);
         }
         notificationRepo.markNotificationAsNotViewed(notificationId);
     }
@@ -291,31 +292,31 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void viewNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
-            .orElseThrow().getTargetUser().getId();
+                .orElseThrow().getTargetUser().getId();
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         if (count == 1) {
             messagingTemplate
-                .convertAndSend(TOPIC + userId + NOTIFICATION, false);
+                    .convertAndSend(TOPIC + userId + NOTIFICATION, false);
         }
         notificationRepo.markNotificationAsViewed(notificationId);
     }
 
     private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications,
-        String language) {
+                                                                          String language) {
         List<NotificationDto> notificationDtoList = new LinkedList<>();
         for (Notification n : notifications) {
             notificationDtoList.add(createNotificationDto(n, language));
         }
         return new PageableAdvancedDto<>(
-            notificationDtoList,
-            notifications.getTotalElements(),
-            notifications.getPageable().getPageNumber(),
-            notifications.getTotalPages(),
-            notifications.getNumber(),
-            notifications.hasPrevious(),
-            notifications.hasNext(),
-            notifications.isFirst(),
-            notifications.isLast());
+                notificationDtoList,
+                notifications.getTotalElements(),
+                notifications.getPageable().getPageNumber(),
+                notifications.getTotalPages(),
+                notifications.getNumber(),
+                notifications.hasPrevious(),
+                notifications.hasNext(),
+                notifications.isFirst(),
+                notifications.isLast());
     }
 
     /**
@@ -329,7 +330,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private NotificationDto createNotificationDto(Notification notification, String language) {
         NotificationDto dto = modelMapper.map(notification, NotificationDto.class);
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
-            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
         dto.setBodyText(bundle.getString(dto.getNotificationType()));
         int size = notification.getActionUsers().size();
