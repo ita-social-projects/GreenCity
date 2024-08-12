@@ -139,6 +139,9 @@ class HabitAssignServiceImplTest {
     private NotificationService notificationService;
 
     @Mock
+    private UserNotificationService userNotificationService;
+
+    @Mock
     private RatingCalculation ratingCalculation;
 
     @Mock
@@ -2750,12 +2753,12 @@ class HabitAssignServiceImplTest {
         habitAssign.setId(1L);
         habitAssign.setStatus(HabitAssignStatus.CANCELLED);
         habitAssign.setHabit(Habit.builder()
-            .id(1L)
-            .habitTranslations(List.of(getHabitTranslation()))
-            .build());
+                .id(1L)
+                .habitTranslations(List.of(getHabitTranslation()))
+                .build());
 
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendId)).thenReturn(
-            habitAssign);
+                habitAssign);
         when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
 
         habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habit.getId(), locale);
@@ -2769,16 +2772,16 @@ class HabitAssignServiceImplTest {
         Locale locale = Locale.of("en");
         User friend = getUser();
         Habit habit = Habit.builder()
-            .id(1L)
-            .habitTranslations(List.of(getHabitTranslation()))
-            .build();
+                .id(1L)
+                .habitTranslations(List.of(getHabitTranslation()))
+                .build();
 
         when(userRepo.isFriend(userVO.getId(), friend.getId())).thenReturn(true);
         when(userRepo.findById(friend.getId())).thenReturn(Optional.of(friend));
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friend.getId())).thenReturn(
-            null);
+                null);
         when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId())).thenReturn(List.of(1L));
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
 
@@ -2787,6 +2790,8 @@ class HabitAssignServiceImplTest {
         verify(habitAssignRepo).save(any(HabitAssign.class));
         verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
         verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
+
+        verify(userNotificationService).createOrUpdateHabitInviteNotification(eq(new UserVO()), eq(userVO), eq(habit.getId()), eq(""));
     }
 
     @Test
