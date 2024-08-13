@@ -2700,11 +2700,12 @@ class HabitAssignServiceImplTest {
         Long friendId = 10L;
         Long habitId = 1L;
         Locale locale = Locale.of("en");
+        List<Long> friendsList = List.of(10L);
 
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(false);
 
         assertThrows(UserHasNoFriendWithIdException.class,
-            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
+            () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, habitId,
                 locale));
     }
 
@@ -2713,13 +2714,14 @@ class HabitAssignServiceImplTest {
         Long friendId = 10L;
         Long habitId = 1L;
         Locale locale = Locale.of("en");
+        List<Long> friendsList = List.of(10L);
 
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
         when(userRepo.findById(friendId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
             () -> habitAssignService
-                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId, locale));
+                .inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, habitId, locale));
     }
 
     @Test
@@ -2727,6 +2729,7 @@ class HabitAssignServiceImplTest {
         Long friendId = 10L;
         Long habitId = 1L;
         Locale locale = Locale.of("en");
+        List<Long> friendsList = List.of(10L);
 
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
         when(userRepo.findById(friendId)).thenReturn(Optional.of(getUser()));
@@ -2735,7 +2738,7 @@ class HabitAssignServiceImplTest {
 
         assertThrows(NotFoundException.class,
             () -> habitAssignService
-                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId, locale));
+                .inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, habitId, locale));
     }
 
     @Test
