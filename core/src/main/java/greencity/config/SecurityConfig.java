@@ -282,7 +282,7 @@ public class SecurityConfig {
                     "/habit/custom",
                     "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
                     FRIENDS + "/{friendId}",
-                    "/habit/assign/{habitId}/{friendId}/invite")
+                    "/habit/assign/{habitId}/invite")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
