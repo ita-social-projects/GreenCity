@@ -199,5 +199,7 @@
     <include file="db/changelog/logs/ch-change-content-field-in-chatmessages-table.xml"/>
     <include file="db/changelog/logs/ch-add-table-db_backups-kizerov.xml"/>
     <include file="db/changelog/logs/ch-add-table-place-comments-Fedotov.xml"/>
-    <include file="/db/changelog/logs/ch-change-table-estimates.xml"/>
+    <include file="/db/changelog/logs/ch-change-table-estimates-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-change-table-comments-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-change-table-comments-2-Fedotov.xml"/>
 </databaseChangeLog>
