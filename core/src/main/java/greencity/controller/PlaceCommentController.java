@@ -38,7 +38,7 @@ public class PlaceCommentController {
     /**
      * Method witch save comment by Place Id.
      *
-     * @param placeId       Id of place to witch related comment.
+     * @param placeId                Id of place to witch related comment.
      * @param placeCommentRequestDto DTO with contain data od Comment.
      * @return CommentDTO
      */
@@ -58,7 +58,8 @@ public class PlaceCommentController {
         @Valid @RequestBody PlaceCommentRequestDto placeCommentRequestDto,
         @Parameter(hidden = true) @AuthenticationPrincipal Principal principal) {
         return ResponseEntity
-            .status(HttpStatus.CREATED).body(placeCommentService.save(placeId, placeCommentRequestDto, principal.getName()));
+            .status(HttpStatus.CREATED).body(placeCommentService.save(placeId, placeCommentRequestDto,
+                principal.getName()));
     }
 
     /**

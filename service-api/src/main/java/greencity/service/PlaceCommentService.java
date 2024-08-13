@@ -24,9 +24,9 @@ public interface PlaceCommentService {
     /**
      * Save Comment by Place id.
      *
-     * @param placeId       Place id to witch related.
+     * @param placeId                Place id to witch related.
      * @param placeCommentRequestDto DTO witch contain data of.
-     * @param email         of User who add comment.
+     * @param email                  of User who add comment.
      * @return @{link {@link PlaceCommentResponseDto}}.
      * @author Marian Milian.
      */
