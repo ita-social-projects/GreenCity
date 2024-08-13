@@ -35,7 +35,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
-                                                                  FilterNotificationDto filterNotificationDto, String language);
+        FilterNotificationDto filterNotificationDto, String language);
 
     /**
      * Method for getting page of Notification instances.
@@ -77,7 +77,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String message,
-                                        NotificationType notificationType, Long targetId);
+        NotificationType notificationType, Long targetId);
 
     /**
      * Method to create Notification for many Users.
@@ -91,7 +91,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String message,
-                                        NotificationType notificationType, Long targetId, String secondMessage);
+        NotificationType notificationType, Long targetId, String secondMessage);
 
     /**
      * Method to create Notification without CustomMessage.
@@ -114,7 +114,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
-                            Long targetId, String customMessage);
+        Long targetId, String customMessage);
 
     /**
      * Method to create Notification.
@@ -129,7 +129,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
-                            Long targetId, String customMessage, Long secondMessageId, String secondMessageText);
+        Long targetId, String customMessage, Long secondMessageId, String secondMessageText);
 
     /**
      * Method to create Notification without actionUser.
@@ -141,7 +141,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
-                               String customMessage);
+        String customMessage);
 
     /**
      * Method to remove ActionUser from Notification or delete Notification if that
@@ -154,7 +154,7 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void removeActionUserFromNotification(UserVO targetUser, UserVO actionUser, Long targetId,
-                                          NotificationType notificationType);
+        NotificationType notificationType);
 
     /**
      * Method to delete specific Notification.
@@ -188,8 +188,8 @@ public interface UserNotificationService {
     void checkUnreadNotification(Long userId);
 
     /**
-     * Method to create a new or update an existing habit invite notification.
-     * If a notification for the specified habit and user already exists, this method
+     * Method to create a new or update an existing habit invite notification. If a
+     * notification for the specified habit and user already exists, this method
      * updates the notification by adding the new user to the list of action users
      * and adjusting the notification message accordingly. If no such notification
      * exists, a new notification is created.
@@ -199,5 +199,6 @@ public interface UserNotificationService {
      * @param habitId      the ID of the habit for which the invitation is sent
      * @param habitName    the name of the habit being invited to
      */
-    void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId, String habitName);
+    void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
+        String habitName);
 }
