@@ -375,7 +375,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             Notification notification = existingNotification.get();
             notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
 
-            customMessage = createCustomMessage(notification.getActionUsers(), habitName);
+            customMessage = createInvitationNotificationMessage(notification.getActionUsers(), habitName);
 
             notification.setCustomMessage(customMessage);
             notification.setTime(LocalDateTime.now());
@@ -388,7 +388,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         }
     }
 
-    private String createCustomMessage(List<User> actionUsers, String habitName) {
+    private String createInvitationNotificationMessage(List<User> actionUsers, String habitName) {
         int userCount = actionUsers.size();
 
         return switch (userCount) {
