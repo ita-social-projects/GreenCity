@@ -42,7 +42,7 @@ public class Place {
 
     @Builder.Default
     @OneToMany(mappedBy = "place", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Comment> comments = new ArrayList<>();
+    private List<PlaceComment> comments = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)

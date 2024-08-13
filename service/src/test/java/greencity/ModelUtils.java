@@ -20,8 +20,8 @@ import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.AddCommentDto;
-import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.comment.PlaceCommentRequestDto;
+import greencity.dto.comment.PlaceCommentResponseDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -144,7 +144,7 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.Advice;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
-import greencity.entity.Comment;
+import greencity.entity.PlaceComment;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
@@ -1461,17 +1461,17 @@ public class ModelUtils {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
 
-    public static Comment getComment() {
-        return new Comment(1L, "text", getUser(),
+    public static PlaceComment getComment() {
+        return new PlaceComment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
     }
 
-    public static CommentReturnDto getCommentReturnDto() {
-        return new CommentReturnDto(1L, "text", null, null, null);
+    public static PlaceCommentResponseDto getCommentReturnDto() {
+        return new PlaceCommentResponseDto(1L, "text", null, null, null);
     }
 
-    public static AddCommentDto getAddCommentDto() {
-        return new AddCommentDto("comment", null, null);
+    public static PlaceCommentRequestDto getAddCommentDto() {
+        return new PlaceCommentRequestDto("comment", null, null);
     }
 
     public static AdviceTranslation getAdviceTranslation() {

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentReturnDto {
+public class PlaceCommentResponseDto {
     private Long id;
     private String text;
     private LocalDateTime createdDate;
