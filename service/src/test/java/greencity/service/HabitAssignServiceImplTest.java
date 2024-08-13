@@ -2711,6 +2711,7 @@ class HabitAssignServiceImplTest {
     @Test
     void testInviteFriendForYourHabitWithEmailNotificationFriendNotFound() {
         Long friendId = 10L;
+        Long habitId = 1L;
         Locale locale = Locale.of("en");
 
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
@@ -2718,23 +2719,23 @@ class HabitAssignServiceImplTest {
 
         assertThrows(NotFoundException.class,
             () -> habitAssignService
-                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), 1L, locale));
+                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId, locale));
     }
 
     @Test
     void testInviteFriendForYourHabitWithEmailNotificationHabitNotFound() {
         Long friendId = 10L;
+        Long habitId = 1L;
         Locale locale = Locale.of("en");
-        UserVO friendVO = getUserVO();
 
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
         when(userRepo.findById(friendId)).thenReturn(Optional.of(getUser()));
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.empty());
-        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(friendVO);
+        when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
+        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(getUserVO());
 
         assertThrows(NotFoundException.class,
             () -> habitAssignService
-                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), 1L, locale));
+                .inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId, locale));
     }
 
     @Test
@@ -2742,6 +2743,7 @@ class HabitAssignServiceImplTest {
         Long friendId = 1L;
         Locale locale = Locale.of("en");
         User friend = getUser();
+        Long habitId = 1L;
 
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
         when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
@@ -2756,11 +2758,11 @@ class HabitAssignServiceImplTest {
             .habitTranslations(List.of(getHabitTranslation()))
             .build());
 
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendId)).thenReturn(
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friendId)).thenReturn(
             habitAssign);
         when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
 
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habit.getId(),
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
             locale);
 
         verify(habitAssignRepo).save(any(HabitAssign.class));
@@ -2771,6 +2773,7 @@ class HabitAssignServiceImplTest {
     void testInviteFriendForYourHabitWithEmailNotificationNewHabitAssign() {
         Locale locale = Locale.of("en");
         User friend = getUser();
+        Long habitId = 1L;
         Habit habit = Habit.builder()
             .id(1L)
             .habitTranslations(List.of(getHabitTranslation()))
@@ -2778,14 +2781,14 @@ class HabitAssignServiceImplTest {
         Long friendId = friend.getId();
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
         when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendId)).thenReturn(null);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friendId)).thenReturn(null);
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
-        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId())).thenReturn(List.of(1L));
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
 
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habit.getId(),
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
             locale);
 
         verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
