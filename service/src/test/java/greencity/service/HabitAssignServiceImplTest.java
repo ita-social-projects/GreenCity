@@ -2782,12 +2782,15 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendId)).thenReturn(null);
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId())).thenReturn(List.of(1L));
+        when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
 
         habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habit.getId(),
             locale);
 
-        verify(habitAssignRepo, times(2)).save(any(HabitAssign.class));
+        verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
         verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
+        verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
     }
 
     @Test

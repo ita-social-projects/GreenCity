@@ -1494,14 +1494,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             Habit habit = getHabitById(habitId);
             validateHabitForAssign(habitId, friend);
 
-            HabitAssign habitAssign = getOrCreateHabitAssign(habit, friend);
-            sendHabitAssignNotification(userVO, friendVO, habitAssign, locale);
-
-            if (habitAssign.getStatus() != HabitAssignStatus.REQUESTED) {
+            HabitAssign habitAssign = getHabitAssignById(habitId, friend);
+            if (habitAssign != null) {
                 updateHabitAssign(habitAssign);
             } else {
+                habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
                 assignShoppingListToUser(habitId, habitAssign);
             }
+            sendHabitAssignNotificationToFriend(userVO, friendVO, habitAssign, locale);
         });
     }
 
@@ -1525,13 +1525,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
     }
 
-    private HabitAssign getOrCreateHabitAssign(Habit habit, User friend) {
-        HabitAssign habitAssign = habitAssignRepo
-            .findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friend.getId());
-        if (habitAssign == null) {
-            habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
-        }
-        return habitAssign;
+    private HabitAssign getHabitAssignById(Long habitId, User friend) {
+        return habitAssignRepo
+            .findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
     }
 
     private void updateHabitAssign(HabitAssign habitAssign) {
@@ -1540,7 +1536,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignRepo.save(habitAssign);
     }
 
-    private void sendHabitAssignNotification(UserVO sender, UserVO receiver, HabitAssign habitAssign, Locale locale) {
+    private void sendHabitAssignNotificationToFriend(UserVO sender, UserVO receiver, HabitAssign habitAssign,
+        Locale locale) {
         notificationService.sendHabitAssignEmailNotification(
             HabitAssignNotificationMessage.builder()
                 .senderName(sender.getName())
