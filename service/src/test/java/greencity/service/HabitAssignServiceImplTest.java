@@ -137,7 +137,8 @@ class HabitAssignServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
-    @Mock UserNotificationService userNotificationService;
+    @Mock
+    UserNotificationService userNotificationService;
 
     @Mock
     private RatingCalculation ratingCalculation;
@@ -2801,7 +2802,8 @@ class HabitAssignServiceImplTest {
         verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
         verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
         verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
-        verify(userNotificationService).createOrUpdateHabitInviteNotification(eq(new UserVO()), eq(userVO), eq(habit.getId()), eq(""));
+        verify(userNotificationService).createOrUpdateHabitInviteNotification(eq(new UserVO()), eq(userVO),
+            eq(habit.getId()), eq(""));
     }
 
     @Test

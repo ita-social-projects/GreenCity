@@ -67,7 +67,7 @@ class UserNotificationServiceImplTest {
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         when(notificationRepo.findTop3ByTargetUserIdAndViewedFalseOrderByTimeDesc(TEST_USER.getId()))
-                .thenReturn(List.of(notification));
+            .thenReturn(List.of(notification));
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
         List<NotificationDto> dtos = userNotificationService.getThreeLastNotifications(getPrincipal(), "en");
@@ -95,21 +95,21 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
 
         when(notificationRepo.findByTargetUserIdAndProjectNameInAndNotificationTypeInOrderByTimeDesc(
-                TEST_USER.getId(), filterNotificationDto.getProjectName(),
-                filterNotificationDto.getNotificationType(), page))
-                .thenReturn(notificationPage);
+            TEST_USER.getId(), filterNotificationDto.getProjectName(),
+            filterNotificationDto.getNotificationType(), page))
+            .thenReturn(notificationPage);
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> expected = userNotificationService
-                .getNotificationsFiltered(page, getPrincipal(), filterNotificationDto, "en");
+            .getNotificationsFiltered(page, getPrincipal(), filterNotificationDto, "en");
 
         assertEquals(expected, actual);
 
         verify(userService).findByEmail("danylo@gmail.com");
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(notificationRepo).findByTargetUserIdAndProjectNameInAndNotificationTypeInOrderByTimeDesc(
-                TEST_USER.getId(), filterNotificationDto.getProjectName(),
-                filterNotificationDto.getNotificationType(), page);
+            TEST_USER.getId(), filterNotificationDto.getProjectName(),
+            filterNotificationDto.getNotificationType(), page);
         verify(modelMapper).map(notification, NotificationDto.class);
     }
 
@@ -129,7 +129,7 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> expected = userNotificationService
-                .getNotifications(page, getPrincipal(), "en");
+            .getNotifications(page, getPrincipal(), "en");
 
         assertEquals(expected, actual);
 
@@ -168,7 +168,7 @@ class UserNotificationServiceImplTest {
         when(notificationRepo.findByIdAndTargetUserId(1L, TEST_USER.getId())).thenReturn(null);
 
         assertThrows(NotFoundException.class, () -> userNotificationService
-                .getNotification(principal, 1L, "en"));
+            .getNotification(principal, 1L, "en"));
 
         verify(userService).findByEmail("danylo@gmail.com");
         verify(modelMapper).map(TEST_USER_VO, User.class);
@@ -180,7 +180,7 @@ class UserNotificationServiceImplTest {
         var dto = getActionDto();
 
         when(notificationRepo.existsByTargetUserIdAndViewedIsFalse(dto.getUserId()))
-                .thenReturn(true);
+            .thenReturn(true);
         userNotificationService.notificationSocket(dto);
 
         verify(messagingTemplate).convertAndSend(TOPIC + dto.getUserId() + NOTIFICATION, true);
@@ -265,27 +265,27 @@ class UserNotificationServiceImplTest {
     void removeActionUserFromNotificationTest() {
         var notification = getNotification();
         when(notificationRepo
-                .findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
-                        NotificationType.EVENT_CREATED, 1L))
-                .thenReturn(notification);
+            .findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
+                NotificationType.EVENT_CREATED, 1L))
+            .thenReturn(notification);
         userNotificationService
-                .removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L, NotificationType.EVENT_CREATED);
+            .removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L, NotificationType.EVENT_CREATED);
         verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
-                NotificationType.EVENT_CREATED, 1L);
+            NotificationType.EVENT_CREATED, 1L);
     }
 
     @Test
     void removeActionUserFromNotificationWithSeveralActionUsersTest() {
         var notification = getNotificationWithSeveralActionUsers(3);
         when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
-                NotificationType.EVENT_CREATED, 1L))
-                .thenReturn(notification);
+            NotificationType.EVENT_CREATED, 1L))
+            .thenReturn(notification);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService
-                .removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L, NotificationType.EVENT_CREATED);
+            .removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L, NotificationType.EVENT_CREATED);
 
         verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
-                NotificationType.EVENT_CREATED, 1L);
+            NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper).map(TEST_USER_VO, User.class);
 
     }
@@ -384,10 +384,10 @@ class UserNotificationServiceImplTest {
         Notification existingNotification = mock(Notification.class);
         List<User> actionUsers = new ArrayList<>();
         when(existingNotification.getActionUsers()).thenReturn(actionUsers);
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(), any(), anyLong()))
-                .thenReturn(Optional.of(existingNotification));
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(Optional.of(existingNotification));
         when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
-
 
         userNotificationService.createOrUpdateHabitInviteNotification(targetUserVO, actionUserVO, habitId, habitName);
 
@@ -407,8 +407,9 @@ class UserNotificationServiceImplTest {
         Long habitId = 1L;
         String habitName = "Test Habit";
 
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(), any(), anyLong()))
-                .thenReturn(Optional.empty());
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(Optional.empty());
 
         User targetUser = mock(User.class);
         when(modelMapper.map(targetUserVO, User.class)).thenReturn(targetUser);
