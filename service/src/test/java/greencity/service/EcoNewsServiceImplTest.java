@@ -963,11 +963,11 @@ class EcoNewsServiceImplTest {
         String accessToken = "Token";
         when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
         UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
-        EcoNews ecoNews = ModelUtils.getEcoNews();
-        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        EcoNews ecoNew = ModelUtils.getEcoNews();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNew));
 
         ecoNewsService.setHiddenValue(1L, adminVO, true);
-        verify(ecoNewsRepo, times(1)).save(ecoNews.setHidden(true));
+        verify(ecoNewsRepo, times(1)).save(ecoNew.setHidden(true));
     }
 
     @Test
