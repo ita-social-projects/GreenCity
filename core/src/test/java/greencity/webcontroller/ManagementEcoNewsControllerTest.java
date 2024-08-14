@@ -228,11 +228,8 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void getLikesByEcoNewsId() throws Exception {
-        // given
-        // when
         mockMvc.perform(get(managementEcoNewsLink + "/1/likes"))
             .andExpect(status().isOk());
-        // then
         verify(ecoNewsService).findUsersWhoLikedPost(1L);
     }
 }

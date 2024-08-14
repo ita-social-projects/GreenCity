@@ -3,14 +3,12 @@ package greencity.repository;
 import greencity.entity.EcoNews;
 import java.util.List;
 import java.util.Optional;
-import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -28,7 +26,6 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      *
      * @param ids list of deleted eco news ids.
      */
-
     @Modifying
     @Query("DELETE FROM EcoNews e WHERE e.id IN (?1)")
     void deleteEcoNewsWithIds(List<Long> ids);
@@ -45,35 +42,12 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     List<EcoNews> getThreeRecommendedEcoNews(Long openedEcoNewsId);
 
     /**
-     * Method returns {@link EcoNews} for specific tags.
-     *
-     * @param tags list of tags to search.
-     * @return {@link EcoNews} for specific tags.
-     */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT en.* FROM eco_news AS en "
-        + "INNER JOIN eco_news_tags AS entag "
-        + "ON en.id = entag.eco_news_id "
-        + "INNER JOIN tag_translations AS t ON entag.tags_id = t.tag_id "
-        + "WHERE lower(t.name) IN (:tags) "
-        + "ORDER BY en.creation_date DESC")
-    Page<EcoNews> findByTags(Pageable pageable, List<String> tags);
-
-    /**
      * Method returns all {@link EcoNews} by page.
      *
      * @param page page of news.
      * @return all {@link EcoNews} by page.
      */
     Page<EcoNews> findAllByOrderByCreationDateDesc(Pageable page);
-
-    /**
-     * Method returns all users {@link EcoNews} by page.
-     *
-     * @param user author of news.
-     * @param page page of news.
-     * @return all {@link EcoNews} by page.
-     */
-    Page<EcoNews> findAllByAuthorOrderByCreationDateDesc(User user, Pageable page);
 
     /**
      * Method that finds {@link EcoNews} by id.
@@ -97,25 +71,28 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     /**
      * Method for getting all published news by user id.
      *
-     * @param userId {@link Long} user id.
+     * @param authorId {@link Long} user id.
      * @return list of {@link EcoNews} instances.
      * @author Vira Maksymets
      */
-    @Query(nativeQuery = true,
-        value = "SELECT * FROM eco_news WHERE author_id = :userId")
-    List<EcoNews> findAllByUserId(@Param("userId") Long userId);
+    List<EcoNews> findAllByAuthorId(Long authorId);
+
+    /**
+     * Method for getting amount of published news.
+     *
+     * @return amount of published news.
+     * @author Ilia Rozhko
+     */
+    long count();
 
     /**
      * Method for getting amount of published news by user id.
      *
-     * @param id {@link Long} user id.
+     * @param authorId {@link Long} user id.
      * @return amount of published news by user id.
      * @author Marian Datsko
      */
-    @Query(nativeQuery = true,
-        value = " SELECT COUNT(author_id) "
-            + " FROM eco_news WHERE author_id = :userId")
-    Long getAmountOfPublishedNewsByUserId(@Param("userId") Long id);
+    long countByAuthorId(Long authorId);
 
     /**
      * Method returns {@link EcoNews} by search query and page.

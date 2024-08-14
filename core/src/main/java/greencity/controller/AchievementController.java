@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
+import greencity.enums.AchievementStatus;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -41,13 +41,12 @@ public class AchievementController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<AchievementVO>> getAll(@Parameter(hidden = true) Principal principal,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
-                required = false) String achievementStatus) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(achievementService.findAllByType(principal.getName(), achievementStatus));
+                required = false) AchievementStatus achievementStatus) {
+        return ResponseEntity.ok().body(achievementService.findAllByType(principal.getName(), achievementStatus));
     }
 
     /**

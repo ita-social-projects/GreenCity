@@ -112,6 +112,8 @@ public class ErrorMessage {
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
+    public static final String ECO_NEWS_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL =
+        "Eco news id in path param and eco news id in entity not equal";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
         "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
@@ -124,9 +126,8 @@ public class ErrorMessage {
         "Bad default social network image host path (Row in database doesn't exists)";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
-    public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
-    public static final String COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID =
-        "The comment with entered parent_comment_id doesn't exist";
+    public static final String COMMENT_NOT_FOUND_EXCEPTION =
+        "The comment with entered id or other params doesn't exist";
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";

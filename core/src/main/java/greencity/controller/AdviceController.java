@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/advices")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Validated
 public class AdviceController {
     private final AdviceService adviceService;
@@ -142,8 +142,7 @@ public class AdviceController {
     @PutMapping("/{adviceId}")
     public ResponseEntity<AdvicePostDto> update(
         @Valid @RequestBody AdvicePostDto dto, @PathVariable Long adviceId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(adviceService.update(dto, adviceId));
+        return ResponseEntity.status(HttpStatus.OK).body(adviceService.update(dto, adviceId));
     }
 
     /**
