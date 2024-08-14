@@ -866,8 +866,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         EcoNews ecoNews = ecoNewsRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
         ecoNews.setHidden(value);
 
         ecoNewsRepo.save(ecoNews);

@@ -260,29 +260,27 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method which hide {@link EcoNewsVO}
-     * by given id.
+     * Method which hide {@link EcoNewsVO} by given id.
      *
      * @param id of Eco New
      * @return {@link ResponseEntity}
      */
     @PatchMapping("/hide")
     public ResponseEntity<Long> hide(@RequestParam("id") Long id,
-                                       @Parameter(hidden = true) @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         ecoNewsService.setHiddenValue(id, user, true);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
     /**
-     * Method which make visible {@link EcoNewsVO}
-     * by given id.
+     * Method which make visible {@link EcoNewsVO} by given id.
      *
      * @param id of Eco New
      * @return {@link ResponseEntity}
      */
     @PatchMapping("/show")
     public ResponseEntity<Long> show(@RequestParam("id") Long id,
-                                     @Parameter(hidden = true) @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         ecoNewsService.setHiddenValue(id, user, false);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }

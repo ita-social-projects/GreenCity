@@ -604,7 +604,8 @@ public class ModelUtils {
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false, null, Collections.singletonList(getTag()), Collections.emptySet(), Collections.emptySet());
+            "title", "text", false, null, Collections.singletonList(getTag()), Collections.emptySet(),
+            Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {
@@ -1688,7 +1689,8 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
-            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0, false);
+            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0,
+            false);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
