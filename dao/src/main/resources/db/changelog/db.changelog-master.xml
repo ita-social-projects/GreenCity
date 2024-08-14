@@ -200,5 +200,4 @@
     <include file="db/changelog/logs/ch-add-table-db_backups-kizerov.xml"/>
     <include file="db/changelog/logs/ch-add-column-eco-news-Herchanivska.xml"/>
     <include file="db/changelog/logs/ch-modify-function-recommended-eco-news-Herchanivska.xml"/>
-    <include file="db/changelog/logs/ch-modify-function-searcheconews-Herchanivska.xml"/>
 </databaseChangeLog>

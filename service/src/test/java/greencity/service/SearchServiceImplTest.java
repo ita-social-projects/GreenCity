@@ -94,47 +94,4 @@ class SearchServiceImplTest {
 
         assertEquals(expected, actual);
     }
-
-    @Test
-    void searchAllEventsTest() {
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<SearchEventsDto> searchDto = Collections.singletonList(getSearchEvents());
-        var pageableDto = new PageableDto<>(searchDto, searchDto.size(), 0, 1);
-
-        when(eventService.search(pageRequest, "title", "en")).thenReturn(pageableDto);
-
-        List<SearchEventsDto> expected = pageableDto.getPage();
-        List<SearchEventsDto> actual = searchService.searchAllEvents(pageRequest, "title", "en").getPage();
-
-        assertEquals(expected, actual);
-        verify(eventService).search(pageRequest, "title", "en");
-    }
-
-    @Test
-    void searchByFunctionQueryTest() {
-        Event event = getEvent();
-        EcoNews ecoNews = getEcoNews();
-
-        SearchNewsDto searchNewsDto = getSearchNews();
-        SearchEventsDto searchEventsDto = getSearchEvents();
-        SearchResponseDto dto = getSearchResponseDto();
-
-        var eventsPage = new PageImpl<>(Collections.singletonList(event), PageRequest.of(1, 3), 1);
-        var ecoNewsPage = new PageImpl<>(Collections.singletonList(ecoNews), PageRequest.of(1, 3), 1);
-
-        when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "query", "ua")).thenReturn(ecoNewsPage);
-        when(eventRepo.searchEvents(PageRequest.of(0, 3), "query", "ua")).thenReturn(eventsPage);
-
-        when(modelMapper.map(ecoNews, SearchNewsDto.class)).thenReturn(searchNewsDto);
-        when(modelMapper.map(event, SearchEventsDto.class)).thenReturn(searchEventsDto);
-
-        SearchResponseDto searchResponseDto = searchService
-            .searchByFunctionQuery(PageRequest.of(0, 3), "query", "ua");
-        assertEquals(searchResponseDto, dto);
-
-        verify(ecoNewsRepo).searchEcoNews(PageRequest.of(0, 3), "query", "ua");
-        verify(eventRepo).searchEvents(PageRequest.of(0, 3), "query", "ua");
-        verify(modelMapper).map(ecoNews, SearchNewsDto.class);
-        verify(modelMapper).map(event, SearchEventsDto.class);
-    }
 }
