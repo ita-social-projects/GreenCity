@@ -8,7 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.enums.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.security.Principal;
 import java.util.List;
 
