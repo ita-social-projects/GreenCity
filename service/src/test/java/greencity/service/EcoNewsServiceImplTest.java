@@ -278,6 +278,7 @@ class EcoNewsServiceImplTest {
             .tagsUa(Collections.emptyList())
             .likes(1)
             .countComments(0)
+            .hidden(false)
             .build();
 
         EcoNews ecoNews = ModelUtils.getEcoNews();
@@ -325,6 +326,7 @@ class EcoNewsServiceImplTest {
                 .tagsUa(Collections.emptyList())
                 .likes(1)
                 .countComments(0)
+                .hidden(false)
                 .build());
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);

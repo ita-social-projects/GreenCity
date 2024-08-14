@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="Herchanivska-4" author="Viktoriia Herchanivska">
+        <sql endDelimiter="/">
+            CREATE OR REPLACE FUNCTION public.fn_searcheconews (
+    search_query text, language_code text
+)
+    RETURNS TABLE(
+                     id bigint,
+                     creation_date timestamp with time zone,
+                     image_path character varying,
+                     author_id bigint,
+                     text character varying,
+                     title character varying,
+                     source character varying,
+                     short_info character varying,
+                     hidden boolean
+                 )
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE
+    ROWS 1000
+AS $BODY$
+            BEGIN
+            RETURN QUERY
+            SELECT DISTINCT en.id,
+                            en.creation_date,
+                            en.image_path,
+                            en.author_id,
+                            en.text,
+                            en.title,
+                            en.source,
+                            en.short_info,
+                            en.hidden
+            FROM eco_news en
+                     JOIN public.eco_news_tags et on en.id=et.eco_news_id
+                     JOIN public.tag_translations tg on tg.tag_id=et.tags_id
+
+            WHERE en.hidden = false
+                AND (LOWER(en.title) LIKE LOWER(CONCAT('%', search_query, '%'))
+               OR LOWER(en.text) LIKE LOWER(CONCAT('%', search_query, '%'))
+               OR et.tags_id IN (
+                SELECT  et.tags_id FROM eco_news_tags et
+                                            JOIN tag_translations ttt
+                                                 ON ttt.tag_id = et.tags_id
+                                            JOIN languages l
+                                                 ON ttt.language_id = l.id
+
+                WHERE LOWER(ttt.name) LIKE LOWER(CONCAT('%', search_query, '%')) AND l.code = language_code))
+            ;
+
+            END
+            $BODY$;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
