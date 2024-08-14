@@ -957,4 +957,35 @@ class EcoNewsServiceImplTest {
         verify(ratingCalculation, times(1))
             .ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, actionUser);
     }
+
+    @Test
+    void setHiddenValue() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+
+        ecoNewsService.setHiddenValue(1L, adminVO, true);
+        verify(ecoNewsRepo, times(1)).save(ecoNews.setHidden(true));
+    }
+
+    @Test
+    void setHiddenWithNotAdminValueThrowExceptionTest() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO userVO = ModelUtils.getUserVO();
+
+        assertThrows(BadRequestException.class, () -> ecoNewsService.setHiddenValue(1L, userVO, true));
+    }
+
+    @Test
+    void setHiddenWithWrongIdValueThrowExceptionTest() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> ecoNewsService.setHiddenValue(1L, adminVO, true));
+    }
 }
