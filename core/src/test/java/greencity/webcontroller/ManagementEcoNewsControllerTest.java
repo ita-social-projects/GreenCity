@@ -242,9 +242,9 @@ class ManagementEcoNewsControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, true);
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .patch(managementEcoNewsLink + "/hide?id=1")
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .patch(managementEcoNewsLink + "/hide?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, true);
     }
@@ -255,9 +255,9 @@ class ManagementEcoNewsControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, false);
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .patch(managementEcoNewsLink + "/show?id=1")
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .patch(managementEcoNewsLink + "/show?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, false);
     }
