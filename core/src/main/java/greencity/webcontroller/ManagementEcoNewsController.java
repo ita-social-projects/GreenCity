@@ -11,7 +11,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
-import greencity.enums.Role;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import java.util.Set;
