@@ -107,6 +107,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final UserService userService;
     private final RatingCalculation ratingCalculation;
     private final NotificationService notificationService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
@@ -1501,6 +1502,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
                 assignShoppingListToUser(habitId, habitAssign);
             }
+
+            String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
+            userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
+
             sendHabitAssignNotificationToFriend(userVO, friendVO, habitAssign, locale);
         });
     }
