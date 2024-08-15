@@ -170,6 +170,10 @@ public class SecurityConfig {
                     "/database/backup",
                     "/database/backupFiles")
                 .permitAll()
+                .requestMatchers(HttpMethod.DELETE,
+                    "/place/{id}",
+                    "/place")
+                .permitAll()
                 .requestMatchers(HttpMethod.POST,
                     "/place/getListPlaceLocationByMapsBounds",
                     "/place/filter")
@@ -334,7 +338,8 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    "/notification/{notificationId}")
+                    "/notification/{notificationId}",
+                    "/ownSecurity/user")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",
