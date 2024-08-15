@@ -334,7 +334,6 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",
-                    "/comments",
                     "/comments/{id}",
                     "/user/all",
                     "/user/roles")
@@ -370,8 +369,7 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     "/advices/{adviceId}",
-                    "/facts/{factId}",
-                    "/comments")
+                    "/facts/{factId}")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/events/comments")
