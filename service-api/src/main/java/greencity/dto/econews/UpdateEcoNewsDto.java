@@ -1,12 +1,7 @@
 package greencity.dto.econews;
 
 import greencity.constant.ServiceValidationConstants;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Builder;
+import lombok.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -15,9 +10,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @Builder
 public class UpdateEcoNewsDto {
     @NotNull
@@ -36,8 +29,6 @@ public class UpdateEcoNewsDto {
 
     @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
-
-    private String image;
 
     private String source;
 }

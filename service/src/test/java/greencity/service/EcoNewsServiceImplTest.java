@@ -183,11 +183,7 @@ class EcoNewsServiceImplTest {
 
     @Test
     void saveWithExistedImageTest() throws IOException {
-        var image = ModelUtils.getFile();
-        var imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
-        var tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-
-        addEcoNewsDtoRequest.setImage(imageToEncode);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
@@ -201,7 +197,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
 
-        AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
+        AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, null, TestConst.EMAIL);
 
         assertEquals(addEcoNewsDtoResponse, actual);
 
@@ -237,12 +233,7 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    @SneakyThrows
-    void saveEcoNews() {
-        MultipartFile image = ModelUtils.getFile();
-        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
-        addEcoNewsDtoRequest.setImage(imageToEncode);
-
+    void saveEcoNews() throws Exception {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
@@ -257,7 +248,7 @@ class EcoNewsServiceImplTest {
             new TypeToken<List<Tag>>() {
             }.getType())).thenReturn(tags);
         when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
-        EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, image, TestConst.EMAIL);
+        EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, null, TestConst.EMAIL);
 
         assertEquals(ecoNewsGenericDto, actual);
     }

@@ -457,9 +457,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
             new TypeToken<List<Tag>>() {
             }.getType()));
-        if (updateEcoNewsDto.getImage() != null) {
-            image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
-        }
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image));
         }
@@ -758,9 +755,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         UserVO byEmail = restClient.findByEmail(email);
         User user = modelMapper.map(byEmail, User.class);
         toSave.setAuthor(user);
-        if (addEcoNewsDtoRequest.getImage() != null) {
-            image = fileService.convertToMultipartImage(addEcoNewsDtoRequest.getImage());
-        }
         if (image != null) {
             toSave.setImagePath(fileService.upload(image));
         }
