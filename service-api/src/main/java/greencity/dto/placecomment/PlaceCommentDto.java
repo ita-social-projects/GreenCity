@@ -1,4 +1,4 @@
-package greencity.dto.comment;
+package greencity.dto.placecomment;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDto {
+public class PlaceCommentDto {
     private String text;
 }

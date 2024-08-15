@@ -2,7 +2,7 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.dto.comment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.UserStatus;

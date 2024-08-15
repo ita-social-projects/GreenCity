@@ -4,9 +4,9 @@ import greencity.ModelUtils;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.PlaceCommentRequestDto;
-import greencity.dto.comment.CommentAdminDto;
-import greencity.dto.comment.PlaceCommentResponseDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentAdminDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.PlaceComment;
 import greencity.enums.UserStatus;
@@ -109,12 +109,12 @@ class PlaceCommentServiceImplTest {
     @Test
     void getAllCommentsTest() {
         PageRequest pageRequest = PageRequest.of(0, 2);
-        List<CommentAdminDto> commentAdminDtos = Collections.singletonList(new CommentAdminDto());
+        List<PlaceCommentAdminDto> commentAdminDtos = Collections.singletonList(new PlaceCommentAdminDto());
         List<PlaceComment> list = Collections.singletonList(ModelUtils.getComment());
         Page<PlaceComment> comments = new PageImpl<>(list, pageRequest, list.size());
 
-        PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0, 1);
-        when(modelMapper.map(list.getFirst(), CommentAdminDto.class)).thenReturn(new CommentAdminDto());
+        PageableDto<PlaceCommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0, 1);
+        when(modelMapper.map(list.getFirst(), PlaceCommentAdminDto.class)).thenReturn(new PlaceCommentAdminDto());
         when(placeCommentRepo.findAll(pageRequest)).thenReturn(comments);
 
         assertEquals(result, placeCommentService.getAllComments(pageRequest));
