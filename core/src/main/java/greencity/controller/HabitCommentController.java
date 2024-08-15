@@ -4,9 +4,10 @@ import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
@@ -39,7 +40,7 @@ public class HabitCommentController {
      * @param request dto for {@link CommentVO} entity.
      * @return dto {@link AddCommentDtoResponse}
      */
-    @Operation(summary = "Add comment.")
+    @Operation(summary = "Add comment")
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
@@ -60,4 +61,30 @@ public class HabitCommentController {
                 .status(HttpStatus.CREATED)
                 .body(commentService.save(ArticleType.HABIT, habitId, request, userVO));
     }
+
+    /**
+     * Method to get certain comment for {@link HabitVO} specified by commentId.
+     *
+     * @param id specifies {@link EventCommentDto} to which we search for comments
+     * @return comment to certain event specified by commentId.
+     */
+    @Operation(summary = "Get comment by id")
+    @ResponseStatus(value = HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+                    content = @Content(schema = @Schema(implementation = AddEventCommentDtoResponse.class))),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
+    })
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id,
+                                                          @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(commentService.findCommentById(id, userVO));
+    }
+
 }

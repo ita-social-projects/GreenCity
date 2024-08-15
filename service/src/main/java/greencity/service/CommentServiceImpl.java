@@ -6,11 +6,15 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
+import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.Habit;
 import greencity.entity.User;
+import greencity.entity.event.EventComment;
 import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -130,4 +134,24 @@ public class CommentServiceImpl implements CommentService {
         }
         return null;
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CommentDto findCommentById(Long id, UserVO userVO) {
+        Comment comment = commentRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
+
+        if (userVO != null) {
+            comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(userVO.getId())));
+        }
+        // todo check how Comments list works
+        return modelMapper.map(comment, CommentDto.class);
+    }
+
+    // todo: get all
+
 }
