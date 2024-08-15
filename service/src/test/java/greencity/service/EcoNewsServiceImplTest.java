@@ -322,7 +322,7 @@ class EcoNewsServiceImplTest {
 
     @Test
     void getThreeRecommendedEcoNews() {
-        List<EcoNewsDto> dtoList = List.of(modelMapper.map(ecoNews, EcoNewsDto.class));
+        List<EcoNewsDto> dtoList = List.of(ModelUtils.getEcoNewsDto());
 
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(ecoNewsRepo.getThreeRecommendedEcoNews(1L)).thenReturn(List.of(ecoNews));
