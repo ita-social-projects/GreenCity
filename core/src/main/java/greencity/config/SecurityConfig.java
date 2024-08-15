@@ -45,7 +45,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfig {
     private static final String ECO_NEWS = "/eco-news";
-    private static final String ECO_NEWS_COMMENTS = "/eco-news/{ecoNewsId}/comments";
+    private static final String ECO_NEWS_ID = "/{ecoNewsId}";
+    private static final String ECO_NEWS_COMMENTS = ECO_NEWS + ECO_NEWS_ID + "/comments";
+    private static final String COMMENT_ID = "/{commentId}";
+    private static final String PARENT_COMMENT_ID = "/{parentCommentId}";
     private static final String EVENTS = "/events";
     private static final String FRIENDS = "/friends";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
@@ -133,13 +136,13 @@ public class SecurityConfig {
                     "/specification",
                     ECO_NEWS,
                     ECO_NEWS + "/tags",
-                    ECO_NEWS + "/{ecoNewsId}/recommended",
-                    ECO_NEWS + "/{ecoNewsId}",
-                    ECO_NEWS + "/{ecoNewsId}/likes/count",
-                    ECO_NEWS + "/{ecoNewsId}/dislikes/count",
+                    ECO_NEWS + ECO_NEWS_ID + "/recommended",
+                    ECO_NEWS + ECO_NEWS_ID,
+                    ECO_NEWS + ECO_NEWS_ID + "/likes/count",
+                    ECO_NEWS + ECO_NEWS_ID + "/dislikes/count",
                     ECO_NEWS_COMMENTS,
-                    ECO_NEWS_COMMENTS + "/{parentCommentId}/replies",
-                    ECO_NEWS_COMMENTS + "/{parentCommentId}/replies/count",
+                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + "/replies",
+                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + "/replies/count",
                     ECO_NEWS_COMMENTS + "/count",
                     "/events/comments/active",
                     "/events/comments/count/{eventId}",
@@ -177,8 +180,8 @@ public class SecurityConfig {
                     CUSTOM_SHOPPING_LIST_URL,
                     "/custom/shopping-list-items/{userId}/{habitId}",
                     ECO_NEWS + "/count",
-                    ECO_NEWS + "/{ecoNewsId}/summary",
-                    ECO_NEWS + "/{ecoNewsId}/likes/{userId}",
+                    ECO_NEWS + ECO_NEWS_ID + "/summary",
+                    ECO_NEWS + ECO_NEWS_ID + "/likes/{userId}",
                     "/favorite_place/",
                     "/shopping-list-items",
                     "/habit/assign/allForCurrentUser",
@@ -244,10 +247,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,
                     "/categories",
                     ECO_NEWS,
-                    ECO_NEWS + "/{ecoNewsId}/likes",
-                    ECO_NEWS + "/{ecoNewsId}/dislikes",
+                    ECO_NEWS + ECO_NEWS_ID + "/likes",
+                    ECO_NEWS + ECO_NEWS_ID + "/dislikes",
                     ECO_NEWS_COMMENTS,
-                    ECO_NEWS_COMMENTS + "/{commentId}/likes",
+                    ECO_NEWS_COMMENTS + COMMENT_ID + "/likes",
                     "/events/comments/{eventId}",
                     "/events/comments/like",
                     EVENTS + "/addAttender/{eventId}",
@@ -279,8 +282,8 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
-                    ECO_NEWS + "/{ecoNewsId}",
-                    ECO_NEWS_COMMENTS + "/{commentId}",
+                    ECO_NEWS + ECO_NEWS_ID,
+                    ECO_NEWS_COMMENTS + COMMENT_ID,
                     "/favorite_place/",
                     "/user/profile",
                     EVENTS + "/update",
@@ -307,8 +310,8 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}/declineFriend")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
-                    ECO_NEWS + "/{ecoNewsId}",
-                    ECO_NEWS_COMMENTS + "/{commentId}",
+                    ECO_NEWS + ECO_NEWS_ID,
+                    ECO_NEWS_COMMENTS + COMMENT_ID,
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
                     "/favorite_place/{placeId}",

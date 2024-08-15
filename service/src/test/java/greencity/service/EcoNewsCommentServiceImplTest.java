@@ -8,7 +8,6 @@ import static greencity.enums.CommentStatus.EDITED;
 import static greencity.enums.CommentStatus.ORIGINAL;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
