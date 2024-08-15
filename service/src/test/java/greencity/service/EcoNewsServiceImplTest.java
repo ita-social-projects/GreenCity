@@ -51,7 +51,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -73,7 +72,6 @@ import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -182,7 +180,7 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void saveWithExistedImageTest() throws IOException {
+    void saveWithExistedImageTest() {
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
