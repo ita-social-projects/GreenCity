@@ -6,9 +6,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ArticleType {
-    EVENT("Event"),
-    ECO_NEWS("Eco news"),
-    HABIT("Habit");
+    EVENT("Event", "events"),
+    ECO_NEWS("Eco news", "econews"),
+    HABIT("Habit", "habits");
 
-    private final String description;
+    private final String name;
+    private final String link;
 }

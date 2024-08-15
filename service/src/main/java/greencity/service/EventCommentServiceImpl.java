@@ -384,7 +384,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
             notificationService.sendEmailNotification(GeneralEmailMessage.builder()
                 .email(user.getEmail())
-                .subject(String.format(EmailNotificationMessagesConstants.EVENT_TAGGED_SUBJECT, userVO.getName()))
+                .subject(String.format(EmailNotificationMessagesConstants.ARTICLE_TAGGED_SUBJECT, userVO.getName()))
                 .message(clientAddress + LINK + eventId)
                 .build());
         }
