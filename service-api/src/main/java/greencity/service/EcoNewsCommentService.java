@@ -24,8 +24,8 @@ public interface EcoNewsCommentService {
      * @param user                        {@link UserVO} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
-    AddEcoNewsCommentDtoResponse save(
-        Long ecoNewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest, UserVO user);
+    AddEcoNewsCommentDtoResponse save(Long ecoNewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
+        UserVO user);
 
     /**
      * Method returns replies to certain comment specified by parentCommentId and
@@ -100,8 +100,8 @@ public interface EcoNewsCommentService {
      * @return all active comments to certain ecoNews specified by ecoNewsId.
      * @author Taras Dovganyuk
      */
-    PageableDto<EcoNewsCommentDto> findAllComments(
-        Pageable pageable, UserVO user, Long ecoNewsId, List<CommentStatus> statuses);
+    PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, UserVO user, Long ecoNewsId,
+        List<CommentStatus> statuses);
 
     /**
      * Method that allow you to search users by name.

@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.EcoNewsComment;
 import greencity.enums.CommentStatus;
-import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      *
      * @param pageable        page of news.
      * @param parentCommentId id of comment, replies to which we get.
-     * @param status          statuses of comment
+     * @param status          statuses of comment.
      * @return all replies to comment, specified by parentCommentId, page and
      *         statuses.
      * @author Ilia Rozhko
@@ -47,17 +46,15 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
     int countEcoNewsCommentByEcoNews(Long ecoNewsId);
 
     /**
-     * Method returns all {@link EcoNewsComment} by page.
+     * Method returns {@link EcoNewsComment} by page, id of eco news and statuses.
      *
-     * @param pageable  page of news.
+     * @param pageable  page.
      * @param ecoNewsId id of {@link greencity.entity.EcoNews} for which comments we
      *                  search.
-     * @return all active {@link EcoNewsComment} by page.
-     * @author Dovganyuk Taras
+     * @param status    statuses of comments.
+     * @return {@link EcoNewsComment} by page.
+     * @author Ilia Rozhko
      */
-    Page<EcoNewsComment> findAllByParentCommentIsNullAndEcoNewsIdAndStatusNotOrderByCreatedDateDesc(
-        Pageable pageable, Long ecoNewsId, CommentStatus status);
-
     Page<EcoNewsComment> findAllByEcoNewsIdAndParentCommentIsNullAndStatusInOrderByCreatedDateDesc(
-        Pageable pageable, Long ecoNewsId, Collection<CommentStatus> status);
+        Pageable pageable, Long ecoNewsId, List<CommentStatus> status);
 }
