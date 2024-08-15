@@ -539,7 +539,6 @@ class EcoNewsServiceImplTest {
 
     @Test
     void updateVoidTest() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -553,9 +552,9 @@ class EcoNewsServiceImplTest {
 
     @Test
     void updateVoidTest_whenEcoNewsNotSaved_throwException() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
@@ -563,14 +562,13 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.save(ecoNews)).thenThrow(new RuntimeException());
 
         assertThrows(NotSavedException.class,
-            () -> ecoNewsService.update(ecoNewsDtoManagement, any(MultipartFile.class)));
+            () -> ecoNewsService.update(ecoNewsDtoManagement, file));
 
         verify(fileService).delete(anyString());
     }
 
     @Test
     void updateEcoNewsDtoTest() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         EcoNewsGenericDto ecoNewsDto = ModelUtils.getEcoNewsGenericDto();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
@@ -594,10 +592,11 @@ class EcoNewsServiceImplTest {
 
     @Test
     void updateEcoNewsDtoTest_whenEcoNewsNotSaved_throwException() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
+        UserVO userVO = ModelUtils.getUserVO();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         EcoNewsGenericDto ecoNewsDto = ModelUtils.getEcoNewsGenericDto();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
+        MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
@@ -611,7 +610,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.save(ecoNews)).thenThrow(new RuntimeException());
 
         assertThrows(NotSavedException.class,
-            () -> ecoNewsService.update(updateEcoNewsDto, any(MultipartFile.class), ModelUtils.getUserVO()));
+            () -> ecoNewsService.update(updateEcoNewsDto, file, userVO));
 
         verify(fileService).delete(anyString());
     }
