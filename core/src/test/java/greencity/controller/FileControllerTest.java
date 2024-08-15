@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class FileServiceControllerTest {
+class FileControllerTest {
 
     private MockMvc mockMvc;
 
@@ -26,11 +26,11 @@ class FileServiceControllerTest {
     FileService fileService;
 
     @InjectMocks
-    FileServiceController fileServiceController;
+    FileController fileController;
 
     @BeforeEach
     void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(fileServiceController)
+        this.mockMvc = MockMvcBuilders.standaloneSetup(fileController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
     }
