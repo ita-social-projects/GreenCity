@@ -31,13 +31,6 @@ public interface EcoNewsService {
     EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
     /**
-     * Method for getting last three eco news.
-     *
-     * @return list of {@link EcoNewsDto} instances.
-     */
-    List<EcoNewsDto> getThreeLastEcoNews();
-
-    /**
      * Method for getting three recommended eco news.
      *
      * @param ecoNewsId don't include into the list

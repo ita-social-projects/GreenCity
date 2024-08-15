@@ -132,7 +132,6 @@ public class SecurityConfig {
                     "/place/about/{id}",
                     "/specification",
                     ECO_NEWS,
-                    ECO_NEWS + "/newest",
                     ECO_NEWS + "/tags",
                     ECO_NEWS + "/{ecoNewsId}/recommended",
                     ECO_NEWS + "/{ecoNewsId}",

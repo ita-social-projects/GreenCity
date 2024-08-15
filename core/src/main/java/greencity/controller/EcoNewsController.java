@@ -55,23 +55,6 @@ public class EcoNewsController {
     private final TagsService tagService;
 
     /**
-     * Method for getting three last eco news.
-     *
-     * @return list of {@link EcoNewsDto} instances.
-     * @author Yuriy Olkhovskyi.
-     */
-    @Operation(summary = "Get three last eco news.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("/newest")
-    public ResponseEntity<List<EcoNewsDto>> getThreeLastEcoNews() {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getThreeLastEcoNews());
-    }
-
-    /**
      * Method for creating {@link EcoNewsVO}.
      *
      * @param addEcoNewsDtoRequest - dto for {@link EcoNewsVO} entity.

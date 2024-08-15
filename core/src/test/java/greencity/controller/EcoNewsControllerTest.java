@@ -5,7 +5,6 @@ import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
@@ -66,14 +65,6 @@ class EcoNewsControllerTest {
                 new UserArgumentResolver(userService, modelMapper))
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
             .build();
-    }
-
-    @Test
-    void getThreeLastEcoNewsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/newest"))
-            .andExpect(status().isOk());
-
-        verify(ecoNewsService).getThreeLastEcoNews();
     }
 
     @Test

@@ -14,14 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificationExecutor<EcoNews> {
     /**
-     * Method for getting three last eco news.
-     *
-     * @return list of {@link EcoNews} instances.
-     */
-    @Query(nativeQuery = true, value = "SELECT * FROM eco_news ORDER BY creation_date DESC LIMIT 3")
-    List<EcoNews> getThreeLastEcoNews();
-
-    /**
      * Method for deleting eco news by list of ids.
      *
      * @param ids list of deleted eco news ids.

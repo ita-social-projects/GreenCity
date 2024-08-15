@@ -34,7 +34,6 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
@@ -64,7 +63,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
@@ -151,7 +149,6 @@ class EcoNewsServiceImplTest {
     private final AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
     private final EcoNewsGenericDto ecoNewsGenericDto = ModelUtils.getEcoNewsGenericDto();
 
-    private static final String ECO_NEWS_TITLE = "title";
     private static final String ECO_NEWS_JOIN_TAG = "tags";
     private static final String ECO_NEWS_TAG_TRANSLATION = "tagTranslations";
     private static final String ECO_NEWS_TAG_TRANSLATION_NAME = "name";
@@ -262,46 +259,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void getThreeLastEcoNews() {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-
-        EcoNewsDto ecoNewsDto = EcoNewsDto.builder()
-            .creationDate(zonedDateTime)
-            .imagePath("test image path")
-            .id(1L)
-            .title("test title")
-            .content("content")
-            .shortInfo(null)
-            .author(ModelUtils.getEcoNewsAuthorDto())
-            .tags(Collections.emptyList())
-            .tagsUa(Collections.emptyList())
-            .likes(1)
-            .countComments(0)
-            .build();
-
-        EcoNews ecoNews = ModelUtils.getEcoNews();
-
-        List<EcoNewsDto> dtoList = Collections.singletonList(ecoNewsDto);
-
-        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
-        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-
-        List<EcoNewsDto> actual = ecoNewsService.getThreeLastEcoNews();
-
-        assertEquals(dtoList, actual);
-    }
-
-    @Test
-    void getThreeLastEcoNewsNotFound() {
-        List<EcoNews> ecoNews = Collections.emptyList();
-
-        when(ecoNewsRepo.getThreeLastEcoNews())
-            .thenReturn(ecoNews);
-
-        assertThrows(NotFoundException.class, () -> ecoNewsService.getThreeLastEcoNews());
-    }
-
-    @Test
     void findAll() {
         ZonedDateTime now = ZonedDateTime.now();
 
@@ -365,11 +322,10 @@ class EcoNewsServiceImplTest {
 
     @Test
     void getThreeRecommendedEcoNews() {
-        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
+        List<EcoNewsDto> dtoList = List.of(modelMapper.map(ecoNews, EcoNewsDto.class));
 
-        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(ecoNews));
-        when(ecoNewsRepo.getThreeRecommendedEcoNews(1L)).thenReturn(Collections.singletonList(ecoNews));
-        when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(ecoNewsRepo.getThreeRecommendedEcoNews(1L)).thenReturn(List.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.getFirst());
 
         List<EcoNewsDto> actual = ecoNewsService.getThreeRecommendedEcoNews(1L);

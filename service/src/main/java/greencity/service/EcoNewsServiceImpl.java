@@ -41,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -120,19 +119,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * {@inheritDoc}
      */
-    @Cacheable(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME)
-    @Override
-    public List<EcoNewsDto> getThreeLastEcoNews() {
-        List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeLastEcoNews();
-        if (ecoNewsList.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
-        }
-        return mapEcoNewsListToEcoNewsDtoList(ecoNewsList);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long ecoNewsId) {
         return mapEcoNewsListToEcoNewsDtoList(ecoNewsRepo.getThreeRecommendedEcoNews(ecoNewsId));
@@ -171,7 +157,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags, String title, Long authorId) {
-        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title)
+        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))))
