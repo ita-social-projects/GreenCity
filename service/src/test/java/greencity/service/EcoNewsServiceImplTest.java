@@ -278,6 +278,7 @@ class EcoNewsServiceImplTest {
             .tagsUa(Collections.emptyList())
             .likes(1)
             .countComments(0)
+            .hidden(false)
             .build();
 
         EcoNews ecoNews = ModelUtils.getEcoNews();
@@ -325,6 +326,7 @@ class EcoNewsServiceImplTest {
                 .tagsUa(Collections.emptyList())
                 .likes(1)
                 .countComments(0)
+                .hidden(false)
                 .build());
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
@@ -954,5 +956,36 @@ class EcoNewsServiceImplTest {
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))
             .ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, actionUser);
+    }
+
+    @Test
+    void setHiddenValue() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        EcoNews ecoNew = ModelUtils.getEcoNews();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNew));
+
+        ecoNewsService.setHiddenValue(1L, adminVO, true);
+        verify(ecoNewsRepo, times(1)).save(ecoNew.setHidden(true));
+    }
+
+    @Test
+    void setHiddenWithNotAdminValueThrowExceptionTest() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO userVO = ModelUtils.getUserVO();
+
+        assertThrows(BadRequestException.class, () -> ecoNewsService.setHiddenValue(1L, userVO, true));
+    }
+
+    @Test
+    void setHiddenWithWrongIdValueThrowExceptionTest() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> ecoNewsService.setHiddenValue(1L, adminVO, true));
     }
 }

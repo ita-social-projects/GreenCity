@@ -730,6 +730,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .content(ecoNews.getText())
             .title(ecoNews.getTitle())
             .creationDate(ecoNews.getCreationDate())
+            .hidden(ecoNews.isHidden())
             .build();
     }
 
@@ -830,5 +831,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return predicateList.size() == 1
             ? predicateList.getFirst()
             : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Viktoriia Herchanivska.
+     */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
+    @Override
+    public void setHiddenValue(Long id, UserVO user, boolean value) {
+        if (user.getRole() != Role.ROLE_ADMIN) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        EcoNews ecoNews = ecoNewsRepo
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+        ecoNews.setHidden(value);
+
+        ecoNewsRepo.save(ecoNews);
     }
 }
