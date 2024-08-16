@@ -198,4 +198,6 @@
     <include file="db/changelog/logs/ch-add-unique-constraint-to-include-habit_id-column-in-user_action-table-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-change-content-field-in-chatmessages-table.xml"/>
     <include file="db/changelog/logs/ch-add-table-db_backups-kizerov.xml"/>
+    <include file="db/changelog/logs/ch-add-column-eco-news-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-modify-function-recommended-eco-news-Herchanivska.xml"/>
 </databaseChangeLog>

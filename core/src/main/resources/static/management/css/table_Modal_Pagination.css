@@ -1437,6 +1437,7 @@ td input[type=search] {
 
 .btn-tertiary {
     color: #13AA57;
+    background-color: #ffffff;
     border: 1px solid #13AA57;
     box-sizing: border-box;
     border-radius: 4px;
@@ -1444,11 +1445,11 @@ td input[type=search] {
     height: 40px;
     display: flex;
     justify-content: center;
-    margin-top: 25px;
 }
 
 .btn-tertiary:hover {
-    color: #13AA57;
+    background-color: #13AA57;
+    color: #ffffff;
 }
 
 .btn-tertiary:focus {
