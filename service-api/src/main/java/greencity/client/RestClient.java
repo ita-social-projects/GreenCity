@@ -7,11 +7,16 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
-import greencity.message.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import greencity.message.GeneralEmailMessage;
+import greencity.message.HabitAssignNotificationMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.SendReportEmailMessage;
+import greencity.message.UserTaggedInCommentMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
@@ -588,7 +593,7 @@ public class RestClient {
     /**
      * Method sends email notification when user was mentioned in event comment.
      *
-     * @param message {@link GeneralEmailMessage}.
+     * @param message {@link UserTaggedInCommentMessage}.
      */
     public void sendUserTaggedInCommentNotification(UserTaggedInCommentMessage message) {
         HttpHeaders headers = setHeader();
