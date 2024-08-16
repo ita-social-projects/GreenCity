@@ -23,6 +23,7 @@ import greencity.enums.EmailNotification;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.SendReportEmailMessage;
+import greencity.message.UserTaggedInCommentMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -256,5 +257,28 @@ class NotificationServiceImplTest {
         assertEquals(message.getHabitName(), capturedMessage.getHabitName());
         assertEquals(message.getLanguage(), capturedMessage.getLanguage());
         assertEquals(message.getSenderName(), capturedMessage.getSenderName());
+    }
+
+    @Test
+    void sendUserTaggedInCommentNotificationTest() {
+        UserTaggedInCommentMessage message = UserTaggedInCommentMessage.builder()
+            .receiverEmail("receiver@example.com")
+            .receiverName("receiver")
+            .commentText("test")
+            .taggerName("tagger")
+            .commentedEventId(1L)
+            .language("en")
+            .build();
+        ArgumentCaptor<UserTaggedInCommentMessage> captor =
+            ArgumentCaptor.forClass(UserTaggedInCommentMessage.class);
+        notificationService.sendUsersTaggedInCommentEmailNotification(message);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendUserTaggedInCommentNotification(captor.capture()));
+        UserTaggedInCommentMessage capturedMessage = captor.getValue();
+        assertEquals(message.getReceiverEmail(), capturedMessage.getReceiverEmail());
+        assertEquals(message.getReceiverName(), capturedMessage.getReceiverName());
+        assertEquals(message.getCommentText(), capturedMessage.getCommentText());
+        assertEquals(message.getLanguage(), capturedMessage.getLanguage());
+        assertEquals(message.getTaggerName(), capturedMessage.getTaggerName());
     }
 }
