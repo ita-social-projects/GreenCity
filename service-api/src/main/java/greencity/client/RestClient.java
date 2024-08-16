@@ -7,11 +7,7 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
-import greencity.message.GeneralEmailMessage;
-import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendHabitNotification;
-import greencity.message.SendReportEmailMessage;
-import greencity.message.HabitAssignNotificationMessage;
+import greencity.message.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -587,5 +583,18 @@ public class RestClient {
         HttpEntity<HabitAssignNotificationMessage> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_HABIT_ASSIGN_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    /**
+     * Method sends email notification when user was mentioned in event comment.
+     *
+     * @param message {@link GeneralEmailMessage}.
+     */
+    public void sendUserTaggedInCommentNotification(UserTaggedInCommentMessage message) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserTaggedInCommentMessage> entity = new HttpEntity<>(message, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }
