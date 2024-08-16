@@ -3,17 +3,17 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
-import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.Habit;
 import greencity.entity.User;
+import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
@@ -26,10 +26,15 @@ import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +46,6 @@ public class CommentServiceImpl implements CommentService {
     private final ModelMapper modelMapper;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
-    private final NotificationService notificationService;
-    @Value("${client.address}")
-    private String clientAddress;
 
     /**
      * {@inheritDoc}
@@ -78,8 +80,6 @@ public class CommentServiceImpl implements CommentService {
             comment.setParentComment(parentComment);
         }
 
-        sendNotificationToTaggedUser(articleType, articleId, userVO, addCommentDtoRequest.getText());
-
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
@@ -94,43 +94,6 @@ public class CommentServiceImpl implements CommentService {
         if(articleType == ArticleType.HABIT) {
             Habit habit = habitRepo.findById(articleId).orElseThrow(() -> new NotFoundException("Habit not found"));
             return userRepo.findById(habit.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
-        }
-        return null;
-    }
-
-
-    /**
-     * Method to send email notification if user tagged in comment.
-     *
-     * @param articleId {@link Long} article id.
-     * @param userVO  {@link UserVO} comment author.
-     * @param comment {@link String} comment.
-     */
-    private void sendNotificationToTaggedUser(ArticleType type, Long articleId, UserVO userVO, String comment) {
-        Long userId = getUserIdFromComment(comment);
-        if (userId != null) {
-            User user = userRepo.findById(userId)
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                    .email(user.getEmail())
-                    .subject(String.format(EmailNotificationMessagesConstants.ARTICLE_TAGGED_SUBJECT, userVO.getName()))
-                    .message(clientAddress + "/#/" + type.getLink() + "/" + articleId)
-                    .build());
-        }
-    }
-
-    /**
-     * Method to extract user id from comment.
-     *
-     * @param message comment from {@link AddCommentDtoResponse}.
-     * @return user id if present or null.
-     */
-    private Long getUserIdFromComment(String message) {
-        String regEx = "data-userid=\"(\\d+)\"";
-        Pattern pattern = Pattern.compile(regEx);
-        Matcher matcher = pattern.matcher(message);
-        if (matcher.find()) {
-            return Long.valueOf(matcher.group(1));
         }
         return null;
     }
@@ -152,6 +115,85 @@ public class CommentServiceImpl implements CommentService {
         return modelMapper.map(comment, CommentDto.class);
     }
 
-    // todo: get all
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<CommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+        Page<Comment> pages =
+                commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
+                        CommentStatus.DELETED);
 
+        if (userVO != null) {
+            pages.forEach(ec -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(userVO.getId()))));
+        }
+
+        List<CommentDto> commentDtos = pages.stream()
+                .map(comment -> modelMapper.map(comment, CommentDto.class))
+                .collect(Collectors.toList());
+
+        return new PageableDto<>(
+                commentDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber(),
+                pages.getTotalPages());
+    }
+
+    @Override
+    public int countComments(ArticleType type, Long articleId) {
+        if(type == ArticleType.HABIT){
+            Habit habit = habitRepo.findById(articleId).orElseThrow(() ->
+                    new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + articleId));
+            return commentRepo.countNotDeletedCommentsByHabit(habit.getId());
+
+        }
+        return 0;
+    }
+
+    /**
+     * Method to count not deleted replies to the certain {@link Comment}.
+     *
+     * @param parentCommentId to specify parent comment {@link Comment}
+     * @return amount of replies
+     */
+    @Override
+    public int countAllActiveReplies(Long parentCommentId) {
+        if (commentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId);
+        }
+        return commentRepo.countByParentCommentIdAndStatusNot(parentCommentId, CommentStatus.DELETED);
+    }
+
+    @Override
+    public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId,
+                                                        ArticleType articleType) {
+        if(articleType == ArticleType.HABIT){
+            Optional<Habit> habit = habitRepo.findById(articleId);
+            if(habit.isEmpty()){
+                throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + articleId);
+            }
+        }
+
+        Page<Comment> pages =
+                commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc
+                        (pageable, articleId, articleType, CommentStatus.DELETED);
+
+        if (userVO != null) {
+            pages.forEach(comment -> comment.setCurrentUserLiked(comment.getUsersLiked()
+                    .stream()
+                    .anyMatch(u -> u.getId().equals(userVO.getId()))));
+        }
+
+        List<CommentDto> commentDto = pages
+                .stream()
+                .map(comment -> modelMapper.map(comment, CommentDto.class))
+                .collect(Collectors.toList());
+
+        return new PageableDto<>(
+                commentDto,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber(),
+                pages.getTotalPages());
+    }
 }
