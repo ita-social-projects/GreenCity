@@ -5,8 +5,7 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
-import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
@@ -34,9 +33,10 @@ public interface CommentService {
      * Method to get certain comment specified by commentId.
      *
      * @param id specifies {@link CommentDto} to which we search for comments
+     * @param type specifies {@link ArticleType} to which we search for comments
      * @return comment to certain article specified by commentId.
      */
-    CommentDto findCommentById(Long id, UserVO userVO);
+    CommentDto findCommentById(ArticleType type, Long id, UserVO userVO);
 
 
     /**
@@ -75,4 +75,24 @@ public interface CommentService {
      * @return all active comments to certain article specified by articleId.
      */
     PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId, ArticleType type);
+
+    /**
+     * Method to like or dislike {@link CommentVO} specified by id.
+     *
+     * @param commentId id of {@link CommentVO} to like/dislike.
+     * @param userVO    current {@link UserVO} that wants to like/dislike.
+     */
+    void like(Long commentId, UserVO userVO);
+
+    /**
+     * Method returns count of likes to certain {@link CommentVO} specified by
+     * id.
+     *
+     * @param commentId id of {@link CommentVO} must be counted.
+     * @param userVO    {@link UserVO} user who want to get amount of likes for
+     *                  comment.
+     *
+     * @return amountCommentLikesDto dto with id and count likes for comments.
+     */
+    AmountCommentLikesDto countLikes(Long commentId, UserVO userVO);
 }

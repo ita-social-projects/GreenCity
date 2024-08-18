@@ -8,9 +8,11 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
-import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
+import greencity.entity.EcoNewsComment;
 import greencity.entity.Habit;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -25,15 +27,13 @@ import greencity.repository.HabitRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,15 +103,19 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public CommentDto findCommentById(Long id, UserVO userVO) {
+    public CommentDto findCommentById(ArticleType type, Long id, UserVO userVO) {
         Comment comment = commentRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
+
+        if(comment.getArticleType() != type) {
+            throw new BadRequestException("Comment with id: " + id + " doesn't belongs to " + type.getLink());
+        }
 
         if (userVO != null) {
             comment.setCurrentUserLiked(comment.getUsersLiked().stream()
                     .anyMatch(u -> u.getId().equals(userVO.getId())));
         }
-        // todo check how Comments list works
+
         return modelMapper.map(comment, CommentDto.class);
     }
 
@@ -152,10 +156,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * Method to count not deleted replies to the certain {@link Comment}.
-     *
-     * @param parentCommentId to specify parent comment {@link Comment}
-     * @return amount of replies
+     * {@inheritDoc}
      */
     @Override
     public int countAllActiveReplies(Long parentCommentId) {
@@ -185,15 +186,74 @@ public class CommentServiceImpl implements CommentService {
                     .anyMatch(u -> u.getId().equals(userVO.getId()))));
         }
 
-        List<CommentDto> commentDto = pages
-                .stream()
-                .map(comment -> modelMapper.map(comment, CommentDto.class))
-                .collect(Collectors.toList());
+        List<CommentDto> commentDtos = convertToCommentDtos(pages, userVO).stream()
+                .map(this::setRepliesToComment)
+                .toList();
+
 
         return new PageableDto<>(
-                commentDto,
+                commentDtos,
                 pages.getTotalElements(),
                 pages.getPageable().getPageNumber(),
                 pages.getTotalPages());
+    }
+
+    private List<CommentDto> convertToCommentDtos(Page<Comment> pages, UserVO user) {
+        return pages.stream()
+                .map(comment -> {
+                    CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
+                    commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
+                            .anyMatch(u -> u.getId().equals(user.getId())));
+                    commentDto.setAuthor(modelMapper.map(user, CommentAuthorDto.class));
+                    commentDto.setLikes(comment.getUsersLiked().size());
+                    commentDto.setReplies(comment.getComments().size());
+                    commentDto.setStatus(comment.getStatus().name());
+                    return commentDto;
+                })
+                .toList();
+    }
+
+    private CommentDto setRepliesToComment(CommentDto comment) {
+        comment.setReplies(commentRepo.countByParentCommentId(comment.getId()));
+        return comment;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void like(Long commentId, UserVO userVO) {
+        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+        if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
+            achievementCalculation.calculateAchievement(userVO,
+                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+        } else {
+            comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+            achievementCalculation.calculateAchievement(userVO,
+                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+        }
+        commentRepo.save(comment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AmountCommentLikesDto countLikes(Long commentId, UserVO userVO) {
+        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+
+        boolean isLiked =
+                userVO != null && comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        return AmountCommentLikesDto.builder()
+                .id(comment.getId())
+                .userId(userVO == null ? 0 : userVO.getId())
+                .isLiked(isLiked)
+                .amountLikes(comment.getUsersLiked().size())
+                .build();
     }
 }

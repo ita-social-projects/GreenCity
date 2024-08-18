@@ -1,8 +1,6 @@
 package greencity.repository;
 
 import greencity.entity.Comment;
-import greencity.entity.event.Event;
-import greencity.entity.event.EventComment;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import org.springframework.data.domain.Page;
@@ -10,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface CommentRepo  extends JpaRepository<Comment, Long> {
@@ -64,4 +61,13 @@ public interface CommentRepo  extends JpaRepository<Comment, Long> {
      */
     Page<Comment> findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
             Pageable pageable, Long articleId, ArticleType articleType, CommentStatus commentStatus);
+
+    /**
+     * Method returns count of replies to comment, specified by parentCommentId.
+     *
+     * @param parentCommentId id of comment, count of replies to which we get.
+     * @return count of replies to comment, specified by parentCommentId.
+     */
+    @Query("SELECT count(c) from Comment c where c.parentComment.id = :parentCommentId AND c.status <> 'DELETED'")
+    int countByParentCommentId(Long parentCommentId);
 }

@@ -1,6 +1,5 @@
 package greencity.dto.comment;
 
-import greencity.dto.eventcomment.EventCommentAuthorDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,11 +20,16 @@ public class CommentDto {
     private Long id;
 
     @NotEmpty
+    private LocalDateTime createdDate;
+
+    @NotEmpty
     private LocalDateTime modifiedDate;
 
     private CommentAuthorDto author;
 
     private String text;
+
+    private int replies;
 
     private int likes;
 

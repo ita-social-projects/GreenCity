@@ -18,5 +18,5 @@ public class CommentAuthorDto {
     private String name;
 
     @NotEmpty
-    private String userProfilePicturePath;
+    private String profilePicturePath;
 }

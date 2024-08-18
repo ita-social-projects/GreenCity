@@ -9,6 +9,7 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
@@ -87,7 +88,7 @@ public class HabitCommentController {
     public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id,
                                                           @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(commentService.findCommentById(id, userVO));
+                .body(commentService.findCommentById(ArticleType.HABIT, id, userVO));
     }
 
     /**
@@ -103,8 +104,6 @@ public class HabitCommentController {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
                     content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
                     content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
@@ -130,8 +129,6 @@ public class HabitCommentController {
     @Operation(summary = "Count comments.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
                     content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
 
@@ -152,8 +149,6 @@ public class HabitCommentController {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
                     content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
                     content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
@@ -169,13 +164,15 @@ public class HabitCommentController {
      * @param habitId id of {@link HabitVO}
      * @return Pageable of {@link CommentDto}
      */
-    @Operation(summary = "Get all active comments.")
+    @Operation(summary = "Get all active comments (without replies).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
                     content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("comments/active")
     @ApiPageableWithoutSort
@@ -185,5 +182,51 @@ public class HabitCommentController {
             @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(commentService.getAllActiveComments(pageable, user, habitId, ArticleType.HABIT));
+    }
+
+    /**
+     * Method to like/dislike certain {@link CommentDto} comment specified by
+     * id.
+     *
+     * @param commentId of {@link CommentDto} to like/dislike
+     */
+    @Operation(summary = "Like/dislike comment.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/comments/like")
+    public void like(@RequestParam("commentId") Long commentId, @Parameter(hidden = true) @CurrentUser UserVO user) {
+        commentService.like(commentId, user);
+    }
+
+    /**
+     * Method to count likes for comment.
+     *
+     * @param commentId id of {@link CommentDto} comment whose likes must be
+     *                  counted
+     * @param user      {@link UserVO} user who want to get amount of likes for
+     *                  comment.
+     * @return amountCommentLikesDto dto with id and count likes for comments.
+     */
+    @Operation(summary = "Count likes for comment.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/comments/{commentId}/likes/count")
+    public ResponseEntity<AmountCommentLikesDto> countLikes(@PathVariable("commentId") Long commentId,
+                                                            @Parameter(hidden = true) @CurrentUser UserVO user) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(commentService.countLikes(commentId, user));
     }
 }
