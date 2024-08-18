@@ -1,6 +1,8 @@
 package greencity.webcontroller;
 
+import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventViewDto;
 import greencity.enums.TagType;
@@ -8,20 +10,31 @@ import greencity.service.EventService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/management/events")
 public class ManagementEventsController {
     private final EventService eventService;
     private final TagsService tagsService;
+    private final RestClient restClient;
+
+    @Value("${google.maps.api.key}")
+    private String googleMapApiKey;
+
+    @Value("${address}")
+    private String backendAddress;
 
     /**
      * Method that returns management page with all {@link EventDto}.
@@ -32,7 +45,7 @@ public class ManagementEventsController {
      */
     @GetMapping
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
+                               @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
         if (eventViewDto.getId() != null && !eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
@@ -40,8 +53,8 @@ public class ManagementEventsController {
             model.addAttribute("query", "");
         } else {
             allEvents = query == null || query.isEmpty()
-                ? eventService.getAll(pageable, null)
-                : eventService.searchEventsBy(pageable, query);
+                    ? eventService.getAll(pageable, null)
+                    : eventService.searchEventsBy(pageable, query);
             model.addAttribute("fields", new EventViewDto());
             model.addAttribute("query", query);
         }
@@ -58,5 +71,26 @@ public class ManagementEventsController {
         model.addAttribute("eventsTag", tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en"));
         model.addAttribute("pageSize", pageable.getPageSize());
         return "core/management_events";
+    }
+
+    @GetMapping("/create-event")
+    public String getEventCreatePage(Model model, Principal principal) {
+        model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
+        model.addAttribute("images", new MultipartFile[]{});
+        model.addAttribute("backendAddress", backendAddress);
+        model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
+        model.addAttribute("googleMapApiKey", googleMapApiKey);
+        return "core/management_create_event";
+    }
+
+    @PostMapping
+    public String createEvent(@RequestPart("addEventDtoRequest") AddEventDtoRequest addEventDtoRequest,
+                              @RequestPart("images") MultipartFile[] images,
+                              Principal principal,
+                              Model model) {
+        model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
+        model.addAttribute("images", new MultipartFile[]{});
+        eventService.save(addEventDtoRequest, principal.getName(), images);
+        return "redirect:/management/events";
     }
 }

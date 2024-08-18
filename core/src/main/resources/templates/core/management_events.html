@@ -44,8 +44,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="d-flex justify-content-end">
-                                    <a href="#addEventModal" id="addEventModalBtn" class="btn btn-secondary"
-                                       data-toggle="modal">
+                                    <a th:href="@{/management/events/create-event}" class="btn btn-secondary">
                                         <div>[[#{greenCity.events.page.add.event}]]</div>
                                     </a>
                                     <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled"
@@ -223,12 +222,8 @@
             </div>
         </div>
     </div>
-    <!-- Create Event Modal Window-->
-    <div th:replace="core/fragments/modals/create_event_modal.html"></div>
     <!-- Edit Modal HTML -->
     <div th:replace="core/fragments/modals/edit_event_modal.html">
-    <!-- Delete Modal HTML -->
-    <div th:replace="core/fragments/modals/delete_event_modal.html">
     <!-- Delete all selected Modal HTML -->
     <div th:replace="core/fragments/modals/delete_all_selected_events_modal.html">
 </div>
