@@ -7,6 +7,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 import greencity.service.UserService;
+import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,14 +26,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.security.Principal;
-
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,23 +43,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 class EcoNewsCommentControllerTest {
     private static final String ecoNewsCommentControllerLink = "/eco-news/{ecoNewsId}/comments";
+    private final Principal principal = getPrincipal();
+    private final ObjectMapper mapper = new ObjectMapper();
     private MockMvc mockMvc;
-
     @InjectMocks
     private EcoNewsCommentController ecoNewsCommentController;
-
     @Mock
     private EcoNewsCommentService ecoNewsCommentService;
-
     @Mock
     private UserService userService;
-
     @Mock
     private ModelMapper modelMapper;
-
-    private final Principal principal = getPrincipal();
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setup() {

@@ -44,9 +44,15 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableGlobalAuthentication
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private static final String ADVICES = "/advices";
+    private static final String CATEGORIES = "/categories";
     private static final String ECO_NEWS = "/eco-news";
     private static final String ECO_NEWS_ID = "/{ecoNewsId}";
     private static final String ECO_NEWS_COMMENTS = ECO_NEWS + ECO_NEWS_ID + "/comments";
+    private static final String REPLIES = "/replies";
+    private static final String LIKES = "/likes";
+    private static final String DISLIKES = "/dislikes";
+    private static final String COUNT = "/count";
     private static final String COMMENT_ID = "/{commentId}";
     private static final String PARENT_COMMENT_ID = "/{parentCommentId}";
     private static final String EVENTS = "/events";
@@ -117,7 +123,7 @@ public class SecurityConfig {
                     "/factoftheday/all",
                     "/factoftheday/find",
                     "/factoftheday/languages",
-                    "/categories",
+                    CATEGORIES,
                     "/place/info/{id}",
                     "/place/info/favorite/{placeId}",
                     "/favorite_place/favorite/{placeId}",
@@ -138,12 +144,12 @@ public class SecurityConfig {
                     ECO_NEWS + "/tags",
                     ECO_NEWS + ECO_NEWS_ID + "/recommended",
                     ECO_NEWS + ECO_NEWS_ID,
-                    ECO_NEWS + ECO_NEWS_ID + "/likes/count",
-                    ECO_NEWS + ECO_NEWS_ID + "/dislikes/count",
+                    ECO_NEWS + ECO_NEWS_ID + LIKES + COUNT,
+                    ECO_NEWS + ECO_NEWS_ID + DISLIKES + COUNT,
                     ECO_NEWS_COMMENTS,
-                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + "/replies",
-                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + "/replies/count",
-                    ECO_NEWS_COMMENTS + "/count",
+                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES,
+                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + COUNT,
+                    ECO_NEWS_COMMENTS + COUNT,
                     "/events/comments/active",
                     "/events/comments/count/{eventId}",
                     "/events/comments/replies/active/{parentCommentId}",
@@ -173,15 +179,16 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,
                     "/achievements",
-                    "/advices/random/{habitId}",
-                    "/advices",
+                    ADVICES,
+                    ADVICES + "/{id}",
+                    ADVICES + "/random",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST,
                     CUSTOM_SHOPPING_LIST_URL,
                     "/custom/shopping-list-items/{userId}/{habitId}",
-                    ECO_NEWS + "/count",
+                    ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
-                    ECO_NEWS + ECO_NEWS_ID + "/likes/{userId}",
+                    ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
                     "/favorite_place/",
                     "/shopping-list-items",
                     "/habit/assign/allForCurrentUser",
@@ -219,7 +226,6 @@ public class SecurityConfig {
                     "/factoftheday/",
                     "/factoftheday/all",
                     "/chat",
-                    "/achievements/notification/{userId}",
                     EVENTS + "/myEvents",
                     EVENTS + "/myEvents/createdEvents",
                     EVENTS + "/myEvents/relatedEvents",
@@ -245,12 +251,12 @@ public class SecurityConfig {
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
-                    "/categories",
+                    CATEGORIES,
                     ECO_NEWS,
-                    ECO_NEWS + ECO_NEWS_ID + "/likes",
-                    ECO_NEWS + ECO_NEWS_ID + "/dislikes",
+                    ECO_NEWS + ECO_NEWS_ID + LIKES,
+                    ECO_NEWS + ECO_NEWS_ID + DISLIKES,
                     ECO_NEWS_COMMENTS,
-                    ECO_NEWS_COMMENTS + COMMENT_ID + "/likes",
+                    ECO_NEWS_COMMENTS + COMMENT_ID + LIKES,
                     "/events/comments/{eventId}",
                     "/events/comments/like",
                     EVENTS + "/addAttender/{eventId}",
@@ -274,7 +280,6 @@ public class SecurityConfig {
                     "/user/{userId}/userFriend/{friendId}",
                     "/user/{userId}/declineFriend/{friendId}",
                     "/user/{userId}/acceptFriend/{friendId}",
-                    "/achievements/calculate-achievement",
                     "/habit/custom",
                     "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
                     FRIENDS + "/{friendId}",
@@ -353,12 +358,12 @@ public class SecurityConfig {
                     "/place")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
-                    "/advices",
+                    ADVICES,
                     "/facts",
                     "/user/filter")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PUT,
-                    "/advices/{adviceId}",
+                    ADVICES + "/{id}",
                     "/facts/{factId}")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
@@ -368,7 +373,7 @@ public class SecurityConfig {
                     "/user/update/role")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
-                    "/advices/{adviceId}",
+                    ADVICES + "/{id}",
                     "/facts/{factId}")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
