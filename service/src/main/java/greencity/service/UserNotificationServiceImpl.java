@@ -400,4 +400,47 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(), habitName);
         };
     }
+
+    @Override
+    public void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
+        boolean isLike) {
+        notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
+            targetUserVO.getId(), NotificationType.ECONEWS_LIKE, newsId)
+            .ifPresentOrElse(notification -> {
+                List<User> actionUsers = notification.getActionUsers();
+
+                actionUsers.removeIf(user -> user.getId().equals(actionUserVO.getId()));
+                if (isLike) {
+                    actionUsers.add(modelMapper.map(actionUserVO, User.class));
+                }
+
+                if (actionUsers.isEmpty()) {
+                    notificationRepo.delete(notification);
+                } else {
+                    notification.setCustomMessage(createLikeNotificationMessage(actionUsers, newsTitle));
+                    notification.setTime(LocalDateTime.now());
+                    notificationRepo.save(notification);
+                }
+            }, () -> {
+                if (isLike) {
+                    String customMessage = String.format("%s likes your news %s.",
+                        actionUserVO.getName(), newsTitle);
+                    createNotification(targetUserVO, actionUserVO, NotificationType.ECONEWS_LIKE, newsId,
+                        customMessage);
+                }
+            });
+    }
+
+    private String createLikeNotificationMessage(List<User> actionUsers, String newsTitle) {
+        int userCount = actionUsers.size();
+
+        return switch (userCount) {
+            case 1 -> String.format("%s likes your news %s.",
+                actionUsers.get(0).getName(), newsTitle);
+            case 2 -> String.format("%s and %s like your news %s.",
+                actionUsers.get(0).getName(), actionUsers.get(1).getName(), newsTitle);
+            default -> String.format("%s, %s and other users like your news %s.",
+                actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(), newsTitle);
+        };
+    }
 }
