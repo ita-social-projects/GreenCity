@@ -1,13 +1,15 @@
 package greencity.webcontroller;
 
-import greencity.converters.UserArgumentResolver;
+import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.UserVO;
 import greencity.enums.TagType;
 import greencity.service.EventService;
 import greencity.service.TagsService;
-import greencity.service.UserService;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import lombok.SneakyThrows;
@@ -19,13 +21,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.mockito.Mockito.*;
+import org.springframework.web.multipart.MultipartFile;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,17 +46,16 @@ class ManagementEventsControllerTest {
     ManagementEventsController managementEventsController;
     private MockMvc mockMvc;
     @Mock
-    private ModelMapper modelMapper;
-    @Mock
     private TagsService tagsService;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
+    @Mock
+    private Principal principal;
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventsController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
     }
 
@@ -121,5 +127,34 @@ class ManagementEventsControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).getAll(pageable, null);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventCreatePage() {
+        String principalName = "test@example.com";
+        when(principal.getName()).thenReturn(principalName);
+        when(restClient.findByEmail(principalName)).thenReturn(new UserVO());
+
+        this.mockMvc.perform(get(managementEventsLink + "/create-event").principal(principal))
+            .andExpect(view().name("core/management_create_event"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCreateEvent() throws Exception {
+        String json =
+            "{\"title\":\"asdgasgdgsa\",\"description\":\"<p>asdgadsgagdasdgasdggadsg</p>\",\"tags\":[\"ECONOMIC\"],\"open\":true,\"datesLocations\":[{\"startDate\":\"2024-11-11T00:00:00Z\",\"finishDate\":\"2024-11-11T23:59:00Z\",\"onlineLink\":\"https://www.greencity.cx.ua/#/greenCity\"}]}";
+        MockMultipartFile addEventDtoRequestJSON =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+        MockMultipartFile image =
+            new MockMultipartFile("images", "image.jpg", "image/jpeg", "image content".getBytes());
+        mockMvc.perform(multipart(managementEventsLink)
+            .file(addEventDtoRequestJSON)
+            .file(image)
+            .principal(() -> "user"))
+            .andExpect(status().is3xxRedirection());
+
+        verify(eventService, times(1)).save(any(AddEventDtoRequest.class), eq("user"), any(MultipartFile[].class));
     }
 }
