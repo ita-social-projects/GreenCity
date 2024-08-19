@@ -902,8 +902,8 @@ class EcoNewsServiceImplTest {
         ecoNewsService.like(actionUser, ecoNewsVO.getId());
 
         assertTrue(ecoNewsVO.getUsersLikedNews().contains(actionUser));
-        verify(userNotificationService, times(1)).createNotification(
-            targetUser, actionUser, NotificationType.ECONEWS_LIKE, ecoNewsVO.getId(), ecoNewsVO.getTitle());
+        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
+            eq(targetUser), eq(actionUser), eq(ecoNewsVO.getId()), eq(ecoNewsVO.getTitle()), eq(true));
         verify(achievementCalculation, times(1)).calculateAchievement(actionUser,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         verify(ratingCalculation, times(1))
@@ -928,12 +928,12 @@ class EcoNewsServiceImplTest {
 
         ModelMapper mapper = new ModelMapper();
         UserVO userVO = mapper.map(action, UserVO.class);
-        UserVO targetUser = mapper.map(author, UserVO.class);
         UserVO actionUser = mapper.map(action, UserVO.class);
 
         EcoNews news = EcoNews.builder()
             .id(1L)
             .author(author)
+            .title("test title")
             .usersLikedNews(new HashSet<>(Set.of(action)))
             .build();
         EcoNewsVO ecoNewsVO = mapper.map(news, EcoNewsVO.class);
@@ -947,12 +947,12 @@ class EcoNewsServiceImplTest {
 
         assertFalse(ecoNewsVO.getUsersLikedNews().contains(actionUser));
 
-        verify(userNotificationService, times(1))
-            .removeActionUserFromNotification(targetUser, actionUser, ecoNewsVO.getId(), NotificationType.ECONEWS_LIKE);
-        verify(userNotificationService, times(1)).checkUnreadNotification(author.getId());
+        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
+            eq(null), eq(actionUser), eq(ecoNewsVO.getId()), eq("test title"), eq(false));
         verify(achievementCalculation, times(1))
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))
             .ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, actionUser);
     }
+
 }

@@ -34,6 +34,7 @@ import static greencity.ModelUtils.getNotificationWithSeveralActionUsers;
 import static greencity.ModelUtils.getPageableAdvancedDtoForNotificationDto;
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -418,5 +419,59 @@ class UserNotificationServiceImplTest {
         userNotificationService.createOrUpdateHabitInviteNotification(targetUserVO, actionUserVO, habitId, habitName);
 
         verify(notificationRepo, times(1)).save(any(Notification.class));
+    }
+
+    @Test
+    @DisplayName("createOrUpdateLikeNotification updates existing notification when liking")
+    void testCreateOrUpdateLikeNotification_UpdateExistingNotification_AddLike() {
+        UserVO targetUserVO = mock(UserVO.class);
+        UserVO actionUserVO = mock(UserVO.class);
+        User actionUser = mock(User.class);
+        Long newsId = 1L;
+        String newsTitle = "Test News";
+
+        Notification existingNotification = mock(Notification.class);
+        List<User> actionUsers = new ArrayList<>();
+        when(existingNotification.getActionUsers()).thenReturn(actionUsers);
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(Optional.of(existingNotification));
+        when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
+
+        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle, true);
+
+        assertTrue(actionUsers.contains(actionUser), "Action users should contain the actionUser.");
+
+        verify(existingNotification).setCustomMessage(anyString());
+        verify(existingNotification).setTime(any(LocalDateTime.class));
+        verify(notificationRepo).save(existingNotification);
+        verify(notificationRepo, never()).delete(existingNotification);
+    }
+
+    @Test
+    @DisplayName("createOrUpdateLikeNotification updates existing notification when unliking and deletes it if no users left")
+    void testCreateOrUpdateLikeNotification_UpdateExistingNotification_RemoveLike() {
+        UserVO targetUserVO = mock(UserVO.class);
+        UserVO actionUserVO = mock(UserVO.class);
+        User actionUser = mock(User.class);
+        Long newsId = 1L;
+        String newsTitle = "Test News";
+
+        Notification existingNotification = mock(Notification.class);
+        List<User> actionUsers = new ArrayList<>();
+        actionUsers.add(actionUser);
+        when(existingNotification.getActionUsers()).thenReturn(actionUsers);
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(Optional.of(existingNotification));
+        when(actionUserVO.getId()).thenReturn(1L);
+        when(actionUser.getId()).thenReturn(1L);
+
+        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle, false);
+
+        assertTrue(actionUsers.isEmpty(), "Action users should be empty after unliking.");
+
+        verify(notificationRepo).delete(existingNotification);
+        verify(notificationRepo, never()).save(existingNotification);
     }
 }
