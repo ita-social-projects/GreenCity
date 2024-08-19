@@ -510,35 +510,45 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void like(UserVO userVO, Long id) {
         EcoNewsVO ecoNewsVO = findById(id);
-        if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
-            ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-        }
-        if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
+
+        ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+
+        boolean isLiked = ecoNewsVO.getUsersLikedNews().stream()
+            .anyMatch(u -> u.getId().equals(userVO.getId()));
+
+        boolean isAuthor = ecoNewsVO.getAuthor().getId().equals(userVO.getId());
+
+        if (isLiked) {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-            userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO,
-                id, NotificationType.ECONEWS_LIKE);
-            userNotificationService.checkUnreadNotification(ecoNewsVO.getAuthor().getId());
         } else {
-            if (ecoNewsVO.getAuthor().getId().equals(userVO.getId())) {
+            if (isAuthor) {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
             }
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
-            sendNotification(ecoNewsVO, userVO);
         }
+
+        sendNotification(ecoNewsVO, userVO, !isLiked);
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
     }
 
-    private void sendNotification(EcoNewsVO ecoNewsVO, UserVO actionUser) {
+    private void sendNotification(EcoNewsVO ecoNewsVO, UserVO actionUser, boolean isLike) {
         UserVO targetUser = userService.findById(ecoNewsVO.getAuthor().getId());
-        userNotificationService.createNotification(
-            targetUser, actionUser, NotificationType.ECONEWS_LIKE,
-            ecoNewsVO.getId(), ecoNewsVO.getTitle());
+        userNotificationService.createOrUpdateLikeNotification(
+            targetUser, actionUser, ecoNewsVO.getId(), formatNewsTitle(ecoNewsVO.getTitle()), isLike);
+    }
+
+    private String formatNewsTitle(String newsTitle) {
+        int maxLength = 20;
+        if (newsTitle.length() > maxLength) {
+            return newsTitle.substring(0, maxLength) + "...";
+        }
+        return newsTitle;
     }
 
     /**
