@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -9,38 +8,37 @@ import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
-import greencity.entity.EcoNewsComment;
+import greencity.entity.EcoNews;
 import greencity.entity.Habit;
 import greencity.entity.User;
 import greencity.entity.event.Event;
-import greencity.entity.event.EventComment;
 import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.message.GeneralEmailMessage;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.rating.RatingCalculation;
-import greencity.repository.CommentRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.UserRepo;
+import greencity.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static greencity.constant.ErrorMessage.*;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final HabitRepo habitRepo;
+    private final EventRepo eventRepo;
+    private final EcoNewsRepo ecoNewsRepo;
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
     private final ModelMapper modelMapper;
@@ -54,8 +52,12 @@ public class CommentServiceImpl implements CommentService {
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
                                       AddCommentDtoRequest addCommentDtoRequest, UserVO userVO) {
         User articleAuthor = articleCheckIfExistsAndReturnAuthor(articleType, articleId);
-        // todo check notifications for articleAuthor
-        System.out.println(articleAuthor);
+
+        if(articleAuthor == null) {
+            throw new NotFoundException("Article author not found");
+            // todo: don't send notification if article author equals comment author
+            // todo: send notifications in other cases
+        }
 
         Comment comment = modelMapper.map(addCommentDtoRequest, Comment.class);
         comment.setArticleType(articleType);
@@ -90,12 +92,34 @@ public class CommentServiceImpl implements CommentService {
         return addCommentDtoResponse;
     }
 
+    /**
+     * Method to check correctness of article and define its type.
+     *
+     * @param articleType  {@link ArticleType}.
+     * @param articleId    {@link Long} id of an article.
+     *
+     * @return article author {@link User}.
+     */
     private User articleCheckIfExistsAndReturnAuthor(ArticleType articleType, Long articleId) {
         if(articleType == ArticleType.HABIT) {
-            Habit habit = habitRepo.findById(articleId).orElseThrow(() -> new NotFoundException("Habit not found"));
-            return userRepo.findById(habit.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
+            Habit habit = habitRepo.findById(articleId).orElseThrow(() ->
+                    new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+            return userRepo.findById(habit.getUserId()).orElseThrow(() ->
+                    new NotFoundException(USER_NOT_FOUND_BY_ID + habit.getUserId()));
         }
-        return null;
+        else if(articleType == ArticleType.EVENT) {
+            Event event = eventRepo.findById(articleId).orElseThrow(() ->
+                    new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
+            return userRepo.findById(event.getOrganizer().getId()).orElseThrow(() ->
+                    new NotFoundException(USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+        }
+        else if(articleType == ArticleType.ECO_NEWS) {
+            EcoNews ecoNews = ecoNewsRepo.findById(articleId).orElseThrow(() ->
+                    new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
+            return userRepo.findById(ecoNews.getAuthor().getId()).orElseThrow(() ->
+                    new NotFoundException(USER_NOT_FOUND_BY_ID + ecoNews.getAuthor().getId()));
+        }
+        else return null;
     }
 
 
@@ -116,7 +140,8 @@ public class CommentServiceImpl implements CommentService {
                     .anyMatch(u -> u.getId().equals(userVO.getId())));
         }
 
-        return modelMapper.map(comment, CommentDto.class);
+        return convertToCommentDto(comment, userVO);
+
     }
 
     /**
@@ -133,9 +158,7 @@ public class CommentServiceImpl implements CommentService {
                     .anyMatch(u -> u.getId().equals(userVO.getId()))));
         }
 
-        List<CommentDto> commentDtos = pages.stream()
-                .map(comment -> modelMapper.map(comment, CommentDto.class))
-                .collect(Collectors.toList());
+        List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userVO)).toList();
 
         return new PageableDto<>(
                 commentDtos,
@@ -148,7 +171,7 @@ public class CommentServiceImpl implements CommentService {
     public int countComments(ArticleType type, Long articleId) {
         if(type == ArticleType.HABIT){
             Habit habit = habitRepo.findById(articleId).orElseThrow(() ->
-                    new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + articleId));
+                    new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
             return commentRepo.countNotDeletedCommentsByHabit(habit.getId());
 
         }
@@ -172,7 +195,7 @@ public class CommentServiceImpl implements CommentService {
         if(articleType == ArticleType.HABIT){
             Optional<Habit> habit = habitRepo.findById(articleId);
             if(habit.isEmpty()){
-                throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + articleId);
+                throw new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId);
             }
         }
 
@@ -186,10 +209,7 @@ public class CommentServiceImpl implements CommentService {
                     .anyMatch(u -> u.getId().equals(userVO.getId()))));
         }
 
-        List<CommentDto> commentDtos = convertToCommentDtos(pages, userVO).stream()
-                .map(this::setRepliesToComment)
-                .toList();
-
+        List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userVO)).toList();
 
         return new PageableDto<>(
                 commentDtos,
@@ -198,24 +218,18 @@ public class CommentServiceImpl implements CommentService {
                 pages.getTotalPages());
     }
 
-    private List<CommentDto> convertToCommentDtos(Page<Comment> pages, UserVO user) {
-        return pages.stream()
-                .map(comment -> {
-                    CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
-                    commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
-                            .anyMatch(u -> u.getId().equals(user.getId())));
-                    commentDto.setAuthor(modelMapper.map(user, CommentAuthorDto.class));
-                    commentDto.setLikes(comment.getUsersLiked().size());
-                    commentDto.setReplies(comment.getComments().size());
-                    commentDto.setStatus(comment.getStatus().name());
-                    return commentDto;
-                })
-                .toList();
-    }
-
-    private CommentDto setRepliesToComment(CommentDto comment) {
-        comment.setReplies(commentRepo.countByParentCommentId(comment.getId()));
-        return comment;
+    private CommentDto convertToCommentDto(Comment comment, UserVO user) {
+        CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
+        commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(user.getId())));
+        if (comment.getParentComment() != null) {
+            commentDto.setParentCommentId(comment.getParentComment().getId());
+        }
+        commentDto.setAuthor(modelMapper.map(user, CommentAuthorDto.class));
+        commentDto.setLikes(comment.getUsersLiked().size());
+        commentDto.setReplies(comment.getComments().size());
+        commentDto.setStatus(comment.getStatus().name());
+        return commentDto;
     }
 
     /**
@@ -255,5 +269,48 @@ public class CommentServiceImpl implements CommentService {
                 .isLiked(isLiked)
                 .amountLikes(comment.getUsersLiked().size())
                 .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void update(String commentText, Long id, UserVO userVO) {
+        Comment comment = commentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+
+        if (!userVO.getId().equals(comment.getUser().getId())) {
+            throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
+        }
+
+        comment.setText(commentText);
+        comment.setStatus(CommentStatus.EDITED);
+        commentRepo.save(comment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void delete(Long id, UserVO userVO) {
+        Comment comment = commentRepo
+                .findByIdAndStatusNot(id, CommentStatus.DELETED)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
+
+        if (userVO.getRole() != Role.ROLE_ADMIN && !userVO.getId().equals(comment.getUser().getId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        comment.setStatus(CommentStatus.DELETED);
+        if (comment.getComments() != null) {
+            comment.getComments()
+                    .forEach(c -> c.setStatus(CommentStatus.DELETED));
+        }
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
+
+        commentRepo.save(comment);
     }
 }

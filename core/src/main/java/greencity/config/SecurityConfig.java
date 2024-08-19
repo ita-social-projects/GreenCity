@@ -47,6 +47,7 @@ public class SecurityConfig {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String EVENTS = "/events";
     private static final String FRIENDS = "/friends";
+    private static final String HABITS = "/habits";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -132,6 +133,12 @@ public class SecurityConfig {
                     "/habit/statistic/{habitId}",
                     "/habit/statistic/assign/{habitAssignId}",
                     "/habit/statistic/todayStatisticsForAllHabitItems",
+                    HABITS + "/comments/{id}",
+                    HABITS + "/comments/{parentCommentId}/replies/active",
+                    HABITS + "/{habitId}/comments/count",
+                    HABITS + "/comments/{parentCommentId}/replies/active/count",
+                    //HABITS + "/comments/active",
+                    HABITS + "/comments/{commentId}/likes/count",
                     "/place/about/{id}",
                     "/specification",
                     "/econews",
@@ -268,6 +275,8 @@ public class SecurityConfig {
                     "/habit/assign/{habitAssignId}/enroll/**",
                     "/habit/assign/{habitAssignId}/unenroll/{date}",
                     "/habit/statistic/{habitId}",
+                    HABITS + "/{habitId}/comments",
+                    HABITS + "/comments/like",
                     "/newsSubscriber",
                     "/place/{placeId}/comments",
                     "/place/propose",
@@ -316,6 +325,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     ECONEWS_COMMENTS,
                     "/events/comments/{eventCommentId}",
+                    HABITS + "comments/{id}",
                     "/econews/{econewsId}",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
@@ -378,7 +388,8 @@ public class SecurityConfig {
                     "/comments")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
-                    "/events/comments")
+                    "/events/comments",
+                    HABITS + "/comments")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     "/events/comments/{eventId}")

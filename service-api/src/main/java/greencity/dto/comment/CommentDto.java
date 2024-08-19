@@ -27,6 +27,8 @@ public class CommentDto {
 
     private CommentAuthorDto author;
 
+    private Long parentCommentId;
+
     private String text;
 
     private int replies;

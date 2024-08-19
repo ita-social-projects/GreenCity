@@ -10,7 +10,6 @@ import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
@@ -23,6 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -60,7 +60,6 @@ public class HabitCommentController {
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long habitId,
                                                            @Valid @RequestBody AddCommentDtoRequest request,
                                                            @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        // todo: SECURITY CONFIG
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(commentService.save(ArticleType.HABIT, habitId, request, userVO));
@@ -152,7 +151,7 @@ public class HabitCommentController {
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
                     content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @GetMapping("/comments/replies/active/count/{parentCommentId}")
+    @GetMapping("/comments/{parentCommentId}/replies/active/count")
     public int getCountOfActiveReplies(@PathVariable Long parentCommentId) {
         return commentService.countAllActiveReplies(parentCommentId);
     }
@@ -228,5 +227,56 @@ public class HabitCommentController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(commentService.countLikes(commentId, user));
+    }
+
+    /**
+     * Method to update certain {@link CommentVO}
+     * specified by id.
+     *
+     * @param id          of {@link CommentVO} to
+     *                    update
+     * @param commentText edited text of
+     *                    {@link CommentVO}
+     */
+    @Operation(summary = "Update comment.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PatchMapping("/comments")
+    public void update(@RequestParam Long id,
+                       @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
+                       @Parameter(hidden = true) @CurrentUser UserVO user) {
+        commentService.update(commentText, id, user);
+    }
+
+    /**
+     * Method for deleting {@link CommentVO} by its
+     * id.
+     *
+     * @param id {@link CommentVO} id
+     *                       which will be deleted.
+     * @return id of deleted {@link CommentVO}.
+     */
+    @Operation(summary = "Mark comment as deleted.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @DeleteMapping("comments/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id,
+                                         @Parameter(hidden = true) @CurrentUser UserVO user) {
+        commentService.delete(id, user);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

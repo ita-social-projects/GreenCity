@@ -1,6 +1,5 @@
 package greencity.dto.comment;
 
-import greencity.dto.user.UserVO;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

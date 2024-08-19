@@ -6,7 +6,6 @@ import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import org.springframework.data.domain.Pageable;
@@ -95,4 +94,23 @@ public interface CommentService {
      * @return amountCommentLikesDto dto with id and count likes for comments.
      */
     AmountCommentLikesDto countLikes(Long commentId, UserVO userVO);
+
+    /**
+     * Method to change the existing {@link CommentVO}.
+     *
+     * @param commentText new text of {@link CommentVO}.
+     * @param id          to specify {@link CommentVO} that user wants to
+     *                    change.
+     * @param userVO        current {@link UserVO} that wants to change comment.
+     */
+    void update(String commentText, Long id, UserVO userVO);
+
+    /**
+     * Method for deleting the {@link CommentVO} instance by its id.
+     *
+     * @param id     - {@link CommentVO} instance id which will be
+     *               deleted.
+     * @param userVO current {@link CommentVO} that wants to delete.
+     */
+    void delete(Long id, UserVO userVO);
 }
