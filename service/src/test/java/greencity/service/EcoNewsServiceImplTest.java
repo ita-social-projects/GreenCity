@@ -567,6 +567,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
+        when(fileService.upload(file)).thenReturn("https://google.com/");
         when(modelMapper.map(ecoNews, EcoNewsGenericDto.class)).thenReturn(ecoNewsDto);
         List<TagVO> tags = ModelUtils.getEcoNewsVO().getTags();
         when(tagService.findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS)).thenReturn(tags);
