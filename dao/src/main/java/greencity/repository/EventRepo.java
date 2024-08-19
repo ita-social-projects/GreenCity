@@ -130,25 +130,20 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     Page<Event> searchEvents(Pageable pageable, String searchQuery, String languageCode);
 
     /**
-     * Get all events addresses.
+     * Method returns count of all events where user is attender.
      *
-     * @author Olena Sotnik.
+     * @param attenderId {@link Long} id of current user.
+     * @return {@link Long} count of attended by user events.
      */
-    @Query(value = "SELECT edl.address FROM Event e LEFT JOIN e.dates edl WHERE edl.address IS NOT NULL")
-    Set<Address> findAllEventsAddresses();
+    Long countDistinctByAttendersId(Long attenderId);
 
     /**
-     * Method returns count of all events where user is organizer or attender.
+     * Method returns count of all events where user is organizer.
      *
-     * @param userId {@link Long} id of current user.
-     * @return {@link Long} count of organized or attended by user events.
-     *
-     * @author Olena Sotnik
+     * @param organizerId {@link Long} id of current user.
+     * @return {@link Long} count of organized by user events.
      */
-    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT e.id) FROM events e "
-        + "LEFT JOIN events_attenders att ON e.id = att.event_id "
-        + "WHERE att.user_id = :userId OR e.organizer_id = :userId")
-    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
+    Long countDistinctByOrganizerId(Long organizerId);
 
     /**
      * Retrieves a paginated list of Long in order based on various filter criteria

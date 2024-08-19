@@ -13,7 +13,6 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
@@ -1375,7 +1374,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFavoriteEventsByUserTest() {
+    void getAllFavoriteEventsByUserIdTest() {
         User user = ModelUtils.getUser();
         Pageable pageable = PageRequest.of(0, 20);
         List<Event> events = List.of(ModelUtils.getEvent());
@@ -1392,7 +1391,7 @@ class EventServiceImplTest {
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
-            eventService.getAllFavoriteEventsByUser(pageable, user.getEmail());
+            eventService.getAllFavoriteEventsByUserId(pageable, 1L);
         EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
         assertEquals(expected, actual);
         assertTrue(actual.isFavorite());
@@ -1405,32 +1404,6 @@ class EventServiceImplTest {
             }.getType());
         verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
-    }
-
-    @Test
-    void getAllEventAddressesTest() {
-        AddressDto expectedAddressDto = ModelUtils.getAddressDto();
-        Set<AddressDto> expectedAddresses = Set.of(expectedAddressDto);
-        Address address = ModelUtils.getAddress();
-
-        when(eventRepo.findAllEventsAddresses()).thenReturn(Set.of(address));
-        when(modelMapper.map(address, AddressDto.class)).thenReturn(expectedAddressDto);
-
-        Set<AddressDto> actualAddresses = eventService.getAllEventsAddresses();
-
-        assertEquals(expectedAddresses, actualAddresses);
-        assertTrue(actualAddresses.contains(expectedAddressDto));
-
-        verify(eventRepo).findAllEventsAddresses();
-        verify(modelMapper).map(address, AddressDto.class);
-    }
-
-    @Test
-    void getAmountOfOrganizedAndAttendedNewsByUserIdTest() {
-        when(eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(1L)).thenReturn(100L);
-        Long actual = eventService.getAmountOfOrganizedAndAttendedEventsByUserId(1L);
-        assertEquals(100L, actual);
-        verify(eventRepo).getAmountOfOrganizedAndAttendedEventsByUserId(anyLong());
     }
 
     @Test

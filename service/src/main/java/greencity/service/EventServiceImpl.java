@@ -242,8 +242,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal,
-        FilterEventDto filterEventDto,
-        String title) {
+        FilterEventDto filterEventDto, String title) {
         Long userId = null;
         if (principal != null) {
             userId = restClient.findIdByEmail(principal.getName());
@@ -310,8 +309,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getAllUserEvents(
-        Pageable page, String email, String userLatitude, String userLongitude, EventType eventType) {
+    public PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String userLatitude,
+        String userLongitude, EventType eventType) {
         User participant = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, participant, userLatitude, userLongitude);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
@@ -319,17 +318,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable page, String email) {
-        User user = modelMapper.map(restClient.findByEmail(email), User.class);
+    public PageableAdvancedDto<EventDto> getAllFavoriteEventsByUserId(Pageable page, Long userId) {
+        User user = modelMapper.map(restClient.findById(userId), User.class);
         Page<Event> events = eventRepo.findAllFavoritesByUser(user.getId(), page);
         return buildPageableAdvancedDto(events, user.getId());
-    }
-
-    @Override
-    public Set<AddressDto> getAllEventsAddresses() {
-        return eventRepo.findAllEventsAddresses().stream()
-            .map(eventAddress -> modelMapper.map(eventAddress, AddressDto.class))
-            .collect(Collectors.toSet());
     }
 
     private List<Event> getEventsForCurrentPage(Pageable page, List<Event> allEvents) {
@@ -349,8 +341,9 @@ public class EventServiceImpl implements EventService {
                     : getOfflineUserEventsSortedByDate(attender);
             }
         }
-        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream().sorted(getComparatorByDates())
-            .collect(Collectors.toList());
+        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
+            .sorted(getComparatorByDates())
+            .toList();
     }
 
     private List<Event> getOnlineUserEventsSortedByDate(User attender) {
@@ -515,8 +508,6 @@ public class EventServiceImpl implements EventService {
 
     /**
      * {@inheritDoc}
-     *
-     * @return EventDto
      */
     @Override
     @Transactional
@@ -873,9 +864,20 @@ public class EventServiceImpl implements EventService {
             page.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId) {
-        return eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(userId);
+    public Long getCountOfAttendedEventsByUserId(Long userId) {
+        return eventRepo.countDistinctByAttendersId(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getCountOfOrganizedEventsByUserId(Long userId) {
+        return eventRepo.countDistinctByOrganizerId(userId);
     }
 
     private Boolean getBooleanIfAllMatchOrElseNull(List<Boolean> list) {

@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventPreviewDto;
@@ -159,19 +158,11 @@ public interface EventService {
      * Method for getting all user's favorite events.
      *
      * @param pageable {@link Pageable}
-     * @param email    {@link String}
+     * @param userId   {@link Long}
      * @return a page of {@link EventDto} instance.
      * @author Midianyi Yurii.
      */
-    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, String email);
-
-    /**
-     * Method for getting all events' addresses.
-     *
-     * @return set of {@link AddressDto} instances.
-     * @author Olena Sotnik.
-     */
-    Set<AddressDto> getAllEventsAddresses();
+    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUserId(Pageable pageable, Long userId);
 
     /**
      * Method for getting Events by searchQuery.
@@ -197,12 +188,18 @@ public interface EventService {
     PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
-     * Method for getting amount of events organized and attended by user id.
+     * Method for getting amount of attended events by user id.
      *
      * @param userId {@link Long} user id.
-     * @return {@link Long} amount of organized and attended events by user id.
-     *
-     * @author Olena Sotnik
+     * @return {@link Long} amount of attended events by user id.
      */
-    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
+    Long getCountOfAttendedEventsByUserId(Long userId);
+
+    /**
+     * Method for getting amount of organized events by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return {@link Long} amount of organized events by user id.
+     */
+    Long getCountOfOrganizedEventsByUserId(Long userId);
 }

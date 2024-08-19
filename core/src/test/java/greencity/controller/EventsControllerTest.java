@@ -505,7 +505,7 @@ class EventsControllerTest {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllFavoriteEvents").principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService).getAllFavoriteEventsByUser(pageable, principal.getName());
+        verify(eventService).getAllFavoriteEventsByUserId(pageable, 1L);
     }
 
     @Test
@@ -681,24 +681,5 @@ class EventsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, EventDto.class);
-    }
-
-    @Test
-    @SneakyThrows
-    void getAllEventsAddressesTest() {
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses"))
-            .andExpect(status().isOk());
-
-        verify(eventService).getAllEventsAddresses();
-    }
-
-    @Test
-    @SneakyThrows
-    void findAmountOfOrganizedAndAttendedEvents() {
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/userEvents/count")
-            .param("userId", "1"))
-            .andExpect(status().isOk());
-
-        verify(eventService).getAmountOfOrganizedAndAttendedEventsByUserId(1L);
     }
 }
