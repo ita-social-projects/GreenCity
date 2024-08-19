@@ -26,16 +26,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
-
 import static greencity.constant.ErrorMessage.*;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
-
     private final HabitRepo habitRepo;
     private final EventRepo eventRepo;
     private final EcoNewsRepo ecoNewsRepo;
@@ -50,10 +47,10 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
-                                      AddCommentDtoRequest addCommentDtoRequest, UserVO userVO) {
+        AddCommentDtoRequest addCommentDtoRequest, UserVO userVO) {
         User articleAuthor = articleCheckIfExistsAndReturnAuthor(articleType, articleId);
 
-        if(articleAuthor == null) {
+        if (articleAuthor == null) {
             throw new NotFoundException("Article author not found");
             // todo: don't send notification if article author equals comment author
             // todo: send notifications in other cases
@@ -65,10 +62,10 @@ public class CommentServiceImpl implements CommentService {
         comment.setUser(modelMapper.map(userVO, User.class));
         comment.setStatus(CommentStatus.ORIGINAL);
 
-        if(addCommentDtoRequest.getParentCommentId() != null && addCommentDtoRequest.getParentCommentId() > 0){
+        if (addCommentDtoRequest.getParentCommentId() != null && addCommentDtoRequest.getParentCommentId() > 0) {
             Long parentCommentId = addCommentDtoRequest.getParentCommentId();
             Comment parentComment = commentRepo.findById(parentCommentId)
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId));
 
             if (parentComment.getParentComment() != null) {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
@@ -76,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
 
             if (!parentComment.getArticleId().equals(articleId)) {
                 String message = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
-                        + " in " + articleType.getName() + " with id: " + articleId;
+                    + " in " + articleType.getName() + " with id: " + articleId;
                 throw new NotFoundException(message);
             }
             comment.setParentComment(parentComment);
@@ -84,10 +81,10 @@ public class CommentServiceImpl implements CommentService {
 
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
         AddCommentDtoResponse addCommentDtoResponse = modelMapper.map(
-                commentRepo.save(comment), AddCommentDtoResponse.class);
+            commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
         return addCommentDtoResponse;
     }
@@ -95,33 +92,31 @@ public class CommentServiceImpl implements CommentService {
     /**
      * Method to check correctness of article and define its type.
      *
-     * @param articleType  {@link ArticleType}.
-     * @param articleId    {@link Long} id of an article.
+     * @param articleType {@link ArticleType}.
+     * @param articleId   {@link Long} id of an article.
      *
      * @return article author {@link User}.
      */
     private User articleCheckIfExistsAndReturnAuthor(ArticleType articleType, Long articleId) {
-        if(articleType == ArticleType.HABIT) {
-            Habit habit = habitRepo.findById(articleId).orElseThrow(() ->
-                    new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-            return userRepo.findById(habit.getUserId()).orElseThrow(() ->
-                    new NotFoundException(USER_NOT_FOUND_BY_ID + habit.getUserId()));
+        if (articleType == ArticleType.HABIT) {
+            Habit habit = habitRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+            return userRepo.findById(habit.getUserId())
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + habit.getUserId()));
+        } else if (articleType == ArticleType.EVENT) {
+            Event event = eventRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
+            return userRepo.findById(event.getOrganizer().getId())
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+        } else if (articleType == ArticleType.ECO_NEWS) {
+            EcoNews ecoNews = ecoNewsRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
+            return userRepo.findById(ecoNews.getAuthor().getId())
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + ecoNews.getAuthor().getId()));
+        } else {
+            return null;
         }
-        else if(articleType == ArticleType.EVENT) {
-            Event event = eventRepo.findById(articleId).orElseThrow(() ->
-                    new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
-            return userRepo.findById(event.getOrganizer().getId()).orElseThrow(() ->
-                    new NotFoundException(USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
-        }
-        else if(articleType == ArticleType.ECO_NEWS) {
-            EcoNews ecoNews = ecoNewsRepo.findById(articleId).orElseThrow(() ->
-                    new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
-            return userRepo.findById(ecoNews.getAuthor().getId()).orElseThrow(() ->
-                    new NotFoundException(USER_NOT_FOUND_BY_ID + ecoNews.getAuthor().getId()));
-        }
-        else return null;
     }
-
 
     /**
      * {@inheritDoc}
@@ -129,19 +124,18 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto findCommentById(ArticleType type, Long id, UserVO userVO) {
         Comment comment = commentRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
 
-        if(comment.getArticleType() != type) {
+        if (comment.getArticleType() != type) {
             throw new BadRequestException("Comment with id: " + id + " doesn't belongs to " + type.getLink());
         }
 
         if (userVO != null) {
             comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                    .anyMatch(u -> u.getId().equals(userVO.getId())));
+                .anyMatch(u -> u.getId().equals(userVO.getId())));
         }
 
         return convertToCommentDto(comment, userVO);
-
     }
 
     /**
@@ -150,30 +144,29 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public PageableDto<CommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<Comment> pages =
-                commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
-                        CommentStatus.DELETED);
+            commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
+                CommentStatus.DELETED);
 
         if (userVO != null) {
             pages.forEach(ec -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
-                    .anyMatch(u -> u.getId().equals(userVO.getId()))));
+                .anyMatch(u -> u.getId().equals(userVO.getId()))));
         }
 
         List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userVO)).toList();
 
         return new PageableDto<>(
-                commentDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber(),
-                pages.getTotalPages());
+            commentDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
     }
 
     @Override
     public int countComments(ArticleType type, Long articleId) {
-        if(type == ArticleType.HABIT){
-            Habit habit = habitRepo.findById(articleId).orElseThrow(() ->
-                    new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+        if (type == ArticleType.HABIT) {
+            Habit habit = habitRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
             return commentRepo.countNotDeletedCommentsByHabit(habit.getId());
-
         }
         return 0;
     }
@@ -191,37 +184,37 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId,
-                                                        ArticleType articleType) {
-        if(articleType == ArticleType.HABIT){
+        ArticleType articleType) {
+        if (articleType == ArticleType.HABIT) {
             Optional<Habit> habit = habitRepo.findById(articleId);
-            if(habit.isEmpty()){
+            if (habit.isEmpty()) {
                 throw new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId);
             }
         }
 
         Page<Comment> pages =
-                commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc
-                        (pageable, articleId, articleType, CommentStatus.DELETED);
+            commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
+                pageable, articleId, articleType, CommentStatus.DELETED);
 
         if (userVO != null) {
             pages.forEach(comment -> comment.setCurrentUserLiked(comment.getUsersLiked()
-                    .stream()
-                    .anyMatch(u -> u.getId().equals(userVO.getId()))));
+                .stream()
+                .anyMatch(u -> u.getId().equals(userVO.getId()))));
         }
 
         List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userVO)).toList();
 
         return new PageableDto<>(
-                commentDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber(),
-                pages.getTotalPages());
+            commentDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
     }
 
     private CommentDto convertToCommentDto(Comment comment, UserVO user) {
         CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
         commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
-                .anyMatch(u -> u.getId().equals(user.getId())));
+            .anyMatch(u -> u.getId().equals(user.getId())));
         if (comment.getParentComment() != null) {
             commentDto.setParentCommentId(comment.getParentComment().getId());
         }
@@ -238,16 +231,16 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void like(Long commentId, UserVO userVO) {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             achievementCalculation.calculateAchievement(userVO,
-                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
-                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
         }
         commentRepo.save(comment);
@@ -259,16 +252,16 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public AmountCommentLikesDto countLikes(Long commentId, UserVO userVO) {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+            () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         boolean isLiked =
-                userVO != null && comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+            userVO != null && comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
         return AmountCommentLikesDto.builder()
-                .id(comment.getId())
-                .userId(userVO == null ? 0 : userVO.getId())
-                .isLiked(isLiked)
-                .amountLikes(comment.getUsersLiked().size())
-                .build();
+            .id(comment.getId())
+            .userId(userVO == null ? 0 : userVO.getId())
+            .isLiked(isLiked)
+            .amountLikes(comment.getUsersLiked().size())
+            .build();
     }
 
     /**
@@ -278,7 +271,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void update(String commentText, Long id, UserVO userVO) {
         Comment comment = commentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
@@ -296,8 +289,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void delete(Long id, UserVO userVO) {
         Comment comment = commentRepo
-                .findByIdAndStatusNot(id, CommentStatus.DELETED)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
+            .findByIdAndStatusNot(id, CommentStatus.DELETED)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
 
         if (userVO.getRole() != Role.ROLE_ADMIN && !userVO.getId().equals(comment.getUser().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -305,11 +298,11 @@ public class CommentServiceImpl implements CommentService {
         comment.setStatus(CommentStatus.DELETED);
         if (comment.getComments() != null) {
             comment.getComments()
-                    .forEach(c -> c.setStatus(CommentStatus.DELETED));
+                .forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
         commentRepo.save(comment);
     }

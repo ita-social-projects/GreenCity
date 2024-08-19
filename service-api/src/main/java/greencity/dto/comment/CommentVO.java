@@ -1,13 +1,10 @@
 package greencity.dto.comment;
 
-import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,10 +34,10 @@ public class CommentVO {
     @NotEmpty
     private LocalDateTime modifiedDate;
 
-    private EventCommentVO parentComment;
+    private CommentVO parentComment;
 
     @Builder.Default
-    private List<EventCommentVO> comments = new ArrayList<>();
+    private List<CommentVO> comments = new ArrayList<>();
 
     private UserVO user;
 

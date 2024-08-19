@@ -7,10 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import java.util.Optional;
 
-public interface CommentRepo  extends JpaRepository<Comment, Long> {
+public interface CommentRepo extends JpaRepository<Comment, Long> {
     /**
      * Method returns all {@link Comment} not deleted replies to the comment by
      * page.
@@ -19,20 +18,21 @@ public interface CommentRepo  extends JpaRepository<Comment, Long> {
      * @param parentCommentId id of {@link Comment} parent comment
      * @return all replies to comment, specified by parentCommentId and page.
      */
-    Page<Comment> findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable, Long parentCommentId, CommentStatus commentStatus);
+    Page<Comment> findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable, Long parentCommentId,
+        CommentStatus commentStatus);
 
     /**
      * The method returns the count of not deleted comments, specified by.
      *
      * @param habitId {@link Long} - id of habit.
      *
-     * @return count of not deleted comments, specified by {@link greencity.entity.Habit}
+     * @return count of not deleted comments, specified by
+     *         {@link greencity.entity.Habit}
      */
     @Query(value = "select count(c.id) from comments c"
-            + " join habits h on h.id = c.article_id"
-            + " where h.id = :habitId and c.status <>'DELETED'", nativeQuery = true)
+        + " join habits h on h.id = c.article_id"
+        + " where h.id = :habitId and c.status <>'DELETED'", nativeQuery = true)
     int countNotDeletedCommentsByHabit(Long habitId);
-
 
     /**
      * The method returns not deleted comment {@link Comment}, specified by id.
@@ -54,13 +54,14 @@ public interface CommentRepo  extends JpaRepository<Comment, Long> {
     /**
      * Method returns all {@link Comment} by page.
      *
-     * @param pageable page of news.
-     * @param articleId  id of article for which we search comments.
-     * @param articleType  type {@link ArticleType} of article for which we search comments.
+     * @param pageable    page of news.
+     * @param articleId   id of article for which we search comments.
+     * @param articleType type {@link ArticleType} of article for which we search
+     *                    comments.
      * @return all active {@link Comment} by page.
      */
     Page<Comment> findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
-            Pageable pageable, Long articleId, ArticleType articleType, CommentStatus commentStatus);
+        Pageable pageable, Long articleId, ArticleType articleType, CommentStatus commentStatus);
 
     /**
      * Method returns count of replies to comment, specified by parentCommentId.

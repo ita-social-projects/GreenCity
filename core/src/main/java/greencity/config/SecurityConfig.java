@@ -137,7 +137,7 @@ public class SecurityConfig {
                     HABITS + "/comments/{parentCommentId}/replies/active",
                     HABITS + "/{habitId}/comments/count",
                     HABITS + "/comments/{parentCommentId}/replies/active/count",
-                    //HABITS + "/comments/active",
+                    // HABITS + "/comments/active",
                     HABITS + "/comments/{commentId}/likes/count",
                     "/place/about/{id}",
                     "/specification",
