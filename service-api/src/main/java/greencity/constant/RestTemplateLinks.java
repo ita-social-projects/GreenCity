@@ -18,13 +18,11 @@ public class RestTemplateLinks {
     public static final String SEND_REPORT = "/email/sendReport";
     public static final String CHANGE_PLACE_STATUS = "/email/changePlaceStatus";
     public static final String SEND_HABIT_NOTIFICATION = "/email/sendHabitNotification";
-    public static final String SEND_EVENT_CREATION_NOTIFICATION = "/email/sendEventNotification";
     public static final String USER = "/user";
     public static final String USER_FIND_ALL = "user/findAll";
     public static final String FRIENDS = "/friends";
     public static final String USER_FIND_NOT_DEACTIVATED_BY_EMAIL = "/user/findNotDeactivatedByEmail";
     public static final String USER_FIND_ID_BY_EMAIL = "/user/findIdByEmail";
-    public static final String UPDATE_USER_LAST_ACTIVITY_TIME = "/updateUserLastActivityTime/";
     public static final String USER_DEACTIVATE = "user/deactivate";
     public static final String USER_ACTIVATE = "user/activate";
     public static final String OWN_SECURITY_REGISTER = "ownSecurity/register";
@@ -38,6 +36,7 @@ public class RestTemplateLinks {
     public static final String ADD_EVENT_COMMENT = "/email/addEventComment";
     public static final String SEND_GENERAL_EMAIL_NOTIFICATION = "/email/general/notification";
     public static final String SEND_HABIT_ASSIGN_NOTIFICATION = "/email/habitAssign/notification";
+    public static final String SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION = "/email/taggedUserInComment/notification";
 
     private RestTemplateLinks() {
     }

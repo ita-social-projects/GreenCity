@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/management/places")
 public class ManagementPlacesController {
     private final PlaceService placeService;
@@ -50,7 +50,7 @@ public class ManagementPlacesController {
      * @return View template path {@link String}.
      * @author Olena Petryshak
      */
-    @GetMapping("")
+    @GetMapping
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
         @Parameter(hidden = true) Pageable pageable) {
         PageableDto<AdminPlaceDto> allPlaces =
@@ -58,8 +58,9 @@ public class ManagementPlacesController {
                 : placeService.searchBy(pageable, query);
         model.addAttribute("pageable", allPlaces);
         model.addAttribute("categoryList", categoryService.findAllCategoryDto());
-        List<String> discountSpecifications = specificationService.findAllSpecificationDto().stream().map(
-            SpecificationNameDto::getName).collect(Collectors.toList());
+        List<String> discountSpecifications = specificationService.findAllSpecificationDto().stream()
+            .map(SpecificationNameDto::getName)
+            .collect(Collectors.toList());
         model.addAttribute("discountSpecifications", discountSpecifications);
         return "core/management_places";
     }
@@ -129,7 +130,6 @@ public class ManagementPlacesController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         placeService.bulkDelete(listId);
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(listId);
+        return ResponseEntity.status(HttpStatus.OK).body(listId);
     }
 }

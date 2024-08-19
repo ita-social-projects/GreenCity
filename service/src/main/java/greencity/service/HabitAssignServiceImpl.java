@@ -77,8 +77,6 @@ import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -92,7 +90,6 @@ import org.springframework.util.CollectionUtils;
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class HabitAssignServiceImpl implements HabitAssignService {
-    private static final Logger log = LoggerFactory.getLogger(HabitAssignServiceImpl.class);
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
     private final UserRepo userRepo;
@@ -110,6 +107,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final UserService userService;
     private final RatingCalculation ratingCalculation;
     private final NotificationService notificationService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
@@ -237,7 +235,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 CustomShoppingListItem customShoppingListItem = modelMapper.map(item, CustomShoppingListItem.class);
                 List<CustomShoppingListItem> duplicates = user.getCustomShoppingListItems().stream()
                     .filter(userItem -> userItem.getText().equals(customShoppingListItem.getText()))
-                    .collect(Collectors.toList());
+                    .toList();
                 if (duplicates.isEmpty()) {
                     customShoppingListItem.setUser(user);
                     customShoppingListItem.setHabit(habit);
@@ -258,7 +256,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<User> usersWhoShouldBeFriendList = habitAssignCustomPropertiesDto.getFriendsIdsList().stream()
             .map(id -> userRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id: " + id + " doesn't exist")))
-            .collect(Collectors.toList());
+            .toList();
 
         for (User friendOfUser : usersWhoShouldBeFriendList) {
             if (!userRepo.isFriend(userId, friendOfUser.getId())) {
@@ -420,7 +418,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method builds {@link HabitAssignDto} with one habit translation.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param language    code of {@link Language}.
+     * @param language    code of language.
      * @return {@link HabitAssign} instance.
      */
     private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language) {
@@ -1027,18 +1025,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public void addDefaultHabit(UserVO user, String language) {
-        if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
-            UserVO userVO = modelMapper.map(user, UserVO.class);
-            assignDefaultHabitForUser(1L, userVO);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
     public void deleteHabitAssign(Long habitAssignId, Long userId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
@@ -1195,7 +1181,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         if (listToSaveNames.size() != relatedShoppingListItems.size()) {
             List<String> relatedShoppingListItemNames = relatedShoppingListItems.stream()
                 .map(x -> getShoppingItemNameByLanguageCode(x, language))
-                .collect(Collectors.toList());
+                .toList();
 
             listToSaveNames.removeAll(relatedShoppingListItemNames);
 
@@ -1298,7 +1284,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<UserShoppingListItem> currentList) {
         List<Long> updateIds =
             listToUpdate.stream().map(UserShoppingListItemResponseDto::getId).collect(Collectors.toList());
-        List<Long> currentIds = currentList.stream().map(UserShoppingListItem::getId).collect(Collectors.toList());
+        List<Long> currentIds = currentList.stream().map(UserShoppingListItem::getId).toList();
 
         updateIds.removeAll(currentIds);
 
@@ -1454,7 +1440,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<CustomShoppingListItem> currentList) {
         List<Long> updateIds =
             listToUpdate.stream().map(CustomShoppingListItemResponseDto::getId).collect(Collectors.toList());
-        List<Long> currentIds = currentList.stream().map(CustomShoppingListItem::getId).collect(Collectors.toList());
+        List<Long> currentIds = currentList.stream().map(CustomShoppingListItem::getId).toList();
 
         updateIds.removeAll(currentIds);
 
@@ -1499,52 +1485,80 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional
-    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId,
+    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
         Locale locale) {
-        if (!userRepo.isFriend(userVO.getId(), friendId)) {
-            throw new UserHasNoFriendWithIdException(
-                ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
-        }
-        User friend = userRepo.findById(friendId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId));
-        UserVO friendVO = modelMapper.map(friend, UserVO.class);
-        checkStatusInProgressExists(habitId, friendVO);
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        friendsIds.forEach(friendId -> {
+            checkIfUserIsAFriend(userVO.getId(), friendId);
+            User friend = getUserById(friendId);
+            UserVO friendVO = mapToUserVO(friend);
+            checkStatusInProgressExists(habitId, friendVO);
+            Habit habit = getHabitById(habitId);
+            validateHabitForAssign(habitId, friend);
 
-        validateHabitForAssign(habitId, friend);
-        HabitAssign habitAssign =
-            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
-
-        if (habitAssign != null) {
-            habitAssign.setStatus(HabitAssignStatus.REQUESTED);
-            habitAssign.setCreateDate(ZonedDateTime.now());
-            habitAssignRepo.save(habitAssign);
-            notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
-                .senderName(userVO.getName())
-                .receiverName(friendVO.getName())
-                .receiverEmail(friendVO.getEmail())
-                .habitAssignId(habitAssign.getId())
-                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
-                .language(locale.getLanguage())
-                .build());
-        } else {
-            List<Long> allShoppingListItemId =
-                shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
-            habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
-            notificationService.sendHabitAssignEmailNotification(HabitAssignNotificationMessage.builder()
-                .senderName(userVO.getName())
-                .receiverName(friendVO.getName())
-                .receiverEmail(friendVO.getEmail())
-                .habitAssignId(habitAssign.getId())
-                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
-                .language(locale.getLanguage())
-                .build());
-            if (!allShoppingListItemId.isEmpty()) {
-                List<ShoppingListItem> shoppingList =
-                    shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
-                saveUserShoppingListItems(shoppingList, habitAssign);
+            HabitAssign habitAssign = getHabitAssignById(habitId, friend);
+            if (habitAssign != null) {
+                updateHabitAssign(habitAssign);
+            } else {
+                habitAssign = buildHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
+                assignShoppingListToUser(habitId, habitAssign);
             }
+
+            String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
+            userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
+
+            sendHabitAssignNotificationToFriend(userVO, friendVO, habitAssign, locale);
+        });
+    }
+
+    private void checkIfUserIsAFriend(Long userId, Long friendId) {
+        if (!userRepo.isFriend(userId, friendId)) {
+            throw new UserHasNoFriendWithIdException(ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
+        }
+    }
+
+    private User getUserById(Long userId) {
+        return userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+    }
+
+    private UserVO mapToUserVO(User user) {
+        return modelMapper.map(user, UserVO.class);
+    }
+
+    private Habit getHabitById(Long habitId) {
+        return habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+    }
+
+    private HabitAssign getHabitAssignById(Long habitId, User friend) {
+        return habitAssignRepo
+            .findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
+    }
+
+    private void updateHabitAssign(HabitAssign habitAssign) {
+        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+        habitAssign.setCreateDate(ZonedDateTime.now());
+        habitAssignRepo.save(habitAssign);
+    }
+
+    private void sendHabitAssignNotificationToFriend(UserVO sender, UserVO receiver, HabitAssign habitAssign,
+        Locale locale) {
+        notificationService.sendHabitAssignEmailNotification(
+            HabitAssignNotificationMessage.builder()
+                .senderName(sender.getName())
+                .receiverName(receiver.getName())
+                .receiverEmail(receiver.getEmail())
+                .habitAssignId(habitAssign.getId())
+                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
+                .language(locale.getLanguage())
+                .build());
+    }
+
+    private void assignShoppingListToUser(Long habitId, HabitAssign habitAssign) {
+        List<Long> allShoppingListItemId = shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
+        if (!allShoppingListItemId.isEmpty()) {
+            List<ShoppingListItem> shoppingList = shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
+            saveUserShoppingListItems(shoppingList, habitAssign);
         }
     }
 

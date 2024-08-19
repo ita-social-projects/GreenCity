@@ -64,11 +64,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -255,11 +250,13 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void getAllByTagsAndLanguageCode() {
+    void getAllByTagsAndLanguageCodeWithoutExcluded() {
         Pageable pageable = PageRequest.of(0, 2);
         String tag = "ECO_NEWS";
         List<String> tags = Collections.singletonList(tag);
         List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
+        boolean excludeAssigned = false;
+        Long userId = 1L;
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         HabitDto habitDto = ModelUtils.getHabitDto();
         Page<HabitTranslation> habitTranslationPage =
@@ -271,7 +268,32 @@ class HabitServiceImplTest {
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, "en"))
             .thenReturn(habitTranslationPage);
-        assertEquals(pageableDto, habitService.getAllByTagsAndLanguageCode(pageable, tags, "en"));
+        assertEquals(pageableDto,
+            habitService.getAllByTagsAndLanguageCode(pageable, tags, "en", excludeAssigned, userId));
+    }
+
+    @Test
+    void getAllByTagsAndLanguageCodeWithExcluded() {
+        Pageable pageable = PageRequest.of(0, 2);
+        String tag = "ECO_NEWS";
+        List<String> tags = Collections.singletonList(tag);
+        List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
+        boolean excludeAssigned = true;
+        Long userId = 1L;
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        HabitDto habitDto = ModelUtils.getHabitDto();
+        Page<HabitTranslation> habitTranslationPage =
+            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
+        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
+            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitTranslationRepo.findUnassignedHabitTranslationsByLanguageAndTags(pageable, lowerCaseTags, "en",
+            userId))
+            .thenReturn(habitTranslationPage);
+        assertEquals(pageableDto,
+            habitService.getAllByTagsAndLanguageCode(pageable, tags, "en", excludeAssigned, userId));
     }
 
     private static Stream<Arguments> getAllByDifferentParametersArguments() {

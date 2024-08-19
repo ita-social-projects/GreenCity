@@ -12,7 +12,6 @@ import greencity.entity.EcoNewsComment;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import greencity.enums.CommentStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

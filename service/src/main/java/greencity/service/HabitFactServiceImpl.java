@@ -330,7 +330,7 @@ public class HabitFactServiceImpl implements HabitFactService {
                     .findFirst();
                 content.ifPresent(habitFactTranslationUpdateDto -> habitFactTranslation
                     .setContent(habitFactTranslationUpdateDto.getContent()));
-                habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
+                habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().getFirst().getFactOfDayStatus());
             });
     }
 }

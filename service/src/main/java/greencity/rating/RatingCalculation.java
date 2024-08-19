@@ -7,16 +7,16 @@ import greencity.entity.User;
 import greencity.enums.RatingCalculationEnum;
 import greencity.service.RatingStatisticsService;
 import greencity.service.UserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RatingCalculation {
-    private RatingStatisticsService ratingStatisticsService;
+    private final RatingStatisticsService ratingStatisticsService;
     private final ModelMapper modelMapper;
-    private UserService userService;
+    private final UserService userService;
 
     /**
      * Method that calculates the user rating.

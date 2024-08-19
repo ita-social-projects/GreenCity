@@ -5,7 +5,6 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
-import greencity.dto.user.BulkSaveUserShoppingListItemDto;
 import greencity.dto.user.UserVO;
 import greencity.service.CustomShoppingListItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,7 +58,7 @@ public class CustomShoppingListItemController {
     /**
      * Method saves custom shopping list items for user.
      *
-     * @param dto    {@link BulkSaveUserShoppingListItemDto} with list objects to
+     * @param dto    {@link BulkSaveCustomShoppingListItemDto} with list objects to
      *               save
      * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}

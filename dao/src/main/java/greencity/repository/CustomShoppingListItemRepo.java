@@ -47,16 +47,6 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
         @Param("userId") Long userId, @Param("habitId") Long habitId);
 
     /**
-     * Method returns particular selected custom shopping list items for user.
-     *
-     * @param userId id of the {@link User} current user
-     * @return {@link CustomShoppingListItem}
-     */
-    @Query("SELECT cg FROM CustomShoppingListItem cg WHERE"
-        + " cg.user.id=:userId")
-    CustomShoppingListItem findByUserId(@Param("userId") Long userId);
-
-    /**
      * Method find all custom shopping list items by user.
      *
      * @param userId  {@link CustomShoppingListItem} id

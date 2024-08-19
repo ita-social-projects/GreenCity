@@ -92,12 +92,13 @@ class HabitControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Locale locale = Locale.of("en");
         List<String> tags = Arrays.asList("News", "Education");
+        boolean excludeAssigned = false;
 
         mockMvc.perform(get(habitLink + "/tags/search?page=" + pageNumber +
-            "&lang=" + locale.getLanguage() + "&tags=News,Education")
+            "&lang=" + locale.getLanguage() + "&tags=News,Education" + "&excludeAssigned=" + excludeAssigned)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage());
+        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned, null);
     }
 
     @Test

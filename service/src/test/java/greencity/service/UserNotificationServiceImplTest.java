@@ -2,11 +2,13 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,8 +18,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static greencity.ModelUtils.TEST_USER;
 import static greencity.ModelUtils.TEST_USER_VO;
 import static greencity.ModelUtils.getActionDto;
@@ -29,10 +35,14 @@ import static greencity.ModelUtils.getPageableAdvancedDtoForNotificationDto;
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class UserNotificationServiceImplTest {
@@ -181,20 +191,20 @@ class UserNotificationServiceImplTest {
     void createNotificationForAttendersTest() {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
-            NotificationType.EVENT_CREATED, 1L);
+                NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(messagingTemplate,times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
+        verify(messagingTemplate, times(1))
+                .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
     }
 
     @Test
     void createNotificationForAttendersWithTitleTest() {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
-            NotificationType.EVENT_CREATED, 1L, "Title");
+                NotificationType.EVENT_CREATED, 1L, "Title");
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
+                .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
     }
 
     @Test
@@ -203,52 +213,52 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO, NotificationType.EVENT_CREATED);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
+                .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
     }
 
     @Test
     void createNotificationWithCustomMessageTest() {
         when(notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
-                NotificationType.EVENT_CREATED, 1L)).thenReturn(Optional.empty());
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
+                        NotificationType.EVENT_CREATED, 1L)).thenReturn(Optional.empty());
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO,
-            NotificationType.EVENT_CREATED, 1L, "Message");
+                NotificationType.EVENT_CREATED, 1L, "Message");
 
         verify(notificationRepo)
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
-                NotificationType.EVENT_CREATED, 1L);
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
+                        NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
+                .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
     }
 
     @Test
     void createNotificationWithSecondMessageTest() {
         when(notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
-                NotificationType.EVENT_CREATED, 1L)).thenReturn(Optional.empty());
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
+                        NotificationType.EVENT_CREATED, 1L)).thenReturn(Optional.empty());
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO,
-            NotificationType.EVENT_CREATED, 1L, "Message", 1L,
-            "Second Message");
+                NotificationType.EVENT_CREATED, 1L, "Message", 1L,
+                "Second Message");
 
         verify(notificationRepo)
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
-                NotificationType.EVENT_CREATED, 1L);
+                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
+                        NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
+                .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
     }
 
     @Test
     void createNewNotificationTest() {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         userNotificationService.createNewNotification(TEST_USER_VO, NotificationType.EVENT_CREATED,
-            1L, "Custom Message");
+                1L, "Custom Message");
         verify(modelMapper).map(TEST_USER_VO, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION,true);
+                .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
     }
 
     @Test
@@ -283,12 +293,12 @@ class UserNotificationServiceImplTest {
     @Test
     void removeActionUserFromNotificationIfNotificationIsNullTest() {
         when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
-            NotificationType.EVENT_CREATED, 1L)).thenReturn(null);
+                NotificationType.EVENT_CREATED, 1L)).thenReturn(null);
         userNotificationService.removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L,
-            NotificationType.EVENT_CREATED);
+                NotificationType.EVENT_CREATED);
 
         verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
-            NotificationType.EVENT_CREATED, 1L);
+                NotificationType.EVENT_CREATED, 1L);
     }
 
     @Test
@@ -340,5 +350,73 @@ class UserNotificationServiceImplTest {
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
         verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, false);
         verify(notificationRepo).markNotificationAsViewed(notificationId);
+    }
+
+    @Test
+    void testCheckUnreadNotificationWhenUnreadExists() {
+        Long userId = 1L;
+        when(notificationRepo.countByTargetUserIdAndViewedIsFalse(userId)).thenReturn(3L);
+
+        userNotificationService.checkUnreadNotification(userId);
+
+        verify(messagingTemplate, never()).convertAndSend(TOPIC + userId + NOTIFICATION, false);
+    }
+
+    @Test
+    void testCheckUnreadNotificationWhenNoUnreadExists() {
+        Long userId = 2L;
+        when(notificationRepo.countByTargetUserIdAndViewedIsFalse(userId)).thenReturn(0L);
+
+        userNotificationService.checkUnreadNotification(userId);
+
+        verify(messagingTemplate, times(1)).convertAndSend(TOPIC + userId + NOTIFICATION, false);
+    }
+
+    @Test
+    @DisplayName("createOrUpdateHabitInviteNotification method updates existing notification")
+    void testCreateOrUpdateHabitInviteNotification_UpdateExistingNotification() {
+        UserVO targetUserVO = mock(UserVO.class);
+        UserVO actionUserVO = mock(UserVO.class);
+        User actionUser = mock(User.class);
+        Long habitId = 1L;
+        String habitName = "Test Habit";
+
+        Notification existingNotification = mock(Notification.class);
+        List<User> actionUsers = new ArrayList<>();
+        when(existingNotification.getActionUsers()).thenReturn(actionUsers);
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(Optional.of(existingNotification));
+        when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
+
+        userNotificationService.createOrUpdateHabitInviteNotification(targetUserVO, actionUserVO, habitId, habitName);
+
+        assertEquals(1, actionUsers.size());
+        assertEquals(actionUser, actionUsers.getFirst());
+
+        verify(existingNotification).setCustomMessage(anyString());
+        verify(existingNotification).setTime(any(LocalDateTime.class));
+        verify(notificationRepo).save(existingNotification);
+    }
+
+    @Test
+    @DisplayName("createOrUpdateHabitInviteNotification method creates new notification")
+    void testCreateOrUpdateHabitInviteNotification_CreateNewNotification() {
+        UserVO targetUserVO = mock(UserVO.class);
+        UserVO actionUserVO = mock(UserVO.class);
+        Long habitId = 1L;
+        String habitName = "Test Habit";
+
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(Optional.empty());
+
+        User targetUser = mock(User.class);
+        when(modelMapper.map(targetUserVO, User.class)).thenReturn(targetUser);
+        when(targetUser.getId()).thenReturn(1L);
+
+        userNotificationService.createOrUpdateHabitInviteNotification(targetUserVO, actionUserVO, habitId, habitName);
+
+        verify(notificationRepo, times(1)).save(any(Notification.class));
     }
 }

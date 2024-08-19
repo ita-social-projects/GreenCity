@@ -63,7 +63,7 @@ public class ManagementEventsController {
         StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl + order.getProperty() + "," + order.getDirection());
+                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
             }
             model.addAttribute("sortModel", orderUrl);
         }

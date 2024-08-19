@@ -7,15 +7,7 @@ import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewContentSourceDto;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsGenericDto;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
@@ -28,13 +20,7 @@ import greencity.entity.EcoNews_;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementAction;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.CommentStatus;
-import greencity.enums.NotificationType;
-import greencity.enums.RatingCalculationEnum;
-import greencity.enums.Role;
-import greencity.enums.TagType;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -48,9 +34,11 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
@@ -63,14 +51,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @EnableCaching
@@ -83,7 +64,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
     private final greencity.rating.RatingCalculation ratingCalculation;
-    private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
@@ -204,7 +184,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
             }
         }
-        return buildPageableAdvancedGeneticDto(pages);
+        return buildPageableAdvancedGenericDto(pages);
     }
 
     /**
@@ -220,7 +200,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } else {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
-        return buildPageableAdvancedGeneticDto(pages);
+        return buildPageableAdvancedGenericDto(pages);
     }
 
     /**
@@ -231,16 +211,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
         Page<EcoNews> pages = ecoNewsRepo.findByTags(page, lowerCaseTags);
 
-        return buildPageableAdvancedGeneticDto(pages);
+        return buildPageableAdvancedGenericDto(pages);
     }
 
     @Override
     public PageableAdvancedDto<EcoNewsGenericDto> findByFilters(Pageable page, List<String> tags, String title) {
         return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title)
-            ? buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll(
+            ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))))
-            : buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll(
+            : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title),
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "creationDate"))));
@@ -264,7 +244,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsPage.isLast());
     }
 
-    private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGeneticDto(Page<EcoNews> ecoNewsPage) {
+    private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGenericDto(Page<EcoNews> ecoNewsPage) {
         List<EcoNewsGenericDto> ecoNewsDtos = ecoNewsPage.stream()
             .map(this::getEcoNewsGenericDtoWithEnTags)
             .collect(Collectors.toList());
@@ -320,7 +300,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
                 .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(lang))
                 .map(TagTranslation::getName)
-                .collect(Collectors.toList()));
+                .toList());
         }
         return getEcoNewsDto(ecoNews, tags);
     }
@@ -540,6 +520,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
             userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO,
                 id, NotificationType.ECONEWS_LIKE);
+            userNotificationService.checkUnreadNotification(ecoNewsVO.getAuthor().getId());
         } else {
             if (ecoNewsVO.getAuthor().getId().equals(userVO.getId())) {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -548,13 +529,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                .email(ecoNewsVO.getAuthor().getEmail())
-                .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
-                .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
-                .build());
+            sendNotification(ecoNewsVO, userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+    }
+
+    private void sendNotification(EcoNewsVO ecoNewsVO, UserVO actionUser) {
+        UserVO targetUser = userService.findById(ecoNewsVO.getAuthor().getId());
+        userNotificationService.createNotification(
+            targetUser, actionUser, NotificationType.ECONEWS_LIKE,
+            ecoNewsVO.getId(), ecoNewsVO.getTitle());
     }
 
     /**
@@ -647,14 +631,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     public List<SearchCriteria> buildSearchCriteria(EcoNewsViewDto ecoNewsViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
-        SearchCriteria searchCriteria;
-
         setValueIfNotEmpty(criteriaList, EcoNews_.ID, ecoNewsViewDto.getId());
         setValueIfNotEmpty(criteriaList, EcoNews_.TITLE, ecoNewsViewDto.getTitle());
         setValueIfNotEmpty(criteriaList, EcoNews_.AUTHOR, ecoNewsViewDto.getAuthor());
         setValueIfNotEmpty(criteriaList, EcoNews_.TEXT, ecoNewsViewDto.getText());
         setValueIfNotEmpty(criteriaList, EcoNews_.TAGS, ecoNewsViewDto.getTags());
 
+        SearchCriteria searchCriteria;
         if (!ecoNewsViewDto.getStartDate().isEmpty() && !ecoNewsViewDto.getEndDate().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key(EcoNews_.CREATION_DATE)
@@ -747,6 +730,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .content(ecoNews.getText())
             .title(ecoNews.getTitle())
             .creationDate(ecoNews.getCreationDate())
+            .hidden(ecoNews.isHidden())
             .build();
     }
 
@@ -847,5 +831,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return predicateList.size() == 1
             ? predicateList.getFirst()
             : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Viktoriia Herchanivska.
+     */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
+    @Override
+    public void setHiddenValue(Long id, UserVO user, boolean value) {
+        if (user.getRole() != Role.ROLE_ADMIN) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        EcoNews ecoNews = ecoNewsRepo
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+        ecoNews.setHidden(value);
+
+        ecoNewsRepo.save(ecoNews);
     }
 }

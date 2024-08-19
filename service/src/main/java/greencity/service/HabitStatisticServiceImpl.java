@@ -180,7 +180,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public void deleteAllStatsByHabitAssign(HabitAssignVO habitAssignVO) {
-        habitStatisticRepo.findAllByHabitAssignId(habitAssignVO.getId())
-            .forEach(habitStatisticRepo::delete);
+        habitStatisticRepo.deleteAll(habitStatisticRepo.findAllByHabitAssignId(habitAssignVO.getId()));
     }
 }

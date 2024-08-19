@@ -130,7 +130,7 @@ class ManagementShoppingListItemsControllerTest {
     @Test
     void updateHabitFactsTest() throws Exception {
         ShoppingListItemPostDto shoppingListItemPostDto = ModelUtils.getShoppingListItemPostDto();
-        Long id = 1L;
+        long id = 1L;
         String itemGtoJson = objectMapper.writeValueAsString(shoppingListItemPostDto);
 
         mockMvc.perform(put(managementShoppingListLink + "/" + id)

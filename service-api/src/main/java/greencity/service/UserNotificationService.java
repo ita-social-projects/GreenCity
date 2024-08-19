@@ -18,7 +18,7 @@ public interface UserNotificationService {
      *
      * @param principal user to get notifications
      * @param language  language code
-     * @return set of 3 last new notifications
+     * @return list of 3 last new notifications
      * @author Volodymyr Mladonov
      */
     List<NotificationDto> getThreeLastNotifications(Principal principal, String language);
@@ -177,4 +177,27 @@ public interface UserNotificationService {
      * @param notificationId id of notification, that should be marked
      */
     void viewNotification(Long notificationId);
+
+    /**
+     * Checks for any unread notifications for the specified user.
+     *
+     * @param userId the ID of the user whose unread notifications are to be
+     *               checked.
+     */
+    void checkUnreadNotification(Long userId);
+
+    /**
+     * Method to create a new or update an existing habit invite notification. If a
+     * notification for the specified habit and user already exists, this method
+     * updates the notification by adding the new user to the list of action users
+     * and adjusting the notification message accordingly. If no such notification
+     * exists, a new notification is created.
+     *
+     * @param targetUserVO the user who is invited to the habit
+     * @param actionUserVO the user who sends the invitation
+     * @param habitId      the ID of the habit for which the invitation is sent
+     * @param habitName    the name of the habit being invited to
+     */
+    void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
+        String habitName);
 }

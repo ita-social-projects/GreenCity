@@ -122,7 +122,7 @@ class AchievementServiceImplTest {
         when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(userAchievementRepo.getUserAchievementByUserId(anyLong()))
-            .thenReturn(Arrays.asList(ModelUtils.getUserAchievement()));
+            .thenReturn(List.of(ModelUtils.getUserAchievement()));
         when(achievementRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievement()));
         when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());

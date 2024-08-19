@@ -294,13 +294,6 @@ public interface HabitAssignService {
         LocalDate from, LocalDate to, String language);
 
     /**
-     * Method add default habit.
-     *
-     * @param user {@link UserVO} instance.
-     */
-    void addDefaultHabit(UserVO user, String language);
-
-    /**
      * Method delete HabitAssign by habitAssignId for current User.
      *
      * @param habitAssignId {@link Long} id.
@@ -354,14 +347,15 @@ public interface HabitAssignService {
     HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId, Integer duration);
 
     /**
-     * Method invite friend to your habit with email notification.
+     * Method invite friends to your habit with email notification.
      *
-     * @param userVO   {@link UserVO} user.
-     * @param friendId {@link Long} User friend id.
-     * @param habitId  {@link Long} habit id.
-     * @param locale   {@link Locale} language.
+     * @param userVO     {@link UserVO} user.
+     * @param friendsIds {@link Long} User friends ids.
+     * @param habitId    {@link Long} habit id.
+     * @param locale     {@link Locale} language.
      */
-    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, Long friendId, Long habitId, Locale locale);
+    void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
+        Locale locale);
 
     /**
      * Method to confirm friend request to habit.

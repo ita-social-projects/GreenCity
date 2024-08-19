@@ -72,7 +72,6 @@ public class HabitServiceImpl implements HabitService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
-    private static final String EN_LANGUAGE_CODE = "en";
 
     /**
      * Method returns Habit by its id.
@@ -139,10 +138,13 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
-        String languageCode) {
+        String languageCode, boolean excludeAssigned, Long userId) {
         List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
-        Page<HabitTranslation> habitTranslationsPage =
-            habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
+        Page<HabitTranslation> habitTranslationsPage = (excludeAssigned)
+            ? habitTranslationRepo.findUnassignedHabitTranslationsByLanguageAndTags(pageable, lowerCaseTags,
+                languageCode, userId)
+            : habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
+
         return buildPageableDto(habitTranslationsPage);
     }
 
@@ -445,7 +447,7 @@ public class HabitServiceImpl implements HabitService {
         List<CustomShoppingListItem> customShoppingListItems = customShoppingListItemRepo
             .findAllByUserIdAndHabitId(user.getId(), habit.getId());
 
-        customShoppingListItems.stream()
+        customShoppingListItems
             .forEach(item -> habitDto.getCustomShoppingListItemDto().stream()
                 .filter(itemToUpdate -> item.getId().equals(itemToUpdate.getId()))
                 .forEach(itemToUpdate -> {

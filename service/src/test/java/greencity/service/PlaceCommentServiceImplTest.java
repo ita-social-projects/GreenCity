@@ -9,7 +9,6 @@ import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
-import greencity.entity.User;
 import greencity.enums.UserStatus;
 import greencity.rating.RatingCalculation;
 import greencity.repository.PlaceCommentRepo;

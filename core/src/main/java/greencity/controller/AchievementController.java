@@ -1,19 +1,18 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
-import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.service.AchievementService;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import java.security.Principal;
-import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.security.Principal;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -25,21 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/achievements")
+@RequiredArgsConstructor
 public class AchievementController {
     private final AchievementService achievementService;
 
     /**
-     * Constructor with parameters.
-     */
-    @Autowired
-    public AchievementController(AchievementService achievementService) {
-        this.achievementService = achievementService;
-    }
-
-    /**
      * Method returns all achievements, available for achieving.
      *
-     * @return list of {@link AchievementDTO}
+     * @return list of {@link AchievementVO}
      */
     @Operation(summary = "Get all achievements by type.")
     @ApiResponses(value = {

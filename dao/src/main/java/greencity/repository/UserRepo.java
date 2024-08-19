@@ -5,6 +5,10 @@ import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import jakarta.persistence.Tuple;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,10 +18,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
@@ -239,7 +239,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-        value = "UPDATE users_friends SET  status = 'REJECTED' WHERE user_id = :friendId AND friend_id = :userId")
+        value = "UPDATE users_friends SET status = 'REJECTED' WHERE user_id = :friendId AND friend_id = :userId")
     void declineFriendRequest(Long userId, Long friendId);
 
     /**
@@ -254,27 +254,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     void canselUserRequestToFriend(Long userId, Long friendId);
 
     /**
-     * Get all user friends.
-     *
-     * @param userId The ID of the user.
-     *
-     * @return list of {@link User}.
-     */
-    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id IN ( "
-        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
-        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));")
-    List<User> getAllUserFriends(Long userId);
-
-    /**
      * Get all user friends order: friends, who are tracking the same habits as user
      * with userId; friends, who live in the same city as user with userId; friends,
      * who have the highest personal rate.
      *
      * @param userId The ID of the user.
-     *
      * @return list of {@link User}.
      */
-
     @Query(nativeQuery = true, value = ""
         + "SELECT u.* "
         + "FROM users u "
@@ -293,25 +279,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(Pageable pageable, Long userId);
 
     /**
-     * Get FriendStatus related to current user with currentUserId by user with
-     * userId.
-     *
-     * @param userId        The ID of the user.
-     * @param currentUserId The ID of the current user.
-     *
-     * @return {@link Page} of {@link User}.
-     */
-    @Query(nativeQuery = true, value = "SELECT uf.status FROM users_friends as uf "
-        + " WHERE friend_id = :userId and user_id = :currentUserId "
-        + " OR friend_id = :currentUserId and user_id = :userId")
-    String getFriendStatusByUserIdAndCurrentUserId(Long userId, Long currentUserId);
-
-    /**
      * Get all user friends.
      *
      * @param userId   The ID of the user.
      * @param pageable current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id IN ( "
@@ -325,7 +296,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId        current user's id.
      * @param filteringName name filter.
      * @param pageable      current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u "
@@ -345,7 +315,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId        current user's id.
      * @param filteringName name filter.
      * @param pageable      current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u "
@@ -366,7 +335,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId   current user's id.
      * @param pageable current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT u.* FROM users  u "
@@ -385,7 +353,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param pageable current page.
      * @param userId   current user's id.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u "
@@ -399,7 +366,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId        current user's id.
      * @param filteringName name filter.
      * @param pageable      current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u "
@@ -416,7 +382,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId   current user's id.
      * @param friendId friend id.
      * @param pageable current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u"
@@ -435,7 +400,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId current user's id.
      * @param rating rating.
-     *
      * @author Anton Bondar.
      */
     @Modifying
@@ -447,7 +411,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId   current user's id.
      * @param pageable current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users u "
@@ -459,7 +422,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * Method that allow you to search users by name.
      *
      * @param searchQuery username you want to search {@link String}.
-     *
      * @return list of {@link User} users.
      * @author Anton Bondar
      */
@@ -473,7 +435,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId   current user's id.
      * @param city     current user's city.
      * @param pageable current page.
-     *
      * @return {@link Page} of {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT users.* FROM users "
@@ -485,7 +446,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * Method to find user language code by userId.
      *
      * @param userId {@link Long} current user's id.
-     *
      * @return {@link String}.
      * @author Olena Sotnik.
      */
@@ -500,7 +460,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId   {@link Long} current user's id.
      * @param friendId {@link Long} friend`s id.
-     *
      * @return {@link Tuple}.
      * @author Denys Ryhal.
      */
@@ -515,7 +474,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId   {@link Long} current user's id.
      * @param friendId {@link Long} friend`s id.
-     *
      * @return {@link Long}.
      * @author Denys Ryhal.
      */
