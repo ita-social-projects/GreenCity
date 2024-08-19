@@ -3,6 +3,7 @@ package greencity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
@@ -11,6 +12,8 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -921,5 +924,30 @@ public class ModelUtils {
             .friendStatus("FRIEND")
             .chatId(1L)
             .build();
+    }
+
+    public static PageableDto<CommentDto> getPageableCommentDtos() {
+        List<CommentDto> commentDtos = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            CommentDto comment = CommentDto.builder()
+                    .id((long) i)
+                    .text("Comment #" + i)
+                    .modifiedDate(LocalDateTime.now().minusDays(i))
+                    .author(CommentAuthorDto.builder()
+                            .id(1L)
+                            .name("UserName")
+                            .profilePicturePath("PicturePath")
+                            .build())
+                    .currentUserLiked(false)
+                    .build();
+            commentDtos.add(comment);
+        }
+
+        return new PageableDto<>(
+                commentDtos,
+                commentDtos.size(),
+                1,
+                1);
     }
 }
