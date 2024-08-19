@@ -148,6 +148,12 @@
                                 </th>
                                 <th>
                                     <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.time}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.tags}]]</span>
                                         <span class="table-filter-icon filter"></span>
                                     </div>
@@ -200,7 +206,8 @@
                                             <img src="/img/eco-news-default-large.png" style="height:inherit; max-width: 51px">
                                         </div>
                                     </td>
-                                    <td class="text" th:text="${econew.creationDate}"></td>
+                                    <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalDate(), 'dd.MM.yyyy')}"></td>
+                                    <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalTime(), 'HH:mm:ss')}"></td>
                                     <td style = "width: 173px">
                                         <div th:switch="${econew.tags.isEmpty()}">
                                             <div th:case="false">
