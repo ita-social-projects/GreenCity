@@ -200,4 +200,7 @@
     <include file="db/changelog/logs/ch-add-table-db_backups-kizerov.xml"/>
     <include file="db/changelog/logs/ch-add-column-eco-news-Herchanivska.xml"/>
     <include file="db/changelog/logs/ch-modify-function-recommended-eco-news-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-employee-authority-Prots.xml" />
+    <include file="db/changelog/logs/ch-insert-into-employee-authority-mapping-Prots.xml" />
+    <include file="db/changelog/logs/ch-insert-into-positions-authorities-mapping-Prots.xml" />
 </databaseChangeLog>
