@@ -96,8 +96,8 @@
                             </div>
                         </div>
 
-
-                        <table class="table table-bordered" id="tabElement">
+                        <div class="table-container">
+                        <table class="table table-bordered scrollable-table" id="tabElement">
                             <thead>
                             <tr class="table-primary">
                                 <th>
@@ -107,38 +107,78 @@
                                 </span>
                                 </th>
                                 <th>
-                                    [[#{greenCity.pages.table.id}]]
-                                    <span class="table-filter-icon filter"></span>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.id}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
                                 <th>
-                                    [[#{greenCity.pages.table.userName}]]
-                                    <span class="table-filter-icon filter"></span>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.author}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
 
-                                <th>[[#{greenCity.pages.table.title}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.title}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
 
-                                <th>[[#{greenCity.pages.table.text}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.text}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
 
-                                <th>[[#{greenCity.pages.table.image}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.image}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
+
                                 </th>
-                                <th>[[#{greenCity.pages.table.tags}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.date}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
-                                <th>[[#{greenCity.pages.table.likes}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.time}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
-                                <th>[[#{greenCity.pages.table.dislikes}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.tags}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
-                                <th>[[#{greenCity.pages.table.visibility}]]
-                                    <span class="table-filter-icon filter"></span>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.likes}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
                                 </th>
-                                <th>[[#{greenCity.pages.table.actions}]]</th>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.dislikes}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="table-header-container">
+                                        <span class="header-text">[[#{greenCity.pages.table.visibility}]]</span>
+                                        <span class="table-filter-icon filter"></span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <span>[[#{greenCity.pages.table.actions}]]</span>
+                                </th>
                             </tr>
                             </thead>
 
@@ -166,6 +206,8 @@
                                             <img src="/img/eco-news-default-large.png" style="height:inherit; max-width: 51px">
                                         </div>
                                     </td>
+                                    <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalDate(), 'dd.MM.yyyy')}"></td>
+                                    <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalTime(), 'HH:mm:ss')}"></td>
                                     <td style = "width: 173px">
                                         <div th:switch="${econew.tags.isEmpty()}">
                                             <div th:case="false">
@@ -211,18 +253,25 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div th:if="${econew.hidden eq false}">
-                                            <a class="edit eHideBtn" th:href="@{/management/eco-news/hide(id=${econew.id})}"><i
-                                                    class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.hide}">&#xE8F5;</i></a>
+                                        <div style="display: flex">
+                                            <div th:if="${econew.hidden eq false}">
+                                                <a class="edit eHideBtn" th:href="@{/management/eco-news/hide(id=${econew.id})}">
+                                                    <i class="material-icons" data-toggle="tooltip"
+                                                       th:title="#{greenCity.pages.hide}">&#xE8F5;</i>
+                                                </a>
+                                            </div>
+                                            <div th:if="${econew.hidden eq true}">
+                                                <a class="edit eShowBtn" th:href="@{/management/eco-news/show(id=${econew.id})}">
+                                                    <i class="material-icons" data-toggle="tooltip"
+                                                       th:title="#{greenCity.pages.show}">&#xE8F4;</i>
+                                                </a>
+                                            </div>
+                                            <a class="delete eDelBtn" data-toggle="modal"
+                                                th:href="@{/management/eco-news/delete(id=${econew.id})}">
+                                                <i class="material-icons" data-toggle="tooltip"
+                                                   th:title="#{greenCity.pages.delete}">&#xE872;</i>
+                                            </a>
                                         </div>
-                                        <div th:if="${econew.hidden eq true}">
-                                            <a class="edit eShowBtn" th:href="@{/management/eco-news/show(id=${econew.id})}"><i
-                                                    class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.show}">&#xE8F4;</i></a>
-                                        </div>
-                                        <a class="delete eDelBtn" data-toggle="modal"
-                                           th:href="@{/management/eco-news/delete(id=${econew.id})}"><i class="material-icons"
-                                                                                                    data-toggle="tooltip"
-                                                                                                    th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
                                     </td>
 
 <!--                                    <td th:if="${econew.likes < 100}">
@@ -249,6 +298,7 @@
                                 </tbody>
                             </th:block>
                         </table>
+                        </div>
                         <!-- Start of Paging -->
                         <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
                             <div class="d-flex justify-content-center">
