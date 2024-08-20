@@ -78,7 +78,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
         when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
-                .thenReturn(ModelUtils.getAddCommentDtoResponse());
+            .thenReturn(ModelUtils.getAddCommentDtoResponse());
 
         commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO);
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
@@ -102,8 +102,8 @@ class CommentServiceImplTest {
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
 
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class,
-                        () -> commentService.save(ArticleType.HABIT,  1L, addCommentDtoRequest, userVO));
+            assertThrows(NotFoundException.class,
+                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
     }
@@ -133,11 +133,11 @@ class CommentServiceImplTest {
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
 
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class,
-                        () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO));
+            assertThrows(NotFoundException.class,
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO));
 
         String expectedErrorMessage = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
-                + " in Habit with id: " + habit.getId();
+            + " in Habit with id: " + habit.getId();
         assertEquals(expectedErrorMessage, notFoundException.getMessage());
     }
 
@@ -169,8 +169,8 @@ class CommentServiceImplTest {
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
 
         BadRequestException badRequestException =
-                assertThrows(BadRequestException.class,
-                        () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO));
+            assertThrows(BadRequestException.class,
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO));
 
         String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;
 
@@ -217,12 +217,12 @@ class CommentServiceImplTest {
 
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
-                pageable, habitId, ArticleType.HABIT, CommentStatus.DELETED))
-                .thenReturn(pages);
+            pageable, habitId, ArticleType.HABIT, CommentStatus.DELETED))
+            .thenReturn(pages);
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
 
         PageableDto<CommentDto> allComments = commentService.getAllActiveComments(
-                pageable, userVO, habitId, ArticleType.HABIT);
+            pageable, userVO, habitId, ArticleType.HABIT);
         assertEquals(commentDto, allComments.getPage().getFirst());
         assertEquals(4, allComments.getTotalElements());
         assertEquals(1, allComments.getCurrentPage());
@@ -244,7 +244,7 @@ class CommentServiceImplTest {
         Comment comment = getComment();
 
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
-                .thenReturn(Optional.ofNullable(comment));
+            .thenReturn(Optional.ofNullable(comment));
 
         commentService.update(editedText, commentId, userVO);
 
@@ -261,8 +261,8 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class,
-                        () -> commentService.update(editedText, commentId, userVO));
+            assertThrows(NotFoundException.class,
+                () -> commentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -278,11 +278,11 @@ class CommentServiceImplTest {
         String editedText = "edited text";
 
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
-                .thenReturn(Optional.of(comment));
+            .thenReturn(Optional.of(comment));
 
         BadRequestException badRequestException =
-                assertThrows(BadRequestException.class,
-                        () -> commentService.update(editedText, commentId, userVO));
+            assertThrows(BadRequestException.class,
+                () -> commentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 
@@ -292,7 +292,7 @@ class CommentServiceImplTest {
         Long commentId = 1L;
         Comment comment = getComment();
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
-                .thenReturn(Optional.ofNullable(comment));
+            .thenReturn(Optional.ofNullable(comment));
         commentService.delete(commentId, userVO);
 
         assertEquals(CommentStatus.DELETED, comment.getComments().get(0).getStatus());
@@ -312,11 +312,11 @@ class CommentServiceImplTest {
         comment.setUser(user);
 
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
-                .thenReturn(Optional.of(comment));
+            .thenReturn(Optional.of(comment));
 
         UserHasNoPermissionToAccessException noPermissionToAccessException =
-                assertThrows(UserHasNoPermissionToAccessException.class,
-                        () -> commentService.delete(commentId, userToDeleteVO));
+            assertThrows(UserHasNoPermissionToAccessException.class,
+                () -> commentService.delete(commentId, userToDeleteVO));
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, noPermissionToAccessException.getMessage());
     }
 
@@ -328,7 +328,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class, () -> commentService.delete(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> commentService.delete(commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }
 
@@ -347,11 +347,11 @@ class CommentServiceImplTest {
 
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(ModelUtils.getCommentDto());
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
-                CommentStatus.DELETED))
-                .thenReturn(page);
+            CommentStatus.DELETED))
+            .thenReturn(page);
 
         PageableDto<CommentDto> commentDtos =
-                commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
+            commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
         assertEquals(getEventComment().getId(), commentDtos.getPage().get(0).getId());
         assertEquals(4, commentDtos.getTotalElements());
         assertEquals(1, commentDtos.getCurrentPage());
@@ -374,8 +374,8 @@ class CommentServiceImplTest {
         Page<Comment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
         when(commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
-                CommentStatus.DELETED))
-                .thenReturn(page);
+            CommentStatus.DELETED))
+            .thenReturn(page);
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(getCommentDto());
 
         commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
@@ -388,9 +388,9 @@ class CommentServiceImplTest {
         Long parentCommentId = 1L;
         int repliesAmount = 5;
         when(commentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED))
-                .thenReturn(Optional.of(getComment()));
+            .thenReturn(Optional.of(getComment()));
         when(commentRepo.countByParentCommentIdAndStatusNot(parentCommentId, CommentStatus.DELETED))
-                .thenReturn(repliesAmount);
+            .thenReturn(repliesAmount);
 
         int result = commentService.countAllActiveReplies(parentCommentId);
         assertEquals(repliesAmount, result);
@@ -400,9 +400,9 @@ class CommentServiceImplTest {
     void countAllActiveRepliesNotFoundParentCommentTest() {
         Long parentCommentId = 1L;
         when(commentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class, () -> commentService.countAllActiveReplies(parentCommentId));
+            assertThrows(NotFoundException.class, () -> commentService.countAllActiveReplies(parentCommentId));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
     }
@@ -445,7 +445,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class, () -> commentService.like(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> commentService.like(commentId, userVO));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }
@@ -481,7 +481,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class, () -> commentService.countLikes(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> commentService.countLikes(commentId, userVO));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }

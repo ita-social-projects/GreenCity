@@ -69,9 +69,9 @@ class HabitCommentControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitCommentController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, modelMapper))
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .build();
     }
 
     @Test
@@ -81,19 +81,19 @@ class HabitCommentControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "{\n"
-                + "  \"text\": \"string\",\n"
-                + "  \"parentCommentId\": \"100\"\n"
-                + "}";
+            + "  \"text\": \"string\",\n"
+            + "  \"parentCommentId\": \"100\"\n"
+            + "}";
 
         mockMvc.perform(post(HABIT_LINK + "/{habitId}/comments", 1)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isCreated());
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         AddCommentDtoRequest addCommentDtoRequest =
-                mapper.readValue(content, AddCommentDtoRequest.class);
+            mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO);
@@ -103,9 +103,9 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void saveBadRequestTest() {
         mockMvc.perform(post(HABIT_LINK + "/{habitId}/comments", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{}"))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -113,9 +113,9 @@ class HabitCommentControllerTest {
     void getEventCommentById() {
         String content = "{\n" + "  \"text\": \"string\"\n" + "}";
         mockMvc.perform(get(HABIT_LINK + "/comments/{id}", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -128,8 +128,8 @@ class HabitCommentControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(HABIT_LINK + "/comments/active?page=5&habitId=1")
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).getAllActiveComments(pageable, userVO, 1L, ArticleType.HABIT);
@@ -139,7 +139,7 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void countComments() {
         mockMvc.perform(get(HABIT_LINK + "/{habitId}/comments/count", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(commentService).countComments(ArticleType.HABIT, 1L);
     }
@@ -162,14 +162,14 @@ class HabitCommentControllerTest {
         String expectedJson = objectMapper.writeValueAsString(commentReplies);
 
         when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
-                .thenReturn(commentReplies);
+            .thenReturn(commentReplies);
 
         mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active", parentCommentId)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
         verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
         verify(userService).findByEmail(principal.getName());
     }
@@ -179,7 +179,7 @@ class HabitCommentControllerTest {
     void getAllActiveRepliesWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active", notValidId))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -197,13 +197,13 @@ class HabitCommentControllerTest {
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
-                .when(commentService)
-                .getAllActiveReplies(pageable, parentCommentId, userVO);
+            .when(commentService)
+            .getAllActiveReplies(pageable, parentCommentId, userVO);
 
         Assertions.assertThatThrownBy(
-                        () -> mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active",
-                                parentCommentId).principal(principal)).andExpect(status().isNotFound()))
-                .hasCause(new NotFoundException(errorMessage));
+            () -> mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active",
+                parentCommentId).principal(principal)).andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException(errorMessage));
     }
 
     @Test
@@ -215,8 +215,8 @@ class HabitCommentControllerTest {
         when(commentService.countAllActiveReplies(parentCommentId)).thenReturn(repliesAmount);
 
         mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active/count", parentCommentId))
-                .andExpect(status().isOk())
-                .andExpect(content().xml(expectedResponse));
+            .andExpect(status().isOk())
+            .andExpect(content().xml(expectedResponse));
 
         verify(commentService).countAllActiveReplies(parentCommentId);
     }
@@ -226,7 +226,7 @@ class HabitCommentControllerTest {
     void getCountOfActiveRepliesBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active/count", notValidId))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -236,13 +236,13 @@ class HabitCommentControllerTest {
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
-                .when(commentService)
-                .countAllActiveReplies(parentCommentId);
+            .when(commentService)
+            .countAllActiveReplies(parentCommentId);
 
         Assertions.assertThatThrownBy(() -> mockMvc.perform(
-                get(HABIT_LINK + "/comments/{parentCommentId}/replies/active/count", parentCommentId))
-                .andExpect(status().isNotFound()))
-                .hasCause(new NotFoundException(errorMessage));
+            get(HABIT_LINK + "/comments/{parentCommentId}/replies/active/count", parentCommentId))
+            .andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException(errorMessage));
     }
 
     @Test
@@ -255,9 +255,9 @@ class HabitCommentControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(HABIT_LINK + "/comments/like")
-                        .param("commentId", commentId)
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .param("commentId", commentId)
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(commentService).like(numericCommentId, userVO);
     }
@@ -268,9 +268,9 @@ class HabitCommentControllerTest {
         String notValidId = "id";
 
         mockMvc.perform(post(HABIT_LINK + "/comments/like")
-                        .param("commentId", notValidId)
-                        .principal(principal))
-                .andExpect(status().isBadRequest());
+            .param("commentId", notValidId)
+            .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -285,15 +285,15 @@ class HabitCommentControllerTest {
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
-                .when(commentService)
-                .like(commentId, userVO);
+            .when(commentService)
+            .like(commentId, userVO);
 
         Assertions.assertThatThrownBy(
-                        () -> mockMvc.perform(post(HABIT_LINK + "/comments/like")
-                                        .param("commentId", commentIdParam)
-                                        .principal(principal))
-                                .andExpect(status().isNotFound()))
-                .hasCause(new NotFoundException(errorMessage));
+            () -> mockMvc.perform(post(HABIT_LINK + "/comments/like")
+                .param("commentId", commentIdParam)
+                .principal(principal))
+                .andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException(errorMessage));
     }
 
     @Test
@@ -306,11 +306,11 @@ class HabitCommentControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         AmountCommentLikesDto result = AmountCommentLikesDto.builder()
-                .id(commentId)
-                .amountLikes(likesAmount)
-                .isLiked(false)
-                .userId(userVO.getId())
-                .build();
+            .id(commentId)
+            .amountLikes(likesAmount)
+            .isLiked(false)
+            .userId(userVO.getId())
+            .build();
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
@@ -319,11 +319,11 @@ class HabitCommentControllerTest {
         when(commentService.countLikes(commentId, userVO)).thenReturn(result);
 
         mockMvc.perform(get(HABIT_LINK + "/comments/{commentId}/likes/count", commentId)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
 
         verify(commentService).countLikes(commentId, userVO);
     }
@@ -333,8 +333,8 @@ class HabitCommentControllerTest {
     void countLikesNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(get(HABIT_LINK + "/comments/{commentId}/likes/count", notValidId)
-                        .principal(principal))
-                .andExpect(status().isBadRequest());
+            .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -348,13 +348,13 @@ class HabitCommentControllerTest {
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
-                .when(commentService)
-                .countLikes(commentId, userVO);
+            .when(commentService)
+            .countLikes(commentId, userVO);
 
         Assertions.assertThatThrownBy(
-                        () -> mockMvc.perform(get(HABIT_LINK + "/comments/{commentId}/likes/count", commentId)
-                                        .principal(principal))
-                                .andExpect(status().isNotFound()))
-                .hasCause(new NotFoundException(errorMessage));
+            () -> mockMvc.perform(get(HABIT_LINK + "/comments/{commentId}/likes/count", commentId)
+                .principal(principal))
+                .andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException(errorMessage));
     }
 }

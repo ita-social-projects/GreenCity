@@ -931,23 +931,23 @@ public class ModelUtils {
 
         for (int i = 0; i < 5; i++) {
             CommentDto comment = CommentDto.builder()
-                    .id((long) i)
-                    .text("Comment #" + i)
-                    .modifiedDate(LocalDateTime.now().minusDays(i))
-                    .author(CommentAuthorDto.builder()
-                            .id(1L)
-                            .name("UserName")
-                            .profilePicturePath("PicturePath")
-                            .build())
-                    .currentUserLiked(false)
-                    .build();
+                .id((long) i)
+                .text("Comment #" + i)
+                .modifiedDate(LocalDateTime.now().minusDays(i))
+                .author(CommentAuthorDto.builder()
+                    .id(1L)
+                    .name("UserName")
+                    .profilePicturePath("PicturePath")
+                    .build())
+                .currentUserLiked(false)
+                .build();
             commentDtos.add(comment);
         }
 
         return new PageableDto<>(
-                commentDtos,
-                commentDtos.size(),
-                1,
-                1);
+            commentDtos,
+            commentDtos.size(),
+            1,
+            1);
     }
 }

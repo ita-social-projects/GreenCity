@@ -2951,55 +2951,55 @@ public class ModelUtils {
 
     public static Comment getComment() {
         return Comment.builder()
-                .id(1L)
-                .articleType(ArticleType.HABIT)
-                .articleId(10L)
-                .text("text")
-                .usersLiked(new HashSet<>())
-                .createdDate(LocalDateTime.now())
-                .user(getUser())
-                .comments(List.of(getSubComment()))
-                .status(CommentStatus.ORIGINAL)
-                .build();
+            .id(1L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .comments(List.of(getSubComment()))
+            .status(CommentStatus.ORIGINAL)
+            .build();
     }
 
     public static Comment getSubComment() {
         return Comment.builder()
-                .id(5L)
-                .articleType(ArticleType.HABIT)
-                .articleId(10L)
-                .text("other text")
-                .usersLiked(new HashSet<>())
-                .createdDate(LocalDateTime.now())
-                .user(getUser())
-                .status(CommentStatus.ORIGINAL)
-                .build();
+            .id(5L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("other text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .status(CommentStatus.ORIGINAL)
+            .build();
     }
 
     public static CommentDto getCommentDto() {
         return CommentDto.builder()
-                .id(1L)
-                .text("text")
-                .createdDate(LocalDateTime.now())
-                .author(getCommentAuthorDto())
-                .status(CommentStatus.ORIGINAL.toString())
-                .build();
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .author(getCommentAuthorDto())
+            .status(CommentStatus.ORIGINAL.toString())
+            .build();
     }
 
     public static AddCommentDtoResponse getAddCommentDtoResponse() {
         return AddCommentDtoResponse.builder()
-                .id(getComment().getId())
-                .author(getCommentAuthorDto())
-                .text(getComment().getText())
-                .build();
+            .id(getComment().getId())
+            .author(getCommentAuthorDto())
+            .text(getComment().getText())
+            .build();
     }
 
     public static CommentAuthorDto getCommentAuthorDto() {
         return CommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName().trim())
-                .profilePicturePath(getUser().getProfilePicturePath())
-                .build();
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .profilePicturePath(getUser().getProfilePicturePath())
+            .build();
     }
 
     public static AddCommentDtoRequest getAddCommentDtoRequest() {
