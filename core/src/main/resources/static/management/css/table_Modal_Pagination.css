@@ -1742,3 +1742,30 @@ a.lightgrey {
     margin-top: 11px;
     margin-right: 5px;
 }
+
+.table-container {
+    overflow-x: scroll;
+    margin-bottom: 1rem;
+}
+
+.scrollable-table {
+    display: block;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.table-container::-webkit-scrollbar {
+    display: block;
+    height: 10px;
+    background-color: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+}
+
+.table-container .table-header-container {
+    display: flex;
+    justify-content: space-between;
+}
