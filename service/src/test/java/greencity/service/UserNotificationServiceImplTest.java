@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.eq;
 
 @ExtendWith(MockitoExtension.class)
 class UserNotificationServiceImplTest {
@@ -473,5 +475,95 @@ class UserNotificationServiceImplTest {
 
         verify(notificationRepo).delete(existingNotification);
         verify(notificationRepo, never()).save(existingNotification);
+    }
+
+    @Test
+    @DisplayName("createOrUpdateLikeNotification creates new notification when liking and no existing notification")
+    void testCreateOrUpdateLikeNotification_CreateNewNotification_AddLike() {
+        UserVO targetUserVO = mock(UserVO.class);
+        UserVO actionUserVO = mock(UserVO.class);
+        User actionUser = mock(User.class);
+        Long newsId = 1L;
+        String newsTitle = "Test News";
+
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(Optional.empty());
+        when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(actionUser);
+        when(actionUserVO.getName()).thenReturn("John");
+
+        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle, true);
+
+        verify(notificationRepo, times(1)).save(any(Notification.class));
+    }
+
+    @Test
+    @DisplayName("createLikeNotificationMessage with two users")
+    void testCreateLikeNotificationMessage_TwoUsers() throws Exception {
+        User user1 = User.builder().name("Taras").build();
+        User user2 = User.builder().name("Petro").build();
+
+        List<User> actionUsers = List.of(user1, user2);
+        String newsTitle = "Test News";
+
+        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
+            String.class);
+        method.setAccessible(true);
+        String result = (String) method.invoke(userNotificationService, actionUsers, newsTitle);
+
+        assertEquals("Taras and Petro like your news Test News.", result);
+    }
+
+    @Test
+    @DisplayName("createLikeNotificationMessage with more than two users")
+    void testCreateLikeNotificationMessage_MoreThanTwoUsers() throws Exception {
+        User user1 = User.builder().name("Taras").build();
+        User user2 = User.builder().name("Petro").build();
+        User user3 = User.builder().name("Vasyl").build();
+
+        List<User> actionUsers = List.of(user1, user2, user3);
+        String newsTitle = "Test News";
+
+        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
+            String.class);
+        method.setAccessible(true);
+        String result = (String) method.invoke(userNotificationService, actionUsers, newsTitle);
+
+        assertEquals("Petro, Vasyl and other users like your news Test News.", result);
+    }
+
+    @Test
+    @DisplayName("createInvitationNotificationMessage with two users")
+    void testCreateInvitationNotificationMessage_TwoUsers() throws Exception {
+        User user1 = User.builder().name("Taras").build();
+        User user2 = User.builder().name("Petro").build();
+
+        List<User> actionUsers = List.of(user1, user2);
+        String habitName = "Test Habit";
+
+        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createInvitationNotificationMessage",
+            List.class, String.class);
+        method.setAccessible(true);
+        String result = (String) method.invoke(userNotificationService, actionUsers, habitName);
+
+        assertEquals("Taras and Petro invite you to add new habit Test Habit.", result);
+    }
+
+    @Test
+    @DisplayName("createInvitationNotificationMessage with more than two users")
+    void testCreateInvitationNotificationMessage_MoreThanTwoUsers() throws Exception {
+        User user1 = User.builder().name("Taras").build();
+        User user2 = User.builder().name("Petro").build();
+        User user3 = User.builder().name("Vasyl").build();
+
+        List<User> actionUsers = List.of(user1, user2, user3);
+        String habitName = "Test Habit";
+
+        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createInvitationNotificationMessage",
+            List.class, String.class);
+        method.setAccessible(true);
+        String result = (String) method.invoke(userNotificationService, actionUsers, habitName);
+
+        assertEquals("Petro, Vasyl and other users invite you to add new habit Test Habit.", result);
     }
 }
