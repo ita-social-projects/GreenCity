@@ -32,7 +32,7 @@ public interface CommentService {
      * @param type specifies {@link ArticleType} to which we search for comments
      * @return comment to certain article specified by commentId.
      */
-    CommentDto findCommentById(ArticleType type, Long id, UserVO userVO);
+    CommentDto getCommentById(ArticleType type, Long id, UserVO userVO);
 
     /**
      * Method to get all not deleted replies for to certain {@link CommentVO}
@@ -42,7 +42,7 @@ public interface CommentService {
      * @param userVO          {@link UserVO} that want to get replies.
      * @return replies for comment
      */
-    PageableDto<CommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO);
+    PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO);
 
     /**
      * Method to count not deleted comments for certain article.

@@ -87,7 +87,7 @@ public class HabitCommentController {
     public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(commentService.findCommentById(ArticleType.HABIT, id, userVO));
+            .body(commentService.getCommentById(ArticleType.HABIT, id, userVO));
     }
 
     /**
@@ -114,7 +114,7 @@ public class HabitCommentController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(commentService.findAllActiveReplies(pageable, parentCommentId, userVO));
+            .body(commentService.getAllActiveReplies(pageable, parentCommentId, userVO));
     }
 
     /**

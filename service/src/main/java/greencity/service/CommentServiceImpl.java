@@ -122,7 +122,7 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public CommentDto findCommentById(ArticleType type, Long id, UserVO userVO) {
+    public CommentDto getCommentById(ArticleType type, Long id, UserVO userVO) {
         Comment comment = commentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
 
@@ -142,7 +142,7 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<CommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+    public PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<Comment> pages =
             commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
                 CommentStatus.DELETED);

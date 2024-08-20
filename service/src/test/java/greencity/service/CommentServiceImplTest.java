@@ -183,7 +183,7 @@ class CommentServiceImplTest {
         CommentDto commentDto = getCommentDto();
         when(commentRepo.findById(1L)).thenReturn(Optional.of(comment));
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
-        assertEquals(commentDto, commentService.findCommentById(comment.getArticleType(), 1L, getUserVO()));
+        assertEquals(commentDto, commentService.getCommentById(comment.getArticleType(), 1L, getUserVO()));
     }
 
     @Test
@@ -351,7 +351,7 @@ class CommentServiceImplTest {
                 .thenReturn(page);
 
         PageableDto<CommentDto> commentDtos =
-                commentService.findAllActiveReplies(pageable, parentCommentId, userVO);
+                commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
         assertEquals(getEventComment().getId(), commentDtos.getPage().get(0).getId());
         assertEquals(4, commentDtos.getTotalElements());
         assertEquals(1, commentDtos.getCurrentPage());
@@ -378,7 +378,7 @@ class CommentServiceImplTest {
                 .thenReturn(page);
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(getCommentDto());
 
-        commentService.findAllActiveReplies(pageable, parentCommentId, userVO);
+        commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
 
         assertTrue(childComment.isCurrentUserLiked());
     }
