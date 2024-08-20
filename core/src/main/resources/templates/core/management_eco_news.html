@@ -135,7 +135,10 @@
                                 <th>[[#{greenCity.pages.table.dislikes}]]
                                     <span class="table-filter-icon filter"></span>
                                 </th>
-
+                                <th>[[#{greenCity.pages.table.visibility}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+                                <th>[[#{greenCity.pages.table.actions}]]</th>
                             </tr>
                             </thead>
 
@@ -198,6 +201,28 @@
                                                 <span th:text="${econew.dislikes}"></span>
                                             </a>
                                         </span>
+                                    </td>
+                                    <td class="text">
+                                        <div th:if="${econew.hidden eq false}">
+                                            [[#{greenCity.pages.table.visible}]]
+                                        </div>
+                                        <div th:if="${econew.hidden eq true}">
+                                            [[#{greenCity.pages.table.hidden}]]
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div th:if="${econew.hidden eq false}">
+                                            <a class="edit eHideBtn" th:href="@{/management/eco-news/hide(id=${econew.id})}"><i
+                                                    class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.hide}">&#xE8F5;</i></a>
+                                        </div>
+                                        <div th:if="${econew.hidden eq true}">
+                                            <a class="edit eShowBtn" th:href="@{/management/eco-news/show(id=${econew.id})}"><i
+                                                    class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.show}">&#xE8F4;</i></a>
+                                        </div>
+                                        <a class="delete eDelBtn" data-toggle="modal"
+                                           th:href="@{/management/eco-news/delete(id=${econew.id})}"><i class="material-icons"
+                                                                                                    data-toggle="tooltip"
+                                                                                                    th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
                                     </td>
 
 <!--                                    <td th:if="${econew.likes < 100}">
@@ -385,6 +410,73 @@
                                        th:value="#{greenCity.pages.popup.cancel.}">
                                 <a href="" id="deleteAllSubmit" class="btn btn-danger">
                                     <div>[[#{greenCity.pages.delete}]]</div>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="deleteEcoNewsModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="deleteEcoNewsForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.places.page.delete.ecoNews}]]</h4>
+                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                                <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-remove" href="" id="deleteOneSubmit">
+                                    <div>[[#{greenCity.pages.delete}]]</div>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="hideEcoNewsModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="hideEcoNewsForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.places.page.hide.ecoNews}]]</h4>
+                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.hide.h2}]]</p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-remove" href="" id="hideOneSubmit">
+                                    <div>[[#{greenCity.pages.hide}]]</div>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="showEcoNewsModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="showEcoNewsForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.places.page.show.ecoNews}]]</h4>
+                                <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.show.h2}]]</p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-remove" href="" id="showOneSubmit">
+                                    <div>[[#{greenCity.pages.show}]]</div>
                                 </a>
                             </div>
                         </form>

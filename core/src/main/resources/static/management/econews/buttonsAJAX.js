@@ -227,16 +227,22 @@ $(document).ready(function () {
     $('#deleteOneSubmit').on('click', function (event) {
         event.preventDefault();
         var href = $(this).attr('href');
+        sendAjaxDeleteRequest(href);
+    });
+
+    function sendAjaxDeleteRequest(href, payload) {
+        payload = payload !== undefined ? payload : {};
         $.ajax({
             url: href,
             type: 'delete',
             dataType: 'json',
             contentType: 'application/json',
-            success: function (data) {
+            success: function () {
                 location.reload();
-            }
+            },
+            data: JSON.stringify(payload)
         });
-    });
+    }
 
     //delete button on the right in the table
     $('.delete.eDelBtn').on('click', function (event) {
@@ -268,6 +274,46 @@ $(document).ready(function () {
             data: JSON.stringify(payload)
         });
     });
+
+    $('.edit.eHideBtn').on('click', function (event) {
+        event.preventDefault();
+        $('#hideEcoNewsModal').modal();
+        let href = $(this).attr('href');
+        $('#hideOneSubmit').attr('href', href);
+    });
+
+    $('#hideOneSubmit').on('click', function (event) {
+        event.preventDefault();
+        let href = $(this).attr('href');
+        sendAjaxPatchRequest(href);
+    });
+
+    $('.edit.eShowBtn').on('click', function (event) {
+        event.preventDefault();
+        $('#showEcoNewsModal').modal();
+        let href = $(this).attr('href');
+        $('#showOneSubmit').attr('href', href);
+    });
+
+    $('#showOneSubmit').on('click', function (event) {
+        event.preventDefault();
+        let href = $(this).attr('href');
+        sendAjaxPatchRequest(href);
+    });
+
+    function sendAjaxPatchRequest(href, payload) {
+        payload = payload !== undefined ? payload : {};
+        $.ajax({
+            url: href,
+            type: 'patch',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function () {
+                location.reload();
+            },
+            data: JSON.stringify(payload)
+        });
+    }
 
     //add EcoNews button at the top
     $('#addEcoNewsModalBtn').on('click', function (event) {

@@ -235,4 +235,30 @@ class ManagementEcoNewsControllerTest {
         // then
         verify(ecoNewsService).findUsersWhoLikedPost(1L);
     }
+
+    @Test
+    void hide() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, true);
+        this.mockMvc.perform(MockMvcRequestBuilders
+            .patch(managementEcoNewsLink + "/hide?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, true);
+    }
+
+    @Test
+    void show() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, false);
+        this.mockMvc.perform(MockMvcRequestBuilders
+            .patch(managementEcoNewsLink + "/show?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, false);
+    }
 }

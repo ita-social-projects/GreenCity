@@ -48,6 +48,9 @@ public class EcoNews {
     @Column(nullable = false)
     private String text;
 
+    @Column(nullable = false)
+    private boolean hidden = false;
+
     @Builder.Default
     @OneToMany(mappedBy = "ecoNews", fetch = FetchType.LAZY)
     private List<EcoNewsComment> ecoNewsComments = new ArrayList<>();

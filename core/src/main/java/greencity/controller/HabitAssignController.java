@@ -705,12 +705,13 @@ public class HabitAssignController {
     /**
      * Method send request to assign on habit via email notification.
      *
-     * @param habitId  - id of {@link HabitAssignVO}.
-     * @param friendId - id of user friend {@link UserVO}.
-     * @param userVO   - user who send request {@link UserVO}.
-     * @param locale   - current language {@link greencity.dto.language.LanguageVO}.
+     * @param habitId    - id of {@link HabitAssignVO}.
+     * @param friendsIds - list of ids of user friends {@link UserVO} to invite.
+     * @param userVO     - user who send request {@link UserVO}.
+     * @param locale     - current language
+     *                   {@link greencity.dto.language.LanguageVO}.
      */
-    @Operation(summary = "Inviting friend on habit with email notification")
+    @Operation(summary = "Inviting friends on habit with email notification")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -718,12 +719,12 @@ public class HabitAssignController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PostMapping("/{habitId}/{friendId}/invite")
+    @PostMapping("/{habitId}/invite")
     public ResponseEntity<ResponseEntity.BodyBuilder> inviteFriendRequest(@PathVariable Long habitId,
-        @PathVariable Long friendId,
+        @Parameter(description = "List of friends ids to invite") @RequestParam List<Long> friendsIds,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendId, habitId, locale);
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendsIds, habitId, locale);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
