@@ -307,6 +307,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, String language) {
         return habitAssignRepo.findAllByUserId(userId)
             .stream()
@@ -647,6 +648,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language) {
         return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
             .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
@@ -692,6 +694,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId,
         String language) {
         return habitAssignRepo.findAllByUserIdAndStatusIsCancelled(userId)
@@ -914,6 +917,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language) {
         List<HabitAssign> list = habitAssignRepo.findAllInprogressHabitAssignsOnDate(userId, date);
         return list.stream().map(

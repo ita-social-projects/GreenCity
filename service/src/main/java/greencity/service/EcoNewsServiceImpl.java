@@ -367,6 +367,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @return list of {@link EcoNewsDto} instances.
      */
     @Override
+    @Transactional(readOnly = true)
     public List<EcoNewsDto> getAllPublishedNewsByUserId(Long userId) {
         return ecoNewsRepo.findAllByUserId(userId).stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
