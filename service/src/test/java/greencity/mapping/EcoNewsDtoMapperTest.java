@@ -46,6 +46,7 @@ class EcoNewsDtoMapperTest {
             .author(ModelUtils.getEcoNewsAuthorDto())
             .creationDate(ecoNews.getCreationDate())
             .content("text")
+            .hidden(false)
             .build();
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
