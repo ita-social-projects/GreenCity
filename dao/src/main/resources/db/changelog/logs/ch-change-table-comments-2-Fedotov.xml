@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="comments-2-delete" author="Dmytro Fedotov">
+        <dropColumn columnName="created_date" tableName="comments"/>
+        <dropColumn columnName="modified_date" tableName="comments"/>
+        <dropColumn columnName="text" tableName="comments"/>
+        <dropColumn columnName="estimate_id" tableName="comments"/>
+        <dropColumn columnName="place_id" tableName="comments"/>
+    </changeSet>
+</databaseChangeLog>
