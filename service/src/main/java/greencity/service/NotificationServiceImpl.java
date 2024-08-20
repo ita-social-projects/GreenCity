@@ -13,6 +13,8 @@ import greencity.enums.PlaceStatus;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.SendReportEmailMessage;
+import greencity.message.UserReceivedCommentMessage;
+import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -168,6 +170,44 @@ public class NotificationServiceImpl implements NotificationService {
             }
         });
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dmytruk
+     */
+    @Override
+    public void sendUserReceivedCommentEmailNotification(UserReceivedCommentMessage message) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                restClient.sendUserReceivedCommentNotification(message);
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dmytruk
+     */
+    @Override
+    public void sendUserReceivedCommentReplyEmailNotification(UserReceivedCommentReplyMessage message) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                restClient.sendUserReceivedCommentReplyNotification(message);
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
+    }
+
+
 
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
         log.info(LogMessage.IN_SEND_REPORT, emailNotification);
