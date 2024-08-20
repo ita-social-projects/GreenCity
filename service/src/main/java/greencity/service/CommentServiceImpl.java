@@ -98,23 +98,27 @@ public class CommentServiceImpl implements CommentService {
      * @return article author {@link User}.
      */
     private User articleCheckIfExistsAndReturnAuthor(ArticleType articleType, Long articleId) {
-        if (articleType == ArticleType.HABIT) {
-            Habit habit = habitRepo.findById(articleId)
-                .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-            return userRepo.findById(habit.getUserId())
-                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + habit.getUserId()));
-        } else if (articleType == ArticleType.EVENT) {
-            Event event = eventRepo.findById(articleId)
-                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
-            return userRepo.findById(event.getOrganizer().getId())
-                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
-        } else if (articleType == ArticleType.ECO_NEWS) {
-            EcoNews ecoNews = ecoNewsRepo.findById(articleId)
-                .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
-            return userRepo.findById(ecoNews.getAuthor().getId())
-                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + ecoNews.getAuthor().getId()));
-        } else {
-            return null;
+        switch (articleType) {
+            case HABIT:
+                Habit habit = habitRepo.findById(articleId)
+                        .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+                return userRepo.findById(habit.getUserId())
+                        .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + habit.getUserId()));
+
+            case EVENT:
+                Event event = eventRepo.findById(articleId)
+                        .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
+                return userRepo.findById(event.getOrganizer().getId())
+                        .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+
+            case ECO_NEWS:
+                EcoNews ecoNews = ecoNewsRepo.findById(articleId)
+                        .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
+                return userRepo.findById(ecoNews.getAuthor().getId())
+                        .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + ecoNews.getAuthor().getId()));
+
+            default:
+                return null;
         }
     }
 

@@ -161,7 +161,7 @@ class HabitCommentControllerTest {
         objectMapper.findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(commentReplies);
 
-        when(commentService.findAllActiveReplies(pageable, parentCommentId, userVO))
+        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
                 .thenReturn(commentReplies);
 
         mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active", parentCommentId)
@@ -170,7 +170,7 @@ class HabitCommentControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
-        verify(commentService).findAllActiveReplies(pageable, parentCommentId, userVO);
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
         verify(userService).findByEmail(principal.getName());
     }
 
@@ -198,7 +198,7 @@ class HabitCommentControllerTest {
 
         doThrow(new NotFoundException(errorMessage))
                 .when(commentService)
-                .findAllActiveReplies(pageable, parentCommentId, userVO);
+                .getAllActiveReplies(pageable, parentCommentId, userVO);
 
         Assertions.assertThatThrownBy(
                         () -> mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active",
