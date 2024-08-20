@@ -888,12 +888,18 @@ public class EventServiceImpl implements EventService {
         return modelMapper.map(event, EventDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {
         Page<Event> page = eventsSearchRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
         return getSearchNewsDtoPageableDto(page);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode) {
         Page<Event> page = eventsSearchRepo.find(pageable, searchQuery, languageCode);
