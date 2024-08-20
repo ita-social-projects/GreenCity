@@ -59,7 +59,7 @@ class PlaceCommentServiceImplTest {
 
     @Test
     void findByIdTest() {
-        PlaceComment comment = ModelUtils.getComment();
+        PlaceComment comment = ModelUtils.getPlaceComment();
         PlaceCommentResponseDto placeCommentResponseDto = ModelUtils.getCommentReturnDto();
         when(placeCommentRepo.findById(1L))
             .thenReturn(Optional.of(comment));
@@ -73,7 +73,7 @@ class PlaceCommentServiceImplTest {
     void deleteByIdTest() {
         String accessToken = "Token";
         UserVO userVO = ModelUtils.getUserVO();
-        PlaceComment comment = ModelUtils.getComment();
+        PlaceComment comment = ModelUtils.getPlaceComment();
         when(placeCommentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
         doNothing().when(placeCommentRepo).delete(comment);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -92,7 +92,7 @@ class PlaceCommentServiceImplTest {
     void saveTest() {
         String token = "token";
         PlaceCommentRequestDto placeCommentRequestDto = ModelUtils.getAddCommentDto();
-        PlaceComment comment = ModelUtils.getComment();
+        PlaceComment comment = ModelUtils.getPlaceComment();
         when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
         UserVO userVO = ModelUtils.getUserVO();
         userVO.setUserStatus(UserStatus.ACTIVATED);
@@ -110,7 +110,7 @@ class PlaceCommentServiceImplTest {
     void getAllCommentsTest() {
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<PlaceCommentAdminDto> commentAdminDtos = Collections.singletonList(new PlaceCommentAdminDto());
-        List<PlaceComment> list = Collections.singletonList(ModelUtils.getComment());
+        List<PlaceComment> list = Collections.singletonList(ModelUtils.getPlaceComment());
         Page<PlaceComment> comments = new PageImpl<>(list, pageRequest, list.size());
 
         PageableDto<PlaceCommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0, 1);
