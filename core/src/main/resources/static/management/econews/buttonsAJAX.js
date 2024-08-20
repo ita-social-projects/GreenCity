@@ -515,6 +515,26 @@ $(document).ready(function () {
             orientation: 'top'
         });
     });
+
+    $('.filter-container').hide();
+
+    $('.eFilterBtn').on('click', function () {
+        const $filterContainer = $(this).closest('th').find('.filter-container');
+
+        $('.eFilterBtn').not(this).removeClass('active');
+        $('.filter-container').not($filterContainer).hide();
+        $(this).toggleClass('active');
+
+        $filterContainer.toggle();
+    });
+
+    //Hide filter container when clicking outside of it
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('th').length) {
+            $('.filter-container').hide();
+            $('.eFilterBtn').removeClass('active');
+        }
+    });
 });
 
 // edit econew image

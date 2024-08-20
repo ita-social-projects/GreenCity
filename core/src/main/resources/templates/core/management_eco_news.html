@@ -109,71 +109,257 @@
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.id}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-id" onclick="">
+                                            <label for="ascending-sort-id">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-id" onclick="">
+                                            <label for="descending-sort-id">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-id" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-id" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-id" onclick="">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.author}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-author" onclick="">
+                                            <label for="ascending-sort-author">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-author" onclick="">
+                                            <label for="descending-sort-author">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-author" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-author" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-author" onclick="">
+                                        </div>
                                     </div>
                                 </th>
 
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.title}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-title" onclick="">
+                                            <label for="ascending-sort-title">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-title" onclick="">
+                                            <label for="descending-sort-title">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-title" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-title" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-title" onclick="">
+                                        </div>
                                     </div>
                                 </th>
 
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.text}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-text" onclick="">
+                                            <label for="ascending-sort-text">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-text" onclick="">
+                                            <label for="descending-sort-text">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-text" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-text" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-text" onclick="">
+                                        </div>
                                     </div>
                                 </th>
 
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.image}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
                                     </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-image" onclick="">
+                                            <label for="ascending-sort-image">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-image" onclick="">
+                                            <label for="descending-sort-image">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-image" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-image" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
 
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-image" onclick="">
+                                        </div>
+                                    </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.date}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-date" onclick="">
+                                            <label for="ascending-sort-date">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-date" onclick="">
+                                            <label for="descending-sort-date">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-date" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-date" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-date" onclick="">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.time}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-time" onclick="">
+                                            <label for="ascending-sort-time">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-time" onclick="">
+                                            <label for="descending-sort-time">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-time" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-time" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-time" onclick="">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.tags}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-tags" onclick="">
+                                            <label for="ascending-sort-tags">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-tags" onclick="">
+                                            <label for="descending-sort-tags">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-tags" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-tags" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-tags" onclick="">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.likes}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-likes" onclick="">
+                                            <label for="ascending-sort-likes">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-likes" onclick="">
+                                            <label for="descending-sort-likes">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-likes" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-likes" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-likes" onclick="">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.dislikes}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-dislikes" onclick="">
+                                            <label for="ascending-sort-dislikes">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-dislikes" onclick="">
+                                            <label for="descending-sort-dislikes">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-dislikes" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-dislikes" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-dislikes" onclick="">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.visibility}]]</span>
-                                        <span class="table-filter-icon filter"></span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__sorting">
+                                            <input type="radio" name="sort-order" id="ascending-sort-visibility" onclick="">
+                                            <label for="ascending-sort-visibility">Ascending</label>
+                                            <input type="radio" name="sort-order" id="descending-sort-visibility" onclick="">
+                                            <label for="descending-sort-visibility">Descending</label>
+                                        </div>
+                                        <div class="filter-container__search">
+                                            <input id="search-eco-news-by-visibility" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <label for="search-eco-news-by-visibility" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
+                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-visibility" onclick="">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
