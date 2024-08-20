@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -13,9 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserTaggedInCommentMessage implements Serializable {
-    @NotEmpty(message = "Tagger name cannot be empty")
-    private String taggerName;
+public class UserReceivedCommentReplyMessage implements Serializable {
+    @NotEmpty(message = "Author name cannot be empty")
+    private String authorName;
 
     @NotEmpty(message = "Receiver name cannot be empty")
     private String receiverName;
@@ -37,6 +38,15 @@ public class UserTaggedInCommentMessage implements Serializable {
 
     @NotNull(message = "Element ID cannot be null")
     private Long commentedElementId;
+
+    @NotEmpty(message = "Parent comment cannot be empty")
+    private String parentCommentText;
+
+    @NotEmpty(message = "Parent comment author name cannot be empty")
+    private String parentCommentAuthorName;
+
+    @NotNull(message = "Parent comment creation date cannot be null")
+    private LocalDateTime parentCommentCreationDate;
 
     @NotNull(message = "Base link cannot be null")
     private String baseLink;
