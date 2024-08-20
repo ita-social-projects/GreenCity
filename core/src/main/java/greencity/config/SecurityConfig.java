@@ -48,6 +48,7 @@ public class SecurityConfig {
     private static final String EVENTS = "/events";
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
+    private static final String COMMENTS = "/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -348,7 +349,7 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",
-                    "/comments",
+                    COMMENTS,
                     "/comments/{id}",
                     "/user/all",
                     "/user/roles")
@@ -385,11 +386,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     "/advices/{adviceId}",
                     "/facts/{factId}",
-                    "/comments")
+                    COMMENTS)
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/events/comments",
-                    HABITS + "/comments")
+                    HABITS + COMMENTS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     "/events/comments/{eventId}")

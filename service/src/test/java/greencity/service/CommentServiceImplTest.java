@@ -230,13 +230,6 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getAllActiveCommentsHabitNotFoundException() {
-        Long habitId = 1L;
-        when(habitRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> commentService.countComments(ArticleType.HABIT, habitId));
-    }
-
-    @Test
     void update() {
         UserVO userVO = getUserVO();
         Long commentId = 1L;

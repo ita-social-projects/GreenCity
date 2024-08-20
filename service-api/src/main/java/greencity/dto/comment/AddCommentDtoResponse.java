@@ -17,8 +17,6 @@ public class AddCommentDtoResponse {
     @Min(1)
     private Long id;
 
-    // todo
-
     @NotEmpty
     private CommentAuthorDto author;
 

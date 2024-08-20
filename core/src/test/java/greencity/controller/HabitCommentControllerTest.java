@@ -7,9 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import greencity.exception.exceptions.NotFoundException;
@@ -36,12 +33,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -80,10 +73,12 @@ class HabitCommentControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
-        String content = "{\n"
-            + "  \"text\": \"string\",\n"
-            + "  \"parentCommentId\": \"100\"\n"
-            + "}";
+        String content = """
+                {
+                  "text": "string",
+                  "parentCommentId": "100"
+                }
+                """;
 
         mockMvc.perform(post(HABIT_LINK + "/{habitId}/comments", 1)
             .principal(principal)
@@ -111,7 +106,11 @@ class HabitCommentControllerTest {
     @Test
     @SneakyThrows
     void getEventCommentById() {
-        String content = "{\n" + "  \"text\": \"string\"\n" + "}";
+        String content = """
+                {
+                  "text": "string"
+                }
+                """;
         mockMvc.perform(get(HABIT_LINK + "/comments/{id}", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
