@@ -74,11 +74,11 @@ class HabitCommentControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = """
-                {
-                  "text": "string",
-                  "parentCommentId": "100"
-                }
-                """;
+            {
+              "text": "string",
+              "parentCommentId": "100"
+            }
+            """;
 
         mockMvc.perform(post(HABIT_LINK + "/{habitId}/comments", 1)
             .principal(principal)
@@ -107,10 +107,10 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void getEventCommentById() {
         String content = """
-                {
-                  "text": "string"
-                }
-                """;
+            {
+              "text": "string"
+            }
+            """;
         mockMvc.perform(get(HABIT_LINK + "/comments/{id}", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
