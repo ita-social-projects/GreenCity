@@ -36,6 +36,9 @@ public class Comment {
     @Size(min = 1, max = 8000)
     private String text;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
@@ -43,9 +46,6 @@ public class Comment {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime modifiedDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
