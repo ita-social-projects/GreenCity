@@ -32,15 +32,15 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
-import greencity.enums.EventType;
-import greencity.enums.NotificationType;
-import greencity.enums.TagType;
-import greencity.enums.Role;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
+import greencity.enums.EventType;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -126,6 +126,7 @@ import static greencity.enums.EventType.ONLINE;
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
+    private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final EventRepo eventRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
@@ -135,12 +136,14 @@ public class EventServiceImpl implements EventService {
     private final UserService userService;
     private final EventsSearchRepo eventsSearchRepo;
     private final NotificationService notificationService;
-    private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
@@ -185,6 +188,9 @@ public class EventServiceImpl implements EventService {
         return buildEventDto(savedEvent, organizer.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(Long eventId, String email) {
         UserVO userVO = restClient.findByEmail(email);
@@ -219,6 +225,9 @@ public class EventServiceImpl implements EventService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventDto getEvent(Long eventId, Principal principal) {
         Event event = eventRepo.findById(eventId)
@@ -230,6 +239,9 @@ public class EventServiceImpl implements EventService {
         return buildEventDto(event);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
         Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
@@ -240,6 +252,9 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(events);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal,
         FilterEventDto filterEventDto, String title) {
@@ -308,6 +323,9 @@ public class EventServiceImpl implements EventService {
             eventPrewiewIdsPage.isLast());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String userLatitude,
         String userLongitude, EventType eventType) {
@@ -317,6 +335,9 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(eventPage, participant.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<EventDto> getAllFavoriteEventsByUserId(Pageable page, Long userId) {
         User user = modelMapper.map(restClient.findById(userId), User.class);
@@ -406,6 +427,9 @@ public class EventServiceImpl implements EventService {
         return userGeoPoint.distance(eventGeoPoint);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable page, String email) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
@@ -413,6 +437,9 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(events, attender.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable page, String email) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
@@ -420,6 +447,9 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(events, attender.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addAttender(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
@@ -452,6 +482,9 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeAttender(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
@@ -465,6 +498,9 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addToFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
@@ -481,6 +517,9 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeFromFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
@@ -500,6 +539,9 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query) {
         Page<Event> page = eventRepo.searchEventsBy(paging, query);
@@ -576,6 +618,9 @@ public class EventServiceImpl implements EventService {
             calculateUserEventOrganizerRating(event.getOrganizer()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<EventAttenderDto> getAllEventAttenders(Long eventId) {
         Event event = eventRepo.findById(eventId)
@@ -584,6 +629,9 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EventVO findById(Long eventId) {
         Event event = eventRepo.findById(eventId)

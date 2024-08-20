@@ -8,6 +8,8 @@ import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
+import greencity.enums.CommentStatus;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface EventCommentService {
@@ -28,11 +30,13 @@ public interface EventCommentService {
     /**
      * Method to get certain comment to {@link EventVO} specified by commentId.
      *
-     * @param id specifies {@link EventCommentDto} to which we search for comments
+     * @param eventId   id of {@link EventVO} to which we get comment.
+     * @param commentId specifies {@link EventCommentDto} to which we search for
+     *                  comments
+     * @param userVO    {@link UserVO} that get the comment.
      * @return comment to certain event specified by commentId.
-     * @author Inna Yashna
      */
-    EventCommentDto getEventCommentById(Long id, UserVO userVO);
+    EventCommentDto getEventCommentById(Long eventId, Long commentId, UserVO userVO);
 
     /**
      * Method to count not deleted event comments to certain {@link EventVO}.
@@ -47,69 +51,79 @@ public interface EventCommentService {
      * Method to get all active comments to {@link EventVO} specified by eventId.
      *
      * @param pageable page of event.
+     * @param user     {@link UserVO} that get the comments.
      * @param eventId  specifies {@link EventVO} to which we search for comments
+     * @param statuses statuses of comments.
      * @return all active comments to certain event specified by eventId.
-     * @author Inna Yashna
      */
-    PageableDto<EventCommentDto> getAllActiveComments(Pageable pageable, UserVO user, Long eventId);
+    PageableDto<EventCommentDto> getAllComments(Pageable pageable, UserVO user, Long eventId,
+        List<CommentStatus> statuses);
 
     /**
      * Method to change the existing {@link EventCommentVO}.
      *
      * @param commentText new text of {@link EventCommentVO}.
-     * @param id          to specify {@link EventCommentVO} that user wants to
+     * @param eventId     event id,
+     * @param commentId   to specify {@link EventCommentVO} that user wants to
      *                    change.
      * @param user        current {@link UserVO} that wants to change.
      */
-    void update(String commentText, Long id, UserVO user);
+    void update(String commentText, Long eventId, Long commentId, UserVO user);
 
     /**
      * Method for deleting the {@link EventCommentVO} instance by its id.
      *
+     * @param eventId        event id where located comment.
      * @param eventCommentId - {@link EventCommentVO} instance id which will be
      *                       deleted.
      * @param user           current {@link EventCommentVO} that wants to delete.
      */
-    void delete(Long eventCommentId, UserVO user);
+    void delete(Long eventId, Long eventCommentId, UserVO user);
 
     /**
-     * Method to get all not deleted replies for to certain {@link EventCommentVO}
+     * Method to get replies by statuses for to certain {@link EventCommentVO}
      * specified by id.
      *
+     * @param pageable        page of replies.
+     * @param eventId         event where located replies.
      * @param parentCommentId to specify {@link EventCommentVO}.
+     * @param statuses        statuses of comment.
      * @param user            {@link UserVO} that want to get replies.
      * @return replies for comment
      */
-    PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user);
+    PageableDto<EventCommentDto> findAllReplies(Pageable pageable, Long eventId, Long parentCommentId,
+        List<CommentStatus> statuses, UserVO user);
 
     /**
      * Method to count not deleted replies for to certain {@link EventCommentVO}
      * specified by id.
      *
+     * @param eventId         event id.
      * @param parentCommentId to specify {@link EventCommentVO}.
      * @return amount of replies.
      */
-    int countAllActiveReplies(Long parentCommentId);
+    int countAllActiveReplies(Long eventId, Long parentCommentId);
 
     /**
      * Method to like or dislike {@link EventCommentVO} specified by id.
      *
+     * @param eventId   event id.
      * @param commentId id of {@link EventCommentVO} to like/dislike.
      * @param userVO    current {@link UserVO} that wants to like/dislike.
      */
-    void like(Long commentId, UserVO userVO);
+    void like(Long eventId, Long commentId, UserVO userVO);
 
     /**
      * Method returns count of likes to certain {@link EventCommentVO} specified by
      * id.
      *
+     * @param eventId   event id.
      * @param commentId id of {@link EventCommentVO} must be counted.
      * @param userVO    {@link UserVO} user who want to get amount of likes for
      *                  comment.
-     *
      * @return amountCommentLikesDto dto with id and count likes for comments.
      */
-    AmountCommentLikesDto countLikes(Long commentId, UserVO userVO);
+    AmountCommentLikesDto countLikes(Long eventId, Long commentId, UserVO userVO);
 
     /**
      * Method returns count of likes to certain {@link EventCommentVO} specified by

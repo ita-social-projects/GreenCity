@@ -1,7 +1,6 @@
 package greencity.repository;
 
 import greencity.entity.User;
-import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import jakarta.persistence.Tuple;
 import org.springframework.data.domain.Page;
@@ -12,7 +11,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**

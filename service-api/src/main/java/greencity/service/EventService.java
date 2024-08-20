@@ -169,7 +169,6 @@ public interface EventService {
      *
      * @param searchQuery  query to search
      * @param languageCode {@link String}
-     *
      * @return PageableDto of {@link SearchEventsDto} instances
      * @author Anton Bondar
      */
@@ -181,7 +180,6 @@ public interface EventService {
      * @param pageable     {@link Pageable}
      * @param searchQuery  query to search
      * @param languageCode {@link String}
-     *
      * @return PageableDto of {@link SearchEventsDto} instances
      * @author Anton Bondar
      */

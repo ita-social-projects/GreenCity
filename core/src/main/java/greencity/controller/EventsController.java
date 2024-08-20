@@ -286,7 +286,8 @@ public class EventsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @DeleteMapping("/{eventId}/attenders")
-    public ResponseEntity<Object> removeAttender(@PathVariable Long eventId,
+    public ResponseEntity<Object> removeAttender(
+        @PathVariable Long eventId,
         @Parameter(hidden = true) Principal principal) {
         eventService.removeAttender(eventId, principal.getName());
         return ResponseEntity.ok().build();
