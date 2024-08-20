@@ -266,7 +266,7 @@ class NotificationServiceImplTest {
             .receiverName("receiver")
             .commentText("test")
             .taggerName("tagger")
-            .commentedEventId(1L)
+            .commentedElementId(1L)
             .language("en")
             .build();
         ArgumentCaptor<UserTaggedInCommentMessage> captor =
