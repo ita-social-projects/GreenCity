@@ -20,8 +20,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 @ToString(exclude = {"comments", "photos"})
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "comments")
-public class Comment {
+@Table(name = "place_comments")
+public class PlaceComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,11 +36,11 @@ public class Comment {
     private Place place;
 
     @ManyToOne
-    private Comment parentComment;
+    private PlaceComment parentComment;
 
     @Builder.Default
     @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.ALL})
-    private List<Comment> comments = new ArrayList<>();
+    private List<PlaceComment> comments = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "comment", cascade = {CascadeType.ALL})

@@ -7,11 +7,11 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.AddCommentDto;
+import greencity.dto.comment.PlaceCommentRequestDto;
 import greencity.dto.comment.CommentAdminDto;
-import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.comment.PlaceCommentResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Comment;
+import greencity.entity.PlaceComment;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
@@ -56,9 +56,9 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public CommentReturnDto findById(Long id) {
-        Comment comment = placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException(""));
-        return modelMapper.map(comment, CommentReturnDto.class);
+    public PlaceCommentResponseDto findById(Long id) {
+        PlaceComment comment = placeCommentRepo.findById(id).orElseThrow(() -> new NotFoundException(""));
+        return modelMapper.map(comment, PlaceCommentResponseDto.class);
     }
 
     /**
@@ -67,14 +67,14 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * @author Marian Milian
      */
     @Override
-    public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
+    public PlaceCommentResponseDto save(Long placeId, PlaceCommentRequestDto placeCommentRequestDto, String email) {
         UserVO userVO = restClient.findByEmail(email);
         if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         Place place = modelMapper.map(placeService.findById(placeId), Place.class);
         User user = modelMapper.map(userVO, User.class);
-        Comment comment = modelMapper.map(addCommentDto, Comment.class);
+        PlaceComment comment = modelMapper.map(placeCommentRequestDto, PlaceComment.class);
         comment.setPlace(place);
         comment.setUser(user);
         if (comment.getEstimate() != null) {
@@ -93,7 +93,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
-        return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
+        return modelMapper.map(placeCommentRepo.save(comment), PlaceCommentResponseDto.class);
     }
 
     /**
@@ -117,7 +117,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      */
     @Override
     public PageableDto<CommentAdminDto> getAllComments(Pageable pageable) {
-        Page<Comment> comments;
+        Page<PlaceComment> comments;
         List<CommentAdminDto> commentList;
         try {
             comments = placeCommentRepo.findAll(pageable);
