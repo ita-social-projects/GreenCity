@@ -51,12 +51,12 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -68,12 +68,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -86,15 +84,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
@@ -182,12 +171,8 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void saveWithExistedImageTest() throws IOException {
-        var image = ModelUtils.getFile();
-        var imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
-        var tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-
-        addEcoNewsDtoRequest.setImage(imageToEncode);
+    void saveWithExistedImageTest() {
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
@@ -201,7 +186,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
 
-        AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
+        AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, null, TestConst.EMAIL);
 
         assertEquals(addEcoNewsDtoResponse, actual);
 
@@ -237,12 +222,7 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    @SneakyThrows
-    void saveEcoNews() {
-        MultipartFile image = ModelUtils.getFile();
-        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
-        addEcoNewsDtoRequest.setImage(imageToEncode);
-
+    void saveEcoNews() throws Exception {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
@@ -257,7 +237,7 @@ class EcoNewsServiceImplTest {
             new TypeToken<List<Tag>>() {
             }.getType())).thenReturn(tags);
         when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
-        EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, image, TestConst.EMAIL);
+        EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, null, TestConst.EMAIL);
 
         assertEquals(ecoNewsGenericDto, actual);
     }
@@ -278,6 +258,7 @@ class EcoNewsServiceImplTest {
             .tagsUa(Collections.emptyList())
             .likes(1)
             .countComments(0)
+            .hidden(false)
             .build();
 
         EcoNews ecoNews = ModelUtils.getEcoNews();
@@ -325,6 +306,7 @@ class EcoNewsServiceImplTest {
                 .tagsUa(Collections.emptyList())
                 .likes(1)
                 .countComments(0)
+                .hidden(false)
                 .build());
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
@@ -547,7 +529,6 @@ class EcoNewsServiceImplTest {
 
     @Test
     void updateVoidTest() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -560,15 +541,33 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void updateVoidTest_whenEcoNewsNotSaved_throwException() {
+        EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        MultipartFile file = ModelUtils.getFile();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(ecoNewsRepo.save(ecoNews)).thenThrow(new RuntimeException());
+
+        assertThrows(NotSavedException.class,
+            () -> ecoNewsService.update(ecoNewsDtoManagement, file));
+
+        verify(fileService).delete(anyString());
+    }
+
+    @Test
     void updateEcoNewsDtoTest() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         EcoNewsGenericDto ecoNewsDto = ModelUtils.getEcoNewsGenericDto();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
+        MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
+        when(fileService.upload(file)).thenReturn("https://google.com/");
         when(modelMapper.map(ecoNews, EcoNewsGenericDto.class)).thenReturn(ecoNewsDto);
         List<TagVO> tags = ModelUtils.getEcoNewsVO().getTags();
         when(tagService.findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS)).thenReturn(tags);
@@ -578,8 +577,33 @@ class EcoNewsServiceImplTest {
             }.getType())).thenReturn(ecoNews.getTags());
 
         EcoNewsGenericDto actual =
-            ecoNewsService.update(updateEcoNewsDto, any(MultipartFile.class), ModelUtils.getUserVO());
+            ecoNewsService.update(updateEcoNewsDto, file, ModelUtils.getUserVO());
         assertEquals(ecoNewsDto, actual);
+    }
+
+    @Test
+    void updateEcoNewsDtoTest_whenEcoNewsNotSaved_throwException() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        EcoNewsGenericDto ecoNewsDto = ModelUtils.getEcoNewsGenericDto();
+        UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
+        MultipartFile file = ModelUtils.getFile();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+        when(modelMapper.map(ecoNews, EcoNewsGenericDto.class)).thenReturn(ecoNewsDto);
+        List<TagVO> tags = ModelUtils.getEcoNewsVO().getTags();
+        when(tagService.findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS)).thenReturn(tags);
+        when(modelMapper.map(tagService
+            .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
+            new TypeToken<List<Tag>>() {
+            }.getType())).thenReturn(ecoNews.getTags());
+        when(ecoNewsRepo.save(ecoNews)).thenThrow(new RuntimeException());
+
+        assertThrows(NotSavedException.class,
+            () -> ecoNewsService.update(updateEcoNewsDto, file, userVO));
+
+        verify(fileService).delete(anyString());
     }
 
     @Test
@@ -588,7 +612,6 @@ class EcoNewsServiceImplTest {
         UserVO user = ModelUtils.getUserVO();
         ecoNews.getAuthor().setId(2L);
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
-        EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
@@ -954,5 +977,36 @@ class EcoNewsServiceImplTest {
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))
             .ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, actionUser);
+    }
+
+    @Test
+    void setHiddenValue() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        EcoNews ecoNew = ModelUtils.getEcoNews();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNew));
+
+        ecoNewsService.setHiddenValue(1L, adminVO, true);
+        verify(ecoNewsRepo, times(1)).save(ecoNew.setHidden(true));
+    }
+
+    @Test
+    void setHiddenWithNotAdminValueThrowExceptionTest() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO userVO = ModelUtils.getUserVO();
+
+        assertThrows(BadRequestException.class, () -> ecoNewsService.setHiddenValue(1L, userVO, true));
+    }
+
+    @Test
+    void setHiddenWithWrongIdValueThrowExceptionTest() {
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> ecoNewsService.setHiddenValue(1L, adminVO, true));
     }
 }

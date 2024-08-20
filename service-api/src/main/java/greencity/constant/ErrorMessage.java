@@ -111,7 +111,8 @@ public class ErrorMessage {
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
-    public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
+    public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved";
+    public static final String DUPLICATE_TAGS = "Duplicate tags in eco news";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
         "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";

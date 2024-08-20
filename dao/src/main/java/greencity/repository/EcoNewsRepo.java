@@ -85,16 +85,6 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     Optional<EcoNews> findById(Long id);
 
     /**
-     * Method returns {@link EcoNews} by search query and page.
-     *
-     * @param searchQuery query to search
-     * @return list of {@link EcoNews}
-     */
-    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searcheconews "
-        + "( :searchQuery, :languageCode) ")
-    Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery, String languageCode);
-
-    /**
      * Method for getting all published news by user id.
      *
      * @param userId {@link Long} user id.
