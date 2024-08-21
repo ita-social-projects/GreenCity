@@ -9,7 +9,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.enums.EventType;
@@ -169,7 +168,7 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping
-    public ResponseEntity<PageableAdvancedDto<EventPreviewDto>> getEvent(
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) Principal principal,
         FilterEventDto filterEventDto,

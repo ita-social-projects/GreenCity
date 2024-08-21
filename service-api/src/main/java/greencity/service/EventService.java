@@ -5,7 +5,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
@@ -53,7 +52,7 @@ public interface EventService {
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
+    PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
         String title);
 
     /**

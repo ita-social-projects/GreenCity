@@ -813,7 +813,7 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .eventTime(null)
             .cities(null)
-            .statuses(null)
+            .status(null)
             .tags(null)
             .build();
     }

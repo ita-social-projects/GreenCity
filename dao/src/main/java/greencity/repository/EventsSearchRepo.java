@@ -1,8 +1,23 @@
 package greencity.repository;
 
+import greencity.dto.filter.FilterEventDto;
 import greencity.entity.Tag;
+import greencity.entity.Tag_;
+import greencity.entity.User;
+import greencity.entity.User_;
+import greencity.entity.event.Address;
+import greencity.entity.event.Address_;
 import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventDateLocation_;
+import greencity.entity.event.Event_;
 import greencity.entity.localization.TagTranslation;
+import greencity.entity.localization.TagTranslation_;
+import greencity.enums.EventStatus;
+import greencity.enums.EventTime;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.SetJoin;
+import java.time.ZonedDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +48,22 @@ public class EventsSearchRepo {
         this.criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
+    public Page<Event> findEventsByFilter(Pageable pageable, Long userId, FilterEventDto filterEventDto, String title) {
+        CriteriaQuery<Event> criteria = criteriaBuilder.createQuery(Event.class);
+        Root<Event> eventRoot = criteria.from(Event.class);
+
+        Predicate predicate = getPredicate(userId, filterEventDto, title, eventRoot);
+        criteria.select(eventRoot).where(predicate);
+
+        TypedQuery<Event> typedQuery = entityManager.createQuery(criteria)
+            .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+            .setMaxResults(pageable.getPageSize());
+        List<Event> resultList = typedQuery.getResultList();
+        long total = getEventsByFilterCount(userId, filterEventDto, title);
+
+        return new PageImpl<>(resultList, pageable, total);
+    }
+
     /**
      * Method for search events by title,text,short info and tag name.
      *
@@ -44,34 +75,96 @@ public class EventsSearchRepo {
      * @author Anton Bondar
      */
     public Page<Event> find(Pageable pageable, String searchingText, String languageCode) {
-        CriteriaQuery<Event> criteriaQuery =
-            criteriaBuilder.createQuery(Event.class);
+        CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
         Root<Event> root = criteriaQuery.from(Event.class);
 
-        Predicate predicate = getPredicate(criteriaBuilder, searchingText, languageCode, root);
-
+        Predicate predicate = getPredicate(searchingText, languageCode, root);
         criteriaQuery.select(root).distinct(true).where(predicate);
+
         TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery)
             .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
             .setMaxResults(pageable.getPageSize());
         List<Event> resultList = typedQuery.getResultList();
-        long total = getEventsCount(criteriaBuilder, searchingText, languageCode);
+        long total = getEventsCount(searchingText, languageCode);
 
         return new PageImpl<>(resultList, pageable, total);
     }
 
-    private long getEventsCount(CriteriaBuilder criteriaBuilder, String searchingText, String languageCode) {
+    private Predicate getPredicate(Long userId, FilterEventDto filterEventDto, String title, Root<Event> eventRoot) {
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (filterEventDto.getEventTime() != null) {
+            ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates);
+            if (filterEventDto.getEventTime() == EventTime.FUTURE) {
+                predicates.add(
+                    criteriaBuilder.greaterThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
+            } else if (filterEventDto.getEventTime() == EventTime.PAST) {
+                predicates.add(
+                    criteriaBuilder.lessThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
+            }
+        }
+
+        if (filterEventDto.getCities() != null && !filterEventDto.getCities().isEmpty()) {
+            Join<EventDateLocation, Address> addressJoin = eventRoot.join(Event_.dates).join(EventDateLocation_.address);
+            predicates.add(addressJoin.get(Address_.CITY_EN).in(filterEventDto.getCities()));
+        }
+
+        if (filterEventDto.getStatus() != null) {
+            if (filterEventDto.getStatus() == EventStatus.OPEN) {
+                predicates.add(criteriaBuilder.isTrue(eventRoot.get(Event_.IS_OPEN)));
+            } else if (filterEventDto.getStatus() == EventStatus.CLOSED) {
+                predicates.add(criteriaBuilder.isFalse(eventRoot.get(Event_.IS_OPEN)));
+            } else if (filterEventDto.getStatus() == EventStatus.CREATED && userId != null) {
+                Join<Event, User> organizerJoin = eventRoot.join(Event_.organizer);
+                predicates.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
+            } else if (filterEventDto.getStatus() == EventStatus.JOINED && userId != null) {
+                SetJoin<Event, User> attendersJoin = eventRoot.join(Event_.attenders);
+                predicates.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
+            } else if (filterEventDto.getStatus() == EventStatus.SAVED && userId != null) {
+                SetJoin<Event, User> followersJoin = eventRoot.join(Event_.followers);
+                predicates.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
+            }
+        }
+
+        if (filterEventDto.getTags() != null && !filterEventDto.getTags().isEmpty()) {
+            ListJoin<Tag, TagTranslation> tagsJoin = eventRoot.join(Event_.tags).join(Tag_.tagTranslations);
+            predicates.add(tagsJoin.get(TagTranslation_.NAME).in(filterEventDto.getTags()));
+        }
+
+        if (title != null && !title.isEmpty()) {
+            predicates.add(criteriaBuilder.like(eventRoot.get("title"), "%" + title + "%"));
+        }
+
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private Predicate getPredicate(String searchingText, String languageCode, Root<Event> root) {
+        List<Predicate> predicateList = formEventsLikePredicate(searchingText, root);
+        predicateList.add(formTagTranslationsPredicate(searchingText, languageCode, root));
+        return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+    }
+
+    private long getEventsByFilterCount(Long userId, FilterEventDto filterEventDto, String title) {
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Event> eventRoot = countQuery.from(Event.class);
+
+        Predicate predicate = getPredicate(userId, filterEventDto, title, eventRoot);
+        countQuery.select(criteriaBuilder.count(eventRoot)).where(predicate);
+
+        return entityManager.createQuery(countQuery).getSingleResult();
+    }
+
+    private long getEventsCount(String searchingText, String languageCode) {
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         Root<Event> countRoot = countQuery.from(Event.class);
 
-        Predicate countPredicate = getPredicate(criteriaBuilder, searchingText, languageCode, countRoot);
+        Predicate countPredicate = getPredicate(searchingText, languageCode, countRoot);
         countQuery.select(criteriaBuilder.count(countRoot)).where(countPredicate);
 
         return entityManager.createQuery(countQuery).getSingleResult();
     }
 
-    private List<Predicate> formEventsLikePredicate(CriteriaBuilder criteriaBuilder, String searchingText,
-        Root<Event> root) {
+    private List<Predicate> formEventsLikePredicate(String searchingText, Root<Event> root) {
         Expression<String> title = root.get("title").as(String.class);
         Expression<String> description = root.get("description").as(String.class);
 
@@ -84,8 +177,7 @@ public class EventsSearchRepo {
         return predicateList;
     }
 
-    private Predicate formTagTranslationsPredicate(CriteriaBuilder criteriaBuilder, String searchingText,
-        String languageCode, Root<Event> root) {
+    private Predicate formTagTranslationsPredicate(String searchingText, String languageCode, Root<Event> root) {
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Subquery<Long> tagSubquery = criteriaQuery.subquery(Long.class);
         Root<Tag> tagRoot = tagSubquery.from(Tag.class);
@@ -96,7 +188,7 @@ public class EventsSearchRepo {
 
         Join<TagTranslation, Tag> tagTranslationTagJoin = tagTranslationRoot.join("tagTranslations");
 
-        Predicate predicate = predicateForTags(criteriaBuilder, searchingText, languageCode, tagTranslationTagJoin);
+        Predicate predicate = predicateForTags(searchingText, languageCode, tagTranslationTagJoin);
         tagTranslationSubquery.select(tagTranslationTagJoin.get("id"))
             .where(predicate);
 
@@ -104,7 +196,7 @@ public class EventsSearchRepo {
         return criteriaBuilder.in(root.get("id")).value(tagSubquery);
     }
 
-    private Predicate predicateForTags(CriteriaBuilder criteriaBuilder, String searchingText, String languageCode,
+    private Predicate predicateForTags(String searchingText, String languageCode,
         Join<TagTranslation, Tag> tagTranslationTagJoin) {
         List<Predicate> predicateList = new ArrayList<>();
         Arrays.stream(searchingText.split(" ")).forEach(partOfSearchingText -> predicateList.add(criteriaBuilder.and(
@@ -112,13 +204,6 @@ public class EventsSearchRepo {
                 "%" + partOfSearchingText.toLowerCase() + "%"),
             criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("language").get("code")),
                 "%" + languageCode.toLowerCase() + "%"))));
-        return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
-    }
-
-    private Predicate getPredicate(CriteriaBuilder criteriaBuilder, String searchingText,
-        String languageCode, Root<Event> root) {
-        List<Predicate> predicateList = formEventsLikePredicate(criteriaBuilder, searchingText, root);
-        predicateList.add(formTagTranslationsPredicate(criteriaBuilder, searchingText, languageCode, root));
         return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 }

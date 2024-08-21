@@ -42,9 +42,7 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDateLocationPreviewDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
@@ -124,7 +122,6 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.UserFilterDtoRequest;
@@ -274,12 +271,7 @@ import static greencity.constant.EventTupleConstant.tagId;
 import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
-import static greencity.enums.EventStatus.CLOSED;
-import static greencity.enums.EventStatus.CREATED;
-import static greencity.enums.EventStatus.JOINED;
 import static greencity.enums.EventStatus.OPEN;
-import static greencity.enums.EventStatus.SAVED;
-import static greencity.enums.EventTime.FUTURE;
 import static greencity.enums.EventTime.PAST;
 import static greencity.enums.UserStatus.ACTIVATED;
 
@@ -3237,36 +3229,10 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDto() {
         return FilterEventDto.builder()
-            .eventTime(List.of(FUTURE, PAST))
+            .eventTime(PAST)
             .cities(List.of("Kyiv"))
-            .statuses(List.of(OPEN, CLOSED, JOINED, CREATED, SAVED))
+            .status(OPEN)
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
-            .build();
-    }
-
-    public static FilterEventDto getFilterEventDtoWithOpenStatus() {
-        return FilterEventDto.builder()
-            .statuses(List.of(OPEN))
-            .build();
-    }
-
-    public static FilterEventDto getFilterEventDtoWithSomeFilters() {
-        return FilterEventDto.builder()
-            .eventTime(List.of(PAST))
-            .cities(List.of("Kyiv"))
-            .statuses(List.of(JOINED, CREATED, SAVED))
-            .build();
-    }
-
-    public static FilterEventDto getFilterEventDtoWithCities() {
-        return FilterEventDto.builder()
-            .cities(List.of("Kyiv", "Lviv", "City"))
-            .build();
-    }
-
-    public static FilterEventDto getFilterEventDtoWithTags() {
-        return FilterEventDto.builder()
-            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL", "NOT_EVENT_TAG"))
             .build();
     }
 
@@ -3284,12 +3250,6 @@ public class ModelUtils {
             .events(List.of(getSearchEvents()))
             .countOfEcoNewsResults(4L)
             .countOfEventsResults(4L)
-            .build();
-    }
-
-    public static FilterEventDto getFilterEventDtoWithClosedStatus() {
-        return FilterEventDto.builder()
-            .statuses(List.of(CLOSED))
             .build();
     }
 

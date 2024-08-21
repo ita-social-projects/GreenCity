@@ -43,12 +43,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
@@ -112,7 +110,7 @@ class EventsControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        PageableAdvancedDto<EventPreviewDto> eventPreviewDtoPageableAdvancedDto =
+        PageableAdvancedDto<EventDto> eventPreviewDtoPageableAdvancedDto =
             ModelUtils.getEventPreviewDtoPageableAdvancedDto(pageable);
 
         ObjectMapper objectMapper = new ObjectMapper();

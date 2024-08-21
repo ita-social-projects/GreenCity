@@ -11,10 +11,9 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDateLocationPreviewDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
@@ -24,7 +23,6 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
-import greencity.dto.user.AuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -256,12 +254,16 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal,
+    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal,
         FilterEventDto filterEventDto, String title) {
         Long userId = null;
         if (principal != null) {
             userId = restClient.findIdByEmail(principal.getName());
         }
+
+//        Page<Event> eventsByFilter = eventsSearchRepo.findEventsByFilter(page, userId, filterEventDto, title);
+//        return buildPageableAdvancedDto(eventsByFilter);
+
         if (title != null) {
             title = "%" + title.toLowerCase() + "%";
         }
@@ -273,24 +275,21 @@ public class EventServiceImpl implements EventService {
         Boolean isSubscribed = null;
         Boolean isOrganizedByUser = null;
         if (filterEventDto != null) {
-            futureTimeStatuses = filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()
-                ? filterEventDto.getEventTime().stream()
-                    .map(eventTime -> eventTime == EventTime.FUTURE)
-                    .collect(Collectors.toList())
-                : Collections.emptyList();
-            if (filterEventDto.getStatuses() != null && !filterEventDto.getStatuses().isEmpty()) {
-                for (EventStatus eventStatus : filterEventDto.getStatuses()) {
-                    if (eventStatus == EventStatus.OPEN) {
-                        openStatuses.add(true);
-                    } else if (eventStatus == EventStatus.CLOSED) {
-                        openStatuses.add(false);
-                    } else if (eventStatus == EventStatus.JOINED) {
-                        isSubscribed = true;
-                    } else if (eventStatus == EventStatus.CREATED) {
-                        isOrganizedByUser = true;
-                    } else if (eventStatus == EventStatus.SAVED) {
-                        isFavorite = true;
-                    }
+            if (filterEventDto.getEventTime() != null) {
+                futureTimeStatuses = List.of(filterEventDto.getEventTime() == EventTime.FUTURE);
+            }
+            if (filterEventDto.getStatus() != null) {
+                EventStatus eventStatus = filterEventDto.getStatus();
+                if (eventStatus == EventStatus.OPEN) {
+                    openStatuses.add(true);
+                } else if (eventStatus == EventStatus.CLOSED) {
+                    openStatuses.add(false);
+                } else if (eventStatus == EventStatus.JOINED) {
+                    isSubscribed = true;
+                } else if (eventStatus == EventStatus.CREATED) {
+                    isOrganizedByUser = true;
+                } else if (eventStatus == EventStatus.SAVED) {
+                    isFavorite = true;
                 }
             }
             citiesInLower = getArrayFromListOrNullIfEmpty(filterEventDto.getCities());
@@ -355,11 +354,11 @@ public class EventServiceImpl implements EventService {
         EventType eventType, User attender, String userLatitude, String userLongitude) {
         if (eventType != null) {
             if (ONLINE == eventType) {
-                return getOnlineUserEventsSortedByDate(attender);
+                return getUserEventsSortedByDate(attender, ONLINE);
             } else if (OFFLINE == eventType) {
                 return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
                     ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
-                    : getOfflineUserEventsSortedByDate(attender);
+                    : getUserEventsSortedByDate(attender, OFFLINE);
             }
         }
         return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
@@ -367,17 +366,9 @@ public class EventServiceImpl implements EventService {
             .toList();
     }
 
-    private List<Event> getOnlineUserEventsSortedByDate(User attender) {
+    private List<Event> getUserEventsSortedByDate(User attender, EventType eventType) {
         return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(EventType.ONLINE)
-                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
-            .sorted(getComparatorByDates())
-            .collect(Collectors.toList());
-    }
-
-    private List<Event> getOfflineUserEventsSortedByDate(User attender) {
-        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
+            .filter(event -> event.getEventType().equals(eventType)
                 || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDates())
             .collect(Collectors.toList());
@@ -391,7 +382,7 @@ public class EventServiceImpl implements EventService {
             .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
             .filter(Event::isRelevant)
             .collect(Collectors.toList());
-        List<Event> eventsPassed = getOfflineUserEventsSortedByDate(attender).stream()
+        List<Event> eventsPassed = getUserEventsSortedByDate(attender, OFFLINE).stream()
             .filter(event -> !event.isRelevant())
             .toList();
         eventsFurtherSorted.addAll(eventsPassed);
@@ -787,8 +778,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
-        eventDateLocationDtos
-            .stream()
+        eventDateLocationDtos.stream()
             .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
             .forEach(eventDateLocationDto -> {
                 AddressDto addressDto = eventDateLocationDto.getCoordinates();
@@ -947,37 +937,37 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-    private List<EventPreviewDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
-        Map<Long, EventPreviewDto> eventsMap = new HashMap<>();
+    private List<EventDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
+        Map<Long, EventDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
-        List<EventPreviewDto> sortedDtos = new ArrayList<>();
+        List<EventDto> sortedDtos = new ArrayList<>();
         for (Tuple tuple : page) {
             long id = tuple.get(eventId, Long.class);
-            EventPreviewDto eventPreviewDto;
+            EventDto eventDto;
             if (!eventsMap.containsKey(id)) {
-                eventPreviewDto = EventPreviewDto.builder()
+                eventDto = EventDto.builder()
                     .id(id)
                     .title(tuple.get(title, String.class))
-                    .organizer(
-                        new AuthorDto(tuple.get(organizerId, Long.class), tuple.get(organizerName, String.class)))
+                    .organizer(new EventAuthorDto(
+                        tuple.get(organizerId, Long.class), tuple.get(organizerName, String.class), 123.0, "qwe"))
                     .creationDate(tuple.get(creationDate, Date.class).toLocalDate())
                     .titleImage(tuple.get(titleImage, String.class))
                     .isOpen(tuple.get(isOpen, Boolean.class))
                     .isRelevant(tuple.get(isRelevant, Boolean.class))
-                    .likes(tuple.get(likes, Long.class))
-                    .countComments(tuple.get(countComments, Long.class))
+                    .likes(Math.toIntExact(tuple.get(likes, Long.class)))
+                    .countComments(Math.toIntExact(tuple.get(countComments, Long.class)))
                     .isOrganizedByFriend(tuple.get(isOrganizedByFriend, Boolean.class))
                     .isFavorite(tuple.get(isFavorite, Boolean.class))
                     .isSubscribed(tuple.get(isSubscribed, Boolean.class))
                     .eventRate(tuple.get(grade, BigDecimal.class) != null
                         ? tuple.get(grade, BigDecimal.class).doubleValue()
                         : 0.0)
-                    .dates(new HashSet<>())
+                    .dates(new ArrayList<>())
                     .tags(new ArrayList<>())
                     .build();
-                eventsMap.put(id, eventPreviewDto);
+                eventsMap.put(id, eventDto);
             } else {
-                eventPreviewDto = eventsMap.get(id);
+                eventDto = eventsMap.get(id);
             }
             AddressDto addressDto = AddressDto.builder()
                 .latitude(tuple.get(latitude, Double.class))
@@ -1000,7 +990,7 @@ public class EventServiceImpl implements EventService {
                 addressDto.getHouseNumber(), addressDto.getFormattedAddressEn(), addressDto.getFormattedAddressUa())) {
                 addressDto = null;
             }
-            eventPreviewDto.getDates().add(EventDateLocationPreviewDto.builder()
+            eventDto.getDates().add(EventDateLocationDto.builder()
                 .startDate(ZonedDateTime.ofInstant(tuple.get(startDate, Instant.class), ZoneId.systemDefault()))
                 .finishDate(ZonedDateTime.ofInstant(tuple.get(finishDate, Instant.class), ZoneId.systemDefault()))
                 .onlineLink(tuple.get(onlineLink, String.class))
@@ -1015,7 +1005,7 @@ public class EventServiceImpl implements EventService {
             tagsMap.put(id, tagDtos);
         }
         for (Long id : sortedIds) {
-            EventPreviewDto eventPreviewDto = eventsMap.get(id);
+            EventDto eventDto = eventsMap.get(id);
             Set<TagDto> tags = tagsMap.get(id);
             List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
 
@@ -1036,8 +1026,8 @@ public class EventServiceImpl implements EventService {
                     tagUaEnDtos.add(tagUaEnDto);
                 }
             });
-            eventPreviewDto.setTags(tagUaEnDtos);
-            sortedDtos.add(eventPreviewDto);
+            eventDto.setTags(tagUaEnDtos);
+            sortedDtos.add(eventDto);
         }
         return sortedDtos;
     }

@@ -1335,7 +1335,7 @@ class EventServiceImplTest {
             .thenReturn(idsPage);
         when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
 
-        PageableAdvancedDto<EventPreviewDto> result =
+        PageableAdvancedDto<EventDto> result =
             eventService.getEvents(pageable, principal, filterEventDto, title);
         assertEquals(eventPreviewDtoPage, result);
     }
@@ -1368,7 +1368,7 @@ class EventServiceImplTest {
             .thenReturn(idsPage);
         when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent())).thenReturn(tuples);
 
-        PageableAdvancedDto<EventPreviewDto> result =
+        PageableAdvancedDto<EventDto> result =
             eventService.getEvents(pageable, null, filterEventDto, title);
         assertEquals(eventPreviewDtoPage, result);
     }

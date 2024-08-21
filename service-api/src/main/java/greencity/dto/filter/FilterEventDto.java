@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class FilterEventDto {
-    private List<EventTime> eventTime;
+    private EventTime eventTime;
     private List<String> cities;
-    private List<EventStatus> statuses;
+    private EventStatus status;
     private List<String> tags;
 }

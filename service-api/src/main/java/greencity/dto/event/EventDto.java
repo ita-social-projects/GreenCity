@@ -2,27 +2,21 @@ package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.dto.tag.TagUaEnDto;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Builder;
-import lombok.ToString;
-import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
 
 @Builder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
+@Data
 public class EventDto {
     private Long id;
 
@@ -68,7 +62,6 @@ public class EventDto {
 
     /**
      * Return String of event tags in English.
-     *
      */
     public String tagsToStringEn() {
         if (!CollectionUtils.isEmpty(tags)) {
