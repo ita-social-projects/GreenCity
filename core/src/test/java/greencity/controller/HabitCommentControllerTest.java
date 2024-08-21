@@ -136,11 +136,11 @@ class HabitCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void countComments() {
+    void countCommentsForHabit() {
         mockMvc.perform(get(HABIT_LINK + "/{habitId}/comments/count", 1))
             .andExpect(status().isOk());
 
-        verify(commentService).countComments(ArticleType.HABIT, 1L);
+        verify(commentService).countCommentsForHabit(1L);
     }
 
     @Test

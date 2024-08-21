@@ -131,7 +131,7 @@ public class HabitCommentController {
     })
     @GetMapping("/{habitId}/comments/count")
     public int getCountOfComments(@PathVariable Long habitId) {
-        return commentService.countComments(ArticleType.HABIT, habitId);
+        return commentService.countCommentsForHabit(habitId);
     }
 
     /**

@@ -218,13 +218,13 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void countComments() {
+    void countCommentsForHabit() {
         Habit habit = getHabit();
 
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(commentRepo.countNotDeletedCommentsByHabit(habit.getId())).thenReturn(1);
 
-        assertEquals(1, commentService.countComments(ArticleType.HABIT, habit.getId()));
+        assertEquals(1, commentService.countCommentsForHabit(habit.getId()));
 
         verify(habitRepo).findById(1L);
         verify(commentRepo).countNotDeletedCommentsByHabit(habit.getId());
@@ -236,7 +236,7 @@ class CommentServiceImplTest {
 
         when(habitRepo.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.countComments(ArticleType.HABIT, habitId));
+        assertThrows(NotFoundException.class, () -> commentService.countCommentsForHabit(habitId));
 
         verify(habitRepo).findById(1L);
     }

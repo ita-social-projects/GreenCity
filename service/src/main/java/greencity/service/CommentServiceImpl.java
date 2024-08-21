@@ -164,13 +164,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int countComments(ArticleType type, Long articleId) {
-        if (type == ArticleType.HABIT) {
-            Habit habit = habitRepo.findById(articleId)
-                .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-            return commentRepo.countNotDeletedCommentsByHabit(habit.getId());
-        }
-        return 0;
+    public int countCommentsForHabit(Long habitId) {
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + habitId));
+        return commentRepo.countNotDeletedCommentsByHabit(habit.getId());
     }
 
     /**

@@ -45,13 +45,12 @@ public interface CommentService {
     PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO);
 
     /**
-     * Method to count not deleted comments for certain article.
+     * Method to count not deleted comments for habit.
      *
-     * @param articleId to specify article
-     * @param type      to specify {@link ArticleType}
+     * @param habitId to specify article
      * @return amount of comments
      */
-    int countComments(ArticleType type, Long articleId);
+    int countCommentsForHabit(Long habitId);
 
     /**
      * Method to count not deleted replies for to certain {@link CommentVO}
