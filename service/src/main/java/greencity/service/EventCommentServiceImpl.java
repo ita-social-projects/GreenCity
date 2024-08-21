@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.constant.AppConstant;
 import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -33,7 +34,6 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -384,7 +384,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         Set<Long> usersId = getUserIdFromComment(commentText);
         if (!usersId.isEmpty()) {
             String formattedComment = formatComment(commentText);
-            String baseLink = clientAddress + "/#/events/" + eventVO.getId();
+            String baseLink = clientAddress + AppConstant.EVENTS_PATH + eventVO.getId();
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
@@ -413,7 +413,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     private void sendNotificationToReceivedCommentUser(EventVO eventVO, UserVO userVO, EventCommentVO commentVO,
         Locale locale) {
-        String baseLink = clientAddress + "/#/events/" + eventVO.getId();
+        String baseLink = clientAddress + AppConstant.EVENTS_PATH + eventVO.getId();
         String formattedComment = formatComment(commentVO.getText());
         UserReceivedCommentMessage message = UserReceivedCommentMessage.builder()
             .receiverName(eventVO.getOrganizer().getName())
@@ -440,13 +440,12 @@ public class EventCommentServiceImpl implements EventCommentService {
         Locale locale) {
         EventComment parentComment = eventCommentRepo.findById(commentVO.getParentComment().getId()).orElseThrow(
             () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        String baseLink = clientAddress + "/#/events/" + eventVO.getId();
+        String baseLink = clientAddress + AppConstant.EVENTS_PATH + eventVO.getId();
         String formattedComment = formatComment(commentVO.getText());
-        LocalDateTime dateTime = commentVO.getCreatedDate();
         UserReceivedCommentReplyMessage message = UserReceivedCommentReplyMessage.builder()
             .receiverName(eventVO.getOrganizer().getName())
             .receiverEmail(eventVO.getOrganizer().getEmail())
-            .creationDate(dateTime)
+            .creationDate(commentVO.getCreatedDate())
             .commentedElementId(eventVO.getId())
             .commentText(formattedComment)
             .authorName(userVO.getName())
