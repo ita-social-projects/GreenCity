@@ -82,7 +82,15 @@ class CommentServiceImplTest {
 
         commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO);
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
+
+        verify(habitRepo).findById(anyLong());
         verify(commentRepo).save(any(Comment.class));
+        verify(commentRepo).findById(anyLong());
+        verify(userRepo).findById(anyLong());
+        verify(modelMapper).map(userVO, CommentAuthorDto.class);
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
+        verify(modelMapper).map(any(Comment.class), eq(AddCommentDtoResponse.class));
     }
 
     @Test
@@ -106,6 +114,12 @@ class CommentServiceImplTest {
                 () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
+
+        verify(habitRepo).findById(anyLong());
+        verify(commentRepo).findById(parentCommentId);
+        verify(userRepo).findById(anyLong());
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
     }
 
     @Test
@@ -139,6 +153,12 @@ class CommentServiceImplTest {
         String expectedErrorMessage = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
             + " in Habit with id: " + habit.getId();
         assertEquals(expectedErrorMessage, notFoundException.getMessage());
+
+        verify(habitRepo).findById(anyLong());
+        verify(commentRepo).findById(parentCommentId);
+        verify(userRepo).findById(anyLong());
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
     }
 
     @Test
@@ -175,15 +195,26 @@ class CommentServiceImplTest {
         String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;
 
         assertEquals(expectedErrorMessage, badRequestException.getMessage());
+
+        verify(habitRepo).findById(anyLong());
+        verify(commentRepo).findById(parentCommentId);
+        verify(userRepo).findById(anyLong());
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
     }
 
     @Test
     void getCommentById() {
         Comment comment = getComment();
         CommentDto commentDto = getCommentDto();
+
         when(commentRepo.findById(1L)).thenReturn(Optional.of(comment));
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
+
         assertEquals(commentDto, commentService.getCommentById(comment.getArticleType(), 1L, getUserVO()));
+
+        verify(commentRepo).findById(1L);
+        verify(modelMapper).map(comment, CommentDto.class);
     }
 
     @Test
@@ -194,13 +225,20 @@ class CommentServiceImplTest {
         when(commentRepo.countNotDeletedCommentsByHabit(habit.getId())).thenReturn(1);
 
         assertEquals(1, commentService.countComments(ArticleType.HABIT, habit.getId()));
+
+        verify(habitRepo).findById(1L);
+        verify(commentRepo).countNotDeletedCommentsByHabit(habit.getId());
     }
 
     @Test
     void countCommentsHabitNotFoundException() {
         Long habitId = 1L;
+
         when(habitRepo.findById(1L)).thenReturn(Optional.empty());
+
         assertThrows(NotFoundException.class, () -> commentService.countComments(ArticleType.HABIT, habitId));
+
+        verify(habitRepo).findById(1L);
     }
 
     @Test
@@ -227,6 +265,12 @@ class CommentServiceImplTest {
         assertEquals(4, allComments.getTotalElements());
         assertEquals(1, allComments.getCurrentPage());
         assertEquals(1, allComments.getPage().size());
+
+        verify(habitRepo).findById(1L);
+        verify(commentRepo).findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
+            pageable, habitId, ArticleType.HABIT, CommentStatus.DELETED);
+        verify(modelMapper).map(comment, CommentDto.class);
+
     }
 
     @Test
@@ -242,6 +286,7 @@ class CommentServiceImplTest {
         commentService.update(editedText, commentId, userVO);
 
         assertEquals(CommentStatus.EDITED, comment.getStatus());
+
         verify(commentRepo).save(any(Comment.class));
     }
 
@@ -257,6 +302,8 @@ class CommentServiceImplTest {
             assertThrows(NotFoundException.class,
                 () -> commentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -277,6 +324,8 @@ class CommentServiceImplTest {
             assertThrows(BadRequestException.class,
                 () -> commentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -288,8 +337,9 @@ class CommentServiceImplTest {
             .thenReturn(Optional.ofNullable(comment));
         commentService.delete(commentId, userVO);
 
-        assertEquals(CommentStatus.DELETED, comment.getComments().get(0).getStatus());
+        assertEquals(CommentStatus.DELETED, comment.getComments().getFirst().getStatus());
         assertEquals(CommentStatus.DELETED, comment.getStatus());
+
         verify(commentRepo).findByIdAndStatusNot(any(Long.class), eq(CommentStatus.DELETED));
     }
 
@@ -311,6 +361,8 @@ class CommentServiceImplTest {
             assertThrows(UserHasNoPermissionToAccessException.class,
                 () -> commentService.delete(commentId, userToDeleteVO));
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, noPermissionToAccessException.getMessage());
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -323,6 +375,8 @@ class CommentServiceImplTest {
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class, () -> commentService.delete(commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -345,10 +399,14 @@ class CommentServiceImplTest {
 
         PageableDto<CommentDto> commentDtos =
             commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
-        assertEquals(getEventComment().getId(), commentDtos.getPage().get(0).getId());
+        assertEquals(getEventComment().getId(), commentDtos.getPage().getFirst().getId());
         assertEquals(4, commentDtos.getTotalElements());
         assertEquals(1, commentDtos.getCurrentPage());
         assertEquals(1, commentDtos.getPage().size());
+
+        verify(modelMapper).map(childComment, CommentDto.class);
+        verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
+            pageable, parentCommentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -374,6 +432,10 @@ class CommentServiceImplTest {
         commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
 
         assertTrue(childComment.isCurrentUserLiked());
+
+        verify(commentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(
+            pageable, parentCommentId, CommentStatus.DELETED);
+        verify(modelMapper).map(childComment, CommentDto.class);
     }
 
     @Test
@@ -387,6 +449,9 @@ class CommentServiceImplTest {
 
         int result = commentService.countAllActiveReplies(parentCommentId);
         assertEquals(repliesAmount, result);
+
+        verify(commentRepo).findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED);
+        verify(commentRepo).countByParentCommentIdAndStatusNot(parentCommentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -398,6 +463,8 @@ class CommentServiceImplTest {
             assertThrows(NotFoundException.class, () -> commentService.countAllActiveReplies(parentCommentId));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
+
+        verify(commentRepo).findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -413,6 +480,9 @@ class CommentServiceImplTest {
         commentService.like(commentId, userVO);
 
         assertTrue(comment.getUsersLiked().contains(user));
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+        verify(modelMapper).map(userVO, User.class);
     }
 
     @Test
@@ -428,6 +498,8 @@ class CommentServiceImplTest {
         commentService.like(commentId, userVO);
 
         assertFalse(comment.getUsersLiked().contains(user));
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -441,6 +513,8 @@ class CommentServiceImplTest {
             assertThrows(NotFoundException.class, () -> commentService.like(commentId, userVO));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -464,6 +538,8 @@ class CommentServiceImplTest {
         assertEquals(comment.getUser().getId(), result.getUserId());
         assertEquals(usersLikedAmount, result.getAmountLikes());
         assertTrue(result.isLiked());
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
     @Test
@@ -477,5 +553,7 @@ class CommentServiceImplTest {
             assertThrows(NotFoundException.class, () -> commentService.countLikes(commentId, userVO));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 }

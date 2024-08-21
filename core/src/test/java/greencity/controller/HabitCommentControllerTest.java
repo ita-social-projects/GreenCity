@@ -203,6 +203,9 @@ class HabitCommentControllerTest {
             () -> mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active",
                 parentCommentId).principal(principal)).andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
+
+        verify(userService).findByEmail(anyString());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
     }
 
     @Test
@@ -242,6 +245,8 @@ class HabitCommentControllerTest {
             get(HABIT_LINK + "/comments/{parentCommentId}/replies/active/count", parentCommentId))
             .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
+
+        verify(commentService).countAllActiveReplies(parentCommentId);
     }
 
     @Test
@@ -293,6 +298,8 @@ class HabitCommentControllerTest {
                 .principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
+
+        verify(userService).findByEmail(anyString());
     }
 
     @Test
@@ -324,6 +331,7 @@ class HabitCommentControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
+        verify(userService).findByEmail(anyString());
         verify(commentService).countLikes(commentId, userVO);
     }
 
@@ -355,5 +363,8 @@ class HabitCommentControllerTest {
                 .principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
+
+        verify(userService).findByEmail(anyString());
+        verify(commentService).countLikes(commentId, userVO);
     }
 }
