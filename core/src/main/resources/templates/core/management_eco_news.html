@@ -53,7 +53,7 @@
     <div id="sidebar" th:insert="core/sidepanel"></div>
     <div class="main-content">
         <div class="container-xl">
-            <div class="table-responsive">
+            <div class="table-responsive eco-news">
                 <div class="table-wrapper">
                     <div class="table-title">
                         <div class="row manager-user">
@@ -72,15 +72,11 @@
                         <div class="row-box-and-sort">
                             <div class="main-search">
                                 <!-- Search Form  -->
-                                <form class="form-inline searching" action="#">
-                                    <input id="habitSearch" type="text"  class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}"
-                                           onkeyup="searchTableFunction()">
+                                <form class="form-inline searching" action="#" onsubmit="return searchByQuery(document.getElementById('ecoNewsSearch').value)">
+                                    <input id="ecoNewsSearch" type="text"  class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}">
+                                    <label for="ecoNewsSearch" class="search-icon" style="transform: translateY(-50%);"><i class="material-icons">&#xE8B6;</i></label>
                                     <input class="search-submit-btn" type="submit">
                                 </form>
-                                    <button id="econews-filter-button" class="filter-button">  <!--onclick="openForm()"  -->
-                                        <img src="/img/filter-icon.svg" alt="Filter icon">Filter
-                                    </button>
-                                    <!-- todo-->
                             </div>
 
                             <div class="filter-list-grid">
@@ -110,22 +106,23 @@
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.id}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'id')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'id')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                     <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-id" onclick="">
-                                            <label for="ascending-sort-id">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-id" onclick="">
-                                            <label for="descending-sort-id">Descending</label>
-                                        </div>
                                         <div class="filter-container__search">
-                                            <input id="search-eco-news-by-id" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <input id="search-eco-news-by-id" type="text" class="form-search" th:placeholder="#{greenCity.pages.search}">
                                             <label for="search-eco-news-by-id" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
                                         </div>
-
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-id" onclick="">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-id" onclick="searchByNameField(document.getElementById('search-eco-news-by-id').value, 'id')">
                                         </div>
                                     </div>
                                 </th>
@@ -133,22 +130,23 @@
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.author}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'author')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'author')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                     <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-author" onclick="">
-                                            <label for="ascending-sort-author">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-author" onclick="">
-                                            <label for="descending-sort-author">Descending</label>
-                                        </div>
                                         <div class="filter-container__search">
-                                            <input id="search-eco-news-by-author" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <input id="search-eco-news-by-author" type="text" class="form-search" th:placeholder="#{greenCity.pages.search}">
                                             <label for="search-eco-news-by-author" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
                                         </div>
-
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-author" onclick="">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-author" onclick="searchByNameField(document.getElementById('search-eco-news-by-author').value, 'author')">
                                         </div>
                                     </div>
                                 </th>
@@ -157,22 +155,23 @@
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.title}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'title')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'title')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                     <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-title" onclick="">
-                                            <label for="ascending-sort-title">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-title" onclick="">
-                                            <label for="descending-sort-title">Descending</label>
-                                        </div>
                                         <div class="filter-container__search">
-                                            <input id="search-eco-news-by-title" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <input id="search-eco-news-by-title" type="text" class="form-search" th:placeholder="#{greenCity.pages.search}">
                                             <label for="search-eco-news-by-title" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
                                         </div>
-
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-title" onclick="">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-title" onclick="searchByNameField(document.getElementById('search-eco-news-by-title').value, 'title')">
                                         </div>
                                     </div>
                                 </th>
@@ -181,69 +180,49 @@
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.text}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'text')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'text')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                     <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-text" onclick="">
-                                            <label for="ascending-sort-text">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-text" onclick="">
-                                            <label for="descending-sort-text">Descending</label>
-                                        </div>
                                         <div class="filter-container__search">
-                                            <input id="search-eco-news-by-text" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
+                                            <input id="search-eco-news-by-text" type="text" class="form-search" th:placeholder="#{greenCity.pages.search}">
                                             <label for="search-eco-news-by-text" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
                                         </div>
 
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-text" onclick="">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-text" onclick="searchByNameField(document.getElementById('search-eco-news-by-text').value, 'text')">
                                         </div>
                                     </div>
                                 </th>
 
                                 <th>
-                                    <div class="table-header-container">
-                                        <span class="header-text">[[#{greenCity.pages.table.image}]]</span>
-                                        <span class="table-filter-icon filter eFilterBtn"></span>
-                                    </div>
-                                    <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-image" onclick="">
-                                            <label for="ascending-sort-image">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-image" onclick="">
-                                            <label for="descending-sort-image">Descending</label>
-                                        </div>
-                                        <div class="filter-container__search">
-                                            <input id="search-eco-news-by-image" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
-                                            <label for="search-eco-news-by-image" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
-                                        </div>
-
-                                        <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-image" onclick="">
-                                        </div>
-                                    </div>
+                                    <span class="header-text">[[#{greenCity.pages.table.image}]]</span>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.date}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'creationDate')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'creationDate')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                     <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-date" onclick="">
-                                            <label for="ascending-sort-date">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-date" onclick="">
-                                            <label for="descending-sort-date">Descending</label>
-                                        </div>
-                                        <div class="filter-container__search">
-                                            <input id="search-eco-news-by-date" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
-                                            <label for="search-eco-news-by-date" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
-                                        </div>
-
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-date" onclick="">
+                                            <!-- todo: select one date or date period -->
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-date" onclick="orderByNameField(getSelectedRadioButton('sort-order-date'), document.getElementById('search-eco-news-by-date').value, 'date')">
                                         </div>
                                     </div>
                                 </th>
@@ -251,22 +230,20 @@
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.time}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
+                                        <span onclick="orderByNameField('asc', 'time')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'time')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                     <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-time" onclick="">
-                                            <label for="ascending-sort-time">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-time" onclick="">
-                                            <label for="descending-sort-time">Descending</label>
-                                        </div>
-                                        <div class="filter-container__search">
-                                            <input id="search-eco-news-by-time" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
-                                            <label for="search-eco-news-by-time" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
-                                        </div>
-
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-time" onclick="">
+                                            <!-- todo: select one time or time period -->
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-time" onclick="orderByNameField(getSelectedRadioButton('sort-order-time'), document.getElementById('search-eco-news-by-time').value, 'time')">
                                         </div>
                                     </div>
                                 </th>
@@ -277,19 +254,15 @@
                                     </div>
                                     <div class="filter-container">
                                         <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-tags" onclick="">
+                                            <!-- todo: checkboxes for tags-->
+                                            <input type="radio" name="sort-order-tags" id="ascending-sort-tags" value="ASC">
                                             <label for="ascending-sort-tags">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-tags" onclick="">
+                                            <input type="radio" name="sort-order-tags" id="descending-sort-tags" value="DESC">
                                             <label for="descending-sort-tags">Descending</label>
                                         </div>
-                                        <div class="filter-container__search">
-                                            <input id="search-eco-news-by-tags" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
-                                            <label for="search-eco-news-by-tags" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
-                                        </div>
-
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-tags" onclick="">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-tags" onclick="orderByNameField(getSelectedRadioButton('sort-order-tags'), document.getElementById('search-eco-news-by-tags').value, 'tags')">
                                         </div>
                                     </div>
                                 </th>
@@ -297,46 +270,28 @@
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.likes}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
-                                    </div>
-                                    <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-likes" onclick="">
-                                            <label for="ascending-sort-likes">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-likes" onclick="">
-                                            <label for="descending-sort-likes">Descending</label>
-                                        </div>
-                                        <div class="filter-container__search">
-                                            <input id="search-eco-news-by-likes" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
-                                            <label for="search-eco-news-by-likes" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
-                                        </div>
-
-                                        <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-likes" onclick="">
-                                        </div>
+                                        <span onclick="orderByNameField('asc', 'likes')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'likes')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.dislikes}]]</span>
                                         <span class="table-filter-icon filter eFilterBtn"></span>
-                                    </div>
-                                    <div class="filter-container">
-                                        <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-dislikes" onclick="">
-                                            <label for="ascending-sort-dislikes">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-dislikes" onclick="">
-                                            <label for="descending-sort-dislikes">Descending</label>
-                                        </div>
-                                        <div class="filter-container__search">
-                                            <input id="search-eco-news-by-dislikes" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
-                                            <label for="search-eco-news-by-dislikes" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
-                                        </div>
-
-                                        <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-dislikes" onclick="">
-                                        </div>
+                                        <span onclick="orderByNameField('asc', 'dislikes')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
+                                        <span onclick="orderByNameField('desc', 'dislikes')">
+                                            <i class="material-icons" data-toggle="tooltip"
+                                               th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
                                     </div>
                                 </th>
                                 <th>
@@ -346,19 +301,15 @@
                                     </div>
                                     <div class="filter-container">
                                         <div class="filter-container__sorting">
-                                            <input type="radio" name="sort-order" id="ascending-sort-visibility" onclick="">
+                                            <!-- todo: radiobuttons/checkboxes for visibility-->
+                                            <input type="radio" name="sort-order-visibility" id="ascending-sort-visibility" value="ASC">
                                             <label for="ascending-sort-visibility">Ascending</label>
-                                            <input type="radio" name="sort-order" id="descending-sort-visibility" onclick="">
+                                            <input type="radio" name="sort-order-visibility" id="descending-sort-visibility" value="DESC">
                                             <label for="descending-sort-visibility">Descending</label>
                                         </div>
-                                        <div class="filter-container__search">
-                                            <input id="search-eco-news-by-visibility" type="text" class="form-search" name="searchReg" placeholder="Search" onkeyup="" >
-                                            <label for="search-eco-news-by-visibility" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
-                                        </div>
-
                                         <div class="filter-container__buttons">
-                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" value="Cancel">
-                                            <input type="submit" class="btn btn-success btn-primary" value="Apply" id="-visibility" onclick="">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="hideFilterPopup()">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="-visibility" onclick="orderByNameField(getSelectedRadioButton('sort-order-visibility'), document.getElementById('search-eco-news-by-visibility').value, 'visibility')">
                                         </div>
                                     </div>
                                 </th>

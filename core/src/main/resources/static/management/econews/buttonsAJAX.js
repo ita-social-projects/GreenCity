@@ -6,34 +6,6 @@ function clearAllTagsInTagList() {
     document.getElementById("tagsEdit").innerHTML = '';
 }
 
-function searchTableFunction() {
-    var userRequestInput, filteredRequest, table, tr, i;
-    userRequestInput = document.getElementById("search");
-    filteredRequest = userRequestInput.value.toUpperCase();
-    table = document.getElementById("tabElement");
-    tr = table.getElementsByTagName("tr");
-    for (i = 0; i < tr.length; i++) {
-        id = tr[i].getElementsByTagName("td")[1];
-        author = tr[i].getElementsByTagName("td")[2];
-        title = tr[i].getElementsByTagName("td")[3];
-        content = tr[i].getElementsByTagName("td")[4];
-        if (id || author || title || content) {
-            idValue = id.textContent || id.innerText;
-            authorValue = author.textContent || author.innerText;
-            titleValue = title.textContent || title.innerText;
-            contentValue = content.textContent || content.innerText;
-            if (idValue.toUpperCase().indexOf(filteredRequest) > -1 ||
-                authorValue.toUpperCase().indexOf(filteredRequest) > -1 ||
-                titleValue.toUpperCase().indexOf(filteredRequest) > -1 ||
-                contentValue.toUpperCase().indexOf(filteredRequest) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
-        }
-    }
-}
-
 function toggle(source) {
     var checkboxes = document.querySelectorAll('input[type="checkbox"]');
     for (var i = 0; i < checkboxes.length; i++) {
@@ -535,6 +507,17 @@ $(document).ready(function () {
             $('.eFilterBtn').removeClass('active');
         }
     });
+
+    document.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            const target = event.target;
+
+            if (target.id.startsWith('search-eco-news-by-')) {
+                const fieldName = target.id.replace('search-eco-news-by-', '');
+                searchByNameField(target.value, fieldName);
+            }
+        }
+    });
 });
 
 // edit econew image
@@ -554,27 +537,109 @@ function markCurentPageOnNav() {
     document.getElementById("eco-news-nav").classList.add("eco-news-active-link");
 }
 
-function orderByNameField(nameField) {
-    var allParam = window.location.search;
-    var urlSearch = new URLSearchParams(allParam);
-    var sort = urlSearch.get("sort");
-    var page = urlSearch.get("page");
+function hideFilterPopup() {
+    $('.filter-container').hide();
+}
+
+function getSelectedRadioButton(radioGroupName) {
+    const selectedRadio = document.querySelector(`input[name="${radioGroupName}"]:checked`);
+    return selectedRadio ? selectedRadio.value : null;
+}
+
+function searchByQuery(query) {
+    let allParam = window.location.search;
+    let urlSearch = new URLSearchParams(allParam);
+    let filter = urlSearch.get("filter");
+    let sort = urlSearch.get("sort");
+    let page = urlSearch.get("page");
     if (page !== null) {
         urlSearch.set("page", "0");
     }
-    if (sort == null) {
-        urlSearch.set("sort", nameField + ",ASC");
-    } else if (sort.includes(nameField)) {
-        sort = sort.toUpperCase();
-        if (sort.includes("ASC")) {
-            urlSearch.set("sort", nameField + ",DESC");
-        } else if (sort.includes("DESC")) {
-            urlSearch.set("sort", nameField + ',ASC');
+    if (sort !== null) {
+        urlSearch.set("sort", sort);
+    }
+    if (filter !== null) {
+        urlSearch.set("filter", filter);
+    }
+    urlSearch.set("query", query);
+
+    let url = "/management/eco-news?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
         }
-    } else {
-        urlSearch.set("sort", nameField + ",ASC");
+    });
+}
+
+function searchByNameField(searchValue, fieldName) {
+    let allParam = window.location.search;
+    let urlSearch = new URLSearchParams(allParam);
+    let filter = urlSearch.get("filter");
+    let sort = urlSearch.get("sort");
+    let query = urlSearch.get("query");
+    let page = urlSearch.get("page");
+    if (page !== null) {
+        urlSearch.set("page", "0");
+    }
+    if (sort !== null) {
+        urlSearch.set("sort", sort);
+    }
+    if (query !== null) {
+        urlSearch.set("query", query);
+    }
+    if (searchValue !== null || searchValue !== "") {
+        if (filter == null) {
+            urlSearch.set("filter", fieldName + "=" + searchValue);
+        } else {
+            urlSearch.set("filter", filter + ";/n" + fieldName + "=" + searchValue);
+        }
     }
 
+    let url = "/management/eco-news?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function orderByNameField(sortOrder, fieldName) {
+    let allParam = window.location.search;
+    let urlSearch = new URLSearchParams(allParam);
+    let filter = urlSearch.get("filter");
+    let query = urlSearch.get("query");
+    let sort = urlSearch.get("sort");
+    let page = urlSearch.get("page");
+    if (page !== null) {
+        urlSearch.set("page", "0");
+    }
+    if (filter !== null) {
+        urlSearch.set("filter", filter);
+    }
+    if (query !== null) {
+        urlSearch.set("query", query);
+    }
+    if (sort !== null) {
+        if (sort.includes(fieldName)) {
+            let sortArray = sort.split(';');
+            for (let i = 0; i < sortArray.length; i++) {
+                if (sortArray[i].startsWith(fieldName + ',')) {
+                    sortArray[i] = fieldName + ',' + sortOrder;
+                    break;
+                }
+            }
+            sort = sortArray.join(';');
+            urlSearch.set("sort", sort);
+        } else {
+            urlSearch.set("sort", sort + ";" + fieldName + "," + sortOrder);
+        }
+    } else {
+        urlSearch.set("sort", fieldName + "," + sortOrder);
+    }
     let url = "/management/eco-news?";
     $.ajax({
         url: url + urlSearch.toString(),
@@ -651,3 +716,15 @@ function closeNav() {
     document.getElementById("tab-content").style.marginLeft = "0";
     // document.getElementById("eco-news-content").style.marginRight="0";
 }
+
+document.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const target = event.target;
+
+        if (target.id.startsWith('search-eco-news-by-')) {
+            event.preventDefault(); // Prevent form submission
+            const fieldName = target.id.replace('search-eco-news-by-', '');
+            searchByNameField(target.value, fieldName);
+        }
+    }
+});

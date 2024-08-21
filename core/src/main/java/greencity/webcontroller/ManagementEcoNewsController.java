@@ -63,8 +63,11 @@ public class ManagementEcoNewsController {
      * @return View template path {@link String}.
      */
     @GetMapping
-    public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
+    public String getAllEcoNews(@RequestParam(required = false, name = "query") String query,
+                                @RequestParam(required = false, name = "filter") String filter,
+                                Model model,
+                                @Parameter(hidden = true) Pageable pageable,
+                                EcoNewsViewDto ecoNewsViewDto) {
         PageableAdvancedDto<EcoNewsDto> allEcoNews;
         if (ecoNewsViewDto.getId() != null && !ecoNewsViewDto.isEmpty()) {
             allEcoNews = ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);

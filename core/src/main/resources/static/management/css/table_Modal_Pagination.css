@@ -1827,7 +1827,7 @@ a.lightgrey {
     box-sizing: border-box;
 }
 
-.filter-container__search .search-icon {
+.eco-news .search-icon {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -1853,4 +1853,10 @@ a.lightgrey {
 
 .table-filter-icon.active {
     background-image: url("/img/filter-icon-active.svg");
+}
+
+.eco-news .form-inline.searching {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
