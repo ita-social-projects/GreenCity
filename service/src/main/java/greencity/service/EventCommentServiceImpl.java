@@ -24,10 +24,17 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +46,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +70,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public AddEventCommentDtoResponse save(Long eventId, AddEventCommentDtoRequest addEventCommentDtoRequest,
-        UserVO userVO) {
+        UserVO userVO, Locale locale) {
         EventVO eventVO = eventService.findById(eventId);
         EventComment eventComment = modelMapper.map(addEventCommentDtoRequest, EventComment.class);
         eventComment.setUser(modelMapper.map(userVO, User.class));
@@ -94,11 +102,12 @@ public class EventCommentServiceImpl implements EventCommentService {
                 eventId, eventVO.getTitle());
         }
 
-        sendNotificationToTaggedUser(eventId, userVO, addEventCommentDtoRequest.getText());
-
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
+
+        sendNotificationToTaggedUser(eventId, userVO, addEventCommentDtoResponse.getText(),
+            addEventCommentDtoResponse.getCreatedDate(), locale);
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
@@ -164,7 +173,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     @Transactional
-    public void update(String commentText, Long eventId, Long commentId, UserVO userVO) {
+    public void update(String commentText, Long eventId, Long commentId, UserVO userVO, Locale locale) {
         EventComment eventComment = eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .filter(c -> c.getEvent().getId().equals(eventId))
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
@@ -176,6 +185,9 @@ public class EventCommentServiceImpl implements EventCommentService {
         eventComment.setText(commentText);
         eventComment.setStatus(CommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
+
+        sendNotificationToTaggedUser(eventComment.getEvent().getId(), userVO, eventComment.getText(),
+            eventComment.getCreatedDate(), locale);
     }
 
     /**
@@ -323,20 +335,33 @@ public class EventCommentServiceImpl implements EventCommentService {
     /**
      * Method to send email notification if user tagged in comment.
      *
-     * @param eventId {@link Long} event id.
-     * @param userVO  {@link UserVO} comment author.
-     * @param comment {@link String} comment.
+     * @param eventId     {@link Long} event id.
+     * @param userVO      {@link UserVO} comment author.
+     * @param comment     {@link String} comment.
+     * @param createdDate {@link LocalDateTime} date and time of creation
      */
-    private void sendNotificationToTaggedUser(Long eventId, UserVO userVO, String comment) {
-        Long userId = getUserIdFromComment(comment);
-        if (userId != null) {
-            User user = userRepo.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                .email(user.getEmail())
-                .subject(String.format(EmailNotificationMessagesConstants.EVENT_TAGGED_SUBJECT, userVO.getName()))
-                .message(clientAddress + LINK + eventId)
-                .build());
+    private void sendNotificationToTaggedUser(Long eventId, UserVO userVO, String comment, LocalDateTime createdDate,
+        Locale locale) {
+        Set<Long> usersId = getUserIdFromComment(comment);
+        if (!usersId.isEmpty()) {
+            String formattedComment = formatComment(comment);
+            Event event = eventRepo.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+            for (Long userId : usersId) {
+                User user = userRepo.findById(userId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+                UserTaggedInCommentMessage message = UserTaggedInCommentMessage.builder()
+                    .commentedEventId(eventId)
+                    .eventName(event.getTitle())
+                    .taggerName(userVO.getName())
+                    .language(locale.getLanguage())
+                    .creationDate(createdDate)
+                    .receiverName(user.getName())
+                    .receiverEmail(user.getEmail())
+                    .commentText(formattedComment)
+                    .build();
+                notificationService.sendUsersTaggedInCommentEmailNotification(message);
+            }
         }
     }
 
@@ -346,13 +371,40 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @param message comment from {@link AddEventCommentDtoResponse}.
      * @return user id if present or null.
      */
-    private Long getUserIdFromComment(String message) {
+    private Set<Long> getUserIdFromComment(String message) {
         String regEx = "data-userid=\"(\\d+)\"";
         Pattern pattern = Pattern.compile(regEx);
         Matcher matcher = pattern.matcher(message);
-        if (matcher.find()) {
-            return Long.valueOf(matcher.group(1));
+        Set<Long> userIds = new HashSet<>();
+        if (!matcher.find()) {
+            return userIds;
         }
-        return null;
+        matcher.reset();
+        while (matcher.find()) {
+            userIds.add(Long.valueOf(matcher.group(1)));
+        }
+        return userIds;
+    }
+
+    /**
+     * Method to replace regex data-userid="userId" with @+username in comment and
+     * makes username bold.
+     *
+     * @param comment is comment to format.
+     * @return formatted comment.
+     */
+    private String formatComment(String comment) {
+        String regEx = "data-userid=\"(\\d+)\"";
+        Pattern pattern = Pattern.compile(regEx);
+        Matcher matcher = pattern.matcher(comment);
+        StringBuilder formattedCommentBuilder = new StringBuilder();
+        while (matcher.find()) {
+            Long userId = Long.valueOf(matcher.group(1));
+            String username = userRepo.findById(userId).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)).getName();
+            matcher.appendReplacement(formattedCommentBuilder, " <strong>@" + username + "</strong> ");
+        }
+        matcher.appendTail(formattedCommentBuilder);
+        return formattedCommentBuilder.toString();
     }
 }

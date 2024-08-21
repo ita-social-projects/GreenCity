@@ -37,6 +37,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -99,7 +100,7 @@ class EventCommentControllerTest {
             mapper.readValue(content, AddEventCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(eventCommentService).save(eventId, addEventCommentDtoRequest, userVO);
+        verify(eventCommentService).save(eventId, addEventCommentDtoRequest, userVO, Locale.of("en"));
     }
 
     @Test

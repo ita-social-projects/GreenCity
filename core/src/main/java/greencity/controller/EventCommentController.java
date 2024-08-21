@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Locale;
 
 @Validated
 @RequiredArgsConstructor
@@ -71,8 +73,9 @@ public class EventCommentController {
     public ResponseEntity<AddEventCommentDtoResponse> save(
         @PathVariable Long eventId,
         @Valid @RequestBody AddEventCommentDtoRequest request,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventCommentService.save(eventId, request, user));
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventCommentService.save(eventId, request, user, locale));
     }
 
     /**
@@ -158,8 +161,9 @@ public class EventCommentController {
         @PathVariable Long eventId,
         @PathVariable Long commentId,
         @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        eventCommentService.update(commentText, eventId, commentId, user);
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        eventCommentService.update(commentText, eventId, commentId, user, locale);
         return ResponseEntity.ok().build();
     }
 

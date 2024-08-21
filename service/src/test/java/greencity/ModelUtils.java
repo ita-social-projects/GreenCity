@@ -20,8 +20,8 @@ import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.AddCommentDto;
-import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.comment.PlaceCommentRequestDto;
+import greencity.dto.comment.PlaceCommentResponseDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -141,7 +141,7 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.Advice;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
-import greencity.entity.Comment;
+import greencity.entity.PlaceComment;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
@@ -568,7 +568,7 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text",
+            "title", "text", false,
             List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
@@ -586,7 +586,7 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text",
+            "title", "text", false,
             List.of(getEcoNewsComment(CommentStatus.EDITED),
                 getEcoNewsComment(CommentStatus.ORIGINAL),
                 getEcoNewsComment(CommentStatus.DELETED),
@@ -596,7 +596,8 @@ public class ModelUtils {
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet(), Collections.emptySet());
+            "title", "text", false, null, Collections.singletonList(getTag()), Collections.emptySet(),
+            Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {
@@ -1135,7 +1136,7 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("News"), "source", null, "shortInfo");
+            Collections.singletonList("News"), "source", "shortInfo");
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
@@ -1453,17 +1454,17 @@ public class ModelUtils {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
 
-    public static Comment getComment() {
-        return new Comment(1L, "text", getUser(),
+    public static PlaceComment getComment() {
+        return new PlaceComment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
     }
 
-    public static CommentReturnDto getCommentReturnDto() {
-        return new CommentReturnDto(1L, "text", null, null, null);
+    public static PlaceCommentResponseDto getCommentReturnDto() {
+        return new PlaceCommentResponseDto(1L, "text", null, null, null);
     }
 
-    public static AddCommentDto getAddCommentDto() {
-        return new AddCommentDto("comment", null, null);
+    public static PlaceCommentRequestDto getAddCommentDto() {
+        return new PlaceCommentRequestDto("comment", null, null);
     }
 
     public static AdviceTranslation getAdviceTranslation() {
@@ -1667,7 +1668,7 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false);
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
@@ -1680,12 +1681,12 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
-            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0);
+            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0,
+            false);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
-        return new UpdateEcoNewsDto(1L, "title", "text", "shortInfo", Collections.singletonList("tag"),
-            "image", "source");
+        return new UpdateEcoNewsDto(1L, "title", "text", "shortInfo", Collections.singletonList("tag"), "source");
     }
 
     public static SearchNewsDto getSearchNewsDto() {

@@ -197,17 +197,16 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", null, Collections.singletonList(getTag()), null, null);
+            "title", "text", false, null, Collections.singletonList(getTag()), null, null);
     }
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()), null, 1L,
-            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12);
+            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12, false);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
-        return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), null, null, "shortInfo");
+        return new AddEcoNewsDtoRequest("title", "text", Collections.singletonList("tag"), null, "shortInfo");
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
