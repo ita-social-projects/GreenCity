@@ -67,8 +67,6 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Value("${client.address}")
     private String clientAddress;
 
-    private static final String EVENT_PATH = "/#/events/";
-
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
      *
@@ -385,7 +383,6 @@ public class EventCommentServiceImpl implements EventCommentService {
         Set<Long> usersId = getUserIdFromComment(commentText);
         if (!usersId.isEmpty()) {
             String formattedComment = formatComment(commentText);
-            String baseLink = clientAddress + EVENT_PATH + eventVO.getId();
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
@@ -398,7 +395,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                     .receiverName(user.getName())
                     .receiverEmail(user.getEmail())
                     .commentText(formattedComment)
-                    .baseLink(baseLink)
+                    .baseLink(getBaseLink(eventVO.getId()))
                     .build();
                 notificationService.sendUsersTaggedInCommentEmailNotification(message);
             }
@@ -414,7 +411,6 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     private void sendNotificationToReceivedCommentUser(EventVO eventVO, UserVO userVO, EventCommentVO commentVO,
         Locale locale) {
-        String baseLink = clientAddress + EVENT_PATH + eventVO.getId();
         String formattedComment = formatComment(commentVO.getText());
         UserReceivedCommentMessage message = UserReceivedCommentMessage.builder()
             .receiverName(eventVO.getOrganizer().getName())
@@ -425,7 +421,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             .language(locale.getLanguage())
             .elementName(eventVO.getTitle())
             .authorName(userVO.getName())
-            .baseLink(baseLink)
+            .baseLink(getBaseLink(eventVO.getId()))
             .build();
         notificationService.sendUserReceivedCommentEmailNotification(message);
     }
@@ -441,7 +437,6 @@ public class EventCommentServiceImpl implements EventCommentService {
         Locale locale) {
         EventComment parentComment = eventCommentRepo.findById(commentVO.getParentComment().getId()).orElseThrow(
             () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        String baseLink = clientAddress + +eventVO.getId();
         String formattedComment = formatComment(commentVO.getText());
         UserReceivedCommentReplyMessage message = UserReceivedCommentReplyMessage.builder()
             .receiverName(eventVO.getOrganizer().getName())
@@ -455,7 +450,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             .parentCommentCreationDate(parentComment.getCreatedDate())
             .parentCommentText(parentComment.getText())
             .parentCommentAuthorName(parentComment.getUser().getName())
-            .baseLink(baseLink)
+            .baseLink(getBaseLink(eventVO.getId()))
             .build();
         notificationService.sendUserReceivedCommentReplyEmailNotification(message);
     }
@@ -501,5 +496,9 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
         matcher.appendTail(formattedCommentBuilder);
         return formattedCommentBuilder.toString();
+    }
+
+    private String getBaseLink(Long id) {
+        return clientAddress + "/#/events/" + id;
     }
 }
