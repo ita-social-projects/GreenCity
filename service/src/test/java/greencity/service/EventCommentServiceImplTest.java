@@ -158,7 +158,6 @@ class EventCommentServiceImplTest {
             .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
     }
 
-
     @Test
     void saveReplyWithWrongParentIdThrowException() {
         Long parentCommentId = 123L;

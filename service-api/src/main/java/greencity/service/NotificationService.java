@@ -76,14 +76,10 @@ public interface NotificationService {
      */
     void sendUserReceivedCommentEmailNotification(UserReceivedCommentMessage message);
 
-
     /**
      * Method send a notification message when user received reply to the comment.
      *
      * @param message {@link UserReceivedCommentReplyMessage}.
      */
     void sendUserReceivedCommentReplyEmailNotification(UserReceivedCommentReplyMessage message);
-
-
 }
-

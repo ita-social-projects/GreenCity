@@ -3563,30 +3563,30 @@ public class ModelUtils {
             .build();
     }
 
-    public static EventCommentVO getEventCommentVO(){
+    public static EventCommentVO getEventCommentVO() {
         return EventCommentVO.builder()
-                .id(1L)
-                .text("text")
-                .usersLiked(new HashSet<>())
-                .createdDate(LocalDateTime.now())
-                .user(getUserVO())
-                .event(getEventVO())
-                .parentComment(EventCommentVO.builder()
-                        .id(5L)
-                        .build())
-                .status(String.valueOf(CommentStatus.ORIGINAL))
-                .build();
+            .id(1L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .parentComment(EventCommentVO.builder()
+                .id(5L)
+                .build())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
+            .build();
     }
 
-    public static EventCommentVO getEventCommentVOWithTaggedUser(){
+    public static EventCommentVO getEventCommentVOWithTaggedUser() {
         return EventCommentVO.builder()
-                .id(1L)
-                .text("test data-userid=\"5\" test")
-                .usersLiked(new HashSet<>())
-                .createdDate(LocalDateTime.now())
-                .user(getUserVO())
-                .event(getEventVO())
-                .status(String.valueOf(CommentStatus.ORIGINAL))
-                .build();
+            .id(1L)
+            .text("test data-userid=\"5\" test")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
+            .build();
     }
 }

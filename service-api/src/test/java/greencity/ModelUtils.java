@@ -237,35 +237,35 @@ public class ModelUtils {
 
     public static UserTaggedInCommentMessage getUserTaggedInCommentMessage() {
         return UserTaggedInCommentMessage.builder()
-                .baseLink("http://localhost:8060/events/1")
-                .taggerName("Denys")
-                .receiverName("Ivan")
-                .language("en")
-                .receiverEmail("Ivan@gmail.com")
-                .build();
+            .baseLink("http://localhost:8060/events/1")
+            .taggerName("Denys")
+            .receiverName("Ivan")
+            .language("en")
+            .receiverEmail("Ivan@gmail.com")
+            .build();
     }
 
     public static UserReceivedCommentMessage getUserReceivedCommentMessage() {
         return UserReceivedCommentMessage.builder()
-                .commentText("test")
-                .baseLink("http://localhost:8060/events/1")
-                .authorName("Denys")
-                .receiverName("Ivan")
-                .language("en")
-                .receiverEmail("Ivan@gmail.com")
-                .build();
+            .commentText("test")
+            .baseLink("http://localhost:8060/events/1")
+            .authorName("Denys")
+            .receiverName("Ivan")
+            .language("en")
+            .receiverEmail("Ivan@gmail.com")
+            .build();
     }
 
     public static UserReceivedCommentReplyMessage getUserReceivedCommentReplyMessage() {
         return UserReceivedCommentReplyMessage.builder()
-                .commentText("test")
-                .baseLink("http://localhost:8060/events/1")
-                .authorName("Denys")
-                .receiverName("Ivan")
-                .language("en")
-                .receiverEmail("Ivan@gmail.com")
-                .parentCommentText("parent comment")
-                .parentCommentAuthorName("Dmytro")
-                .build();
+            .commentText("test")
+            .baseLink("http://localhost:8060/events/1")
+            .authorName("Denys")
+            .receiverName("Ivan")
+            .language("en")
+            .receiverEmail("Ivan@gmail.com")
+            .parentCommentText("parent comment")
+            .parentCommentAuthorName("Dmytro")
+            .build();
     }
 }

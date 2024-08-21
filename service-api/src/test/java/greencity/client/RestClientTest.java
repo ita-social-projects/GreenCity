@@ -623,14 +623,14 @@ class RestClientTest {
         HttpEntity<UserTaggedInCommentMessage> entity = new HttpEntity<>(message, headers);
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-                + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(Object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendUserTaggedInCommentNotification(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-                + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 
     @Test
@@ -642,14 +642,14 @@ class RestClientTest {
         HttpEntity<UserReceivedCommentMessage> entity = new HttpEntity<>(message, headers);
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-                + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(Object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendUserReceivedCommentNotification(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-                + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 
     @Test
@@ -661,13 +661,13 @@ class RestClientTest {
         HttpEntity<UserReceivedCommentReplyMessage> entity = new HttpEntity<>(message, headers);
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-                + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(Object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendUserReceivedCommentReplyNotification(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-                + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

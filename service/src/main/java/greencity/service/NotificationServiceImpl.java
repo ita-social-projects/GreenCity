@@ -207,8 +207,6 @@ public class NotificationServiceImpl implements NotificationService {
         });
     }
 
-
-
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
         log.info(LogMessage.IN_SEND_REPORT, emailNotification);
         List<PlaceAuthorDto> subscribers = getSubscribers(emailNotification);

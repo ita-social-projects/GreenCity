@@ -7,7 +7,6 @@ import greencity.entity.event.EventComment;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
 import java.util.stream.Collectors;
 
 /**
@@ -24,9 +23,8 @@ public class EventCommentVOMapper extends AbstractConverter<EventComment, EventC
             .text(eventComment.getText())
             .createdDate(eventComment.getCreatedDate())
             .modifiedDate(eventComment.getModifiedDate())
-            .parentComment(eventComment.getParentComment() != null ?
-                EventCommentVO.builder()
-                    .id(eventComment.getParentComment().getId())
+            .parentComment(eventComment.getParentComment() != null ? EventCommentVO.builder()
+                .id(eventComment.getParentComment().getId())
                 .build() : null)
             .user(UserVO.builder()
                 .id(eventComment.getUser().getId())
@@ -37,14 +35,12 @@ public class EventCommentVOMapper extends AbstractConverter<EventComment, EventC
                 .id(eventComment.getEvent().getId())
                 .build())
             .currentUserLiked(eventComment.isCurrentUserLiked())
-            .usersLiked(eventComment.getUsersLiked() != null ?
-                eventComment.getUsersLiked().stream()
-                    .map(user -> UserVO.builder()
-                        .id(user.getId())
-                        .build())
-                    .collect(Collectors.toSet()) : null)
-            .status(eventComment.getStatus() != null ?
-                    eventComment.getStatus().toString() : null)
+            .usersLiked(eventComment.getUsersLiked() != null ? eventComment.getUsersLiked().stream()
+                .map(user -> UserVO.builder()
+                    .id(user.getId())
+                    .build())
+                .collect(Collectors.toSet()) : null)
+            .status(eventComment.getStatus() != null ? eventComment.getStatus().toString() : null)
             .build();
     }
 }

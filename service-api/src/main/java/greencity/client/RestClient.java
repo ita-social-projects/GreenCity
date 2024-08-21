@@ -615,7 +615,7 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserReceivedCommentMessage> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 
     /**
@@ -628,6 +628,6 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserReceivedCommentReplyMessage> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }
