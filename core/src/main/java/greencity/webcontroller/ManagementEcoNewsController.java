@@ -64,7 +64,6 @@ public class ManagementEcoNewsController {
      */
     @GetMapping
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query,
-                                @RequestParam(required = false, name = "filter") String filter,
                                 Model model,
                                 @Parameter(hidden = true) Pageable pageable,
                                 EcoNewsViewDto ecoNewsViewDto) {

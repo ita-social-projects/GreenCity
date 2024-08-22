@@ -488,6 +488,8 @@ $(document).ready(function () {
         });
     });
 
+    $('.end-date').hide();
+
     $('.filter-container').hide();
 
     $('.eFilterBtn').on('click', function () {
@@ -547,19 +549,10 @@ function getSelectedRadioButton(radioGroupName) {
 }
 
 function searchByQuery(query) {
-    let allParam = window.location.search;
-    let urlSearch = new URLSearchParams(allParam);
-    let filter = urlSearch.get("filter");
+    let urlSearch = getUrlSearchParams();
     let sort = urlSearch.get("sort");
-    let page = urlSearch.get("page");
-    if (page !== null) {
-        urlSearch.set("page", "0");
-    }
     if (sort !== null) {
         urlSearch.set("sort", sort);
-    }
-    if (filter !== null) {
-        urlSearch.set("filter", filter);
     }
     urlSearch.set("query", query);
 
@@ -573,28 +566,21 @@ function searchByQuery(query) {
     });
 }
 
-function searchByNameField(searchValue, fieldName) {
-    let allParam = window.location.search;
-    let urlSearch = new URLSearchParams(allParam);
-    let filter = urlSearch.get("filter");
+function searchByNameField(searchValue, fieldName, searchValue2 = null, fieldName2 = null) {
+    let urlSearch = getUrlSearchParams();
     let sort = urlSearch.get("sort");
     let query = urlSearch.get("query");
-    let page = urlSearch.get("page");
-    if (page !== null) {
-        urlSearch.set("page", "0");
-    }
     if (sort !== null) {
         urlSearch.set("sort", sort);
     }
     if (query !== null) {
         urlSearch.set("query", query);
     }
-    if (searchValue !== null || searchValue !== "") {
-        if (filter == null) {
-            urlSearch.set("filter", fieldName + "=" + searchValue);
-        } else {
-            urlSearch.set("filter", filter + ";/n" + fieldName + "=" + searchValue);
-        }
+    if (searchValue !== null && searchValue !== "") {
+        urlSearch.set(fieldName, searchValue);
+    }
+    if (searchValue2 !== null && searchValue2 !== "") {
+        urlSearch.set(fieldName2, searchValue2);
     }
 
     let url = "/management/eco-news?";
@@ -608,18 +594,9 @@ function searchByNameField(searchValue, fieldName) {
 }
 
 function orderByNameField(sortOrder, fieldName) {
-    let allParam = window.location.search;
-    let urlSearch = new URLSearchParams(allParam);
-    let filter = urlSearch.get("filter");
+    let urlSearch = getUrlSearchParams();
     let query = urlSearch.get("query");
     let sort = urlSearch.get("sort");
-    let page = urlSearch.get("page");
-    if (page !== null) {
-        urlSearch.set("page", "0");
-    }
-    if (filter !== null) {
-        urlSearch.set("filter", filter);
-    }
     if (query !== null) {
         urlSearch.set("query", query);
     }
@@ -649,6 +626,7 @@ function orderByNameField(sortOrder, fieldName) {
         }
     });
 }
+
 
 // mark order
 function markOrder() {
@@ -728,3 +706,50 @@ document.addEventListener('keypress', function(event) {
         }
     }
 });
+
+function applyTagFilter() {
+    let selectedTags = [];
+
+    $('input[name="tags"]:checked').each(function() {
+        selectedTags.push($(this).val());
+    });
+
+    let tagValues = selectedTags.join(',');
+
+    searchByNameField(tagValues, 'tags');
+}
+
+function toggleEndDate() {
+    $('.end-date').toggle();
+}
+
+function getUrlSearchParams() {
+    let allParam = window.location.search;
+    let urlSearch = new URLSearchParams(allParam);
+
+    let params = {
+        id: urlSearch.get("id"),
+        author: urlSearch.get("author"),
+        title: urlSearch.get("title"),
+        text: urlSearch.get("text"),
+        startDate: urlSearch.get("startDate"),
+        endDate: urlSearch.get("endDate"),
+        tags: urlSearch.get("tags"),
+        hidden: urlSearch.get("hidden"),
+        query: urlSearch.get("query"),
+        sort: urlSearch.get("sort"),
+        page: urlSearch.get("page")
+    };
+
+    if (params.page !== null) {
+        urlSearch.set("page", "0");
+    }
+
+    for (let key in params) {
+        if (params[key] !== null) {
+            urlSearch.set(key, params[key]);
+        }
+    }
+
+    return urlSearch;
+}

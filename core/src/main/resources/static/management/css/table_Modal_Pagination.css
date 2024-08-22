@@ -1783,29 +1783,29 @@ a.lightgrey {
     top: 100%;
     margin-left: -10px;
 }
-.filter-container__sorting input {
+.filter-container__search .visibility {
     display: inline;
     position: absolute;
 }
 
-.filter-container__sorting input[type="radio"] {
+.filter-container__search input[type="radio"] {
     opacity: 0.01;
     z-index: 100;
 }
 
-.filter-container__sorting input[type="radio"]:checked+label,
+.filter-container__search input[type="radio"]:checked+label,
 .Checked+label {
     border: 1px solid #13AA57;
     background-color: #13AA57;
     color: #ffffff;
 }
 
-.filter-container__sorting label {
+.filter-container__search .visibility-label {
     border: 1px solid #13AA57;
     background-color: #ffffff;
     color: #13AA57;
     border-radius: 5px;
-    width: 175px;
+    width: 140px;
     height: 40px;
     padding: 5px;
     cursor: pointer;
@@ -1859,4 +1859,41 @@ a.lightgrey {
     position: relative;
     display: flex;
     align-items: center;
+}
+
+.radio-buttons .filter-container__search {
+    display: grid;
+    justify-content: start;
+}
+
+.radio-buttons .btn {
+    margin: 10px 0 0 0;
+    width: 70px;
+    height: 35px;
+}
+
+.filter-container__search.tags {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.custom-checkbox.tag span, .custom-checkbox.date span {
+    margin-left: 10px;
+    color: #13AA57;
+    font-weight: 600;
+}
+
+.custom-checkbox.tag input[type="checkbox"]:checked + label:after,
+.custom-checkbox.date input[type="checkbox"]:checked + label:after {
+    transform: translateY(10px);
+}
+
+.form-control.end-date {
+    margin-top: 10px;
+}
+
+.filter-container__search.tags,
+.filter-container__search.date {
+    padding: 10px;
 }
