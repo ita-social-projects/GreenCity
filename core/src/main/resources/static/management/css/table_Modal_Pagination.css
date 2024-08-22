@@ -556,8 +556,7 @@ table.table .avatar {
 }
 
 .custom-checkbox {
-    margin-left: 8px;
-    margin-top: -9px;
+    position:relative;
 }
 
 .custom-checkbox.userpage {
@@ -568,12 +567,18 @@ table.table .avatar {
 .custom-checkbox input[type="checkbox"] {
     opacity: 0;
     position: absolute;
-    margin: 5px 0 0 3px;
     z-index: 9;
 }
 
 .custom-checkbox .modal-checkbox label:before {
     border: 1px solid green;
+}
+
+.custom-checkbox label {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    margin:0;
 }
 
 .custom-checkbox label:before {
@@ -587,26 +592,37 @@ table.table .avatar {
     z-index: 2;
     width: 18px;
     height: 18px;
-
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .custom-checkbox input[type="checkbox"]:checked + label:after {
     content: '';
     position: absolute;
-    left: 6px;
-    top: 3px;
+    top: 50%;
+    left: 50%;
     width: 6px;
     height: 11px;
-    border: solid #ffffff;
+    border: solid #ffffff 1px;
     border-width: 0 3px 3px 0;
-    transform: inherit;
-    z-index: 3;
-    transform: rotateZ(45deg);
+    transform: translate(-50%, -50%) rotate(45deg);
+    z-index: 10;
 }
 
-.custom-checkbox input[type="checkbox"]:checked + label:before {
+.custom-checkbox input[type="checkbox"]:checked + label:before,
+.custom-checkbox input[type="checkbox"].indeterminate + label:before{
     border-color: #13AA57;
     background: #13AA57;
+}
+
+.custom-checkbox input[type="checkbox"].indeterminate + label:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 2px;
+    background: #ffffff;
+    transform: translate(-50%, -50%);
 }
 
 .column-role{

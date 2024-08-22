@@ -1,8 +1,9 @@
 class ConfirmationModal {
-    constructor(modalId, messageElementId, confirmButtonId) {
+    constructor(modalId, messageElementId, confirmButtonId, cancelButtonId) {
         this.modalId = modalId;
         this.messageElementId = messageElementId;
         this.confirmButtonId = confirmButtonId;
+        this.cancelButtonId = cancelButtonId;
         this.callbackConfirm = null;
         this.callbackCancel = null;
 
@@ -20,8 +21,10 @@ class ConfirmationModal {
         });
     }
 
-    show(message, onConfirm, onCancel) {
+    show(message, onConfirm, onCancel, confirmButtonText = "Yes", cancelButtonText = "No") {
         document.getElementById(this.messageElementId).textContent = message;
+        document.getElementById(this.confirmButtonId).textContent = confirmButtonText;
+        document.getElementById(this.cancelButtonId).textContent = cancelButtonText;
 
         this.callbackConfirm = onConfirm;
         this.callbackCancel = onCancel;

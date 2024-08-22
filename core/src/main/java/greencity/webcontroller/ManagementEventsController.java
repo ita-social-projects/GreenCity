@@ -13,15 +13,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,7 +50,7 @@ public class ManagementEventsController {
      */
     @GetMapping
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
+                               @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
         if (eventViewDto.getId() != null && !eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
@@ -54,8 +58,8 @@ public class ManagementEventsController {
             model.addAttribute("query", "");
         } else {
             allEvents = query == null || query.isEmpty()
-                ? eventService.getAll(pageable, null)
-                : eventService.searchEventsBy(pageable, query);
+                    ? eventService.getAll(pageable, null)
+                    : eventService.searchEventsBy(pageable, query);
             model.addAttribute("fields", new EventViewDto());
             model.addAttribute("query", query);
         }
@@ -71,13 +75,14 @@ public class ManagementEventsController {
         }
         model.addAttribute("eventsTag", tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en"));
         model.addAttribute("pageSize", pageable.getPageSize());
+        model.addAttribute("backendAddress", backendAddress);
         return "core/management_events";
     }
 
     @GetMapping("/create-event")
     public String getEventCreatePage(Model model, Principal principal) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[] {});
+        model.addAttribute("images", new MultipartFile[]{});
         model.addAttribute("backendAddress", backendAddress);
         model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
         model.addAttribute("googleMapApiKey", googleMapApiKey);
@@ -86,12 +91,21 @@ public class ManagementEventsController {
 
     @PostMapping
     public String createEvent(@RequestPart("addEventDtoRequest") AddEventDtoRequest addEventDtoRequest,
-        @RequestPart("images") MultipartFile[] images,
-        Principal principal,
-        Model model) {
+                              @RequestPart("images") MultipartFile[] images,
+                              Principal principal,
+                              Model model) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[] {});
+        model.addAttribute("images", new MultipartFile[]{});
         eventService.save(addEventDtoRequest, principal.getName(), images);
         return "redirect:/management/events";
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Object> delete(@RequestBody List<Long> ids, Principal principal) {
+        String email = principal.getName();
+        for(Long id :ids){
+            eventService.delete(id, email);
+        }
+        return ResponseEntity.ok().build();
     }
 }

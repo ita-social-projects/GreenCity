@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -25,8 +26,8 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/events/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/events/confirmationModal.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 </head>
 <body>
@@ -38,20 +39,18 @@
             <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
                 <div id="eco-news" class="row " style="margin-top: 3%; ">
                     <div class="col-sm-8">
-                        <h2 class="text-describe">[[#{greenCity.events.page.h}]]</h2>
+                        <h2 class="text-describe text-bold" style=" font-size: 32px; color: #13AA57;">[[#{greenCity.events.page.h}]]</h2>
                     </div>
                     <div class="col-sm-4">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-end" style="gap:2rem">
                                     <a th:href="@{/management/events/create-event}" class="btn btn-secondary">
                                         <div>[[#{greenCity.events.page.add.event}]]</div>
                                     </a>
-                                    <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled"
-                                       data-toggle="modal">
-                                        <div class="text-danger" style="width: 100px;">[[#{greenCity.pages.delete}]]
-                                        </div>
-                                    </a>
+                                    <button id="deleteSelectedButton" class="btn btn-remove d-none">
+                                        <div>[[#{greenCity.pages.delete}]]</div>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +61,7 @@
 
                     </div>
                     <div class="col-sm-2">
-                        <!--                SOME BUTTONS TO SHANGE FORM-->
+                        <!--                SOME BUTTONS TO CHANGE FORM-->
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="dropdown size">
@@ -81,14 +80,14 @@
                 </div>
                 <div class="row" style="margin-top: 3%">
                     <div class="col-sm-12">
-                        <table class="table table-striped">
+                        <table class="table table-bordered">
                             <thead class="table-primary">
                             <tr>
-                                <th style="width: 48px;">
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
-                                </span>
+                                <th style="width: 40px;">
+                                    <div class="custom-checkbox">
+                                        <input type="checkbox" id="selectAll">
+                                        <label for="selectAll"></label>
+                                    </div>
                                 </th>
                                 <th style="width: 120px;">
                                     <span>[[#{greenCity.pages.table.id}]]</span>
@@ -129,20 +128,14 @@
                             </thead>
 
                             <tbody>
-
                             <th:block th:each="allEvents, iterStatus :${pageable.getPage()}">
                                 <tr>
-                                    <td style="width: 48px">
-                                        <span class="custom-checkbox">
-                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                               name="options[]" th:value="${allEvents.getId()}"
-                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
-                                        </span>
+                                    <td class="custom-checkbox">
+                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}"
+                                               name="options[]" th:value="${allEvents.getId()}">
+                                        <label th:for="checkbox+${iterStatus.count}"></label>
                                     </td>
-                                    >
                                     <td style="width: 8%">
-
                                         <span>[[${allEvents.getId()}]]</span>
                                     </td>
                                     <td th:text="${allEvents.organizer.name}" style="white-space: nowrap; /* Заборона переносу */
@@ -167,11 +160,6 @@
                                            class="edit eBtn">
                                             <i class="material-icons" data-toggle="tooltip"
                                                th:title="#{greenCity.pages.edit}">&#xE254;</i>
-                                        </a>
-                                        <a th:href="@{/management/events/delete/(id=${allEvents.getId()})}"
-                                           class="delete eDelBtn" data-toggle="modal">
-                                            <i class="material-icons" data-toggle="tooltip"
-                                               th:title="#{greenCity.pages.delete}">&#xE872;</i>
                                         </a>
                                     </td>
                                 </tr>
@@ -215,7 +203,6 @@
                                 </ul>
                             </div>
                         </div>
-
                         <!-- End of Pagination-->
                     </div>
                 </div>
@@ -223,11 +210,17 @@
         </div>
     </div>
     <!-- Edit Modal HTML -->
-    <div th:replace="core/fragments/modals/edit_event_modal.html">
-    <!-- Delete all selected Modal HTML -->
-    <div th:replace="core/fragments/modals/delete_all_selected_events_modal.html">
-</div>
+    <div th:replace="core/fragments/modals/edit_event_modal.html"></div>
+    <div th:replace="core/fragments/modals/confirmation-modal.html"></div>
+    <div id="footer" th:insert="core/footer"></div>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        var backendAddress = /*[[${backendAddress}]]*/;
+        /*]]>*/
+    </script>
 
-<div id="footer" th:insert="core/footer"></div>
+    <script th:src="@{/management/events/deleteEvents.js}"></script>
+
+
 </body>
 </html>

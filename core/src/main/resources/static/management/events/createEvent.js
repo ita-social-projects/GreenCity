@@ -16,7 +16,7 @@ durationSelect.addEventListener('change', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const confirmationModal = new ConfirmationModal('confirmationModal', 'confirmationMessage', 'confirmButton');
+    const confirmationModal = new ConfirmationModal('confirmationModal', 'confirmationMessage', 'confirmModalButton',"cancelModalButton");
 
     imageUploader = new ImageUploader({
         fileInputSelector: '#imageUpload',
