@@ -54,6 +54,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -3559,6 +3560,33 @@ public class ModelUtils {
             .requesterId(1L)
             .friendStatus("FRIEND")
             .chatId(1L)
+            .build();
+    }
+
+    public static EventCommentVO getEventCommentVO() {
+        return EventCommentVO.builder()
+            .id(1L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .parentComment(EventCommentVO.builder()
+                .id(5L)
+                .build())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
+            .build();
+    }
+
+    public static EventCommentVO getEventCommentVOWithTaggedUser() {
+        return EventCommentVO.builder()
+            .id(1L)
+            .text("test data-userid=\"5\" test")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
             .build();
     }
 }

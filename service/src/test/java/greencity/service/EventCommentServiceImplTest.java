@@ -11,6 +11,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -19,6 +20,7 @@ import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.EventCommentVOMapper;
 import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
@@ -91,6 +93,9 @@ class EventCommentServiceImplTest {
     @Mock
     private UserNotificationService userNotificationService;
 
+    @Mock
+    private EventCommentVOMapper eventCommentVOMapper;
+
     private Locale locale = Locale.ENGLISH;
 
     @Test
@@ -99,10 +104,10 @@ class EventCommentServiceImplTest {
         User user = getUser();
         EventVO eventVO = ModelUtils.getEventVO();
         Event event = ModelUtils.getEvent();
+        EventCommentVO eventCommentVO = ModelUtils.getEventCommentVO();
         AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
         EventComment eventComment = getEventComment();
         EventCommentAuthorDto eventCommentAuthorDto = ModelUtils.getEventCommentAuthorDto();
-
         when(eventService.findById(anyLong())).thenReturn(eventVO);
         when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(eventCommentRepo.findById(anyLong())).thenReturn(Optional.of(eventComment));
@@ -112,7 +117,7 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
-        when(modelMapper.map(eventComment.getUser(), UserVO.class)).thenReturn(userVO);
+        when(eventCommentVOMapper.convert(eventComment)).thenReturn(eventCommentVO);
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());
@@ -126,6 +131,7 @@ class EventCommentServiceImplTest {
         User user = getUser();
         EventVO eventVO = ModelUtils.getEventVO();
         Event event = ModelUtils.getEvent();
+        EventCommentVO eventCommentVO = ModelUtils.getEventCommentVOWithTaggedUser();
         AddEventCommentDtoResponse response = ModelUtils.getAddEventCommentDtoResponse().setText(comment);
         AddEventCommentDtoRequest addEventCommentDtoRequest = AddEventCommentDtoRequest.builder()
             .text(comment)
@@ -144,7 +150,7 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment.setText(comment));
         when(modelMapper.map(eventComment, AddEventCommentDtoResponse.class)).thenReturn(response);
-        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(eventCommentVOMapper.convert(eventComment)).thenReturn(eventCommentVO);
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO, locale);
 
@@ -308,9 +314,14 @@ class EventCommentServiceImplTest {
         Long commentId = 1L;
         String editedText = "edited text";
         EventComment eventComment = getEventComment();
+        EventVO eventVO = ModelUtils.getEventVO();
+        EventCommentVO eventCommentVO = ModelUtils.getEventCommentVO();
 
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.ofNullable(eventComment));
+        assert eventComment != null;
+        when(eventService.findById(eventComment.getEvent().getId())).thenReturn(eventVO);
+        when(modelMapper.map(eventComment, EventCommentVO.class)).thenReturn(eventCommentVO);
 
         eventCommentService.update(editedText, commentId, userVO, locale);
 

@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @SuperBuilder
 @Getter
-public class UserTaggedInCommentMessage extends CommentMessage implements Serializable {
-    @NotEmpty(message = "Tagger name cannot be empty")
-    private String taggerName;
+public class UserReceivedCommentMessage extends CommentMessage implements Serializable {
+    @NotEmpty(message = "Author name cannot be empty")
+    private String authorName;
 }
