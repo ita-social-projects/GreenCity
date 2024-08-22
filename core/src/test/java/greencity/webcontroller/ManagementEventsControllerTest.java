@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
@@ -157,4 +158,24 @@ class ManagementEventsControllerTest {
 
         verify(eventService, times(1)).save(any(AddEventDtoRequest.class), eq("user"), any(MultipartFile[].class));
     }
+
+    @Test
+    @SneakyThrows
+    void testDeleteEvents() {
+        List<Long> ids = List.of(1L, 2L, 3L);
+        String principalName = "test@example.com";
+
+        when(principal.getName()).thenReturn(principalName);
+
+        this.mockMvc.perform(delete(managementEventsLink)
+                        .contentType("application/json")
+                        .content("[1, 2, 3]")
+                        .principal(principal))
+                .andExpect(status().isOk());
+
+        for (Long id : ids) {
+            verify(eventService, times(1)).delete(id, principalName);
+        }
+    }
+
 }
