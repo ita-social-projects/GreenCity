@@ -168,10 +168,10 @@ class ManagementEventsControllerTest {
         when(principal.getName()).thenReturn(principalName);
 
         this.mockMvc.perform(delete(managementEventsLink)
-                        .contentType("application/json")
-                        .content("[1, 2, 3]")
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .contentType("application/json")
+            .content("[1, 2, 3]")
+            .principal(principal))
+            .andExpect(status().isOk());
 
         for (Long id : ids) {
             verify(eventService, times(1)).delete(id, principalName);

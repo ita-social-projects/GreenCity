@@ -50,7 +50,7 @@ public class ManagementEventsController {
      */
     @GetMapping
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-                               @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
+        @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
         if (eventViewDto.getId() != null && !eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
@@ -58,8 +58,8 @@ public class ManagementEventsController {
             model.addAttribute("query", "");
         } else {
             allEvents = query == null || query.isEmpty()
-                    ? eventService.getAll(pageable, null)
-                    : eventService.searchEventsBy(pageable, query);
+                ? eventService.getAll(pageable, null)
+                : eventService.searchEventsBy(pageable, query);
             model.addAttribute("fields", new EventViewDto());
             model.addAttribute("query", query);
         }
@@ -82,7 +82,7 @@ public class ManagementEventsController {
     @GetMapping("/create-event")
     public String getEventCreatePage(Model model, Principal principal) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[]{});
+        model.addAttribute("images", new MultipartFile[] {});
         model.addAttribute("backendAddress", backendAddress);
         model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
         model.addAttribute("googleMapApiKey", googleMapApiKey);
@@ -91,11 +91,11 @@ public class ManagementEventsController {
 
     @PostMapping
     public String createEvent(@RequestPart("addEventDtoRequest") AddEventDtoRequest addEventDtoRequest,
-                              @RequestPart("images") MultipartFile[] images,
-                              Principal principal,
-                              Model model) {
+        @RequestPart("images") MultipartFile[] images,
+        Principal principal,
+        Model model) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[]{});
+        model.addAttribute("images", new MultipartFile[] {});
         eventService.save(addEventDtoRequest, principal.getName(), images);
         return "redirect:/management/events";
     }
@@ -103,7 +103,7 @@ public class ManagementEventsController {
     @DeleteMapping
     public ResponseEntity<Object> delete(@RequestBody List<Long> ids, Principal principal) {
         String email = principal.getName();
-        for(Long id :ids){
+        for (Long id : ids) {
             eventService.delete(id, email);
         }
         return ResponseEntity.ok().build();
