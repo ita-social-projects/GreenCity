@@ -200,4 +200,27 @@ public interface UserNotificationService {
      */
     void createOrUpdateHabitInviteNotification(UserVO targetUserVO, UserVO actionUserVO, Long habitId,
         String habitName);
+
+    /**
+     * Creates a new like notification or updates an existing one. If a notification
+     * for the specified news article and target user already exists and is not yet
+     * viewed, this method will update the existing notification by adding the
+     * action user to the list of users who liked the article. It will also adjust
+     * the notification message accordingly to reflect the new state. If no such
+     * notification exists, a new notification will be created. If `isLike` is false
+     * and the notification exists, the action user will be removed from the list of
+     * users who liked the article. If the list becomes empty as a result, the
+     * notification will be deleted.
+     *
+     * @param targetUserVO the user who owns the news article and will receive the
+     *                     notification.
+     * @param actionUserVO the user who liked or unliked the news article.
+     * @param newsId       the ID of the news article that was liked or unliked.
+     * @param newsTitle    the title of the news article, which may be shortened for
+     *                     the notification.
+     * @param isLike       a boolean flag indicating whether the action is a like
+     *                     (true) or an unlike (false).
+     */
+    void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
+        boolean isLike);
 }
