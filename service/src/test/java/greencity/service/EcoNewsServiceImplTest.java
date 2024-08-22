@@ -917,7 +917,7 @@ class EcoNewsServiceImplTest {
 
         assertTrue(ecoNewsVO.getUsersLikedNews().contains(actionUser));
         verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
-            eq(targetUser), eq(actionUser), eq(ecoNewsVO.getId()), eq(ecoNewsVO.getTitle()), eq(true));
+            targetUser, actionUser, ecoNewsVO.getId(), ecoNewsVO.getTitle(), true);
         verify(achievementCalculation, times(1)).calculateAchievement(actionUser,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         verify(ratingCalculation, times(1))
@@ -962,7 +962,7 @@ class EcoNewsServiceImplTest {
         assertFalse(ecoNewsVO.getUsersLikedNews().contains(actionUser));
 
         verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
-            eq(null), eq(actionUser), eq(ecoNewsVO.getId()), eq("test title"), eq(false));
+            null, actionUser, ecoNewsVO.getId(), "test title", false);
         verify(achievementCalculation, times(1))
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))
