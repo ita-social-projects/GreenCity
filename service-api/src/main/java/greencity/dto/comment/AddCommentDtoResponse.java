@@ -1,9 +1,13 @@
 package greencity.dto.comment;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 
@@ -17,10 +21,10 @@ public class AddCommentDtoResponse {
     @Min(1)
     private Long id;
 
-    @NotEmpty
+    @NotNull
     private CommentAuthorDto author;
 
-    @NotEmpty
+    @NotBlank
     private String text;
 
     @CreatedDate

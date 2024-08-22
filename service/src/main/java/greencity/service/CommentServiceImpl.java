@@ -46,6 +46,7 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
         AddCommentDtoRequest addCommentDtoRequest, UserVO userVO) {
         User articleAuthor = articleCheckIfExistsAndReturnAuthor(articleType, articleId);
@@ -163,6 +164,9 @@ public class CommentServiceImpl implements CommentService {
             pages.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int countCommentsForHabit(Long habitId) {
         Habit habit = habitRepo.findById(habitId)
@@ -181,6 +185,9 @@ public class CommentServiceImpl implements CommentService {
         return commentRepo.countByParentCommentIdAndStatusNot(parentCommentId, CommentStatus.DELETED);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId,
         ArticleType articleType) {
@@ -212,12 +219,14 @@ public class CommentServiceImpl implements CommentService {
 
     private CommentDto convertToCommentDto(Comment comment, UserVO user) {
         CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
-        commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
-            .anyMatch(u -> u.getId().equals(user.getId())));
+        if (user != null) {
+            commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(user.getId())));
+        }
         if (comment.getParentComment() != null) {
             commentDto.setParentCommentId(comment.getParentComment().getId());
         }
-        commentDto.setAuthor(modelMapper.map(user, CommentAuthorDto.class));
+        commentDto.setAuthor(modelMapper.map(comment.getUser(), CommentAuthorDto.class));
         commentDto.setLikes(comment.getUsersLiked().size());
         commentDto.setReplies(comment.getComments().size());
         commentDto.setStatus(comment.getStatus().name());

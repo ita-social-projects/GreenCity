@@ -1,18 +1,20 @@
 package greencity.dto.comment;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
+@Data
 public class AddCommentDtoRequest {
-    @NotBlank(message = "The text of comment can not be empty")
+    @NotBlank(message = "Text must not be null and must contain at least one non-whitespace character.")
     @Length(min = 1, max = 8000)
     private String text;
+
     private Long parentCommentId;
 }

@@ -134,6 +134,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -926,10 +927,9 @@ public class ModelUtils {
     }
 
     public static PageableDto<CommentDto> getPageableCommentDtos() {
-        List<CommentDto> commentDtos = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            CommentDto comment = CommentDto.builder()
+        List<CommentDto> commentDtos = Stream.iterate(0, i -> i + 1)
+            .limit(5)
+            .map(i -> CommentDto.builder()
                 .id((long) i)
                 .text("Comment #" + i)
                 .modifiedDate(LocalDateTime.now().minusDays(i))
@@ -939,9 +939,8 @@ public class ModelUtils {
                     .profilePicturePath("PicturePath")
                     .build())
                 .currentUserLiked(false)
-                .build();
-            commentDtos.add(comment);
-        }
+                .build())
+            .toList();
 
         return new PageableDto<>(
             commentDtos,

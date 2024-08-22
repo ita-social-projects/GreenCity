@@ -1,6 +1,7 @@
 package greencity.dto.comment;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,12 +12,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class CommentAuthorDto {
-    @NotEmpty
+    @NotNull
     private Long id;
 
-    @NotEmpty
+    @NotBlank
     private String name;
 
-    @NotEmpty
+    @NotBlank
     private String profilePicturePath;
 }

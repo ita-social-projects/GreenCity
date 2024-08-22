@@ -1,9 +1,12 @@
 package greencity.dto.comment;
 
 import greencity.dto.user.UserVO;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,13 +14,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
+@Data
 public class CommentVO {
     private Long id;
 
@@ -31,7 +31,7 @@ public class CommentVO {
     @CreatedDate
     private LocalDateTime createdDate;
 
-    @NotEmpty
+    @NotNull
     private LocalDateTime modifiedDate;
 
     private CommentVO parentComment;

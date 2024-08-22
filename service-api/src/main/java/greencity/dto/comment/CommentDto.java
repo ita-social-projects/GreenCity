@@ -1,27 +1,27 @@
 package greencity.dto.comment;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode
-@ToString
+@Data
 public class CommentDto {
     @NotNull
     @Min(1)
     private Long id;
 
-    @NotEmpty
+    @NotNull
     private LocalDateTime createdDate;
 
-    @NotEmpty
+    @NotNull
     private LocalDateTime modifiedDate;
 
     private CommentAuthorDto author;
