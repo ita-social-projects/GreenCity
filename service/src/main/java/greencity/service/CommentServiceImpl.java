@@ -14,7 +14,12 @@ import greencity.entity.EcoNews;
 import greencity.entity.Habit;
 import greencity.entity.User;
 import greencity.entity.event.Event;
-import greencity.enums.*;
+import greencity.enums.ArticleType;
+import greencity.enums.CommentStatus;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.Role;
+import greencity.enums.AchievementAction;
+import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -28,7 +33,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
-import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,9 +57,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
         AddCommentDtoRequest addCommentDtoRequest, UserVO userVO) {
-        User articleAuthor = articleCheckIfExistsAndReturnAuthor(articleType, articleId);
-
-        if (articleAuthor == null) {
+        if (getArticleAuthor(articleType, articleId) == null) {
             throw new NotFoundException("Article author not found");
         }
 
@@ -89,36 +95,39 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * Method to check correctness of article and define its type.
+     * Method to return author of article.
      *
      * @param articleType {@link ArticleType}.
      * @param articleId   {@link Long} id of an article.
      *
      * @return article author {@link User}.
      */
-    private User articleCheckIfExistsAndReturnAuthor(ArticleType articleType, Long articleId) {
+    private User getArticleAuthor(ArticleType articleType, Long articleId) {
+        Long articleAuthorId;
         switch (articleType) {
             case HABIT:
                 Habit habit = habitRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-                return userRepo.findById(habit.getUserId())
-                    .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + habit.getUserId()));
+                articleAuthorId = habit.getUserId();
+                break;
 
             case EVENT:
                 Event event = eventRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
-                return userRepo.findById(event.getOrganizer().getId())
-                    .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+                articleAuthorId = event.getOrganizer().getId();
+                break;
 
             case ECO_NEWS:
                 EcoNews ecoNews = ecoNewsRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
-                return userRepo.findById(ecoNews.getAuthor().getId())
-                    .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + ecoNews.getAuthor().getId()));
+                articleAuthorId = ecoNews.getAuthor().getId();
+                break;
 
             default:
-                return null;
+                throw new BadRequestException("Unsupported article type");
         }
+        return userRepo.findById(articleAuthorId)
+            .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + articleAuthorId));
     }
 
     /**
@@ -130,7 +139,7 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
 
         if (comment.getArticleType() != type) {
-            throw new BadRequestException("Comment with id: " + id + " doesn't belongs to " + type.getLink());
+            throw new BadRequestException("Comment with id: " + id + " doesn't belong to " + type.getLink());
         }
 
         if (userVO != null) {
@@ -150,11 +159,43 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
                 CommentStatus.DELETED);
 
+        pages = setCurrentUserLiked(pages, userVO);
+
+        return convertPagesToCommentDtos(pages, userVO);
+    }
+
+    /**
+     * Updates each {@link Comment} in a {@link Page} to set whether the current
+     * user has liked the comment.
+     *
+     * @param pages  the {@link Page} of {@link Comment} entities to be updated.
+     * @param userVO the {@link UserVO} representing the current user. This may be
+     *               {@code null}, in which case no updates will be made to the
+     *               comments' "current user liked" status.
+     * @return the same {@link Page} of {@link Comment} with updated "current user
+     *         liked" status for each comment.
+     */
+    public Page<Comment> setCurrentUserLiked(Page<Comment> pages, UserVO userVO) {
         if (userVO != null) {
             pages.forEach(ec -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
                 .anyMatch(u -> u.getId().equals(userVO.getId()))));
         }
+        return pages;
+    }
 
+    /**
+     * Converts a {@link Page} of {@link Comment} entities into a
+     * {@link PageableDto} containing {@link CommentDto} objects.
+     *
+     * @param pages  the {@link Page} of {@link Comment} entities to be converted.
+     * @param userVO the {@link UserVO} representing the current user, used to
+     *               determine if the user has liked each comment. This may be
+     *               {@code null} if the current user's information is not
+     *               available.
+     * @return a {@link PageableDto} of {@link CommentDto} containing the mapped
+     *         {@link CommentDto} objects.
+     */
+    public PageableDto<CommentDto> convertPagesToCommentDtos(Page<Comment> pages, UserVO userVO) {
         List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userVO)).toList();
 
         return new PageableDto<>(
@@ -202,21 +243,21 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
                 pageable, articleId, articleType, CommentStatus.DELETED);
 
-        if (userVO != null) {
-            pages.forEach(comment -> comment.setCurrentUserLiked(comment.getUsersLiked()
-                .stream()
-                .anyMatch(u -> u.getId().equals(userVO.getId()))));
-        }
+        pages = setCurrentUserLiked(pages, userVO);
 
-        List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userVO)).toList();
-
-        return new PageableDto<>(
-            commentDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages());
+        return convertPagesToCommentDtos(pages, userVO);
     }
 
+    /**
+     * Converts a {@link Comment} entity into a {@link CommentDto} data transfer
+     * object.
+     *
+     * @param comment the {@link Comment} entity to be converted.
+     * @param user    the {@link UserVO} representing the current user, which is
+     *                used to determine if the user has liked the comment.
+     * @return a {@link CommentDto} that contains the mapped information from the
+     *         provided {@link Comment} entity.
+     */
     private CommentDto convertToCommentDto(Comment comment, UserVO user) {
         CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
         if (user != null) {
