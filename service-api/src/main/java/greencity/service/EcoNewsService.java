@@ -6,6 +6,8 @@ import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
+
+import java.util.Locale;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -222,8 +224,10 @@ public interface EcoNewsService {
      * @return a dto of {@link PageableDto}.
      * @author Dovganyuk Taras
      */
-    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(Pageable pageable,
-        EcoNewsViewDto ecoNewsViewDto);
+    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
+                                                                       Pageable pageable,
+                                                                       EcoNewsViewDto ecoNewsViewDto,
+                                                                       Locale locale);
 
     /**
      * Method to mark news as liked by User.

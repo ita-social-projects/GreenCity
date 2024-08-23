@@ -254,20 +254,10 @@
                                     </div>
                                     <div class="filter-container">
                                         <div class="filter-container__search tags">
-                                            <div class="custom-checkbox tag">
-                                                <input type="checkbox" name="tags" id="news-tag" value="1">
-                                                <label for="news-tag"></label>
-                                                <span>News</span>
-                                            </div>
-                                            <div class="custom-checkbox tag">
-                                                <input type="checkbox" name="tags" id="events-tag" value="2">
-                                                <label for="events-tag"></label>
-                                                <span>Events</span>
-                                            </div>
-                                            <div class="custom-checkbox tag">
-                                                <input type="checkbox" name="tags" id="ads-tag" value="5">
-                                                <label for="ads-tag"></label>
-                                                <span>Ads</span>
+                                            <div class="custom-checkbox tag" th:each="tag: ${ecoNewsTag}">
+                                                <input type="checkbox" name="tags" th:id="${tag.name}" th:value="${tag.id}">
+                                                <label th:for="${tag.name}"></label>
+                                                <span th:text="${tag.name}"></span>
                                             </div>
                                         </div>
                                         <div class="filter-container__buttons">

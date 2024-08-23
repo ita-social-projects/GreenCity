@@ -550,10 +550,6 @@ function getSelectedRadioButton(radioGroupName) {
 
 function searchByQuery(query) {
     let urlSearch = getUrlSearchParams();
-    let sort = urlSearch.get("sort");
-    if (sort !== null) {
-        urlSearch.set("sort", sort);
-    }
     urlSearch.set("query", query);
 
     let url = "/management/eco-news?";
@@ -568,14 +564,6 @@ function searchByQuery(query) {
 
 function searchByNameField(searchValue, fieldName, searchValue2 = null, fieldName2 = null) {
     let urlSearch = getUrlSearchParams();
-    let sort = urlSearch.get("sort");
-    let query = urlSearch.get("query");
-    if (sort !== null) {
-        urlSearch.set("sort", sort);
-    }
-    if (query !== null) {
-        urlSearch.set("query", query);
-    }
     if (searchValue !== null && searchValue !== "") {
         urlSearch.set(fieldName, searchValue);
     }
@@ -595,28 +583,33 @@ function searchByNameField(searchValue, fieldName, searchValue2 = null, fieldNam
 
 function orderByNameField(sortOrder, fieldName) {
     let urlSearch = getUrlSearchParams();
-    let query = urlSearch.get("query");
-    let sort = urlSearch.get("sort");
-    if (query !== null) {
-        urlSearch.set("query", query);
-    }
-    if (sort !== null) {
-        if (sort.includes(fieldName)) {
-            let sortArray = sort.split(';');
-            for (let i = 0; i < sortArray.length; i++) {
-                if (sortArray[i].startsWith(fieldName + ',')) {
-                    sortArray[i] = fieldName + ',' + sortOrder;
-                    break;
-                }
-            }
-            sort = sortArray.join(';');
-            urlSearch.set("sort", sort);
-        } else {
-            urlSearch.set("sort", sort + ";" + fieldName + "," + sortOrder);
+    let sortParams = [];
+    urlSearch.forEach((value, key) => {
+        if (key === "sort" && value !== "") {
+            sortParams.push(value);
         }
-    } else {
-        urlSearch.set("sort", fieldName + "," + sortOrder);
+    });
+
+    let updated = false;
+    for (let i = 0; i < sortParams.length; i++) {
+        let [field, order] = sortParams[i].split(',');
+        if (field === fieldName) {
+            sortParams[i] = fieldName + ',' + sortOrder;
+            updated = true;
+            break;
+        }
     }
+
+    if (!updated) {
+        sortParams.push(fieldName + ',' + sortOrder);
+    }
+
+    urlSearch.delete("sort");
+
+    sortParams.forEach(param => {
+        urlSearch.append("sort", param);
+    });
+
     let url = "/management/eco-news?";
     $.ajax({
         url: url + urlSearch.toString(),
@@ -727,6 +720,13 @@ function getUrlSearchParams() {
     let allParam = window.location.search;
     let urlSearch = new URLSearchParams(allParam);
 
+    let sortParams = [];
+    urlSearch.forEach((value, key) => {
+        if (key === "sort") {
+            sortParams.push(value);
+        }
+    });
+
     let params = {
         id: urlSearch.get("id"),
         author: urlSearch.get("author"),
@@ -737,7 +737,6 @@ function getUrlSearchParams() {
         tags: urlSearch.get("tags"),
         hidden: urlSearch.get("hidden"),
         query: urlSearch.get("query"),
-        sort: urlSearch.get("sort"),
         page: urlSearch.get("page")
     };
 
@@ -745,11 +744,17 @@ function getUrlSearchParams() {
         urlSearch.set("page", "0");
     }
 
+    urlSearch = new URLSearchParams();
+
     for (let key in params) {
         if (params[key] !== null) {
             urlSearch.set(key, params[key]);
         }
     }
+
+    sortParams.forEach(param => {
+        urlSearch.append("sort", param);
+    });
 
     return urlSearch;
 }
