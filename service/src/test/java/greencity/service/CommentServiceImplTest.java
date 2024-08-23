@@ -38,11 +38,20 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getComment;
+import static greencity.ModelUtils.getCommentDto;
+import static greencity.ModelUtils.getHabit;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.eq;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
@@ -399,7 +408,7 @@ class CommentServiceImplTest {
 
         PageableDto<CommentDto> commentDtos =
             commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
-        assertEquals(getEventComment().getId(), commentDtos.getPage().getFirst().getId());
+        assertEquals(getComment().getId(), commentDtos.getPage().getFirst().getId());
         assertEquals(4, commentDtos.getTotalElements());
         assertEquals(1, commentDtos.getCurrentPage());
         assertEquals(1, commentDtos.getPage().size());

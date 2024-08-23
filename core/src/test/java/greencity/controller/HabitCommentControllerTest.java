@@ -34,11 +34,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
 
-import static greencity.ModelUtils.*;
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getPageableCommentDtos;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,7 +75,7 @@ class HabitCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void save() {
+    void saveTest() {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
@@ -105,7 +111,7 @@ class HabitCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void getEventCommentById() {
+    void getEventCommentByIdTest() {
         String content = """
             {
               "text": "string"
@@ -119,7 +125,7 @@ class HabitCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void getAllActiveComments() {
+    void getAllActiveCommentsTest() {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
@@ -136,7 +142,7 @@ class HabitCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void countCommentsForHabit() {
+    void countCommentsForHabitTest() {
         mockMvc.perform(get(HABIT_LINK + "/{habitId}/comments/count", 1))
             .andExpect(status().isOk());
 
@@ -145,7 +151,7 @@ class HabitCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void getAllActiveReplies() {
+    void getAllActiveRepliesTest() {
         Long parentCommentId = 1L;
         int pageNumber = 0;
         int pageSize = 20;
@@ -366,5 +372,40 @@ class HabitCommentControllerTest {
 
         verify(userService).findByEmail(anyString());
         verify(commentService).countLikes(commentId, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateTest() {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+        String content = "string";
+
+        mockMvc.perform(patch(HABIT_LINK + "/comments")
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("id", "1")
+            .content(content))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).update(content, 1L, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteTest() {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+
+        mockMvc.perform(delete(HABIT_LINK + "/comments/{id}", 1)
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).delete(1L, userVO);
     }
 }
