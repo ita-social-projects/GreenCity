@@ -11,8 +11,10 @@ import greencity.dto.comment.CommentDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
+import greencity.entity.EcoNews;
 import greencity.entity.Habit;
 import greencity.entity.User;
+import greencity.entity.event.Event;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.BadRequestException;
@@ -20,8 +22,10 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
+import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.EcoNewsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
@@ -43,6 +47,8 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getComment;
 import static greencity.ModelUtils.getCommentDto;
 import static greencity.ModelUtils.getHabit;
+import static greencity.ModelUtils.getEvent;
+import static greencity.ModelUtils.getEcoNews;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,6 +63,10 @@ import static org.mockito.Mockito.eq;
 class CommentServiceImplTest {
     @Mock
     private CommentRepo commentRepo;
+    @Mock
+    private EventRepo eventRepo;
+    @Mock
+    private EcoNewsRepo econewsRepo;
     @Mock
     private ModelMapper modelMapper;
     @Mock
@@ -564,5 +574,35 @@ class CommentServiceImplTest {
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+    }
+
+    @Test
+    void getEventAuthorTest() {
+        Long articleId = 1L;
+        Event event = getEvent();
+        User user = getUser();
+
+        when(eventRepo.findById(articleId)).thenReturn(Optional.of(event));
+        when(userRepo.findById(getUser().getId())).thenReturn(Optional.of(user));
+
+        commentService.getArticleAuthor(ArticleType.EVENT, articleId);
+
+        verify(eventRepo).findById(articleId);
+        verify(userRepo).findById(getUser().getId());
+    }
+
+    @Test
+    void getEcoNewsAuthorTest() {
+        Long articleId = 1L;
+        EcoNews ecoNews = getEcoNews();
+        User user = getUser();
+
+        when(econewsRepo.findById(articleId)).thenReturn(Optional.of(ecoNews));
+        when(userRepo.findById(getUser().getId())).thenReturn(Optional.of(user));
+
+        commentService.getArticleAuthor(ArticleType.ECO_NEWS, articleId);
+
+        verify(econewsRepo).findById(articleId);
+        verify(userRepo).findById(getUser().getId());
     }
 }

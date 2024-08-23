@@ -102,7 +102,7 @@ public class CommentServiceImpl implements CommentService {
      *
      * @return article author {@link User}.
      */
-    private User getArticleAuthor(ArticleType articleType, Long articleId) {
+    protected User getArticleAuthor(ArticleType articleType, Long articleId) {
         Long articleAuthorId;
         switch (articleType) {
             case HABIT:
