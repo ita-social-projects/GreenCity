@@ -1,4 +1,4 @@
-package greencity.dto.comment;
+package greencity.dto.placecomment;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.photo.PhotoAddDto;
