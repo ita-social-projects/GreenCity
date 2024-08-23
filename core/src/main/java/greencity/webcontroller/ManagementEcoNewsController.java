@@ -69,11 +69,8 @@ public class ManagementEcoNewsController {
                                 @Parameter(hidden = true) Pageable pageable,
                                 EcoNewsViewDto ecoNewsViewDto,
                                 @Parameter(hidden = true) Locale locale) {
-        PageableAdvancedDto<EcoNewsDto> allEcoNews;
-        allEcoNews = query == null || query.isEmpty()
-                ? ecoNewsService.findAll(pageable)
-                : ecoNewsService.searchEcoNewsBy(pageable, query);
-        allEcoNews = ecoNewsService.getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, locale);
+        PageableAdvancedDto<EcoNewsDto> allEcoNews = ecoNewsService
+                .getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, locale);
         model.addAttribute("pageable", allEcoNews);
         if (!ecoNewsViewDto.isEmpty()) {
             model.addAttribute("fields", ecoNewsViewDto);

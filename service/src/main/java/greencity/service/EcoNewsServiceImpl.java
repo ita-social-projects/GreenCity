@@ -153,6 +153,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableAdvancedDto<EcoNewsDto> findAll(Pageable page) {
+        //TODO: remove this method
         Page<EcoNews> pages;
         if (page.getSort().isEmpty()) {
             pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
@@ -429,6 +430,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
+        //TODO: remove this method
         Page<EcoNews> page = ecoNewsRepo.searchEcoNewsBy(paging, query);
         return buildPageableAdvancedDto(page);
     }
@@ -502,10 +504,49 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
-        Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
-        Page<EcoNews> page = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
-        return buildPageableAdvancedDto(page);
+    public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
+                                                                              Pageable pageable,
+                                                                              EcoNewsViewDto ecoNewsViewDto,
+                                                                              Locale locale) {
+        Page<EcoNews> byQuery = null;
+        boolean isQueryPresent = query != null && !query.isEmpty();
+        if (isQueryPresent) {
+            byQuery = ecoNewsRepo.searchEcoNewsBy(pageable, query);
+        }
+        Page<EcoNews> filteredByFields = null;
+        boolean isFilterByFieldsPresent = ecoNewsViewDto != null && !ecoNewsViewDto.isEmpty();
+        if (isFilterByFieldsPresent) {
+            filteredByFields = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
+        }
+        if (isQueryPresent && isFilterByFieldsPresent) {
+            Iterator<EcoNews> iteratorByQuery = byQuery.iterator();
+            while (iteratorByQuery.hasNext()) {
+                EcoNews currentEcoNews = iteratorByQuery.next();
+                boolean isPresentInFiltered = false;
+                Iterator<EcoNews> iteratorByFilter = filteredByFields.iterator();
+                while (iteratorByFilter.hasNext()) {
+                    EcoNews filteredEcoNews = iteratorByFilter.next();
+                    if (currentEcoNews.getId().equals(filteredEcoNews.getId())) {
+                        isPresentInFiltered = true;
+                        iteratorByFilter.remove();
+                        break;
+                    }
+                }
+                if (!isPresentInFiltered) {
+                    iteratorByQuery.remove();
+                }
+            }
+            return buildPageableAdvancedDto(byQuery);
+        } else if (isQueryPresent) {
+            return buildPageableAdvancedDto(byQuery);
+        } else if (isFilterByFieldsPresent) {
+            return buildPageableAdvancedDto(filteredByFields);
+        } else {
+            if (pageable.getSort().isUnsorted()) {
+                return buildPageableAdvancedDto(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageable));
+            }
+            return buildPageableAdvancedDto(ecoNewsRepo.findAll(pageable));
+        }
     }
 
     /**
@@ -644,14 +685,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         setValueIfNotEmpty(criteriaList, EcoNews_.TEXT, ecoNewsViewDto.getText());
         setValueIfNotEmpty(criteriaList, EcoNews_.TAGS, ecoNewsViewDto.getTags());
 
-        SearchCriteria searchCriteria;
-        if (!ecoNewsViewDto.getStartDate().isEmpty() && !ecoNewsViewDto.getEndDate().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
+        if ((ecoNewsViewDto.getStartDate() != null && !ecoNewsViewDto.getStartDate().isEmpty())
+                && (ecoNewsViewDto.getEndDate() != null && !ecoNewsViewDto.getEndDate().isEmpty())) {
+            SearchCriteria searchCriteria = SearchCriteria.builder()
                 .key(EcoNews_.CREATION_DATE)
                 .type("dateRange")
                 .value(new String[] {ecoNewsViewDto.getStartDate(), ecoNewsViewDto.getEndDate()})
                 .build();
             criteriaList.add(searchCriteria);
+        } else {
+            setValueIfNotEmpty(criteriaList, EcoNews_.CREATION_DATE, ecoNewsViewDto.getStartDate());
         }
 
         return criteriaList;

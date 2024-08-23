@@ -72,8 +72,8 @@
                         <div class="row-box-and-sort">
                             <div class="main-search">
                                 <!-- Search Form  -->
-                                <form class="form-inline searching" action="#" onsubmit="return searchByQuery(document.getElementById('ecoNewsSearch').value)">
-                                    <input id="ecoNewsSearch" type="text"  class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}">
+                                <form class="form-inline searching" onsubmit="return searchByQuery(document.getElementById('ecoNewsSearch').value)">
+                                    <input id="ecoNewsSearch" type="text"  class="form-search" name="query" th:placeholder="#{greenCity.pages.search}">
                                     <label for="ecoNewsSearch" class="search-icon" style="transform: translateY(-50%);"><i class="material-icons">&#xE8B6;</i></label>
                                     <input class="search-submit-btn" type="submit">
                                 </form>
@@ -255,7 +255,7 @@
                                     <div class="filter-container">
                                         <div class="filter-container__search tags">
                                             <div class="custom-checkbox tag" th:each="tag: ${ecoNewsTag}">
-                                                <input type="checkbox" name="tags" th:id="${tag.name}" th:value="${tag.id}">
+                                                <input type="checkbox" name="tags" th:id="${tag.name}" th:value="${tag.name}">
                                                 <label th:for="${tag.name}"></label>
                                                 <span th:text="${tag.name}"></span>
                                             </div>
@@ -343,22 +343,40 @@
                                     <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalDate(), 'dd.MM.yyyy')}"></td>
                                     <td class="text" th:text="${#temporals.format(econew.creationDate.toLocalTime(), 'HH:mm:ss')}"></td>
                                     <td style = "width: 173px">
-                                        <div th:switch="${econew.tags.isEmpty()}">
-                                            <div th:case="false">
-                                                <div class="dropdown role" style="position: inherit">
-                                                    <button class="dropbtn role" th:text="${econew.tags.get(0)}">
-                                                    </button>
-                                                    <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
-                                                    <div class="dropdown-content role" style="width:173px; height: auto;">
-                                                        <a th:each="tag, iterStatus :${econew.tags.subList(1, econew.tags.size())}" th:text="${tag}"></a>
+                                        <div th:switch="${#locale.language}">
+                                            <div th:case="en">
+                                                <div th:switch="${econew.tags.isEmpty()}">
+                                                    <div th:case="false">
+                                                        <div class="dropdown role" style="position: inherit">
+                                                            <button class="dropbtn role" th:text="${econew.tags.get(0)}">
+                                                            </button>
+                                                            <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                                            <div class="dropdown-content role" style="width:173px; height: auto;">
+                                                                <a th:each="tag, iterStatus :${econew.tags.subList(1, econew.tags.size())}" th:text="${tag}"></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text" th:case="true">
+                                                        <span class="text" th:text="#{greenCity.pages.table.noTags}"></span>
                                                     </div>
                                                 </div>
-                                                <!--<div th:each="tag, iterStatus : ${econew.tags}">
-                                                    <span class="text" th:text="${tag}"></span>&nbsp;
-                                                </div>-->
                                             </div>
-                                            <div class="text" th:case="true">
-                                                <span class="text">No tags</span>
+                                            <div th:case="ua">
+                                                <div th:switch="${econew.tagsUa.isEmpty()}">
+                                                    <div th:case="false">
+                                                        <div class="dropdown role" style="position: inherit">
+                                                            <button class="dropbtn role" th:text="${econew.tagsUa.get(0)}">
+                                                            </button>
+                                                            <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                                            <div class="dropdown-content role" style="width:173px; height: auto;">
+                                                                <a th:each="tag, iterStatus :${econew.tagsUa.subList(1, econew.tagsUa.size())}" th:text="${tag}"></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text" th:case="true">
+                                                        <span class="text" th:text="#{greenCity.pages.table.noTags}"></span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
