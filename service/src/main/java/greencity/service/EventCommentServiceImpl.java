@@ -33,25 +33,20 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EventCommentServiceImpl implements EventCommentService {
-    private static final String LINK = "/#/events/";
     private final EventCommentRepo eventCommentRepo;
     private final EventService eventService;
     private final ModelMapper modelMapper;
@@ -62,8 +57,6 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
     private final UserRepo userRepo;
-    @Value("${client.address}")
-    private String clientAddress;
 
     /**
      * {@inheritDoc}

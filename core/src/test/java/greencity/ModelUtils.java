@@ -1,7 +1,6 @@
 package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
@@ -9,26 +8,15 @@ import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.breaktime.BreakTimeDto;
-import greencity.dto.category.CategoryVO;
-import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDateLocationPreviewDto;
-import greencity.dto.event.EventPreviewDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.factoftheday.FactOfTheDayDTO;
-import greencity.dto.factoftheday.FactOfTheDayPostDTO;
-import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.friends.UserAsFriendDto;
@@ -37,23 +25,17 @@ import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
-import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
-import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.place.PlaceVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
@@ -62,45 +44,13 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserProfilePictureDto;
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Advice;
-import greencity.entity.BreakTime;
-import greencity.entity.Category;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FavoritePlace;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
-import greencity.entity.HabitStatistic;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.ShoppingListItem;
-import greencity.entity.Specification;
-import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.UserShoppingListItem;
-import greencity.entity.localization.AdviceTranslation;
-import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.CommentStatus;
 import greencity.enums.FactOfDayStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.enums.Role;
@@ -109,21 +59,10 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.sql.Date;
-import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -133,19 +72,10 @@ import java.util.List;
 import java.util.Set;
 
 public class ModelUtils {
-    public static Tag getTag() {
-        return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptySet(), Collections.emptySet());
-    }
-
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
             TagTranslationVO.builder().id(2L).name("News").build(),
             TagTranslationVO.builder().id(3L).name("Новины").build());
-    }
-
-    public static LanguageVO getLanguageVO() {
-        return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
 
     public static TagVO getTagVO() {
@@ -190,16 +120,6 @@ public class ModelUtils {
         return new EcoNewsAuthorDto(1L, TestConst.NAME);
     }
 
-    public static Language getLanguage() {
-        return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList());
-    }
-
-    public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false, null, Collections.singletonList(getTag()), null, null);
-    }
-
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()), null, 1L,
             "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12, false);
@@ -209,189 +129,8 @@ public class ModelUtils {
         return new AddEcoNewsDtoRequest("title", "text", Collections.singletonList("tag"), null, "shortInfo");
     }
 
-    public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
-        return new AddEcoNewsDtoResponse(1L, "title",
-            "text", "shortInfo", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
-            ZonedDateTime.now(), TestConst.SITE, null,
-            Collections.singletonList("tag"));
-    }
-
-    public static MultipartFile getFile() {
-        Path path = Paths.get("src/test/resources/test.jpg");
-        String name = TestConst.IMG_NAME;
-        String contentType = "photo/plain";
-        byte[] content = null;
-        try {
-            content = Files.readAllBytes(path);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-        return new MockMultipartFile(name,
-            name, contentType, content);
-    }
-
-    public static URL getUrl() throws MalformedURLException {
-        return new URL(TestConst.SITE);
-    }
-
-    public static DiscountValue getDiscountValue() {
-        return new DiscountValue(null, 33, null, null);
-    }
-
-    public static DiscountValueDto getDiscountValueDto() {
-        return new DiscountValueDto(33, null);
-    }
-
-    public static Place getPlace() {
-        Place place = new Place();
-        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", "test", place));
-        place.setId(1L);
-        place.setName("Forum");
-        place.setDescription("Shopping center");
-        place.setPhone("0322 489 850");
-        place.setEmail("forum_lviv@gmail.com");
-        place.setAuthor(getUser());
-        place.setModifiedDate(ZonedDateTime.now());
-        return place;
-    }
-
-    public static FavoritePlace getFavoritePlace() {
-        return new FavoritePlace(3L, "name", getUser(), getPlace());
-    }
-
     public static FavoritePlaceDto getFavoritePlaceDto() {
         return new FavoritePlaceDto("name", 3L);
-    }
-
-    public static AddHabitStatisticDto addHabitStatisticDto() {
-        return AddHabitStatisticDto.builder()
-            .amountOfItems(5)
-            .habitRate(HabitRate.DEFAULT)
-            .createDate(ZonedDateTime.now())
-            .build();
-    }
-
-    public static HabitStatistic getHabitStatistic() {
-        return HabitStatistic.builder()
-            .id(1L)
-            .habitRate(HabitRate.DEFAULT)
-            .createDate(ZonedDateTime.now())
-            .amountOfItems(5)
-            .habitAssign(HabitAssign.builder().id(13L).build())
-            .build();
-    }
-
-    public static Category getCategory() {
-        return Category.builder()
-            .id(12L)
-            .name("category")
-            .build();
-    }
-
-    public static ShoppingListItemTranslation getShoppingListItemTranslation() {
-        return ShoppingListItemTranslation.builder()
-            .id(2L)
-            .language(
-                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList()))
-            .shoppingListItem(
-                new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
-            .content("Buy a bamboo toothbrush")
-            .build();
-    }
-
-    public static List<ShoppingListItemTranslation> getShoppingListItemTranslations() {
-        return Arrays.asList(
-            ShoppingListItemTranslation.builder()
-                .id(2L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-                .content("Buy a bamboo toothbrush")
-                .shoppingListItem(
-                    new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
-                .build(),
-            ShoppingListItemTranslation.builder()
-                .id(11L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-                .content("Start recycling batteries")
-                .shoppingListItem(
-                    new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
-                .build());
-    }
-
-    public static Advice getAdvice() {
-        return new Advice(1L, null, null);
-    }
-
-    public static HabitFact getHabitFact() {
-        return new HabitFact(1L, Collections.singletonList(getHabitFactTranslation()), null);
-    }
-
-    public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
-        return LocationAddressAndGeoDto.builder()
-            .address("address")
-            .lat(12.12d)
-            .lng(12.12d)
-            .build();
-    }
-
-    public static LocalTime getLocalTime() {
-        return LocalTime.of(7, 20, 45, 342123342);
-    }
-
-    public static OpeningHoursDto getOpeningHoursDto() {
-        OpeningHoursDto openingHours = new OpeningHoursDto();
-        openingHours.setOpenTime(getLocalTime());
-        openingHours.setCloseTime(getLocalTime());
-        openingHours.setBreakTime(BreakTimeDto.builder()
-            .startTime(getLocalTime())
-            .endTime(getLocalTime())
-            .build());
-        openingHours.setWeekDay(DayOfWeek.MONDAY);
-        return openingHours;
-    }
-
-    public static OpeningHours getOpeningHours() {
-        OpeningHours openingHoursTest = new OpeningHours();
-        openingHoursTest.setOpenTime(getLocalTime());
-        openingHoursTest.setCloseTime(getLocalTime());
-        openingHoursTest.setBreakTime(BreakTime.builder()
-            .startTime(getLocalTime())
-            .endTime(getLocalTime())
-            .build());
-        openingHoursTest.setWeekDay(DayOfWeek.MONDAY);
-        return openingHoursTest;
-    }
-
-    public static Location getLocation() {
-        return Location.builder()
-            .address("address")
-            .lng(12.12d)
-            .lat(12.12d)
-            .build();
-    }
-
-    public static LocationVO getLocationVO() {
-        return LocationVO.builder()
-            .address("address")
-            .lng(12.12d)
-            .lat(12.12d)
-            .build();
-    }
-
-    public static Specification getSpecification() {
-        return Specification.builder()
-            .id(1L)
-            .name("specification")
-            .build();
-    }
-
-    public static Photo getPhoto() {
-        return Photo.builder()
-            .id(1L)
-            .name("photo")
-            .build();
     }
 
     public static LanguageDTO getLanguageDTO() {
@@ -402,52 +141,6 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
-    public static EcoNewsComment getEcoNewsComment() {
-        return EcoNewsComment.builder()
-            .id(1L)
-            .text("text")
-            .createdDate(LocalDateTime.now())
-            .modifiedDate(LocalDateTime.now())
-            .status(CommentStatus.ORIGINAL)
-            .user(getUser())
-            .ecoNews(getEcoNews())
-            .build();
-    }
-
-    public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
-        return new AddEcoNewsCommentDtoRequest("text", 0L);
-    }
-
-    public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
-        return AddEcoNewsCommentDtoResponse.builder()
-            .id(getEcoNewsComment().getId())
-            .author(getEcoNewsCommentAuthorDto())
-            .text(getEcoNewsComment().getText())
-            .modifiedDate(getEcoNewsComment().getModifiedDate())
-            .build();
-    }
-
-    public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
-        return EcoNewsCommentAuthorDto.builder()
-            .id(getUser().getId())
-            .name(getUser().getName().trim())
-            .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static EcoNewsCommentDto getEcoNewsCommentDto() {
-        return EcoNewsCommentDto.builder()
-            .id(1L)
-            .modifiedDate(LocalDateTime.now())
-            .author(getEcoNewsCommentAuthorDto())
-            .text("text")
-            .replies(0)
-            .likes(0)
-            .currentUserLiked(false)
-            .status(CommentStatus.ORIGINAL)
-            .build();
-    }
-
     public static Principal getPrincipal() {
         return () -> "test@gmail.com";
     }
@@ -456,75 +149,8 @@ public class ModelUtils {
         return new NewsSubscriberRequestDto("test@gmail.com");
     }
 
-    public static UserProfilePictureDto getUserProfilePictureDto() {
-        return new UserProfilePictureDto(1L, "name", "image");
-    }
-
-    public static FactOfTheDayDTO getFactOfTheDayDto() {
-        return new FactOfTheDayDTO(1L, "name", null, ZonedDateTime.now());
-    }
-
-    public static FactOfTheDay getFactOfTheDay() {
-        return new FactOfTheDay(1L, "Fact of the day", null, ZonedDateTime.now());
-    }
-
-    public static FactOfTheDayPostDTO getFactOfTheDayPostDto() {
-        return new FactOfTheDayPostDTO(1L, "name",
-            Collections.singletonList(
-                new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
-    }
-
     public static ObjectMapper getObjectMapper() {
         return new ObjectMapper();
-    }
-
-    public static HabitAssign getHabitAssign() {
-        return HabitAssign.builder()
-            .id(1L)
-            .status(HabitAssignStatus.ACQUIRED)
-            .createDate(ZonedDateTime.now())
-            .habit(Habit.builder()
-                .id(1L)
-                .image("")
-                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
-                    .id(1L)
-                    .name("")
-                    .description("")
-                    .habitItem("")
-                    .language(getLanguage())
-                    .build()))
-                .build())
-            .user(getUser())
-            .workingDays(0)
-            .duration(0)
-            .habitStreak(0)
-            .lastEnrollmentDate(ZonedDateTime.now())
-            .build();
-    }
-
-    public static HabitStatusCalendar getHabitStatusCalendar() {
-        return HabitStatusCalendar.builder()
-            .id(1L)
-            .enrollDate(LocalDate.now()).build();
-    }
-
-    public static AdviceTranslation getAdviceTranslation() {
-        return AdviceTranslation.builder()
-            .id(1L)
-            .language(getLanguage())
-            .content("Text content")
-            .advice(getAdvice())
-            .build();
-    }
-
-    public static HabitFactTranslation getHabitFactTranslation() {
-        return HabitFactTranslation.builder()
-            .id(1L)
-            .content("content")
-            .language(getLanguage())
-            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
-            .habitFact(getHabitFact())
-            .build();
     }
 
     public static HabitFactVO getHabitFactVO() {
@@ -545,22 +171,6 @@ public class ModelUtils {
                     .build())
                 .build()))
             .build();
-    }
-
-    public static PlaceVO getPlaceVO() {
-        PlaceVO placeVO = new PlaceVO();
-        placeVO.setLocation(getLocationVO());
-        placeVO.setId(1L);
-        placeVO.setName("Forum");
-        placeVO.setDescription("Shopping center");
-        placeVO.setPhone("0322 489 850");
-        placeVO.setEmail("forum_lviv@gmail.com");
-        placeVO.setAuthor(getUserVO());
-        placeVO.setModifiedDate(ZonedDateTime.now());
-        CategoryVO categoryVO = new CategoryVO();
-        categoryVO.setName("category");
-        placeVO.setCategory(categoryVO);
-        return placeVO;
     }
 
     public static HabitFactPostDto getHabitFactPostDto() {
@@ -608,25 +218,6 @@ public class ModelUtils {
             new AchievementCategoryVO(1L, "name"), 1);
     }
 
-    public static UserShoppingListItem getUserShoppingListItem() {
-        return UserShoppingListItem.builder()
-            .id(1L)
-            .status(ShoppingListItemStatus.DONE)
-            .habitAssign(HabitAssign.builder()
-                .id(1L)
-                .status(HabitAssignStatus.ACQUIRED)
-                .habitStreak(10)
-                .duration(300)
-                .lastEnrollmentDate(ZonedDateTime.now())
-                .workingDays(5)
-                .build())
-            .shoppingListItem(ShoppingListItem.builder()
-                .id(1L)
-                .build())
-            .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
-            .build();
-    }
-
     public static UserManagementDto getUserManagementDto() {
         return UserManagementDto.builder()
             .id(1L)
@@ -649,18 +240,6 @@ public class ModelUtils {
         return HabitAssignCustomPropertiesDto.builder()
             .habitAssignPropertiesDto(getHabitAssignPropertiesDto())
             .friendsIdsList(List.of(1L, 2L))
-            .build();
-    }
-
-    public static UpdateUserShoppingListDto getUpdateUserShoppingListDto() {
-        return UpdateUserShoppingListDto.builder()
-            .userShoppingListItemId(1L)
-            .habitAssignId(1L)
-            .userShoppingListAdvanceDto(List.of(UserShoppingListItemAdvanceDto.builder()
-                .id(1L)
-                .shoppingListItemId(1L)
-                .status(ShoppingListItemStatus.INPROGRESS)
-                .build()))
             .build();
     }
 
@@ -830,7 +409,7 @@ public class ModelUtils {
             .notificationType(new NotificationType[] {}).build();
     }
 
-    public static PageableAdvancedDto<EventPreviewDto> getEventPreviewDtoPageableAdvancedDto(Pageable pageable) {
+    public static PageableAdvancedDto<EventDto> getEventPreviewDtoPageableAdvancedDto(Pageable pageable) {
         return new PageableAdvancedDto<>(
             ModelUtils.getEventPreviewDtos(),
             2,
@@ -843,15 +422,15 @@ public class ModelUtils {
             true);
     }
 
-    public static List<EventPreviewDto> getEventPreviewDtos() {
+    public static List<EventDto> getEventPreviewDtos() {
         return List.of(
-            EventPreviewDto.builder()
+            EventDto.builder()
                 .id(3L)
                 .title("test3")
-                .organizer(AuthorDto.builder().id(2L).name("Test3").build())
+                .organizer(EventAuthorDto.builder().id(2L).name("Test3").build())
                 .creationDate(Date.valueOf("2024-04-14").toLocalDate())
-                .dates(Set.of(
-                    EventDateLocationPreviewDto.builder()
+                .dates(List.of(
+                    EventDateLocationDto.builder()
                         .startDate(
                             ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
                         .finishDate(
@@ -873,18 +452,18 @@ public class ModelUtils {
                 .isSubscribed(true)
                 .isFavorite(true)
                 .isRelevant(true)
-                .likes(0L)
-                .countComments(2L)
+                .likes(0)
+                .countComments(2)
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
                 .build(),
-            EventPreviewDto.builder()
+            EventDto.builder()
                 .id(1L)
                 .title("test1")
-                .organizer(AuthorDto.builder().id(1L).name("Test").build())
+                .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
                 .creationDate(Date.valueOf("2024-04-16").toLocalDate())
-                .dates(Set.of(
-                    EventDateLocationPreviewDto.builder()
+                .dates(List.of(
+                    EventDateLocationDto.builder()
                         .startDate(
                             ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
                         .finishDate(
@@ -906,8 +485,8 @@ public class ModelUtils {
                 .isSubscribed(true)
                 .isFavorite(true)
                 .isRelevant(true)
-                .likes(0L)
-                .countComments(2L)
+                .likes(0)
+                .countComments(2)
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
                 .build());

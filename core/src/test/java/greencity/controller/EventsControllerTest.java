@@ -11,7 +11,6 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;

@@ -64,6 +64,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -1316,8 +1317,8 @@ class EventServiceImplTest {
         elements = ModelUtils.getTupleElements();
 
         List<Tuple> tuples = ModelUtils.getTuples(elements);
-        List<EventPreviewDto> eventPreviewDtoList = ModelUtils.getEventPreviewDtos();
-        PageableAdvancedDto<EventPreviewDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+        List<EventDto> eventPreviewDtoList = ModelUtils.getEventPreviewDtos();
+        PageableAdvancedDto<EventDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
             eventPreviewDtoList,
             idsPage.getTotalElements(),
             pageable.getPageNumber(),
@@ -1328,12 +1329,12 @@ class EventServiceImplTest {
             idsPage.isFirst(),
             idsPage.isLast());
         when(restClient.findIdByEmail(principal.getName())).thenReturn(userId);
-        when(eventRepo.findAllEventPreviewDtoByFilters(userId, true, true, true,
-            titleCriteria, null, null,
-            filterEventDto.getCities().stream().map(String::toLowerCase).toArray(String[]::new),
-            filterEventDto.getTags().stream().map(String::toLowerCase).toArray(String[]::new), pageable))
-            .thenReturn(idsPage);
-        when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
+//        when(eventRepo.findAllEventPreviewDtoByFilters(userId, true, true, true,
+//            titleCriteria, null, null,
+//            filterEventDto.getCities().stream().map(String::toLowerCase).toArray(String[]::new),
+//            filterEventDto.getTags().stream().map(String::toLowerCase).toArray(String[]::new), pageable))
+//            .thenReturn(idsPage);
+        when(eventRepo.loadEventDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
 
         PageableAdvancedDto<EventDto> result =
             eventService.getEvents(pageable, principal, filterEventDto, title);
@@ -1351,8 +1352,8 @@ class EventServiceImplTest {
         elements = ModelUtils.getTupleElements();
 
         List<Tuple> tuples = ModelUtils.getTuples(elements);
-        List<EventPreviewDto> eventPreviewDtoList = ModelUtils.getEventPreviewDtos();
-        PageableAdvancedDto<EventPreviewDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+        List<EventDto> eventPreviewDtoList = ModelUtils.getEventPreviewDtos();
+        PageableAdvancedDto<EventDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
             eventPreviewDtoList,
             idsPage.getTotalElements(),
             pageable.getPageNumber(),
@@ -1362,11 +1363,11 @@ class EventServiceImplTest {
             idsPage.hasNext(),
             idsPage.isFirst(),
             idsPage.isLast());
-        when(eventRepo.findAllEventPreviewDtoByFilters(titleCriteria, null, null,
-            filterEventDto.getCities().stream().map(String::toLowerCase).toArray(String[]::new),
-            filterEventDto.getTags().stream().map(String::toLowerCase).toArray(String[]::new), pageable))
-            .thenReturn(idsPage);
-        when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent())).thenReturn(tuples);
+//        when(eventRepo.findAllEventPreviewDtoByFilters(titleCriteria, null, null,
+//            filterEventDto.getCities().stream().map(String::toLowerCase).toArray(String[]::new),
+//            filterEventDto.getTags().stream().map(String::toLowerCase).toArray(String[]::new), pageable))
+//            .thenReturn(idsPage);
+        when(eventRepo.loadEventDataByIds(idsPage.getContent())).thenReturn(tuples);
 
         PageableAdvancedDto<EventDto> result =
             eventService.getEvents(pageable, null, filterEventDto, title);
@@ -1509,7 +1510,7 @@ class EventServiceImplTest {
         });
 
         Throwable cause = exception.getCause();
-        assertTrue(cause instanceof IllegalArgumentException);
+        assertInstanceOf(IllegalArgumentException.class, cause);
         assertEquals(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE, cause.getMessage());
     }
 }

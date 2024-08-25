@@ -106,10 +106,8 @@ import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
-import greencity.dto.search.SearchResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
@@ -196,6 +194,7 @@ import jakarta.persistence.TupleElement;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -794,56 +793,6 @@ public class ModelUtils {
                 .build());
     }
 
-    public static List<HabitsDateEnrollmentDto> getAdditionalHabitsDateEnrollmentDtos() {
-        return Arrays.asList(
-            HabitsDateEnrollmentDto
-                .builder()
-                .enrollDate(LocalDate.of(2020, 12, 27))
-                .habitAssigns(Collections.emptyList()).build(),
-
-            HabitsDateEnrollmentDto
-                .builder()
-                .enrollDate(LocalDate.of(2020, 12, 28))
-                .habitAssigns(Collections.singletonList(
-                    new HabitEnrollDto(1L, "", "", true)))
-                .build(),
-
-            HabitsDateEnrollmentDto
-                .builder()
-                .enrollDate(LocalDate.of(2020, 12, 29))
-                .habitAssigns(Collections.singletonList(
-                    new HabitEnrollDto(1L, "", "", false)))
-                .build());
-    }
-
-    public static HabitAssign getHabitAssignWithStatusInprogress() {
-        return HabitAssign.builder()
-            .id(1L)
-            .status(HabitAssignStatus.INPROGRESS)
-            .createDate(ZonedDateTime.now())
-            .habit(Habit.builder()
-                .id(1L)
-                .image("")
-                .userId(2L)
-                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
-                    .id(1L)
-                    .name("")
-                    .description("")
-                    .habitItem("")
-                    .language(getLanguage())
-                    .build()))
-                .build())
-            .user(getUser())
-            .userShoppingListItems(new ArrayList<>())
-            .workingDays(0)
-            .duration(0)
-            .habitStreak(0)
-            .habitStatistic(Collections.singletonList(getHabitStatistic()))
-            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
-            .lastEnrollmentDate(ZonedDateTime.now())
-            .build();
-    }
-
     public static HabitAssign getFullHabitAssign() {
         return HabitAssign.builder()
             .id(1L)
@@ -1161,7 +1110,7 @@ public class ModelUtils {
     }
 
     public static URL getUrl() throws MalformedURLException {
-        return new URL(TestConst.SITE);
+        return URI.create(TestConst.SITE).toURL();
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
@@ -1857,173 +1806,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static List<UserShoppingListItemVO> getUserShoppingListItemVOList() {
-        List<UserShoppingListItemVO> list = new ArrayList<>();
-        list.add(UserShoppingListItemVO.builder()
-            .id(1L)
-            .build());
-        return list;
-    }
-
-    public static List<CustomShoppingListItemVO> getCustomShoppingListItemVOList() {
-        List<CustomShoppingListItemVO> list = new ArrayList<>();
-        list.add(CustomShoppingListItemVO.builder()
-            .id(1L)
-            .text("text")
-            .build());
-        return list;
-    }
-
-    public static UserVO createUserVO2() {
-        return UserVO.builder()
-            .id(1L)
-            .name("name")
-            .email("test@mail.com")
-            .role(Role.ROLE_MODERATOR)
-            .userCredo("fdsfs")
-            .userStatus(UserStatus.ACTIVATED)
-            .userShoppingListItemVOS(getUserShoppingListItemVOList())
-            .customShoppingListItemVOS(getCustomShoppingListItemVOList())
-            .rating(13.4)
-            .verifyEmail(VerifyEmailVO.builder()
-                .id(1L)
-                .user(UserVO.builder()
-                    .id(1L)
-                    .name("name")
-                    .email("test@mail.com")
-                    .role(Role.ROLE_MODERATOR)
-                    .userCredo("fdsfs")
-                    .userStatus(UserStatus.ACTIVATED)
-                    .userShoppingListItemVOS(getUserShoppingListItemVOList())
-                    .customShoppingListItemVOS(getCustomShoppingListItemVOList())
-                    .rating(13.4)
-                    .emailNotification(EmailNotification.MONTHLY)
-                    .dateOfRegistration(LocalDateTime.now())
-                    .socialNetworks(Collections.singletonList(
-                        SocialNetworkVO.builder()
-                            .id(10L)
-                            .user(UserVO.builder()
-                                .id(1L)
-                                .email("namesurname1995@gmail.com")
-                                .build())
-                            .url("www.network.com")
-                            .socialNetworkImage(SocialNetworkImageVO.builder()
-                                .id(25L)
-                                .hostPath("path///")
-                                .imagePath("imagepath///")
-                                .build())
-                            .build()))
-                    .userFriends(Collections.singletonList(
-                        UserVO.builder()
-                            .id(75L)
-                            .name("Andrew")
-                            .build()))
-                    .userAchievements(List.of(
-                        UserAchievementVO.builder()
-                            .id(47L)
-                            .user(UserVO.builder()
-                                .id(1L)
-                                .build())
-                            .achievement(AchievementVO.builder()
-                                .id(56L)
-                                .build())
-                            .build(),
-                        UserAchievementVO.builder()
-                            .id(39L)
-                            .user(UserVO.builder()
-                                .id(1L)
-                                .build())
-                            .achievement(AchievementVO.builder()
-                                .id(14L)
-                                .build())
-                            .build()))
-                    .refreshTokenKey("fsdfsfd")
-                    .ownSecurity(OwnSecurityVO.builder()
-                        .id(1L)
-                        .password("password")
-                        .user(UserVO.builder()
-                            .id(1L)
-                            .build())
-                        .build())
-                    .profilePicturePath("../")
-                    .ecoNewsLiked(null)
-                    .ecoNewsCommentsLiked(null)
-                    .firstName("dfsfsdf")
-                    .showLocation(true)
-                    .showEcoPlace(true)
-                    .showShoppingList(true)
-                    .lastActivityTime(LocalDateTime.now())
-                    .userActions(null)
-                    .languageVO(getLanguageVO())
-                    .build())
-                .expiryDate(LocalDateTime.of(2021, 7, 7, 7, 7))
-                .token("toooookkkeeeeen42324532542")
-                .build())
-            .userFriends(Collections.singletonList(
-                UserVO.builder()
-                    .id(75L)
-                    .name("Andrew")
-                    .build()))
-            .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
-            .ownSecurity(null)
-            .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .showShoppingList(true)
-            .showEcoPlace(true)
-            .showLocation(true)
-            .socialNetworks(Collections.singletonList(
-                SocialNetworkVO.builder()
-                    .id(10L)
-                    .user(UserVO.builder()
-                        .id(1L)
-                        .email("namesurname1995@gmail.com")
-                        .build())
-                    .url("www.network.com")
-                    .socialNetworkImage(SocialNetworkImageVO.builder()
-                        .id(25L)
-                        .hostPath("path///")
-                        .imagePath("imagepath///")
-                        .build())
-                    .build()))
-            .ownSecurity(OwnSecurityVO.builder()
-                .id(1L)
-                .password("password")
-                .user(UserVO.builder()
-                    .id(1L)
-                    .build())
-                .build())
-            .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
-            .userAchievements(List.of(
-                UserAchievementVO.builder()
-                    .id(47L)
-                    .user(UserVO.builder()
-                        .id(1L)
-                        .build())
-                    .achievement(AchievementVO.builder()
-                        .id(56L)
-                        .build())
-                    .build(),
-                UserAchievementVO.builder()
-                    .id(39L)
-                    .user(UserVO.builder()
-                        .id(1L)
-                        .build())
-                    .achievement(AchievementVO.builder()
-                        .id(14L)
-                        .build())
-                    .build()))
-            .userActions(Collections.singletonList(UserActionVO.builder()
-                .id(1L)
-                .achievementCategory(AchievementCategoryVO.builder()
-                    .id(1L)
-                    .build())
-                .count(0)
-                .user(UserVO.builder()
-                    .id(1L)
-                    .build())
-                .build()))
-            .build();
-    }
-
     public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
         return CustomShoppingListItemResponseDto.builder()
             .id(1L)
@@ -2062,33 +1844,6 @@ public class ModelUtils {
             getKyivAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
-        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
-        return event;
-    }
-
-    public static Event getEventWithTags() {
-        Event event = new Event();
-        Set<User> followers = new HashSet<>();
-        Tag tag1 = getEventTag();
-        tag1.setId(12L);
-        Tag tag2 = getEventTag();
-        tag2.setId(13L);
-        Tag tag3 = getEventTag();
-        tag3.setId(14L);
-        followers.add(getUser());
-        event.setOpen(true);
-        event.setDescription("Description");
-        event.setId(1L);
-        event.setOrganizer(getUser());
-        event.setFollowers(followers);
-        event.setTitle("Title");
-        List<EventDateLocation> dates = new ArrayList<>();
-        dates.add(new EventDateLocation(1L, event,
-            ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getKyivAddress(), null));
-        event.setDates(dates);
-        event.setTags(List.of(tag1, tag2, tag3));
         event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
@@ -3245,15 +3000,6 @@ public class ModelUtils {
         return SearchEventsDto.builder().id(1L).title("Title").tags(new ArrayList<>()).build();
     }
 
-    public static SearchResponseDto getSearchResponseDto() {
-        return SearchResponseDto.builder()
-            .ecoNews(List.of(getSearchNews()))
-            .events(List.of(getSearchEvents()))
-            .countOfEcoNewsResults(4L)
-            .countOfEventsResults(4L)
-            .build();
-    }
-
     public static AmountCommentLikesDto getAmountCommentLikesDto() {
         return AmountCommentLikesDto.builder()
             .id(1L)
@@ -3355,15 +3101,15 @@ public class ModelUtils {
         };
     }
 
-    public static List<EventPreviewDto> getEventPreviewDtos() {
+    public static List<EventDto> getEventPreviewDtos() {
         return List.of(
-            EventPreviewDto.builder()
+            EventDto.builder()
                 .id(3L)
                 .title("test3")
-                .organizer(AuthorDto.builder().id(2L).name("Test3").build())
+                .organizer(EventAuthorDto.builder().id(2L).name("Test3").build())
                 .creationDate(Date.valueOf("2024-04-14").toLocalDate())
-                .dates(Set.of(
-                    EventDateLocationPreviewDto.builder()
+                .dates(List.of(
+                    EventDateLocationDto.builder()
                         .startDate(
                             ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
                         .finishDate(
@@ -3385,18 +3131,18 @@ public class ModelUtils {
                 .isSubscribed(true)
                 .isFavorite(true)
                 .isRelevant(true)
-                .likes(0L)
-                .countComments(2L)
+                .likes(0)
+                .countComments(2)
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
                 .build(),
-            EventPreviewDto.builder()
+            EventDto.builder()
                 .id(1L)
                 .title("test1")
-                .organizer(AuthorDto.builder().id(1L).name("Test").build())
+                .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
                 .creationDate(Date.valueOf("2024-04-16").toLocalDate())
-                .dates(Set.of(
-                    EventDateLocationPreviewDto.builder()
+                .dates(List.of(
+                    EventDateLocationDto.builder()
                         .startDate(
                             ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
                         .finishDate(
@@ -3418,8 +3164,8 @@ public class ModelUtils {
                 .isSubscribed(true)
                 .isFavorite(true)
                 .isRelevant(true)
-                .likes(0L)
-                .countComments(2L)
+                .likes(0)
+                .countComments(2)
                 .isOrganizedByFriend(false)
                 .eventRate(3.5)
                 .build());

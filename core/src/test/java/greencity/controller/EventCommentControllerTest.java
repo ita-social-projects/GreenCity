@@ -129,7 +129,7 @@ class EventCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(eventCommentService).update("string", eventId, commentId, userVO);
+        verify(eventCommentService).update("string", eventId, commentId, userVO, Locale.of("en"));
     }
 
     @Test

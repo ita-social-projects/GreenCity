@@ -32,8 +32,6 @@ import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.EventStatus;
-import greencity.enums.EventTime;
 import greencity.enums.EventType;
 import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
@@ -71,7 +69,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -261,65 +258,14 @@ public class EventServiceImpl implements EventService {
             userId = restClient.findIdByEmail(principal.getName());
         }
 
-//        Page<Event> eventsByFilter = eventsSearchRepo.findEventsByFilter(page, userId, filterEventDto, title);
-//        return buildPageableAdvancedDto(eventsByFilter);
-
-        if (title != null) {
-            title = "%" + title.toLowerCase() + "%";
-        }
-        List<Boolean> openStatuses = new ArrayList<>();
-        List<Boolean> futureTimeStatuses = new ArrayList<>();
-        String[] citiesInLower = null;
-        String[] tagsInLower = null;
-        Boolean isFavorite = null;
-        Boolean isSubscribed = null;
-        Boolean isOrganizedByUser = null;
-        if (filterEventDto != null) {
-            if (filterEventDto.getEventTime() != null) {
-                futureTimeStatuses = List.of(filterEventDto.getEventTime() == EventTime.FUTURE);
-            }
-            if (filterEventDto.getStatus() != null) {
-                EventStatus eventStatus = filterEventDto.getStatus();
-                if (eventStatus == EventStatus.OPEN) {
-                    openStatuses.add(true);
-                } else if (eventStatus == EventStatus.CLOSED) {
-                    openStatuses.add(false);
-                } else if (eventStatus == EventStatus.JOINED) {
-                    isSubscribed = true;
-                } else if (eventStatus == EventStatus.CREATED) {
-                    isOrganizedByUser = true;
-                } else if (eventStatus == EventStatus.SAVED) {
-                    isFavorite = true;
-                }
-            }
-            citiesInLower = getArrayFromListOrNullIfEmpty(filterEventDto.getCities());
-            tagsInLower = getArrayFromListOrNullIfEmpty(filterEventDto.getTags());
-        }
-
-        Boolean isOpen = getBooleanIfAllMatchOrElseNull(openStatuses);
-        Boolean isRelevant = getBooleanIfAllMatchOrElseNull(futureTimeStatuses);
-
-        Page<Long> eventPrewiewIdsPage;
+        Page<Long> eventIds = eventsSearchRepo.findEventsIds(page, userId, filterEventDto, title);
         List<Tuple> tuples;
         if (userId != null) {
-            eventPrewiewIdsPage = eventRepo.findAllEventPreviewDtoByFilters(userId, isSubscribed,
-                isOrganizedByUser, isFavorite, title, isOpen, isRelevant, citiesInLower, tagsInLower, page);
-            tuples = eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent(), userId);
+            tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
         } else {
-            eventPrewiewIdsPage = eventRepo.findAllEventPreviewDtoByFilters(title,
-                isOpen, isRelevant, citiesInLower, tagsInLower, page);
-            tuples = eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent());
+            tuples = eventRepo.loadEventDataByIds(eventIds.getContent());
         }
-        return new PageableAdvancedDto<>(
-            mapTupleListToEventPreviewDtoList(tuples, eventPrewiewIdsPage.toList()),
-            eventPrewiewIdsPage.getTotalElements(),
-            page.getPageNumber(),
-            eventPrewiewIdsPage.getTotalPages(),
-            eventPrewiewIdsPage.getNumber(),
-            eventPrewiewIdsPage.hasPrevious(),
-            eventPrewiewIdsPage.hasNext(),
-            eventPrewiewIdsPage.isFirst(),
-            eventPrewiewIdsPage.isLast());
+        return buildPageableAdvancedDto(eventIds, tuples, page);
     }
 
     /**
@@ -847,6 +793,20 @@ public class EventServiceImpl implements EventService {
             eventsPage.isLast());
     }
 
+    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Long> eventIds, List<Tuple> tuples,
+        Pageable pageable) {
+        return new PageableAdvancedDto<>(
+            mapTupleListToEventDtoList(tuples, eventIds.toList()),
+            eventIds.getTotalElements(),
+            pageable.getPageNumber(),
+            eventIds.getTotalPages(),
+            eventIds.getNumber(),
+            eventIds.hasPrevious(),
+            eventIds.hasNext(),
+            eventIds.isFirst(),
+            eventIds.isLast());
+    }
+
     private void setSubscribes(Collection<EventDto> eventDtos, Long userId) {
         List<Long> eventIds = eventDtos.stream().map(EventDto::getId).collect(Collectors.toList());
         List<Event> subscribedEvents = eventRepo.findSubscribedAmongEventIds(eventIds, userId);
@@ -924,20 +884,7 @@ public class EventServiceImpl implements EventService {
         return eventRepo.countDistinctByOrganizerId(userId);
     }
 
-    private Boolean getBooleanIfAllMatchOrElseNull(List<Boolean> list) {
-        Boolean result = null;
-        if (list.isEmpty()) {
-            return null;
-        }
-        if (list.stream().allMatch(s -> s)) {
-            result = true;
-        } else if (list.stream().noneMatch(s -> s)) {
-            result = false;
-        }
-        return result;
-    }
-
-    private List<EventDto> mapTupleListToEventPreviewDtoList(List<Tuple> page, List<Long> sortedIds) {
+    private List<EventDto> mapTupleListToEventDtoList(List<Tuple> page, List<Long> sortedIds) {
         Map<Long, EventDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
         List<EventDto> sortedDtos = new ArrayList<>();
@@ -1030,16 +977,6 @@ public class EventServiceImpl implements EventService {
             sortedDtos.add(eventDto);
         }
         return sortedDtos;
-    }
-
-    @Nullable
-    private String[] getArrayFromListOrNullIfEmpty(List<String> list) {
-        if (list != null) {
-            return !list.isEmpty()
-                ? list.stream().map(String::toLowerCase).toArray(String[]::new)
-                : null;
-        }
-        return null;
     }
 
     private void checkingEqualityDateTimeInEventDateLocationDto(List<EventDateLocationDto> eventDateLocationDtos) {

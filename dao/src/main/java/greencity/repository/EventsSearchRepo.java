@@ -15,6 +15,7 @@ import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.SetJoin;
 import java.time.ZonedDateTime;
@@ -48,20 +49,53 @@ public class EventsSearchRepo {
         this.criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
-    public Page<Event> findEventsByFilter(Pageable pageable, Long userId, FilterEventDto filterEventDto, String title) {
-        CriteriaQuery<Event> criteria = criteriaBuilder.createQuery(Event.class);
+    /**
+     * Method for search list event ids by {@link FilterEventDto} and title.
+     *
+     * @param pageable       {@link Pageable}.
+     * @param userId         user id.
+     * @param filterEventDto {@link FilterEventDto}.
+     * @param title          title of event.
+     *
+     * @return list of event ids.
+     */
+    public Page<Long> findEventsIds(Pageable pageable, Long userId, FilterEventDto filterEventDto, String title) {
+        CriteriaQuery<Tuple> criteria = criteriaBuilder.createQuery(Tuple.class);
+
+        Subquery<Long> countSubquery = criteria.subquery(Long.class);
+        Root<Event> countRoot = countSubquery.from(Event.class);
+        Predicate subqueryPredicate = getPredicate(userId, filterEventDto, title, countRoot);
+        countSubquery.select(criteriaBuilder.countDistinct(countRoot)).where(subqueryPredicate);
+
         Root<Event> eventRoot = criteria.from(Event.class);
+        Predicate mainPredicate = getPredicate(userId, filterEventDto, title, eventRoot);
+        criteria.multiselect(eventRoot.get(Event_.ID), countSubquery.getSelection())
+            .distinct(true)
+            .where(mainPredicate);
 
-        Predicate predicate = getPredicate(userId, filterEventDto, title, eventRoot);
-        criteria.select(eventRoot).where(predicate);
-
-        TypedQuery<Event> typedQuery = entityManager.createQuery(criteria)
+        TypedQuery<Tuple> typedQuery = entityManager.createQuery(criteria)
             .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
             .setMaxResults(pageable.getPageSize());
-        List<Event> resultList = typedQuery.getResultList();
-        long total = getEventsByFilterCount(userId, filterEventDto, title);
+        List<Tuple> resultList = typedQuery.getResultList();
 
-        return new PageImpl<>(resultList, pageable, total);
+        return new PageImpl<>(getEventIdsFromTuple(resultList), pageable, getEventCountFromTuple(resultList));
+    }
+
+    private List<Long> getEventIdsFromTuple(List<Tuple> tuples) {
+        List<Long> eventIds = new ArrayList<>();
+        if (!tuples.isEmpty()) {
+            for (Tuple tuple : tuples) {
+                eventIds.add(tuple.get(0, Long.class));
+            }
+        }
+        return eventIds;
+    }
+
+    private Long getEventCountFromTuple(List<Tuple> tuple) {
+        if (!tuple.isEmpty()) {
+            return tuple.getFirst().get(1, Long.class);
+        }
+        return 0L;
     }
 
     /**
@@ -90,68 +124,79 @@ public class EventsSearchRepo {
         return new PageImpl<>(resultList, pageable, total);
     }
 
-    private Predicate getPredicate(Long userId, FilterEventDto filterEventDto, String title, Root<Event> eventRoot) {
-        List<Predicate> predicates = new ArrayList<>();
-
-        if (filterEventDto.getEventTime() != null) {
-            ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates);
-            if (filterEventDto.getEventTime() == EventTime.FUTURE) {
-                predicates.add(
-                    criteriaBuilder.greaterThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
-            } else if (filterEventDto.getEventTime() == EventTime.PAST) {
-                predicates.add(
-                    criteriaBuilder.lessThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
-            }
-        }
-
-        if (filterEventDto.getCities() != null && !filterEventDto.getCities().isEmpty()) {
-            Join<EventDateLocation, Address> addressJoin = eventRoot.join(Event_.dates).join(EventDateLocation_.address);
-            predicates.add(addressJoin.get(Address_.CITY_EN).in(filterEventDto.getCities()));
-        }
-
-        if (filterEventDto.getStatus() != null) {
-            if (filterEventDto.getStatus() == EventStatus.OPEN) {
-                predicates.add(criteriaBuilder.isTrue(eventRoot.get(Event_.IS_OPEN)));
-            } else if (filterEventDto.getStatus() == EventStatus.CLOSED) {
-                predicates.add(criteriaBuilder.isFalse(eventRoot.get(Event_.IS_OPEN)));
-            } else if (filterEventDto.getStatus() == EventStatus.CREATED && userId != null) {
-                Join<Event, User> organizerJoin = eventRoot.join(Event_.organizer);
-                predicates.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
-            } else if (filterEventDto.getStatus() == EventStatus.JOINED && userId != null) {
-                SetJoin<Event, User> attendersJoin = eventRoot.join(Event_.attenders);
-                predicates.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
-            } else if (filterEventDto.getStatus() == EventStatus.SAVED && userId != null) {
-                SetJoin<Event, User> followersJoin = eventRoot.join(Event_.followers);
-                predicates.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
-            }
-        }
-
-        if (filterEventDto.getTags() != null && !filterEventDto.getTags().isEmpty()) {
-            ListJoin<Tag, TagTranslation> tagsJoin = eventRoot.join(Event_.tags).join(Tag_.tagTranslations);
-            predicates.add(tagsJoin.get(TagTranslation_.NAME).in(filterEventDto.getTags()));
-        }
-
-        if (title != null && !title.isEmpty()) {
-            predicates.add(criteriaBuilder.like(eventRoot.get("title"), "%" + title + "%"));
-        }
-
-        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-    }
-
     private Predicate getPredicate(String searchingText, String languageCode, Root<Event> root) {
         List<Predicate> predicateList = formEventsLikePredicate(searchingText, root);
         predicateList.add(formTagTranslationsPredicate(searchingText, languageCode, root));
         return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
-    private long getEventsByFilterCount(Long userId, FilterEventDto filterEventDto, String title) {
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Event> eventRoot = countQuery.from(Event.class);
+    private Predicate getPredicate(Long userId, FilterEventDto filterEventDto, String title, Root<Event> eventRoot) {
+        List<Predicate> predicates = new ArrayList<>();
 
-        Predicate predicate = getPredicate(userId, filterEventDto, title, eventRoot);
-        countQuery.select(criteriaBuilder.count(eventRoot)).where(predicate);
+        if (filterEventDto != null) {
+            addEventTimePredicate(filterEventDto.getEventTime(), eventRoot, predicates);
+            addCitiesPredicate(filterEventDto.getCities(), eventRoot, predicates);
+            addStatusPredicate(filterEventDto.getStatus(), userId, eventRoot, predicates);
+            addTagsPredicate(filterEventDto.getTags(), eventRoot, predicates);
+            addTitlePredicate(title, eventRoot, predicates);
+        }
 
-        return entityManager.createQuery(countQuery).getSingleResult();
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private void addEventTimePredicate(EventTime eventTime, Root<Event> eventRoot, List<Predicate> predicates) {
+        if (eventTime != null) {
+            ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates);
+            if (eventTime == EventTime.FUTURE) {
+                predicates.add(
+                    criteriaBuilder.greaterThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
+            } else if (eventTime == EventTime.PAST) {
+                predicates.add(
+                    criteriaBuilder.lessThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
+            }
+        }
+    }
+
+    private void addCitiesPredicate(List<String> cities, Root<Event> eventRoot, List<Predicate> predicates) {
+        if (cities != null && !cities.isEmpty()) {
+            Join<EventDateLocation, Address> addressJoin = eventRoot
+                .join(Event_.dates).join(EventDateLocation_.address);
+            predicates.add(addressJoin.get(Address_.CITY_EN).in(cities));
+        }
+    }
+
+    private void addStatusPredicate(EventStatus eventStatus, Long userId, Root<Event> eventRoot,
+        List<Predicate> predicates) {
+        if (eventStatus != null) {
+            if (eventStatus == EventStatus.OPEN) {
+                predicates.add(criteriaBuilder.isTrue(eventRoot.get(Event_.IS_OPEN)));
+            } else if (eventStatus == EventStatus.CLOSED) {
+                predicates.add(criteriaBuilder.isFalse(eventRoot.get(Event_.IS_OPEN)));
+            } else if (eventStatus == EventStatus.CREATED && userId != null) {
+                Join<Event, User> organizerJoin = eventRoot.join(Event_.organizer);
+                predicates.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
+            } else if (eventStatus == EventStatus.JOINED && userId != null) {
+                SetJoin<Event, User> attendersJoin = eventRoot.join(Event_.attenders);
+                predicates.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
+            } else if (eventStatus == EventStatus.SAVED && userId != null) {
+                SetJoin<Event, User> followersJoin = eventRoot.join(Event_.followers);
+                predicates.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
+            }
+        }
+    }
+
+    private void addTagsPredicate(List<String> tags, Root<Event> eventRoot, List<Predicate> predicates) {
+        if (tags != null && !tags.isEmpty()) {
+            ListJoin<Tag, TagTranslation> tagsJoin = eventRoot.join(Event_.tags).join(Tag_.tagTranslations);
+            predicates.add(tagsJoin.get(TagTranslation_.NAME).in(tags));
+        }
+    }
+
+    private void addTitlePredicate(String title, Root<Event> eventRoot, List<Predicate> predicates) {
+        if (title != null && !title.isEmpty()) {
+            predicates.add(criteriaBuilder.like(
+                criteriaBuilder.lower(eventRoot.get(Event_.TITLE)), "%" + title.toLowerCase() + "%"));
+        }
     }
 
     private long getEventsCount(String searchingText, String languageCode) {

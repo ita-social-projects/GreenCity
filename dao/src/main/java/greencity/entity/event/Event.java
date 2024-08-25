@@ -92,7 +92,7 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventGrade> eventGrades = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventComment> eventsComments = new ArrayList<>();
 
     @ManyToMany
