@@ -109,7 +109,10 @@ public enum RatingCalculationEnum {
     UNDO_FIRST_10_ACHIEVEMENTS(-25),
     UNDO_FIRST_25_ACHIEVEMENTS(-50),
     UNDO_FIRST_50_ACHIEVEMENTS(-100),
-    UNDO_FIRST_100_ACHIEVEMENTS(-200);
+    UNDO_FIRST_100_ACHIEVEMENTS(-200),
+
+    LIKE_HABIT(1),
+    UNDO_LIKE_HABIT(-1);
 
     private final int ratingPoints;
 
