@@ -155,12 +155,4 @@ public interface HabitService {
      * @author Olena Sotnik.
      */
     void deleteCustomHabit(Long customHabitId, String ownerEmail);
-
-    /**
-     * Method to like or dislike {@link HabitVO} specified by id.
-     *
-     * @param habitId id of {@link HabitVO} to like/dislike.
-     * @param userVO  current {@link UserVO} that wants to like/dislike.
-     */
-    void like(Long habitId, UserVO userVO);
 }

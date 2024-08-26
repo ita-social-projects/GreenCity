@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -19,10 +18,6 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
-import greencity.enums.RatingCalculationEnum;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementAction;
-import greencity.enums.NotificationType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
@@ -31,7 +26,6 @@ import greencity.mapping.CustomShoppingListMapper;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
-import greencity.rating.RatingCalculation;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
@@ -79,10 +73,6 @@ public class HabitServiceImpl implements HabitService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
-    private static final String EN_LANGUAGE_CODE = "en";
-    private final UserNotificationService userNotificationService;
-    private final RatingCalculation ratingCalculation;
-    private final AchievementCalculation achievementCalculation;
 
     /**
      * Method returns Habit by its id.
@@ -537,42 +527,6 @@ public class HabitServiceImpl implements HabitService {
         unAssignOwnerFromCustomHabit(toDelete, owner.getId());
         toDelete.setIsDeleted(true);
         habitRepo.save(toDelete);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void like(Long habitId, UserVO userVO) {
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-
-        User habitAuthor = null;
-
-        if (habit.getUserId() != null) {
-            habitAuthor = userRepo.findById(habit.getUserId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + habitId));
-        }
-        if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_HABIT, userVO);
-            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
-                AchievementAction.DELETE);
-            if (habitAuthor != null) {
-                userNotificationService.removeActionUserFromNotification(modelMapper.map(habitAuthor, UserVO.class),
-                    userVO, habitId, NotificationType.HABIT_LIKE);
-            }
-        } else {
-            habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_HABIT, userVO);
-            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
-                AchievementAction.ASSIGN);
-            if (habitAuthor != null) {
-                userNotificationService.createNotification(modelMapper.map(habitAuthor, UserVO.class), userVO,
-                    NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
-            }
-        }
-        habitRepo.save(habit);
     }
 
     private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {

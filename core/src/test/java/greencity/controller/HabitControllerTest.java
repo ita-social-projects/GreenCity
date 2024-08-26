@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import greencity.service.TagsService;
-import greencity.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +32,6 @@ import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
@@ -52,9 +49,6 @@ class HabitControllerTest {
 
     @Mock
     TagsService tagsService;
-
-    @Mock
-    private UserService userService;
 
     @InjectMocks
     HabitController habitController;
@@ -350,20 +344,5 @@ class HabitControllerTest {
             .principal(principal)).andExpect(status().isOk());
 
         verify(habitService).deleteCustomHabit(customHabitId, principal.getName());
-    }
-
-    @Test
-    @SneakyThrows
-    void likeTest() {
-        Long habitId = 1L;
-
-        UserVO userVO = new UserVO();
-
-        mockMvc.perform(post(habitLink + "/like")
-            .param("habitId", habitId.toString())
-            .principal(getPrincipal()))
-            .andExpect(status().isOk());
-
-        verify(habitService).like(habitId, userVO);
     }
 }
