@@ -204,7 +204,7 @@ class HabitServiceImplTest {
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
         verify(habitRepo).findById(1L);
         verify(userRepo).findUserLanguageCodeByUserId(anyLong());
@@ -242,7 +242,7 @@ class HabitServiceImplTest {
             anyList(), anyLong(), anyString());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(habitRepo).findById(1L);
