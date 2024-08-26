@@ -124,6 +124,8 @@ class HabitServiceImplTest {
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementCalculation achievementCalculation;
+    @Mock
+    private UserNotificationServiceImpl userNotificationService;
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -1283,10 +1285,11 @@ class HabitServiceImplTest {
     void likeTest() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit();
+        Habit habit = getHabit().setUserId(user.getId());
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 
         habitService.like(habit.getId(), userVO);
 
@@ -1294,19 +1297,24 @@ class HabitServiceImplTest {
 
         verify(modelMapper).map(userVO, User.class);
         verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(user.getId());
     }
 
     @Test
     void removeLikeTest() {
         UserVO userVO = getUserVO();
         User user = getUser();
-        Habit habit = getHabit();
+        Habit habit = getHabit().setUserId(user.getId());
         habit.getUsersLiked().add(user);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
         habitService.like(habit.getId(), userVO);
         assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
         verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(user.getId());
     }
 
     @Test

@@ -1564,9 +1564,11 @@ public class ModelUtils {
     }
 
     public static Habit getHabit() {
-        return Habit.builder().id(1L).image("image.png")
+        Habit habit = Habit.builder().id(1L).image("image.png")
             .usersLiked(new HashSet<>())
             .complexity(1).tags(new HashSet<>(getTags())).build();
+
+        return habit.setHabitTranslations(List.of(getHabitTranslation(habit)));
     }
 
     public static Habit getHabitWithCustom() {
@@ -1582,6 +1584,17 @@ public class ModelUtils {
             .language(getLanguage())
             .name("test name")
             .habit(getHabit())
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslation(Habit habit) {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("test description")
+            .habitItem("test habit item")
+            .language(getLanguage())
+            .name("test name")
+            .habit(habit)
             .build();
     }
 
