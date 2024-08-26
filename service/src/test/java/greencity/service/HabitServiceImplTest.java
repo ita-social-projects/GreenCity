@@ -408,6 +408,7 @@ class HabitServiceImplTest {
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
         verify(habitRepo).findById(1L);
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
 
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
@@ -558,6 +559,7 @@ class HabitServiceImplTest {
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitRepo).findById(1L);
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
 
