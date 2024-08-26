@@ -63,12 +63,16 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.*;
 
@@ -134,7 +138,7 @@ class HabitServiceImplTest {
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
-        Habit habit = ModelUtils.getHabit();
+        Habit habit = getHabit();
         habit.setIsCustomHabit(false);
         HabitDto habitDto = ModelUtils.getHabitDto();
         habitDto.setIsCustomHabit(false);
@@ -153,7 +157,7 @@ class HabitServiceImplTest {
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitTrue() {
-        Habit habit = ModelUtils.getHabit();
+        Habit habit = getHabit();
         habit.setIsCustomHabit(true);
         habit.setCustomShoppingListItems(List.of(ModelUtils.getCustomShoppingListItem()));
         HabitDto habitDto = ModelUtils.getHabitDto();
@@ -179,7 +183,7 @@ class HabitServiceImplTest {
 
     @Test
     void getByIdAndLanguageCodeHabitTranslationNotFoundException2() {
-        Habit habit = ModelUtils.getHabit();
+        Habit habit = getHabit();
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         assertThrows(NotFoundException.class, () -> habitService.getByIdAndLanguageCode(1L, "en"));
     }
@@ -191,12 +195,12 @@ class HabitServiceImplTest {
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
-        Habit habit = ModelUtils.getHabit();
+        Habit habit = getHabit();
         habit.setIsCustomHabit(true);
         habit.setUserId(1L);
         HabitDto habitDto = ModelUtils.getHabitDto();
         habitDto.setIsCustomHabit(true);
-        UserVO userVO = ModelUtils.getUserVO();
+        UserVO userVO = getUserVO();
         List<Long> requestedCustomHabitIds = List.of(1L);
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
@@ -232,12 +236,12 @@ class HabitServiceImplTest {
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
-        Habit habit = ModelUtils.getHabit();
+        Habit habit = getHabit();
         habit.setIsCustomHabit(true);
         habit.setUserId(1L);
         HabitDto habitDto = ModelUtils.getHabitDto();
         habitDto.setIsCustomHabit(true);
-        UserVO userVO = ModelUtils.getUserVO();
+        UserVO userVO = getUserVO();
         List<Long> requestedCustomHabitIds = new ArrayList<>();
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
@@ -335,7 +339,7 @@ class HabitServiceImplTest {
         Optional<List<Integer>> complexities) {
         Pageable pageable = PageRequest.of(0, 2);
         String tag = "HABIT";
-        Long userId = ModelUtils.getUser().getId();
+        Long userId = getUser().getId();
         List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
@@ -419,7 +423,7 @@ class HabitServiceImplTest {
                 complexities, "en", requestedCustomHabitIds, userId);
         }
 
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
+        assertEquals(pageableDto, habitService.getAllByDifferentParameters(getUserVO(), pageable, tags,
             isCustomHabit, complexities, "en"));
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);
@@ -487,7 +491,7 @@ class HabitServiceImplTest {
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities) {
         Pageable pageable = PageRequest.of(0, 2);
         String tag = "HABIT";
-        Long userId = ModelUtils.getUser().getId();
+        Long userId = getUser().getId();
         List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
@@ -571,7 +575,7 @@ class HabitServiceImplTest {
                 complexities, "en", requestedCustomHabitIds, userId);
         }
 
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
+        assertEquals(pageableDto, habitService.getAllByDifferentParameters(getUserVO(), pageable, tags,
             isCustomHabit, complexities, "en"));
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);
@@ -678,7 +682,7 @@ class HabitServiceImplTest {
 
     @Test
     void addCustomHabitTestWithImagePathInDto() throws IOException {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Language languageEn = ModelUtils.getLanguage();
@@ -747,7 +751,7 @@ class HabitServiceImplTest {
 
     @Test
     void addCustomHabitTestWithImageFile() throws IOException {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Language languageEn = ModelUtils.getLanguage();
@@ -815,7 +819,7 @@ class HabitServiceImplTest {
 
     @Test
     void addCustomHabitTest2() throws IOException {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Language languageEn = ModelUtils.getLanguage();
@@ -882,7 +886,7 @@ class HabitServiceImplTest {
 
     @Test
     void addCustomHabitNoSuchElementExceptionWithNotExistingLanguageCodeTestUa() throws IOException {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
@@ -917,7 +921,7 @@ class HabitServiceImplTest {
 
     @Test
     void addCustomHabitNoSuchElementExceptionWithNotExistingLanguageCodeEn() throws IOException {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
@@ -972,7 +976,7 @@ class HabitServiceImplTest {
         Long habitId = 1L;
         Long userId = 2L;
         Long friendId = 3L;
-        User friend = ModelUtils.getUser();
+        User friend = getUser();
         friend.setId(friendId);
         friend.setProfilePicturePath("test");
         UserProfilePictureDto friendProfilePicture = UserProfilePictureDto.builder()
@@ -1035,7 +1039,7 @@ class HabitServiceImplTest {
 
     @Test
     void updateCustomHabitTest() throws IOException {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         user.setRole(Role.ROLE_ADMIN);
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
@@ -1114,7 +1118,7 @@ class HabitServiceImplTest {
     void updateCustomHabitThrowsUserHasNoPermissionToAccessException() {
         CustomHabitDtoRequest customHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
-        User user = ModelUtils.getUser();
+        User user = getUser();
         String email = user.getEmail();
         user.setRole(Role.ROLE_USER);
 
@@ -1228,7 +1232,7 @@ class HabitServiceImplTest {
         Long customHabitId = 1L;
         Habit toDelete = ModelUtils.getHabitWithCustom();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        User user = ModelUtils.getUser();
+        User user = getUser();
         toDelete.setUserId(1L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
@@ -1276,7 +1280,7 @@ class HabitServiceImplTest {
     void checkAccessOfOwnerToCustomHabitThrowsUserHasNoPermissionToAccessExceptionTest() {
         Long customHabitId = 1L;
         Habit toDelete = ModelUtils.getHabitWithCustom();
-        User user = ModelUtils.getUser();
+        User user = getUser();
         String userEmail = user.getEmail();
         toDelete.setUserId(4L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
