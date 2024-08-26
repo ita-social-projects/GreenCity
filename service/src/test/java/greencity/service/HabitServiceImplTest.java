@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
@@ -26,6 +27,7 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
+import greencity.rating.RatingCalculation;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
@@ -122,6 +124,13 @@ class HabitServiceImplTest {
 
     @Mock
     private HabitAssignService habitAssignService;
+
+    @Mock
+    private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementCalculation achievementCalculation;
+    @Mock
+    private UserNotificationServiceImpl userNotificationService;
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -1135,7 +1144,7 @@ class HabitServiceImplTest {
         newItem.setId(null);
 
         CustomHabitDtoRequest customHabitDtoRequest = ModelUtils
-            .getСustomHabitDtoRequestWithNewCustomShoppingListItem();
+            .getCustomHabitDtoRequestWithNewCustomShoppingListItem();
         CustomHabitDtoResponse customHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
         when(customShoppingListMapper.mapAllToList(any()))
             .thenReturn(List.of(newItem));
@@ -1281,5 +1290,90 @@ class HabitServiceImplTest {
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo, times(0)).save(any(Habit.class));
+    }
+
+    @Test
+    void likeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = getHabit().setUserId(user.getId());
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        habitService.like(habit.getId(), userVO);
+
+        assertTrue(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(modelMapper).map(userVO, User.class);
+        verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(user.getId());
+    }
+
+    @Test
+    void removeLikeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = getHabit().setUserId(user.getId());
+        habit.getUsersLiked().add(user);
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        habitService.like(habit.getId(), userVO);
+        assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(user.getId());
+    }
+
+    @Test
+    void removeLikeRemoveIfTest() {
+        User user = getUser();
+        Habit habit = getHabit();
+        habit.getUsersLiked().add(user);
+
+        UserVO userVO = getUserVO();
+        userVO.setName("New Name");
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        habitService.like(habit.getId(), userVO);
+        assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+        verify(habitRepo).findById(habit.getId());
+    }
+
+    @Test
+    void likeHabitHabitNotFoundTest() {
+        UserVO userVO = getUserVO();
+        Habit habit = getHabit();
+        Long habitId = habit.getId();
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitService.like(habitId, userVO));
+        assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habit.getId(), exception.getMessage());
+
+        verify(habitRepo).findById(habit.getId());
+    }
+
+    @Test
+    void likeHabitUserNotFoundTest() {
+        UserVO userVO = getUserVO();
+        Habit habit = getHabit();
+        Long habitId = habit.getId();
+        User user = getUser();
+        habit.setUserId(user.getId());
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitService.like(habitId, userVO));
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId(), exception.getMessage());
+
+        verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(habit.getUserId());
     }
 }

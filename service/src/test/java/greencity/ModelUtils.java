@@ -226,6 +226,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import static greencity.enums.NotificationType.ECONEWS_COMMENT;
 import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
 import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
@@ -241,6 +242,7 @@ import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
 import static greencity.enums.NotificationType.EVENT_UPDATED;
 import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
 import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
+import static greencity.enums.NotificationType.HABIT_LIKE;
 import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.ProjectName.PICKUP;
 import org.hibernate.sql.results.internal.TupleElementImpl;
@@ -1566,8 +1568,11 @@ public class ModelUtils {
     }
 
     public static Habit getHabit() {
-        return Habit.builder().id(1L).image("image.png")
+        Habit habit = Habit.builder().id(1L).image("image.png")
+            .usersLiked(new HashSet<>())
             .complexity(1).tags(new HashSet<>(getTags())).build();
+
+        return habit.setHabitTranslations(List.of(getHabitTranslation(habit)));
     }
 
     public static Habit getHabitWithCustom() {
@@ -1583,6 +1588,17 @@ public class ModelUtils {
             .language(getLanguage())
             .name("test name")
             .habit(getHabit())
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslation(Habit habit) {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("test description")
+            .habitItem("test habit item")
+            .language(getLanguage())
+            .name("test name")
+            .habit(habit)
             .build();
     }
 
@@ -3113,7 +3129,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithNewCustomShoppingListItem() {
+    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithNewCustomShoppingListItem() {
         return CustomHabitDtoRequest.builder()
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -3611,7 +3627,8 @@ public class ModelUtils {
                 EVENT_JOINED,
                 EVENT_COMMENT,
                 FRIEND_REQUEST_ACCEPTED,
-                FRIEND_REQUEST_RECEIVED})
+                FRIEND_REQUEST_RECEIVED,
+                HABIT_LIKE})
             .build();
     }
 

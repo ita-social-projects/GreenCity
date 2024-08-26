@@ -290,7 +290,6 @@ class UserNotificationServiceImplTest {
         verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
             NotificationType.EVENT_CREATED, 1L);
         verify(modelMapper).map(TEST_USER_VO, User.class);
-
     }
 
     @Test
