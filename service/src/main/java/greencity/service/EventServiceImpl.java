@@ -251,14 +251,13 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal,
-        FilterEventDto filterEventDto, String title) {
-        Long userId = null;
-        if (principal != null) {
-            userId = restClient.findIdByEmail(principal.getName());
+    public PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto) {
+        Long userId = filterEventDto.getUserId();
+        if (userId != null) {
+            restClient.findById(userId);
         }
 
-        Page<Long> eventIds = eventsSearchRepo.findEventsIds(page, userId, filterEventDto, title);
+        Page<Long> eventIds = eventsSearchRepo.findEventsIds(page, filterEventDto);
         List<Tuple> tuples;
         if (userId != null) {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);

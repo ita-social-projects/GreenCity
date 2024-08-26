@@ -15,26 +15,26 @@ import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
-import jakarta.persistence.Tuple;
-import jakarta.persistence.criteria.ListJoin;
-import jakarta.persistence.criteria.SetJoin;
-import java.time.ZonedDateTime;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class EventsSearchRepo {
@@ -53,22 +53,19 @@ public class EventsSearchRepo {
      * Method for search list event ids by {@link FilterEventDto} and title.
      *
      * @param pageable       {@link Pageable}.
-     * @param userId         user id.
      * @param filterEventDto {@link FilterEventDto}.
-     * @param title          title of event.
-     *
      * @return list of event ids.
      */
-    public Page<Long> findEventsIds(Pageable pageable, Long userId, FilterEventDto filterEventDto, String title) {
+    public Page<Long> findEventsIds(Pageable pageable, FilterEventDto filterEventDto) {
         CriteriaQuery<Tuple> criteria = criteriaBuilder.createQuery(Tuple.class);
 
         Subquery<Long> countSubquery = criteria.subquery(Long.class);
         Root<Event> countRoot = countSubquery.from(Event.class);
-        Predicate subqueryPredicate = getPredicate(userId, filterEventDto, title, countRoot);
+        Predicate subqueryPredicate = getPredicate(filterEventDto, countRoot);
         countSubquery.select(criteriaBuilder.countDistinct(countRoot)).where(subqueryPredicate);
 
         Root<Event> eventRoot = criteria.from(Event.class);
-        Predicate mainPredicate = getPredicate(userId, filterEventDto, title, eventRoot);
+        Predicate mainPredicate = getPredicate(filterEventDto, eventRoot);
         criteria.multiselect(eventRoot.get(Event_.ID), countSubquery.getSelection())
             .distinct(true)
             .where(mainPredicate);
@@ -104,7 +101,6 @@ public class EventsSearchRepo {
      * @param pageable      {@link Pageable}
      * @param searchingText - text criteria for searching.
      * @param languageCode  {@link String}.
-     *
      * @return all finding events, their tags and also count of finding events.
      * @author Anton Bondar
      */
@@ -130,15 +126,15 @@ public class EventsSearchRepo {
         return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
-    private Predicate getPredicate(Long userId, FilterEventDto filterEventDto, String title, Root<Event> eventRoot) {
+    private Predicate getPredicate(FilterEventDto filterEventDto, Root<Event> eventRoot) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filterEventDto != null) {
             addEventTimePredicate(filterEventDto.getEventTime(), eventRoot, predicates);
             addCitiesPredicate(filterEventDto.getCities(), eventRoot, predicates);
-            addStatusPredicate(filterEventDto.getStatus(), userId, eventRoot, predicates);
+            addStatusesPredicate(filterEventDto.getStatuses(), filterEventDto.getUserId(), eventRoot, predicates);
             addTagsPredicate(filterEventDto.getTags(), eventRoot, predicates);
-            addTitlePredicate(title, eventRoot, predicates);
+            addTitlePredicate(filterEventDto.getTitle(), eventRoot, predicates);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -165,23 +161,27 @@ public class EventsSearchRepo {
         }
     }
 
-    private void addStatusPredicate(EventStatus eventStatus, Long userId, Root<Event> eventRoot,
+    private void addStatusesPredicate(List<EventStatus> eventStatuses, Long userId, Root<Event> eventRoot,
         List<Predicate> predicates) {
-        if (eventStatus != null) {
-            if (eventStatus == EventStatus.OPEN) {
-                predicates.add(criteriaBuilder.isTrue(eventRoot.get(Event_.IS_OPEN)));
-            } else if (eventStatus == EventStatus.CLOSED) {
-                predicates.add(criteriaBuilder.isFalse(eventRoot.get(Event_.IS_OPEN)));
-            } else if (eventStatus == EventStatus.CREATED && userId != null) {
-                Join<Event, User> organizerJoin = eventRoot.join(Event_.organizer);
-                predicates.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
-            } else if (eventStatus == EventStatus.JOINED && userId != null) {
-                SetJoin<Event, User> attendersJoin = eventRoot.join(Event_.attenders);
-                predicates.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
-            } else if (eventStatus == EventStatus.SAVED && userId != null) {
-                SetJoin<Event, User> followersJoin = eventRoot.join(Event_.followers);
-                predicates.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
-            }
+        if (eventStatuses != null) {
+            List<Predicate> statusesPredicate = new ArrayList<>();
+            eventStatuses.forEach(status -> {
+                if (status == EventStatus.OPEN) {
+                    statusesPredicate.add(criteriaBuilder.isTrue(eventRoot.get(Event_.IS_OPEN)));
+                } else if (status == EventStatus.CLOSED) {
+                    statusesPredicate.add(criteriaBuilder.isFalse(eventRoot.get(Event_.IS_OPEN)));
+                } else if (status == EventStatus.CREATED && userId != null) {
+                    Join<Event, User> organizerJoin = eventRoot.join(Event_.organizer);
+                    statusesPredicate.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
+                } else if (status == EventStatus.JOINED && userId != null) {
+                    SetJoin<Event, User> attendersJoin = eventRoot.join(Event_.attenders);
+                    statusesPredicate.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
+                } else if (status == EventStatus.SAVED && userId != null) {
+                    SetJoin<Event, User> followersJoin = eventRoot.join(Event_.followers);
+                    statusesPredicate.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
+                }
+            });
+            predicates.add(criteriaBuilder.or(statusesPredicate.toArray(new Predicate[0])));
         }
     }
 
