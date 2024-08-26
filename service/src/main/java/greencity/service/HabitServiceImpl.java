@@ -539,7 +539,7 @@ public class HabitServiceImpl implements HabitService {
 
     private HabitAssignStatus assignHabitStatus(List<HabitAssign> habitAssigns) {
         if (habitAssigns.isEmpty()) {
-            throw new IllegalArgumentException("Habit Assigns list cannot be empty");
+            throw new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST);
         }
 
         for (HabitAssign habitAssign : habitAssigns) {
