@@ -698,13 +698,9 @@ public class ModelUtils {
     }
 
     public static HabitAssign getHabitAssign() {
-        return getHabitAssign(HabitAssignStatus.INPROGRESS);
-    }
-
-    public static HabitAssign getHabitAssign(HabitAssignStatus status) {
         return HabitAssign.builder()
             .id(1L)
-            .status(status)
+            .status(HabitAssignStatus.ACQUIRED)
             .createDate(ZonedDateTime.now())
             .habit(Habit.builder()
                 .id(1L)
