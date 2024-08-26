@@ -38,16 +38,4 @@ public interface SearchService {
      * @return PageableDto of {@link SearchEventsDto} instances.
      */
     PageableDto<SearchEventsDto> searchAllEvents(Pageable pageable, String searchQuery, String languageCode);
-
-    /**
-     * Method that allow you to search Events {@link SearchResponseDto}.
-     *
-     * @param pageable     {@link Pageable}.
-     * @param searchQuery  query to search {@link String}.
-     * @param languageCode language {@link String}.
-     *
-     * @return {@link SearchResponseDto} instances.
-     * @author Anton Bondar
-     */
-    SearchResponseDto searchByFunctionQuery(Pageable pageable, String searchQuery, String languageCode);
 }

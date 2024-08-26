@@ -148,10 +148,13 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
-        String languageCode) {
+        String languageCode, boolean excludeAssigned, Long userId) {
         List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
-        Page<HabitTranslation> habitTranslationsPage =
-            habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
+        Page<HabitTranslation> habitTranslationsPage = (excludeAssigned)
+            ? habitTranslationRepo.findUnassignedHabitTranslationsByLanguageAndTags(pageable, lowerCaseTags,
+                languageCode, userId)
+            : habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
+
         return buildPageableDto(habitTranslationsPage);
     }
 

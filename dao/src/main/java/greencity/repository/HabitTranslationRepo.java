@@ -56,6 +56,36 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     /**
+     * Method to find all unassigned habit translations by language code and tags.
+     *
+     * @param pageable     {@link Pageable} instance for pagination information.
+     * @param tags         {@link List} of {@link String} representing the tags to
+     *                     filter habits.
+     * @param languageCode {@link String} representing the language code for
+     *                     filtering habit translations.
+     * @param userId       {@link Long} representing the ID of the user for whom
+     *                     assigned habits should be excluded.
+     *
+     * @return {@link Page} of {@link HabitTranslation} containing the filtered and
+     *         unassigned habit translations.
+     */
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "JOIN h.tags AS t "
+        + "WHERE t.id IN "
+        + "(SELECT tt.tag.id FROM TagTranslation AS tt "
+        + "WHERE lower(tt.name) IN (:tags)) "
+        + "AND h.isDeleted = false "
+        + "AND h.id NOT IN (SELECT ha.habit.id FROM HabitAssign AS ha "
+        + "WHERE ha.user.id = :userId)) "
+        + "ORDER BY ht.habit.id DESC")
+    Page<HabitTranslation> findUnassignedHabitTranslationsByLanguageAndTags(Pageable pageable, List<String> tags,
+        String languageCode, Long userId);
+
+    /**
      * Method that finds by language code and tags all default, custom habit's
      * translations of current user or by habit assign status REQUESTED.
      *

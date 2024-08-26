@@ -198,6 +198,18 @@
     <include file="db/changelog/logs/ch-add-unique-constraint-to-include-habit_id-column-in-user_action-table-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-change-content-field-in-chatmessages-table.xml"/>
     <include file="db/changelog/logs/ch-add-table-db_backups-kizerov.xml"/>
+    <include file="db/changelog/logs/ch-add-column-eco-news-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-modify-function-recommended-eco-news-Herchanivska.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-employee-authority-Prots.xml" />
+    <include file="db/changelog/logs/ch-insert-into-employee-authority-mapping-Prots.xml" />
+    <include file="db/changelog/logs/ch-insert-into-positions-authorities-mapping-Prots.xml" />
+    <include file="db/changelog/logs/ch-add-table-place-comments-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-change-table-estimates-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-change-table-comments-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-change-table-comments-2-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-change-table-photos-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-add-column-comments-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-add-table-comments-users-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-table-habits-user-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement-categories-Fedotov.xml"/>
 </databaseChangeLog>

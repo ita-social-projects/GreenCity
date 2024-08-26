@@ -20,8 +20,12 @@ import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.AddCommentDto;
-import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.comment.AddCommentDtoRequest;
+import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -54,6 +58,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -139,41 +144,42 @@ import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
-import greencity.entity.Advice;
-import greencity.entity.BreakTime;
-import greencity.entity.Category;
-import greencity.entity.Comment;
-import greencity.entity.CustomShoppingListItem;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.FavoritePlace;
-import greencity.entity.Filter;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
-import greencity.entity.HabitStatistic;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.Location;
-import greencity.entity.Notification;
-import greencity.entity.OpeningHours;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.ShoppingListItem;
-import greencity.entity.Specification;
-import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.UserAchievement;
-import greencity.entity.UserAction;
-import greencity.entity.UserShoppingListItem;
+import greencity.entity.Tag;
+import greencity.entity.Language;
+import greencity.entity.EcoNews;
 import greencity.entity.VerifyEmail;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.HabitAssign;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.Habit;
+import greencity.entity.HabitTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.UserShoppingListItem;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.Category;
+import greencity.entity.Place;
+import greencity.entity.HabitFact;
+import greencity.entity.Advice;
+import greencity.entity.Photo;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.PlaceComment;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.Notification;
+import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.Location;
+import greencity.entity.DiscountValue;
+import greencity.entity.Specification;
+import greencity.entity.FavoritePlace;
+import greencity.entity.OpeningHours;
+import greencity.entity.Achievement;
+import greencity.entity.BreakTime;
+import greencity.entity.AchievementCategory;
+import greencity.entity.UserAction;
+import greencity.entity.Filter;
+import greencity.entity.UserAchievement;
+import greencity.entity.Comment;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
@@ -182,18 +188,19 @@ import greencity.entity.event.EventGrade;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.NotificationType;
-import greencity.enums.PlaceStatus;
-import greencity.enums.ProjectName;
-import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
+import greencity.enums.Role;
+import greencity.enums.CommentStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.ArticleType;
+import greencity.enums.EmailNotification;
+import greencity.enums.PlaceStatus;
+import greencity.enums.ProjectName;
+import greencity.enums.NotificationType;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import java.io.IOException;
@@ -578,7 +585,7 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text",
+            "title", "text", false,
             List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
@@ -596,7 +603,7 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text",
+            "title", "text", false,
             List.of(getEcoNewsComment(CommentStatus.EDITED),
                 getEcoNewsComment(CommentStatus.ORIGINAL),
                 getEcoNewsComment(CommentStatus.DELETED),
@@ -606,7 +613,8 @@ public class ModelUtils {
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet(), Collections.emptySet());
+            "title", "text", false, null, Collections.singletonList(getTag()), Collections.emptySet(),
+            Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {
@@ -917,7 +925,7 @@ public class ModelUtils {
     }
 
     public static List<UserShoppingListItem> getUserShoppingListItemList() {
-        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList();
+        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList<>();
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
@@ -929,7 +937,7 @@ public class ModelUtils {
         ShoppingListItemTranslation translation = getShoppingListItemTranslations1();
         ShoppingListItemTranslation translation2 = getShoppingListItemTranslations1();
         ShoppingListItemTranslation translation3 = getShoppingListItemTranslations1();
-        List<ShoppingListItemTranslation> list = new ArrayList();
+        List<ShoppingListItemTranslation> list = new ArrayList<>();
         list.add(translation);
         list.add(translation2);
         list.add(translation3);
@@ -1145,7 +1153,7 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("News"), "source", null, "shortInfo");
+            Collections.singletonList("News"), "source", "shortInfo");
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
@@ -1463,17 +1471,17 @@ public class ModelUtils {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
 
-    public static Comment getComment() {
-        return new Comment(1L, "text", getUser(),
+    public static PlaceComment getPlaceComment() {
+        return new PlaceComment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
     }
 
-    public static CommentReturnDto getCommentReturnDto() {
-        return new CommentReturnDto(1L, "text", null, null, null);
+    public static PlaceCommentResponseDto getCommentReturnDto() {
+        return new PlaceCommentResponseDto(1L, "text", null, null, null);
     }
 
-    public static AddCommentDto getAddCommentDto() {
-        return new AddCommentDto("comment", null, null);
+    public static PlaceCommentRequestDto getAddCommentDto() {
+        return new PlaceCommentRequestDto("comment", null, null);
     }
 
     public static AdviceTranslation getAdviceTranslation() {
@@ -1678,7 +1686,7 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false);
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
@@ -1691,12 +1699,12 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
-            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0);
+            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0,
+            false);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
-        return new UpdateEcoNewsDto(1L, "title", "text", "shortInfo", Collections.singletonList("tag"),
-            "image", "source");
+        return new UpdateEcoNewsDto(1L, "title", "text", "shortInfo", Collections.singletonList("tag"), "source");
     }
 
     public static SearchNewsDto getSearchNewsDto() {
@@ -2993,6 +3001,63 @@ public class ModelUtils {
             .build();
     }
 
+    public static Comment getComment() {
+        return Comment.builder()
+            .id(1L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .comments(List.of(getSubComment()))
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
+    public static Comment getSubComment() {
+        return Comment.builder()
+            .id(5L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("other text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
+    public static CommentDto getCommentDto() {
+        return CommentDto.builder()
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .author(getCommentAuthorDto())
+            .status(CommentStatus.ORIGINAL.toString())
+            .build();
+    }
+
+    public static AddCommentDtoResponse getAddCommentDtoResponse() {
+        return AddCommentDtoResponse.builder()
+            .id(getComment().getId())
+            .author(getCommentAuthorDto())
+            .text(getComment().getText())
+            .build();
+    }
+
+    public static CommentAuthorDto getCommentAuthorDto() {
+        return CommentAuthorDto.builder()
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .profilePicturePath(getUser().getProfilePicturePath())
+            .build();
+    }
+
+    public static AddCommentDtoRequest getAddCommentDtoRequest() {
+        return new AddCommentDtoRequest("text", 10L);
+    }
+
     public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
         return UserShoppingAndCustomShoppingListsDto.builder()
             .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
@@ -3562,6 +3627,33 @@ public class ModelUtils {
             .requesterId(1L)
             .friendStatus("FRIEND")
             .chatId(1L)
+            .build();
+    }
+
+    public static EventCommentVO getEventCommentVO() {
+        return EventCommentVO.builder()
+            .id(1L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .parentComment(EventCommentVO.builder()
+                .id(5L)
+                .build())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
+            .build();
+    }
+
+    public static EventCommentVO getEventCommentVOWithTaggedUser() {
+        return EventCommentVO.builder()
+            .id(1L)
+            .text("test data-userid=\"5\" test")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
             .build();
     }
 }

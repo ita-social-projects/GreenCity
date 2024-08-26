@@ -43,14 +43,19 @@ public interface HabitService {
     /**
      * Method that find all habit's translations by language code and tags.
      *
-     * @param pageable     {@link Pageable}
-     * @param tags         {@link List} of {@link String} tags
-     * @param languageCode language code {@link String}
+     * @param pageable        {@link Pageable}
+     * @param tags            {@link List} of {@link String} tags
+     * @param languageCode    language code {@link String}
+     * @param excludeAssigned {@link boolean} flag to determine whether to exclude
+     *                        habits already assigned to the specified user.
+     * @param userId          {@link Long} representing the ID of the user for whom
+     *                        assigned habits should be excluded (if applicable).
      *
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Markiyan Derevetskyi
      */
-    PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
+    PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode,
+        boolean excludeAssigned, Long userId);
 
     /**
      * Method that return all PageableDto of HabitDto by tags, isCustomHabit,

@@ -1437,6 +1437,7 @@ td input[type=search] {
 
 .btn-tertiary {
     color: #13AA57;
+    background-color: #ffffff;
     border: 1px solid #13AA57;
     box-sizing: border-box;
     border-radius: 4px;
@@ -1444,11 +1445,11 @@ td input[type=search] {
     height: 40px;
     display: flex;
     justify-content: center;
-    margin-top: 25px;
 }
 
 .btn-tertiary:hover {
-    color: #13AA57;
+    background-color: #13AA57;
+    color: #ffffff;
 }
 
 .btn-tertiary:focus {
@@ -1740,4 +1741,31 @@ a.lightgrey {
     float: right;
     margin-top: 11px;
     margin-right: 5px;
+}
+
+.table-container {
+    overflow-x: scroll;
+    margin-bottom: 1rem;
+}
+
+.scrollable-table {
+    display: block;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.table-container::-webkit-scrollbar {
+    display: block;
+    height: 10px;
+    background-color: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+}
+
+.table-container .table-header-container {
+    display: flex;
+    justify-content: space-between;
 }

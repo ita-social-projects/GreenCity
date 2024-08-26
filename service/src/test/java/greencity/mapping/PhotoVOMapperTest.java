@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.photo.PhotoVO;
-import greencity.entity.Comment;
+import greencity.entity.PlaceComment;
 import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -22,7 +22,7 @@ class PhotoVOMapperTest {
             .name("name")
             .id(13L)
             .user(User.builder().id(1L).build())
-            .comment(Comment.builder().id(1L).build())
+            .comment(PlaceComment.builder().id(1L).build())
             .place(Place.builder().id(1L).build())
             .build();
 

@@ -128,9 +128,11 @@ public class HabitController {
     /**
      * Method finds all habits by tags and language code.
      *
-     * @param locale   {@link Locale} with needed language code.
-     * @param pageable {@link Pageable} instance.
-     * @param tags     {@link List} of {@link String}
+     * @param locale          {@link Locale} with needed language code.
+     * @param pageable        {@link Pageable} instance.
+     * @param tags            {@link List} of {@link String}
+     * @param excludeAssigned {@link boolean} flag to determine whether to exclude
+     *                        habits already assigned to the current user.
      * @return Pageable of {@link HabitDto}.
      */
     @Operation(summary = "Find all habits by tags and language code.")
@@ -142,11 +144,14 @@ public class HabitController {
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam List<String> tags,
+        @RequestParam boolean excludeAssigned,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage()));
+            habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned,
+                userVO.getId()));
     }
 
     /**

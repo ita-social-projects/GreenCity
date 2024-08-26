@@ -44,7 +44,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -443,6 +442,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 new TypeToken<List<Tag>>() {
                 }.getType()));
         if (image != null) {
+            fileService.delete(toUpdate.getImagePath());
             toUpdate.setImagePath(fileService.upload(image));
         }
     }
@@ -457,10 +457,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
             new TypeToken<List<Tag>>() {
             }.getType()));
-        if (updateEcoNewsDto.getImage() != null) {
-            image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
-        }
         if (image != null) {
+            fileService.delete(toUpdate.getImagePath());
             toUpdate.setImagePath(fileService.upload(image));
         }
     }
@@ -473,8 +471,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile image) {
         EcoNews toUpdate = modelMapper.map(findById(ecoNewsDtoManagement.getId()), EcoNews.class);
         enhanceWithNewManagementData(toUpdate, ecoNewsDtoManagement, image);
-
-        ecoNewsRepo.save(toUpdate);
+        try {
+            ecoNewsRepo.save(toUpdate);
+        } catch (Exception e) {
+            fileService.delete(toUpdate.getImagePath());
+            throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
+        }
     }
 
     /**
@@ -490,7 +492,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
-        ecoNewsRepo.save(toUpdate);
+        try {
+            ecoNewsRepo.save(toUpdate);
+        } catch (Exception e) {
+            fileService.delete(toUpdate.getImagePath());
+            throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
+        }
         return getEcoNewsGenericDtoWithAllTags(toUpdate);
     }
 
@@ -510,35 +517,45 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void like(UserVO userVO, Long id) {
         EcoNewsVO ecoNewsVO = findById(id);
-        if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
-            ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-        }
-        if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
+
+        ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+
+        boolean isLiked = ecoNewsVO.getUsersLikedNews().stream()
+            .anyMatch(u -> u.getId().equals(userVO.getId()));
+
+        boolean isAuthor = ecoNewsVO.getAuthor().getId().equals(userVO.getId());
+
+        if (isLiked) {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
-            userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO,
-                id, NotificationType.ECONEWS_LIKE);
-            userNotificationService.checkUnreadNotification(ecoNewsVO.getAuthor().getId());
         } else {
-            if (ecoNewsVO.getAuthor().getId().equals(userVO.getId())) {
+            if (isAuthor) {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
             }
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
-            sendNotification(ecoNewsVO, userVO);
         }
+
+        sendNotification(ecoNewsVO, userVO, !isLiked);
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
     }
 
-    private void sendNotification(EcoNewsVO ecoNewsVO, UserVO actionUser) {
+    private void sendNotification(EcoNewsVO ecoNewsVO, UserVO actionUser, boolean isLike) {
         UserVO targetUser = userService.findById(ecoNewsVO.getAuthor().getId());
-        userNotificationService.createNotification(
-            targetUser, actionUser, NotificationType.ECONEWS_LIKE,
-            ecoNewsVO.getId(), ecoNewsVO.getTitle());
+        userNotificationService.createOrUpdateLikeNotification(
+            targetUser, actionUser, ecoNewsVO.getId(), formatNewsTitle(ecoNewsVO.getTitle()), isLike);
+    }
+
+    private String formatNewsTitle(String newsTitle) {
+        int maxLength = 20;
+        if (newsTitle.length() > maxLength) {
+            return newsTitle.substring(0, maxLength) + "...";
+        }
+        return newsTitle;
     }
 
     /**
@@ -730,6 +747,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .content(ecoNews.getText())
             .title(ecoNews.getTitle())
             .creationDate(ecoNews.getCreationDate())
+            .hidden(ecoNews.isHidden())
             .build();
     }
 
@@ -768,7 +786,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());
 
         if (tagsSet.size() < addEcoNewsDtoRequest.getTags().size()) {
-            throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
+            throw new NotSavedException(ErrorMessage.DUPLICATE_TAGS);
         }
 
         List<TagVO> tagVOS = tagService.findTagsByNamesAndType(
@@ -779,7 +797,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             }.getType()));
         try {
             ecoNewsRepo.save(toSave);
-        } catch (DataIntegrityViolationException e) {
+        } catch (Exception e) {
+            fileService.delete(toSave.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return toSave;
@@ -830,5 +849,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return predicateList.size() == 1
             ? predicateList.getFirst()
             : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Viktoriia Herchanivska.
+     */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
+    @Override
+    public void setHiddenValue(Long id, UserVO user, boolean value) {
+        if (user.getRole() != Role.ROLE_ADMIN) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        EcoNews ecoNews = ecoNewsRepo
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+        ecoNews.setHidden(value);
+
+        ecoNewsRepo.save(ecoNews);
     }
 }
