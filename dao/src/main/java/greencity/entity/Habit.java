@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -78,4 +79,15 @@ public class Habit {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
+
+    @Transient
+    @Builder.Default
+    private boolean currentUserLiked = false;
+
+    @ManyToMany
+    @JoinTable(
+        name = "habits_users_likes",
+        joinColumns = @JoinColumn(name = "habit_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersLiked;
 }
