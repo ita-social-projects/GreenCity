@@ -233,6 +233,7 @@ class HabitServiceImplTest {
         habit.setUserId(1L);
         HabitDto habitDto = ModelUtils.getHabitDto();
         habitDto.setIsCustomHabit(true);
+        habitDto.setHabitAssignStatus(HabitAssignStatus.ACQUIRED);
         UserVO userVO = ModelUtils.getUserVO();
         List<Long> requestedCustomHabitIds = new ArrayList<>();
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
@@ -242,7 +243,7 @@ class HabitServiceImplTest {
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
         when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
-            .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign()));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
         when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("ua");
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
