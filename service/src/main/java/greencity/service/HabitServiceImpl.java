@@ -16,6 +16,7 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -281,9 +282,11 @@ public class HabitServiceImpl implements HabitService {
         for (HabitDto habitDto : habits) {
             Habit habit = habitRepo.findById(habitDto.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitDto.getId()));
-            Optional<HabitAssign> habitAssign =
-                habitAssignRepo.findByHabitIdAndUserId(habitDto.getId(), userVO.getId());
-            habitAssign.ifPresent(assign -> habitDto.setHabitAssignStatus(assign.getStatus()));
+            List<HabitAssign> habitAssigns =
+                habitAssignRepo.findHabitsByHabitIdAndUserId(habitDto.getId(), userVO.getId());
+            if (!habitAssigns.isEmpty()) {
+                habitDto.setHabitAssignStatus(assignHabitStatus(habitAssigns));
+            }
             boolean isCustomHabit = habit.getIsCustomHabit();
             habitDto.setIsCustomHabit(isCustomHabit);
             if (isCustomHabit) {
@@ -532,5 +535,19 @@ public class HabitServiceImpl implements HabitService {
         }
         habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(habit.getId(), userId)
             .forEach(haId -> habitAssignService.deleteHabitAssign(haId, userId));
+    }
+
+    private HabitAssignStatus assignHabitStatus(List<HabitAssign> habitAssigns) {
+        if (habitAssigns.isEmpty()) {
+            throw new IllegalArgumentException("Habit Assigns list cannot be empty");
+        }
+
+        for (HabitAssign habitAssign : habitAssigns) {
+            HabitAssignStatus status = habitAssign.getStatus();
+            if (status == HabitAssignStatus.INPROGRESS || status == HabitAssignStatus.REQUESTED) {
+                return status;
+            }
+        }
+        return HabitAssignStatus.ACQUIRED;
     }
 }
