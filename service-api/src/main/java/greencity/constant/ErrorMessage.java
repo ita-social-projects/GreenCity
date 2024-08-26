@@ -190,4 +190,5 @@ public class ErrorMessage {
     public static final String INVALID_TIME_RANGE = "Start date and end date must be greater than end date";
     public static final String NOT_FOUND_IN_CURRENT_TIME_RANGE = "Not found backups in current time range";
     public static final String COMMENT_NOT_FOUND_BY_ID = "Comment doesn't exist by this id: ";
+    public static final String EMPTY_HABIT_ASSIGN_LIST = "Habit Assigns list cannot be empty";
 }
