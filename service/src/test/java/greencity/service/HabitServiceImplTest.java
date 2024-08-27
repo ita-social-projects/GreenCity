@@ -20,6 +20,7 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.HabitAssign;
 import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -199,20 +200,22 @@ class HabitServiceImplTest {
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
         when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("en");
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
+        assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
             anyList(), anyLong(), anyString());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
         verify(habitRepo).findById(1L);
         verify(userRepo).findUserLanguageCodeByUserId(anyLong());
@@ -230,6 +233,7 @@ class HabitServiceImplTest {
         habit.setUserId(1L);
         HabitDto habitDto = ModelUtils.getHabitDto();
         habitDto.setIsCustomHabit(true);
+        habitDto.setHabitAssignStatus(HabitAssignStatus.ACQUIRED);
         UserVO userVO = ModelUtils.getUserVO();
         List<Long> requestedCustomHabitIds = new ArrayList<>();
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
@@ -238,19 +242,21 @@ class HabitServiceImplTest {
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign()));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
         when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("ua");
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
+        assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
             anyList(), anyLong(), anyString());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(habitRepo).findById(1L);
@@ -341,6 +347,8 @@ class HabitServiceImplTest {
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId)).thenReturn(requestedCustomHabitIds);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.getHabitWithCustom()));
 
         when(habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(any(Pageable.class),
@@ -412,9 +420,11 @@ class HabitServiceImplTest {
 
         assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
             isCustomHabit, complexities, "en"));
+        assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitRepo).findById(1L);
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
 
@@ -492,6 +502,8 @@ class HabitServiceImplTest {
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId)).thenReturn(requestedCustomHabitIds);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.getHabitWithCustom()));
 
         when(habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(any(Pageable.class),
@@ -563,9 +575,11 @@ class HabitServiceImplTest {
 
         assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
             isCustomHabit, complexities, "en"));
+        assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitRepo).findById(1L);
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
 
