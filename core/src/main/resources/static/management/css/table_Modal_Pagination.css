@@ -24,7 +24,6 @@ body {
     background: #fff;
     margin-top: 5px;
     border-radius: 3px;
-    min-width: 1000px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
 }
 
@@ -32,8 +31,7 @@ body {
     padding-bottom: 15px;
     color: #212529;
     padding: 16px 30px;
-    min-width: 100%;
-    margin: -20px -25px 10px;
+    width: 100%;
     border-radius: 3px 3px 0 0;
 }
 
@@ -366,7 +364,6 @@ table.table tr th:last-child {
 
 table.table-striped tbody tr {
     background-color: #e5ebef;
-    white-space: nowrap;
 }
 
 
@@ -442,7 +439,7 @@ table.table .avatar {
 
 .pagination {
     justify-content: center;
-    margin: 0 0 5px;
+    margin: 10px 0 5px 0;
 }
 
 .pagination li a {
@@ -985,7 +982,6 @@ table.table .avatar {
     margin-left: -11px;
     border: 1px solid #CACFD3;
     border-top: 0px solid #CACFD3;
-
 }
 
 .dropdown-content.status a {
@@ -993,7 +989,6 @@ table.table .avatar {
     text-decoration: none;
     display: block;
     font-weight: normal;
-
 }
 
 .dropdown.status {
@@ -1032,8 +1027,6 @@ table.table .avatar {
     margin-top: 5px;
     margin-left: -1px;
     border: solid 1px #336B4C;
-
-
 }
 
 .change_color {
@@ -1073,13 +1066,10 @@ table.table .avatar {
     margin-left: 0 !important;
     z-index: 5;
     box-sizing: border-box;
-
-
 }
 
 .dropdown-content.size a:hover {
     color: #9CA7B0;
-    /*border: solid 1px #9CA7B0;*/
     background-color: #336B4C;
     box-sizing: border-box;
     height: 35px;
@@ -1091,8 +1081,6 @@ table.table .avatar {
     position: relative;
     right: 50px;
     display: flex;
-    /*padding-top: 5px;*/
-
 }
 
 .filter-list-grid i {
@@ -1333,6 +1321,15 @@ table.table .avatar {
     left: 10px;
 }
 
+.search-box-right.fixed-i-position {
+    margin: 10px 10px 10px 30px;
+}
+
+.search-box-right.fixed-i-position i {
+    top: 15px;
+    left: -25px;
+}
+
 .filter-button {
     border: 1px solid #9CA7B0;
     display: flex;
@@ -1380,8 +1377,8 @@ td input[type=search] {
 }
 
 .btn {
-    width: 122px;
-    height: 48px;
+    min-width: 122px;
+    min-height: 48px;
     border-radius: 5px;
     font-weight: 600;
 }
@@ -1500,8 +1497,13 @@ td input[type=search] {
 
 .btn-danger{
     height: 40px;
-    margin-top: 25px;
-    width: 98px;
+    min-width: 98px;
+}
+
+.btn-success, .btn-danger{
+    text-align: center;
+    align-content: center;
+    margin: 5px;
 }
 
 .dropbtn.userpage:focus {
@@ -1741,6 +1743,72 @@ a.lightgrey {
     float: right;
     margin-top: 11px;
     margin-right: 5px;
+}
+.table-child tr:nth-child(odd) {
+    border-bottom: 1px solid #ddd;
+}
+
+.table-child td {
+    background-color: #f1f1f1;
+}
+
+.align-content-center {
+    align-content: center;
+}
+.alternative-checkbox input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid #9CA7B0;
+    border-radius: 3px;
+}
+
+.alternative-checkbox input[type="checkbox"]:checked {
+    background-color: white;
+}
+
+.alternative-checkbox input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 5px;
+    width: 8px;
+    height: 13px;
+    border: solid #13AA57;
+    border-width: 0 4px 4px 0;
+    transform: rotate(45deg);
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.text-align-center, .clearfix.text-align-center{
+    text-align: center;
+}
+
+.small-column {
+    width: 5%;
+}
+
+@media (max-width: 768px) {
+
+    body {
+        height: auto;
+    }
+    .table-child {
+        display: block;
+        width: 100%;
+        border: 0;
+    }
+
+    .mobile-hidden,
+    .mobile-hidden .small-column{
+        display: none;
+    }
 }
 
 .table-container {
