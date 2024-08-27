@@ -100,7 +100,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
-                .requestMatchers("/management/**").hasAnyRole(ADMIN)
+                .requestMatchers("/management/**").permitAll()//.hasAnyRole(ADMIN)
                 .requestMatchers("/v2/api-docs/**",
                     "/v3/api-docs/**",
                     "/swagger.json",
@@ -117,7 +117,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,
                     "/factoftheday/",
                     "/factoftheday/all",
-                    "/factoftheday/find",
+                    "/factoftheday/find/**",
                     "/factoftheday/languages",
                     "/category",
                     "/place/info/{id}",
