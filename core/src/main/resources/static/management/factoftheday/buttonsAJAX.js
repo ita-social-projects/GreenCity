@@ -30,20 +30,26 @@ $(document).ready(function(){
         }
     });
     //Кнопка edit справа в таблиці
-    $('td .edit.eBtn').on('click',function(event){
+    $('td .edit.eBtn').on('click', function(event) {
         event.preventDefault();
-        $("#editFactOfTheDayModal").each(function(){
+        $('#editFactOfTheDayModal').each(function() {
             $(this).find('input.eEdit').val("");
         });
         clearAllErrorsSpan();
         $('#editFactOfTheDayModal').modal();
-        var href = $(this).attr('href');
-        $.get(href, function (factoftheday,status){
-            $('#id').val(factoftheday.id);
-            $('#name').val(factoftheday.name);
-            factoftheday.factOfTheDayTranslations.forEach(function (translation,index){
-                $('#content'+translation.language.code).val(translation.content);
-            })
+
+        var $row = $(this).closest('tr');
+        var id = $row.find('td.mobile-hidden:first').text().trim();
+        var name = $row.find('td').eq(2).text().trim();
+        var translations = $row.find('table.table-child tbody tr');
+
+        $('#id').val(id);
+        $('#name').val(name);
+
+        translations.each(function() {
+            var languageCode = $(this).find('td').eq(2).text().trim();
+            var content = $(this).find('td').eq(1).text().trim();
+            $('#content' + languageCode).val(content);
         });
     });
     //Кнопка addFactOftheDay зверху таблиці
@@ -184,6 +190,4 @@ $(document).ready(function(){
             data: JSON.stringify(returnData)
         });
     })
-
-
 });

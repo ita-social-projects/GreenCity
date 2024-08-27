@@ -117,7 +117,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,
                     "/factoftheday/",
                     "/factoftheday/all",
-                    "/factoftheday/find",
+                    "/factoftheday/find/**",
                     "/factoftheday/languages",
                     "/category",
                     "/place/info/{id}",
