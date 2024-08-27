@@ -389,7 +389,7 @@ public class ModelUtils {
 
     public static FilterEventDto getNullFilterEventDto() {
         return FilterEventDto.builder()
-            .eventTime(null)
+            .time(null)
             .cities(null)
             .statuses(null)
             .tags(null)

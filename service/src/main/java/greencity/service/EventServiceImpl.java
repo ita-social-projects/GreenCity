@@ -115,6 +115,7 @@ import static greencity.constant.EventTupleConstant.tagId;
 import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
+import static greencity.constant.EventTupleConstant.type;
 import static greencity.enums.EventType.OFFLINE;
 import static greencity.enums.EventType.ONLINE;
 
@@ -899,6 +900,7 @@ public class EventServiceImpl implements EventService {
                     .creationDate(tuple.get(creationDate, Date.class).toLocalDate())
                     .titleImage(tuple.get(titleImage, String.class))
                     .isOpen(tuple.get(isOpen, Boolean.class))
+                    .type(EventType.valueOf(tuple.get(type, String.class)))
                     .isRelevant(tuple.get(isRelevant, Boolean.class))
                     .likes(Math.toIntExact(tuple.get(likes, Long.class)))
                     .countComments(Math.toIntExact(tuple.get(countComments, Long.class)))

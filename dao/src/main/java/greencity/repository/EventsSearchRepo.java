@@ -15,6 +15,7 @@ import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
+import greencity.enums.EventType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
@@ -130,11 +131,12 @@ public class EventsSearchRepo {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filterEventDto != null) {
-            addEventTimePredicate(filterEventDto.getEventTime(), eventRoot, predicates);
+            addEventTimePredicate(filterEventDto.getTime(), eventRoot, predicates);
             addCitiesPredicate(filterEventDto.getCities(), eventRoot, predicates);
             addStatusesPredicate(filterEventDto.getStatuses(), filterEventDto.getUserId(), eventRoot, predicates);
             addTagsPredicate(filterEventDto.getTags(), eventRoot, predicates);
             addTitlePredicate(filterEventDto.getTitle(), eventRoot, predicates);
+            addTypePredicate(filterEventDto.getType(), eventRoot, predicates);
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -197,6 +199,10 @@ public class EventsSearchRepo {
             predicates.add(criteriaBuilder.like(
                 criteriaBuilder.lower(eventRoot.get(Event_.TITLE)), "%" + title.toLowerCase() + "%"));
         }
+    }
+
+    private void addTypePredicate(EventType type, Root<Event> eventRoot, List<Predicate> predicates) {
+        predicates.add(criteriaBuilder.equal(eventRoot.get(Event_.type), type));
     }
 
     private long getEventsCount(String searchingText, String languageCode) {

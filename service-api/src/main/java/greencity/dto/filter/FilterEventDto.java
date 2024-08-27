@@ -14,11 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class FilterEventDto {
-    private EventTime eventTime;
+    private EventTime time;
     private List<String> cities;
     private List<EventStatus> statuses;
     private List<String> tags;
     private String title;
-    private EventType eventType;
+    private EventType type;
     private Long userId;
 }

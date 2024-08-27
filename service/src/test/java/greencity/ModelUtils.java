@@ -2985,7 +2985,7 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDto() {
         return FilterEventDto.builder()
-            .eventTime(PAST)
+            .time(PAST)
             .cities(List.of("Kyiv"))
             .statuses(List.of(OPEN))
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
