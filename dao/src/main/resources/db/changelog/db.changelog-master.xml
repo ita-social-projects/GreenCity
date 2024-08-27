@@ -208,4 +208,5 @@
     <include file="/db/changelog/logs/ch-change-table-comments-Fedotov.xml"/>
     <include file="/db/changelog/logs/ch-change-table-comments-2-Fedotov.xml"/>
     <include file="/db/changelog/logs/ch-change-table-photos-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-add-column-type-to-events-Rozhko.xml"/>
 </databaseChangeLog>

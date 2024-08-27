@@ -3,6 +3,8 @@ package greencity.entity.event;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.EventType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -82,6 +84,9 @@ public class Event {
 
     @Column
     private boolean isOpen = true;
+
+    @Enumerated(EnumType.STRING)
+    private EventType type;
 
     @ManyToMany
     @JoinTable(name = "events_tags",

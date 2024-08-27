@@ -2,6 +2,7 @@ package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.dto.tag.TagUaEnDto;
+import greencity.enums.EventType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
@@ -42,6 +43,8 @@ public class EventDto {
     private List<String> additionalImages;
 
     private boolean isOpen;
+
+    private EventType type;
 
     @JsonProperty("isSubscribed")
     private boolean isSubscribed;
