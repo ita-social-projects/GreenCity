@@ -129,7 +129,7 @@ public class ErrorMessage {
     public static final String COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID =
         "The comment with entered parent_comment_id doesn't exist";
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
-    public static final String CANNOT_REPLY_THE_REPLY = "You can't reply on reply";
+    public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
@@ -189,6 +189,4 @@ public class ErrorMessage {
         "No friends are assigned on current habit with id: ";
     public static final String INVALID_TIME_RANGE = "Start date and end date must be greater than end date";
     public static final String NOT_FOUND_IN_CURRENT_TIME_RANGE = "Not found backups in current time range";
-    public static final String COMMENT_NOT_FOUND_BY_ID = "Comment doesn't exist by this id: ";
-    public static final String EMPTY_HABIT_ASSIGN_LIST = "Habit Assigns list cannot be empty";
 }
