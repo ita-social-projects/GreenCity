@@ -1,11 +1,17 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
+import greencity.constant.LogMessage;
 import greencity.dto.place.PlaceVO;
+import greencity.enums.NotificationType;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.UserReceivedCommentMessage;
 import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public interface NotificationService {
@@ -38,6 +44,30 @@ public interface NotificationService {
     void sendMonthlyReport();
 
     /**
+     * Method for sending scheduled email to user has unread notifications
+     * connected with likes. Sending is performed 2 times a day.
+     */
+    void sendLikeScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications
+     * connected with comments. Sending is performed 2 times a day.
+     */
+    void sendCommentScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications
+     * connected with comment replies. Sending is performed 2 times a day.
+     */
+    void sendCommentReplyScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications
+     * connected with friend requests. Sending is performed 2 times a day.
+     */
+    void sendFriendRequestScheduledEmail();
+
+    /**
      * method sends a general email notification to many Users.
      *
      * @param usersEmails {@link Set} to this users email will be sent.
@@ -68,18 +98,4 @@ public interface NotificationService {
      * @param message {@link UserTaggedInCommentMessage}.
      */
     void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message);
-
-    /**
-     * Method send a notification message when user received comment.
-     *
-     * @param message {@link UserReceivedCommentMessage}.
-     */
-    void sendUserReceivedCommentEmailNotification(UserReceivedCommentMessage message);
-
-    /**
-     * Method send a notification message when user received reply to the comment.
-     *
-     * @param message {@link UserReceivedCommentReplyMessage}.
-     */
-    void sendUserReceivedCommentReplyEmailNotification(UserReceivedCommentReplyMessage message);
 }
