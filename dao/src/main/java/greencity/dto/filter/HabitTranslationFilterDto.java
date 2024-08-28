@@ -21,4 +21,5 @@ public class HabitTranslationFilterDto {
     private boolean isCustom;
     @NotNull
     private Long userId;
+    private List<Long> requestedIds;
 }

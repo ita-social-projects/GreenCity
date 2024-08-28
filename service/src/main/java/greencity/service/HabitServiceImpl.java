@@ -190,8 +190,10 @@ public class HabitServiceImpl implements HabitService {
         Optional<List<String>> tags, Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities,
         String languageCode) {
         Long userId = userVO.getId();
+        List<Long> requestedIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         HabitTranslationFilterDto filterDto = createFilterDto(
             userId,
+            requestedIds,
             languageCode,
             tags.orElse(new ArrayList<>()),
             isCustomHabit.orElse(false),
@@ -199,9 +201,6 @@ public class HabitServiceImpl implements HabitService {
 
         Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
         Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
-
-        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
-        checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
 
         return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO);
     }
@@ -547,6 +546,7 @@ public class HabitServiceImpl implements HabitService {
 
     private HabitTranslationFilterDto createFilterDto(
         Long userId,
+        List<Long> requestedIds,
         String languageCode,
         List<String> tags,
         Boolean isCustomHabit,
@@ -557,6 +557,7 @@ public class HabitServiceImpl implements HabitService {
             .tags(tags)
             .isCustom(isCustomHabit)
             .userId(userId)
+            .requestedIds(requestedIds)
             .build();
     }
 }

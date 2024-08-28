@@ -2,10 +2,13 @@ package greencity.repository.options;
 
 import greencity.dto.filter.HabitTranslationFilterDto;
 import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.HabitAssignStatus;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -33,7 +36,15 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
         List<Predicate> predicates = new ArrayList<>();
         Join<HabitTranslation, Habit> habitJoin = root.join("habit", JoinType.INNER);
 
-        if (filter.getLanguageCode() != null) {
+        if (!filter.isCustom()) {
+            predicates.add(isNotCustomHabit(criteriaBuilder, habitJoin));
+        }
+
+        if (filter.isCustom() && filter.getUserId() != null) {
+            predicates.add(isCustomHabit(criteriaBuilder, habitJoin, filter.getUserId(), filter.getRequestedIds()));
+        }
+
+        if (filter.getLanguageCode() != null && !filter.getLanguageCode().isEmpty()) {
             predicates.add(hasLanguageCode(root, criteriaBuilder, filter.getLanguageCode()));
         }
 
@@ -46,6 +57,26 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
         }
 
         return predicates;
+    }
+
+    private Predicate isNotCustomHabit(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin) {
+        Predicate isCustomHabitFalse = cb.equal(habitJoin.get("isCustomHabit"), false);
+        Predicate isDeletedFalse = cb.equal(habitJoin.get("isDeleted"), false);
+        return cb.and(isCustomHabitFalse, isDeletedFalse);
+    }
+
+    private Predicate isCustomHabit(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin, Long userId,
+        List<Long> requestedIds) {
+        Predicate isCustomHabitTrue = cb.equal(habitJoin.get("isCustomHabit"), true);
+        Predicate isDeletedFalse = cb.equal(habitJoin.get("isDeleted"), false);
+
+        Predicate isRequested = habitJoin.get("id").in(requestedIds);
+        Predicate isAuthor = cb.equal(habitJoin.get("userId"), userId);
+
+        return cb.and(
+            isCustomHabitTrue,
+            isDeletedFalse,
+            cb.or(isRequested, isAuthor));
     }
 
     private Predicate hasTags(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin, List<String> tags) {
