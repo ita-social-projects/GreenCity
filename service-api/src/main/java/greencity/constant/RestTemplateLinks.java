@@ -37,12 +37,8 @@ public class RestTemplateLinks {
     public static final String SEND_GENERAL_EMAIL_NOTIFICATION = "/email/general/notification";
     public static final String SEND_HABIT_ASSIGN_NOTIFICATION = "/email/habitAssign/notification";
     public static final String SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION = "/email/taggedUserInComment/notification";
-    public static final String SEND_USER_RECEIVED_COMMENT_NOTIFICATION = "/email/userReceivedComment/notification";
-    public static final String SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION =
-            "/email/userReceivedCommentReply/notification";
-    public static final String SEND_USER_RECEIVED_LIKE_NOTIFICATION = "/email/userReceivedLike/notification";
-    public static final String SEND_USER_RECEIVED_FRIEND_REQUEST_NOTIFICATION = "/email/userFriendRequest/notification";
     public static final String SEND_SCHEDULED_NOTIFICATION = "/email/scheduled/notification";
+
     private RestTemplateLinks() {
     }
 }

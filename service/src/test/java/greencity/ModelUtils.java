@@ -20,8 +20,12 @@ import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.PlaceCommentRequestDto;
-import greencity.dto.comment.PlaceCommentResponseDto;
+import greencity.dto.comment.AddCommentDtoRequest;
+import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -140,41 +144,42 @@ import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
-import greencity.entity.Advice;
-import greencity.entity.BreakTime;
+import greencity.entity.User;
+import greencity.entity.Tag;
+import greencity.entity.Language;
+import greencity.entity.EcoNews;
+import greencity.entity.VerifyEmail;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.HabitAssign;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.Habit;
+import greencity.entity.HabitTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.UserShoppingListItem;
+import greencity.entity.FactOfTheDay;
 import greencity.entity.Category;
+import greencity.entity.Place;
+import greencity.entity.HabitFact;
+import greencity.entity.Advice;
+import greencity.entity.Photo;
+import greencity.entity.HabitFactTranslation;
 import greencity.entity.PlaceComment;
 import greencity.entity.CustomShoppingListItem;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.FavoritePlace;
-import greencity.entity.Filter;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
-import greencity.entity.HabitStatistic;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.Location;
 import greencity.entity.Notification;
-import greencity.entity.OpeningHours;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.ShoppingListItem;
+import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.Location;
+import greencity.entity.DiscountValue;
 import greencity.entity.Specification;
-import greencity.entity.Tag;
-import greencity.entity.User;
-import greencity.entity.UserAchievement;
+import greencity.entity.FavoritePlace;
+import greencity.entity.OpeningHours;
+import greencity.entity.Achievement;
+import greencity.entity.BreakTime;
+import greencity.entity.AchievementCategory;
 import greencity.entity.UserAction;
-import greencity.entity.UserShoppingListItem;
-import greencity.entity.VerifyEmail;
+import greencity.entity.Filter;
+import greencity.entity.UserAchievement;
+import greencity.entity.Comment;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
@@ -183,18 +188,19 @@ import greencity.entity.event.EventGrade;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.NotificationType;
-import greencity.enums.PlaceStatus;
-import greencity.enums.ProjectName;
-import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
+import greencity.enums.Role;
+import greencity.enums.CommentStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.ArticleType;
+import greencity.enums.EmailNotification;
+import greencity.enums.PlaceStatus;
+import greencity.enums.ProjectName;
+import greencity.enums.NotificationType;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import java.io.IOException;
@@ -220,6 +226,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import static greencity.enums.NotificationType.ECONEWS_COMMENT;
 import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
 import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
@@ -235,6 +242,7 @@ import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
 import static greencity.enums.NotificationType.EVENT_UPDATED;
 import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
 import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
+import static greencity.enums.NotificationType.HABIT_LIKE;
 import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.ProjectName.PICKUP;
 import org.hibernate.sql.results.internal.TupleElementImpl;
@@ -692,9 +700,13 @@ public class ModelUtils {
     }
 
     public static HabitAssign getHabitAssign() {
+        return getHabitAssign(HabitAssignStatus.ACQUIRED);
+    }
+
+    public static HabitAssign getHabitAssign(HabitAssignStatus status) {
         return HabitAssign.builder()
             .id(1L)
-            .status(HabitAssignStatus.ACQUIRED)
+            .status(status)
             .createDate(ZonedDateTime.now())
             .habit(Habit.builder()
                 .id(1L)
@@ -917,7 +929,7 @@ public class ModelUtils {
     }
 
     public static List<UserShoppingListItem> getUserShoppingListItemList() {
-        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList();
+        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList<>();
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
@@ -929,7 +941,7 @@ public class ModelUtils {
         ShoppingListItemTranslation translation = getShoppingListItemTranslations1();
         ShoppingListItemTranslation translation2 = getShoppingListItemTranslations1();
         ShoppingListItemTranslation translation3 = getShoppingListItemTranslations1();
-        List<ShoppingListItemTranslation> list = new ArrayList();
+        List<ShoppingListItemTranslation> list = new ArrayList<>();
         list.add(translation);
         list.add(translation2);
         list.add(translation3);
@@ -1463,7 +1475,7 @@ public class ModelUtils {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
 
-    public static PlaceComment getComment() {
+    public static PlaceComment getPlaceComment() {
         return new PlaceComment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
     }
@@ -1556,8 +1568,11 @@ public class ModelUtils {
     }
 
     public static Habit getHabit() {
-        return Habit.builder().id(1L).image("image.png")
+        Habit habit = Habit.builder().id(1L).image("image.png")
+            .usersLiked(new HashSet<>())
             .complexity(1).tags(new HashSet<>(getTags())).build();
+
+        return habit.setHabitTranslations(List.of(getHabitTranslation(habit)));
     }
 
     public static Habit getHabitWithCustom() {
@@ -1573,6 +1588,17 @@ public class ModelUtils {
             .language(getLanguage())
             .name("test name")
             .habit(getHabit())
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslation(Habit habit) {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("test description")
+            .habitItem("test habit item")
+            .language(getLanguage())
+            .name("test name")
+            .habit(habit)
             .build();
     }
 
@@ -1727,6 +1753,7 @@ public class ModelUtils {
             .habitTranslation(new HabitTranslationDto())
             .defaultDuration(1)
             .tags(new ArrayList<>())
+            .habitAssignStatus(HabitAssignStatus.INPROGRESS)
             .build();
     }
 
@@ -2992,6 +3019,63 @@ public class ModelUtils {
             .build();
     }
 
+    public static Comment getComment() {
+        return Comment.builder()
+            .id(1L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .comments(List.of(getSubComment()))
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
+    public static Comment getSubComment() {
+        return Comment.builder()
+            .id(5L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("other text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
+    public static CommentDto getCommentDto() {
+        return CommentDto.builder()
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .author(getCommentAuthorDto())
+            .status(CommentStatus.ORIGINAL.toString())
+            .build();
+    }
+
+    public static AddCommentDtoResponse getAddCommentDtoResponse() {
+        return AddCommentDtoResponse.builder()
+            .id(getComment().getId())
+            .author(getCommentAuthorDto())
+            .text(getComment().getText())
+            .build();
+    }
+
+    public static CommentAuthorDto getCommentAuthorDto() {
+        return CommentAuthorDto.builder()
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .profilePicturePath(getUser().getProfilePicturePath())
+            .build();
+    }
+
+    public static AddCommentDtoRequest getAddCommentDtoRequest() {
+        return new AddCommentDtoRequest("text", 10L);
+    }
+
     public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
         return UserShoppingAndCustomShoppingListsDto.builder()
             .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
@@ -3046,7 +3130,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithNewCustomShoppingListItem() {
+    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithNewCustomShoppingListItem() {
         return CustomHabitDtoRequest.builder()
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -3544,7 +3628,8 @@ public class ModelUtils {
                 EVENT_JOINED,
                 EVENT_COMMENT,
                 FRIEND_REQUEST_ACCEPTED,
-                FRIEND_REQUEST_RECEIVED})
+                FRIEND_REQUEST_RECEIVED,
+                HABIT_LIKE})
             .build();
     }
 

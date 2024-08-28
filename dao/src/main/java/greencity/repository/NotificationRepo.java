@@ -44,7 +44,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
      * @return last Notifications for user, where viewed is false
      */
     Page<Notification> findByTargetUserIdAndProjectNameInAndNotificationTypeInOrderByTimeDesc(Long targetUserId,
-                                                                                              ProjectName[] projectNames, NotificationType[] notificationTypes, Pageable pageable);
+        ProjectName[] projectNames, NotificationType[] notificationTypes, Pageable pageable);
 
     /**
      * Checks if there are any unread notifications for the specified user.
@@ -93,7 +93,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
      * @return {@link Notification} with specific NotificationType and id of object
      */
     Notification findNotificationByTargetUserIdAndNotificationTypeAndTargetId(Long targetUserId,
-                                                                              NotificationType notificationType, Long targetId);
+        NotificationType notificationType, Long targetId);
 
     /**
      * Method to find specific not viewed Notification.
@@ -104,7 +104,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
      * @return {@link Notification} with specific NotificationType and id of object
      */
     Optional<Notification> findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
-            Long targetUserId, NotificationType notificationType, Long targetId);
+        Long targetUserId, NotificationType notificationType, Long targetId);
 
     /**
      * Method to delete specific Notification.
@@ -125,10 +125,14 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
     long countByTargetUserIdAndViewedIsFalse(Long userId);
 
     /**
-     * Method to return all unread notifications by specific type
+     * Method to return all unread notifications by specific type.
+     *
      * @param notificationType type of notification
      * @return List of unread notification that have specific type
      */
-    @Query("SELECT n FROM Notification n JOIN FETCH n.targetUser JOIN FETCH n.actionUsers WHERE n.notificationType = :notificationType AND n.viewed = false")
+    @Query("SELECT n FROM Notification n "
+        + "JOIN FETCH n.targetUser "
+        + "JOIN FETCH n.actionUsers "
+        + "WHERE n.notificationType = :notificationType AND n.viewed = false")
     List<Notification> findAllByNotificationTypeAndViewedIsFalse(NotificationType notificationType);
 }

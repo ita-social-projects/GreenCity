@@ -58,7 +58,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${client.address}")
     private String clientAddress;
 
-
     @Override
     public void sendImmediatelyReport(PlaceVO newPlace) {
         log.info(LogMessage.IN_SEND_IMMEDIATELY_REPORT, newPlace.getName());
@@ -68,11 +67,11 @@ public class NotificationServiceImpl implements NotificationService {
         Map<CategoryDto, List<PlaceNotificationDto>> categoriesDtoWithPlacesDtoMap = new HashMap<>();
         CategoryDto map = modelMapper.map(newPlace.getCategory(), CategoryDto.class);
         List<PlaceNotificationDto> placeDtoList =
-                Collections.singletonList(modelMapper.map(newPlace, PlaceNotificationDto.class));
+            Collections.singletonList(modelMapper.map(newPlace, PlaceNotificationDto.class));
         categoriesDtoWithPlacesDtoMap.put(map, placeDtoList);
 
         restClient.sendReport(new SendReportEmailMessage(subscribers,
-                categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
+            categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
     }
 
     /**
@@ -119,9 +118,9 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * @author Dmytro Dmytruk
      */
-    @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Scheduled(fixedDelay = 10000)
     @Override
-    public void sendLikeScheduledEmail(){
+    public void sendLikeScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT_LIKE);
         sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_LIKE);
@@ -137,7 +136,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
-    public void sendCommentScheduledEmail(){
+    public void sendCommentScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT);
         sendScheduledNotifications(NotificationType.ECONEWS_COMMENT);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT);
@@ -151,8 +150,9 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Scheduled(cron = "0 0 12,21 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
-    public void sendCommentReplyScheduledEmail(){
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT_REPLY);
+    public void sendCommentReplyScheduledEmail() {
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+            NotificationType.ECONEWS_COMMENT_REPLY);
         sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT_REPLY);
         sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY);
@@ -165,10 +165,12 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Scheduled(cron = "0 0 13,22 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
-    public void sendFriendRequestScheduledEmail(){
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.FRIEND_REQUEST_RECEIVED);
+    public void sendFriendRequestScheduledEmail() {
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+            NotificationType.FRIEND_REQUEST_RECEIVED);
         sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.FRIEND_REQUEST_ACCEPTED);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+            NotificationType.FRIEND_REQUEST_ACCEPTED);
         sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED);
     }
 
@@ -184,8 +186,7 @@ public class NotificationServiceImpl implements NotificationService {
                         restClient.sendScheduledEmailNotification(message);
                     });
                 }
-            }
-            finally {
+            } finally {
                 RequestContextHolder.resetRequestAttributes();
             }
         });
@@ -203,11 +204,11 @@ public class NotificationServiceImpl implements NotificationService {
             try {
                 RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 usersEmails.forEach(attenderEmail -> restClient.sendEmailNotification(
-                        GeneralEmailMessage.builder()
-                                .email(attenderEmail)
-                                .subject(subject)
-                                .message(message)
-                                .build()));
+                    GeneralEmailMessage.builder()
+                        .email(attenderEmail)
+                        .subject(subject)
+                        .message(message)
+                        .build()));
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }
@@ -273,27 +274,27 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDateTime endDate = LocalDateTime.now(ZONE_ID);
         if (!subscribers.isEmpty()) {
             List<Place> places = placeRepo.findAllByModifiedDateBetweenAndStatus(
-                    startDate, endDate, PlaceStatus.APPROVED);
+                startDate, endDate, PlaceStatus.APPROVED);
             categoriesDtoWithPlacesDtoMap = getCategoriesDtoWithPlacesDtoMap(places);
         }
         if (!categoriesDtoWithPlacesDtoMap.isEmpty()) {
             restClient.sendReport(
-                    new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
+                new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
         }
     }
 
     private List<PlaceAuthorDto> getSubscribers(EmailNotification emailNotification) {
         log.info(LogMessage.IN_GET_SUBSCRIBERS, emailNotification);
         return restClient.findAllByEmailNotification(emailNotification).stream()
-                .map(o -> modelMapper.map(o, PlaceAuthorDto.class))
-                .collect(Collectors.toList());
+            .map(o -> modelMapper.map(o, PlaceAuthorDto.class))
+            .collect(Collectors.toList());
     }
 
     private Map<CategoryDto, List<PlaceNotificationDto>> getCategoriesDtoWithPlacesDtoMap(List<Place> places) {
         log.info(LogMessage.IN_GET_CATEGORIES_WITH_PLACES_MAP, places.toString());
         List<PlaceNotificationDto> placeDto = places.stream()
-                .map(o -> modelMapper.map(o, PlaceNotificationDto.class))
-                .toList();
+            .map(o -> modelMapper.map(o, PlaceNotificationDto.class))
+            .toList();
         Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlacesMap = new HashMap<>();
         List<CategoryDto> categories = getUniqueCategoriesFromPlaces(places);
         List<PlaceNotificationDto> placesByCategory = new ArrayList<>();
@@ -311,15 +312,15 @@ public class NotificationServiceImpl implements NotificationService {
     private List<CategoryDto> getUniqueCategoriesFromPlaces(List<Place> places) {
         log.info(LogMessage.IN_GET_UNIQUE_CATEGORIES_FROM_PLACES, places);
         return places.stream()
-                .map(Place::getCategory)
-                .distinct()
-                .map(o -> modelMapper.map(o, CategoryDto.class))
-                .toList();
+            .map(Place::getCategory)
+            .distinct()
+            .map(o -> modelMapper.map(o, CategoryDto.class))
+            .toList();
     }
 
     private ScheduledEmailMessage createScheduledEmailMessage(Notification notification, String language) {
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
-                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         String subject = bundle.getString(notification.getNotificationType() + "_TITLE");
         String bodyTemplate = bundle.getString(notification.getNotificationType().toString());
         String actionUserText;
@@ -332,17 +333,17 @@ public class NotificationServiceImpl implements NotificationService {
         }
         String secondMessage = notification.getSecondMessage() != null ? notification.getSecondMessage() : "";
         String body = bodyTemplate
-                .replace("{user}", actionUserText)
-                .replace("{message}", notification.getCustomMessage())
-                .replace("{secondMessage}", secondMessage);
+            .replace("{user}", actionUserText)
+            .replace("{message}", notification.getCustomMessage())
+            .replace("{secondMessage}", secondMessage);
         return ScheduledEmailMessage.builder()
-                .email(notification.getTargetUser().getEmail())
-                .username(notification.getTargetUser().getName())
-                .baseLink(createBaseLink(notification))
-                .subject(subject)
-                .body(body)
-                .language(language)
-                .build();
+            .email(notification.getTargetUser().getEmail())
+            .username(notification.getTargetUser().getName())
+            .baseLink(createBaseLink(notification))
+            .subject(subject)
+            .body(body)
+            .language(language)
+            .build();
     }
 
     private String createBaseLink(Notification notification) {

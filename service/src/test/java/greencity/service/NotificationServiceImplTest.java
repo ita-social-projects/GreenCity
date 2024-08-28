@@ -68,9 +68,9 @@ class NotificationServiceImplTest {
     void sendImmediatelyReportTest() {
         EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
         CategoryVO category = CategoryVO.builder()
-                .id(12L)
-                .name("category")
-                .build();
+            .id(12L)
+            .name("category")
+            .build();
 
         UserVO userVO = ModelUtils.getUserVO();
         userVO.setEmailNotification(emailNotification);
@@ -86,18 +86,18 @@ class NotificationServiceImplTest {
         place.setCategory(category);
 
         when(restClient.findAllByEmailNotification(emailNotification))
-                .thenReturn(Collections.singletonList(userVO));
+            .thenReturn(Collections.singletonList(userVO));
         when(modelMapper.map(userVO, PlaceAuthorDto.class))
-                .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
+            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
         when(modelMapper.map(place.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category", "test", null));
+            .thenReturn(new CategoryDto("category", "test", null));
         when(modelMapper.map(place, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
 
         notificationService.sendImmediatelyReport(place);
 
         verify(restClient, Mockito.times(1))
-                .sendReport(any(SendReportEmailMessage.class));
+            .sendReport(any(SendReportEmailMessage.class));
     }
 
     @Test
@@ -118,24 +118,24 @@ class NotificationServiceImplTest {
         List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
 
         when(restClient.findAllByEmailNotification(emailNotification))
-                .thenReturn(Collections.singletonList(userVO));
+            .thenReturn(Collections.singletonList(userVO));
         when(modelMapper.map(userVO, PlaceAuthorDto.class))
-                .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
+            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
         when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
-                .thenReturn(testPlaces);
+            .thenReturn(testPlaces);
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
         when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category", "test", null));
+            .thenReturn(new CategoryDto("category", "test", null));
         when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category1", "test", null));
+            .thenReturn(new CategoryDto("category1", "test", null));
 
         notificationService.sendDailyReport();
 
         verify(restClient, Mockito.times(1))
-                .sendReport(any(SendReportEmailMessage.class));
+            .sendReport(any(SendReportEmailMessage.class));
 
     }
 
@@ -157,24 +157,24 @@ class NotificationServiceImplTest {
         List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
 
         when(restClient.findAllByEmailNotification(emailNotification))
-                .thenReturn(Collections.singletonList(userVO));
+            .thenReturn(Collections.singletonList(userVO));
         when(modelMapper.map(userVO, PlaceAuthorDto.class))
-                .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
+            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
         when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
-                .thenReturn(testPlaces);
+            .thenReturn(testPlaces);
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
         when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category", "test", null));
+            .thenReturn(new CategoryDto("category", "test", null));
         when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category1", "test", null));
+            .thenReturn(new CategoryDto("category1", "test", null));
 
         notificationService.sendWeeklyReport();
 
         verify(restClient, Mockito.times(1))
-                .sendReport(any(SendReportEmailMessage.class));
+            .sendReport(any(SendReportEmailMessage.class));
 
     }
 
@@ -196,24 +196,24 @@ class NotificationServiceImplTest {
         List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
 
         when(restClient.findAllByEmailNotification(emailNotification))
-                .thenReturn(Collections.singletonList(userVO));
+            .thenReturn(Collections.singletonList(userVO));
         when(modelMapper.map(userVO, PlaceAuthorDto.class))
-                .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
+            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
         when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
-                .thenReturn(testPlaces);
+            .thenReturn(testPlaces);
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
-                .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
         when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category", "test", null));
+            .thenReturn(new CategoryDto("category", "test", null));
         when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
-                .thenReturn(new CategoryDto("category1", "test", null));
+            .thenReturn(new CategoryDto("category1", "test", null));
 
         notificationService.sendMonthlyReport();
 
         verify(restClient, Mockito.times(1))
-                .sendReport(any(SendReportEmailMessage.class));
+            .sendReport(any(SendReportEmailMessage.class));
     }
 
     @Test
@@ -224,7 +224,7 @@ class NotificationServiceImplTest {
         ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
         notificationService.sendEmailNotification(setOfEmails, subject, message);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient, times(3)).sendEmailNotification(emailMessageCaptor.capture()));
+            .untilAsserted(() -> verify(restClient, times(3)).sendEmailNotification(emailMessageCaptor.capture()));
         List<GeneralEmailMessage> capturedEmailMessages = emailMessageCaptor.getAllValues();
         assertFalse(capturedEmailMessages.isEmpty());
         for (GeneralEmailMessage capturedEmailMessage : capturedEmailMessages) {
@@ -243,7 +243,7 @@ class NotificationServiceImplTest {
         ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
         notificationService.sendEmailNotification(generalEmailMessage);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
         GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
         assertEquals(email, capturedEmailMessage.getEmail());
         assertEquals(subject, capturedEmailMessage.getSubject());
@@ -253,12 +253,12 @@ class NotificationServiceImplTest {
     @Test
     void sendHabitAssignEmailNotification() {
         HabitAssignNotificationMessage message = new HabitAssignNotificationMessage(
-                "sender", "receiver", "receiver@example.com", "habit", "en", 123L);
+            "sender", "receiver", "receiver@example.com", "habit", "en", 123L);
         ArgumentCaptor<HabitAssignNotificationMessage> emailMessageCaptor =
-                ArgumentCaptor.forClass(HabitAssignNotificationMessage.class);
+            ArgumentCaptor.forClass(HabitAssignNotificationMessage.class);
         notificationService.sendHabitAssignEmailNotification(message);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient).sendHabitAssignNotification(emailMessageCaptor.capture()));
+            .untilAsserted(() -> verify(restClient).sendHabitAssignNotification(emailMessageCaptor.capture()));
         HabitAssignNotificationMessage capturedMessage = emailMessageCaptor.getValue();
         assertEquals(message.getReceiverEmail(), capturedMessage.getReceiverEmail());
         assertEquals(message.getHabitAssignId(), capturedMessage.getHabitAssignId());
@@ -270,18 +270,18 @@ class NotificationServiceImplTest {
     @Test
     void sendUserTaggedInCommentNotificationTest() {
         UserTaggedInCommentMessage message = UserTaggedInCommentMessage.builder()
-                .receiverEmail("receiver@example.com")
-                .receiverName("receiver")
-                .commentText("test")
-                .taggerName("tagger")
-                .commentedElementId(1L)
-                .language("en")
-                .build();
+            .receiverEmail("receiver@example.com")
+            .receiverName("receiver")
+            .commentText("test")
+            .taggerName("tagger")
+            .commentedElementId(1L)
+            .language("en")
+            .build();
         ArgumentCaptor<UserTaggedInCommentMessage> captor =
-                ArgumentCaptor.forClass(UserTaggedInCommentMessage.class);
+            ArgumentCaptor.forClass(UserTaggedInCommentMessage.class);
         notificationService.sendUsersTaggedInCommentEmailNotification(message);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient).sendUserTaggedInCommentNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient).sendUserTaggedInCommentNotification(captor.capture()));
         UserTaggedInCommentMessage capturedMessage = captor.getValue();
         assertEquals(message.getReceiverEmail(), capturedMessage.getReceiverEmail());
         assertEquals(message.getReceiverName(), capturedMessage.getReceiverName());
@@ -296,13 +296,13 @@ class NotificationServiceImplTest {
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_RECEIVED))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_ACCEPTED))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         notificationService.sendFriendRequestScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
             assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
@@ -316,13 +316,13 @@ class NotificationServiceImplTest {
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_REPLY))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_REPLY))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         notificationService.sendCommentReplyScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
             assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
@@ -336,13 +336,13 @@ class NotificationServiceImplTest {
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         notificationService.sendCommentScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
             assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
@@ -356,15 +356,15 @@ class NotificationServiceImplTest {
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_LIKE))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_LIKE))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_LIKE))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         notificationService.sendLikeScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient, times(3)).sendScheduledEmailNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient, times(3)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
             assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
