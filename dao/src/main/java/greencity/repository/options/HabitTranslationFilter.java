@@ -53,8 +53,8 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
         Join<Tag, TagTranslation> tagTranslationJoin = tagJoin.join("tagTranslations", JoinType.INNER);
 
         List<String> lowerCaseTags = tags.stream()
-                .map(String::toLowerCase)
-                .toList();
+            .map(String::toLowerCase)
+            .toList();
 
         return cb.lower(tagTranslationJoin.get("name")).in(lowerCaseTags);
     }
