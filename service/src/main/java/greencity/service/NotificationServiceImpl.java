@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.annotations.CheckEmailPreference;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
@@ -9,6 +10,7 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
+import greencity.enums.EmailPreference;
 import greencity.enums.PlaceStatus;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
@@ -102,12 +104,13 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Yurii Midianyi
      */
     @Override
+    @CheckEmailPreference(EmailPreference.SYSTEM)
     public void sendEmailNotification(Set<String> usersEmails, String subject, String message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
                 RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                usersEmails.forEach(attenderEmail -> restClient.sendEmailNotification(
+                usersEmails.forEach(attenderEmail -> sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(attenderEmail)
                         .subject(subject)
@@ -125,6 +128,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Yurii Midianyi
      */
     @Override
+    @CheckEmailPreference(EmailPreference.SYSTEM)
     public void sendEmailNotification(GeneralEmailMessage generalEmailMessage) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
@@ -137,10 +141,26 @@ public class NotificationServiceImpl implements NotificationService {
         });
     }
 
+    @CheckEmailPreference(EmailPreference.LIKES)
+    public void sendEmailNotificationLikes(GeneralEmailMessage generalEmailMessage) {
+        sendEmailNotification(generalEmailMessage);
+    }
+
+    @CheckEmailPreference(EmailPreference.COMMENTS)
+    public void sendEmailNotificationComments(GeneralEmailMessage generalEmailMessage) {
+        sendEmailNotification(generalEmailMessage);
+    }
+
+    @CheckEmailPreference(EmailPreference.INVITES)
+    public void sendEmailNotificationInvites(GeneralEmailMessage generalEmailMessage) {
+        sendEmailNotification(generalEmailMessage);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
+    @CheckEmailPreference(EmailPreference.SYSTEM)
     public void sendHabitAssignEmailNotification(HabitAssignNotificationMessage message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
@@ -159,6 +179,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Dmytro Dmytruk
      */
     @Override
+    @CheckEmailPreference(EmailPreference.COMMENTS)
     public void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
@@ -177,6 +198,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Dmytro Dmytruk
      */
     @Override
+    @CheckEmailPreference(EmailPreference.COMMENTS)
     public void sendUserReceivedCommentEmailNotification(UserReceivedCommentMessage message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
@@ -195,6 +217,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Dmytro Dmytruk
      */
     @Override
+    @CheckEmailPreference(EmailPreference.COMMENTS)
     public void sendUserReceivedCommentReplyEmailNotification(UserReceivedCommentReplyMessage message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {

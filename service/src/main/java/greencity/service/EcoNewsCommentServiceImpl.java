@@ -97,7 +97,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotificationComments(GeneralEmailMessage.builder()
             .email(ecoNewsVO.getAuthor().getEmail())
             .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE, ecoNewsVO.getTitle()))
@@ -219,7 +219,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
             }
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            notificationService.sendEmailNotificationLikes(GeneralEmailMessage.builder()
                 .email(comment.getUser().getEmail())
                 .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()))

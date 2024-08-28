@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GeneralEmailMessage implements Serializable {
+public class GeneralEmailMessage implements Serializable, EmailMessage {
     private String email;
     private String subject;
     private String message;
