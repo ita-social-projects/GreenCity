@@ -56,7 +56,6 @@ public class RestClient {
     private final JwtTool jwtTool;
     private final String systemEmail;
 
-
     /**
      * Constructs a new instance of the RestClient class.
      *
