@@ -20,10 +20,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
-import greencity.message.GeneralEmailMessage;
-import greencity.message.HabitAssignNotificationMessage;
-import greencity.message.SendReportEmailMessage;
-import greencity.message.UserTaggedInCommentMessage;
+import greencity.message.*;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -243,6 +240,54 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    void sendEmailNotificationLikesToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationLikes(generalEmailMessage);
+        await().atMost(5, SECONDS)
+                .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
+    void sendEmailNotificationCommentsToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationComments(generalEmailMessage);
+        await().atMost(5, SECONDS)
+                .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
+    void sendEmailNotificationInvitesToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationInvites(generalEmailMessage);
+        await().atMost(5, SECONDS)
+                .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
     void sendHabitAssignEmailNotification() {
         HabitAssignNotificationMessage message = new HabitAssignNotificationMessage(
             "sender", "receiver", "receiver@example.com", "habit", "en", 123L);
@@ -280,5 +325,47 @@ class NotificationServiceImplTest {
         assertEquals(message.getCommentText(), capturedMessage.getCommentText());
         assertEquals(message.getLanguage(), capturedMessage.getLanguage());
         assertEquals(message.getTaggerName(), capturedMessage.getTaggerName());
+    }
+
+    @Test
+    void sendUserReceivedCommentEmailNotificationTest() {
+        String receiverEmail = "test1@gmail.com";
+        String author = "AUTHOR";
+        String message = "check your email box";
+        UserReceivedCommentMessage emailMessage = new UserReceivedCommentMessage();
+        emailMessage.setReceiverEmail(receiverEmail);
+        emailMessage.setAuthorName(author);
+        emailMessage.setCommentText(message);
+
+
+        ArgumentCaptor<UserReceivedCommentMessage> emailMessageCaptor = ArgumentCaptor.forClass(UserReceivedCommentMessage.class);
+        notificationService.sendUserReceivedCommentEmailNotification(emailMessage);
+        await().atMost(5, SECONDS)
+                .untilAsserted(() -> verify(restClient).sendUserReceivedCommentNotification(emailMessageCaptor.capture()));
+        UserReceivedCommentMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(receiverEmail, capturedEmailMessage.getEmail());
+        assertEquals(author, capturedEmailMessage.getAuthorName());
+        assertEquals(message, capturedEmailMessage.getCommentText());
+    }
+
+    @Test
+    void sendUserReceivedCommentReplyEmailNotification() {
+        String receiverEmail = "test1@gmail.com";
+        String author = "AUTHOR";
+        String message = "check your email box";
+        UserReceivedCommentReplyMessage emailMessage = new UserReceivedCommentReplyMessage();
+        emailMessage.setReceiverEmail(receiverEmail);
+        emailMessage.setAuthorName(author);
+        emailMessage.setCommentText(message);
+
+
+        ArgumentCaptor< UserReceivedCommentReplyMessage> emailMessageCaptor = ArgumentCaptor.forClass( UserReceivedCommentReplyMessage.class);
+        notificationService.sendUserReceivedCommentReplyEmailNotification(emailMessage);
+        await().atMost(5, SECONDS)
+                .untilAsserted(() -> verify(restClient).sendUserReceivedCommentReplyNotification(emailMessageCaptor.capture()));
+        UserReceivedCommentReplyMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(receiverEmail, capturedEmailMessage.getEmail());
+        assertEquals(author, capturedEmailMessage.getAuthorName());
+        assertEquals(message, capturedEmailMessage.getCommentText());
     }
 }
