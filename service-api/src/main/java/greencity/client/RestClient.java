@@ -1,5 +1,6 @@
 package greencity.client;
 
+import greencity.constant.AppConstant;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
@@ -54,6 +55,7 @@ public class RestClient {
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
     private final String systemEmail;
+
 
     /**
      * Constructs a new instance of the RestClient class.
@@ -548,7 +550,7 @@ public class RestClient {
         }
 
         if (!StringUtils.hasLength(accessToken)) {
-            accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
+            accessToken = AppConstant.TOKEN_PREFIX + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -561,7 +563,7 @@ public class RestClient {
             .filter(c -> c.getName().equals("accessToken"))
             .findFirst()
             .map(Cookie::getValue).orElse(null);
-        return token == null ? null : "Bearer " + token;
+        return token == null ? null : AppConstant.TOKEN_PREFIX + token;
     }
 
     /**
@@ -610,7 +612,7 @@ public class RestClient {
      * @param message {@link ScheduledEmailMessage}.
      */
     public void sendScheduledEmailNotification(ScheduledEmailMessage message) {
-        String accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
+        String accessToken = AppConstant.TOKEN_PREFIX + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);

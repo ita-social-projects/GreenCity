@@ -18,7 +18,6 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.message.GeneralEmailMessage;
