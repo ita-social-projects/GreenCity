@@ -118,7 +118,7 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * @author Dmytro Dmytruk
      */
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendLikeScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT_LIKE);
@@ -320,30 +320,34 @@ public class NotificationServiceImpl implements NotificationService {
 
     private ScheduledEmailMessage createScheduledEmailMessage(Notification notification, String language) {
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
-            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         String subject = bundle.getString(notification.getNotificationType() + "_TITLE");
         String bodyTemplate = bundle.getString(notification.getNotificationType().toString());
         String actionUserText;
         int size = notification.getActionUsers().size();
-        if (size != 1) {
+        if (size > 1) {
             actionUserText = size + " " + bundle.getString("USERS");
-        } else {
+        } else if (size == 1) {
             User actionUser = notification.getActionUsers().getFirst();
-            actionUserText = actionUser.getName();
+            actionUserText = actionUser != null ? actionUser.getName() : "";
+        } else {
+            actionUserText = "";
         }
+        String customMessage = notification.getCustomMessage() != null ? notification.getCustomMessage() : "";
         String secondMessage = notification.getSecondMessage() != null ? notification.getSecondMessage() : "";
         String body = bodyTemplate
-            .replace("{user}", actionUserText)
-            .replace("{message}", notification.getCustomMessage())
-            .replace("{secondMessage}", secondMessage);
+                .replace("{user}", actionUserText)
+                .replace("{message}", customMessage)
+                .replace("{secondMessage}", secondMessage);
+
         return ScheduledEmailMessage.builder()
-            .email(notification.getTargetUser().getEmail())
-            .username(notification.getTargetUser().getName())
-            .baseLink(createBaseLink(notification))
-            .subject(subject)
-            .body(body)
-            .language(language)
-            .build();
+                .email(notification.getTargetUser().getEmail())
+                .username(notification.getTargetUser().getName())
+                .baseLink(createBaseLink(notification))
+                .subject(subject)
+                .body(body)
+                .language(language)
+                .build();
     }
 
     private String createBaseLink(Notification notification) {
