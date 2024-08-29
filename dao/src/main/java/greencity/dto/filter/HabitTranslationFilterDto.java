@@ -14,12 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HabitTranslationFilterDto {
+    @NotNull
+    private Long userId;
     @NotEmpty
     private String languageCode;
     private List<String> tags;
     private List<Integer> complexities;
-    private boolean isCustom;
-    @NotNull
-    private Long userId;
-    private List<Long> requestedIds;
+    private Boolean isCustom;
 }
