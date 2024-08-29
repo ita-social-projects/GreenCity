@@ -82,7 +82,6 @@ public class HabitServiceImpl implements HabitService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
-    private static final String EN_LANGUAGE_CODE = "en";
     private final UserNotificationService userNotificationService;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;

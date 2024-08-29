@@ -17,7 +17,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
-
 import java.util.ArrayList;
 import java.util.List;
 
