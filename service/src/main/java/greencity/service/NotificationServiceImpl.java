@@ -320,7 +320,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private ScheduledEmailMessage createScheduledEmailMessage(Notification notification, String language) {
         ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
-                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         String subject = bundle.getString(notification.getNotificationType() + "_TITLE");
         String bodyTemplate = bundle.getString(notification.getNotificationType().toString());
         String actionUserText;
@@ -336,18 +336,18 @@ public class NotificationServiceImpl implements NotificationService {
         String customMessage = notification.getCustomMessage() != null ? notification.getCustomMessage() : "";
         String secondMessage = notification.getSecondMessage() != null ? notification.getSecondMessage() : "";
         String body = bodyTemplate
-                .replace("{user}", actionUserText)
-                .replace("{message}", customMessage)
-                .replace("{secondMessage}", secondMessage);
+            .replace("{user}", actionUserText)
+            .replace("{message}", customMessage)
+            .replace("{secondMessage}", secondMessage);
 
         return ScheduledEmailMessage.builder()
-                .email(notification.getTargetUser().getEmail())
-                .username(notification.getTargetUser().getName())
-                .baseLink(createBaseLink(notification))
-                .subject(subject)
-                .body(body)
-                .language(language)
-                .build();
+            .email(notification.getTargetUser().getEmail())
+            .username(notification.getTargetUser().getName())
+            .baseLink(createBaseLink(notification))
+            .subject(subject)
+            .body(body)
+            .language(language)
+            .build();
     }
 
     private String createBaseLink(Notification notification) {
