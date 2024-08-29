@@ -17,17 +17,19 @@ import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
 import greencity.enums.EventType;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
+import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,49 +53,36 @@ public class EventsSearchRepo {
     }
 
     /**
-     * Method for search list event ids by {@link FilterEventDto} and title.
+     * Method for search list event ids by {@link FilterEventDto}.
      *
      * @param pageable       {@link Pageable}.
      * @param filterEventDto {@link FilterEventDto}.
      * @return list of event ids.
      */
     public Page<Long> findEventsIds(Pageable pageable, FilterEventDto filterEventDto) {
-        CriteriaQuery<Tuple> criteria = criteriaBuilder.createQuery(Tuple.class);
-
-        Subquery<Long> countSubquery = criteria.subquery(Long.class);
-        Root<Event> countRoot = countSubquery.from(Event.class);
-        Predicate subqueryPredicate = getPredicate(filterEventDto, countRoot);
-        countSubquery.select(criteriaBuilder.countDistinct(countRoot)).where(subqueryPredicate);
-
+        CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
         Root<Event> eventRoot = criteria.from(Event.class);
-        Predicate mainPredicate = getPredicate(filterEventDto, eventRoot);
-        criteria.multiselect(eventRoot.get(Event_.ID), countSubquery.getSelection())
-            .distinct(true)
-            .where(mainPredicate);
 
-        TypedQuery<Tuple> typedQuery = entityManager.createQuery(criteria)
-            .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-            .setMaxResults(pageable.getPageSize());
-        List<Tuple> resultList = typedQuery.getResultList();
+        criteria.multiselect(eventRoot.get(Event_.ID))
+            .where(getPredicate(filterEventDto, eventRoot))
+            .orderBy(getOrders(filterEventDto, eventRoot));
 
-        return new PageImpl<>(getEventIdsFromTuple(resultList), pageable, getEventCountFromTuple(resultList));
+        List<Long> resultList = entityManager.createQuery(criteria).getResultList();
+        List<Long> uniqueEventIds = resultList.stream().distinct().toList();
+
+        return buildPage(uniqueEventIds, pageable);
     }
 
-    private List<Long> getEventIdsFromTuple(List<Tuple> tuples) {
-        List<Long> eventIds = new ArrayList<>();
-        if (!tuples.isEmpty()) {
-            for (Tuple tuple : tuples) {
-                eventIds.add(tuple.get(0, Long.class));
-            }
-        }
-        return eventIds;
-    }
+    private PageImpl<Long> buildPage(List<Long> uniqueEventIds, Pageable pageable) {
+        int totalElements = uniqueEventIds.size();
+        int fromIndex = pageable.getPageNumber() * pageable.getPageSize();
+        int toIndex = Math.min(fromIndex + pageable.getPageSize(), totalElements);
 
-    private Long getEventCountFromTuple(List<Tuple> tuple) {
-        if (!tuple.isEmpty()) {
-            return tuple.getFirst().get(1, Long.class);
-        }
-        return 0L;
+        List<Long> pagedEventIds = fromIndex < totalElements
+            ? uniqueEventIds.subList(fromIndex, toIndex)
+            : new ArrayList<>();
+
+        return new PageImpl<>(pagedEventIds, pageable, totalElements);
     }
 
     /**
@@ -202,7 +191,69 @@ public class EventsSearchRepo {
     }
 
     private void addTypePredicate(EventType type, Root<Event> eventRoot, List<Predicate> predicates) {
-        predicates.add(criteriaBuilder.equal(eventRoot.get(Event_.type), type));
+        if (type != null) {
+            predicates.add(criteriaBuilder.equal(eventRoot.get(Event_.TYPE), type));
+        }
+    }
+
+    private List<Order> getOrders(FilterEventDto filterEventDto, Root<Event> eventRoot) {
+        List<Order> orders = new ArrayList<>();
+
+        if (filterEventDto != null && filterEventDto.getUserId() != null) {
+            addSortByOrganizerOrder(filterEventDto.getUserId(), eventRoot, orders);
+            addSortByFollowersOrder(filterEventDto.getUserId(), eventRoot, orders);
+            addSortByAttendersOrder(filterEventDto.getUserId(), eventRoot, orders);
+        }
+
+        ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates);
+        addSortByCurrentDateOrder(orders, datesJoin);
+        addSortByOneWeekOrder(orders, datesJoin);
+        addSortByDateOrder(orders, datesJoin);
+
+        return orders;
+    }
+
+    private void addSortByOrganizerOrder(Long userId, Root<Event> eventRoot, List<Order> orders) {
+        orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
+            .when(criteriaBuilder.equal(
+                eventRoot.get(Event_.organizer).get(User_.ID), userId), 1)
+            .otherwise(0)));
+    }
+
+    private void addSortByFollowersOrder(Long userId, Root<Event> eventRoot, List<Order> orders) {
+        orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
+            .when(criteriaBuilder.equal(
+                eventRoot.join(Event_.followers, JoinType.LEFT).get(User_.ID), userId), 1)
+            .otherwise(0)));
+    }
+
+    private void addSortByAttendersOrder(Long userId, Root<Event> eventRoot, List<Order> orders) {
+        orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
+            .when(criteriaBuilder.equal(
+                eventRoot.join(Event_.attenders, JoinType.LEFT).get(User_.ID), userId), 1)
+            .otherwise(0)));
+    }
+
+    private void addSortByOneWeekOrder(List<Order> orders, ListJoin<Event, EventDateLocation> datesJoin) {
+        ZonedDateTime currentDate = ZonedDateTime.now();
+        ZonedDateTime oneWeekLater = currentDate.plusWeeks(1);
+        orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
+            .when(criteriaBuilder.and(
+                criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), currentDate),
+                criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), oneWeekLater)), 1)
+            .otherwise(0)));
+    }
+
+    private void addSortByCurrentDateOrder(List<Order> orders, ListJoin<Event, EventDateLocation> datesJoin) {
+        orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
+            .when(criteriaBuilder.equal(
+                criteriaBuilder.function("DATE", Date.class, datesJoin.get(EventDateLocation_.START_DATE)),
+                criteriaBuilder.function("DATE", Date.class, criteriaBuilder.currentDate())), 1)
+            .otherwise(0)));
+    }
+
+    private void addSortByDateOrder(List<Order> orders, ListJoin<Event, EventDateLocation> datesJoin) {
+        orders.add(criteriaBuilder.desc(datesJoin.get(EventDateLocation_.START_DATE)));
     }
 
     private long getEventsCount(String searchingText, String languageCode) {
