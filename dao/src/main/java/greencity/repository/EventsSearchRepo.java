@@ -59,13 +59,13 @@ public class EventsSearchRepo {
      * @param filterEventDto {@link FilterEventDto}.
      * @return list of event ids.
      */
-    public Page<Long> findEventsIds(Pageable pageable, FilterEventDto filterEventDto) {
+    public Page<Long> findEventsIds(Pageable pageable, FilterEventDto filterEventDto, Long userId) {
         CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
         Root<Event> eventRoot = criteria.from(Event.class);
 
         criteria.multiselect(eventRoot.get(Event_.ID))
-            .where(getPredicate(filterEventDto, eventRoot))
-            .orderBy(getOrders(filterEventDto, eventRoot));
+            .where(getPredicate(filterEventDto, userId, eventRoot))
+            .orderBy(getOrders(userId, eventRoot));
 
         List<Long> resultList = entityManager.createQuery(criteria).getResultList();
         List<Long> uniqueEventIds = resultList.stream().distinct().toList();
@@ -116,13 +116,13 @@ public class EventsSearchRepo {
         return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
-    private Predicate getPredicate(FilterEventDto filterEventDto, Root<Event> eventRoot) {
+    private Predicate getPredicate(FilterEventDto filterEventDto, Long userId, Root<Event> eventRoot) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filterEventDto != null) {
             addEventTimePredicate(filterEventDto.getTime(), eventRoot, predicates);
             addCitiesPredicate(filterEventDto.getCities(), eventRoot, predicates);
-            addStatusesPredicate(filterEventDto.getStatuses(), filterEventDto.getUserId(), eventRoot, predicates);
+            addStatusesPredicate(filterEventDto.getStatuses(), userId, eventRoot, predicates);
             addTagsPredicate(filterEventDto.getTags(), eventRoot, predicates);
             addTitlePredicate(filterEventDto.getTitle(), eventRoot, predicates);
             addTypePredicate(filterEventDto.getType(), eventRoot, predicates);
@@ -172,7 +172,9 @@ public class EventsSearchRepo {
                     statusesPredicate.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
                 }
             });
-            predicates.add(criteriaBuilder.or(statusesPredicate.toArray(new Predicate[0])));
+            if (!statusesPredicate.isEmpty()) {
+                predicates.add(criteriaBuilder.or(statusesPredicate.toArray(new Predicate[0])));
+            }
         }
     }
 
@@ -196,13 +198,13 @@ public class EventsSearchRepo {
         }
     }
 
-    private List<Order> getOrders(FilterEventDto filterEventDto, Root<Event> eventRoot) {
+    private List<Order> getOrders(Long userId, Root<Event> eventRoot) {
         List<Order> orders = new ArrayList<>();
 
-        if (filterEventDto != null && filterEventDto.getUserId() != null) {
-            addSortByOrganizerOrder(filterEventDto.getUserId(), eventRoot, orders);
-            addSortByFollowersOrder(filterEventDto.getUserId(), eventRoot, orders);
-            addSortByAttendersOrder(filterEventDto.getUserId(), eventRoot, orders);
+        if (userId != null) {
+            addSortByOrganizerOrder(userId, eventRoot, orders);
+            addSortByFollowersOrder(userId, eventRoot, orders);
+            addSortByAttendersOrder(userId, eventRoot, orders);
         }
 
         ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates);

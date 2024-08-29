@@ -52,7 +52,7 @@ public interface EventService {
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto);
+    PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId);
 
     /**
      * Method for getting all Event instances that user attended.

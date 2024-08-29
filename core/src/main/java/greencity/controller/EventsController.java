@@ -169,8 +169,10 @@ public class EventsController {
     @ApiPageableWithoutSort
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
-        @Parameter(hidden = true) Pageable pageable, FilterEventDto filterEventDto) {
-        return ResponseEntity.ok().body(eventService.getEvents(pageable, filterEventDto));
+        @Parameter(hidden = true) Pageable pageable,
+        @RequestParam(required = false, name = "user-id") Long userId,
+        FilterEventDto filterEventDto) {
+        return ResponseEntity.ok().body(eventService.getEvents(pageable, filterEventDto, userId));
     }
 
     /**

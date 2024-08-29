@@ -252,13 +252,12 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto) {
-        Long userId = filterEventDto.getUserId();
+    public PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId) {
         if (userId != null) {
             restClient.findById(userId);
         }
 
-        Page<Long> eventIds = eventsSearchRepo.findEventsIds(page, filterEventDto);
+        Page<Long> eventIds = eventsSearchRepo.findEventsIds(page, filterEventDto, userId);
         List<Tuple> tuples;
         if (userId != null) {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
