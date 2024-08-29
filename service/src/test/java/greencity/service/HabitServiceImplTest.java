@@ -490,7 +490,7 @@ class HabitServiceImplTest {
 
     @Test
     void getShoppingListForHabit() {
-        ShoppingListItemTranslation shoppingListItemTranslation = getShoppingListItemTranslation();
+        ShoppingListItemTranslation shoppingListItemTranslation = ModelUtils.getShoppingListItemTranslation();
         List<ShoppingListItemTranslation> shoppingListItemTranslations =
             Collections.singletonList(shoppingListItemTranslation);
         ShoppingListItemDto shoppingListItemDto = new ShoppingListItemDto(1L, "test", "ACTIVE");
