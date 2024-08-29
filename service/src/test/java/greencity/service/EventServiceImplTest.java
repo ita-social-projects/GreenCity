@@ -1375,39 +1375,6 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFavoriteEventsByUserIdTest() {
-        User user = ModelUtils.getUser();
-        Pageable pageable = PageRequest.of(0, 20);
-        List<Event> events = List.of(ModelUtils.getEvent());
-        EventDto expected = ModelUtils.getEventDto();
-        Page<Event> eventPage = new PageImpl<>(events, pageable, events.size());
-        List<Long> eventIds = List.of(expected.getId());
-
-        when(eventRepo.findAllFavoritesByUser(anyLong(), eq(pageable))).thenReturn(eventPage);
-        when(modelMapper.map(restClient.findByEmail(anyString()), User.class)).thenReturn(user);
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(List.of(expected));
-        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(events);
-        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(events);
-
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
-            eventService.getAllFavoriteEventsByUserId(pageable, 1L);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
-        assertEquals(expected, actual);
-        assertTrue(actual.isFavorite());
-        assertTrue(actual.isSubscribed());
-
-        verify(eventRepo).findAllFavoritesByUser(anyLong(), eq(pageable));
-        verify(modelMapper).map(restClient.findByEmail(anyString()), User.class);
-        verify(modelMapper).map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType());
-        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
-        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
-    }
-
-    @Test
     void testCheckTitleImageInImagesToDelete_TitleImageInImagesToDelete_AdditionalImagesNotEmpty() throws Exception {
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
         updateEventDto.setTitleImage("titleImage");

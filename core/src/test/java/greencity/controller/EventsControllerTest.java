@@ -535,16 +535,6 @@ class EventsControllerTest {
 
     @Test
     @SneakyThrows
-    void getAllFavoriteEventsByUserTest() {
-        Pageable pageable = PageRequest.of(0, 20);
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/favorites?user-id=1"))
-            .andExpect(status().isOk());
-
-        verify(eventService).getAllFavoriteEventsByUserId(pageable, 1L);
-    }
-
-    @Test
-    @SneakyThrows
     void getAllEventSubscribersWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", notValidId))

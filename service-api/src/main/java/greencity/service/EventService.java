@@ -153,16 +153,6 @@ public interface EventService {
     EventVO findById(Long eventId);
 
     /**
-     * Method for getting all user's favorite events.
-     *
-     * @param pageable {@link Pageable}
-     * @param userId   {@link Long}
-     * @return a page of {@link EventDto} instance.
-     * @author Midianyi Yurii.
-     */
-    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUserId(Pageable pageable, Long userId);
-
-    /**
      * Method for getting Events by searchQuery.
      *
      * @param searchQuery  query to search

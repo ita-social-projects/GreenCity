@@ -280,16 +280,6 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(eventPage, participant.getId());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableAdvancedDto<EventDto> getAllFavoriteEventsByUserId(Pageable page, Long userId) {
-        User user = modelMapper.map(restClient.findById(userId), User.class);
-        Page<Event> events = eventRepo.findAllFavoritesByUser(user.getId(), page);
-        return buildPageableAdvancedDto(events, user.getId());
-    }
-
     private List<Event> getEventsForCurrentPage(Pageable page, List<Event> allEvents) {
         int startIndex = page.getPageNumber() * page.getPageSize();
         int endIndex = Math.min(startIndex + page.getPageSize(), allEvents.size());

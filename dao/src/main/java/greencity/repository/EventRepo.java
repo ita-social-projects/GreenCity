@@ -94,14 +94,6 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     List<Event> getAllByOrganizer(User organizer);
 
     /**
-     * Get all user's favorite events by user id.
-     *
-     * @param userId {@link Long}.
-     */
-    @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE f.id = :userId")
-    Page<Event> findAllFavoritesByUser(Long userId, Pageable pageable);
-
-    /**
      * Get subscribed events in given event ids by user id.
      */
     @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS f WHERE e.id in :eventIds AND f.id = :userId")
