@@ -31,7 +31,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public class HabitTranslationFilter implements Specification<HabitTranslation> {
-    private final HabitTranslationFilterDto filter;
+    private final transient HabitTranslationFilterDto filter;
 
     /**
      * Forms a list of {@link Predicate} based on type of the classes initialized in
