@@ -179,6 +179,7 @@ import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.CommentStatus;
 import greencity.enums.EmailNotification;
+import greencity.enums.EventType;
 import greencity.enums.FactOfDayStatus;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
@@ -215,6 +216,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static greencity.constant.EventTupleConstant.type;
 import static greencity.enums.NotificationType.ECONEWS_COMMENT;
 import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
 import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
@@ -1887,27 +1890,6 @@ public class ModelUtils {
         return event;
     }
 
-    public static Event getSecondEvent() {
-        Event event = new Event();
-        event.setDescription("Description2");
-        event.setId(2L);
-        event.setOrganizer(getAttenderUser());
-        event.setTitle("Title2");
-        List<EventDateLocation> dates = new ArrayList<>();
-        dates.add(new EventDateLocation(1L, event,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), "/url"));
-        dates.add(new EventDateLocation(2L, event,
-            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), "/url"));
-        event.setDates(dates);
-        event.setTags(List.of(getEventTag()));
-        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
-        return event;
-    }
-
     public static Event getEventWithoutAddress() {
         Event event = new Event();
         event.setDescription("Description");
@@ -1923,38 +1905,6 @@ public class ModelUtils {
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             null, "url/"));
-        event.setDates(dates);
-        event.setTags(List.of(getEventTag()));
-        return event;
-    }
-
-    public static Event getOnlineEvent() {
-        Event event = new Event();
-        event.setDescription("Description");
-        event.setId(1L);
-        event.setOrganizer(getUser());
-        event.setTitle("Title");
-        List<EventDateLocation> dates = new ArrayList<>();
-        dates.add(new EventDateLocation(1L, event,
-            ZonedDateTime.of(2023, 10, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null, "url/"));
-        event.setDates(dates);
-        event.setTags(List.of(getEventTag()));
-        return event;
-    }
-
-    public static Event getOfflineOnlineEventIfEventFinalDateToday() {
-        Event event = new Event();
-        event.setDescription("Description");
-        event.setId(1L);
-        event.setOrganizer(getUser());
-        event.setTitle("Title");
-        List<EventDateLocation> dates = new ArrayList<>();
-        dates.add(new EventDateLocation(1L, event,
-            ZonedDateTime.of(2023, 7, 11, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.now(),
-            getAddress(), "url/"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -2217,29 +2167,6 @@ public class ModelUtils {
                 .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
                 .onlineLink("/url")
                 .coordinates(AddressDto.builder().build()).build()))
-            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
-                .nameUa("Соціальний").build()))
-            .build();
-    }
-
-    public static EventDto getEventOfflineDto() {
-        return EventDto.builder()
-            .id(1L)
-            .description("Description")
-            .organizer(EventAuthorDto.builder()
-                .name("User")
-                .id(1L)
-                .build())
-            .title("Title")
-            .countComments(2)
-            .likes(1)
-            .dates(List.of(EventDateLocationDto.builder()
-                .id(1L)
-                .event(null)
-                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-                .onlineLink(null)
-                .coordinates(getSecondAddressDtoCorrect()).build()))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2989,6 +2916,7 @@ public class ModelUtils {
             .cities(List.of("Kyiv"))
             .statuses(List.of(OPEN))
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .title("111")
             .build();
     }
 
@@ -3033,28 +2961,28 @@ public class ModelUtils {
     public static List<Tuple> getTuples(TupleElement<?>[] elements) {
         TupleMetadata tupleMetadata = new TupleMetadata(
             elements, new String[] {eventId, title, tagId, languageCode, tagName,
-                isOpen, organizerId, organizerName, titleImage, creationDate, startDate,
+                isOpen, type, organizerId, organizerName, titleImage, creationDate, startDate,
                 finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
                 cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
                 formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
                 isFavorite});
 
-        Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, 1L,
+        Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row2 = new Object[] {1L, "test1", 1L, "ua", "Соціальний", true, 1L,
+        Object[] row2 = new Object[] {1L, "test1", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row3 = new Object[] {3L, "test3", 2L, "en", "Social1", true, 2L,
+        Object[] row3 = new Object[] {3L, "test3", 2L, "en", "Social1", true, "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row4 = new Object[] {3L, "test3", 2L, "ua", "Соціальний1", true, 2L,
+        Object[] row4 = new Object[] {3L, "test3", 2L, "ua", "Соціальний1", true, "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
@@ -3071,6 +2999,7 @@ public class ModelUtils {
             new TupleElementImpl<>(String.class, languageCode),
             new TupleElementImpl<>(String.class, tagName),
             new TupleElementImpl<>(Boolean.class, isOpen),
+            new TupleElementImpl<>(String.class, type),
             new TupleElementImpl<>(Long.class, organizerId),
             new TupleElementImpl<>(String.class, organizerName),
             new TupleElementImpl<>(String.class, titleImage),
@@ -3128,6 +3057,7 @@ public class ModelUtils {
                     .build()))
                 .titleImage("image.png")
                 .isOpen(true)
+                .type(EventType.ONLINE_OFFLINE)
                 .isSubscribed(true)
                 .isFavorite(true)
                 .isRelevant(true)
@@ -3161,6 +3091,7 @@ public class ModelUtils {
                     .build()))
                 .titleImage("image.png")
                 .isOpen(true)
+                .type(EventType.ONLINE)
                 .isSubscribed(true)
                 .isFavorite(true)
                 .isRelevant(true)

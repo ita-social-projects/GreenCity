@@ -715,8 +715,10 @@ public class EventServiceImpl implements EventService {
                 eventDto = EventDto.builder()
                     .id(id)
                     .title(tuple.get(title, String.class))
-                    .organizer(new EventAuthorDto(
-                        tuple.get(organizerId, Long.class), tuple.get(organizerName, String.class), 123.0, "qwe"))
+                    .organizer(EventAuthorDto.builder()
+                        .id(tuple.get(organizerId, Long.class))
+                        .name(tuple.get(organizerName, String.class))
+                        .build())
                     .creationDate(tuple.get(creationDate, Date.class).toLocalDate())
                     .titleImage(tuple.get(titleImage, String.class))
                     .isOpen(tuple.get(isOpen, Boolean.class))
@@ -797,6 +799,11 @@ public class EventServiceImpl implements EventService {
             eventDto.setTags(tagUaEnDtos);
             sortedDtos.add(eventDto);
         }
+        sortedDtos.forEach(event -> {
+            event.setDates(event.getDates().stream()
+                .distinct()
+                .toList());
+        });
         return sortedDtos;
     }
 
