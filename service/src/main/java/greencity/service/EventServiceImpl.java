@@ -43,7 +43,6 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
-import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import java.math.BigDecimal;
@@ -120,7 +119,6 @@ public class EventServiceImpl implements EventService {
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
     private final UserService userService;
-    private final EventsSearchRepo eventsSearchRepo;
     private final NotificationService notificationService;
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
@@ -234,7 +232,7 @@ public class EventServiceImpl implements EventService {
             restClient.findById(userId);
         }
 
-        Page<Long> eventIds = eventsSearchRepo.findEventsIds(page, filterEventDto, userId);
+        Page<Long> eventIds = eventRepo.findEventsIds(page, filterEventDto, userId);
         List<Tuple> tuples;
         if (userId != null) {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
@@ -665,7 +663,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {
-        Page<Event> page = eventsSearchRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
+        Page<Event> page = eventRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
         return getSearchNewsDtoPageableDto(page);
     }
 
@@ -674,7 +672,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        Page<Event> page = eventsSearchRepo.find(pageable, searchQuery, languageCode);
+        Page<Event> page = eventRepo.find(pageable, searchQuery, languageCode);
         return getSearchNewsDtoPageableDto(page);
     }
 

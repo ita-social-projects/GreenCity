@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
+public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
      * Method returns {@link Event} by search query and page.
      *

@@ -40,24 +40,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class EventsSearchRepo {
+public class EventSearchRepoImpl implements EventSearchRepo {
     private final EntityManager entityManager;
     private final CriteriaBuilder criteriaBuilder;
 
     /**
      * Initialization constructor.
      */
-    public EventsSearchRepo(EntityManager entityManager) {
+    public EventSearchRepoImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
         this.criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
     /**
-     * Method for search list event ids by {@link FilterEventDto}.
-     *
-     * @param pageable       {@link Pageable}.
-     * @param filterEventDto {@link FilterEventDto}.
-     * @return list of event ids.
+     * {@inheritDoc}
      */
     public Page<Long> findEventsIds(Pageable pageable, FilterEventDto filterEventDto, Long userId) {
         CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
@@ -86,13 +82,7 @@ public class EventsSearchRepo {
     }
 
     /**
-     * Method for search events by title,text,short info and tag name.
-     *
-     * @param pageable      {@link Pageable}
-     * @param searchingText - text criteria for searching.
-     * @param languageCode  {@link String}.
-     * @return all finding events, their tags and also count of finding events.
-     * @author Anton Bondar
+     * {@inheritDoc}
      */
     public Page<Event> find(Pageable pageable, String searchingText, String languageCode) {
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
