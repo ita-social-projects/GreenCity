@@ -207,7 +207,7 @@ public class EventsSearchRepo {
             addSortByAttendersOrder(userId, eventRoot, orders);
         }
 
-        ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates);
+        ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates, JoinType.LEFT);
         addSortByCurrentDateOrder(orders, datesJoin);
         addSortByOneWeekOrder(orders, datesJoin);
         addSortByDateOrder(orders, datesJoin);

@@ -11,12 +11,10 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
-import greencity.enums.EventType;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -173,80 +171,6 @@ public class EventsController {
         @RequestParam(required = false, name = "user-id") Long userId,
         FilterEventDto filterEventDto) {
         return ResponseEntity.ok().body(eventService.getEvents(pageable, filterEventDto, userId));
-    }
-
-    /**
-     * Method for getting pages of users events sorted by dates if online and by
-     * closeness to coordinates of User if offline.
-     *
-     * @return a page of {@link EventDto} instance.
-     * @author Danylo Hlysnkyi, Olena Sotnik.
-     */
-    @Operation(summary = "Get all user's events that may be filtered by event type")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
-    })
-    @ApiPageableWithoutSort
-    @GetMapping("/myEvents")
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(
-        @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) Principal principal,
-        @Parameter(description = "Type of event. Example : ONLINE, OFFLINE") @RequestParam(
-            required = false) EventType eventType,
-        @Parameter(description = "User location coordinates latitude value. Example : 50.450001",
-            in = ParameterIn.QUERY) @RequestParam(required = false) String userLatitude,
-        @Parameter(description = "User location coordinates longitude value. Example : 30.523333",
-            in = ParameterIn.QUERY) @RequestParam(required = false) String userLongitude) {
-        return ResponseEntity.ok().body(eventService.getAllUserEvents(
-            pageable, principal.getName(), userLatitude, userLongitude, eventType));
-    }
-
-    /**
-     * Method for getting page of events which were created user.
-     *
-     * @return a page of{@link EventDto} instance.
-     * @author Nikita Korzh.
-     */
-    @Operation(summary = "Get events created by user")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
-    })
-    @ApiPageableWithoutSort
-    @GetMapping("/myEvents/createdEvents")
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getEventsCreatedByUser(
-        @Parameter(hidden = true) Pageable pageable, @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok().body(eventService.getEventsCreatedByUser(pageable, principal.getName()));
-    }
-
-    /**
-     * Method for getting pages of users events and events which were created by
-     * this user.
-     *
-     * @return a page of {@link EventDto} instance.
-     * @author Oliyarnik Serhii.
-     */
-    @Operation(summary = "Get all users events and events which were created by this user")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
-    })
-    @ApiPageableWithoutSort
-    @GetMapping("/myEvents/relatedEvents")
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getRelatedToUserEvents(
-        @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok().body(eventService.getRelatedToUserEvents(pageable, principal.getName()));
     }
 
     /**

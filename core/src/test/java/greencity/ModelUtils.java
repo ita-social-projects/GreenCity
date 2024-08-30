@@ -388,12 +388,7 @@ public class ModelUtils {
     }
 
     public static FilterEventDto getNullFilterEventDto() {
-        return FilterEventDto.builder()
-            .time(null)
-            .cities(null)
-            .statuses(null)
-            .tags(null)
-            .build();
+        return FilterEventDto.builder().build();
     }
 
     public static ActionDto getActionDto() {
@@ -409,9 +404,9 @@ public class ModelUtils {
             .notificationType(new NotificationType[] {}).build();
     }
 
-    public static PageableAdvancedDto<EventDto> getEventPreviewDtoPageableAdvancedDto(Pageable pageable) {
+    public static PageableAdvancedDto<EventDto> getEventDtoPageableAdvancedDto(Pageable pageable) {
         return new PageableAdvancedDto<>(
-            ModelUtils.getEventPreviewDtos(),
+            ModelUtils.getListEventDto(),
             2,
             pageable.getPageNumber(),
             1,
@@ -422,7 +417,7 @@ public class ModelUtils {
             true);
     }
 
-    public static List<EventDto> getEventPreviewDtos() {
+    public static List<EventDto> getListEventDto() {
         return List.of(
             EventDto.builder()
                 .id(3L)

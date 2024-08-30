@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
@@ -43,7 +42,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -62,24 +61,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EventsControllerTest {
-
     private static final String EVENTS_CONTROLLER_LINK = "/events";
-
+    private final Principal principal = getPrincipal();
     private MockMvc mockMvc;
-
     @InjectMocks
     private EventsController eventsController;
-
     @Mock
     private EventService eventService;
-
     @Mock
     private UserService userService;
-
     @Mock
     private ModelMapper modelMapper;
-
-    private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setup() {
@@ -91,83 +83,30 @@ class EventsControllerTest {
 
     @Test
     @SneakyThrows
-    void getEventsCreatedByUser() {
-        int pageNumber = 0;
-        int pageSize = 20;
-
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents/createdEvents").principal(principal))
-            .andExpect(status().isOk());
-        verify(eventService).getEventsCreatedByUser(pageable, "test@gmail.com");
-
-    }
-
-    @Test
-    @SneakyThrows
     void getAllEventsTest() {
         int pageNumber = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Long userId = 1L;
 
-        PageableAdvancedDto<EventDto> eventPreviewDtoPageableAdvancedDto =
-            ModelUtils.getEventPreviewDtoPageableAdvancedDto(pageable);
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = getEventDtoPageableAdvancedDto(pageable);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        ObjectWriter ow = objectMapper.writer();
-        String expectedJson = ow.writeValueAsString(eventPreviewDtoPageableAdvancedDto);
+        String expectedJson = objectMapper.writeValueAsString(eventDtoPageableAdvancedDto);
 
         FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
 
-//        when(eventService.getEvents(pageable, principal, filterEventDto, null))
-//            .thenReturn(eventPreviewDtoPageableAdvancedDto);
+        when(eventService.getEvents(pageable, filterEventDto, userId))
+            .thenReturn(eventDtoPageableAdvancedDto);
 
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "?page=0&size=20&user-id=" + userId)
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .principal(principal))
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-//        verify(eventService).getEvents(pageable, principal, filterEventDto, null);
-    }
-
-    @Test
-    @SneakyThrows
-    void getUserEventsTest() {
-        int pageNumber = 0;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        PageableAdvancedDto<EventDto> pageableAdvancedDto = getPageableAdvancedDtoEventDto();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
-        ObjectWriter ow = objectMapper.writer();
-        String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
-
-        when(eventService.getAllUserEvents(pageable, principal.getName(), "", "", null))
-            .thenReturn(pageableAdvancedDto);
-
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents?eventType=&userLatitude=&userLongitude=")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .principal(principal))
-            .andExpect(status().isOk())
-            .andExpect(content().json(expectedJson));
-
-        verify(eventService).getAllUserEvents(pageable, principal.getName(), "", "", null);
-    }
-
-    @Test
-    @SneakyThrows
-    void getRelatedToUserEvents() {
-        int pageNumber = 0;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents/relatedEvents").principal(principal))
-            .andExpect(status().isOk());
-        verify(eventService).getRelatedToUserEvents(pageable, principal.getName());
+        verify(eventService).getEvents(pageable, filterEventDto, userId);
     }
 
     @Test
@@ -570,57 +509,6 @@ class EventsControllerTest {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/organizers/count?user-id=1"))
             .andExpect(status().isOk());
         verify(eventService).getCountOfOrganizedEventsByUserId(1L);
-    }
-
-    private PageableAdvancedDto<EventDto> getPageableAdvancedDtoEventDto() {
-        EventDto eventDto = EventDto.builder()
-            .id(11L)
-            .countComments(2)
-            .likes(20)
-            .title("Test-Title")
-            .organizer(EventAuthorDto.builder()
-                .id(12L)
-                .name("Organizer-Name")
-                .organizerRating(1.1D)
-                .build())
-            .description("Event Description")
-            .dates(List.of(EventDateLocationDto.builder()
-                .id(13L)
-                .startDate(ZonedDateTime.of(2023, 6, 1, 1, 2, 3, 4, ZoneId.of("Europe/Kiev")))
-                .finishDate(ZonedDateTime.of(2023, 6, 1, 3, 2, 3, 4, ZoneId.of("Europe/Kiev")))
-                .onlineLink("some-link.com")
-                .coordinates(AddressDto.builder()
-                    .streetUa("Вулиця")
-                    .streetEn("Street")
-                    .houseNumber("1B")
-                    .cityUa("Місто")
-                    .cityEn("City")
-                    .regionUa("Область")
-                    .regionUa("Oblast")
-                    .countryUa("Країна")
-                    .countryEn("Country")
-                    .latitude(50.45594503475653d)
-                    .longitude(30.5058935778292d).build())
-                .build()))
-            .tags(List.of(TagUaEnDto.builder()
-                .id(20L)
-                .nameEn("Name")
-                .nameUa("Назва").build()))
-            .titleImage("https://csb10032000a548f571.blob.core.windows.net/all/8f09887c.png")
-            .additionalImages(List.of("https://csb10032000a548f571.blob.core.windows.net/all/10005000.png"))
-            .isOpen(true)
-            .isSubscribed(true).build();
-
-        return new PageableAdvancedDto<>(
-            List.of(eventDto),
-            1,
-            0,
-            1,
-            0,
-            false,
-            false,
-            true,
-            true);
     }
 
     @SneakyThrows

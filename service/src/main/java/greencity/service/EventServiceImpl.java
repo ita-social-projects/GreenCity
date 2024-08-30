@@ -56,7 +56,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -65,18 +64,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -116,8 +108,6 @@ import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
-import static greencity.enums.EventType.OFFLINE;
-import static greencity.enums.EventType.ONLINE;
 
 @Service
 @RequiredArgsConstructor
@@ -239,19 +229,6 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
-        Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
-        if (principal != null) {
-            User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-            return buildPageableAdvancedDto(events, user.getId());
-        }
-        return buildPageableAdvancedDto(events);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId) {
         if (userId != null) {
             restClient.findById(userId);
@@ -265,112 +242,6 @@ public class EventServiceImpl implements EventService {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent());
         }
         return buildPageableAdvancedDto(eventIds, tuples, page);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String userLatitude,
-        String userLongitude, EventType eventType) {
-        User participant = modelMapper.map(restClient.findByEmail(email), User.class);
-        List<Event> events = sortUserEventsByEventType(eventType, participant, userLatitude, userLongitude);
-        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
-        return buildPageableAdvancedDto(eventPage, participant.getId());
-    }
-
-    private List<Event> getEventsForCurrentPage(Pageable page, List<Event> allEvents) {
-        int startIndex = page.getPageNumber() * page.getPageSize();
-        int endIndex = Math.min(startIndex + page.getPageSize(), allEvents.size());
-        return allEvents.subList(startIndex, endIndex);
-    }
-
-    private List<Event> sortUserEventsByEventType(
-        EventType eventType, User attender, String userLatitude, String userLongitude) {
-        if (eventType != null) {
-            if (ONLINE == eventType) {
-                return getUserEventsSortedByDate(attender, ONLINE);
-            } else if (OFFLINE == eventType) {
-                return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
-                    ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
-                    : getUserEventsSortedByDate(attender, OFFLINE);
-            }
-        }
-        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
-            .sorted(getComparatorByDates())
-            .toList();
-    }
-
-    private List<Event> getUserEventsSortedByDate(User attender, EventType eventType) {
-        return eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(eventType)
-                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
-            .sorted(getComparatorByDates())
-            .collect(Collectors.toList());
-    }
-
-    private List<Event> getOfflineUserEventsSortedByUserLocation(
-        User attender, String userLatitude, String userLongitude) {
-        List<Event> eventsFurtherSorted = eventRepo.findAllByAttenderOrOrganizer(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
-                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
-            .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
-            .filter(Event::isRelevant)
-            .collect(Collectors.toList());
-        List<Event> eventsPassed = getUserEventsSortedByDate(attender, OFFLINE).stream()
-            .filter(event -> !event.isRelevant())
-            .toList();
-        eventsFurtherSorted.addAll(eventsPassed);
-        return eventsFurtherSorted;
-    }
-
-    private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
-        return (e1, e2) -> {
-            double distance1 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
-                Objects.requireNonNull(e1.getDates().getLast()
-                    .getAddress()).getLatitude(),
-                Objects.requireNonNull(e1.getDates().getLast()
-                    .getAddress()).getLongitude());
-            double distance2 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
-                Objects.requireNonNull(e2.getDates().getLast()
-                    .getAddress()).getLatitude(),
-                Objects.requireNonNull(e2.getDates().getLast()
-                    .getAddress()).getLongitude());
-            return Double.compare(distance1, distance2);
-        };
-    }
-
-    private Comparator<Event> getComparatorByDates() {
-        return (e1, e2) -> e2.getDates().getLast().getStartDate()
-            .compareTo(e1.getDates().getLast().getStartDate());
-    }
-
-    private double calculateDistanceBetweenUserAndEventCoordinates(
-        double userLatitude, double userLongitude, double eventLatitude, double eventLongitude) {
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        Point userGeoPoint = geometryFactory.createPoint(new Coordinate(userLongitude, userLatitude));
-        Point eventGeoPoint = geometryFactory.createPoint(new Coordinate(eventLongitude, eventLatitude));
-        return userGeoPoint.distance(eventGeoPoint);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable page, String email) {
-        User attender = modelMapper.map(restClient.findByEmail(email), User.class);
-        Page<Event> events = eventRepo.findEventsByOrganizer(page, attender.getId());
-        return buildPageableAdvancedDto(events, attender.getId());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable page, String email) {
-        User attender = modelMapper.map(restClient.findByEmail(email), User.class);
-        Page<Event> events = eventRepo.findRelatedEventsByUser(page, attender.getId());
-        return buildPageableAdvancedDto(events, attender.getId());
     }
 
     /**
@@ -725,44 +596,6 @@ public class EventServiceImpl implements EventService {
 
     private ZonedDateTime findLastEventDateTime(Event event) {
         return Collections.max(event.getDates().stream().map(EventDateLocation::getFinishDate).toList());
-    }
-
-    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {
-        List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
-            new TypeToken<List<EventDto>>() {
-            }.getType());
-
-        if (Objects.nonNull(eventDtos)) {
-            eventDtos.forEach(eventDto -> {
-                if (Objects.nonNull(eventDto.getOrganizer())) {
-                    Long idOrganizer = eventDto.getOrganizer().getId();
-                    if (Objects.nonNull(idOrganizer)) {
-                        boolean isOrganizedByFriend = userRepo.isFriend(idOrganizer, userId);
-                        eventDto.setOrganizedByFriend(isOrganizedByFriend);
-                    } else {
-                        eventDto.setOrganizedByFriend(false);
-                    }
-                } else {
-                    eventDto.setOrganizedByFriend(false);
-                }
-            });
-        }
-
-        if (CollectionUtils.isNotEmpty(eventDtos)) {
-            setSubscribes(eventDtos, userId);
-            setFollowers(eventDtos, userId);
-        }
-
-        return new PageableAdvancedDto<>(
-            eventDtos,
-            eventsPage.getTotalElements(),
-            eventsPage.getPageable().getPageNumber(),
-            eventsPage.getTotalPages(),
-            eventsPage.getNumber(),
-            eventsPage.hasPrevious(),
-            eventsPage.hasNext(),
-            eventsPage.isFirst(),
-            eventsPage.isLast());
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {

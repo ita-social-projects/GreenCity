@@ -9,7 +9,6 @@ import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.search.SearchEventsDto;
-import greencity.enums.EventType;
 import java.security.Principal;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
@@ -41,42 +40,11 @@ public interface EventService {
     EventDto getEvent(Long eventId, Principal principal);
 
     /**
-     * Method for getting all Event instances.
-     *
-     * @return List of {@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal);
-
-    /**
      * Method for getting all Event instances filtered.
      *
      * @return List of {@link EventDto} instance.
      */
     PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId);
-
-    /**
-     * Method for getting all Event instances that user attended.
-     *
-     * @return List of {@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String latitude,
-        String longitude, EventType eventType);
-
-    /**
-     * Method for getting page of events which were created user.
-     *
-     * @return a page of{@link EventDto} instance.
-     * @author Nikita Korzh.
-     */
-    PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable pageable, String email);
-
-    /**
-     * Method for getting pages of users events and events which were created by
-     * this user.
-     *
-     * @return a page of{@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable pageable, String name);
 
     /**
      * Add an attender to the Event by id.
