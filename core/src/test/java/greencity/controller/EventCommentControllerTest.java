@@ -201,7 +201,7 @@ class EventCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void findAllActiveReplies() {
+    void findAllReplies() {
         Long parentCommentId = 1L;
         Long eventId = 1L;
         int pageNumber = 0;
@@ -234,7 +234,7 @@ class EventCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void findAllActiveRepliesWithNotValidIdBadRequestTest() {
+    void findAllRepliesWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         Long eventId = 1L;
         mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies", eventId, notValidId))
@@ -243,7 +243,7 @@ class EventCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void findAllActiveRepliesWithNonexistentIdNotFoundTest() {
+    void findAllRepliesWithNonexistentIdNotFoundTest() {
         Long parentCommentId = 1L;
         Long eventId = 1L;
         List<CommentStatus> statuses = List.of(CommentStatus.ORIGINAL, CommentStatus.EDITED);

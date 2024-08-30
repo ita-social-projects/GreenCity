@@ -117,12 +117,12 @@ public class EventCommentController {
     }
 
     /**
-     * Method to get all active comments to {@link greencity.dto.event.EventVO}
+     * Method to get all comments to {@link greencity.dto.event.EventVO}
      * specified by eventId.
      *
      * @return Pageable of {@link greencity.dto.eventcomment.EventCommentDto}
      */
-    @Operation(summary = "Get all active comments.")
+    @Operation(summary = "Get all comments.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -193,11 +193,12 @@ public class EventCommentController {
     }
 
     /**
-     * Method to get all active replies to {@link EventCommentDto} specified by
+     * Method to get all replies to {@link EventCommentDto} specified by
      * parent comment id.
      *
      * @param parentCommentId id of parent comment {@link EventCommentDto}
      * @param user            {@link UserVO} user who want to get replies.
+     * @param statuses statuses of comments.
      * @return Pageable of {@link EventCommentDto}
      */
     @Operation(description = "Get all active replies to comment.")
@@ -210,7 +211,7 @@ public class EventCommentController {
     })
     @ApiPageable
     @GetMapping("/{parentCommentId}/replies")
-    public ResponseEntity<PageableDto<EventCommentDto>> findAllActiveReplies(
+    public ResponseEntity<PageableDto<EventCommentDto>> findAllReplies(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long eventId,
         @PathVariable Long parentCommentId,
@@ -221,7 +222,7 @@ public class EventCommentController {
     }
 
     /**
-     * Method to count all active replies for {@link EventCommentDto} comment.
+     * Method to count all replies for {@link EventCommentDto} comment.
      *
      * @param parentCommentId to specify {@link EventCommentDto}
      * @return amount of all active comments for certain {@link EventCommentDto}

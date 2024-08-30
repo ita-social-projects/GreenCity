@@ -46,6 +46,17 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String EVENTS = "/events";
+    private static final String EVENT_ID = "/{eventId}";
+    private static final String FAVORITES = "/favorites";
+    private static final String ATTENDERS = "/attenders";
+    private static final String ORGANIZERS = "/organizers";
+    private static final String RATINGS = "/ratings";
+    private static final String EVENTS_COMMENTS = EVENTS + EVENT_ID + "/comments";
+    private static final String COMMENT_ID = "/{commentId}";
+    private static final String PARENT_COMMENT_ID = "/{parentCommentId}";
+    private static final String REPLIES = "/replies";
+    private static final String LIKES = "/likes";
+    private static final String COUNT = "/count";
     private static final String FRIENDS = "/friends";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
@@ -147,15 +158,15 @@ public class SecurityConfig {
                     "/econews/comments/count/likes",
                     "/econews/comments/replies/active/{parentCommentId}",
                     "/econews/comments/active",
-                    "/events/comments/active",
-                    "/events/comments/count/{eventId}",
-                    "/events/comments/replies/active/{parentCommentId}",
-                    "/events/comments/replies/active/count/{parentCommentId}",
-                    "/events/comments/likes/count/{commentId}",
+                    EVENTS_COMMENTS,
+                    EVENTS_COMMENTS + COMMENT_ID,
+                    EVENTS_COMMENTS + COMMENT_ID + COUNT,
+                    EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES,
+                    EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES + COUNT,
+                    EVENTS_COMMENTS + COMMENT_ID + LIKES + COUNT,
                     EVENTS,
-                    EVENTS + "/event/{eventId}",
-                    EVENTS + "/getAllSubscribers/{eventId}",
-                    EVENTS + "/addresses",
+                    EVENTS + EVENT_ID,
+                    EVENTS + EVENT_ID + ATTENDERS,
                     "/language",
                     "/search",
                     "/search/econews",
@@ -223,11 +234,8 @@ public class SecurityConfig {
                     "/factoftheday/all",
                     "/chat",
                     "/achievements/notification/{userId}",
-                    EVENTS + "/myEvents",
-                    EVENTS + "/myEvents/createdEvents",
-                    EVENTS + "/myEvents/relatedEvents",
-                    EVENTS + "/getAllFavoriteEvents",
-                    EVENTS + "/userEvents/count",
+                    EVENTS + ATTENDERS + COUNT,
+                    EVENTS + ORGANIZERS + COUNT,
                     "/user/shopping-list-items/{userId}/get-all-inprogress",
                     "/habit/assign/{habitAssignId}/allUserAndCustomList",
                     "/habit/assign/allUserAndCustomShoppingListsInprogress",
@@ -254,12 +262,12 @@ public class SecurityConfig {
                     "/econews/dislike",
                     "/econews/comments/{econewsId}",
                     "/econews/comments/like",
-                    "/events/comments/{eventId}",
-                    "/events/comments/like",
-                    EVENTS + "/addAttender/{eventId}",
-                    EVENTS + "/addToFavorites/{eventId}",
-                    EVENTS + "/create",
-                    EVENTS + "/rateEvent/{eventId}/{rate}",
+                    EVENTS_COMMENTS,
+                    EVENTS_COMMENTS + COMMENT_ID + LIKES,
+                    EVENTS,
+                    EVENTS + EVENT_ID + ATTENDERS,
+                    EVENTS + EVENT_ID + FAVORITES,
+                    EVENTS + EVENT_ID + RATINGS,
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     "/files/image",
                     "/files/convert",
@@ -289,7 +297,8 @@ public class SecurityConfig {
                     "/econews/update",
                     "/favorite_place/",
                     "/user/profile",
-                    EVENTS + "/update",
+                    EVENTS_COMMENTS + COMMENT_ID,
+                    EVENTS + EVENT_ID,
                     "/habit/update/{habitId}",
                     HABIT_ASSIGN_ID + "/update-habit-duration",
                     "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
@@ -315,7 +324,6 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECONEWS_COMMENTS,
-                    "/events/comments/{eventCommentId}",
                     "/econews/{econewsId}",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
@@ -324,9 +332,10 @@ public class SecurityConfig {
                     USER_CUSTOM_SHOPPING_LIST_ITEMS,
                     USER_SHOPPING_LIST + "/user-shopping-list-items",
                     USER_SHOPPING_LIST,
-                    EVENTS + "/delete/{eventId}",
-                    EVENTS + "/removeAttender/{eventId}",
-                    EVENTS + "/removeFromFavorites/{eventId}",
+                    EVENTS_COMMENTS + COMMENT_ID,
+                    EVENTS + EVENT_ID,
+                    EVENTS + EVENT_ID + ATTENDERS,
+                    EVENTS + EVENT_ID + FAVORITES,
                     "/user/{userId}/userFriend/{friendId}",
                     "/habit/assign/delete/{habitAssignId}",
                     "/habit/delete/{customHabitId}",
@@ -377,12 +386,6 @@ public class SecurityConfig {
                     "/facts/{factId}",
                     "/comments")
                 .hasAnyRole(ADMIN)
-                .requestMatchers(HttpMethod.PATCH,
-                    "/events/comments")
-                .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
-                .requestMatchers(HttpMethod.POST,
-                    "/events/comments/{eventId}")
-                .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .anyRequest().hasAnyRole(ADMIN))
             .logout(logout -> logout.logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))

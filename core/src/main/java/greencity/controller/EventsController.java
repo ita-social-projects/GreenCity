@@ -278,7 +278,7 @@ public class EventsController {
     @PostMapping("/{eventId}/ratings")
     public ResponseEntity<Object> rateEvent(
         @PathVariable Long eventId,
-        @RequestBody @NotNull @Positive @Max(value = 5) Integer grade,
+        @RequestBody @NotNull @Positive @Max(3) Integer grade,
         @Parameter(hidden = true) Principal principal) {
         eventService.rateEvent(eventId, principal.getName(), grade);
         return ResponseEntity.ok().build();
