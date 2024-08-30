@@ -12,6 +12,7 @@ import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.enums.CommentStatus;
+import java.time.ZonedDateTime;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setTitleImage(event.getTitleImage());
         eventDto.setOpen(event.isOpen());
         eventDto.setType(event.getType());
-        eventDto.setIsRelevant(event.isRelevant());
+        eventDto.setIsRelevant(isRelevant(event.getDates()));
         eventDto.setLikes(event.getUsersLikedEvents().size());
         eventDto
             .setCountComments((int) event.getEventsComments().stream()
@@ -109,5 +110,10 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             .mapToInt(EventGrade::getGrade)
             .average()
             .orElse(0.0);
+    }
+
+    private boolean isRelevant(List<EventDateLocation> dates) {
+        return dates.getLast().getFinishDate().isAfter(ZonedDateTime.now())
+            || dates.getLast().getFinishDate().isEqual(ZonedDateTime.now());
     }
 }

@@ -53,12 +53,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class EventsControllerTest {
+class EventControllerTest {
     private static final String EVENTS_CONTROLLER_LINK = "/events";
     private final Principal principal = getPrincipal();
     private MockMvc mockMvc;
     @InjectMocks
-    private EventsController eventsController;
+    private EventController eventController;
     @Mock
     private EventService eventService;
     @Mock
@@ -68,7 +68,7 @@ class EventsControllerTest {
 
     @BeforeEach
     void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(eventsController)
+        this.mockMvc = MockMvcBuilders.standaloneSetup(eventController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
             .build();

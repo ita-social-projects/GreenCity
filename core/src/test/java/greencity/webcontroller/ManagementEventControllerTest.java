@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ManagementEventsControllerTest {
+class ManagementEventControllerTest {
     private static final String managementEventsLink = "/management/events";
     @Mock
     EventService eventService;

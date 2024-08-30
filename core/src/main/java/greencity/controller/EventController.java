@@ -49,7 +49,7 @@ import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
-public class EventsController {
+public class EventController {
     private final EventService eventService;
 
     /**

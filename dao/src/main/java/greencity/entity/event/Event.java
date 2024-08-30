@@ -26,11 +26,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -106,32 +104,4 @@ public class Event {
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersLikedEvents = new HashSet<>();
-
-    /**
-     * Method for getting an event type.
-     *
-     * @return {@link EventType} instance.
-     * @author Olena Sotnik.
-     */
-    public EventType getEventType() {
-        if (dates.stream().anyMatch(date -> Objects.nonNull(date.getOnlineLink())
-            && Objects.nonNull(date.getAddress()))) {
-            return EventType.ONLINE_OFFLINE;
-        }
-        if (dates.stream().allMatch(date -> Objects.nonNull(date.getOnlineLink()))) {
-            return EventType.ONLINE;
-        }
-        return EventType.OFFLINE;
-    }
-
-    /**
-     * Method for checking if event is Relevant.
-     *
-     * @return boolean: true if relevant, false if event passed.
-     * @author Olena Sotnik.
-     */
-    public boolean isRelevant() {
-        return dates.getLast().getFinishDate().isAfter(ZonedDateTime.now())
-            || dates.getLast().getFinishDate().isEqual(ZonedDateTime.now());
-    }
 }

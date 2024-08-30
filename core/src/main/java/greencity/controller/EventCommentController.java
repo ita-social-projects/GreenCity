@@ -117,8 +117,8 @@ public class EventCommentController {
     }
 
     /**
-     * Method to get all comments to {@link greencity.dto.event.EventVO}
-     * specified by eventId.
+     * Method to get all comments to {@link greencity.dto.event.EventVO} specified
+     * by eventId.
      *
      * @return Pageable of {@link greencity.dto.eventcomment.EventCommentDto}
      */
@@ -193,12 +193,12 @@ public class EventCommentController {
     }
 
     /**
-     * Method to get all replies to {@link EventCommentDto} specified by
-     * parent comment id.
+     * Method to get all replies to {@link EventCommentDto} specified by parent
+     * comment id.
      *
      * @param parentCommentId id of parent comment {@link EventCommentDto}
      * @param user            {@link UserVO} user who want to get replies.
-     * @param statuses statuses of comments.
+     * @param statuses        statuses of comments.
      * @return Pageable of {@link EventCommentDto}
      */
     @Operation(description = "Get all active replies to comment.")

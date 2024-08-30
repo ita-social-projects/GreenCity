@@ -49,7 +49,6 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -134,10 +133,10 @@ public class EventServiceImpl implements EventService {
         checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
-        toSave.setCreationDate(LocalDate.now());
         UserVO userVO = restClient.findByEmail(email);
         User organizer = modelMapper.map(userVO, User.class);
         toSave.setOrganizer(organizer);
+        toSave.setType(getEventType(toSave.getDates()));
         if (images != null && images.length > 0 && images[0] != null) {
             toSave.setTitleImage(fileService.upload(images[0]));
             List<EventImages> eventImages = new ArrayList<>();
@@ -170,6 +169,28 @@ public class EventServiceImpl implements EventService {
         userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
             savedEvent.getTitle());
         return buildEventDto(savedEvent, organizer.getId());
+    }
+
+    private EventType getEventType(List<EventDateLocation> dates) {
+        boolean hasOnlineEvent = false;
+        boolean hasOfflineEvent = false;
+
+        for (EventDateLocation date : dates) {
+            if (date.getOnlineLink() != null) {
+                hasOnlineEvent = true;
+            }
+            if (date.getAddress() != null) {
+                hasOfflineEvent = true;
+            }
+        }
+
+        if (hasOnlineEvent && hasOfflineEvent) {
+            return EventType.ONLINE_OFFLINE;
+        } else if (hasOnlineEvent) {
+            return EventType.ONLINE;
+        } else {
+            return EventType.OFFLINE;
+        }
     }
 
     /**
@@ -461,7 +482,6 @@ public class EventServiceImpl implements EventService {
         if (updateEventDto.getIsOpen() != null) {
             toUpdate.setOpen(updateEventDto.getIsOpen());
         }
-
         if (updateEventDto.getTags() != null) {
             toUpdate.setTags(modelMapper.map(tagService
                 .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
@@ -478,6 +498,7 @@ public class EventServiceImpl implements EventService {
                 .map(d -> modelMapper.map(d, EventDateLocation.class))
                 .map(location -> setEventToEventDateLocation(location, toUpdate))
                 .collect(Collectors.toList()));
+            toUpdate.setType(getEventType(toUpdate.getDates()));
         }
     }
 
@@ -809,8 +830,7 @@ public class EventServiceImpl implements EventService {
 
     private void checkingEqualityDateTimeInEventDateLocationDto(List<EventDateLocationDto> eventDateLocationDtos) {
         if (eventDateLocationDtos != null && !eventDateLocationDtos.isEmpty()) {
-            eventDateLocationDtos
-                .stream()
+            eventDateLocationDtos.stream()
                 .filter(eventDateLocationDto -> eventDateLocationDto.getStartDate()
                     .isEqual(eventDateLocationDto.getFinishDate()))
                 .findAny()
