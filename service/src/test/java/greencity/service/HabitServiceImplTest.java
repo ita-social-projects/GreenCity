@@ -306,6 +306,7 @@ class HabitServiceImplTest {
         assertEquals(pageableDto,
             habitService.getAllByTagsAndLanguageCode(pageable, tags, "en", excludeAssigned, userId));
     }
+
     @Test
     void getAllByDifferentParameters() {
         Pageable pageable = PageRequest.of(0, 2);
