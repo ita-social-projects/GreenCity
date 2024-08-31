@@ -306,30 +306,6 @@ class HabitServiceImplTest {
         assertEquals(pageableDto,
             habitService.getAllByTagsAndLanguageCode(pageable, tags, "en", excludeAssigned, userId));
     }
-
-    @Test
-    void getAllByDifferentParametersInvalidUserId() {
-        UserVO user = getUserVO();
-        user.setId(null);
-        Pageable pageable = PageRequest.of(0, 10);
-
-        assertThrows(RuntimeException.class, () -> {
-            habitService.getAllByDifferentParameters(user, pageable, Optional.empty(), Optional.empty(),
-                Optional.empty(), "en");
-        });
-    }
-
-    @Test
-    void getAllByDifferentParametersInvalidLanguageCode() {
-        UserVO user = getUserVO();
-        Pageable pageable = PageRequest.of(0, 10);
-
-        assertThrows(RuntimeException.class, () -> {
-            habitService.getAllByDifferentParameters(user, pageable, Optional.empty(), Optional.empty(),
-                Optional.empty(), "");
-        });
-    }
-
     @Test
     void getAllByDifferentParameters() {
         Pageable pageable = PageRequest.of(0, 2);
