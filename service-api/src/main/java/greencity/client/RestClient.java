@@ -16,6 +16,8 @@ import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
+import greencity.message.UserReceivedCommentMessage;
+import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -601,5 +603,31 @@ public class RestClient {
         HttpEntity<UserTaggedInCommentMessage> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    /**
+     * Method sends email notification when user has received comment.
+     *
+     * @param message {@link UserReceivedCommentMessage}.
+     */
+    public void sendUserReceivedCommentNotification(UserReceivedCommentMessage message) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserReceivedCommentMessage> entity = new HttpEntity<>(message, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    /**
+     * Method sends email notification when user has received reply to the comment.
+     *
+     * @param message {@link UserReceivedCommentMessage}.
+     */
+    public void sendUserReceivedCommentReplyNotification(UserReceivedCommentReplyMessage message) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserReceivedCommentReplyMessage> entity = new HttpEntity<>(message, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

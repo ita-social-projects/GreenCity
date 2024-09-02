@@ -1,7 +1,7 @@
-package greencity.dto.comment;
+package greencity.dto.placecomment;
 
 import greencity.dto.photo.PhotoReturnDto;
-import greencity.dto.rate.EstimateAddDto;
+import greencity.dto.place.AdminPlaceDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlaceCommentResponseDto {
+public class PlaceCommentAdminDto {
     private Long id;
     private String text;
     private LocalDateTime createdDate;
     private List<PhotoReturnDto> photos;
-    private EstimateAddDto estimate;
+    private AdminPlaceDto place;
 }

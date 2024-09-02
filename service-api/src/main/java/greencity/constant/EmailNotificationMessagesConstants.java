@@ -20,7 +20,7 @@ public final class EmailNotificationMessagesConstants {
     public static final String EVENT_JOINED_MESSAGE = "%s has joined your event";
     public static final String EVENT_COMMENTED_SUBJECT = "You received a comment";
     public static final String EVENT_COMMENTED_MESSAGE = "You received a comment on your event: %s";
-    public static final String EVENT_TAGGED_SUBJECT = "You were tagged in the comments by %s";
+    public static final String ARTICLE_TAGGED_SUBJECT = "You were tagged in the comments by %s";
     public static final String REPLY_SUBJECT = "You received a reply";
     public static final String REPLY_MESSAGE = "%s replied to you";
     public static final String COMMENT_LIKE_SUBJECT = "You receive a like on your comment";

@@ -335,4 +335,24 @@ public class HabitController {
         habitService.deleteCustomHabit(customHabitId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    /**
+     * Method to like/dislike certain {@link HabitDto} habit specified by id.
+     *
+     * @param habitId of {@link HabitDto} to like/dislike
+     */
+    @Operation(summary = "Like/dislike habit.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/like")
+    public void like(@RequestParam("habitId") Long habitId, @Parameter(hidden = true) @CurrentUser UserVO user) {
+        habitService.like(habitId, user);
+    }
 }

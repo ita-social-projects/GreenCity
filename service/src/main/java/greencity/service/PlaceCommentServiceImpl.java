@@ -7,9 +7,9 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.PlaceCommentRequestDto;
-import greencity.dto.comment.CommentAdminDto;
-import greencity.dto.comment.PlaceCommentResponseDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentAdminDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.PlaceComment;
 import greencity.entity.Place;
@@ -116,14 +116,14 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<CommentAdminDto> getAllComments(Pageable pageable) {
+    public PageableDto<PlaceCommentAdminDto> getAllComments(Pageable pageable) {
         Page<PlaceComment> comments;
-        List<CommentAdminDto> commentList;
+        List<PlaceCommentAdminDto> commentList;
         try {
             comments = placeCommentRepo.findAll(pageable);
             commentList =
                 comments.getContent()
-                    .stream().map(comment -> modelMapper.map(comment, CommentAdminDto.class))
+                    .stream().map(comment -> modelMapper.map(comment, PlaceCommentAdminDto.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundException(ErrorMessage.COMMENT_PROPERTY_TYPE_NOT_FOUND + pageable.getSort());

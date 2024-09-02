@@ -20,8 +20,10 @@ import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.PlaceCommentRequestDto;
-import greencity.dto.comment.PlaceCommentResponseDto;
+import greencity.dto.comment.AddCommentDtoRequest;
+import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -52,6 +54,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -104,6 +107,8 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
@@ -139,7 +144,7 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.Advice;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
-import greencity.entity.PlaceComment;
+import greencity.entity.Comment;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
@@ -161,6 +166,7 @@ import greencity.entity.Notification;
 import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.Place;
+import greencity.entity.PlaceComment;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.Specification;
 import greencity.entity.Tag;
@@ -177,6 +183,7 @@ import greencity.entity.event.EventGrade;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
@@ -216,25 +223,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static greencity.constant.EventTupleConstant.type;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
-import static greencity.enums.NotificationType.ECONEWS_CREATED;
-import static greencity.enums.NotificationType.ECONEWS_LIKE;
-import static greencity.enums.NotificationType.EVENT_CANCELED;
-import static greencity.enums.NotificationType.EVENT_COMMENT;
-import static greencity.enums.NotificationType.EVENT_COMMENT_LIKE;
-import static greencity.enums.NotificationType.EVENT_COMMENT_REPLY;
-import static greencity.enums.NotificationType.EVENT_CREATED;
-import static greencity.enums.NotificationType.EVENT_JOINED;
-import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
-import static greencity.enums.NotificationType.EVENT_UPDATED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
-import static greencity.enums.ProjectName.GREENCITY;
-import static greencity.enums.ProjectName.PICKUP;
 import org.hibernate.sql.results.internal.TupleElementImpl;
 import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
@@ -273,8 +261,27 @@ import static greencity.constant.EventTupleConstant.tagId;
 import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
+import static greencity.constant.EventTupleConstant.type;
 import static greencity.enums.EventStatus.OPEN;
 import static greencity.enums.EventTime.PAST;
+import static greencity.enums.NotificationType.ECONEWS_COMMENT;
+import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
+import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
+import static greencity.enums.NotificationType.ECONEWS_CREATED;
+import static greencity.enums.NotificationType.ECONEWS_LIKE;
+import static greencity.enums.NotificationType.EVENT_CANCELED;
+import static greencity.enums.NotificationType.EVENT_COMMENT;
+import static greencity.enums.NotificationType.EVENT_COMMENT_LIKE;
+import static greencity.enums.NotificationType.EVENT_COMMENT_REPLY;
+import static greencity.enums.NotificationType.EVENT_CREATED;
+import static greencity.enums.NotificationType.EVENT_JOINED;
+import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
+import static greencity.enums.NotificationType.EVENT_UPDATED;
+import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
+import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
+import static greencity.enums.NotificationType.HABIT_LIKE;
+import static greencity.enums.ProjectName.GREENCITY;
+import static greencity.enums.ProjectName.PICKUP;
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
@@ -293,6 +300,90 @@ public class ModelUtils {
     public static String SHOPPING_LIST_TEXT = "buy a shopper";
     public static String HABIT_ITEM = "Item";
     public static String HABIT_DEFAULT_IMAGE = "img/habit-default.png";
+    public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 2, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink("/url")
+            .coordinates(getAddressDto()).build()))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+    public static AddEventDtoRequest addEventDtoWithoutLinkRequest = AddEventDtoRequest.builder()
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDto()).build()))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+    public static AddEventDtoRequest addEventDtoRequestWithNullRegionUa = AddEventDtoRequest.builder()
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDtoWithNullRegionUa()).build()))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+    public static AddEventDtoRequest addEventDtoRequestWithNullCountryUa = AddEventDtoRequest.builder()
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDtoWithNullCountryUa()).build()))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+    public static AddEventDtoRequest addEventDtoRequestWithNullData = AddEventDtoRequest.builder()
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(getAddressDtoWithoutData()).build()))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+    public static AddEventDtoRequest addEventDtoWithoutAddressRequest = AddEventDtoRequest.builder()
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 2, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink("/url")
+            .coordinates(null).build()))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+    public static AddEventDtoRequest addEventDtoWithoutAddressAndLinkRequest = AddEventDtoRequest.builder()
+        .datesLocations(List.of(EventDateLocationDto.builder()
+            .id(1L)
+            .event(null)
+            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
+            .onlineLink(null)
+            .coordinates(null).build()))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
 
     public static EventAttenderDto getEventAttenderDto() {
         return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
@@ -685,9 +776,13 @@ public class ModelUtils {
     }
 
     public static HabitAssign getHabitAssign() {
+        return getHabitAssign(HabitAssignStatus.ACQUIRED);
+    }
+
+    public static HabitAssign getHabitAssign(HabitAssignStatus status) {
         return HabitAssign.builder()
             .id(1L)
-            .status(HabitAssignStatus.ACQUIRED)
+            .status(status)
             .createDate(ZonedDateTime.now())
             .habit(Habit.builder()
                 .id(1L)
@@ -860,7 +955,7 @@ public class ModelUtils {
     }
 
     public static List<UserShoppingListItem> getUserShoppingListItemList() {
-        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList();
+        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList<>();
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
         getUserShoppingListItemList.add(getFullUserShoppingListItem());
@@ -872,7 +967,7 @@ public class ModelUtils {
         ShoppingListItemTranslation translation = getShoppingListItemTranslations1();
         ShoppingListItemTranslation translation2 = getShoppingListItemTranslations1();
         ShoppingListItemTranslation translation3 = getShoppingListItemTranslations1();
-        List<ShoppingListItemTranslation> list = new ArrayList();
+        List<ShoppingListItemTranslation> list = new ArrayList<>();
         list.add(translation);
         list.add(translation2);
         list.add(translation3);
@@ -1406,7 +1501,7 @@ public class ModelUtils {
         return new FavoritePlaceVO(3L, "name", getUserVO(), getPlaceVO());
     }
 
-    public static PlaceComment getComment() {
+    public static PlaceComment getPlaceComment() {
         return new PlaceComment(1L, "text", getUser(),
             getPlace(), null, null, Collections.emptyList(), null, null, null);
     }
@@ -1499,8 +1594,11 @@ public class ModelUtils {
     }
 
     public static Habit getHabit() {
-        return Habit.builder().id(1L).image("image.png")
+        Habit habit = Habit.builder().id(1L).image("image.png")
+            .usersLiked(new HashSet<>())
             .complexity(1).tags(new HashSet<>(getTags())).build();
+
+        return habit.setHabitTranslations(List.of(getHabitTranslation(habit)));
     }
 
     public static Habit getHabitWithCustom() {
@@ -1516,6 +1614,17 @@ public class ModelUtils {
             .language(getLanguage())
             .name("test name")
             .habit(getHabit())
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslation(Habit habit) {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("test description")
+            .habitItem("test habit item")
+            .language(getLanguage())
+            .name("test name")
+            .habit(habit)
             .build();
     }
 
@@ -1670,6 +1779,7 @@ public class ModelUtils {
             .habitTranslation(new HabitTranslationDto())
             .defaultDuration(1)
             .tags(new ArrayList<>())
+            .habitAssignStatus(HabitAssignStatus.INPROGRESS)
             .build();
     }
 
@@ -1919,32 +2029,6 @@ public class ModelUtils {
             new MockMultipartFile("secondFile.tmp", "Hello World".getBytes())};
     }
 
-    public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(EventDateLocationDto.builder()
-            .id(1L)
-            .event(null)
-            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 2, 1, 1, 1, ZoneId.systemDefault()))
-            .onlineLink("/url")
-            .coordinates(getAddressDto()).build()))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
-
-    public static AddEventDtoRequest addEventDtoWithoutLinkRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(EventDateLocationDto.builder()
-            .id(1L)
-            .event(null)
-            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .onlineLink(null)
-            .coordinates(getAddressDto()).build()))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
-
     public static AddressDto getAddressDtoWithNullRegionUa() {
         return AddressDto.builder()
             .latitude(13.4567236)
@@ -2013,45 +2097,6 @@ public class ModelUtils {
         return AddressDto.builder().build();
     }
 
-    public static AddEventDtoRequest addEventDtoRequestWithNullRegionUa = AddEventDtoRequest.builder()
-        .datesLocations(List.of(EventDateLocationDto.builder()
-            .id(1L)
-            .event(null)
-            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .onlineLink(null)
-            .coordinates(getAddressDtoWithNullRegionUa()).build()))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
-
-    public static AddEventDtoRequest addEventDtoRequestWithNullCountryUa = AddEventDtoRequest.builder()
-        .datesLocations(List.of(EventDateLocationDto.builder()
-            .id(1L)
-            .event(null)
-            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .onlineLink(null)
-            .coordinates(getAddressDtoWithNullCountryUa()).build()))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
-
-    public static AddEventDtoRequest addEventDtoRequestWithNullData = AddEventDtoRequest.builder()
-        .datesLocations(List.of(EventDateLocationDto.builder()
-            .id(1L)
-            .event(null)
-            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .onlineLink(null)
-            .coordinates(getAddressDtoWithoutData()).build()))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
-
     public static EventDto getEventDtoWithoutAddress() {
         return EventDto.builder()
             .id(1L)
@@ -2074,32 +2119,6 @@ public class ModelUtils {
                 .nameUa("Соціальний").build()))
             .build();
     }
-
-    public static AddEventDtoRequest addEventDtoWithoutAddressRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(EventDateLocationDto.builder()
-            .id(1L)
-            .event(null)
-            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 2, 1, 1, 1, ZoneId.systemDefault()))
-            .onlineLink("/url")
-            .coordinates(null).build()))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
-
-    public static AddEventDtoRequest addEventDtoWithoutAddressAndLinkRequest = AddEventDtoRequest.builder()
-        .datesLocations(List.of(EventDateLocationDto.builder()
-            .id(1L)
-            .event(null)
-            .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-            .onlineLink(null)
-            .coordinates(null).build()))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
 
     public static EventDto getEventDto() {
         return EventDto.builder()
@@ -2665,6 +2684,63 @@ public class ModelUtils {
             .build();
     }
 
+    public static Comment getComment() {
+        return Comment.builder()
+            .id(1L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .comments(List.of(getSubComment()))
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
+    public static Comment getSubComment() {
+        return Comment.builder()
+            .id(5L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("other text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
+    public static CommentDto getCommentDto() {
+        return CommentDto.builder()
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .author(getCommentAuthorDto())
+            .status(CommentStatus.ORIGINAL.toString())
+            .build();
+    }
+
+    public static AddCommentDtoResponse getAddCommentDtoResponse() {
+        return AddCommentDtoResponse.builder()
+            .id(getComment().getId())
+            .author(getCommentAuthorDto())
+            .text(getComment().getText())
+            .build();
+    }
+
+    public static CommentAuthorDto getCommentAuthorDto() {
+        return CommentAuthorDto.builder()
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .profilePicturePath(getUser().getProfilePicturePath())
+            .build();
+    }
+
+    public static AddCommentDtoRequest getAddCommentDtoRequest() {
+        return new AddCommentDtoRequest("text", 10L);
+    }
+
     public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
         return UserShoppingAndCustomShoppingListsDto.builder()
             .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
@@ -2719,7 +2795,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithNewCustomShoppingListItem() {
+    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithNewCustomShoppingListItem() {
         return CustomHabitDtoRequest.builder()
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -3180,7 +3256,8 @@ public class ModelUtils {
                 EVENT_JOINED,
                 EVENT_COMMENT,
                 FRIEND_REQUEST_ACCEPTED,
-                FRIEND_REQUEST_RECEIVED})
+                FRIEND_REQUEST_RECEIVED,
+                HABIT_LIKE})
             .build();
     }
 
@@ -3196,6 +3273,33 @@ public class ModelUtils {
             .requesterId(1L)
             .friendStatus("FRIEND")
             .chatId(1L)
+            .build();
+    }
+
+    public static EventCommentVO getEventCommentVO() {
+        return EventCommentVO.builder()
+            .id(1L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .parentComment(EventCommentVO.builder()
+                .id(5L)
+                .build())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
+            .build();
+    }
+
+    public static EventCommentVO getEventCommentVOWithTaggedUser() {
+        return EventCommentVO.builder()
+            .id(1L)
+            .text("test data-userid=\"5\" test")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .event(getEventVO())
+            .status(String.valueOf(CommentStatus.ORIGINAL))
             .build();
     }
 }

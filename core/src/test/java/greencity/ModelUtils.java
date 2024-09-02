@@ -2,12 +2,15 @@ package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.AddEventDtoRequest;
@@ -19,9 +22,9 @@ import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
-import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
@@ -57,8 +60,6 @@ import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.Instant;
@@ -70,6 +71,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 public class ModelUtils {
     public static List<TagTranslationVO> getTagTranslationsVO() {
@@ -494,5 +498,28 @@ public class ModelUtils {
             .friendStatus("FRIEND")
             .chatId(1L)
             .build();
+    }
+
+    public static PageableDto<CommentDto> getPageableCommentDtos() {
+        List<CommentDto> commentDtos = Stream.iterate(0, i -> i + 1)
+            .limit(5)
+            .map(i -> CommentDto.builder()
+                .id((long) i)
+                .text("Comment #" + i)
+                .modifiedDate(LocalDateTime.now().minusDays(i))
+                .author(CommentAuthorDto.builder()
+                    .id(1L)
+                    .name("UserName")
+                    .profilePicturePath("PicturePath")
+                    .build())
+                .currentUserLiked(false)
+                .build())
+            .toList();
+
+        return new PageableDto<>(
+            commentDtos,
+            commentDtos.size(),
+            1,
+            1);
     }
 }

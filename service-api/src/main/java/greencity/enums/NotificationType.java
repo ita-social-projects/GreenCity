@@ -16,5 +16,6 @@ public enum NotificationType {
     EVENT_COMMENT,
     FRIEND_REQUEST_ACCEPTED,
     FRIEND_REQUEST_RECEIVED,
+    HABIT_LIKE,
     HABIT_INVITE
 }

@@ -56,7 +56,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -84,6 +83,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
@@ -541,23 +549,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void updateVoidTest_whenEcoNewsNotSaved_throwException() {
-        EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
-        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
-        MultipartFile file = ModelUtils.getFile();
-        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
-        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
-        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
-        when(ecoNewsRepo.save(ecoNews)).thenThrow(new RuntimeException());
-
-        assertThrows(NotSavedException.class,
-            () -> ecoNewsService.update(ecoNewsDtoManagement, file));
-
-        verify(fileService).delete(anyString());
-    }
-
-    @Test
     void updateEcoNewsDtoTest() {
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         EcoNewsGenericDto ecoNewsDto = ModelUtils.getEcoNewsGenericDto();
@@ -925,8 +916,8 @@ class EcoNewsServiceImplTest {
         ecoNewsService.like(actionUser, ecoNewsVO.getId());
 
         assertTrue(ecoNewsVO.getUsersLikedNews().contains(actionUser));
-        verify(userNotificationService, times(1)).createNotification(
-            targetUser, actionUser, NotificationType.ECONEWS_LIKE, ecoNewsVO.getId(), ecoNewsVO.getTitle());
+        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
+            targetUser, actionUser, ecoNewsVO.getId(), ecoNewsVO.getTitle(), true);
         verify(achievementCalculation, times(1)).calculateAchievement(actionUser,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         verify(ratingCalculation, times(1))
@@ -951,12 +942,12 @@ class EcoNewsServiceImplTest {
 
         ModelMapper mapper = new ModelMapper();
         UserVO userVO = mapper.map(action, UserVO.class);
-        UserVO targetUser = mapper.map(author, UserVO.class);
         UserVO actionUser = mapper.map(action, UserVO.class);
 
         EcoNews news = EcoNews.builder()
             .id(1L)
             .author(author)
+            .title("test title")
             .usersLikedNews(new HashSet<>(Set.of(action)))
             .build();
         EcoNewsVO ecoNewsVO = mapper.map(news, EcoNewsVO.class);
@@ -970,9 +961,8 @@ class EcoNewsServiceImplTest {
 
         assertFalse(ecoNewsVO.getUsersLikedNews().contains(actionUser));
 
-        verify(userNotificationService, times(1))
-            .removeActionUserFromNotification(targetUser, actionUser, ecoNewsVO.getId(), NotificationType.ECONEWS_LIKE);
-        verify(userNotificationService, times(1)).checkUnreadNotification(author.getId());
+        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
+            null, actionUser, ecoNewsVO.getId(), "test title", false);
         verify(achievementCalculation, times(1))
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))
@@ -1009,4 +999,5 @@ class EcoNewsServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> ecoNewsService.setHiddenValue(1L, adminVO, true));
     }
+
 }

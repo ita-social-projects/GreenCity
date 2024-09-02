@@ -58,6 +58,8 @@ public class SecurityConfig {
     private static final String LIKES = "/likes";
     private static final String COUNT = "/count";
     private static final String FRIENDS = "/friends";
+    private static final String HABITS = "/habits";
+    private static final String COMMENTS = "/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -126,7 +128,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,
                     "/factoftheday/",
                     "/factoftheday/all",
-                    "/factoftheday/find",
+                    "/factoftheday/find/**",
                     "/factoftheday/languages",
                     "/category",
                     "/place/info/{id}",
@@ -143,6 +145,12 @@ public class SecurityConfig {
                     "/habit/statistic/{habitId}",
                     "/habit/statistic/assign/{habitAssignId}",
                     "/habit/statistic/todayStatisticsForAllHabitItems",
+                    HABITS + "/comments/{id}",
+                    HABITS + "/comments/{parentCommentId}/replies/active",
+                    HABITS + "/{habitId}/comments/count",
+                    HABITS + "/comments/{parentCommentId}/replies/active/count",
+                    HABITS + "/comments/active",
+                    HABITS + "/comments/{commentId}/likes/count",
                     "/place/about/{id}",
                     "/specification",
                     "/econews",
@@ -276,6 +284,9 @@ public class SecurityConfig {
                     "/habit/assign/{habitAssignId}/enroll/**",
                     "/habit/assign/{habitAssignId}/unenroll/{date}",
                     "/habit/statistic/{habitId}",
+                    "/habit/like",
+                    HABITS + "/{habitId}/comments",
+                    HABITS + "/comments/like",
                     "/newsSubscriber",
                     "/place/{placeId}/comments",
                     "/place/propose",
@@ -307,6 +318,7 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PATCH,
                     ECONEWS_COMMENTS,
+                    HABITS + COMMENTS,
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
                     HABIT_ASSIGN_ID,
@@ -324,6 +336,7 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECONEWS_COMMENTS,
+                    HABITS + "/comments/{id}",
                     "/econews/{econewsId}",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
@@ -347,8 +360,8 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",
-                    "/comments",
-                    "/comments/{id}",
+                    COMMENTS,
+                    COMMENTS + "/{id}",
                     "/user/all",
                     "/user/roles")
                 .hasAnyRole(ADMIN, MODERATOR)
@@ -384,7 +397,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     "/advices/{adviceId}",
                     "/facts/{factId}",
-                    "/comments")
+                    COMMENTS)
                 .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))
             .logout(logout -> logout.logoutUrl("/logout")
