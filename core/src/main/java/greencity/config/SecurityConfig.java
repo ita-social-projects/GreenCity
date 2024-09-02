@@ -57,6 +57,8 @@ public class SecurityConfig {
     private static final String PARENT_COMMENT_ID = "/{parentCommentId}";
     private static final String EVENTS = "/events";
     private static final String FRIENDS = "/friends";
+    private static final String HABITS = "/habits";
+    private static final String COMMENTS = "/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -121,7 +123,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,
                     "/factoftheday/",
                     "/factoftheday/all",
-                    "/factoftheday/find",
+                    "/factoftheday/find/**",
                     "/factoftheday/languages",
                     CATEGORIES,
                     "/place/info/{id}",
@@ -138,6 +140,12 @@ public class SecurityConfig {
                     "/habit/statistic/{habitId}",
                     "/habit/statistic/assign/{habitAssignId}",
                     "/habit/statistic/todayStatisticsForAllHabitItems",
+                    HABITS + "/comments/{id}",
+                    HABITS + "/comments/{parentCommentId}/replies/active",
+                    HABITS + "/{habitId}/comments/count",
+                    HABITS + "/comments/{parentCommentId}/replies/active/count",
+                    HABITS + "/comments/active",
+                    HABITS + "/comments/{commentId}/likes/count",
                     "/place/about/{id}",
                     "/specification",
                     ECO_NEWS,
@@ -270,6 +278,9 @@ public class SecurityConfig {
                     "/habit/assign/{habitAssignId}/enroll/**",
                     "/habit/assign/{habitAssignId}/unenroll/{date}",
                     "/habit/statistic/{habitId}",
+                    "/habit/like",
+                    HABITS + "/{habitId}/comments",
+                    HABITS + "/comments/like",
                     "/newsSubscriber",
                     "/place/{placeId}/comments",
                     "/place/propose",
@@ -283,7 +294,7 @@ public class SecurityConfig {
                     "/habit/custom",
                     "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
                     FRIENDS + "/{friendId}",
-                    "/habit/assign/{habitId}/{friendId}/invite")
+                    "/habit/assign/{habitId}/invite")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
@@ -317,6 +328,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
                     ECO_NEWS_COMMENTS + COMMENT_ID,
+                    HABITS + "/comments/{id}",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
                     "/favorite_place/{placeId}",
@@ -339,7 +351,8 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",
-                    "/comments/{id}",
+                    COMMENTS,
+                    COMMENTS + "/{id}",
                     "/user/all",
                     "/user/roles")
                 .hasAnyRole(ADMIN, MODERATOR)
@@ -374,10 +387,12 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     ADVICES + "/{id}",
-                    "/facts/{factId}")
+                    "/facts/{factId}",
+                    COMMENTS)
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
-                    "/events/comments")
+                    "/events/comments",
+                    HABITS + COMMENTS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     "/events/comments/{eventId}")

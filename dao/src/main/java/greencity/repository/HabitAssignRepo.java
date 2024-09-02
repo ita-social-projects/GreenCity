@@ -188,6 +188,21 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         @Param("userId") Long userId);
 
     /**
+     * Method to find a list of {@link HabitAssign} instances by {@link User} id and
+     * {@link Habit} id (with not cancelled and not expired status).
+     *
+     * @param userId  {@link User} id.
+     * @param habitId {@link Habit} id.
+     * @return List of {@link HabitAssign} instances, if none exist returns an empty
+     *         list.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign AS ha "
+        + "WHERE ha.habit.id = :habitId AND ha.user.id = :userId "
+        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    List<HabitAssign> findHabitsByHabitIdAndUserId(@Param("habitId") Long habitId,
+        @Param("userId") Long userId);
+
+    /**
      * Method for counting all inprogress {@link HabitAssign}'s by {@link User} id
      * (with not cancelled and not acquired status).
      *

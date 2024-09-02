@@ -239,4 +239,13 @@ public interface EcoNewsService {
      * @return set of {@link UserVO} instances.
      */
     Set<UserVO> findUsersWhoDislikedPost(Long id);
+
+    /**
+     * Method for hiding/unhiding the {@link EcoNewsVO} instance by its id.
+     *
+     * @param id    - {@link EcoNewsVO} instance id which will be hidden/unhidden.
+     * @param user  current {@link UserVO} that wants to hide.
+     * @param value value to be set to hidden field.
+     */
+    void setHiddenValue(Long id, UserVO user, boolean value);
 }

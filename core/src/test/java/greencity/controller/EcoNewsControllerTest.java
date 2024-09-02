@@ -75,8 +75,7 @@ class EcoNewsControllerTest {
             "\"title\": \"title\",\n" +
             " \"tags\": [\"news\"],\n" +
             " \"text\": \"content content content\", \n" +
-            "\"source\": \"\",\n" +
-            " \"image\": null\n" +
+            "\"source\": \"\"\n" +
             "}";
         MockMultipartFile jsonFile =
             new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());

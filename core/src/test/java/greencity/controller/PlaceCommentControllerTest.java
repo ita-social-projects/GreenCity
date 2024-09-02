@@ -2,7 +2,7 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.dto.comment.AddCommentDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
@@ -39,7 +39,7 @@ class PlaceCommentControllerTest {
     @InjectMocks
     private PlaceCommentController placeCommentController;
 
-    private AddCommentDto addCommentDto;
+    private PlaceCommentRequestDto placeCommentRequestDto;
     private static final String placeCommentLinkFirstPart = "/place";
     private static final String placeCommentLinkSecondPart = "/comments";
 
@@ -91,9 +91,9 @@ class PlaceCommentControllerTest {
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
-        addCommentDto = mapper.readValue(content, AddCommentDto.class);
+        placeCommentRequestDto = mapper.readValue(content, PlaceCommentRequestDto.class);
 
-        verify(placeCommentService).save(1L, addCommentDto, principal.getName());
+        verify(placeCommentService).save(1L, placeCommentRequestDto, principal.getName());
     }
 
     @Test
@@ -104,7 +104,7 @@ class PlaceCommentControllerTest {
             .content("{}"))
             .andExpect(status().isBadRequest());
 
-        verify(placeCommentService, times(0)).save(1L, addCommentDto, "fail@ukr.net");
+        verify(placeCommentService, times(0)).save(1L, placeCommentRequestDto, "fail@ukr.net");
     }
 
     @Test

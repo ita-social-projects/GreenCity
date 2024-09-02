@@ -10,6 +10,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -23,11 +24,20 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.EventCommentVOMapper;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.UserReceivedCommentMessage;
+import greencity.message.UserReceivedCommentReplyMessage;
+import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +48,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +56,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final EventCommentRepo eventCommentRepo;
     private final EventService eventService;
     private final ModelMapper modelMapper;
+    private final EventCommentVOMapper eventCommentVOMapper;
     private final EventRepo eventRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
@@ -55,7 +64,6 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
     private final UserRepo userRepo;
-    private static final String LINK = "/#/events/";
     @Value("${client.address}")
     private String clientAddress;
 
@@ -71,10 +79,11 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @return {@link AddEventCommentDtoResponse} instance.
      */
     @Override
+    @Transactional
     public AddEventCommentDtoResponse save(Long eventId, AddEventCommentDtoRequest addEventCommentDtoRequest,
-        UserVO userVO) {
-        EventVO eventVO = eventService.findById(eventId);
+        UserVO userVO, Locale locale) {
         EventComment eventComment = modelMapper.map(addEventCommentDtoRequest, EventComment.class);
+        EventVO eventVO = eventService.findById(eventId);
         eventComment.setUser(modelMapper.map(userVO, User.class));
         eventComment.setEvent(modelMapper.map(eventVO, Event.class));
         if (addEventCommentDtoRequest.getParentCommentId() != null
@@ -93,32 +102,23 @@ public class EventCommentServiceImpl implements EventCommentService {
                 throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                .email(parentEventComment.getUser().getEmail())
-                .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
-                .message(
-                    String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()))
-                .build());
-            userNotificationService.createNotification(modelMapper.map(parentEventComment.getUser(), UserVO.class),
-                userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText(),
-                eventId, eventVO.getTitle());
         }
-
-        sendNotificationToTaggedUser(eventId, userVO, addEventCommentDtoRequest.getText());
-
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
-
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
+
+        EventCommentVO eventCommentVO = eventCommentVOMapper.convert(eventComment);
+        if (addEventCommentDtoRequest.getParentCommentId() != null
+            && addEventCommentDtoRequest.getParentCommentId() > 0) {
+            sendNotificationToReceivedCommentReplyUser(eventVO, userVO, eventCommentVO, locale);
+        }
+        sendNotificationToReceivedCommentUser(eventVO, userVO, eventCommentVO, locale);
+        sendNotificationToTaggedUser(eventVO, userVO, eventCommentVO, locale);
+
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(eventVO.getOrganizer().getEmail())
-            .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
-            .build());
         userNotificationService.createNotification(eventVO.getOrganizer(), userVO, NotificationType.EVENT_COMMENT,
             eventId, eventVO.getTitle());
         return addEventCommentDtoResponse;
@@ -203,17 +203,18 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     @Transactional
-    public void update(String commentText, Long id, UserVO userVO) {
+    public void update(String commentText, Long id, UserVO userVO, Locale locale) {
         EventComment eventComment = eventCommentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-
         if (!userVO.getId().equals(eventComment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
-
         eventComment.setText(commentText);
         eventComment.setStatus(CommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
+        EventVO eventVO = eventService.findById(eventComment.getEvent().getId());
+        EventCommentVO commentVO = modelMapper.map(eventComment, EventCommentVO.class);
+        sendNotificationToTaggedUser(eventVO, userVO, commentVO, locale);
     }
 
     /**
@@ -373,21 +374,85 @@ public class EventCommentServiceImpl implements EventCommentService {
     /**
      * Method to send email notification if user tagged in comment.
      *
-     * @param eventId {@link Long} event id.
-     * @param userVO  {@link UserVO} comment author.
-     * @param comment {@link String} comment.
+     * @param eventVO   {@link EventVO} event id.
+     * @param userVO    {@link UserVO} comment author.
+     * @param commentVO {@link EventCommentVO} comment.
      */
-    private void sendNotificationToTaggedUser(Long eventId, UserVO userVO, String comment) {
-        Long userId = getUserIdFromComment(comment);
-        if (userId != null) {
-            User user = userRepo.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                .email(user.getEmail())
-                .subject(String.format(EmailNotificationMessagesConstants.EVENT_TAGGED_SUBJECT, userVO.getName()))
-                .message(clientAddress + LINK + eventId)
-                .build());
+    private void sendNotificationToTaggedUser(EventVO eventVO, UserVO userVO, EventCommentVO commentVO, Locale locale) {
+        String commentText = commentVO.getText();
+        Set<Long> usersId = getUserIdFromComment(commentText);
+        if (!usersId.isEmpty()) {
+            String formattedComment = formatComment(commentText);
+            for (Long userId : usersId) {
+                User user = userRepo.findById(userId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+                UserTaggedInCommentMessage message = UserTaggedInCommentMessage.builder()
+                    .commentedElementId(eventVO.getId())
+                    .elementName(eventVO.getTitle())
+                    .taggerName(userVO.getName())
+                    .language(locale.getLanguage())
+                    .creationDate(commentVO.getCreatedDate())
+                    .receiverName(user.getName())
+                    .receiverEmail(user.getEmail())
+                    .commentText(formattedComment)
+                    .baseLink(getBaseLink(eventVO.getId()))
+                    .build();
+                notificationService.sendUsersTaggedInCommentEmailNotification(message);
+            }
         }
+    }
+
+    /**
+     * Method to send email notification to user that received comment.
+     *
+     * @param eventVO   {@link EventVO} event id.
+     * @param userVO    {@link UserVO} comment author.
+     * @param commentVO {@link EventCommentVO} comment.
+     */
+    private void sendNotificationToReceivedCommentUser(EventVO eventVO, UserVO userVO, EventCommentVO commentVO,
+        Locale locale) {
+        String formattedComment = formatComment(commentVO.getText());
+        UserReceivedCommentMessage message = UserReceivedCommentMessage.builder()
+            .receiverName(eventVO.getOrganizer().getName())
+            .receiverEmail(eventVO.getOrganizer().getEmail())
+            .creationDate(commentVO.getCreatedDate())
+            .commentedElementId(eventVO.getId())
+            .commentText(formattedComment)
+            .language(locale.getLanguage())
+            .elementName(eventVO.getTitle())
+            .authorName(userVO.getName())
+            .baseLink(getBaseLink(eventVO.getId()))
+            .build();
+        notificationService.sendUserReceivedCommentEmailNotification(message);
+    }
+
+    /**
+     * Method to send email notification to user received reply to the comment.
+     *
+     * @param eventVO   {@link EventVO} event id.
+     * @param userVO    {@link UserVO} comment author.
+     * @param commentVO {@link EventCommentVO} comment.
+     */
+    private void sendNotificationToReceivedCommentReplyUser(EventVO eventVO, UserVO userVO, EventCommentVO commentVO,
+        Locale locale) {
+        EventComment parentComment = eventCommentRepo.findById(commentVO.getParentComment().getId()).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+        String formattedComment = formatComment(commentVO.getText());
+        UserReceivedCommentReplyMessage message = UserReceivedCommentReplyMessage.builder()
+            .receiverName(eventVO.getOrganizer().getName())
+            .receiverEmail(eventVO.getOrganizer().getEmail())
+            .creationDate(commentVO.getCreatedDate())
+            .commentedElementId(eventVO.getId())
+            .commentText(formattedComment)
+            .authorName(userVO.getName())
+            .language(locale.getLanguage())
+            .elementName(eventVO.getTitle())
+            .parentCommentCreationDate(parentComment.getCreatedDate())
+            .parentCommentText(parentComment.getText())
+            .parentCommentAuthorName(parentComment.getUser().getName())
+            .baseLink(getBaseLink(eventVO.getId()))
+            .build();
+        notificationService.sendUserReceivedCommentReplyEmailNotification(message);
     }
 
     /**
@@ -396,13 +461,44 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @param message comment from {@link AddEventCommentDtoResponse}.
      * @return user id if present or null.
      */
-    private Long getUserIdFromComment(String message) {
+    private Set<Long> getUserIdFromComment(String message) {
         String regEx = "data-userid=\"(\\d+)\"";
         Pattern pattern = Pattern.compile(regEx);
         Matcher matcher = pattern.matcher(message);
-        if (matcher.find()) {
-            return Long.valueOf(matcher.group(1));
+        Set<Long> userIds = new HashSet<>();
+        if (!matcher.find()) {
+            return userIds;
         }
-        return null;
+        matcher.reset();
+        while (matcher.find()) {
+            userIds.add(Long.valueOf(matcher.group(1)));
+        }
+        return userIds;
+    }
+
+    /**
+     * Method to replace regex data-userid="userId" with @+username in comment and
+     * makes username bold.
+     *
+     * @param comment is comment to format.
+     * @return formatted comment.
+     */
+    private String formatComment(String comment) {
+        String regEx = "data-userid=\"(\\d+)\"";
+        Pattern pattern = Pattern.compile(regEx);
+        Matcher matcher = pattern.matcher(comment);
+        StringBuilder formattedCommentBuilder = new StringBuilder();
+        while (matcher.find()) {
+            Long userId = Long.valueOf(matcher.group(1));
+            String username = userRepo.findById(userId).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)).getName();
+            matcher.appendReplacement(formattedCommentBuilder, " <strong>@" + username + "</strong> ");
+        }
+        matcher.appendTail(formattedCommentBuilder);
+        return formattedCommentBuilder.toString();
+    }
+
+    private String getBaseLink(Long id) {
+        return clientAddress + "/#/events/" + id;
     }
 }
