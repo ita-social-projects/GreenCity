@@ -1,4 +1,4 @@
-package greencity.repository;
+package greencity.repository.impl;
 
 import greencity.dto.filter.FilterEventDto;
 import greencity.entity.Tag;
@@ -16,6 +16,7 @@ import greencity.entity.localization.TagTranslation_;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
 import greencity.enums.EventType;
+import greencity.repository.EventSearchRepo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -123,7 +124,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
 
     private void addEventTimePredicate(EventTime eventTime, Root<Event> eventRoot, List<Predicate> predicates) {
         if (eventTime != null) {
-            ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates);
+            ListJoin<Event, EventDateLocation> datesJoin = eventRoot.join(Event_.dates, JoinType.LEFT);
             if (eventTime == EventTime.FUTURE) {
                 predicates.add(
                     criteriaBuilder.greaterThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
@@ -137,7 +138,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
     private void addCitiesPredicate(List<String> cities, Root<Event> eventRoot, List<Predicate> predicates) {
         if (cities != null && !cities.isEmpty()) {
             Join<EventDateLocation, Address> addressJoin = eventRoot
-                .join(Event_.dates).join(EventDateLocation_.address);
+                .join(Event_.dates, JoinType.LEFT).join(EventDateLocation_.address);
             predicates.add(addressJoin.get(Address_.CITY_EN).in(cities));
         }
     }
