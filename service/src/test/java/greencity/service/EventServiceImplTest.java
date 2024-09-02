@@ -13,6 +13,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
@@ -992,6 +993,24 @@ class EventServiceImplTest {
         Throwable cause = exception.getCause();
         assertInstanceOf(IllegalArgumentException.class, cause);
         assertEquals(ErrorMessage.SAME_START_TIME_AND_FINISH_TIME_IN_EVENT_DATE, cause.getMessage());
+    }
+
+    @Test
+    void getAllEventAddressesTest() {
+        AddressDto expectedAddressDto = ModelUtils.getAddressDto();
+        List<AddressDto> expectedAddresses = List.of(expectedAddressDto);
+        Address address = ModelUtils.getAddress();
+
+        when(eventRepo.findAllEventsAddresses()).thenReturn(List.of(address));
+        when(modelMapper.map(address, AddressDto.class)).thenReturn(expectedAddressDto);
+
+        List<AddressDto> actualAddresses = eventService.getAllEventsAddresses();
+
+        assertEquals(expectedAddresses, actualAddresses);
+        assertTrue(actualAddresses.contains(expectedAddressDto));
+
+        verify(eventRepo).findAllEventsAddresses();
+        verify(modelMapper).map(address, AddressDto.class);
     }
 
     @Test

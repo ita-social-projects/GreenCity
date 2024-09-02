@@ -490,6 +490,14 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
+    void getAllEventsAddressesTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses"))
+            .andExpect(status().isOk());
+        verify(eventService).getAllEventsAddresses();
+    }
+
+    @Test
+    @SneakyThrows
     void getAllAttendersCountTest() {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/attenders/count?user-id=1"))
             .andExpect(status().isOk());

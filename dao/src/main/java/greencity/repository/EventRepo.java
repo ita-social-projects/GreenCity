@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.User;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import jakarta.persistence.Tuple;
 import java.util.Collection;
@@ -69,6 +70,12 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      */
     @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE e.id in :eventIds AND f.id = :userId")
     List<Event> findFavoritesAmongEventIds(Collection<Long> eventIds, Long userId);
+
+    /**
+     * Get all events addresses.
+     */
+    @Query(value = "SELECT DISTINCT edl.address FROM Event e JOIN e.dates edl WHERE edl.address IS NOT NULL")
+    List<Address> findAllEventsAddresses();
 
     /**
      * Method returns count of all events where user is attender.

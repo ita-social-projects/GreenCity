@@ -170,6 +170,7 @@ public class SecurityConfig {
                     EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES + COUNT,
                     EVENTS_COMMENTS + COMMENT_ID + LIKES + COUNT,
                     EVENTS,
+                    EVENTS + "/addresses",
                     EVENTS + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
                     "/language",

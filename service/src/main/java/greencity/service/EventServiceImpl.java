@@ -713,6 +713,16 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
+    public List<AddressDto> getAllEventsAddresses() {
+        return eventRepo.findAllEventsAddresses().stream()
+            .map(eventAddress -> modelMapper.map(eventAddress, AddressDto.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Long getCountOfAttendedEventsByUserId(Long userId) {
         return eventRepo.countDistinctByAttendersId(userId);
     }

@@ -7,6 +7,7 @@ import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
@@ -24,6 +25,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.security.Principal;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -301,6 +303,23 @@ public class EventController {
     @GetMapping("/{eventId}/attenders")
     public ResponseEntity<Set<EventAttenderDto>> getAllEventSubscribers(@PathVariable Long eventId) {
         return ResponseEntity.ok().body(eventService.getAllEventAttenders(eventId));
+    }
+
+    /**
+     * Method for getting all events addresses.
+     *
+     * @return a list of {@link AddressDto} instance.
+     * @author Olena Sotnik.
+     */
+    @Operation(summary = "Get all events addresses")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @GetMapping("/addresses")
+    public ResponseEntity<List<AddressDto>> getAllEventsAddresses() {
+        return ResponseEntity.ok().body(eventService.getAllEventsAddresses());
     }
 
     /**
