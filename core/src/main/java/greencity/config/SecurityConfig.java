@@ -49,6 +49,8 @@ public class SecurityConfig {
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
     private static final String COMMENTS = "/comments";
+    private static final String FACT_OF_THE_DAY = "/fact-of-the-day";
+    private static final String LANGUAGES = "/languages";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -115,10 +117,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, ECONEWS_COMMENTS)
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.GET,
-                    "/factoftheday/",
-                    "/factoftheday/all",
-                    "/factoftheday/find/**",
-                    "/factoftheday/languages",
+                    FACT_OF_THE_DAY,
+                    FACT_OF_THE_DAY + "/random",
+                    FACT_OF_THE_DAY + "/{factId}",
                     "/category",
                     "/place/info/{id}",
                     "/place/info/favorite/{placeId}",
@@ -164,7 +165,8 @@ public class SecurityConfig {
                     EVENTS + "/event/{eventId}",
                     EVENTS + "/getAllSubscribers/{eventId}",
                     EVENTS + "/addresses",
-                    "/language",
+                    LANGUAGES,
+                    LANGUAGES + "/codes",
                     "/search",
                     "/search/econews",
                     "/search/events",
@@ -227,8 +229,6 @@ public class SecurityConfig {
                     "/user/{userId}/recommendedFriends/",
                     "/user/{userId}/friends/",
                     "/user/{userId}/friendRequests/",
-                    "/factoftheday/",
-                    "/factoftheday/all",
                     "/chat",
                     "/achievements/notification/{userId}",
                     EVENTS + "/myEvents",

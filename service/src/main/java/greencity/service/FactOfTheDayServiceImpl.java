@@ -29,8 +29,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link FactOfTheDayService}.
- *
- * @author Mykola Lehkyi
  */
 @AllArgsConstructor
 @Service
@@ -44,11 +42,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private FactOfTheDayService self;
 
     /**
-     * Method finds all {@link FactOfTheDay} with pageable configuration.
-     *
-     * @param pageable {@link Pageable}
-     * @return {@link PageableDto} with list of all {@link FactOfTheDayDTO}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
     public PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable) {
@@ -71,16 +65,13 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     }
 
     /**
-     * Method find {@link FactOfTheDay} by id.
-     *
-     * @param id of {@link FactOfTheDay}
-     * @return {@link FactOfTheDay}
-     * @author Mykola Lehkyi
+     * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayDTO getFactOfTheDayById(Long id) {
-        return modelMapper.map(factOfTheDayRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND)), FactOfTheDayDTO.class);
+    public FactOfTheDayDTO getFactOfTheDayById(Long factId) {
+        return factOfTheDayRepo.findById(factId)
+            .map(f -> modelMapper.map(f, FactOfTheDayDTO.class))
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
     }
 
     /**
@@ -147,25 +138,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayVO update(FactOfTheDayPostDTO fact) {
-        FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(fact.getId())
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.FACT_OF_THE_DAY_NOT_UPDATED));
-        return modelMapper.map(factOfTheDayRepo.save(factOfTheDay), FactOfTheDayVO.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Long deleteFactOfTheDayAndTranslations(Long id) {
-        FactOfTheDay factOfTheDay = factOfTheDayRepo.findById(id)
-            .orElseThrow(() -> new NotUpdatedException(ErrorMessage.FACT_OF_THE_DAY_NOT_DELETED));
-        factOfTheDayRepo.deleteById(id);
-        List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOS = factOfTheDay.getFactOfTheDayTranslations()
-            .stream()
-            .map(fact -> modelMapper.map(fact, FactOfTheDayTranslationVO.class))
-            .collect(Collectors.toList());
-        factOfTheDayTranslationService.deleteAll(factOfTheDayTranslationVOS);
+        deleteAllFactOfTheDayAndTranslations(List.of(id));
         return id;
     }
 
@@ -193,10 +167,9 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     @Override
     public PageableDto<FactOfTheDayDTO> searchBy(Pageable pageable, String searchQuery) {
         Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.searchBy(pageable, searchQuery);
-        List<FactOfTheDayDTO> factOfTheDayDTOs =
-            factsOfTheDay.getContent().stream()
-                .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
-                .collect(Collectors.toList());
+        List<FactOfTheDayDTO> factOfTheDayDTOs = factsOfTheDay.getContent().stream()
+            .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+            .collect(Collectors.toList());
         return new PageableDto<>(
             factOfTheDayDTOs,
             factsOfTheDay.getTotalElements(),
@@ -210,8 +183,9 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     @Override
     @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME)
     public FactOfTheDayVO getRandomFactOfTheDay() {
-        return (modelMapper.map(factOfTheDayRepo.getRandomFactOfTheDay()
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND)), FactOfTheDayVO.class));
+        return factOfTheDayRepo.getRandomFactOfTheDay()
+            .map(f -> modelMapper.map(f, FactOfTheDayVO.class))
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
     }
 
     /**
@@ -220,11 +194,10 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     @Override
     public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode) {
         FactOfTheDay factOfTheDay = modelMapper.map(self.getRandomFactOfTheDay(), FactOfTheDay.class);
-        FactOfTheDayTranslation factOfTheDayTranslation = factOfTheDay.getFactOfTheDayTranslations()
-            .stream()
+        return factOfTheDay.getFactOfTheDayTranslations().stream()
             .filter(fact -> fact.getLanguage().getCode().equals(languageCode))
             .findAny()
+            .map(f -> modelMapper.map(f, FactOfTheDayTranslationDTO.class))
             .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
-        return modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class);
     }
 }

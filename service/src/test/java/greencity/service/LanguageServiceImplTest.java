@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.AppConstant;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Language;
 import greencity.entity.localization.TagTranslation;
@@ -10,7 +9,6 @@ import greencity.repository.LanguageRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -31,9 +29,6 @@ class LanguageServiceImplTest {
     @Mock
     private LanguageRepo languageRepo;
 
-    @Mock
-    private HttpServletRequest request;
-
     @InjectMocks
     private LanguageServiceImpl languageService;
 
@@ -45,20 +40,6 @@ class LanguageServiceImplTest {
         when(modelMapper.map(languageRepo.findAll(), new TypeToken<List<LanguageDTO>>() {
         }.getType())).thenReturn(expected);
         assertEquals(expected, languageService.getAllLanguages());
-    }
-
-    @Test
-    void extractExistingLanguageCodeFromRequest() {
-        String expectedLanguageCode = "ua";
-
-        when(request.getParameter("language")).thenReturn(expectedLanguageCode);
-        assertEquals(expectedLanguageCode, languageService.extractLanguageCodeFromRequest());
-    }
-
-    @Test
-    void extractNotExistingLanguageCodeFromRequest() {
-        when(request.getParameter("language")).thenReturn(null);
-        Assertions.assertEquals(AppConstant.DEFAULT_LANGUAGE_CODE, languageService.extractLanguageCodeFromRequest());
     }
 
     @Test

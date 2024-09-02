@@ -27,7 +27,7 @@ class LanguageControllerTest {
     @Mock
     LanguageService languageService;
 
-    private static final String language = "/language";
+    private static final String language = "/languages";
 
     @BeforeEach
     void setup() {
@@ -38,7 +38,15 @@ class LanguageControllerTest {
 
     @Test
     void getAllLanguageCodesTest() throws Exception {
-        this.mockMvc.perform(get(language + "")).andExpect(status().isOk());
+        this.mockMvc.perform(get(language + "/codes"))
+            .andExpect(status().isOk());
         verify(languageService).findAllLanguageCodes();
+    }
+
+    @Test
+    void getLanguagesTest() throws Exception {
+        mockMvc.perform(get(language))
+            .andExpect(status().isOk());
+        verify(languageService).getAllLanguages();
     }
 }

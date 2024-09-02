@@ -18,13 +18,6 @@ public interface LanguageService {
     List<LanguageDTO> getAllLanguages();
 
     /**
-     * Method for extracting language code from request param.
-     *
-     * @return language code
-     */
-    String extractLanguageCodeFromRequest();
-
-    /**
      * Method for getting {@link LanguageDTO} by code.
      *
      * @param code code of language.
@@ -33,7 +26,7 @@ public interface LanguageService {
     LanguageDTO findByCode(String code);
 
     /**
-     * method, that returns codes of all languages.
+     * Method, that returns codes of all languages.
      *
      * @return {@link List} of language code strings.
      */
@@ -44,7 +37,6 @@ public interface LanguageService {
      *
      * @param tagTranslationId id of tag translation object.
      * @return {@link LanguageDTO}.
-     *
      * @author Vira Maksymets
      */
     LanguageDTO findByTagTranslationId(Long tagTranslationId);

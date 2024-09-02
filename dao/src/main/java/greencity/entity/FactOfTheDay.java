@@ -27,7 +27,7 @@ public class FactOfTheDay {
     @Column(nullable = false, unique = true, length = 300)
     private String name;
 
-    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "factOfTheDay", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "factOfTheDay")
     private List<FactOfTheDayTranslation> factOfTheDayTranslations;
 
     @CreationTimestamp
