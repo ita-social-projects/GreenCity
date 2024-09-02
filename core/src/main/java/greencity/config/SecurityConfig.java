@@ -35,15 +35,13 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 /**
  * Config for security.
- *
- * @author Nazar Stasyuk && Yurii Koval
- * @version 1.0
  */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalAuthentication
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private static final String COMMENTS = "/comments";
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String EVENTS = "/events";
     private static final String EVENT_ID = "/{eventId}";
@@ -51,7 +49,7 @@ public class SecurityConfig {
     private static final String ATTENDERS = "/attenders";
     private static final String ORGANIZERS = "/organizers";
     private static final String RATINGS = "/ratings";
-    private static final String EVENTS_COMMENTS = EVENTS + EVENT_ID + "/comments";
+    private static final String EVENTS_COMMENTS = EVENTS + EVENT_ID + COMMENTS;
     private static final String COMMENT_ID = "/{commentId}";
     private static final String PARENT_COMMENT_ID = "/{parentCommentId}";
     private static final String REPLIES = "/replies";
@@ -59,7 +57,6 @@ public class SecurityConfig {
     private static final String COUNT = "/count";
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
-    private static final String COMMENTS = "/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"

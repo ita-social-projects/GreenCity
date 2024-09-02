@@ -59,7 +59,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
         Root<Event> eventRoot = criteria.from(Event.class);
 
-        criteria.multiselect(eventRoot.get(Event_.ID))
+        criteria.select(eventRoot.get(Event_.ID))
             .where(getPredicate(filterEventDto, userId, eventRoot))
             .orderBy(getOrders(userId, eventRoot));
 

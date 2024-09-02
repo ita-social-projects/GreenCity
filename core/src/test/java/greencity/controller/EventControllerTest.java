@@ -506,23 +506,24 @@ class EventControllerTest {
 
     @SneakyThrows
     private AddEventDtoRequest getAddEventDtoRequest() {
-        String json = "{ \n" +
-            "    \"title\":\"string\",\n" +
-            "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
-            "    \"open\":true,\n" +
-            "    \"datesLocations\":[\n" +
-            "        {\n" +
-            "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
-            "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-            "            \"coordinates\":{\n" +
-            "                \"latitude\":1,\n" +
-            "                \"longitude\":1\n" +
-            "            },\n" +
-            "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
-            "        }\n" +
-            "    ],\n" +
-            "    \"tags\":[\"Social\"]\n" +
-            "}   ";
+        String json = """
+            {
+                "title":"string",
+                "description":"stringstringstringstringstringstringstringstring",
+                "open":true,
+                "datesLocations":[
+                    {
+                        "startDate":"2023-05-27T15:00:00Z",
+                        "finishDate":"2023-05-27T17:00:00Z",
+                        "coordinates":{
+                            "latitude":1,
+                            "longitude":1
+                        },
+                        "onlineLink":"http://localhost:8080/swagger-ui.html#/events-controller"
+                    }
+                ],
+                "tags":["Social"]
+            }""";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, AddEventDtoRequest.class);
@@ -530,24 +531,25 @@ class EventControllerTest {
 
     @SneakyThrows
     private UpdateEventRequestDto getUpdateEventDto() {
-        String json = "{\n" +
-            "    \"id\":1,\n" +
-            "    \"title\":\"string\",\n" +
-            "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
-            "    \"open\":true,\n" +
-            "    \"datesLocations\":[\n" +
-            "        {\n" +
-            "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
-            "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-            "            \"coordinates\":{\n" +
-            "                \"latitude\":1,\n" +
-            "                \"longitude\":1\n" +
-            "            },\n" +
-            "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
-            "        }\n" +
-            "    ],\n" +
-            "    \"tags\":[\"Social\"]\n" +
-            "}   ";
+        String json = """
+            {
+                "id":1,
+                "title":"string",
+                "description":"stringstringstringstringstringstringstringstring",
+                "open":true,
+                "datesLocations":[
+                    {
+                        "startDate":"2023-05-27T15:00:00Z",
+                        "finishDate":"2023-05-27T17:00:00Z",
+                        "coordinates":{
+                            "latitude":1,
+                            "longitude":1
+                        },
+                        "onlineLink":"http://localhost:8080/swagger-ui.html#/events-controller"
+                    }
+                ],
+                "tags":["Social"]
+            }""";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, UpdateEventRequestDto.class);
@@ -555,51 +557,52 @@ class EventControllerTest {
 
     @SneakyThrows
     private EventDto getEventDto() {
-        String json = "{\n" +
-            "  \"additionalImages\": [\n" +
-            "    \"string\"\n" +
-            "  ],\n" +
-            "  \"dates\": [\n" +
-            "    {\n" +
-            "        \"coordinates\": {\n" +
-            "        \"streetUa\": \"string\",\n" +
-            "        \"streetEn\": \"string\",\n" +
-            "        \"houseNumber\": \"string\",\n" +
-            "        \"cityUa\": \"string\",\n" +
-            "        \"cityEn\": \"string\",\n" +
-            "        \"regionUa\": \"string\",\n" +
-            "        \"regionEn\": \"string\",\n" +
-            "        \"countryUa\": \"string\",\n" +
-            "        \"countryEn\": \"string\",\n" +
-            "        \"latitude\": 0,\n" +
-            "        \"longitude\": 0\n" +
-            "      },\n" +
-            "      \"finishDate\": \"2022-12-08T15:13:27.538Z\",\n" +
-            "      \"id\": 0,\n" +
-            "      \"onlineLink\": \"string\",\n" +
-            "      \"startDate\": \"2022-12-08T15:13:27.538Z\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"description\": \"stringstringstringstringstringstringstring\",\n" +
-            "  \"creationDate\": \"2022-12-08\",\n" +
-            "  \"id\": 0,\n" +
-            "  \"isSubscribed\": true,\n" +
-            "  \"open\": true,\n" +
-            "  \"organizer\": {\n" +
-            "    \"id\": 0,\n" +
-            "    \"name\": \"string\",\n" +
-            "    \"organizerRating\": 0\n" +
-            "  },\n" +
-            "  \"tags\": [\n" +
-            "    {\n" +
-            "      \"id\": 0,\n" +
-            "      \"nameEn\": \"string\",\n" +
-            "      \"nameUa\": \"string\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"title\": \"string\",\n" +
-            "  \"titleImage\": \"string\"\n" +
-            "}";
+        String json = """
+            {
+              "additionalImages": [
+                "string"
+              ],
+              "dates": [
+                {
+                    "coordinates": {
+                    "streetUa": "string",
+                    "streetEn": "string",
+                    "houseNumber": "string",
+                    "cityUa": "string",
+                    "cityEn": "string",
+                    "regionUa": "string",
+                    "regionEn": "string",
+                    "countryUa": "string",
+                    "countryEn": "string",
+                    "latitude": 0,
+                    "longitude": 0
+                  },
+                  "finishDate": "2022-12-08T15:13:27.538Z",
+                  "id": 0,
+                  "onlineLink": "string",
+                  "startDate": "2022-12-08T15:13:27.538Z"
+                }
+              ],
+              "description": "stringstringstringstringstringstringstring",
+              "creationDate": "2022-12-08",
+              "id": 0,
+              "isSubscribed": true,
+              "open": true,
+              "organizer": {
+                "id": 0,
+                "name": "string",
+                "organizerRating": 0
+              },
+              "tags": [
+                {
+                  "id": 0,
+                  "nameEn": "string",
+                  "nameUa": "string"
+                }
+              ],
+              "title": "string",
+              "titleImage": "string"
+            }""";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, EventDto.class);

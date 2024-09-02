@@ -821,9 +821,10 @@ public class EventServiceImpl implements EventService {
             sortedDtos.add(eventDto);
         }
         sortedDtos.forEach(event -> {
-            event.setDates(event.getDates().stream()
+            List<EventDateLocationDto> uniqueDates = event.getDates().stream()
                 .distinct()
-                .toList());
+                .toList();
+            event.setDates(uniqueDates);
         });
         return sortedDtos;
     }

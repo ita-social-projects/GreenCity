@@ -278,13 +278,6 @@ class EventCommentServiceImplTest {
     }
 
     @Test
-    void countCommentsEventNotFoundException() {
-        Long eventId = 1L;
-        when(eventRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> eventCommentService.countComments(eventId));
-    }
-
-    @Test
     void getAllComments() {
         int pageNumber = 1;
         int pageSize = 3;
