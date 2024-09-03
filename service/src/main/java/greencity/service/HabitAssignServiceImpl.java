@@ -147,6 +147,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
+        validateAssignToPrivateHabit(habitId, user);
         HabitAssign habitAssign =
             habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, user.getId());
 
@@ -196,9 +197,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
-        if (!habitRepo.canAssignHabitByUserIdAndHabitId(user.getId(), habitId)) {
-            throw new UserCouldNotAssignPrivateHabit(ErrorMessage.YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT);
-        }
+        validateAssignToPrivateHabit(habitId, user);
         HabitAssign habitAssign =
             habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, user.getId());
         if (habitAssign != null) {
@@ -1622,5 +1621,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return new PageableAdvancedDto<>(habitAssignPreviewDtos, returnedPage.getTotalElements(),
             returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
             returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
+    }
+
+    private void validateAssignToPrivateHabit(Long habitId, User user) {
+        if (habitRepo.isHabitPrivate(habitId)
+            && !habitRepo.canAssignPrivateHabitByUserIdAndHabitId(user.getId(), habitId)) {
+            throw new UserCouldNotAssignPrivateHabit(ErrorMessage.YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT);
+        }
     }
 }

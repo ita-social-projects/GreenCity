@@ -323,7 +323,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(), user.getId()))
             .thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
         List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
             habitAssignCustomPropertiesDto);
         assertEquals(List.of(habitAssignManagementDto), actual);
@@ -350,7 +350,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
         when(userRepo.isFriend(user1.getId(), userFriend1.getId())).thenReturn(true);
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
         List<HabitAssignManagementDto> actual = habitAssignService
             .assignCustomHabitForUser(habit.getId(), userVO1, habitAssignCustomPropertiesDtoWithFriend);
         assertEquals(List.of(habitAssignManagementDto, habitAssignManagementDto), actual);
@@ -372,7 +372,7 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
 
         List<HabitAssignManagementDto> actual = habitAssignService
             .assignCustomHabitForUser(habit.getId(), userVO1, habitAssignCustomPropertiesDtoWithFriend);
@@ -395,7 +395,7 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
 
         assertThrows(NotFoundException.class, () -> habitAssignService
             .assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDtoWithFriend));
@@ -416,7 +416,7 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
         when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
 
         assertThrows(UserHasNoFriendWithIdException.class,
@@ -429,7 +429,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         List<HabitAssignManagementDto> actual = habitAssignService
                 .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDto);
@@ -446,7 +446,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(ModelUtils.getCustomShoppingListItem());
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
@@ -472,7 +472,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(ModelUtils.getCustomShoppingListItem());
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(true);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(false);
 
         String expectedErrorMessage = String.format(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_EXISTS,
             ModelUtils.getCustomShoppingListItem().getText());
@@ -2937,7 +2937,8 @@ class HabitAssignServiceImplTest {
                 .habitAssignPropertiesDto(habitAssignPropertiesDto)
                 .build();
 
-        when(habitRepo.canAssignHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(false);
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(true);
+        when(habitRepo.canAssignPrivateHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(false);
         when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));

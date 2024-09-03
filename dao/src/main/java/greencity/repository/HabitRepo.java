@@ -148,7 +148,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
             LEFT JOIN tag_translations tt ON tt.tag_id = ht.tag_id AND tt.language_id = 2 AND tt.name = 'Private'
             WHERE h.id = :habitId
             AND h.user_id = :userId
-            AND tt.name IS NULL
+            AND tt.name IS NOT NULL
             AND (
                 EXISTS (
                     SELECT 1
@@ -169,7 +169,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
             )
         )
         """, nativeQuery = true)
-    boolean canAssignHabitByUserIdAndHabitId(
+    boolean canAssignPrivateHabitByUserIdAndHabitId(
         @Param("userId") Long userId,
         @Param("habitId") Long habitId);
 }
