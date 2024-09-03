@@ -125,8 +125,8 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
     boolean isHabitPrivate(@Param("habitId") Long habitId);
 
     /**
-     * Checks if a user can assign a specific private habit.
-     * This method verifies if the habit meets the following conditions:
+     * Checks if a user can assign a specific private habit. This method verifies if
+     * the habit meets the following conditions:
      * <ul>
      * <li>The habit is owned by the user.</li>
      * <li>The habit is private (it has a tag with ID 25 and tag name
