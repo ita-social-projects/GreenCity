@@ -121,5 +121,4 @@
                 onUpdate="RESTRICT"
                 constraintName="fk_comments_parent_comment"/>
     </changeSet>
-
 </databaseChangeLog>
