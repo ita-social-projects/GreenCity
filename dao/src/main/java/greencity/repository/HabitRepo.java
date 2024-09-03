@@ -106,8 +106,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
     List<Long> findVisibleCustomHabitsIdsByUserId(@Param("userId") Long userId);
 
     /**
-     * Determines if a habit is private based on its tags. A habit is considered
-     * private if it has a tag with ID 25.
+     * Determines if a habit is private based on its tags.
      *
      * @param habitId the ID of the habit to check.
      * @return {@code true} if the habit is private, {@code false} otherwise.
