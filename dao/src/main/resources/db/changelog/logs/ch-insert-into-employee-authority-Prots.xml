@@ -4,21 +4,18 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="3" author="Nazar Prots">
-        <sql>
-            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
-            VALUES (7, 31)
-                ON CONFLICT (position_id, authorities_id) DO NOTHING;
-        </sql>
-        <sql>
-            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
-            VALUES (7, 32)
-                ON CONFLICT (position_id, authorities_id) DO NOTHING;
-        </sql>
-        <sql>
-            INSERT INTO positions_authorities_mapping (position_id, authorities_id)
-            VALUES (7, 33)
-                ON CONFLICT (position_id, authorities_id) DO NOTHING;
-        </sql>
+    <changeSet id="Prots-1" author="Nazar Prots">
+        <insert tableName="employee_authorities">
+            <column name="id">31</column>
+            <column name="name">SEE_ALL_AGREEMENTS</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">32</column>
+            <column name="name">CREATE_AGREEMENT</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">33</column>
+            <column name="name">DELETE_AGREEMENT</column>
+        </insert>
     </changeSet>
 </databaseChangeLog>
