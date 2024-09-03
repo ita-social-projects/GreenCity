@@ -206,11 +206,17 @@ class EventServiceImplTest {
     @Test
     void update() {
         EventDto eventDto = ModelUtils.getEventDto();
+        eventDto.setTitle("Valid Title");
+        eventDto.setDescription("Valid Description");
         Event expectedEvent = ModelUtils.getEvent();
         List<Long> eventIds = List.of(eventDto.getId());
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("Valid Description");
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setTitle("Valid Title");
+        updateEventDto.setDescription("Valid Description");
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
@@ -238,11 +244,15 @@ class EventServiceImplTest {
     @Test
     void updateThrowsUserHasNoPermissionToAccessException() {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("Valid Description");
         UserVO userVO = ModelUtils.getTestUserVo();
         User user = ModelUtils.getTestUser();
         String userVoEmail = userVO.getEmail();
         Event expectedEvent = ModelUtils.getEvent();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setTitle("Valid Title");
+        updateEventDto.setDescription("Valid Description");
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
@@ -389,11 +399,15 @@ class EventServiceImplTest {
     void updateTitleImage() {
         EventDto eventDto = ModelUtils.getEventDto();
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("Valid Description");
         eventToUpdateDto.setAdditionalImages(new ArrayList<>());
         Event event = ModelUtils.getEvent();
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setTitle("Valid Title");
+        updateEventDto.setDescription("Valid Description");
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
