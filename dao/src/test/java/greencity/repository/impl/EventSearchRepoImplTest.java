@@ -37,11 +37,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -113,5 +113,55 @@ public class EventSearchRepoImplTest {
         Page<Long> result = eventSearchRepo.findEventsIds(pageable, filterEventDto, null);
 
         assertEquals(3, result.getTotalElements());
+    }
+
+    @Test
+    void findTest() {
+        Pageable pageable = PageRequest.of(0, 10);
+        String searchingText = "event";
+
+        CriteriaQuery<Event> criteriaQuery = mock(CriteriaQuery.class);
+        Root<Event> eventRoot = mock(Root.class);
+        TypedQuery<Event> typedQuery = mock(TypedQuery.class);
+        CriteriaQuery<Long> countQuery = mock(CriteriaQuery.class);
+
+        Path<Object> titlePath = mock(Path.class);
+        Path<Object> descriptionPath = mock(Path.class);
+
+        when(eventRoot.get(Event_.TITLE)).thenReturn(titlePath);
+        when(eventRoot.get(Event_.DESCRIPTION)).thenReturn(descriptionPath);
+
+        CriteriaQuery<Long> criteriaLong = mock(CriteriaQuery.class);
+        when(criteriaBuilder.createQuery(Long.class)).thenReturn(criteriaLong);
+
+        when(criteriaBuilder.createQuery(Event.class)).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(Event.class)).thenReturn(eventRoot);
+
+        when(criteriaQuery.select(eventRoot)).thenReturn(criteriaQuery);
+        when(criteriaQuery.distinct(true)).thenReturn(criteriaQuery);
+        lenient().when(criteriaQuery.where(any(Predicate.class))).thenReturn(criteriaQuery);
+
+        List<Event> events = List.of(new Event(), new Event(), new Event());
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.setFirstResult(anyInt())).thenReturn(typedQuery);
+        when(typedQuery.setMaxResults(anyInt())).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(events);
+
+        when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
+        when(countQuery.from(Event.class)).thenReturn(eventRoot);
+        when(countQuery.select(any())).thenReturn(countQuery);
+        lenient().when(countQuery.where(any(Predicate.class))).thenReturn(countQuery);
+        TypedQuery<Long> countTypedQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(countQuery)).thenReturn(countTypedQuery);
+        when(countTypedQuery.getSingleResult()).thenReturn(3L);
+
+        when(criteriaBuilder.lower(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Page<Event> result = eventSearchRepo.find(pageable, searchingText);
+
+        assertEquals(3, result.getTotalElements());
+        assertEquals(3, result.getContent().size());
+        assertEquals(0, result.getNumber());
+        assertEquals(10, result.getSize());
     }
 }

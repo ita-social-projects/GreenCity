@@ -684,7 +684,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {
-        Page<Event> page = eventRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
+        Page<Event> page = eventRepo.find(PageRequest.of(0, 3), searchQuery);
         return getSearchNewsDtoPageableDto(page);
     }
 
@@ -693,7 +693,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        Page<Event> page = eventRepo.find(pageable, searchQuery, languageCode);
+        Page<Event> page = eventRepo.find(pageable, searchQuery);
         return getSearchNewsDtoPageableDto(page);
     }
 

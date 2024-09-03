@@ -21,7 +21,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
@@ -29,7 +28,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
-import jakarta.persistence.criteria.Subquery;
 import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -56,6 +54,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Page<Long> findEventsIds(Pageable pageable, FilterEventDto filterEventDto, Long userId) {
         CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
         Root<Event> eventRoot = criteria.from(Event.class);
@@ -85,31 +84,31 @@ public class EventSearchRepoImpl implements EventSearchRepo {
     /**
      * {@inheritDoc}
      */
-    public Page<Event> find(Pageable pageable, String searchingText, String languageCode) {
+    @Override
+    public Page<Event> find(Pageable pageable, String searchingText) {
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
         Root<Event> root = criteriaQuery.from(Event.class);
 
-        Predicate predicate = getPredicate(searchingText, languageCode, root);
+        Predicate predicate = getPredicate(searchingText, root);
         criteriaQuery.select(root).distinct(true).where(predicate);
 
         TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery)
             .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
             .setMaxResults(pageable.getPageSize());
         List<Event> resultList = typedQuery.getResultList();
-        long total = getEventsCount(searchingText, languageCode);
+        long total = getEventsCount(searchingText);
 
         return new PageImpl<>(resultList, pageable, total);
     }
 
-    private Predicate getPredicate(String searchingText, String languageCode, Root<Event> root) {
-        List<Predicate> predicateList = formEventsLikePredicate(searchingText, root);
-        predicateList.add(formTagTranslationsPredicate(searchingText, languageCode, root));
-        return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+    private Predicate getPredicate(String searchingText, Root<Event> root) {
+        List<Predicate> predicates = new ArrayList<>();
+        addFormEventsLikePredicate(searchingText, root, predicates);
+        return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
     }
 
     private Predicate getPredicate(FilterEventDto filterEventDto, Long userId, Root<Event> eventRoot) {
         List<Predicate> predicates = new ArrayList<>();
-
         if (filterEventDto != null) {
             addEventTimePredicate(filterEventDto.getTime(), eventRoot, predicates);
             addCitiesPredicate(filterEventDto.getCities(), eventRoot, predicates);
@@ -118,7 +117,6 @@ public class EventSearchRepoImpl implements EventSearchRepo {
             addTitlePredicate(filterEventDto.getTitle(), eventRoot, predicates);
             addTypePredicate(filterEventDto.getType(), eventRoot, predicates);
         }
-
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
@@ -189,6 +187,15 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         }
     }
 
+    private void addFormEventsLikePredicate(String searchingText, Root<Event> root, List<Predicate> predicates) {
+        Arrays.stream(searchingText.split(" ")).forEach(p -> predicates.add(
+            criteriaBuilder.or(
+                criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.TITLE)),
+                    "%" + p.toLowerCase() + "%"),
+                criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.DESCRIPTION)),
+                    "%" + p.toLowerCase() + "%"))));
+    }
+
     private List<Order> getOrders(Long userId, Root<Event> eventRoot) {
         List<Order> orders = new ArrayList<>();
 
@@ -249,56 +256,11 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         orders.add(criteriaBuilder.desc(datesJoin.get(EventDateLocation_.START_DATE)));
     }
 
-    private long getEventsCount(String searchingText, String languageCode) {
+    private long getEventsCount(String searchingText) {
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         Root<Event> countRoot = countQuery.from(Event.class);
 
-        Predicate countPredicate = getPredicate(searchingText, languageCode, countRoot);
-        countQuery.select(criteriaBuilder.count(countRoot)).where(countPredicate);
-
+        countQuery.select(criteriaBuilder.count(countRoot)).where(getPredicate(searchingText, countRoot));
         return entityManager.createQuery(countQuery).getSingleResult();
-    }
-
-    private List<Predicate> formEventsLikePredicate(String searchingText, Root<Event> root) {
-        Expression<String> title = root.get("title").as(String.class);
-        Expression<String> description = root.get("description").as(String.class);
-
-        List<Predicate> predicateList = new ArrayList<>();
-        Arrays.stream(searchingText.split(" ")).forEach(partOfSearchingText -> predicateList.add(
-            criteriaBuilder.or(
-                criteriaBuilder.like(criteriaBuilder.lower(title), "%" + partOfSearchingText.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(description),
-                    "%" + partOfSearchingText.toLowerCase() + "%"))));
-        return predicateList;
-    }
-
-    private Predicate formTagTranslationsPredicate(String searchingText, String languageCode, Root<Event> root) {
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Subquery<Long> tagSubquery = criteriaQuery.subquery(Long.class);
-        Root<Tag> tagRoot = tagSubquery.from(Tag.class);
-        Join<Event, Tag> eventsTagJoin = tagRoot.join("events");
-
-        Subquery<TagTranslation> tagTranslationSubquery = criteriaQuery.subquery(TagTranslation.class);
-        Root<Tag> tagTranslationRoot = tagTranslationSubquery.correlate(tagRoot);
-
-        Join<TagTranslation, Tag> tagTranslationTagJoin = tagTranslationRoot.join("tagTranslations");
-
-        Predicate predicate = predicateForTags(searchingText, languageCode, tagTranslationTagJoin);
-        tagTranslationSubquery.select(tagTranslationTagJoin.get("id"))
-            .where(predicate);
-
-        tagSubquery.select(eventsTagJoin.get("id")).where(criteriaBuilder.exists(tagTranslationSubquery));
-        return criteriaBuilder.in(root.get("id")).value(tagSubquery);
-    }
-
-    private Predicate predicateForTags(String searchingText, String languageCode,
-        Join<TagTranslation, Tag> tagTranslationTagJoin) {
-        List<Predicate> predicateList = new ArrayList<>();
-        Arrays.stream(searchingText.split(" ")).forEach(partOfSearchingText -> predicateList.add(criteriaBuilder.and(
-            criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("name")),
-                "%" + partOfSearchingText.toLowerCase() + "%"),
-            criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("language").get("code")),
-                "%" + languageCode.toLowerCase() + "%"))));
-        return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 }

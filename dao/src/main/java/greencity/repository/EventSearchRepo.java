@@ -20,9 +20,8 @@ public interface EventSearchRepo {
      *
      * @param pageable      {@link Pageable}
      * @param searchingText - text criteria for searching.
-     * @param languageCode  {@link String}.
      * @return all finding events, their tags and also count of finding events.
      * @author Anton Bondar
      */
-    Page<Event> find(Pageable pageable, String searchingText, String languageCode);
+    Page<Event> find(Pageable pageable, String searchingText);
 }
