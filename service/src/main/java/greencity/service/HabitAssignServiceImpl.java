@@ -196,7 +196,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
-        if (!habitRepo.canAssignPrivateHabitByUserIdAndHabitId(user.getId(), habitId)) {
+        if (!habitRepo.canAssignHabitByUserIdAndHabitId(user.getId(), habitId)) {
             throw new UserCouldNotAssignPrivateHabit(ErrorMessage.YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT);
         }
         HabitAssign habitAssign =
