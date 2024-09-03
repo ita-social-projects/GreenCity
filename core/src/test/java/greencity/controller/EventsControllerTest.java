@@ -14,6 +14,8 @@ import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;
+import greencity.enums.EventStatus;
+import greencity.enums.EventTime;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.service.EventService;
@@ -21,7 +23,10 @@ import greencity.service.UserService;
 import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,19 +122,34 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(eventPreviewDtoPageableAdvancedDto);
 
-        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
+        FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
+        List<EventTime> eventTime = filterEventDto.getEventTime();
+        List<String> cities = filterEventDto.getCities();
+        List<EventStatus> statuses = filterEventDto.getStatuses();
+        List<String> tags = filterEventDto.getTags();
+        String title = "Title";
 
-        when(eventService.getEvents(pageable, principal, filterEventDto, null))
+        String eventTimeParam = eventTime.stream().map(Enum::name).collect(Collectors.joining(","));
+        String citiesParam = String.join(",", cities);
+        String statusesParam = statuses.stream().map(Enum::name).collect(Collectors.joining(","));
+        String tagsParam = String.join(",", tags);
+
+        when(eventService.getEvents(pageable, principal, eventTime, cities, statuses, tags, title))
             .thenReturn(eventPreviewDtoPageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
+            .param("eventTime", eventTimeParam)
+            .param("cities", citiesParam)
+            .param("statuses", statusesParam)
+            .param("tags", tagsParam)
+            .param("title", title)
             .principal(principal))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getEvents(pageable, principal, filterEventDto, null);
+        verify(eventService).getEvents(pageable, principal, eventTime, cities, statuses, tags, title);
     }
 
     @Test

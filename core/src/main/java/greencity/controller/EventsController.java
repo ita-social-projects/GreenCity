@@ -11,16 +11,13 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.filter.FilterEventDto;
 import greencity.enums.EventStatus;
 import greencity.enums.EventTime;
 import greencity.enums.EventType;
 import greencity.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +25,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -171,7 +167,7 @@ public class EventsController {
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventPreviewDto>> getEvent(
         @Parameter(hidden = true) Pageable pageable, @Parameter(hidden = true) Principal principal,
-        @Parameter(explode = Explode.TRUE) @RequestParam(
+        @RequestParam(
             required = false) List<EventTime> eventTime,
         @RequestParam(required = false) List<String> cities,
         @RequestParam(required = false) List<EventStatus> statuses,

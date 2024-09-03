@@ -136,6 +136,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static greencity.enums.EventStatus.CLOSED;
+import static greencity.enums.EventStatus.CREATED;
+import static greencity.enums.EventStatus.JOINED;
+import static greencity.enums.EventStatus.OPEN;
+import static greencity.enums.EventStatus.SAVED;
+import static greencity.enums.EventTime.FUTURE;
+import static greencity.enums.EventTime.PAST;
+
 public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(),
@@ -947,5 +955,14 @@ public class ModelUtils {
             commentDtos.size(),
             1,
             1);
+    }
+
+    public static FilterEventDto getFilterEventDto() {
+        return FilterEventDto.builder()
+            .eventTime(List.of(FUTURE, PAST))
+            .cities(List.of("Kyiv"))
+            .statuses(List.of(OPEN, CLOSED, JOINED, CREATED, SAVED))
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .build();
     }
 }

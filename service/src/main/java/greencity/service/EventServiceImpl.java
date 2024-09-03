@@ -66,7 +66,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -272,7 +271,7 @@ public class EventServiceImpl implements EventService {
         if (filterEventDto != null) {
             futureTimeStatuses = filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()
                 ? filterEventDto.getEventTime().stream()
-                    .map(eTime -> eTime == EventTime.FUTURE)
+                    .map(time -> time == EventTime.FUTURE)
                     .collect(Collectors.toList())
                 : Collections.emptyList();
             if (filterEventDto.getStatuses() != null && !filterEventDto.getStatuses().isEmpty()) {
