@@ -11,8 +11,12 @@ import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.search.SearchEventsDto;
+import greencity.enums.EventStatus;
+import greencity.enums.EventTime;
 import greencity.enums.EventType;
 import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,7 +58,11 @@ public interface EventService {
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
+    PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal,
+        List<EventTime> eventTime,
+        List<String> cities,
+        List<EventStatus> statuses,
+        List<String> tags,
         String title);
 
     /**
