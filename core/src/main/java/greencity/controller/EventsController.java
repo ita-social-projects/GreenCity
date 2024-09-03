@@ -167,8 +167,7 @@ public class EventsController {
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventPreviewDto>> getEvent(
         @Parameter(hidden = true) Pageable pageable, @Parameter(hidden = true) Principal principal,
-        @RequestParam(
-            required = false) List<EventTime> eventTime,
+        @RequestParam(required = false) List<EventTime> eventTime,
         @RequestParam(required = false) List<String> cities,
         @RequestParam(required = false) List<EventStatus> statuses,
         @RequestParam(required = false) List<String> tags,
