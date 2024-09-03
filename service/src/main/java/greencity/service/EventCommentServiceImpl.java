@@ -36,6 +36,7 @@ import greencity.repository.UserRepo;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -246,9 +247,11 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public int countAllActiveReplies(Long eventId, Long parentCommentId) {
-        eventCommentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED)
-            .filter(c -> c.getEvent().getId().equals(eventId))
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
+        Optional<EventComment> comment = eventCommentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED)
+            .filter(c -> c.getEvent().getId().equals(eventId));
+        if (comment.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId);
+        }
         return eventCommentRepo.countByParentCommentIdAndStatusNot(parentCommentId, CommentStatus.DELETED);
     }
 
