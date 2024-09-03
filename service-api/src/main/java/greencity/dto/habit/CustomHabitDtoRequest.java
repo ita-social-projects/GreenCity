@@ -36,4 +36,5 @@ public class CustomHabitDtoRequest {
     @Size(min = 1, message = ServiceValidationConstants.TAG_LIST_MIN_LENGTH)
     @Size(max = 3, message = ServiceValidationConstants.TAG_LIST_MAX_LENGTH)
     private Set<Long> tagIds;
+    private Boolean isSharedWithFriends;
 }

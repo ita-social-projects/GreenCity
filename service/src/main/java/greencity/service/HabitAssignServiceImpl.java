@@ -7,6 +7,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
@@ -14,10 +15,9 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.HabitAssignPreviewDto;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habit.HabitWorkingDaysDto;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
@@ -50,6 +50,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserCouldNotAssignPrivateHabit;
+import greencity.exception.exceptions.UserCouldNotInviteToPrivateHabit;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
@@ -63,6 +65,14 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
+import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -74,14 +84,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.AllArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -146,7 +148,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
         HabitAssign habitAssign =
-            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, user.getId());
+            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, user.getId());
 
         if (habitAssign != null) {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
@@ -194,14 +196,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
+        if (!habitRepo.canAssignPrivateHabitByUserIdAndHabitId(user.getId(), habitId)) {
+            throw new UserCouldNotAssignPrivateHabit(ErrorMessage.YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT);
+        }
         HabitAssign habitAssign =
-            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, user.getId());
+            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, user.getId());
         if (habitAssign != null) {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssign.setCreateDate(ZonedDateTime.now());
         } else {
             habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
         }
+
         enhanceAssignWithCustomProperties(habitAssign, habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
 
         if (!habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems().isEmpty()) {
@@ -266,7 +272,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             checkStatusInProgressExists(habit.getId(), UserVO.builder().id(friendOfUser.getId()).build());
             validateHabitForAssign(habit.getId(), friendOfUser);
             HabitAssign habitAssign =
-                habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), friendOfUser.getId());
+                habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(),
+                    friendOfUser.getId());
             if (habitAssign != null) {
                 habitAssign.setStatus(HabitAssignStatus.REQUESTED);
                 habitAssign.setCreateDate(ZonedDateTime.now());
@@ -1487,14 +1494,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
         Locale locale) {
+        Habit habit = getHabitById(habitId);
+        if (habitRepo.isHabitPrivate(habitId) && !userVO.getId().equals(habit.getUserId())) {
+            throw new UserCouldNotInviteToPrivateHabit(ErrorMessage.YOU_COULD_NOT_INVITE_TO_PRIVATE_HABIT);
+        }
         friendsIds.forEach(friendId -> {
             checkIfUserIsAFriend(userVO.getId(), friendId);
             User friend = getUserById(friendId);
             UserVO friendVO = mapToUserVO(friend);
             checkStatusInProgressExists(habitId, friendVO);
-            Habit habit = getHabitById(habitId);
             validateHabitForAssign(habitId, friend);
-
             HabitAssign habitAssign = getHabitAssignById(habitId, friend);
             if (habitAssign != null) {
                 updateHabitAssign(habitAssign);
@@ -1532,7 +1541,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     private HabitAssign getHabitAssignById(Long habitId, User friend) {
         return habitAssignRepo
-            .findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friend.getId());
+            .findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, friend.getId());
     }
 
     private void updateHabitAssign(HabitAssign habitAssign) {

@@ -44,6 +44,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserCouldNotAssignPrivateHabit;
+import greencity.exception.exceptions.UserCouldNotInviteToPrivateHabit;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
@@ -76,6 +78,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
@@ -101,6 +105,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -276,7 +282,7 @@ class HabitAssignServiceImplTest {
         habitAssign.setStatus(HabitAssignStatus.CANCELLED);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId()))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(), user.getId()))
             .thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
@@ -317,7 +323,7 @@ class HabitAssignServiceImplTest {
         habitAssign.setStatus(HabitAssignStatus.CANCELLED);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId()))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(), user.getId()))
             .thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
@@ -2705,8 +2711,8 @@ class HabitAssignServiceImplTest {
         Locale locale = Locale.of("en");
         List<Long> friendsList = List.of(10L);
 
+        when(habitRepo.findById(habitId)).thenReturn(Optional.ofNullable(ModelUtils.getHabit()));
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(false);
-
         assertThrows(UserHasNoFriendWithIdException.class,
             () -> habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, habitId,
                 locale));
@@ -2719,9 +2725,6 @@ class HabitAssignServiceImplTest {
         Locale locale = Locale.of("en");
         List<Long> friendsList = List.of(10L);
 
-        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
-        when(userRepo.findById(friendId)).thenReturn(Optional.empty());
-
         assertThrows(NotFoundException.class,
             () -> habitAssignService
                 .inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, habitId, locale));
@@ -2729,15 +2732,11 @@ class HabitAssignServiceImplTest {
 
     @Test
     void testInviteFriendForYourHabitWithEmailNotificationHabitNotFound() {
-        Long friendId = 10L;
         Long habitId = 1L;
         Locale locale = Locale.of("en");
         List<Long> friendsList = List.of(10L);
 
-        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
-        when(userRepo.findById(friendId)).thenReturn(Optional.of(getUser()));
         when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
-        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(getUserVO());
 
         assertThrows(NotFoundException.class,
             () -> habitAssignService
@@ -2764,7 +2763,7 @@ class HabitAssignServiceImplTest {
             .habitTranslations(List.of(getHabitTranslation()))
             .build());
 
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friendId)).thenReturn(
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, friendId)).thenReturn(
             habitAssign);
         when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
 
@@ -2791,7 +2790,7 @@ class HabitAssignServiceImplTest {
         when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, friendId)).thenReturn(null);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, friendId)).thenReturn(null);
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
         when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId)).thenReturn(List.of(1L));
         when(habitAssignRepo.save(any())).thenReturn(getHabitAssign());
@@ -2876,4 +2875,69 @@ class HabitAssignServiceImplTest {
         assertThrows(NotFoundException.class,
             () -> habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitId));
     }
+
+    @Test
+    void testOwnerInviteToPrivateHabit() {
+        Long friendId = 1L;
+        Locale locale = Locale.of("en");
+        User friend = getUser();
+        Habit habit = ModelUtils.getHabit();
+        userVO.setId(2L);
+        habit.setUserId(2L);
+
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(true);
+        when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
+        when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
+
+        HabitAssign habitAssign = new HabitAssign();
+        habitAssign.setId(1L);
+        habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+        habitAssign.setHabit(habit);
+
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(), friendId)).thenReturn(
+            habitAssign);
+        when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
+
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habit.getId(),
+            locale);
+
+        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
+        verify(habitAssignRepo).save(any(HabitAssign.class));
+        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
+    }
+
+    @Test
+    void testNotOwnerInviteToPrivateHabit() {
+        Habit habit = ModelUtils.getHabit();
+        habit.setUserId(2L);
+        Locale locale = Locale.of("en");
+        List<Long> friendsList = List.of(10L);
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(true);
+
+        assertThrows(UserCouldNotInviteToPrivateHabit.class,
+            () -> habitAssignService
+                .inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, habit.getId(), locale));
+    }
+
+    @Test
+    void assignCustomPrivateHabitForUserThrowsUserCouldNotAssignPrivateHabit() {
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .build();
+
+        when(habitRepo.canAssignPrivateHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(false);
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+
+        assertThrows(UserCouldNotAssignPrivateHabit.class, () -> habitAssignService
+            .assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDto));
+    }
+
 }
