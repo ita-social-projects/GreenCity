@@ -144,6 +144,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
+        if (addEventDtoRequest.getTitle().trim().isEmpty() || addEventDtoRequest.getDescription().trim().isEmpty()) {
+            throw new BadRequestException(ErrorMessage.TITLE_OR_DESCRIPTION_IS_EMPTY);
+        }
         checkingEqualityDateTimeInEventDateLocationDto(addEventDtoRequest.getDatesLocations());
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
@@ -522,6 +525,9 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventDto update(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
         UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
+        if (eventDto.getTitle().trim().isEmpty() || eventDto.getDescription().trim().isEmpty()) {
+            throw new BadRequestException(ErrorMessage.TITLE_OR_DESCRIPTION_IS_EMPTY);
+        }
         checkingEqualityDateTimeInEventDateLocationDto(eventDto.getDatesLocations());
 
         Event toUpdate = eventRepo.findById(eventDto.getId())
