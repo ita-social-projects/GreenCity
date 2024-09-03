@@ -167,6 +167,90 @@ class EventServiceImplTest {
     }
 
     @Test
+    void saveThrowsBadRequestExceptionForEmptyTitle() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("")
+            .description("Valid Description")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void saveThrowsBadRequestExceptionForEmptyDescription() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("Valid Title")
+            .description("")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void saveThrowsBadRequestExceptionForTitleWithSpacesOnly() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("   ")
+            .description("Valid Description")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void saveThrowsBadRequestExceptionForDescriptionWithSpacesOnly() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("Valid Title")
+            .description("   ")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
     void saveEventWithoutAddress() {
         User user = ModelUtils.getUser();
         EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutAddress();
