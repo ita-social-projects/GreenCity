@@ -2726,7 +2726,6 @@ class HabitAssignServiceImplTest {
 
     @Test
     void testInviteFriendForYourHabitWithEmailNotificationFriendNotFound() {
-        Long friendId = 10L;
         Long habitId = 1L;
         Locale locale = Locale.of("en");
         List<Long> friendsList = List.of(10L);
@@ -2887,7 +2886,6 @@ class HabitAssignServiceImplTest {
         Long friendId = 1L;
         Locale locale = Locale.of("en");
         User friend = getUser();
-        Habit habit = ModelUtils.getHabit();
         userVO.setId(2L);
         habit.setUserId(2L);
 
@@ -2897,7 +2895,6 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
 
-        HabitAssign habitAssign = new HabitAssign();
         habitAssign.setId(1L);
         habitAssign.setStatus(HabitAssignStatus.CANCELLED);
         habitAssign.setHabit(habit);
@@ -2917,7 +2914,6 @@ class HabitAssignServiceImplTest {
 
     @Test
     void testNotOwnerInviteToPrivateHabit() {
-        Habit habit = ModelUtils.getHabit();
         habit.setUserId(2L);
         Locale locale = Locale.of("en");
         List<Long> friendsList = List.of(10L);
@@ -2925,18 +2921,12 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(true);
 
-        assertThrows(UserCouldNotInviteToPrivateHabit.class,
-            () -> habitAssignService
-                .inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, habit.getId(), locale));
+        assertThrows(UserCouldNotInviteToPrivateHabit.class, () -> habitAssignService
+            .inviteFriendForYourHabitWithEmailNotification(userVO, friendsList, 1L, locale));
     }
 
     @Test
     void assignCustomPrivateHabitForUserThrowsUserCouldNotAssignPrivateHabit() {
-        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
-            HabitAssignCustomPropertiesDto.builder()
-                .habitAssignPropertiesDto(habitAssignPropertiesDto)
-                .build();
-
         when(habitRepo.isHabitPrivate(habit.getId())).thenReturn(true);
         when(habitRepo.canAssignPrivateHabitByUserIdAndHabitId(anyLong(), anyLong())).thenReturn(false);
         when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
