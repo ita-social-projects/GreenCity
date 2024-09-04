@@ -375,7 +375,6 @@ public class EventCommentServiceImpl implements EventCommentService {
         String commentText = commentVO.getText();
         Set<Long> usersId = getUserIdFromComment(commentText);
         if (!usersId.isEmpty()) {
-            String formattedComment = formatComment(commentText);
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
@@ -387,7 +386,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                     .creationDate(commentVO.getCreatedDate())
                     .receiverName(user.getName())
                     .receiverEmail(user.getEmail())
-                    .commentText(formattedComment)
+                    .commentText(commentText)
                     .baseLink(getBaseLink(eventVO.getId()))
                     .build();
                 notificationService.sendUsersTaggedInCommentEmailNotification(message);
@@ -414,28 +413,6 @@ public class EventCommentServiceImpl implements EventCommentService {
             userIds.add(Long.valueOf(matcher.group(1)));
         }
         return userIds;
-    }
-
-    /**
-     * Method to replace regex data-userid="userId" with @+username in comment and
-     * makes username bold.
-     *
-     * @param comment is comment to format.
-     * @return formatted comment.
-     */
-    private String formatComment(String comment) {
-        String regEx = "data-userid=\"(\\d+)\"";
-        Pattern pattern = Pattern.compile(regEx);
-        Matcher matcher = pattern.matcher(comment);
-        StringBuilder formattedCommentBuilder = new StringBuilder();
-        while (matcher.find()) {
-            Long userId = Long.valueOf(matcher.group(1));
-            String username = userRepo.findById(userId).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)).getName();
-            matcher.appendReplacement(formattedCommentBuilder, " <strong>@" + username + "</strong> ");
-        }
-        matcher.appendTail(formattedCommentBuilder);
-        return formattedCommentBuilder.toString();
     }
 
     private String getBaseLink(Long id) {
