@@ -167,6 +167,90 @@ class EventServiceImplTest {
     }
 
     @Test
+    void saveThrowsBadRequestExceptionForEmptyTitle() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("")
+            .description("Valid Description")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void saveThrowsBadRequestExceptionForEmptyDescription() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("Valid Title")
+            .description("")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void saveThrowsBadRequestExceptionForTitleWithSpacesOnly() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("   ")
+            .description("Valid Description")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void saveThrowsBadRequestExceptionForDescriptionWithSpacesOnly() {
+        AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+            .title("Valid Title")
+            .description("   ")
+            .datesLocations(Collections.singletonList(new EventDateLocationDto()))
+            .tags(List.of("Tag1", "Tag2"))
+            .isOpen(true)
+            .build();
+
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.save(addEventDtoRequest, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
     void saveEventWithoutAddress() {
         User user = ModelUtils.getUser();
         EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutAddress();
@@ -206,11 +290,17 @@ class EventServiceImplTest {
     @Test
     void update() {
         EventDto eventDto = ModelUtils.getEventDto();
+        eventDto.setTitle("Valid Title");
+        eventDto.setDescription("Valid Description");
         Event expectedEvent = ModelUtils.getEvent();
         List<Long> eventIds = List.of(eventDto.getId());
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("Valid Description");
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setTitle("Valid Title");
+        updateEventDto.setDescription("Valid Description");
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
@@ -238,11 +328,15 @@ class EventServiceImplTest {
     @Test
     void updateThrowsUserHasNoPermissionToAccessException() {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("Valid Description");
         UserVO userVO = ModelUtils.getTestUserVo();
         User user = ModelUtils.getTestUser();
         String userVoEmail = userVO.getEmail();
         Event expectedEvent = ModelUtils.getEvent();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setTitle("Valid Title");
+        updateEventDto.setDescription("Valid Description");
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
@@ -389,11 +483,15 @@ class EventServiceImplTest {
     void updateTitleImage() {
         EventDto eventDto = ModelUtils.getEventDto();
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("Valid Description");
         eventToUpdateDto.setAdditionalImages(new ArrayList<>());
         Event event = ModelUtils.getEvent();
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setTitle("Valid Title");
+        updateEventDto.setDescription("Valid Description");
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
@@ -438,6 +536,78 @@ class EventServiceImplTest {
         assertTrue(updatedEventDto.isSubscribed());
 
         verify(restClient).findByEmail(anyString());
+    }
+
+    @Test
+    void updateThrowsBadRequestExceptionForEmptyTitle() {
+        UpdateEventRequestDto eventToUpdateDto = new UpdateEventRequestDto();
+        eventToUpdateDto.setTitle("");
+        eventToUpdateDto.setDescription("Valid Description");
+
+        User user = ModelUtils.getUser();
+        Event event = ModelUtils.getEvent();
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(ModelUtils.getUpdateEventDto());
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.update(eventToUpdateDto, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void updateThrowsBadRequestExceptionForEmptyDescription() {
+        UpdateEventRequestDto eventToUpdateDto = new UpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("");
+
+        User user = ModelUtils.getUser();
+        Event event = ModelUtils.getEvent();
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(ModelUtils.getUpdateEventDto());
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.update(eventToUpdateDto, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void updateThrowsBadRequestExceptionForTitleWithSpacesOnly() {
+        UpdateEventRequestDto eventToUpdateDto = new UpdateEventRequestDto();
+        eventToUpdateDto.setTitle("   ");
+        eventToUpdateDto.setDescription("Valid Description");
+
+        User user = ModelUtils.getUser();
+        Event event = ModelUtils.getEvent();
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(ModelUtils.getUpdateEventDto());
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.update(eventToUpdateDto, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
+    }
+
+    @Test
+    void updateThrowsBadRequestExceptionForDescriptionWithSpacesOnly() {
+        UpdateEventRequestDto eventToUpdateDto = new UpdateEventRequestDto();
+        eventToUpdateDto.setTitle("Valid Title");
+        eventToUpdateDto.setDescription("   ");
+
+        User user = ModelUtils.getUser();
+        Event event = ModelUtils.getEvent();
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(ModelUtils.getUpdateEventDto());
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.update(eventToUpdateDto, user.getEmail(), null));
+
+        verify(eventRepo, never()).save(any(Event.class));
     }
 
     @ParameterizedTest
