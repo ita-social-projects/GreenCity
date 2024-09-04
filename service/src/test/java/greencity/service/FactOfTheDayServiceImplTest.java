@@ -58,24 +58,6 @@ class FactOfTheDayServiceImplTest {
     private FactOfTheDayServiceImpl factOfTheDayService;
 
     @Test
-    void getFactOfTheDayByIdTest() {
-        FactOfTheDayDTO factDto = ModelUtils.getFactOfTheDayDto();
-        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
-
-        when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
-        when(modelMapper.map(fact, FactOfTheDayDTO.class)).thenReturn(factDto);
-        FactOfTheDayDTO factDtoRes = factOfTheDayService.getFactOfTheDayById(1L);
-
-        assertEquals(Long.valueOf(1), factDtoRes.getId());
-    }
-
-    @Test
-    void getFactOfTheDayByIdTestFailed() {
-        when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> factOfTheDayService.getFactOfTheDayById(1L));
-    }
-
-    @Test
     void getAllFactsOfTheDayTest() {
         int pageNumber = 0;
         int pageSize = 1;

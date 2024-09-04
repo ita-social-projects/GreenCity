@@ -1,11 +1,8 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageable;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
-import greencity.dto.PageableDto;
-import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.service.FactOfTheDayService;
@@ -17,19 +14,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Locale;
-import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@AllArgsConstructor
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/fact-of-the-day")
 public class FactOfTheDayController {
-    private FactOfTheDayService factOfTheDayService;
+    private final FactOfTheDayService factOfTheDayService;
 
     /**
      * Method which return a random {@link FactOfTheDayVO}.
@@ -49,46 +44,5 @@ public class FactOfTheDayController {
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDay(
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.ok().body(factOfTheDayService.getRandomFactOfTheDayByLanguage(locale.getLanguage()));
-    }
-
-    /**
-     * Method which return pageable 0f {@link FactOfTheDayVO}.
-     *
-     * @return {@link ResponseEntity}
-     */
-    @ApiPageable
-    @Operation(summary = "Get all facts of the day.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = PageableDto.class))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping
-    public ResponseEntity<PageableDto<FactOfTheDayDTO>> getAllFactOfTheDay(
-        @Parameter(hidden = true) Pageable pageable) {
-        return ResponseEntity.ok().body(factOfTheDayService.getAllFactsOfTheDay(pageable));
-    }
-
-    /**
-     * Method which return {@link FactOfTheDayDTO} by given id.
-     *
-     * @param factId of {@link FactOfTheDayVO}
-     * @return {@link FactOfTheDayDTO}
-     */
-    @Operation(summary = "Find fact of the day by given id.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = FactOfTheDayDTO.class))),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("/{factId}")
-    public ResponseEntity<FactOfTheDayDTO> findFactOfTheDay(@PathVariable Long factId) {
-        return ResponseEntity.ok().body(factOfTheDayService.getFactOfTheDayById(factId));
     }
 }

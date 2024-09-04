@@ -68,16 +68,6 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayDTO getFactOfTheDayById(Long factId) {
-        return factOfTheDayRepo.findById(factId)
-            .map(f -> modelMapper.map(f, FactOfTheDayDTO.class))
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public FactOfTheDayPostDTO saveFactOfTheDayAndTranslations(FactOfTheDayPostDTO factPost) {
         FactOfTheDay factOfTheDay = FactOfTheDay.builder()
             .name(factPost.getName())
