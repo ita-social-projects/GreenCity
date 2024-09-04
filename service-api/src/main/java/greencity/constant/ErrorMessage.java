@@ -109,7 +109,6 @@ public class ErrorMessage {
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND =
         "The user doesn't have any custom shopping list item.";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
-    public static final String TITLE_OR_DESCRIPTION_IS_EMPTY = "Title and Description cannot be empty or spaces only";
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved";
