@@ -76,9 +76,8 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
      * The returned habits include:
      * <ul>
      * <li>Habits owned by the user.</li>
-     * <li>Public habits (those that do not have a tag with ID 25).</li>
-     * <li>Private habits (those that have a tag with ID 25) that are assigned to
-     * the user.</li>
+     * <li>Public habits</li>
+     * <li>Private habits that are assigned to the user.</li>
      * <li>Private habits that are shared with the user's friends (using the
      * isSharedWithFriends flag).</li>
      * </ul>
@@ -128,8 +127,7 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
      * the habit meets the following conditions:
      * <ul>
      * <li>The habit is owned by the user.</li>
-     * <li>The habit is private (it has a tag with ID 25 and tag name
-     * 'Private').</li>
+     * <li>The habit is private.</li>
      * <li>Either the habit is explicitly assigned to the user, or it is shared with
      * friends and the user is a friend of the habit's owner.</li>
      * </ul>
