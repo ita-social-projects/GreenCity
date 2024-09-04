@@ -1,6 +1,9 @@
 package greencity.constant;
 
-public final class LogMessage {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class LogMessage {
     public static final String IN_SAVE = "in save(), entity: {}";
     public static final String IN_FIND_BY_ID = "in findById(), id: {}";
     public static final String IN_DELETE_BY_ID = "in deleteById(), id: {}";
@@ -31,7 +34,4 @@ public final class LogMessage {
     public static final String IN_GET_FAVORITE_PLACE_WITH_LOCATION =
         "in getFavoritePlaceWithLocation(), place id: {} and email: {}";
     public static final String IN_SEND_SCHEDULED_EMAIL = "in sendEmail(), time: {}, type: {}";
-
-    private LogMessage() {
-    }
 }

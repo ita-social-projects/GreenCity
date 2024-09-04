@@ -36,6 +36,7 @@ public class EcoNews {
 
     @Column
     private String source;
+
     @Column
     private String shortInfo;
 
