@@ -33,4 +33,5 @@ public class LogMessage {
         "in getAccessPlaceAsFavoritePlace(), placeId: {}";
     public static final String IN_GET_FAVORITE_PLACE_WITH_LOCATION =
         "in getFavoritePlaceWithLocation(), place id: {} and email: {}";
+    public static final String IN_SEND_SCHEDULED_EMAIL = "in sendEmail(), time: {}, type: {}";
 }

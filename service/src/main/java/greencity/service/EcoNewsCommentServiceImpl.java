@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
@@ -25,7 +24,6 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
 import greencity.repository.EcoNewsRepo;
@@ -72,12 +70,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     .orElseThrow(() -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.getParentComment() == null) {
                 ecoNewsComment.setParentComment(parentComment);
-                notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                    .email(parentComment.getUser().getEmail())
-                    .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
-                    .message(String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE,
-                        ecoNewsComment.getUser().getName()))
-                    .build());
                 userNotificationService.createNotification(modelMapper.map(parentComment.getUser(), UserVO.class),
                     userVO, NotificationType.ECONEWS_COMMENT_REPLY, parentComment.getId(), parentComment.getText(),
                     ecoNewsId, ecoNewsVO.getTitle());
@@ -89,11 +81,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .calculateAchievement(userVO, AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(ecoNewsVO.getAuthor().getEmail())
-            .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE, ecoNewsVO.getTitle()))
-            .build());
         userNotificationService.createNotification(ecoNewsVO.getAuthor(), userVO, NotificationType.ECONEWS_COMMENT,
             ecoNewsId, ecoNewsVO.getTitle());
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
@@ -179,11 +166,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
             }
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-                .email(comment.getUser().getEmail())
-                .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
-                .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()))
-                .build());
             EcoNews ecoNews = comment.getEcoNews();
             userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class), userVO,
                 NotificationType.ECONEWS_COMMENT_LIKE, comment.getId(), comment.getText(),
