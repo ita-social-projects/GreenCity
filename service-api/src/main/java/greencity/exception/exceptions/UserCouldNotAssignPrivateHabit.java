@@ -1,7 +1,7 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
+@StandardException
 public class UserCouldNotAssignPrivateHabit extends RuntimeException {
-    public UserCouldNotAssignPrivateHabit(String message) {
-        super(message);
-    }
 }
