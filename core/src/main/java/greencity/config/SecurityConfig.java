@@ -41,11 +41,12 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableGlobalAuthentication
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private static final String COMMENTS = "/comments";
     private static final String ADVICES = "/advices";
     private static final String CATEGORIES = "/categories";
     private static final String ECO_NEWS = "/eco-news";
     private static final String ECO_NEWS_ID = "/{ecoNewsId}";
-    private static final String ECO_NEWS_COMMENTS = ECO_NEWS + ECO_NEWS_ID + "/comments";
+    private static final String ECO_NEWS_COMMENTS = ECO_NEWS + ECO_NEWS_ID + COMMENTS;
     private static final String REPLIES = "/replies";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
@@ -61,7 +62,6 @@ public class SecurityConfig {
     private static final String EVENTS_COMMENTS = EVENTS + EVENT_ID + COMMENTS;
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
-    private static final String COMMENTS = "/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
