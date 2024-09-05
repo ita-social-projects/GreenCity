@@ -45,14 +45,4 @@ public class LanguageServiceImpl implements LanguageService {
     public List<String> findAllLanguageCodes() {
         return languageRepo.findAllLanguageCodes();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public LanguageDTO findByTagTranslationId(Long tagTranslationId) {
-        return languageRepo.findByTagTranslationId(tagTranslationId)
-            .map(l -> modelMapper.map(l, LanguageDTO.class))
-            .orElseThrow();
-    }
 }

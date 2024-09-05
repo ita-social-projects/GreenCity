@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
-
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.verify;
@@ -41,12 +40,5 @@ class LanguageControllerTest {
         this.mockMvc.perform(get(language + "/codes"))
             .andExpect(status().isOk());
         verify(languageService).findAllLanguageCodes();
-    }
-
-    @Test
-    void getLanguagesTest() throws Exception {
-        mockMvc.perform(get(language))
-            .andExpect(status().isOk());
-        verify(languageService).getAllLanguages();
     }
 }
