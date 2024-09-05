@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.dto.place.*;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +24,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import greencity.client.RestClient;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
@@ -39,29 +41,18 @@ import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoAddDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceUpdateDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.place.PlaceWithUserDto;
-import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.UserStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.enums.PlaceStatus.APPROVED;
 import static greencity.enums.PlaceStatus.PROPOSED;
@@ -572,6 +563,7 @@ class PlaceControllerTest {
     }
 
     @Test
+    @SneakyThrows
     void saveEcoPlaceFromUi() throws Exception {
         String json = "{\n" +
             "  \"categoryName\": \"test\",\n" +
@@ -586,10 +578,18 @@ class PlaceControllerTest {
             "  \"placeName\": \"Форум Львів\"\n" +
             "}";
 
-        this.mockMvc.perform(post(placeLink + "/v2/save")
-            .contentType(MediaType.APPLICATION_JSON)
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        AddPlaceDto addPlaceDtoRequest = objectMapper.readValue(json, AddPlaceDto.class);
+        String jsonValue = objectMapper.writeValueAsString(addPlaceDtoRequest);
+
+        MockMultipartFile jsonFile = new MockMultipartFile("addPlaceDtoRequest", "",
+            "application/json", jsonValue.getBytes());
+        mockMvc.perform(multipart(placeLink + "/v2/save")
+            .file(jsonFile)
             .principal(principal)
-            .content(json))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
 

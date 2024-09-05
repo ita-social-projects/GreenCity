@@ -21,6 +21,8 @@ public class PlaceMapper extends AbstractConverter<PlaceResponse, Place> {
                 .build())
                 .collect(Collectors.toSet()))
             .status(PlaceStatus.APPROVED)
+            .description(source.getDescription())
+            .email(source.getWebsiteUrl())
             .build();
     }
 }
