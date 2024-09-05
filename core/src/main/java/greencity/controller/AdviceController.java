@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import jakarta.validation.Valid;
@@ -35,7 +36,7 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/advices")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Validated
 public class AdviceController {
     private final AdviceService adviceService;
@@ -56,10 +57,10 @@ public class AdviceController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @GetMapping("/random/{habitId}")
+    @GetMapping("/random")
     @ApiLocale
     public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(
-        @PathVariable Long habitId,
+        @RequestParam(name = "habit-id") Long habitId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return adviceService.getRandomAdviceByHabitIdAndLanguage(habitId, locale.getLanguage());
     }
@@ -99,8 +100,8 @@ public class AdviceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/{id}")
-    public AdviceVO getById(@PathVariable Long id) {
-        return adviceService.getAdviceById(id);
+    public ResponseEntity<AdviceVO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(adviceService.getAdviceById(id));
     }
 
     /**
@@ -139,17 +140,16 @@ public class AdviceController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @PutMapping("/{adviceId}")
+    @PutMapping("/{id}")
     public ResponseEntity<AdvicePostDto> update(
-        @Valid @RequestBody AdvicePostDto dto, @PathVariable Long adviceId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(adviceService.update(dto, adviceId));
+        @Valid @RequestBody AdvicePostDto dto, @PathVariable Long id) {
+        return ResponseEntity.ok().body(adviceService.update(dto, id));
     }
 
     /**
      * The controller which delete {@link AdviceVO}.
      *
-     * @param adviceId of {@link AdviceVO}
+     * @param id of {@link AdviceVO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
@@ -161,9 +161,9 @@ public class AdviceController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @DeleteMapping("/{adviceId}")
-    public ResponseEntity<Object> delete(@PathVariable Long adviceId) {
-        adviceService.delete(adviceId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        adviceService.delete(id);
         return ResponseEntity.ok().build();
     }
 }

@@ -114,6 +114,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(eventCommentRepo.findById(anyLong())).thenReturn(Optional.of(eventComment));
         when(modelMapper.map(userVO, EventCommentAuthorDto.class)).thenReturn(eventCommentAuthorDto);
+        when(modelMapper.map(eventComment.getUser(), UserVO.class)).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
