@@ -24,9 +24,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
-
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -259,10 +256,6 @@ public class EcoNewsCommentController {
      */
     @MessageMapping("/getUsersToTagInComment")
     public void getUsersToTagInComment(@Payload UserSearchDto searchUsers) {
-        Instant start = Instant.now();
         ecoNewsCommentService.searchUsers(searchUsers);
-        Instant end = Instant.now();
-        Duration duration = Duration.between(start, end);
-        System.out.println(duration.toMillis());
     }
 }
