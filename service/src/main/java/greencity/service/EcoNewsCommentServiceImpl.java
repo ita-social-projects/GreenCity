@@ -255,15 +255,13 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * {@inheritDoc}
      */
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void searchUsers(UserSearchDto searchUsers) {
-        List<User> users = searchUsers.getSearchQuery() == null ? userRepo.findAll()
-            : userRepo.searchUsers(searchUsers.getSearchQuery());
+        List<User> users = userRepo.searchUsers(searchUsers.getSearchQuery());
 
         List<UserTagDto> usersToTag = users.stream()
             .map(u -> modelMapper.map(u, UserTagDto.class))
-            .limit(10)
-            .collect(Collectors.toList());
+            .toList();
 
         messagingTemplate.convertAndSend("/topic/" + searchUsers.getCurrentUserId() + "/searchUsers", usersToTag);
     }
