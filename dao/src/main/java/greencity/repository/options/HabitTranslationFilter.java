@@ -16,6 +16,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,53 +43,54 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
     public Predicate toPredicate(Root<HabitTranslation> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         query.distinct(true);
         query.orderBy(criteriaBuilder.desc(root.get("id")));
-        List<Predicate> predicates = buildPredicates(root, criteriaBuilder);
+        List<Predicate> predicates = createPredicates(root, criteriaBuilder);
         return criteriaBuilder.and(predicates.toArray(new Predicate[] {}));
     }
 
     /**
      * Constructs the list of predicates based on the filtering conditions.
      */
-    private List<Predicate> buildPredicates(Root<HabitTranslation> root, CriteriaBuilder criteriaBuilder) {
+    private List<Predicate> createPredicates(Root<HabitTranslation> root, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
         Join<HabitTranslation, Habit> habitJoin = root.join("habit", JoinType.INNER);
 
         if (filter.getIsCustom() == null) {
             predicates.add(
                 criteriaBuilder.or(
-                    isNotCustomHabit(criteriaBuilder, habitJoin),
-                    isCustomHabit(criteriaBuilder, habitJoin, filter.getUserId())));
+                    createNonCustomHabitPredicate(criteriaBuilder, habitJoin),
+                    createCustomHabitPredicate(criteriaBuilder, habitJoin, filter.getUserId())));
         }
-        if (filter.getIsCustom() != null && !filter.getIsCustom()) {
-            predicates.add(isNotCustomHabit(criteriaBuilder, habitJoin));
-        }
-
-        if (filter.getIsCustom() != null && filter.getIsCustom() && filter.getUserId() != null) {
-            predicates.add(isCustomHabit(criteriaBuilder, habitJoin, filter.getUserId()));
+        if (Boolean.FALSE.equals(filter.getIsCustom())) {
+            predicates.add(createNonCustomHabitPredicate(criteriaBuilder, habitJoin));
         }
 
-        if (filter.getLanguageCode() != null && !filter.getLanguageCode().isEmpty()) {
-            predicates.add(hasLanguageCode(root, criteriaBuilder, filter.getLanguageCode()));
+        if (Boolean.TRUE.equals(filter.getIsCustom()) && filter.getUserId() != null) {
+            predicates.add(createCustomHabitPredicate(criteriaBuilder, habitJoin, filter.getUserId()));
         }
 
-        if (filter.getComplexities() != null && !filter.getComplexities().isEmpty()) {
-            predicates.add(hasComplexity(filter.getComplexities(), habitJoin));
+        if (StringUtils.isNotEmpty(filter.getLanguageCode())) {
+            predicates.add(createLanguageCodePredicate(root, criteriaBuilder, filter.getLanguageCode()));
         }
 
-        if (filter.getTags() != null && !filter.getTags().isEmpty()) {
-            predicates.add(hasTags(criteriaBuilder, habitJoin, filter.getTags()));
+        if (CollectionUtils.isNotEmpty(filter.getComplexities())) {
+            predicates.add(createComplexityPredicate(filter.getComplexities(), habitJoin));
+        }
+
+        if (CollectionUtils.isNotEmpty(filter.getTags())) {
+            predicates.add(createTagsPredicate(criteriaBuilder, habitJoin, filter.getTags()));
         }
 
         return predicates;
     }
 
-    private Predicate isNotCustomHabit(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin) {
+    private Predicate createNonCustomHabitPredicate(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin) {
         Predicate isCustomHabitFalse = cb.equal(habitJoin.get("isCustomHabit"), false);
         Predicate isDeletedFalse = cb.equal(habitJoin.get("isDeleted"), false);
         return cb.and(isCustomHabitFalse, isDeletedFalse);
     }
 
-    private Predicate isCustomHabit(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin, Long userId) {
+    private Predicate createCustomHabitPredicate(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin,
+        Long userId) {
         Subquery<Long> subquery = cb.createQuery().subquery(Long.class);
         Root<HabitAssign> habitAssignRoot = subquery.from(HabitAssign.class);
         subquery.select(habitAssignRoot.get("habit").get("id"))
@@ -107,7 +110,8 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
             cb.or(isRequested, isAuthor));
     }
 
-    private Predicate hasTags(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin, List<String> tags) {
+    private Predicate createTagsPredicate(CriteriaBuilder cb, Join<HabitTranslation, Habit> habitJoin,
+        List<String> tags) {
         Join<Habit, Tag> tagJoin = habitJoin.join("tags", JoinType.INNER);
         Join<Tag, TagTranslation> tagTranslationJoin = tagJoin.join("tagTranslations", JoinType.INNER);
 
@@ -118,11 +122,12 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
         return cb.lower(tagTranslationJoin.get("name")).in(lowerCaseTags);
     }
 
-    private Predicate hasComplexity(List<Integer> complexities, Join<HabitTranslation, Habit> habitJoin) {
+    private Predicate createComplexityPredicate(List<Integer> complexities, Join<HabitTranslation, Habit> habitJoin) {
         return habitJoin.get("complexity").in(complexities);
     }
 
-    private Predicate hasLanguageCode(Root<HabitTranslation> root, CriteriaBuilder cb, String languageCode) {
+    private Predicate createLanguageCodePredicate(Root<HabitTranslation> root, CriteriaBuilder cb,
+        String languageCode) {
         Join<HabitTranslation, Language> languageJoin = root.join("language", JoinType.INNER);
         return cb.equal(languageJoin.get("code"), languageCode);
     }
