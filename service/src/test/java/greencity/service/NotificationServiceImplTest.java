@@ -349,7 +349,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(),any())).thenReturn(false);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_RECEIVED))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_ACCEPTED))
@@ -370,7 +370,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(),any())).thenReturn(false);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_REPLY))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_REPLY))
@@ -391,7 +391,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(),any())).thenReturn(false);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT))
@@ -412,7 +412,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(),any())).thenReturn(false);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_LIKE))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_LIKE))
