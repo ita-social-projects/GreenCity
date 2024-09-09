@@ -2,7 +2,6 @@ package greencity.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
@@ -42,7 +41,6 @@ import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
-
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -67,7 +65,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -686,11 +683,12 @@ class PlaceServiceImplTest {
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         User user = ModelUtils.getUser();
         user.setUserStatus(UserStatus.BLOCKED);
+        String email = user.getEmail();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
-        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, user.getEmail(), null));
+        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
