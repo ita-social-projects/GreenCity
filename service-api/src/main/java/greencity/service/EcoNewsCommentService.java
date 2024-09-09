@@ -9,48 +9,45 @@ import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.CommentStatus;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface EcoNewsCommentService {
     /**
      * Method to save {@link EcoNewsCommentVO}.
      *
-     * @param econewsId                   id of {@link EcoNewsVO} to which we save
+     * @param ecoNewsId                   id of {@link EcoNewsVO} to which we save
      *                                    comment.
      * @param addEcoNewsCommentDtoRequest dto with {@link EcoNewsCommentVO} text,
      *                                    parentCommentId.
      * @param user                        {@link UserVO} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
-    AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
+    AddEcoNewsCommentDtoResponse save(Long ecoNewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO user);
 
     /**
-     * Method returns all comments to certain ecoNews specified by ecoNewsId.
-     *
-     * @param user      current {@link UserVO}
-     * @param ecoNewsId specifies {@link UserVO} to which we search for comments
-     * @return all comments to certain ecoNews specified by ecoNewsId.
-     */
-    PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, UserVO user, Long ecoNewsId);
-
-    /**
-     * Method returns all replies to certain comment specified by parentCommentId.
+     * Method returns replies to certain comment specified by parentCommentId and
+     * statuses.
      *
      * @param parentCommentId specifies {@link EcoNewsCommentVO} to which we search
      *                        for replies
+     * @param statuses        statuses of comment
      * @param user            current {@link UserVO}
      * @return all replies to certain comment specified by parentCommentId.
      */
-    PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, UserVO user);
+    PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long ecoNewsId, Long parentCommentId,
+        List<CommentStatus> statuses,
+        UserVO user);
 
     /**
      * Method to mark {@link EcoNewsCommentVO} specified by id as deleted.
      *
-     * @param id   id of {@link EcoNewsCommentVO} to delete.
-     * @param user current {@link UserVO} that wants to delete.
+     * @param commentId id of {@link EcoNewsCommentVO} to delete.
+     * @param user      current {@link UserVO} that wants to delete.
      */
-    void deleteById(Long id, UserVO user);
+    void deleteById(Long ecoNewsId, Long commentId, UserVO user);
 
     /**
      * Method to update the text of an existing {@link EcoNewsCommentVO}.
@@ -59,15 +56,15 @@ public interface EcoNewsCommentService {
      * @param id   to specify {@link EcoNewsCommentVO} that user wants to change.
      * @param user current {@link UserVO} that wants to change.
      */
-    void update(String text, Long id, UserVO user);
+    void update(Long ecoNewsId, String text, Long id, UserVO user);
 
     /**
-     * Method to like or dislike {@link EcoNewsCommentVO} specified by id.
+     * Method to like or remove like from {@link EcoNewsCommentVO} specified by id.
      *
-     * @param id   of {@link EcoNewsCommentVO} to like/dislike.
-     * @param user current {@link UserVO} that wants to like/dislike.
+     * @param commentId of {@link EcoNewsCommentVO} to like/dislike.
+     * @param user      current {@link UserVO} that wants to like/dislike.
      */
-    void like(Long id, UserVO user);
+    void like(Long ecoNewsId, Long commentId, UserVO user);
 
     /**
      * Method returns count of likes to certain {@link EcoNewsCommentVO} specified
@@ -80,10 +77,10 @@ public interface EcoNewsCommentService {
     /**
      * Method to count replies to certain {@link EcoNewsCommentVO}.
      *
-     * @param id specifies parent comment to all replies
+     * @param commentId specifies parent comment to all replies
      * @return amount of replies
      */
-    int countReplies(Long id);
+    int countReplies(Long ecoNewsId, Long commentId);
 
     /**
      * Method to count not deleted eco news comments to certain {@link EcoNewsVO}.
@@ -94,34 +91,23 @@ public interface EcoNewsCommentService {
     int countOfComments(Long ecoNewsId);
 
     /**
-     * Method to get all active comments to {@link EcoNewsVO} specified by
-     * ecoNewsId.
+     * Method to get all comments to {@link EcoNewsVO} specified by ecoNewsId and
+     * statuses.
      *
      * @param pageable  page of news.
      * @param ecoNewsId specifies {@link EcoNewsVO} to which we search for comments
+     * @param statuses  statuses of comment
      * @return all active comments to certain ecoNews specified by ecoNewsId.
      * @author Taras Dovganyuk
      */
-    PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, UserVO user, Long ecoNewsId);
-
-    /**
-     * Method returns all active replies to certain comment specified by
-     * parentCommentId.
-     *
-     * @param parentCommentId specifies {@link EcoNewsCommentVO} to which we search
-     *                        for replies
-     * @param user            current {@link UserVO}
-     * @return all replies to certain comment specified by parentCommentId.
-     * @author Taras Dovganyuk
-     */
-    PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user);
+    PageableDto<EcoNewsCommentDto> findAllComments(Pageable pageable, UserVO user, Long ecoNewsId,
+        List<CommentStatus> statuses);
 
     /**
      * Method that allow you to search users by name.
      *
      * @param searchUsers dto with current user ID and search query
      *                    {@link UserSearchDto}.
-     *
      * @author Anton Bondar
      */
     void searchUsers(UserSearchDto searchUsers);

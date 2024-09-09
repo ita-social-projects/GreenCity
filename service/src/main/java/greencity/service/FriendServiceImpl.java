@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
@@ -15,7 +14,6 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
-import greencity.message.GeneralEmailMessage;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -67,12 +65,6 @@ public class FriendServiceImpl implements FriendService {
         userRepo.addNewFriend(userId, friendId);
         User emailReceiver = userRepo.getReferenceById(friendId);
         User friendRequestSender = userRepo.getReferenceById(userId);
-        notificationService.sendEmailNotificationInvites(GeneralEmailMessage.builder()
-            .email(emailReceiver.getEmail())
-            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE,
-                friendRequestSender.getName()))
-            .build());
         userNotificationService.createNotification(modelMapper.map(emailReceiver, UserVO.class),
             modelMapper.map(friendRequestSender, UserVO.class), NotificationType.FRIEND_REQUEST_RECEIVED);
     }
@@ -90,11 +82,6 @@ public class FriendServiceImpl implements FriendService {
         userRepo.acceptFriendRequest(userId, friendId);
         User user = userRepo.getReferenceById(userId);
         User friend = userRepo.getReferenceById(friendId);
-        notificationService.sendEmailNotificationInvites(GeneralEmailMessage.builder()
-            .email(friend.getEmail())
-            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE, user.getName()))
-            .build());
         userNotificationService.createNotification(modelMapper.map(friend, UserVO.class),
             modelMapper.map(user, UserVO.class), NotificationType.FRIEND_REQUEST_ACCEPTED);
     }

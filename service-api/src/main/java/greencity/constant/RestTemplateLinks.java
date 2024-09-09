@@ -1,5 +1,8 @@
 package greencity.constant;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class RestTemplateLinks {
     public static final String USER_LANG = "/user/lang";
     public static final String USER_REASONS = "/user/reasons";
@@ -40,7 +43,5 @@ public class RestTemplateLinks {
     public static final String SEND_USER_RECEIVED_COMMENT_NOTIFICATION = "/email/userReceivedComment/notification";
     public static final String SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION =
         "/email/userReceivedCommentReply/notification";
-
-    private RestTemplateLinks() {
-    }
+    public static final String SEND_SCHEDULED_NOTIFICATION = "/email/scheduled/notification";
 }

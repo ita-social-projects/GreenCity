@@ -60,7 +60,7 @@ class AdviceControllerTest {
 
     @Test
     void getRandomAdviceHabitIdAndLanguageTest() throws Exception {
-        mockMvc.perform(get(adviceLink + "/random/1?lang=en"))
+        mockMvc.perform(get(adviceLink + "/random?habit-id=1&lang=en"))
             .andExpect(status().isOk());
 
         verify(adviceService).getRandomAdviceByHabitIdAndLanguage(1L, "en");
@@ -83,7 +83,7 @@ class AdviceControllerTest {
 
     @Test
     void getRandomAdviceHabitWithInvalidIdAndLanguageTest() throws Exception {
-        mockMvc.perform(get(adviceLink + "/random/{id}?lang=en", "invalidId"))
+        mockMvc.perform(get(adviceLink + "/random?habit-id=invalidId&lang=en"))
             .andExpect(status().isBadRequest());
         verify(adviceService, times(0)).getRandomAdviceByHabitIdAndLanguage(1L, "en");
     }

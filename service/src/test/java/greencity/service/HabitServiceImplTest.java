@@ -813,7 +813,7 @@ class HabitServiceImplTest {
         verify(customShoppingListResponseDtoMapper).mapAllToList(List.of(customShoppingListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
-        verify(fileService).upload(any());
+        verify(fileService).upload(any(MultipartFile.class));
     }
 
     @Test
