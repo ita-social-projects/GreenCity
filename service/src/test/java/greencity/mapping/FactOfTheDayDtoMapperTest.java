@@ -24,7 +24,7 @@ class FactOfTheDayDtoMapperTest {
     }
 
     @Test
-    public void testConvert_ShouldMapFactOfTheDayToFactOfTheDayDTO() {
+    void testConvert_ShouldMapFactOfTheDayToFactOfTheDayDTO() {
         FactOfTheDayTranslation translation1 = FactOfTheDayTranslation.builder()
             .id(1L)
             .content("Fact content 1")
@@ -72,7 +72,7 @@ class FactOfTheDayDtoMapperTest {
     }
 
     @Test
-    public void testConvert_EmptyTranslations_ShouldMapCorrectly() {
+    void testConvert_EmptyTranslations_ShouldMapCorrectly() {
         FactOfTheDay fact = FactOfTheDay.builder()
             .id(1L)
             .name("Sample Fact")

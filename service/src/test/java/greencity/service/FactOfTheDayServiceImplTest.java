@@ -293,13 +293,13 @@ class FactOfTheDayServiceImplTest {
 
     @Test
     void getRandomFactOfTheDayByLanguageAndTags_factNotFound() {
-        Language language = ModelUtils.getLanguage();
+        String languageCode = "en";
         Set<Long> tagIds = Set.of(1L, 2L);
 
         when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> {
-            factOfTheDayService.getRandomFactOfTheDayByLanguageAndTags(language.getCode(), tagIds);
+            factOfTheDayService.getRandomFactOfTheDayByLanguageAndTags(languageCode, tagIds);
         });
     }
 

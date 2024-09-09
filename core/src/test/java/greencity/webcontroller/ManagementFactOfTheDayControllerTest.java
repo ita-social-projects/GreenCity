@@ -215,7 +215,7 @@ class ManagementFactOfTheDayControllerTest {
     }
 
     @Test
-    public void testGetAllFactOfTheDayTags_ReturnsTags() throws Exception {
+    void testGetAllFactOfTheDayTags_ReturnsTags() throws Exception {
         mockMvc.perform(get(managementFactOfTheDayLink + "/tags")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
