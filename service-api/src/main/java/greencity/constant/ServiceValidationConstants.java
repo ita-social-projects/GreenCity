@@ -12,7 +12,6 @@ public class ServiceValidationConstants {
     public static final int CATEGORY_NAME_MIN_LENGTH = 3;
     public static final int CATEGORY_NAME_MAX_LENGTH = 30;
     public static final int PLACE_NAME_MAX_LENGTH = 30;
-    public static final int PLACE_DESCRIPTION_MAX_LENGTH = 8000;
     public static final int HABIT_FACT_MIN_LENGTH = 3;
     public static final int HABIT_FACT_MAX_LENGTH = 300;
     public static final int USERNAME_MIN_LENGTH = 6;
@@ -50,6 +49,4 @@ public class ServiceValidationConstants {
     public static final String HABIT_COMPLEXITY = "{greenCity.validation.habit.complexity}";
     public static final String TAG_LIST_MIN_LENGTH = "{greenCity.validation.min.tags}";
     public static final String TAG_LIST_MAX_LENGTH = "{greenCity.validation.max.tags}";
-    public static final String INVALID_PLACE_DESCRIPTION_MAX_LENGTH =
-        "Description shouldn't be more than 8000 characters";
 }

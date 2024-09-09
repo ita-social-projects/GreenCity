@@ -85,6 +85,4 @@ public class Place {
     @Column(name = "status", columnDefinition = "int4")
     @JdbcType(IntegerJdbcType.class)
     private PlaceStatus status = PlaceStatus.PROPOSED;
-
-    private String titleImage;
 }

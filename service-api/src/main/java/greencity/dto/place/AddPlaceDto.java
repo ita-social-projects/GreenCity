@@ -35,10 +35,6 @@ public class AddPlaceDto {
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
     private String locationName;
-
-    @Length(max = ServiceValidationConstants.PLACE_DESCRIPTION_MAX_LENGTH,
-        message = ServiceValidationConstants.INVALID_PLACE_DESCRIPTION_MAX_LENGTH)
     private String description;
-
     private String websiteUrl;
 }
