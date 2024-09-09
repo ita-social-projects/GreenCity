@@ -2,6 +2,7 @@ package greencity.aspects;
 
 import greencity.annotations.CheckEmailPreference;
 import greencity.dto.user.UserVO;
+import greencity.entity.Notification;
 import greencity.enums.EmailPreference;
 import greencity.message.EmailMessage;
 import greencity.repository.UserNotificationPreferenceRepo;
@@ -42,6 +43,8 @@ public class EmailPreferenceAspect {
     public static String extractEmail(Object message) {
         if (message instanceof EmailMessage) {
             return ((EmailMessage) message).getEmail();
+        } else if (message instanceof Notification) {
+            return ((Notification) message).getTargetUser().getEmail();
         }
         return null;
     }
