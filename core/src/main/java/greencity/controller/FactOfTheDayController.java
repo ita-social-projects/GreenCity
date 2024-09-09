@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,7 +39,7 @@ public class FactOfTheDayController {
     private LanguageService languageService;
 
     /**
-     * Method which return a random {@link FactOfTheDayVO}.
+     * Method which return a random general {@link FactOfTheDayVO}.
      *
      * @param locale string code od language example: en
      * @return {@link FactOfTheDayTranslationDTO}
@@ -57,7 +58,7 @@ public class FactOfTheDayController {
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDay(
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(factOfTheDayService.getRandomFactOfTheDayByLanguage(locale.getLanguage()));
+            .body(factOfTheDayService.getRandomGeneralFactOfTheDay(locale.getLanguage()));
     }
 
     /**
@@ -117,5 +118,29 @@ public class FactOfTheDayController {
     public ResponseEntity<List<LanguageDTO>> getLanguages() {
         return ResponseEntity.status(HttpStatus.OK)
             .body(languageService.getAllLanguages());
+    }
+
+    /**
+     * Returns a random fact of the day based on the user's habit tags and language.
+     *
+     * @param locale the language code (e.g., "en")
+     * @return {@link FactOfTheDayTranslationDTO} containing the translated fact.
+     */
+    @Operation(summary = "Get a random fact of the day based on habits tags.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = FactOfTheDayTranslationDTO.class))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/random/by-tags")
+    @ApiLocale
+    public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDayByTags(
+        @Parameter(hidden = true) @ValidLanguage Locale locale,
+        @Parameter(hidden = true) Principal principal) {
+        return ResponseEntity.ok(factOfTheDayService.getRandomFactOfTheDayForUser(locale.getLanguage(),
+            principal.getName()));
     }
 }

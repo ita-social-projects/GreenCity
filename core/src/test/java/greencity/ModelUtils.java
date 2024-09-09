@@ -139,7 +139,7 @@ import java.util.stream.Stream;
 public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptySet(), Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
     }
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
@@ -465,17 +465,18 @@ public class ModelUtils {
     }
 
     public static FactOfTheDayDTO getFactOfTheDayDto() {
-        return new FactOfTheDayDTO(1L, "name", null, ZonedDateTime.now());
+        return new FactOfTheDayDTO(1L, "name", null, ZonedDateTime.now(), Collections.emptySet());
     }
 
     public static FactOfTheDay getFactOfTheDay() {
-        return new FactOfTheDay(1L, "Fact of the day", null, ZonedDateTime.now());
+        return new FactOfTheDay(1L, "Fact of the day", null, ZonedDateTime.now(), Collections.emptySet());
     }
 
     public static FactOfTheDayPostDTO getFactOfTheDayPostDto() {
         return new FactOfTheDayPostDTO(1L, "name",
             Collections.singletonList(
-                new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
+                new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)),
+            Collections.singletonList(25L));
     }
 
     public static ObjectMapper getObjectMapper() {

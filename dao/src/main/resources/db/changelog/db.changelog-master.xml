@@ -212,4 +212,7 @@
     <include file="/db/changelog/logs/ch-add-table-comments-users-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-table-habits-user-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement-categories-Fedotov.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tags-Chekhovska.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tag-translations-Chekhovska.xml"/>
+    <include file="db/changelog/logs/ch-add-table-fact-of-the-day-tags-and-assign-tag-Chekhovska.xml"/>
 </databaseChangeLog>

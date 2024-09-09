@@ -210,6 +210,7 @@ public class SecurityConfig {
                     "/facts",
                     "/facts/random/{habitId}",
                     "/facts/dayFact/{languageId}",
+                    "/factoftheday/random/by-tags",
                     "/newsSubscriber/unsubscribe",
                     "/place/{status}",
                     "/place/v2/filteredPlacesCategories",
