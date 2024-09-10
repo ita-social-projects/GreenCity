@@ -70,4 +70,103 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
         + "WHERE ha.habit_id =:habitId "
         + "AND ha.user_id =:userId", nativeQuery = true)
     List<Long> findHabitAssignByHabitIdAndHabitOwnerId(@Param("habitId") Long habitId, @Param("userId") Long userId);
+
+    /**
+     * Finds and returns a list of IDs for habits that are visible to a given user.
+     * The returned habits include:
+     * <ul>
+     * <li>Habits owned by the user.</li>
+     * <li>Public habits</li>
+     * <li>Private habits that are assigned to the user.</li>
+     * <li>Private habits that are shared with the user's friends (using the
+     * isSharedWithFriends flag).</li>
+     * </ul>
+     *
+     * @param userId the ID of the user for whom visible habit IDs are to be
+     *               retrieved.
+     * @return a {@link List} of {@link Long} IDs of habits that are visible to thе
+     *         specified user.
+     */
+    @Query(value = """
+        SELECT DISTINCT h.id
+        FROM habits h
+        LEFT JOIN habits_tags ht ON h.id = ht.habit_id
+        LEFT JOIN tags t ON ht.tag_id = t.id
+        LEFT JOIN tag_translations tt ON tt.tag_id = t.id AND tt.language_id = 2 AND tt.name = 'Private'
+        LEFT JOIN habit_assign ha ON h.id = ha.habit_id AND ha.user_id = :userId
+        LEFT JOIN users_friends uf ON uf.status = 'FRIEND'
+                                    AND ((uf.user_id = :userId AND uf.friend_id = h.user_id)
+                                         OR (uf.user_id = h.user_id AND uf.friend_id = :userId))
+        WHERE h.user_id = :userId
+        OR tt.name IS NULL
+        OR ha.user_id = :userId
+        OR (h.is_shared_with_friends = TRUE AND uf.user_id IS NOT NULL)
+        """, nativeQuery = true)
+    List<Long> findVisibleCustomHabitsIdsByUserId(@Param("userId") Long userId);
+
+    /**
+     * Determines if a habit is private based on its tags.
+     *
+     * @param habitId the ID of the habit to check.
+     * @return {@code true} if the habit is private, {@code false} otherwise.
+     */
+    @Query(value = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM habits_tags ht
+                JOIN tag_translations tt ON ht.tag_id = tt.tag_id
+                WHERE ht.habit_id = :habitId
+                AND tt.language_id = 2
+                AND tt.name = 'Private'
+            )
+        """, nativeQuery = true)
+    boolean isHabitPrivate(@Param("habitId") Long habitId);
+
+    /**
+     * Checks if a user can assign a specific private habit. This method verifies if
+     * the habit meets the following conditions:
+     * <ul>
+     * <li>The habit is owned by the user.</li>
+     * <li>The habit is private.</li>
+     * <li>Either the habit is explicitly assigned to the user, or it is shared with
+     * friends and the user is a friend of the habit's owner.</li>
+     * </ul>
+     *
+     * @param userId  the ID of the user who is attempting to assign the habit.
+     * @param habitId the ID of the habit to check.
+     * @return {@code true} if the user can assign the habit; {@code false}
+     *         otherwise.
+     */
+    @Query(value = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM habits h
+            LEFT JOIN habits_tags ht ON ht.habit_id = h.id
+            LEFT JOIN tag_translations tt ON tt.tag_id = ht.tag_id AND tt.language_id = 2 AND tt.name = 'Private'
+            WHERE h.id = :habitId
+            AND h.user_id = :userId
+            AND tt.name IS NOT NULL
+            AND (
+                EXISTS (
+                    SELECT 1
+                    FROM habit_assign ha
+                    WHERE ha.user_id = :userId
+                    AND ha.habit_id = h.id
+                )
+                OR (
+                    h.is_shared_with_friends = TRUE
+                    AND EXISTS (
+                        SELECT 1
+                        FROM users_friends uf
+                        WHERE uf.status = 'FRIEND'
+                        AND ((uf.user_id = :userId AND uf.friend_id = h.user_id)
+                            OR (uf.user_id = h.user_id AND uf.friend_id = :userId))
+                    )
+                )
+            )
+        )
+        """, nativeQuery = true)
+    boolean canAssignPrivateHabitByUserIdAndHabitId(
+        @Param("userId") Long userId,
+        @Param("habitId") Long habitId);
 }
