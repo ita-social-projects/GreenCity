@@ -21,6 +21,7 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -266,6 +267,17 @@ public class ModelUtils {
             .receiverEmail("Ivan@gmail.com")
             .parentCommentText("parent comment")
             .parentCommentAuthorName("Dmytro")
+            .build();
+    }
+
+    public static ScheduledEmailMessage getScheduledEmailMessage() {
+        return ScheduledEmailMessage.builder()
+            .username("test")
+            .body("test")
+            .subject("test")
+            .language("en")
+            .baseLink("test")
+            .email("test@gmail.com")
             .build();
     }
 }

@@ -123,4 +123,16 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
      * @return the number of unread notifications for the specified user
      */
     long countByTargetUserIdAndViewedIsFalse(Long userId);
+
+    /**
+     * Method to return all unread notifications by specific type.
+     *
+     * @param notificationType type of notification
+     * @return List of unread notification that have specific type
+     */
+    @Query("SELECT n FROM Notification n "
+        + "JOIN FETCH n.targetUser "
+        + "JOIN FETCH n.actionUsers "
+        + "WHERE n.notificationType = :notificationType AND n.viewed = false")
+    List<Notification> findAllByNotificationTypeAndViewedIsFalse(NotificationType notificationType);
 }

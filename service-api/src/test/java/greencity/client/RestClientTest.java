@@ -17,6 +17,7 @@ import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -26,9 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
-
-import greencity.message.UserReceivedCommentMessage;
-import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -634,40 +632,22 @@ class RestClientTest {
     }
 
     @Test
-    void sendUserReceivedCommentNotification() {
+    void sendScheduledNotificationTest() {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, ACCESS_TOKEN);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        UserReceivedCommentMessage message = ModelUtils.getUserReceivedCommentMessage();
-        HttpEntity<UserReceivedCommentMessage> entity = new HttpEntity<>(message, headers);
+        ScheduledEmailMessage message = ModelUtils.getScheduledEmailMessage();
+
+        HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class))
             .thenReturn(ResponseEntity.ok(Object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
-        restClient.sendUserReceivedCommentNotification(message);
+        restClient.sendScheduledEmailNotification(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
-    }
-
-    @Test
-    void sendUserReceivedCommentReplyNotification() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        UserReceivedCommentReplyMessage message = ModelUtils.getUserReceivedCommentReplyMessage();
-        HttpEntity<UserReceivedCommentReplyMessage> entity = new HttpEntity<>(message, headers);
-
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-
-        restClient.sendUserReceivedCommentReplyNotification(message);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

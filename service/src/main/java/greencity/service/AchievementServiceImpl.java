@@ -10,14 +10,13 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -26,7 +25,7 @@ import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 import greencity.repository.UserAchievementRepo;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -37,7 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EnableCaching
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
@@ -45,12 +44,10 @@ public class AchievementServiceImpl implements AchievementService {
     private final RestClient restClient;
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
-    private AchievementCalculation achievementCalculation;
-    private UserService userService;
+    private final AchievementCalculation achievementCalculation;
+    private final UserService userService;
     private final UserAchievementRepo userAchievementRepo;
-    private static final String ACHIEVED = "ACHIEVED";
-    private static final String UNACHIEVED = "UNACHIEVED";
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     @Transactional
@@ -65,8 +62,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public AchievementVO save(AchievementPostDto achievementPostDto) {
@@ -81,8 +76,7 @@ public class AchievementServiceImpl implements AchievementService {
         UserAchievementVO userAchievementVO = new UserAchievementVO();
         UserActionVO userActionVO = new UserActionVO();
         userAchievementVO.setAchievement(achievementVO);
-        List<UserVO> all = restClient.findAll();
-        all.forEach(userVO -> {
+        restClient.findAll().forEach(userVO -> {
             UserActionVO userActionByUserIdAndAchievementCategory =
                 userActionService.findUserAction(userVO.getId(),
                     achievementCategoryVO.getId());
@@ -100,8 +94,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
@@ -122,30 +114,23 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Oksana Spodaryk
      */
     @Override
-    public List<AchievementVO> findAllByType(String principalEmail, String achievementStatus) {
-        User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
-        Long userId = currentUser.getId();
-        if (ACHIEVED.equalsIgnoreCase(achievementStatus)) {
+    public List<AchievementVO> findAllByType(String principalEmail, AchievementStatus achievementStatus) {
+        Long userId = userService.findByEmail(principalEmail).getId();
+        if (achievementStatus == AchievementStatus.ACHIEVED) {
             return findAllAchieved(userId);
-        } else if (UNACHIEVED.equalsIgnoreCase(achievementStatus)) {
+        } else if (achievementStatus == AchievementStatus.UNACHIEVED) {
             return achievementRepo.searchAchievementsUnAchieved(userId).stream()
                 .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-                .collect(Collectors.toList());
+                .toList();
         }
         return findAll();
     }
 
     private List<AchievementVO> findAllAchieved(Long userId) {
-        List<Long> achievemnetsId = userAchievementRepo.getUserAchievementByUserId(userId)
-            .stream()
+        return userAchievementRepo.getUserAchievementByUserId(userId).stream()
             .map(userAchievement -> userAchievement.getAchievement().getId())
-            .toList();
-        return achievemnetsId
-            .stream()
             .map(achievementRepo::findById)
             .flatMap(Optional::stream)
             .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
@@ -168,8 +153,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public PageableAdvancedDto<AchievementVO> searchAchievementBy(Pageable paging, String query) {
@@ -183,8 +166,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public Long delete(Long id) {
@@ -198,8 +179,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public void deleteAll(List<Long> listId) {
@@ -208,21 +187,16 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public AchievementVO findById(Long id) {
-        return modelMapper.map(
-            achievementRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID + id)),
-            AchievementVO.class);
+        return achievementRepo.findById(id)
+            .map(a -> modelMapper.map(a, AchievementVO.class))
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID + id));
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     public AchievementPostDto update(AchievementManagementDto achievementManagementDto) {
@@ -235,24 +209,21 @@ public class AchievementServiceImpl implements AchievementService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
      */
     @Override
     @Transactional
     public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
-        Achievement achievement =
-            achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
-        return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
+        return achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition)
+            .map(a -> modelMapper.map(a, AchievementVO.class))
+            .orElse(null);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void calculateAchievements(Long id,
-        AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
-        UserVO userVO = userService.findById(id);
-        achievementCalculation.calculateAchievement(userVO, achievementCategory, achievementAction);
+    public void calculateAchievements(Long id, AchievementCategoryType achievementCategory,
+        AchievementAction achievementAction) {
+        achievementCalculation.calculateAchievement(userService.findById(id), achievementCategory, achievementAction);
     }
 }

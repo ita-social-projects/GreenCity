@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,12 +19,17 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
+import greencity.entity.Notification;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.enums.EmailNotification;
+import greencity.enums.NotificationType;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
+import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.UserTaggedInCommentMessage;
+import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -32,6 +38,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import greencity.repository.UserNotificationPreferenceRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -51,10 +59,16 @@ class NotificationServiceImplTest {
     private PlaceRepo placeRepo;
 
     @Mock
+    private NotificationRepo notificationRepo;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @Mock
     private RestClient restClient;
+
+    @Mock
+    private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
 
     @Test
     void sendImmediatelyReportTest() {
@@ -243,6 +257,54 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    void sendEmailNotificationLikesToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationLikes(generalEmailMessage);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
+    void sendEmailNotificationCommentsToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationComments(generalEmailMessage);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
+    void sendEmailNotificationInvitesToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationInvites(generalEmailMessage);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
     void sendHabitAssignEmailNotification() {
         HabitAssignNotificationMessage message = new HabitAssignNotificationMessage(
             "sender", "receiver", "receiver@example.com", "habit", "en", 123L);
@@ -280,5 +342,91 @@ class NotificationServiceImplTest {
         assertEquals(message.getCommentText(), capturedMessage.getCommentText());
         assertEquals(message.getLanguage(), capturedMessage.getLanguage());
         assertEquals(message.getTaggerName(), capturedMessage.getTaggerName());
+    }
+
+    @Test
+    void sendFriendRequestScheduledEmail() {
+        Notification notification = ModelUtils.getNotification();
+        User targetUser = ModelUtils.getUser();
+        notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_RECEIVED))
+            .thenReturn(Collections.singletonList(notification));
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_ACCEPTED))
+            .thenReturn(Collections.singletonList(notification));
+        notificationService.sendFriendRequestScheduledEmail();
+        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+        List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
+        for (ScheduledEmailMessage capturedMessage : capturedMessages) {
+            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
+        }
+    }
+
+    @Test
+    void sendCommentReplyScheduledEmail() {
+        Notification notification = ModelUtils.getNotification();
+        User targetUser = ModelUtils.getUser();
+        notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_REPLY))
+            .thenReturn(Collections.singletonList(notification));
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_REPLY))
+            .thenReturn(Collections.singletonList(notification));
+        notificationService.sendCommentReplyScheduledEmail();
+        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+        List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
+        for (ScheduledEmailMessage capturedMessage : capturedMessages) {
+            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
+        }
+    }
+
+    @Test
+    void sendCommentScheduledEmail() {
+        Notification notification = ModelUtils.getNotification();
+        User targetUser = ModelUtils.getUser();
+        notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT))
+            .thenReturn(Collections.singletonList(notification));
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT))
+            .thenReturn(Collections.singletonList(notification));
+        notificationService.sendCommentScheduledEmail();
+        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+        List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
+        for (ScheduledEmailMessage capturedMessage : capturedMessages) {
+            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
+        }
+    }
+
+    @Test
+    void sendLikeScheduledEmail() {
+        Notification notification = ModelUtils.getNotification();
+        User targetUser = ModelUtils.getUser();
+        notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_LIKE))
+            .thenReturn(Collections.singletonList(notification));
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_LIKE))
+            .thenReturn(Collections.singletonList(notification));
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_LIKE))
+            .thenReturn(Collections.singletonList(notification));
+        notificationService.sendLikeScheduledEmail();
+        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient, times(3)).sendScheduledEmailNotification(captor.capture()));
+        List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
+        for (ScheduledEmailMessage capturedMessage : capturedMessages) {
+            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
+        }
     }
 }

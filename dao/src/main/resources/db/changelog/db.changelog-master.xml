@@ -201,8 +201,8 @@
     <include file="db/changelog/logs/ch-add-column-eco-news-Herchanivska.xml"/>
     <include file="db/changelog/logs/ch-modify-function-recommended-eco-news-Herchanivska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-employee-authority-Prots.xml" />
-    <include file="db/changelog/logs/ch-insert-into-employee-authority-mapping-Prots.xml" />
-    <include file="db/changelog/logs/ch-insert-into-positions-authorities-mapping-Prots.xml" />
+    <include file="db/changelog/logs/ch-insert-into-employee-authority-mapping-Prots.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-positions-authorities-mapping-Prots.xml"/>
     <include file="db/changelog/logs/ch-add-table-place-comments-Fedotov.xml"/>
     <include file="/db/changelog/logs/ch-change-table-estimates-Fedotov.xml"/>
     <include file="/db/changelog/logs/ch-change-table-comments-Fedotov.xml"/>
@@ -214,4 +214,5 @@
     <include file="db/changelog/logs/ch-add-values-achievement-categories-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-column-is-shared-with-friends-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-add-new-tag-Holotsvan.xml"/>
+    <include file="/db/changelog/logs/ch-add-user_email_preferences-Holotsvan.xml"/>
 </databaseChangeLog>
