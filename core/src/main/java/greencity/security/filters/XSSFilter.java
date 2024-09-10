@@ -18,11 +18,10 @@ import java.io.IOException;
  */
 @RequiredArgsConstructor
 public class XSSFilter extends OncePerRequestFilter {
-
     @Override
     public void doFilterInternal(HttpServletRequest servletRequest,
-                                 @SuppressWarnings("NullableProblems") HttpServletResponse servletResponse,
-                                 @SuppressWarnings("NullableProblems") FilterChain filterChain) throws IOException, ServletException {
+        @SuppressWarnings("NullableProblems") HttpServletResponse servletResponse,
+        @SuppressWarnings("NullableProblems") FilterChain filterChain) throws IOException, ServletException {
         if (servletRequest.getContentType() == null) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else if (servletRequest.getContentType().contains(MediaType.MULTIPART_FORM_DATA_VALUE)) {

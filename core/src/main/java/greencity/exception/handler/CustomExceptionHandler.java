@@ -588,7 +588,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(MultipartXSSProcessingException.class)
     public final ResponseEntity<Object> handleMultipartXSSProcessingException(
-            MultipartXSSProcessingException ex, WebRequest request) {
+        MultipartXSSProcessingException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

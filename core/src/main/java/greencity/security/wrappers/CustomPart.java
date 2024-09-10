@@ -8,10 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-
 /**
- * Class that represents customized part of multipart/form-data
- * content type request.
+ * Class that represents customized part of multipart/form-data content type
+ * request.
  *
  * @author Dmytro Dmytruk.
  */

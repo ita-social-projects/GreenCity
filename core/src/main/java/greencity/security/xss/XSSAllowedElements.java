@@ -5,13 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jsoup.safety.Safelist;
-
 import java.util.List;
-import java.util.Map;
-
 
 /**
- * class user for representing allowed html elements in xss escaping
+ * class user for representing allowed html elements in xss escaping.
  *
  * @author Dmytro Dmytruk
  */

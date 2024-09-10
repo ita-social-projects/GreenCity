@@ -16,8 +16,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * class provides wrapping of multipart/form-data content type
- * with escaping to prevent xss attacks.
+ * class provides wrapping of multipart/form-data content type with escaping to
+ * prevent xss attacks.
  *
  * @author Dmytro Dmytruk.
  */
@@ -39,11 +39,13 @@ public class MultipartXSSWrapper extends HttpServletRequestWrapper {
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
         return super.getParts().stream()
-                .map(this::modifyPart)
-                .collect(Collectors.toList());
+            .map(this::modifyPart)
+            .collect(Collectors.toList());
     }
 
     /**
+     * Performs modification of part.
+     *
      * @param originalPart {@link Part} - original part to escape.
      *
      * @return {@link Part} escaped part of the file.

@@ -13,12 +13,12 @@ import java.util.Iterator;
  * @author Dmytro Dmytruk.
  */
 public class XSSEscaper {
-
     /**
      * Escaping with allowed tags, attributes and attribute values using Jsoup.
      *
-     * @param input {@link String} text to escape
-     * @param safelist allowed attribute values, key - tag, val - attributes with allowed values
+     * @param input    {@link String} text to escape
+     * @param safelist allowed attribute values, key - tag, val - attributes with
+     *                 allowed values
      *
      * @return escaped text
      */
@@ -30,7 +30,7 @@ public class XSSEscaper {
     }
 
     /**
-     * Checks if text contains html
+     * Checks if text contains html.
      *
      * @param text input text
      *
@@ -51,8 +51,9 @@ public class XSSEscaper {
     }
 
     /**
+     * Used to clean node of object.
      *
-     * @param objectNode {@link ObjectNode} represents node of json.
+     * @param objectNode      {@link ObjectNode} represents node of json.
      *
      * @param allowedElements {@link XSSAllowedElements} list of allowed elements.
      *
@@ -65,7 +66,8 @@ public class XSSEscaper {
             JsonNode fieldValue = objectNode.get(fieldName);
             if (allowedElements.getFields().contains(fieldName.toLowerCase())) {
                 if (fieldValue.isTextual()) {
-                    objectNode.set(fieldName, new TextNode(XSSEscaper.clean(fieldValue.asText(), allowedElements.getSafelist())));
+                    objectNode.set(fieldName,
+                        new TextNode(XSSEscaper.clean(fieldValue.asText(), allowedElements.getSafelist())));
                 }
             } else {
                 if (fieldValue.isObject() || fieldValue.isArray()) {
@@ -81,7 +83,7 @@ public class XSSEscaper {
     /**
      * Perform cleaning of json array.
      *
-     * @param node {@link JsonNode} represents node of json.
+     * @param node            {@link JsonNode} represents node of json.
      *
      * @param allowedElements {@link XSSAllowedElements} list of allowed elements.
      *

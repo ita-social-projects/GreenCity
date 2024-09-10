@@ -2,14 +2,12 @@ package greencity.security.xss;
 
 import org.jsoup.safety.Safelist;
 import org.springframework.util.AntPathMatcher;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
- * class stores allowed html tags, attributes, and values
+ * class stores allowed html tags, attributes, and values.
  *
  * @author Dmytro Dmytruk
  */
@@ -20,39 +18,39 @@ public class XSSSafelist {
 
     static {
         Safelist safelistForEvent = new Safelist()
-                .addTags("p", "strong", "em", "u", "span")
-                .addAttributes("span", "class");
+            .addTags("p", "strong", "em", "u", "span")
+            .addAttributes("span", "class");
 
         XSSAllowedElements allowedElementsForEvent = XSSAllowedElements.builder()
-                .safelist(safelistForEvent)
-                .fields(List.of("description"))
-                .build();
+            .safelist(safelistForEvent)
+            .fields(List.of("description"))
+            .build();
 
         Safelist safelistForEcoNews = new Safelist()
-                .addTags("pre", "p", "span", "a", "iframe", "img")
-                .addAttributes("pre", "class")
-                .addAttributes("p", "class")
-                .addAttributes("span", "class", "style")
-                .addAttributes("a", "href", "rel", "target")
-                .addAttributes("iframe", "class", "src", "frameborder", "allowfullscreen")
-                .addAttributes("img", "src", "alt");
+            .addTags("pre", "p", "span", "a", "iframe", "img")
+            .addAttributes("pre", "class")
+            .addAttributes("p", "class")
+            .addAttributes("span", "class", "style")
+            .addAttributes("a", "href", "rel", "target")
+            .addAttributes("iframe", "class", "src", "frameborder", "allowfullscreen")
+            .addAttributes("img", "src", "alt");
         safelistForEcoNews.addEnforcedAttribute("iframe", "frameborder", "0")
-                .addEnforcedAttribute("iframe", "allowfullscreen", "true")
-                .addProtocols("a", "href", "http", "https");
+            .addEnforcedAttribute("iframe", "allowfullscreen", "true")
+            .addProtocols("a", "href", "http", "https");
 
         XSSAllowedElements allowedElementsForEcoNews = XSSAllowedElements.builder()
-                .safelist(safelistForEcoNews)
-                .fields(List.of("text", "content"))
-                .build();
+            .safelist(safelistForEcoNews)
+            .fields(List.of("text", "content"))
+            .build();
 
         Safelist safelistForHabit = new Safelist()
-                .addTags("p", "strong", "em", "u", "span")
-                .addAttributes("span", "class");
+            .addTags("p", "strong", "em", "u", "span")
+            .addAttributes("span", "class");
 
         XSSAllowedElements allowedElementsForHabit = XSSAllowedElements.builder()
-                .safelist(safelistForHabit)
-                .fields(List.of("description", "descriptionUa"))
-                .build();
+            .safelist(safelistForHabit)
+            .fields(List.of("description", "descriptionUa"))
+            .build();
 
         endpointRules.put("/events/create", allowedElementsForEvent);
         endpointRules.put("/events/update", allowedElementsForEvent);

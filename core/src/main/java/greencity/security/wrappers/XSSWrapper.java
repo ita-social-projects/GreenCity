@@ -19,8 +19,8 @@ import java.util.Enumeration;
 import java.util.stream.Collectors;
 
 /**
- * class provides wrapping of application/json content type
- * with escaping to prevent xss attacks
+ * Class provides wrapping of application/json content type with escaping to
+ * prevent xss attacks.
  *
  * @author Dmytro Dmytruk
  */
@@ -39,7 +39,7 @@ public class XSSWrapper extends HttpServletRequestWrapper {
     }
 
     /**
-     * Modify input stream of servlet with escaping of request body
+     * Modify input stream of servlet with escaping of request body.
      *
      * @return {@link ServletInputStream} - modified input stream
      */
@@ -47,7 +47,6 @@ public class XSSWrapper extends HttpServletRequestWrapper {
     public ServletInputStream getInputStream() {
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(escapedBody.getBytes());
         return new ServletInputStream() {
-
             @Override
             public int read() {
                 return byteArrayInputStream.read();
@@ -65,7 +64,6 @@ public class XSSWrapper extends HttpServletRequestWrapper {
 
             @Override
             public void setReadListener(ReadListener listener) {
-
             }
         };
     }
