@@ -21,7 +21,7 @@ import java.util.List;
 public class XSSEscaperTest {
 
     @Test
-    public void xssWithWhitelistTest() {
+    void xssWithWhitelistTest() {
         String input = "<b onclick=\"alert('XSS')\">Bold text</b><script>alert('XSS')</script>";
         Safelist safelist = new Safelist()
             .addTags("b")
@@ -33,7 +33,7 @@ public class XSSEscaperTest {
     }
 
     @Test
-    public void saveTextWithWhitelistTest() {
+    void saveTextWithWhitelistTest() {
         String input = "<p style=\"color:red\">Paragraph</p>";
 
         Safelist safelist = new Safelist()
@@ -47,7 +47,7 @@ public class XSSEscaperTest {
     }
 
     @Test
-    public void xssWithoutWhitelistTest() {
+    void xssWithoutWhitelistTest() {
         String input = "<b onclick=\"alert('XSS')\">text</b><script>alert('XSS')</script>";
         Safelist safelist = Safelist.none();
         String result = XSSEscaper.clean(input, safelist);
@@ -55,7 +55,7 @@ public class XSSEscaperTest {
     }
 
     @Test
-    public void saveTextWithoutWhitelistTest() {
+    void saveTextWithoutWhitelistTest() {
         String input = "<p style=\"color:red\">text</p>";
         Safelist safelist = Safelist.none();
         String result = XSSEscaper.clean(input, safelist);
@@ -63,7 +63,7 @@ public class XSSEscaperTest {
     }
 
     @Test
-    public void cleanJsonObjectWithAllowedFields() throws JsonProcessingException {
+    void cleanJsonObjectWithAllowedFields() throws JsonProcessingException {
         String input = "{\"text\":\"<b onclick='alert('XSS')'>text</b><script>alert('XSS')</script>\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(input);
@@ -80,7 +80,7 @@ public class XSSEscaperTest {
     }
 
     @Test
-    public void cleanJsonObjectWithNoAllowedFields() throws JsonProcessingException {
+    void cleanJsonObjectWithNoAllowedFields() throws JsonProcessingException {
         String input = "{\"text\":\"<b onclick='alert('XSS')'>text</b><script>alert('XSS')</script>\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(input);
@@ -91,7 +91,7 @@ public class XSSEscaperTest {
     }
 
     @Test
-    public void cleanJsonArrayWithMixedNodes() throws JsonProcessingException {
+    void cleanJsonArrayWithMixedNodes() throws JsonProcessingException {
         String input = "[{\"text\":\"<b onclick=\\\"alert('XSS')\\\">Bold text</b>\"}," +
             "{\"innerText\": \"<i>Italic text</i>\"}]";
         ObjectMapper objectMapper = new ObjectMapper();
@@ -106,13 +106,13 @@ public class XSSEscaperTest {
     }
 
     @Test
-    public void containsHtmlTagsWithHtml() {
+    void containsHtmlTagsWithHtml() {
         String text = "<div>Some HTML</div>";
         Assertions.assertTrue(XSSEscaper.containsHtmlTags(text));
     }
 
     @Test
-    public void containsHtmlTagsWithoutHtml() {
+    void containsHtmlTagsWithoutHtml() {
         String text = "Plain text";
         Assertions.assertFalse(XSSEscaper.containsHtmlTags(text));
     }

@@ -29,7 +29,7 @@ public class XSSFilterTest {
     private FilterChain filterChain;
 
     @Test
-    public void testDoFilterInternalNullContentType() throws Exception {
+    void testDoFilterInternalNullContentType() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain spyFilterChain = spy(new MockFilterChain());
@@ -38,7 +38,7 @@ public class XSSFilterTest {
     }
 
     @Test
-    public void testDoFilterInternalMultipartFormData() throws Exception {
+    void testDoFilterInternalMultipartFormData() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContentType("multipart/form-data");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -48,7 +48,7 @@ public class XSSFilterTest {
     }
 
     @Test
-    public void testDoFilterInternalJson() throws Exception {
+    void testDoFilterInternalJson() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContentType("application/json");
         MockHttpServletResponse response = new MockHttpServletResponse();

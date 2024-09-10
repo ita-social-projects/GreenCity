@@ -3,6 +3,7 @@ package greencity.security.xss;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import lombok.experimental.UtilityClass;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.Iterator;
  *
  * @author Dmytro Dmytruk.
  */
+@UtilityClass
 public class XSSEscaper {
     /**
      * Escaping with allowed tags, attributes and attribute values using Jsoup.
@@ -37,7 +39,7 @@ public class XSSEscaper {
      * @return true if html present, false if not
      */
     public static boolean containsHtmlTags(String text) {
-        String htmlTagPattern = "<(\"[^\"]*\"|'[^']*'|[^'\">])*>";
+        String htmlTagPattern = "<[^>]+>";
         return text.matches(".*" + htmlTagPattern + ".*");
     }
 

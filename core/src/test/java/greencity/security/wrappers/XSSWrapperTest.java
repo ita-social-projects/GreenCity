@@ -28,11 +28,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class XSSWrapperTest {
 
-    @Mock
-    XSSWrapper xssWrapper;
-
     @Test
-    public void testGetInputStream() throws IOException {
+    void getInputStreamTest() throws IOException {
         String requestBody = "{\"text\":\"<script>alert('XSS')</script>Test\"}";
         String escapedBody = "{\"text\":\"Test\"}";
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
@@ -50,15 +47,5 @@ public class XSSWrapperTest {
             String result = reader.readLine();
             Assertions.assertEquals(escapedBody, result);
         }
-    }
-
-    @Test
-    void testGetHeadersContentLength() {
-        when(xssWrapper.getHeaders("Content-Length"))
-                .thenReturn(Collections.enumeration(List.of("test")));
-        Enumeration<String> headers = xssWrapper.getHeaders("Content-Length");
-        Assertions.assertTrue(headers.hasMoreElements());
-        String content = headers.nextElement();
-        Assertions.assertEquals(4, content.length());
     }
 }

@@ -54,7 +54,6 @@ public class MultipartXSSWrapper extends HttpServletRequestWrapper {
         try {
             String body = new String(originalPart.getInputStream().readAllBytes());
             if (isJson(body)) {
-                ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(body);
                 JsonNode cleanedNode = XSSEscaper.cleanJson(rootNode, allowedElements);
                 String escapedBody = objectMapper.writeValueAsString(cleanedNode);

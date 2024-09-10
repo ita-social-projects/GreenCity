@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class MultipartXSSWrapperTest {
 
     @Test
-    public void testGetPart() throws IOException, ServletException {
+    void testGetPart() throws IOException, ServletException {
         String requestBody = "{\"key\":\"<script>alert('XSS')</script>Test\"}";
         String escapedBody = "{\"key\":\"Test\"}";
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
@@ -51,7 +51,7 @@ public class MultipartXSSWrapperTest {
     }
 
     @Test
-    public void testGetParts() throws IOException, ServletException {
+    void testGetParts() throws IOException, ServletException {
         String requestBody = "{\"key\":\"<b>test</b>\"}";
         String escapedBody = "{\"key\":\"test\"}";
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
@@ -74,7 +74,7 @@ public class MultipartXSSWrapperTest {
     }
 
     @Test
-    public void testIOExceptionHandling() throws IOException, ServletException {
+    void testIOExceptionHandling() throws IOException, ServletException {
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         Part mockPart = mock(Part.class);
 
@@ -91,7 +91,7 @@ public class MultipartXSSWrapperTest {
     }
 
     @Test
-    public void testEmptyPart() throws IOException, ServletException {
+    void testEmptyPart() throws IOException, ServletException {
         String requestBody = "";
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         Part mockPart = mock(Part.class);

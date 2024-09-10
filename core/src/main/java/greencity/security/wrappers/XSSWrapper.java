@@ -62,8 +62,10 @@ public class XSSWrapper extends HttpServletRequestWrapper {
                 return false;
             }
 
+
             @Override
             public void setReadListener(ReadListener listener) {
+                //Do nothing
             }
         };
     }

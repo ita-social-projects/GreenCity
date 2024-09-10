@@ -1,5 +1,6 @@
 package greencity.security.xss;
 
+import lombok.experimental.UtilityClass;
 import org.jsoup.safety.Safelist;
 import org.springframework.util.AntPathMatcher;
 import java.util.HashMap;
@@ -11,10 +12,13 @@ import java.util.Map;
  *
  * @author Dmytro Dmytruk
  */
+@UtilityClass
 public class XSSSafelist {
     private static final Map<String, XSSAllowedElements> endpointRules = new HashMap<>();
     private static final XSSAllowedElements defaultAllowedElements = XSSAllowedElements.getDefault();
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private static final String IFRAME_ATTR = "iframe";
+    private static final String CLASS_ATTR = "class";
 
     static {
         Safelist safelistForEvent = new Safelist()
@@ -27,15 +31,15 @@ public class XSSSafelist {
             .build();
 
         Safelist safelistForEcoNews = new Safelist()
-            .addTags("pre", "p", "span", "a", "iframe", "img")
-            .addAttributes("pre", "class")
-            .addAttributes("p", "class")
-            .addAttributes("span", "class", "style")
+            .addTags("pre", "p", "span", "a", IFRAME_ATTR, "img")
+            .addAttributes("pre", CLASS_ATTR)
+            .addAttributes("p", CLASS_ATTR)
+            .addAttributes("span", CLASS_ATTR, "style")
             .addAttributes("a", "href", "rel", "target")
-            .addAttributes("iframe", "class", "src", "frameborder", "allowfullscreen")
+            .addAttributes(IFRAME_ATTR, CLASS_ATTR, "src", "frameborder", "allowfullscreen")
             .addAttributes("img", "src", "alt");
-        safelistForEcoNews.addEnforcedAttribute("iframe", "frameborder", "0")
-            .addEnforcedAttribute("iframe", "allowfullscreen", "true")
+        safelistForEcoNews.addEnforcedAttribute(IFRAME_ATTR, "frameborder", "0")
+            .addEnforcedAttribute(IFRAME_ATTR, "allowfullscreen", "true")
             .addProtocols("a", "href", "http", "https");
 
         XSSAllowedElements allowedElementsForEcoNews = XSSAllowedElements.builder()
@@ -45,7 +49,7 @@ public class XSSSafelist {
 
         Safelist safelistForHabit = new Safelist()
             .addTags("p", "strong", "em", "u", "span")
-            .addAttributes("span", "class");
+            .addAttributes("span", CLASS_ATTR);
 
         XSSAllowedElements allowedElementsForHabit = XSSAllowedElements.builder()
             .safelist(safelistForHabit)
@@ -61,9 +65,9 @@ public class XSSSafelist {
     }
 
     public static XSSAllowedElements getAllowedElementsForEndpoint(String endpoint) {
-        for (String registeredEndpoint : endpointRules.keySet()) {
-            if (pathMatcher.match(registeredEndpoint, endpoint)) {
-                return endpointRules.get(registeredEndpoint);
+        for (Map.Entry<String, XSSAllowedElements> entry : endpointRules.entrySet()) {
+            if (pathMatcher.match(entry.getKey(), endpoint)) {
+                return entry.getValue();
             }
         }
         return defaultAllowedElements;
