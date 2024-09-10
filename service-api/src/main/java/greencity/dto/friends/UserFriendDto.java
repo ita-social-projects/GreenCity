@@ -44,7 +44,7 @@ public class UserFriendDto {
                 new UserLocationDto(ulId, cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, latitude,
                     longitude);
         } else {
-            this.userLocationDto = null;
+            this.userLocationDto = new UserLocationDto(null, null, null, null, null, null, null, null, null);
         }
     }
 }
