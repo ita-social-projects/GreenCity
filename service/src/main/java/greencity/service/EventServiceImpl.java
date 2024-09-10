@@ -242,7 +242,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal,
-        FilterEventDto filterEventDto,
+        List<EventTime> eventTime,
+        List<String> cities,
+        List<EventStatus> statuses,
+        List<String> tags,
         String title) {
         Long userId = null;
         if (principal != null) {
@@ -251,6 +254,12 @@ public class EventServiceImpl implements EventService {
         if (title != null) {
             title = "%" + title.toLowerCase() + "%";
         }
+        FilterEventDto filterEventDto = FilterEventDto.builder()
+            .eventTime(eventTime)
+            .cities(cities)
+            .statuses(statuses)
+            .tags(tags)
+            .build();
         List<Boolean> openStatuses = new ArrayList<>();
         List<Boolean> futureTimeStatuses = new ArrayList<>();
         String[] citiesInLower = null;
@@ -261,7 +270,7 @@ public class EventServiceImpl implements EventService {
         if (filterEventDto != null) {
             futureTimeStatuses = filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()
                 ? filterEventDto.getEventTime().stream()
-                    .map(eventTime -> eventTime == EventTime.FUTURE)
+                    .map(time -> time == EventTime.FUTURE)
                     .collect(Collectors.toList())
                 : Collections.emptyList();
             if (filterEventDto.getStatuses() != null && !filterEventDto.getStatuses().isEmpty()) {

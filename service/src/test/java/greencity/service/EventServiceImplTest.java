@@ -17,6 +17,8 @@ import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import greencity.enums.EventStatus;
+import greencity.enums.EventTime;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -1312,6 +1314,10 @@ class EventServiceImplTest {
         String titleCriteria = "%" + title.toLowerCase() + "%";
         Long userId = 1L;
         FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
+        List<EventTime> eventTime = filterEventDto.getEventTime();
+        List<String> cities = filterEventDto.getCities();
+        List<EventStatus> statuses = filterEventDto.getStatuses();
+        List<String> tags = filterEventDto.getTags();
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements;
         elements = ModelUtils.getTupleElements();
@@ -1337,7 +1343,7 @@ class EventServiceImplTest {
         when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
 
         PageableAdvancedDto<EventPreviewDto> result =
-            eventService.getEvents(pageable, principal, filterEventDto, title);
+            eventService.getEvents(pageable, principal, eventTime, cities, statuses, tags, title);
         assertEquals(eventPreviewDtoPage, result);
     }
 
@@ -1347,6 +1353,10 @@ class EventServiceImplTest {
         String title = "Test Title";
         String titleCriteria = "%" + title.toLowerCase() + "%";
         FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
+        List<EventTime> eventTime = filterEventDto.getEventTime();
+        List<String> cities = filterEventDto.getCities();
+        List<EventStatus> statuses = filterEventDto.getStatuses();
+        List<String> tags = filterEventDto.getTags();
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements;
         elements = ModelUtils.getTupleElements();
@@ -1370,7 +1380,7 @@ class EventServiceImplTest {
         when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent())).thenReturn(tuples);
 
         PageableAdvancedDto<EventPreviewDto> result =
-            eventService.getEvents(pageable, null, filterEventDto, title);
+            eventService.getEvents(pageable, null, eventTime, cities, statuses, tags, title);
         assertEquals(eventPreviewDtoPage, result);
     }
 
