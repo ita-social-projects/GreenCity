@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class XSSFilterTest {
+class XSSFilterTest {
     @InjectMocks
     private XSSFilter xssFilter;
 

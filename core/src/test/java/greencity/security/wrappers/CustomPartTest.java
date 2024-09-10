@@ -2,11 +2,8 @@ package greencity.security.wrappers;
 
 import jakarta.servlet.http.Part;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -15,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import static org.mockito.Mockito.when;
 
-public class CustomPartTest {
+class CustomPartTest {
     private final String updatedContent = "updated content";
     private final byte[] updatedContentBytes = updatedContent.getBytes();
 

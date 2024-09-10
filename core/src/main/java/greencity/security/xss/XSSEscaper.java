@@ -39,8 +39,7 @@ public class XSSEscaper {
      * @return true if html present, false if not
      */
     public static boolean containsHtmlTags(String text) {
-        String htmlTagPattern = "<(\"[^\"]*\"|'[^']*'|[^'\">])*>";
-        return text.matches(".*" + htmlTagPattern + ".*");
+        return text.contains("<") && text.contains(">");
     }
 
     public static JsonNode cleanJson(JsonNode node, XSSAllowedElements allowedElements) {

@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class MultipartXSSWrapperTest {
+class MultipartXSSWrapperTest {
 
     @Test
     void testGetPart() throws IOException, ServletException {

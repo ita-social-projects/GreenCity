@@ -10,15 +10,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ArrayNode;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class XSSEscaperTest {
+class XSSEscaperTest {
 
     @Test
     void xssWithWhitelistTest() {
