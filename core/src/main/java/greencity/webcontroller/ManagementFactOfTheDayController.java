@@ -166,6 +166,7 @@ public class ManagementFactOfTheDayController {
     @Operation(summary = "Retrieve all tags associated with Facts of the Day.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/tags")

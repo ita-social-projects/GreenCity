@@ -6,8 +6,7 @@
 
     <changeSet id="AddNewTag" author="Maryna Chekhovska">
         <insert tableName="tags">
-            <column name="id">25</column>
-            <column name="type">FACT_OF_THE_DAY</column>
+            <column name="type" value="FACT_OF_THE_DAY"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

@@ -61,8 +61,7 @@ public interface FactOfTheDayRepo extends JpaRepository<FactOfTheDay, Long> {
      *         Habits
      */
     @Query("SELECT DISTINCT new greencity.dto.tag.TagDto(t.id, tt.name, l.code) "
-        + "FROM FactOfTheDay f "
-        + "JOIN f.tags t "
+        + "FROM Tag t "
         + "JOIN t.tagTranslations tt "
         + "JOIN tt.language l "
         + "WHERE t.type = 'FACT_OF_THE_DAY' or t.type = 'HABIT'")

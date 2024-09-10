@@ -37,7 +37,9 @@
 
         <sql>
             INSERT INTO fact_of_the_day_tags (fact_of_the_day_id, tag_id)
-            SELECT id, 25 FROM fact_of_the_day;
+            SELECT f.id, t.id
+            FROM fact_of_the_day f, tags t
+            WHERE t.type = 'FACT_OF_THE_DAY';
         </sql>
     </changeSet>
 </databaseChangeLog>
