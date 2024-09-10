@@ -250,7 +250,11 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     @Override
     public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String languageCode, String userEmail) {
         Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userEmail);
-        return getRandomFactOfTheDayByLanguageAndTags(languageCode, userTagIds);
+        try {
+            return getRandomFactOfTheDayByLanguageAndTags(languageCode, userTagIds);
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 
     /**
