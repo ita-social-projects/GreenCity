@@ -4,6 +4,7 @@ import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.HabitTranslationFilterDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
@@ -46,11 +47,13 @@ import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.options.HabitTranslationFilter;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.Transactional;
@@ -79,7 +82,6 @@ public class HabitServiceImpl implements HabitService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
-    private static final String EN_LANGUAGE_CODE = "en";
     private final UserNotificationService userNotificationService;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
@@ -120,7 +122,7 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable) {
         long userId = userVO.getId();
-        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
+        List<Long> requestedCustomHabitIds = habitRepo.findVisibleCustomHabitsIdsByUserId(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
         String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
 
@@ -186,75 +188,18 @@ public class HabitServiceImpl implements HabitService {
     public PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable,
         Optional<List<String>> tags, Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities,
         String languageCode) {
-        List<String> lowerCaseTags = new ArrayList<>();
-        List<Integer> complexitiesList = new ArrayList<>();
-        if (tags.isPresent()) {
-            lowerCaseTags = tags.get().stream().map(String::toLowerCase).collect(Collectors.toList());
-        }
-        if (complexities.isPresent()) {
-            complexitiesList = new ArrayList<>(complexities.get());
-        }
-        Page<HabitTranslation> habitTranslationsPage;
-        long userId = userVO.getId();
-        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
-        checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
+        Long userId = userVO.getId();
+        HabitTranslationFilterDto filterDto = HabitTranslationFilterDto.builder()
+            .userId(userId)
+            .languageCode(languageCode)
+            .tags(tags.orElse(new ArrayList<>()))
+            .complexities(complexities.orElse(new ArrayList<>()))
+            .isCustom(isCustomHabit.orElse(null))
+            .build();
 
-        if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty() && !complexitiesList.isEmpty()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage =
-                    habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, complexities, languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage =
-                    habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
-                        complexities, languageCode);
-            }
-        } else if (!complexitiesList.isEmpty() && isCustomHabit.isPresent()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage =
-                    habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
-                        pageable,
-                        complexities, languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage =
-                    habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable,
-                        complexities, languageCode);
-            }
-        } else if (!complexitiesList.isEmpty() && !lowerCaseTags.isEmpty()) {
-            habitTranslationsPage =
-                habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, complexities, languageCode, requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage = habitTranslationRepo
-                    .findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable,
-                    lowerCaseTags, languageCode);
-            }
-        } else if (!lowerCaseTags.isEmpty()) {
-            habitTranslationsPage =
-                habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                    lowerCaseTags, languageCode, requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage =
-                    habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                        languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage = habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable,
-                    languageCode);
-            }
-        } else {
-            habitTranslationsPage =
-                habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, languageCode, requestedCustomHabitIds, userId);
-        }
+        Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
+        Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
+
         return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO);
     }
 
@@ -362,6 +307,7 @@ public class HabitServiceImpl implements HabitService {
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         habit.setUserId(user.getId());
         habit.setIsDeleted(false);
+        habit.setIsSharedWithFriends(addCustomHabitDtoRequest.getIsSharedWithFriends());
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
         setCustomShoppingListItemToHabit(addCustomHabitDtoRequest, habit, user);
@@ -384,6 +330,7 @@ public class HabitServiceImpl implements HabitService {
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
+        response.setIsSharedWithFriends(habit.getIsSharedWithFriends());
         return response;
     }
 

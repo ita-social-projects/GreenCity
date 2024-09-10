@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @SuperBuilder
-public abstract class CommentMessage implements Serializable {
+public abstract class CommentMessage implements Serializable, EmailMessage {
     @NotEmpty(message = "Receiver name cannot be empty")
     private String receiverName;
 
@@ -39,4 +39,8 @@ public abstract class CommentMessage implements Serializable {
 
     @NotEmpty(message = "Base link cannot be null")
     private String baseLink;
+
+    public String getEmail() {
+        return this.getReceiverEmail();
+    }
 }

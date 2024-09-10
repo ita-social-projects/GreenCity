@@ -1,5 +1,6 @@
 package greencity.client;
 
+import greencity.constant.AppConstant;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
@@ -13,11 +14,10 @@ import java.util.Map;
 import java.util.Optional;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
+import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-import greencity.message.UserReceivedCommentMessage;
-import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -549,7 +549,7 @@ public class RestClient {
         }
 
         if (!StringUtils.hasLength(accessToken)) {
-            accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
+            accessToken = AppConstant.TOKEN_PREFIX + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -562,7 +562,7 @@ public class RestClient {
             .filter(c -> c.getName().equals("accessToken"))
             .findFirst()
             .map(Cookie::getValue).orElse(null);
-        return token == null ? null : "Bearer " + token;
+        return token == null ? null : AppConstant.TOKEN_PREFIX + token;
     }
 
     /**
@@ -606,28 +606,17 @@ public class RestClient {
     }
 
     /**
-     * Method sends email notification when user has received comment.
+     * Method sends scheduled email notification.
      *
-     * @param message {@link UserReceivedCommentMessage}.
+     * @param message {@link ScheduledEmailMessage}.
      */
-    public void sendUserReceivedCommentNotification(UserReceivedCommentMessage message) {
-        HttpHeaders headers = setHeader();
+    public void sendScheduledEmailNotification(ScheduledEmailMessage message) {
+        String accessToken = AppConstant.TOKEN_PREFIX + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UserReceivedCommentMessage> entity = new HttpEntity<>(message, headers);
+        HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
-    }
-
-    /**
-     * Method sends email notification when user has received reply to the comment.
-     *
-     * @param message {@link UserReceivedCommentMessage}.
-     */
-    public void sendUserReceivedCommentReplyNotification(UserReceivedCommentReplyMessage message) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UserReceivedCommentReplyMessage> entity = new HttpEntity<>(message, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

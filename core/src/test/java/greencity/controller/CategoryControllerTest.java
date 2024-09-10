@@ -29,7 +29,7 @@ class CategoryControllerTest {
     @InjectMocks
     CategoryController categoryController;
 
-    private static final String categoryLink = "/category";
+    private static final String categoryLink = "/categories";
 
     @BeforeEach
     void setup() {

@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
-public class SendHabitNotification implements Serializable {
+public class SendHabitNotification implements Serializable, EmailMessage {
     private String name;
     private String email;
 }
