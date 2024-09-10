@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.annotations.CheckEmailPreference;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
@@ -11,6 +12,7 @@ import greencity.entity.Notification;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
+import greencity.enums.EmailPreference;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.message.GeneralEmailMessage;
@@ -20,6 +22,16 @@ import greencity.message.SendReportEmailMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
+import greencity.repository.UserNotificationPreferenceRepo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -33,15 +45,6 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @Service
@@ -55,6 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final RestClient restClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     private final String emailLanguage = Locale.ENGLISH.getLanguage();
+    private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
     @Value("${client.address}")
     private String clientAddress;
 
@@ -122,11 +126,11 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendLikeScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE, EmailPreference.LIKES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_LIKE);
+        sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES);
     }
 
     /**
@@ -138,9 +142,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendCommentScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS);
     }
 
     /**
@@ -153,9 +157,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendCommentReplyScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
             NotificationType.ECONEWS_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS);
     }
 
     /**
@@ -168,23 +172,26 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendFriendRequestScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
             NotificationType.FRIEND_REQUEST_RECEIVED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED);
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
             NotificationType.FRIEND_REQUEST_ACCEPTED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED);
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES);
     }
 
-    private void sendScheduledNotifications(NotificationType type) {
+    private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
                 List<Notification> notifications = notificationRepo.findAllByNotificationTypeAndViewedIsFalse(type);
                 if (!notifications.isEmpty()) {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                    notifications.forEach(notification -> {
-                        ScheduledEmailMessage message = createScheduledEmailMessage(notification, emailLanguage);
-                        restClient.sendScheduledEmailNotification(message);
-                    });
+                    notifications.stream()
+                        .filter(n -> !userNotificationPreferenceRepo
+                            .existsByUserIdAndEmailPreference(n.getTargetUser().getId(), emailPreference))
+                        .forEach(notification -> {
+                            ScheduledEmailMessage message = createScheduledEmailMessage(notification, emailLanguage);
+                            restClient.sendScheduledEmailNotification(message);
+                        });
                 }
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -221,6 +228,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Yurii Midianyi
      */
     @Override
+    @CheckEmailPreference(EmailPreference.SYSTEM)
     public void sendEmailNotification(GeneralEmailMessage generalEmailMessage) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
@@ -233,10 +241,26 @@ public class NotificationServiceImpl implements NotificationService {
         });
     }
 
+    @CheckEmailPreference(EmailPreference.LIKES)
+    public void sendEmailNotificationLikes(GeneralEmailMessage generalEmailMessage) {
+        sendEmailNotification(generalEmailMessage);
+    }
+
+    @CheckEmailPreference(EmailPreference.COMMENTS)
+    public void sendEmailNotificationComments(GeneralEmailMessage generalEmailMessage) {
+        sendEmailNotification(generalEmailMessage);
+    }
+
+    @CheckEmailPreference(EmailPreference.INVITES)
+    public void sendEmailNotificationInvites(GeneralEmailMessage generalEmailMessage) {
+        sendEmailNotification(generalEmailMessage);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
+    @CheckEmailPreference(EmailPreference.SYSTEM)
     public void sendHabitAssignEmailNotification(HabitAssignNotificationMessage message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
@@ -255,6 +279,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Dmytro Dmytruk
      */
     @Override
+    @CheckEmailPreference(EmailPreference.COMMENTS)
     public void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {

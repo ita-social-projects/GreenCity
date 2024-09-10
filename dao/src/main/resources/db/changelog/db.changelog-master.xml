@@ -212,4 +212,5 @@
     <include file="/db/changelog/logs/ch-add-table-comments-users-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-table-habits-user-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement-categories-Fedotov.xml"/>
+    <include file="/db/changelog/logs/ch-add-user_email_preferences-Holotsvan.xml"/>
 </databaseChangeLog>
