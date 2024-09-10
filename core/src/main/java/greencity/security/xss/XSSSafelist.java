@@ -17,7 +17,7 @@ public class XSSSafelist {
     private static final Map<String, XSSAllowedElements> endpointRules = new HashMap<>();
     private static final XSSAllowedElements defaultAllowedElements = XSSAllowedElements.getDefault();
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
-    //Html tags
+    // Html tags
     private static final String P_TAG = "p";
     private static final String A_TAG = "a";
     private static final String U_TAG = "u";
@@ -26,7 +26,7 @@ public class XSSSafelist {
     private static final String SPAN_TAG = "span";
     private static final String IMG_TAG = "img";
     private static final String STRONG_TAG = "strong";
-    //Html attributes
+    // Html attributes
     private static final String IFRAME_ATTR = "iframe";
     private static final String CLASS_ATTR = "class";
     private static final String HREF_ATTR = "href";
