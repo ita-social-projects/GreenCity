@@ -215,4 +215,7 @@
     <include file="db/changelog/logs/ch-add-column-is-shared-with-friends-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-add-new-tag-Holotsvan.xml"/>
     <include file="/db/changelog/logs/ch-add-user_email_preferences-Holotsvan.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tags-Chekhovska.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tag-translations-Chekhovska.xml"/>
+    <include file="db/changelog/logs/ch-add-table-fact-of-the-day-tags-and-assign-tag-Chekhovska.xml"/>
 </databaseChangeLog>

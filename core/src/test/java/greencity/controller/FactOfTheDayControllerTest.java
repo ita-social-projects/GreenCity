@@ -12,10 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
-
+import java.security.Principal;
+import java.util.Locale;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,7 +51,7 @@ class FactOfTheDayControllerTest {
     void getRandomFactOfTheDayTest() throws Exception {
         mockMvc.perform(get(factOfTheDayLink + "/"))
             .andExpect(status().isOk());
-        verify(factOfTheDayService).getRandomFactOfTheDayByLanguage("en");
+        verify(factOfTheDayService).getRandomGeneralFactOfTheDay("en");
     }
 
     @Test
@@ -72,5 +74,19 @@ class FactOfTheDayControllerTest {
         mockMvc.perform(get(factOfTheDayLink + "/languages"))
             .andExpect(status().isOk());
         verify(languageService).getAllLanguages();
+    }
+
+    @Test
+    void getRandomFactOfTheDayByTags() throws Exception {
+        Principal mockPrincipal = () -> "testUser@example.com";
+        Locale mockLocale = Locale.ENGLISH;
+
+        mockMvc.perform(get(factOfTheDayLink + "/random/by-tags")
+            .principal(mockPrincipal)
+            .locale(mockLocale)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(factOfTheDayService).getRandomFactOfTheDayForUser("en", "testUser@example.com");
     }
 }
