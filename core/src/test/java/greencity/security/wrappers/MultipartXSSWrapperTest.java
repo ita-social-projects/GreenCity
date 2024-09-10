@@ -1,5 +1,7 @@
 package greencity.security.wrappers;
 
+import greencity.constant.ErrorMessage;
+import greencity.exception.exceptions.MultipartXSSProcessingException;
 import greencity.security.xss.XSSAllowedElements;
 import greencity.security.xss.XSSSafelist;
 import jakarta.servlet.ServletException;
@@ -69,5 +71,40 @@ public class MultipartXSSWrapperTest {
             String result = reader.readLine();
             Assertions.assertEquals(escapedBody, result);
         }
+    }
+
+    @Test
+    public void testIOExceptionHandling() throws IOException, ServletException {
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+        Part mockPart = mock(Part.class);
+
+        when(mockPart.getInputStream()).thenThrow(new IOException("Test IOException"));
+        when(mockRequest.getRequestURI()).thenReturn("/test");
+        when(mockRequest.getPart("partName")).thenReturn(mockPart);
+
+        MultipartXSSWrapper xssWrapper = new MultipartXSSWrapper(mockRequest);
+
+        MultipartXSSProcessingException exception = Assertions.assertThrows(
+            MultipartXSSProcessingException.class,
+            () -> xssWrapper.getPart("partName"));
+        Assertions.assertEquals(ErrorMessage.XSS_MULTIPART_PROCESSING_ERROR, exception.getMessage());
+    }
+
+    @Test
+    public void testEmptyPart() throws IOException, ServletException {
+        String requestBody = "";
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+        Part mockPart = mock(Part.class);
+
+        when(mockPart.getInputStream()).thenReturn(new ByteArrayInputStream(requestBody.getBytes()));
+        when(mockRequest.getRequestURI()).thenReturn("/test");
+        when(mockRequest.getPart("partName")).thenReturn(mockPart);
+
+        MultipartXSSWrapper xssWrapper = new MultipartXSSWrapper(mockRequest);
+        Part part = xssWrapper.getPart("partName");
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream()));
+        String result = reader.readLine();
+        Assertions.assertNull(result);
     }
 }

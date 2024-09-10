@@ -37,7 +37,7 @@ public class XSSEscaper {
      * @return true if html present, false if not
      */
     public static boolean containsHtmlTags(String text) {
-        String htmlTagPattern = "<[^>]+>";
+        String htmlTagPattern = "<(\"[^\"]*\"|'[^']*'|[^'\">])*>";
         return text.matches(".*" + htmlTagPattern + ".*");
     }
 
