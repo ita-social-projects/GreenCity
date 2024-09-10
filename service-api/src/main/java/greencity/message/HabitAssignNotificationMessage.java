@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-public class HabitAssignNotificationMessage implements Serializable {
+public class HabitAssignNotificationMessage implements Serializable, EmailMessage {
     @NotEmpty(message = "Sender name cannot be empty")
     private String senderName;
 
@@ -30,4 +30,9 @@ public class HabitAssignNotificationMessage implements Serializable {
 
     @NotNull(message = "Habit assign ID cannot be null")
     private Long habitAssignId;
+
+    @Override
+    public String getEmail() {
+        return this.getReceiverEmail();
+    }
 }
