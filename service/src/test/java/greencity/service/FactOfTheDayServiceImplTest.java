@@ -24,6 +24,7 @@ import static greencity.enums.TagType.FACT_OF_THE_DAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import greencity.repository.TagsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -362,9 +363,9 @@ class FactOfTheDayServiceImplTest {
 
         when(tagsRepo.findTagsIdByUserHabitsInProgress(userEmail)).thenReturn(Collections.emptySet());
 
-        assertThrows(NotFoundException.class, () -> {
-            factOfTheDayService.getRandomFactOfTheDayForUser(languageCode, userEmail);
-        });
+        FactOfTheDayTranslationDTO result = factOfTheDayService.getRandomFactOfTheDayForUser(languageCode, userEmail);
+
+        assertNull(result);
     }
 
     @Test
