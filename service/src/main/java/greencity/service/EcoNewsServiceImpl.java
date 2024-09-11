@@ -153,7 +153,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableAdvancedDto<EcoNewsDto> findAll(Pageable page) {
-        //TODO: remove this method
+        // TODO: remove this method
         Page<EcoNews> pages;
         if (page.getSort().isEmpty()) {
             pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
@@ -430,7 +430,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
-        //TODO: remove this method
+        // TODO: remove this method
         Page<EcoNews> page = ecoNewsRepo.searchEcoNewsBy(paging, query);
         return buildPageableAdvancedDto(page);
     }
@@ -505,16 +505,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
-                                                                              Pageable pageable,
-                                                                              EcoNewsViewDto ecoNewsViewDto,
-                                                                              Locale locale) {
+        Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto,
+        Locale locale) {
         Page<EcoNews> byQuery = null;
         boolean isQueryPresent = query != null && !query.isEmpty();
         if (isQueryPresent) {
             byQuery = ecoNewsRepo.searchEcoNewsBy(pageable, query);
         }
         Page<EcoNews> filteredByFields = null;
-        boolean isFilterByFieldsPresent = ecoNewsViewDto != null && !ecoNewsViewDto.isEmpty();
+        boolean isFilterByFieldsPresent = (ecoNewsViewDto != null && !ecoNewsViewDto.isEmpty()) || pageable.getSort().isSorted();
         if (isFilterByFieldsPresent) {
             filteredByFields = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
         }
@@ -542,10 +542,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } else if (isFilterByFieldsPresent) {
             return buildPageableAdvancedDto(filteredByFields);
         } else {
-            if (pageable.getSort().isUnsorted()) {
-                return buildPageableAdvancedDto(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageable));
-            }
-            return buildPageableAdvancedDto(ecoNewsRepo.findAll(pageable));
+            return buildPageableAdvancedDto(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageable));
         }
     }
 
@@ -687,7 +684,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         setValueIfNotEmpty(criteriaList, EcoNews_.HIDDEN, ecoNewsViewDto.getHidden());
 
         if ((ecoNewsViewDto.getStartDate() != null && !ecoNewsViewDto.getStartDate().isEmpty())
-                && (ecoNewsViewDto.getEndDate() != null && !ecoNewsViewDto.getEndDate().isEmpty())) {
+            && (ecoNewsViewDto.getEndDate() != null && !ecoNewsViewDto.getEndDate().isEmpty())) {
             SearchCriteria searchCriteria = SearchCriteria.builder()
                 .key(EcoNews_.CREATION_DATE)
                 .type("dateRange")

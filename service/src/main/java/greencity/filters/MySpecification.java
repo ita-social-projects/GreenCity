@@ -73,9 +73,9 @@ public interface MySpecification<T> extends Specification<T> {
     }
 
     default Predicate getBooleanPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
-                                          SearchCriteria searchCriteria) {
+        SearchCriteria searchCriteria) {
         String value = searchCriteria.getValue().toString().trim();
         return value.isEmpty() ? criteriaBuilder.conjunction()
-                : criteriaBuilder.equal(root.get(searchCriteria.getKey()), Boolean.parseBoolean(value));
+            : criteriaBuilder.equal(root.get(searchCriteria.getKey()), Boolean.parseBoolean(value));
     }
 }

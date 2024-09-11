@@ -225,9 +225,9 @@ public interface EcoNewsService {
      * @author Dovganyuk Taras
      */
     PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
-                                                                       Pageable pageable,
-                                                                       EcoNewsViewDto ecoNewsViewDto,
-                                                                       Locale locale);
+        Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto,
+        Locale locale);
 
     /**
      * Method to mark news as liked by User.

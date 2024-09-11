@@ -65,12 +65,12 @@ public class ManagementEcoNewsController {
     @ApiLocale
     @GetMapping
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query,
-                                Model model,
-                                @Parameter(hidden = true) Pageable pageable,
-                                EcoNewsViewDto ecoNewsViewDto,
-                                @Parameter(hidden = true) Locale locale) {
+        Model model,
+        @Parameter(hidden = true) Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto,
+        @Parameter(hidden = true) Locale locale) {
         PageableAdvancedDto<EcoNewsDto> allEcoNews = ecoNewsService
-                .getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, locale);
+            .getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, locale);
         model.addAttribute("pageable", allEcoNews);
         if (!ecoNewsViewDto.isEmpty()) {
             model.addAttribute("fields", ecoNewsViewDto);
