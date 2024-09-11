@@ -593,14 +593,14 @@ class PlaceControllerTest {
         AddPlaceDto addPlaceDtoRequest = objectMapper.readValue(json, AddPlaceDto.class);
         String jsonValue = objectMapper.writeValueAsString(addPlaceDtoRequest);
 
-        MockMultipartFile jsonFile = new MockMultipartFile("addPlaceDtoRequest", "",
+        MockMultipartFile jsonFile = new MockMultipartFile("dto", "",
             "application/json", jsonValue.getBytes());
         mockMvc.perform(multipart(placeLink + "/v2/save")
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isCreated());
     }
 
     @Test
