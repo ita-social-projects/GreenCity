@@ -684,6 +684,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         setValueIfNotEmpty(criteriaList, EcoNews_.AUTHOR, ecoNewsViewDto.getAuthor());
         setValueIfNotEmpty(criteriaList, EcoNews_.TEXT, ecoNewsViewDto.getText());
         setValueIfNotEmpty(criteriaList, EcoNews_.TAGS, ecoNewsViewDto.getTags());
+        setValueIfNotEmpty(criteriaList, EcoNews_.HIDDEN, ecoNewsViewDto.getHidden());
 
         if ((ecoNewsViewDto.getStartDate() != null && !ecoNewsViewDto.getStartDate().isEmpty())
                 && (ecoNewsViewDto.getEndDate() != null && !ecoNewsViewDto.getEndDate().isEmpty())) {
