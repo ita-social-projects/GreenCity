@@ -242,7 +242,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal,
-        FilterEventDto filterEventDto,
+        List<EventTime> eventTime,
+        List<String> cities,
+        List<EventStatus> statuses,
+        List<String> tags,
         String title) {
         Long userId = null;
         if (principal != null) {
@@ -251,6 +254,12 @@ public class EventServiceImpl implements EventService {
         if (title != null) {
             title = "%" + title.toLowerCase() + "%";
         }
+        FilterEventDto filterEventDto = FilterEventDto.builder()
+            .eventTime(eventTime)
+            .cities(cities)
+            .statuses(statuses)
+            .tags(tags)
+            .build();
         List<Boolean> openStatuses = new ArrayList<>();
         List<Boolean> futureTimeStatuses = new ArrayList<>();
         String[] citiesInLower = null;
@@ -261,7 +270,7 @@ public class EventServiceImpl implements EventService {
         if (filterEventDto != null) {
             futureTimeStatuses = filterEventDto.getEventTime() != null && !filterEventDto.getEventTime().isEmpty()
                 ? filterEventDto.getEventTime().stream()
-                    .map(eventTime -> eventTime == EventTime.FUTURE)
+                    .map(time -> time == EventTime.FUTURE)
                     .collect(Collectors.toList())
                 : Collections.emptyList();
             if (filterEventDto.getStatuses() != null && !filterEventDto.getStatuses().isEmpty()) {
@@ -286,17 +295,18 @@ public class EventServiceImpl implements EventService {
         Boolean isOpen = getBooleanIfAllMatchOrElseNull(openStatuses);
         Boolean isRelevant = getBooleanIfAllMatchOrElseNull(futureTimeStatuses);
 
-        Page<Long> eventPrewiewIdsPage;
-        List<Tuple> tuples;
-        if (userId != null) {
-            eventPrewiewIdsPage = eventRepo.findAllEventPreviewDtoByFilters(userId, isSubscribed,
-                isOrganizedByUser, isFavorite, title, isOpen, isRelevant, citiesInLower, tagsInLower, page);
-            tuples = eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent(), userId);
-        } else {
-            eventPrewiewIdsPage = eventRepo.findAllEventPreviewDtoByFilters(title,
-                isOpen, isRelevant, citiesInLower, tagsInLower, page);
-            tuples = eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent());
+        Page<Long> eventPrewiewIdsPage = getEventPreviewIdsPage(userId, isSubscribed, isOrganizedByUser,
+            isFavorite, title, isOpen, isRelevant, citiesInLower, tagsInLower, page);
+        if (page.getPageNumber() >= eventPrewiewIdsPage.getTotalPages() && eventPrewiewIdsPage.getTotalPages() > 0) {
+            page = PageRequest.of(0, page.getPageSize());
+            eventPrewiewIdsPage = getEventPreviewIdsPage(userId, isSubscribed, isOrganizedByUser,
+                isFavorite, title, isOpen, isRelevant, citiesInLower, tagsInLower, page);
         }
+
+        List<Tuple> tuples = (userId != null)
+            ? eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent(), userId)
+            : eventRepo.loadEventPreviewDataByIds(eventPrewiewIdsPage.getContent());
+
         return new PageableAdvancedDto<>(
             mapTupleListToEventPreviewDtoList(tuples, eventPrewiewIdsPage.toList()),
             eventPrewiewIdsPage.getTotalElements(),
@@ -307,6 +317,18 @@ public class EventServiceImpl implements EventService {
             eventPrewiewIdsPage.hasNext(),
             eventPrewiewIdsPage.isFirst(),
             eventPrewiewIdsPage.isLast());
+    }
+
+    private Page<Long> getEventPreviewIdsPage(Long userId, Boolean isSubscribed, Boolean isOrganizedByUser,
+        Boolean isFavorite, String title, Boolean isOpen, Boolean isRelevant, String[] citiesInLower,
+        String[] tagsInLower, Pageable page) {
+        if (userId != null) {
+            return eventRepo.findAllEventPreviewDtoByFilters(userId, isSubscribed, isOrganizedByUser,
+                isFavorite, title, isOpen, isRelevant, citiesInLower, tagsInLower, page);
+        } else {
+            return eventRepo.findAllEventPreviewDtoByFilters(title, isOpen, isRelevant, citiesInLower,
+                tagsInLower, page);
+        }
     }
 
     @Override
