@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create event management</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/image-upload.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <script th:src="@{/management/events/imageUpload.js}"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script th:src="'https://maps.googleapis.com/maps/api/js?key=' + ${googleMapApiKey} + '&libraries=places&language=uk&region=UA'"></script>
+    <script th:src="@{/management/events/confirmationModal.js}"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/create-event.css}">
+</head>
+<body>
+<div id="header" th:insert="core/header"></div>
+<div class="container" style="margin-top:5rem">
+    <div class="row mb-5">
+        <a href="#" id="goBackButton" class="btn btn-secondary">[[#{greenCity.pages.popup.goback.}]]</a>
+    </div>
+    <div class="row mb-4">
+        <h2>[[#{greenCity.events.page.update.event}]]</h2>
+    </div>
+    <form id="addEventsForm" th:action="@{/management/events/}" method="POST" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="hidden" class="form-control" name="id" value="-1" readonly required>
+
+                <div class="form-group">
+                    <label for="title">[[#{greenCity.pages.table.title}]]</label>
+                    <textarea type="text" id="title" class="form-control" name="title"
+                              th:field="*{eventDto.title}" maxlength="170" required></textarea>
+                    <p id="title-error" class="form-error" style="display: none;"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="editor-content">[[#{greenCity.pages.table.description}]]:</label>
+                    <div id="editor-container"></div>
+                    <input type="hidden" id="editor-content" class="form-control"
+                           th:field="*{eventDto.description}" name="description">
+                    <p id="quill-error" class="quill-error" style="display: none;"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageUpload" class="form-label">[[#{greenCity.pages.table.uploadPictures}]]
+                        (PNG/JPG, max 5, < 10MB each):</label>
+                    <div th:replace="core/fragments/image-upload :: imageUpload"></div>
+                    <p id="images-error" class="form-error"></p>
+                </div>
+
+                <div class="form-group" id="initiatives">
+                    <label>[[#{greenCity.pages.table.initiativeType}]]:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="environmental"
+                               th:field="*{eventDto.tags}" value="ENVIRONMENTAL">
+                        <label class="form-check-label"
+                               for="environmental">[[#{greenCity.pages.table.environmental}]]</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="social"
+                               th:field="*{eventDto.tags}" value="SOCIAL">
+                        <label class="form-check-label" for="social">[[#{greenCity.pages.table.social}]]</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="economic"
+                               th:field="*{eventDto.tags}" value="ECONOMIC">
+                        <label class="form-check-label" for="economic">[[#{greenCity.pages.table.economic}]]</label>
+                    </div>
+                    <p id="initiative-error" class="form-error" style="display: none;"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventType">[[#{greenCity.pages.table.eventType}]]:</label>
+                    <select id="eventType" class="form-control" th:field="*{eventDto.open}" required>
+                        <option value="true">[[#{greenCity.pages.table.open}]]</option>
+                        <option value="false">[[#{greenCity.pages.table.closed}]]</option>
+                    </select>
+                    <p class="form-error" id="eventType-error"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="invitees">[[#{greenCity.event.invitees}]] :</label>
+                    <select id="invitees" class="form-control" required>
+                        <option value="Friends">[[#{greenCity.event.invitees.friends}]]</option>
+                        <option value="All">[[#{greenCity.event.invitees.all}]]</option>
+                    </select>
+                    <p id="invitees-error" class="form-error" style="display: none;"></p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="duration">[[#{greenCity.pages.table.duration}]]:</label>
+                    <select id="duration" class="form-control" name="duration" required>
+                        <option th:each="i : ${#numbers.sequence(1, 7)}"
+                                th:value="${i}"
+                                th:default="${eventDto.getDates().size()}"
+                                th:text="${i} + (i == 1 ? ' day' : ' days')"></option>
+                    </select>
+                </div>
+                <div id="daysInfo"></div>
+            </div>
+        </div>
+
+        <div class="form-group mt-4">
+            <input type="button" class="btn btn-danger" id="cancelButton" th:value="#{greenCity.pages.popup.cancel.}">
+            <input type="button" class="btn btn-info btn-primary" th:value="#{greenCity.pages.popup.preview.}"
+                   id="previewBtn">
+            <input type="button" class="btn btn-success btn-success" th:value="#{greenCity.pages.popup.update.}"
+                   id="updateBtn">
+        </div>
+    </form>
+    <div id="footer" th:insert="core/footer"></div>
+    <div th:replace="core/fragments/modals/confirmation-modal.html"></div>
+    <div th:replace="core/fragments/modals/preview-event-modal.html"></div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    var backendAddress = /*[[${backendAddress}]]*/;
+    var author = /*[[${author}]]*/;
+    var eventDto = /*[[${eventDto}]]*/;
+</script>
+<script th:src="@{/management/events/createEvent.js}"></script>
+<script>
+    const description = quill.clipboard.convert(eventDto.description);
+    quill.setContents(description, 'silent')
+    console.log("Date from DTO:")
+    console.log(eventDto.startDate);
+    console.log(eventDto.finishDate);
+    const previewImages = [eventDto.titleImage, ...eventDto.additionalImages]
+    Promise.all(previewImages.map(img => urlToFile(img, img.split("/").pop())))
+        .then(files => {
+            imageUploader.currentFiles = files;
+            imageUploader.previewContainer.innerHTML = '';
+            previewImages.forEach(img => imageUploader.addImageToPreview(img, img.split("/").pop()));
+            imageUploader.updateFileList();
+        })
+        .catch(error => {
+            console.error('Error converting URLs to files:', error);
+            imageUploader.showError('Failed to load images.');
+        })
+    eventDto.tags.forEach(tag => document.querySelector(`input[type="checkbox"][value="${tag.nameEn.toUpperCase()}"]`).checked = true)
+
+    document.getElementById("eventType").querySelector(`option[value="${eventDto.open}"]`).selected = true
+
+    durationSelect.value = eventDto.dates.length ?? 1;
+    generateDayInfoElements(daysInfoDiv, durationSelect.value);
+
+    eventDto.dates.forEach((date, i) => {
+        const dayInfo = document.querySelector(`div[data-day-index="${i}"]`);
+        const {date: dayDate, startTime, finishTime} = extractDateAndTimes(date.startDate, date.finishDate)
+        const toggleLocationCheckbox = document.getElementById(`toggleLocation-${i}`);
+        const toggleOnlineLinkCheckbox = document.getElementById(`toggleOnlineLink-${i}`);
+        const onlineLinkFields = document.getElementById(`online-link-fields-${i}`);
+        const locationFields = document.getElementById(`location-fields-${i}`);
+        const autocomplete = document.getElementById(`autocomplete-${i}`);
+        const latitudeInput = document.getElementById(`latitude-${i}`);
+        const longitudeInput = document.getElementById(`longitude-${i}`);
+        const onlineLinkField = document.getElementById(`onlineLink-${i}`);
+        const allDayCheckBox = document.getElementById(`allDay-${i}`);
+        const startTimeField = document.getElementById(`startTime-${i}`);
+        const finishTimeField = document.getElementById(`finishTime-${i}`);
+        const dateField = document.getElementById(`date-${i}`);
+        const mapElement = document.getElementById(`map-${i}`);
+
+        dateField.value = dayDate;
+        startTimeField.value = startTime;
+        finishTimeField.value = finishTime;
+        if (startTime === "00:00" && finishTime === "23:59") {
+            allDayCheckBox.checked = true
+            startTimeField.disabled = true;
+            finishTimeField.disabled = true;
+        }
+
+        if (date.coordinates) {
+            toggleLocationCheckbox.checked = true
+            locationFields.style.display = "block";
+            autocomplete.value = date.coordinates.formattedAddressEn
+            longitudeInput.value = date.coordinates.longitude
+            latitudeInput.value = date.coordinates.latitude
+            const marker = mapElement.marker;
+            marker.setPosition({lat: date.coordinates.latitude, lng: date.coordinates.longitude})
+        }
+
+        if (date.onlineLink) {
+            toggleOnlineLinkCheckbox.checked = true
+            onlineLinkFields.style.display = "block"
+            onlineLinkField.value = date.onlineLink
+        }
+    })
+
+    function extractDateAndTimes(startDate, finishDate) {
+        const startDateObj = new Date(startDate);
+        const finishDateObj = new Date(finishDate);
+
+        const date = startDateObj.toISOString().split('T')[0];
+
+        const startTime = startDateObj.toISOString().split('T')[1].slice(0, 5);
+        const finishTime = finishDateObj.toISOString().split('T')[1].slice(0, 5);
+
+        return {
+            date,
+            startTime,
+            finishTime
+        };
+    }
+
+
+    function submitUpdateEventForm() {
+        const formData = createFormDataUpdate();
+        fetch(`${backendAddress}/management/events`, {
+            method: 'PUT',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok' + response.status);
+                }
+                window.location.href = backendAddress + "/management/events";
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function urlToFile(url, fileName) {
+        return fetch(url)
+            .then(response => response.blob())
+            .then(blob => new File([blob], fileName, {type: blob.type}));
+    }
+
+    function createFormDataUpdate() {
+        const title = document.getElementById("title").value;
+        const description = quill.root.innerHTML;
+        const tags = Array.from(document.getElementById("initiatives").querySelectorAll('.form-check-input:checked')).map(tag => tag.value);
+        const isOpen = Boolean(document.getElementById('eventType').value);
+
+        const eventDtoRequest = {
+            title: title,
+            description: description,
+            tags: tags,
+            open: isOpen,
+            datesLocations: [],
+            additionalImages: [],
+            id: eventDto.id
+        };
+
+        const daysInfoDiv = document.getElementById('daysInfo');
+        const dayInfos = daysInfoDiv.querySelectorAll('.dayInfo');
+
+        dayInfos.forEach((dayInfo, index) => {
+            const date = dayInfo.querySelector(`#date-${index}`).value;
+            const startTime = dayInfo.querySelector(`#startTime-${index}`).value;
+            const finishTime = dayInfo.querySelector(`#finishTime-${index}`).value;
+
+            const locationCheckbox = dayInfo.querySelector(`#toggleLocation-${index}`);
+            const onlineLinkCheckbox = dayInfo.querySelector(`#toggleOnlineLink-${index}`);
+
+            const latitude = locationCheckbox.checked ? dayInfo.querySelector(`#latitude-${index}`).value : null;
+            const longitude = locationCheckbox.checked ? dayInfo.querySelector(`#longitude-${index}`).value : null;
+            const onlineLink = onlineLinkCheckbox.checked ? dayInfo.querySelector(`#onlineLink-${index}`).value : null;
+
+            const startDateTime = combineDateTime(date, startTime);
+            const finishDateTime = combineDateTime(date, finishTime);
+            const locationData = (latitude && longitude) ? {
+                coordinates: {
+                    latitude: parseFloat(latitude) || null,
+                    longitude: parseFloat(longitude) || null,
+                }
+            } : {};
+
+            const onlineLinkData = onlineLink ? {
+                onlineLink: onlineLink
+            } : {};
+            eventDtoRequest.datesLocations.push({
+                startDate: startDateTime,
+                finishDate: finishDateTime,
+                ...locationData,
+                ...onlineLinkData
+            });
+        });
+
+        const formData = new FormData();
+        formData.append('eventDto', new Blob([JSON.stringify(eventDtoRequest)], {type: 'application/json'}));
+
+        const images = imageUploader.currentFiles;
+
+        for (let i = 0; i < images.length; i++) {
+            formData.append('images', images[i]);
+        }
+        return formData;
+    }
+</script>
+</body>
+</html>

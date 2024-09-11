@@ -156,7 +156,7 @@
                                     <td th:text="${allEvents.tagsToStringEn()}">
                                     </td>
                                     <td>
-                                        <a th:href="@{/management/events/find/(id=${allEvents.getId()})}"
+                                        <a th:href="@{/management/events/edit/{id}(id=${allEvents.getId()})}"
                                            class="edit eBtn">
                                             <i class="material-icons" data-toggle="tooltip"
                                                th:title="#{greenCity.pages.edit}">&#xE254;</i>
@@ -220,7 +220,6 @@
     </script>
 
     <script th:src="@{/management/events/deleteEvents.js}"></script>
-
 
 </body>
 </html>

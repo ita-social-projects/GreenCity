@@ -1,9 +1,8 @@
-
 const quill = initializeQuilEditor();
 const durationSelect = document.getElementById('duration');
 const daysInfoDiv = document.getElementById('daysInfo');
 const form = document.getElementById('addEventsForm');
-let imageUploader;
+const imageUploader = initializeImageUploader();
 
 quill.on('text-change', function () {
     updateHiddenInput(quill);
@@ -16,15 +15,7 @@ durationSelect.addEventListener('change', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const confirmationModal = new ConfirmationModal('confirmationModal', 'confirmationMessage', 'confirmModalButton',"cancelModalButton");
-
-    imageUploader = new ImageUploader({
-        fileInputSelector: '#imageUpload',
-        previewContainerSelector: '#previewContainer',
-        proposedImagesContainerSelector: '#proposedImages',
-        errorMessageSelector: '#uploadImagesErrorMessage',
-        maxFiles: 5
-    });
+    const confirmationModal = new ConfirmationModal('confirmationModal', 'confirmationMessage', 'confirmModalButton', "cancelModalButton");
 
     imageUploader.loadProposedImages([
         '/img/events/default-image.png',
@@ -35,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '/img/events/illustration-store.png',
     ]);
 
-    [document.getElementById('cancelButton'), document.getElementById('goBackButton')].forEach(el => el.addEventListener('click', () => {
+    [document.getElementById('cancelButton'), document.getElementById('goBackButton')].forEach(el => el?.addEventListener('click', () => {
             confirmationModal.show(
                 'Are you sure you want to cancel? All unsaved data will be lost.',
                 () => {
@@ -48,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     );
 
-    document.getElementById("previewBtn").addEventListener('click', () => {
+    document.getElementById("previewBtn")?.addEventListener('click', () => {
         confirmationModal.show(
             'Are you sure you want to open preview?',
             () => {
@@ -65,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
         );
     })
 
-    document.getElementById('submitBtn').addEventListener('click', () => {
+    document.getElementById('submitBtn')?.addEventListener('click', () => {
         confirmationModal.show(
             'Are you sure you want to add this event?',
             () => {
@@ -78,6 +69,21 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         );
     });
+
+    document?.getElementById('updateBtn').addEventListener('click', () => {
+        confirmationModal.show(
+            'Are you sure you want to update this event?',
+            () => {
+                if (formValidation()) {
+                    submitUpdateEventForm();
+                }
+            },
+            () => {
+
+            }
+        );
+    });
+
 });
 
 function initializeQuilEditor() {
@@ -92,6 +98,16 @@ function initializeQuilEditor() {
                 [{'color': []}, {'background': []}],
             ]
         }
+    });
+}
+
+function initializeImageUploader() {
+    return new ImageUploader({
+        fileInputSelector: '#imageUpload',
+        previewContainerSelector: '#previewContainer',
+        proposedImagesContainerSelector: '#proposedImages',
+        errorMessageSelector: '#uploadImagesErrorMessage',
+        maxFiles: 5
     });
 }
 
@@ -230,11 +246,12 @@ function handleAllDayCheckbox(i) {
 
 function initMap(i) {
     const ukraine = {lat: 48.3794, lng: 31.1656};
-    const map = new google.maps.Map(document.getElementById(`map-${i}`), {
+    const mapElement = document.getElementById(`map-${i}`)
+    const map = new google.maps.Map(mapElement, {
         center: ukraine,
         zoom: 6,
     });
-
+    mapElement.googleMap = map;
     const input = document.getElementById(`autocomplete-${i}`);
     const latitudeInput = document.getElementById(`latitude-${i}`);
     const longitudeInput = document.getElementById(`longitude-${i}`);
@@ -249,7 +266,8 @@ function initMap(i) {
         map: map,
         draggable: true
     });
-
+    marker.setMap(map)
+    mapElement.marker = marker;
     const geocoder = new google.maps.Geocoder();
 
     autocomplete.addListener('place_changed', function () {
@@ -311,6 +329,23 @@ function initMap(i) {
 }
 
 function submitEventForm() {
+    const formData = createFormData();
+
+    fetch(`${backendAddress}/management/events`, {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok' + response.status);
+            }
+            window.location.href = backendAddress + "/management/events";
+        })
+        .catch(error => console.error('Error:', error));
+
+}
+
+function createFormData() {
     const title = document.getElementById("title").value;
     const description = quill.root.innerHTML;
     const tags = Array.from(document.getElementById("initiatives").querySelectorAll('.form-check-input:checked')).map(tag => tag.value);
@@ -367,20 +402,7 @@ function submitEventForm() {
     for (let i = 0; i < images.length; i++) {
         formData.append('images', images[i]);
     }
-
-
-    fetch(`${backendAddress}/management/events`, {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok' + response.status);
-            }
-            window.location.href = backendAddress + "/management/events";
-        })
-        .catch(error => console.error('Error:', error));
-
+    return formData;
 }
 
 function combineDateTime(date, time) {
