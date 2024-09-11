@@ -2,7 +2,6 @@ package greencity.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
@@ -42,7 +41,6 @@ import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
-
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -297,12 +295,21 @@ class PlaceServiceImplTest {
     @Test
     void getInfoByIdTest() {
         Place place = ModelUtils.getPlace();
+        place.setDescription("description");
+        place.setEmail("http://www.websitetest.com");
+        place.setPhotos(new ArrayList<>());
+
         PlaceInfoDto gen = modelMapper.map(place, PlaceInfoDto.class);
         gen.setRate(1.5);
+
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
         when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
-        PlaceInfoDto res = placeService.getInfoById(anyLong());
+
+        PlaceInfoDto res = placeService.getInfoById(1L);
+
         assertEquals(gen, res);
+        verify(placeRepo).findById(anyLong());
+        verify(placeRepo).getAverageRate(anyLong());
     }
 
     @Test

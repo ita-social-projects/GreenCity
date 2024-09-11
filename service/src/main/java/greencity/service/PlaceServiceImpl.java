@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import greencity.entity.*;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
@@ -43,13 +44,6 @@ import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Category;
-import greencity.entity.DiscountValue;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
-import greencity.entity.Specification;
-import greencity.entity.User;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
@@ -389,10 +383,8 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public PlaceInfoDto getInfoById(Long id) {
-        Place place =
-            placeRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+        Place place = placeRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         PlaceInfoDto placeInfoDto = modelMapper.map(place, PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.getAverageRate(id));
         return placeInfoDto;

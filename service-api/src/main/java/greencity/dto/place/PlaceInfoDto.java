@@ -7,10 +7,12 @@ import greencity.dto.openhours.OpenHoursDto;
 import java.util.List;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.Builder;
+import org.springframework.lang.Nullable;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +20,7 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Builder
 public class PlaceInfoDto {
     private Long id;
     private String name;
@@ -26,4 +29,8 @@ public class PlaceInfoDto {
     private List<DiscountValueDto> discountValues;
     private List<PlaceCommentDto> comments;
     private Double rate;
+    private String description;
+    private String websiteUrl;
+    @Nullable
+    private List<String> placeImages;
 }
