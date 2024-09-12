@@ -585,14 +585,14 @@ class EcoNewsCommentServiceImplTest {
         var user = getTagUser();
         var userTagDto = getUserTagDto();
         var userSearchDto = getUserSearchDto();
-        userSearchDto.setSearchQuery(null);
+        userSearchDto.setSearchQuery("");
 
-        when(userRepo.findAll()).thenReturn(List.of(user));
+        when(userRepo.searchUsers("")).thenReturn(List.of(user));
         when(modelMapper.map(user, UserTagDto.class)).thenReturn(userTagDto);
 
         ecoNewsCommentService.searchUsers(userSearchDto);
 
-        verify(userRepo).findAll();
+        verify(userRepo).searchUsers("");
         verify(modelMapper).map(user, UserTagDto.class);
     }
 

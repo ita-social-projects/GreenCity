@@ -90,4 +90,10 @@ public interface NotificationService {
      * @param message {@link UserTaggedInCommentMessage}.
      */
     void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message);
+
+    public void sendEmailNotificationLikes(GeneralEmailMessage generalEmailMessage);
+
+    public void sendEmailNotificationComments(GeneralEmailMessage generalEmailMessage);
+
+    public void sendEmailNotificationInvites(GeneralEmailMessage generalEmailMessage);
 }

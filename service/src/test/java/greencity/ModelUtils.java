@@ -391,17 +391,17 @@ public class ModelUtils {
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(),
-            Collections.emptySet(), Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
     }
 
     public static Tag getHabitTag() {
         return new Tag(1L, TagType.HABIT, getHabitTagTranslations(), Collections.emptyList(),
-            Collections.emptySet(), Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
     }
 
     public static Tag getEventTag() {
         return new Tag(1L, TagType.EVENT, getEventTagTranslations(), Collections.emptyList(),
-            Collections.emptySet(), Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
     }
 
     public static List<TagTranslation> getTagTranslations() {
@@ -1045,17 +1045,19 @@ public class ModelUtils {
 
     public static FactOfTheDay getFactOfTheDay() {
         return new FactOfTheDay(1L, "Fact of the day",
-            Collections.singletonList(ModelUtils.getFactOfTheDayTranslation()), ZonedDateTime.now());
+            Collections.singletonList(ModelUtils.getFactOfTheDayTranslation()), ZonedDateTime.now(),
+            Collections.emptySet());
     }
 
     public static FactOfTheDayDTO getFactOfTheDayDto() {
-        return new FactOfTheDayDTO(1L, "name", null, ZonedDateTime.now());
+        return new FactOfTheDayDTO(1L, "name", null, ZonedDateTime.now(), Collections.emptySet());
     }
 
     public static FactOfTheDayPostDTO getFactOfTheDayPostDto() {
         return new FactOfTheDayPostDTO(1L, "name",
             Collections.singletonList(
-                new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)));
+                new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)),
+            Collections.singletonList(25L));
     }
 
     public static FactOfTheDayTranslationVO getFactOfTheDayTranslationVO() {

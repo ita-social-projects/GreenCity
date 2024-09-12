@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import greencity.repository.UserNotificationPreferenceRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -63,6 +66,9 @@ class NotificationServiceImplTest {
 
     @Mock
     private RestClient restClient;
+
+    @Mock
+    private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
 
     @Test
     void sendImmediatelyReportTest() {
@@ -251,6 +257,54 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    void sendEmailNotificationLikesToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationLikes(generalEmailMessage);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
+    void sendEmailNotificationCommentsToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationComments(generalEmailMessage);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
+    void sendEmailNotificationInvitesToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationInvites(generalEmailMessage);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
+    }
+
+    @Test
     void sendHabitAssignEmailNotification() {
         HabitAssignNotificationMessage message = new HabitAssignNotificationMessage(
             "sender", "receiver", "receiver@example.com", "habit", "en", 123L);
@@ -295,6 +349,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_RECEIVED))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.FRIEND_REQUEST_ACCEPTED))
@@ -315,6 +370,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_REPLY))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_REPLY))
@@ -335,6 +391,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT))
@@ -355,6 +412,7 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_COMMENT_LIKE))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.ECONEWS_LIKE))

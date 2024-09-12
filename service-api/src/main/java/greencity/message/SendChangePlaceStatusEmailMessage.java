@@ -10,9 +10,14 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
-public final class SendChangePlaceStatusEmailMessage implements Serializable {
+public final class SendChangePlaceStatusEmailMessage implements Serializable, EmailMessage {
     private String authorFirstName;
     private String placeName;
     private String placeStatus;
     private String authorEmail;
+
+    @Override
+    public String getEmail() {
+        return this.getAuthorEmail();
+    }
 }

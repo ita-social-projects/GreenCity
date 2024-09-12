@@ -75,6 +75,13 @@ import java.util.stream.Stream;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import static greencity.enums.EventStatus.CLOSED;
+import static greencity.enums.EventStatus.CREATED;
+import static greencity.enums.EventStatus.JOINED;
+import static greencity.enums.EventStatus.OPEN;
+import static greencity.enums.EventStatus.SAVED;
+import static greencity.enums.EventTime.FUTURE;
+
 public class ModelUtils {
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
@@ -521,5 +528,14 @@ public class ModelUtils {
             commentDtos.size(),
             1,
             1);
+    }
+
+    public static FilterEventDto getFilterEventDto() {
+        return FilterEventDto.builder()
+            .time(FUTURE)
+            .cities(List.of("Kyiv"))
+            .statuses(List.of(OPEN, CLOSED, JOINED, CREATED, SAVED))
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .build();
     }
 }

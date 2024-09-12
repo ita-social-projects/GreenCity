@@ -64,6 +64,7 @@
                         <th rowspan="2">[[#{greenCity.pages.table.name}]]</th>
                         <th colspan="3">[[#{greenCity.pages.table.translations}]]</th>
                         <th rowspan="2" class="mobile-hidden">[[#{greenCity.pages.table.creation.date}]]</th>
+                        <th rowspan="2">[[#{greenCity.pages.table.tags}]]</th>
                         <th rowspan="2">[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
                     <tr class="table-secondary">
@@ -99,6 +100,17 @@
                             </table>
                         </td>
                         <td class="mobile-hidden" th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd.MM.yyyy HH:mm')}"></td>
+                        <td>
+                            <table class="table table-borderless m-0 table-child">
+                                <tbody id="tag-table-body">
+                                <th:block th:each="tag : ${pageable.getPage().get(iterStatus.index).getTags()}">
+                                        <tr class="table-secondary-tr">
+                                            <td th:data-tag-id="${tag.getId()}" th:data="${tag.getLanguageCode()}" th:text="${tag.getName()}"></td>
+                                        </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </td>
                         <td>
                             <a th:href="@{/factoftheday/find(id=${factOfTheDay.getId()})}" class="edit eBtn"><i
                                     class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
@@ -166,6 +178,11 @@
                                 </div>
                             </div>
                         </th:block>
+                        <div class="form-group">
+                            <label>[[#{greenCity.pages.table.tags}]]</label>
+                            <div id="tagsContainerAdd">
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
@@ -217,6 +234,11 @@
                                 </div>
                             </div>
                         </th:block>
+                        <div class="form-group">
+                            <label>[[#{greenCity.pages.table.tags}]]</label>
+                            <div id="tagsContainerEdit">
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
