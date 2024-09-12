@@ -520,6 +520,55 @@ $(document).ready(function () {
             }
         }
     });
+
+    function isSortActive(fieldName, sortOrder) {
+        let urlSearch = new URLSearchParams(window.location.search);
+        let isActive = false;
+        urlSearch.forEach((value, key) => {
+            if (key === "sort") {
+                let [field, order] = value.split(',');
+                if (field === fieldName && order === sortOrder) {
+                    isActive = true;
+                }
+            }
+        });
+        return isActive;
+    }
+
+    function isFilterActive(filterName) {
+        let urlSearch = new URLSearchParams(window.location.search);
+        return urlSearch.get(filterName) !== null && urlSearch.get(filterName) !== "";
+    }
+
+    $('.table-filter-icon').each(function() {
+        let inputForm = $(this).closest('th').find('input.form-search');
+        if (inputForm.length === 0) {
+            inputForm = $(this).closest('th').find('input.form-control');
+        }
+        if (inputForm.length === 0) {
+            inputForm = $(this).closest('th').find('div.custom-checkbox.tag');
+        }
+        if (inputForm.length !== 0) {
+            const id = inputForm.attr('id');
+            console.log('id: ', id);
+            const filterField = id.split('-').pop();
+            if (isFilterActive(filterField)) {
+                $(this).addClass('filtered');
+            }
+        }
+    });
+
+    $('.sort-icon').each(function() {
+        const field = $(this).data('field');
+        const order = $(this).data('order');
+        if (isSortActive(field, order)) {
+            $(this).find('i').addClass('sorted');
+            console.log('sorted field: ', field);
+        } else {
+            $(this).find('i').removeClass('sorted');
+            console.log('unsorted field: ', field)
+        }
+    });
 });
 
 // edit econew image
