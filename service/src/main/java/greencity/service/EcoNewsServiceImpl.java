@@ -519,24 +519,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             filteredByFields = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
         }
         if (isQueryPresent && isFilterByFieldsPresent) {
-            Iterator<EcoNews> iteratorByQuery = byQuery.iterator();
-            while (iteratorByQuery.hasNext()) {
-                EcoNews currentEcoNews = iteratorByQuery.next();
-                boolean isPresentInFiltered = false;
-                Iterator<EcoNews> iteratorByFilter = filteredByFields.iterator();
-                while (iteratorByFilter.hasNext()) {
-                    EcoNews filteredEcoNews = iteratorByFilter.next();
-                    if (currentEcoNews.getId().equals(filteredEcoNews.getId())) {
-                        isPresentInFiltered = true;
-                        iteratorByFilter.remove();
+            Iterator<EcoNews> iteratorByField = filteredByFields.iterator();
+            while (iteratorByField.hasNext()) {
+                EcoNews currentEcoNews = iteratorByField.next();
+                boolean isPresentByQuery = false;
+                Iterator<EcoNews> iteratorByQuery = byQuery.iterator();
+                while (iteratorByQuery.hasNext()) {
+                    EcoNews ecoNewsByQuery = iteratorByQuery.next();
+                    if (currentEcoNews.getId().equals(ecoNewsByQuery.getId())) {
+                        isPresentByQuery = true;
+                        iteratorByQuery.remove();
                         break;
                     }
                 }
-                if (!isPresentInFiltered) {
-                    iteratorByQuery.remove();
+                if (!isPresentByQuery) {
+                    iteratorByField.remove();
                 }
             }
-            return buildPageableAdvancedDto(byQuery);
+            return buildPageableAdvancedDto(filteredByFields);
         } else if (isQueryPresent) {
             return buildPageableAdvancedDto(byQuery);
         } else if (isFilterByFieldsPresent) {

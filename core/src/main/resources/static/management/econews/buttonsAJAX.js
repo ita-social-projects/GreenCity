@@ -539,8 +539,21 @@ function markCurentPageOnNav() {
     document.getElementById("eco-news-nav").classList.add("eco-news-active-link");
 }
 
-function hideFilterPopup() {
-    $('.filter-container').hide();
+function removeFilter(filterName) {
+    let urlSearch = getUrlSearchParams();
+    urlSearch.delete(key);
+    if (filterName === 'startDate') {
+        urlSearch.delete('endDate');
+    }
+
+    let url = "/management/eco-news?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
 }
 
 function getSelectedRadioButton(radioGroupName) {
@@ -549,6 +562,9 @@ function getSelectedRadioButton(radioGroupName) {
 }
 
 function searchByQuery(query) {
+    if (query === null || query === '') {
+        removeFilter('query');
+    }
     let urlSearch = getUrlSearchParams();
     urlSearch.set("query", query);
 
@@ -594,7 +610,11 @@ function orderByNameField(sortOrder, fieldName) {
     for (let i = 0; i < sortParams.length; i++) {
         let [field, order] = sortParams[i].split(',');
         if (field === fieldName) {
-            sortParams[i] = fieldName + ',' + sortOrder;
+            if (order === sortOrder) {
+                sortParams.splice(i, 1);
+            } else {
+                sortParams[i] = fieldName + ',' + sortOrder;
+            }
             updated = true;
             break;
         }
@@ -757,4 +777,23 @@ function getUrlSearchParams() {
     });
 
     return urlSearch;
+}
+
+function isSortActive(fieldName, sortOrder) {
+    let urlSearch = getUrlSearchParams();
+    let isActive = false;
+    urlSearch.forEach((value, key) => {
+        if (key === "sort") {
+            let [field, order] = value.split(',');
+            if (field === fieldName && order === sortOrder) {
+                isActive = true;
+            }
+        }
+    });
+    return isActive;
+}
+
+function isFilterActive(filterName) {
+    let urlSearch = getUrlSearchParams();
+    return urlSearch.get(filterName) !== null && urlSearch.get(filterName) !== "";
 }

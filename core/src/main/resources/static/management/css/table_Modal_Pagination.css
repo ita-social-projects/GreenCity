@@ -1855,6 +1855,14 @@ a.lightgrey {
     background-image: url("/img/filter-icon-active.svg");
 }
 
+.table-filter-icon.filtered {
+    background-image: url("/img/filter-icon-active.svg");
+}
+
+.material-icons.sorted {
+    color: #13AA57;
+}
+
 .eco-news .form-inline.searching {
     position: relative;
     display: flex;
