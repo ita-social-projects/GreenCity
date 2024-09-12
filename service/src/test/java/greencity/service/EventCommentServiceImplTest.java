@@ -26,6 +26,7 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
@@ -44,6 +45,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 import static greencity.ModelUtils.getAmountCommentLikesDto;
+import static greencity.ModelUtils.getEventCommentDto;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getEventComment;
@@ -254,9 +256,15 @@ class EventCommentServiceImplTest {
     @Test
     void getEventCommentById() {
         EventComment eventComment = getEventComment();
-        EventCommentDto eventCommentDto = modelMapper.map(eventComment, EventCommentDto.class);
+        EventCommentDto eventCommentDto = getEventCommentDto();
+
         when(eventCommentRepo.findById(1L)).thenReturn(Optional.of(eventComment));
-        assertEquals(eventCommentDto, eventCommentService.getEventCommentById(1L, getUserVO()));
+        when(modelMapper.map(eventComment, EventCommentDto.class)).thenReturn(eventCommentDto);
+
+        assertEquals(eventCommentDto, eventCommentService.getEventCommentById(1L, 1L, getUserVO()));
+
+        verify(eventCommentRepo).findById(1L);
+        verify(modelMapper).map(eventComment, EventCommentDto.class);
     }
 
     @Test
@@ -271,14 +279,7 @@ class EventCommentServiceImplTest {
     }
 
     @Test
-    void countCommentsEventNotFoundException() {
-        Long eventId = 1L;
-        when(eventRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> eventCommentService.countComments(eventId));
-    }
-
-    @Test
-    void getAllActiveComments() {
+    void getAllComments() {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -288,14 +289,16 @@ class EventCommentServiceImplTest {
         Event event = ModelUtils.getEvent();
         Page<EventComment> pages = new PageImpl<>(Collections.singletonList(eventComment), pageable, 1);
         EventCommentDto eventCommentDto = ModelUtils.getEventCommentDto();
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(eventCommentRepo.findAllByParentCommentIdIsNullAndEventIdAndStatusNotOrderByCreatedDateDesc(pageable,
-            eventId, CommentStatus.DELETED))
+        when(eventCommentRepo.findAllByEventIdAndParentCommentIsNullAndStatusInOrderByCreatedDateDesc(pageable,
+            eventId, statuses))
             .thenReturn(pages);
         when(modelMapper.map(eventComment, EventCommentDto.class)).thenReturn(eventCommentDto);
 
-        PageableDto<EventCommentDto> allComments = eventCommentService.getAllActiveComments(pageable, userVO, eventId);
+        PageableDto<EventCommentDto> allComments =
+            eventCommentService.getAllComments(pageable, userVO, eventId, statuses);
         assertEquals(eventCommentDto, allComments.getPage().get(0));
         assertEquals(4, allComments.getTotalElements());
         assertEquals(1, allComments.getCurrentPage());
@@ -303,7 +306,7 @@ class EventCommentServiceImplTest {
     }
 
     @Test
-    void getAllActiveCommentsEventNotFoundException() {
+    void getAllCommentsEventNotFoundException() {
         Long eventId = 1L;
         when(eventRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> eventCommentService.countComments(eventId));
@@ -313,6 +316,7 @@ class EventCommentServiceImplTest {
     void update() {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
+        Long eventId = 1L;
         String editedText = "edited text";
         EventComment eventComment = getEventComment();
         EventVO eventVO = ModelUtils.getEventVO();
@@ -324,7 +328,7 @@ class EventCommentServiceImplTest {
         when(eventService.findById(eventComment.getEvent().getId())).thenReturn(eventVO);
         when(modelMapper.map(eventComment, EventCommentVO.class)).thenReturn(eventCommentVO);
 
-        eventCommentService.update(editedText, commentId, userVO, locale);
+        eventCommentService.update(editedText, eventId, commentId, userVO, locale);
 
         assertEquals(CommentStatus.EDITED, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
@@ -334,13 +338,14 @@ class EventCommentServiceImplTest {
     void updateCommentThatDoesntExistsThrowException() {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
+        Long eventId = 1L;
         String editedText = "edited text";
 
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> eventCommentService.update(editedText, commentId, userVO, locale));
+                () -> eventCommentService.update(editedText, eventId, commentId, userVO, locale));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -351,6 +356,7 @@ class EventCommentServiceImplTest {
         user.setId(2L);
 
         Long commentId = 1L;
+        Long eventId = 1L;
         EventComment eventComment = getEventComment();
         eventComment.setUser(user);
         String editedText = "edited text";
@@ -360,7 +366,7 @@ class EventCommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> eventCommentService.update(editedText, commentId, userVO, locale));
+                () -> eventCommentService.update(editedText, eventId, commentId, userVO, locale));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 
@@ -371,7 +377,7 @@ class EventCommentServiceImplTest {
         EventComment eventComment = getEventComment();
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.ofNullable(eventComment));
-        eventCommentService.delete(commentId, userVO);
+        eventCommentService.delete(1L, commentId, userVO);
 
         assertEquals(CommentStatus.DELETED, eventComment.getComments().get(0).getStatus());
         assertEquals(CommentStatus.DELETED, eventComment.getStatus());
@@ -395,7 +401,7 @@ class EventCommentServiceImplTest {
 
         UserHasNoPermissionToAccessException noPermissionToAccessException =
             assertThrows(UserHasNoPermissionToAccessException.class,
-                () -> eventCommentService.delete(commentId, userToDeleteVO));
+                () -> eventCommentService.delete(1L, commentId, userToDeleteVO));
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, noPermissionToAccessException.getMessage());
     }
 
@@ -407,17 +413,18 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> eventCommentService.delete(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> eventCommentService.delete(1L, commentId, userVO));
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }
 
     @Test
-    void findAllActiveRepliesTest() {
+    void findAllRepliesTest() {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
 
         EventComment childComment = getEventComment();
         childComment.setParentComment(getEventComment());
@@ -425,12 +432,11 @@ class EventCommentServiceImplTest {
         Page<EventComment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
         when(modelMapper.map(childComment, EventCommentDto.class)).thenReturn(ModelUtils.getEventCommentDto());
-        when(eventCommentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
-            CommentStatus.DELETED))
-            .thenReturn(page);
+        when(eventCommentRepo.findAllByParentCommentIdAndStatusInOrderByCreatedDateDesc(pageable, parentCommentId,
+            statuses)).thenReturn(page);
 
         PageableDto<EventCommentDto> eventCommentDtos =
-            eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO);
+            eventCommentService.findAllReplies(pageable, 1L, parentCommentId, statuses, userVO);
         assertEquals(getEventComment().getId(), eventCommentDtos.getPage().get(0).getId());
         assertEquals(4, eventCommentDtos.getTotalElements());
         assertEquals(1, eventCommentDtos.getCurrentPage());
@@ -438,13 +444,14 @@ class EventCommentServiceImplTest {
     }
 
     @Test
-    void findAllActiveRepliesCurrentUserLikedTest() {
+    void findAllRepliesCurrentUserLikedTest() {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         UserVO userVO = getUserVO();
         User user = getUser();
         Long parentCommentId = 1L;
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
 
         EventComment childComment = getEventComment();
         childComment.setParentComment(getEventComment());
@@ -452,11 +459,11 @@ class EventCommentServiceImplTest {
 
         Page<EventComment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
-        when(eventCommentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
-            CommentStatus.DELETED))
+        when(eventCommentRepo.findAllByParentCommentIdAndStatusInOrderByCreatedDateDesc(pageable, parentCommentId,
+            statuses))
             .thenReturn(page);
 
-        eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO);
+        eventCommentService.findAllReplies(pageable, 1L, parentCommentId, statuses, userVO);
 
         assertTrue(childComment.isCurrentUserLiked());
     }
@@ -470,7 +477,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.countByParentCommentIdAndStatusNot(parentCommentId, CommentStatus.DELETED))
             .thenReturn(repliesAmount);
 
-        int result = eventCommentService.countAllActiveReplies(parentCommentId);
+        int result = eventCommentService.countAllActiveReplies(1L, parentCommentId);
         assertEquals(repliesAmount, result);
     }
 
@@ -480,7 +487,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED))
             .thenReturn(Optional.empty());
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> eventCommentService.countAllActiveReplies(parentCommentId));
+            assertThrows(NotFoundException.class, () -> eventCommentService.countAllActiveReplies(1L, parentCommentId));
 
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
     }
@@ -495,7 +502,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
-        eventCommentService.like(commentId, userVO);
+        eventCommentService.like(1L, commentId, userVO);
 
         assertTrue(comment.getUsersLiked().contains(user));
     }
@@ -510,7 +517,7 @@ class EventCommentServiceImplTest {
         comment.getUsersLiked().add(user);
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
-        eventCommentService.like(commentId, userVO);
+        eventCommentService.like(1L, commentId, userVO);
 
         assertFalse(comment.getUsersLiked().contains(user));
     }
@@ -523,7 +530,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> eventCommentService.like(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> eventCommentService.like(1L, commentId, userVO));
 
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }
@@ -543,7 +550,7 @@ class EventCommentServiceImplTest {
 
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
-        AmountCommentLikesDto result = eventCommentService.countLikes(commentId, userVO);
+        AmountCommentLikesDto result = eventCommentService.countLikes(1L, commentId, userVO);
 
         assertEquals(commentId, result.getId());
         assertEquals(comment.getUser().getId(), result.getUserId());
@@ -559,7 +566,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> eventCommentService.countLikes(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> eventCommentService.countLikes(1L, commentId, userVO));
 
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }

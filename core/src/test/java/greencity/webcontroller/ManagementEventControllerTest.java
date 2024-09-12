@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class ManagementEventsControllerTest {
+class ManagementEventControllerTest {
     private static final String managementEventsLink = "/management/events";
     @Mock
     EventService eventService;
@@ -51,29 +51,6 @@ class ManagementEventsControllerTest {
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
             .build();
-    }
-
-    @Test
-    @SneakyThrows
-    void getAllEventsWithoutQuery() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<EventDto> eventDtos = Collections.singletonList(new EventDto());
-        PageableAdvancedDto<EventDto> eventsDtoPageableDto =
-            new PageableAdvancedDto<>(eventDtos, 2, 0, 3, 0, true, true, true, true);
-        List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
-            .id(1L)
-            .name("Social").build());
-        when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en")).thenReturn(tagDtoList);
-        when(eventService.getAll(pageable, null)).thenReturn(eventsDtoPageableDto);
-
-        this.mockMvc.perform(get(managementEventsLink)
-            .param("page", "0")
-            .param("size", "10"))
-            .andExpect(view().name("core/management_events"))
-            .andExpect(model().attribute("pageable", eventsDtoPageableDto))
-            .andExpect(status().isOk());
-
-        verify(eventService).getAll(pageable, null);
     }
 
     @Test
@@ -111,7 +88,7 @@ class ManagementEventsControllerTest {
             .id(1L)
             .name("Social").build());
         when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en")).thenReturn(tagDtoList);
-        when(eventService.getAll(pageable, null)).thenReturn(eventsDtoPageableDto);
+        when(eventService.getEvents(pageable, null, null)).thenReturn(eventsDtoPageableDto);
 
         this.mockMvc.perform(get(managementEventsLink)
             .param("page", "0")
@@ -120,6 +97,6 @@ class ManagementEventsControllerTest {
             .andExpect(model().attribute("pageable", eventsDtoPageableDto))
             .andExpect(status().isOk());
 
-        verify(eventService).getAll(pageable, null);
+        verify(eventService).getEvents(pageable, null, null);
     }
 }
