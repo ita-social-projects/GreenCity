@@ -110,5 +110,5 @@ stages:
                 chartType: 'FilePath'
                 chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
                 releaseName: 'greencity'
-                overrideValues: 'ingress.hostname=greencity.test.greencity.cx.ua,deployment.image=yharasym/greencity:prod-$(Build.BuildId),externalSecret.vaultUrl=https://greencity.vault.azure.net/'
+                overrideValues: 'ingress.hostname=greencity.test.greencity.cx.ua,deployment.image=yharasym/greencity:prod-$(Build.BuildId),externalSecret.vaultUrl=https://greencity.vault.azure.net/,externalSecret.tenantId=66fb062f-fc4a-4165-8f98-3407d5825883'
                 arguments: '--debug'
