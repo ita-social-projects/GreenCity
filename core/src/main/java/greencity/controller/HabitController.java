@@ -94,7 +94,7 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @GetMapping("")
+    @GetMapping
     @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,

@@ -8,17 +8,24 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.Language;
+import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import static greencity.enums.TagType.FACT_OF_THE_DAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import greencity.repository.TagsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,6 +60,8 @@ class FactOfTheDayServiceImplTest {
 
     @Mock
     private FactOfTheDayService service;
+    @Mock
+    private TagsRepo tagsRepo;
 
     @InjectMocks
     private FactOfTheDayServiceImpl factOfTheDayService;
@@ -91,6 +100,9 @@ class FactOfTheDayServiceImplTest {
     @Test
     void saveFactOfTheDayAndTranslationsTest() {
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
+        Set<Tag> tagDtos = Set.of(ModelUtils.getTag());
+
+        when(tagsRepo.findTagsById(List.of(25L))).thenReturn(tagDtos);
 
         FactOfTheDayPostDTO res = factOfTheDayService.saveFactOfTheDayAndTranslations(factDtoPost);
         verify(factOfTheDayRepo, times(1)).save(any(FactOfTheDay.class));
@@ -103,6 +115,9 @@ class FactOfTheDayServiceImplTest {
     void saveFactOfTheDayAndTranslationsTestFailed() {
         FactOfTheDayPostDTO factDTO = ModelUtils.getFactOfTheDayPostDto();
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
+        Set<Tag> tagDtos = Set.of(ModelUtils.getTag());
+
+        when(tagsRepo.findTagsById(List.of(25L))).thenReturn(tagDtos);
         when(factOfTheDayRepo.save(fact)).thenThrow(RuntimeException.class);
 
         assertThrows(RuntimeException.class, () -> factOfTheDayService.saveFactOfTheDayAndTranslations(factDTO));
@@ -113,6 +128,7 @@ class FactOfTheDayServiceImplTest {
     void updateFactOfTheDayAndTranslationsTest() {
         LanguageDTO languageDTO = ModelUtils.getLanguageDTO();
         FactOfTheDay dbFact = ModelUtils.getFactOfTheDay();
+        Set<Tag> tagDtos = Set.of(ModelUtils.getTag());
 
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(dbFact));
         when(modelMapper.map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class)).thenReturn(
@@ -120,6 +136,7 @@ class FactOfTheDayServiceImplTest {
         when(languageService.findByCode("en")).thenReturn(languageDTO);
         when(modelMapper.map(languageDTO, Language.class)).thenReturn(ModelUtils.getLanguage());
         when(factOfTheDayTranslationService.saveAll(anyList())).thenReturn(null);
+        when(tagsRepo.findTagsById(List.of(25L))).thenReturn(tagDtos);
 
         FactOfTheDayPostDTO fact = ModelUtils.getFactOfTheDayPostDto();
         assertEquals(fact, factOfTheDayService.updateFactOfTheDayAndTranslations(fact));
@@ -219,55 +236,116 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    void getRandomFactOfTheDayTest() {
-        FactOfTheDayVO factOfTheDayVO = ModelUtils.getFactOfTheDayVO();
-        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
-        when(factOfTheDayRepo.getRandomFactOfTheDay()).thenReturn(Optional.of(fact));
-        when(modelMapper.map(fact, FactOfTheDayVO.class)).thenReturn(factOfTheDayVO);
-        FactOfTheDayVO actual = factOfTheDayService.getRandomFactOfTheDay();
+    void getRandomFactOfTheDayByLanguageAndTags_success() {
+        Language language = ModelUtils.getLanguage();
+        Set<Long> tagIds = Set.of(1L, 2L);
+        FactOfTheDay factOfTheDay = ModelUtils.getFactOfTheDay();
+        FactOfTheDayTranslation factTranslation = ModelUtils.getFactOfTheDayTranslation();
+        FactOfTheDayTranslationDTO expectedDto = ModelUtils.getFactOfTheDayTranslationDTO();
 
-        assertEquals(factOfTheDayVO, actual);
+        when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.of(factOfTheDay));
+        when(modelMapper.map(factTranslation, FactOfTheDayTranslationDTO.class)).thenReturn(expectedDto);
 
-        verify(factOfTheDayRepo, times(1)).getRandomFactOfTheDay();
+        FactOfTheDayTranslationDTO result =
+            factOfTheDayService.getRandomFactOfTheDayByLanguageAndTags(language.getCode(), tagIds);
+
+        assertEquals(expectedDto, result);
     }
 
     @Test
-    void getRandomFactOfTheDayTestFailed() {
-        when(factOfTheDayRepo.getRandomFactOfTheDay()).thenThrow(NotFoundException.class);
+    void getRandomFactOfTheDayByLanguageAndTags_factNotFound() {
+        String languageCode = "en";
+        Set<Long> tagIds = Set.of(1L, 2L);
 
-        assertThrows(NotFoundException.class, () -> factOfTheDayService.getRandomFactOfTheDay());
+        when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            factOfTheDayService.getRandomFactOfTheDayByLanguageAndTags(languageCode, tagIds);
+        });
     }
 
     @Test
-    void getRandomFactOfTheDayByLanguageTest() {
-        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
-        FactOfTheDayVO factOfTheDayVO = ModelUtils.getFactOfTheDayVO();
-        FactOfTheDayTranslation factOfTheDayTranslation = ModelUtils.getFactOfTheDayTranslation();
-        FactOfTheDayTranslationDTO factOfTheDayTranslationDTO = ModelUtils.getFactOfTheDayTranslationDTO();
+    void getRandomGeneralFactOfTheDay_success() {
+        Language language = ModelUtils.getLanguage();
+        List<Tag> tags = List.of(ModelUtils.getTag());
+        Set<Long> tagIds = Set.of(1L);
+        FactOfTheDay factOfTheDay = ModelUtils.getFactOfTheDay();
+        FactOfTheDayTranslation factTranslation = ModelUtils.getFactOfTheDayTranslation();
+        FactOfTheDayTranslationDTO expectedDto = ModelUtils.getFactOfTheDayTranslationDTO();
 
-        when(service.getRandomFactOfTheDay()).thenReturn(factOfTheDayVO);
-        when(modelMapper.map(factOfTheDayVO, FactOfTheDay.class)).thenReturn(fact);
-        when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class))
-            .thenReturn(factOfTheDayTranslationDTO);
+        when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.of(factOfTheDay));
+        when(modelMapper.map(factTranslation, FactOfTheDayTranslationDTO.class)).thenReturn(expectedDto);
+        when(tagsRepo.findTagsByType(FACT_OF_THE_DAY)).thenReturn(tags);
+        when(factOfTheDayService.getRandomFactOfTheDayByLanguageAndTags(language.getCode(), tagIds))
+            .thenReturn(expectedDto);
 
-        FactOfTheDayTranslationDTO actual = factOfTheDayService.getRandomFactOfTheDayByLanguage("en");
+        FactOfTheDayTranslationDTO result = factOfTheDayService.getRandomGeneralFactOfTheDay(language.getCode());
 
-        assertEquals(factOfTheDayTranslationDTO, actual);
-
-        verify(service, times(1)).getRandomFactOfTheDay();
+        assertEquals(expectedDto, result);
     }
 
     @Test
-    void getRandomFactOfTheDayByLanguageTestFailed() {
-        String languageCode = "ua";
-        Language english = ModelUtils.getLanguage();
-        english.setCode("en");
-        FactOfTheDayTranslation translation = ModelUtils.getFactOfTheDayTranslation();
-        translation.setLanguage(english);
-        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
-        fact.setFactOfTheDayTranslations(Collections.singletonList(translation));
-        when(modelMapper.map(service.getRandomFactOfTheDay(), FactOfTheDay.class)).thenReturn(fact);
+    void getRandomGeneralFactOfTheDay_noTagsFound() {
+        String languageCode = "en";
 
-        assertThrows(NotFoundException.class, () -> factOfTheDayService.getRandomFactOfTheDayByLanguage(languageCode));
+        when(tagsRepo.findTagsByType(FACT_OF_THE_DAY)).thenReturn(Collections.emptyList());
+
+        assertThrows(NotFoundException.class, () -> {
+            factOfTheDayService.getRandomGeneralFactOfTheDay(languageCode);
+        });
+    }
+
+    @Test
+    void getRandomFactOfTheDayForUser_success() {
+        Language language = ModelUtils.getLanguage();
+        String userEmail = "user@example.com";
+        Set<Long> tagIds = Set.of(1L);
+        FactOfTheDay factOfTheDay = ModelUtils.getFactOfTheDay();
+        FactOfTheDayTranslation factTranslation = ModelUtils.getFactOfTheDayTranslation();
+        FactOfTheDayTranslationDTO expectedDto = ModelUtils.getFactOfTheDayTranslationDTO();
+
+        when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.of(factOfTheDay));
+        when(modelMapper.map(factTranslation, FactOfTheDayTranslationDTO.class)).thenReturn(expectedDto);
+        when(tagsRepo.findTagsIdByUserHabitsInProgress(userEmail)).thenReturn(tagIds);
+        when(factOfTheDayService.getRandomFactOfTheDayByLanguageAndTags(language.getCode(), tagIds))
+            .thenReturn(expectedDto);
+
+        FactOfTheDayTranslationDTO result =
+            factOfTheDayService.getRandomFactOfTheDayForUser(language.getCode(), userEmail);
+
+        assertEquals(expectedDto, result);
+    }
+
+    @Test
+    void getRandomFactOfTheDayForUser_noUserTags() {
+        String languageCode = "en";
+        String userEmail = "user@example.com";
+
+        when(tagsRepo.findTagsIdByUserHabitsInProgress(userEmail)).thenReturn(Collections.emptySet());
+
+        FactOfTheDayTranslationDTO result = factOfTheDayService.getRandomFactOfTheDayForUser(languageCode, userEmail);
+
+        assertNull(result);
+    }
+
+    @Test
+    void getAllFactOfTheDayTags_success() {
+        TagDto tagDto = ModelUtils.getTagDto();
+        Set<TagDto> expectedTags = Set.of(tagDto);
+
+        when(factOfTheDayRepo.findAllFactOfTheDayAndHabitTags()).thenReturn(expectedTags);
+
+        Set<TagDto> result = factOfTheDayService.getAllFactOfTheDayTags();
+
+        assertEquals(expectedTags, result);
+    }
+
+    @Test
+    void getAllFactOfTheDayTags_noTagsFound() {
+        when(factOfTheDayRepo.findAllFactOfTheDayAndHabitTags()).thenReturn(Collections.emptySet());
+
+        Set<TagDto> result = factOfTheDayService.getAllFactOfTheDayTags();
+
+        assertTrue(result.isEmpty());
     }
 }

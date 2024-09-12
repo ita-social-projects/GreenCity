@@ -7,16 +7,19 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
-import greencity.dto.factoftheday.FactOfTheDayVO;
+import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.Language;
+import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import greencity.repository.TagsRepo;
 import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -26,6 +29,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import static greencity.enums.TagType.FACT_OF_THE_DAY;
 
 /**
  * Implementation of {@link FactOfTheDayService}.
@@ -38,6 +42,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final ModelMapper modelMapper;
     private final LanguageService languageService;
     private final FactOfTheDayTranslationService factOfTheDayTranslationService;
+    private final TagsRepo tagsRepo;
     @Resource
     private FactOfTheDayService self;
 
@@ -53,6 +58,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             factOfTheDayDTOs =
                 factsOfTheDay.getContent().stream()
                     .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+                    .map(factOfTheDay -> factOfTheDay
+                        .setTags(factOfTheDayRepo.findTagsByFactOfTheDayId(factOfTheDay.getId())))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_PROPERTY_NOT_FOUND + pageable.getSort());
@@ -78,6 +85,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                         .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
                         .build())
                     .collect(Collectors.toList()))
+            .tags(tagsRepo.findTagsById(factPost.getTags()))
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
@@ -113,6 +121,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                         .build())
                     .collect(Collectors.toList()))
             .createDate(ZonedDateTime.now())
+            .tags(tagsRepo.findTagsById(factPost.getTags()))
             .build();
         factOfTheDay.getFactOfTheDayTranslations().forEach(el -> el.setFactOfTheDay(factOfTheDay));
         factOfTheDayRepo.save(factOfTheDay);
@@ -159,6 +168,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.searchBy(pageable, searchQuery);
         List<FactOfTheDayDTO> factOfTheDayDTOs = factsOfTheDay.getContent().stream()
             .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+            .map(factOfTheDay -> factOfTheDay
+                .setTags(factOfTheDayRepo.findTagsByFactOfTheDayId(factOfTheDay.getId())))
             .collect(Collectors.toList());
         return new PageableDto<>(
             factOfTheDayDTOs,
@@ -172,22 +183,47 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME)
-    public FactOfTheDayVO getRandomFactOfTheDay() {
-        return factOfTheDayRepo.getRandomFactOfTheDay()
-            .map(f -> modelMapper.map(f, FactOfTheDayVO.class))
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguageAndTags(String languageCode, Set<Long> tagIds) {
+        FactOfTheDay factOfTheDay = factOfTheDayRepo.getRandomFactOfTheDay(tagIds)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+
+        FactOfTheDayTranslation factTranslation = factOfTheDay.getFactOfTheDayTranslations()
+            .stream()
+            .filter(translation -> translation.getLanguage().getCode().equals(languageCode))
+            .findAny()
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+
+        return modelMapper.map(factTranslation, FactOfTheDayTranslationDTO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguage(String languageCode) {
-        FactOfTheDay factOfTheDay = modelMapper.map(self.getRandomFactOfTheDay(), FactOfTheDay.class);
-        return factOfTheDay.getFactOfTheDayTranslations().stream()
-            .filter(fact -> fact.getLanguage().getCode().equals(languageCode))
-            .findAny()
-            .map(f -> modelMapper.map(f, FactOfTheDayTranslationDTO.class))
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
+    public FactOfTheDayTranslationDTO getRandomGeneralFactOfTheDay(String languageCode) {
+        List<Tag> tags = tagsRepo.findTagsByType(FACT_OF_THE_DAY);
+        return getRandomFactOfTheDayByLanguageAndTags(languageCode,
+            tags.stream().map(Tag::getId).collect(Collectors.toSet()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String languageCode, String userEmail) {
+        Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userEmail);
+        try {
+            return getRandomFactOfTheDayByLanguageAndTags(languageCode, userTagIds);
+        } catch (NotFoundException e) {
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<TagDto> getAllFactOfTheDayTags() {
+        return factOfTheDayRepo.findAllFactOfTheDayAndHabitTags();
     }
 }
