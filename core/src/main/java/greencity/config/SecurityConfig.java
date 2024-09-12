@@ -59,6 +59,8 @@ public class SecurityConfig {
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
     private static final String COMMENTS = "/comments";
+    private static final String FACT_OF_THE_DAY = "/fact-of-the-day";
+    private static final String RANDOM = "/random";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -121,10 +123,7 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/css/**", "/img/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
-                    "/factoftheday/",
-                    "/factoftheday/all",
-                    "/factoftheday/find/**",
-                    "/factoftheday/languages",
+                    FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
                     "/place/info/{id}",
                     "/place/info/favorite/{placeId}",
@@ -167,7 +166,7 @@ public class SecurityConfig {
                     EVENTS + "/event/{eventId}",
                     EVENTS + "/getAllSubscribers/{eventId}",
                     EVENTS + "/addresses",
-                    "/language",
+                    "/languages/codes",
                     "/search",
                     "/search/econews",
                     "/search/events",
@@ -214,7 +213,7 @@ public class SecurityConfig {
                     "/facts",
                     "/facts/random/{habitId}",
                     "/facts/dayFact/{languageId}",
-                    "/factoftheday/random/by-tags",
+                    FACT_OF_THE_DAY + RANDOM + "/by-tags",
                     "/newsSubscriber/unsubscribe",
                     "/place/{status}",
                     "/place/v2/filteredPlacesCategories",
@@ -232,8 +231,6 @@ public class SecurityConfig {
                     "/user/{userId}/recommendedFriends/",
                     "/user/{userId}/friends/",
                     "/user/{userId}/friendRequests/",
-                    "/factoftheday/",
-                    "/factoftheday/all",
                     "/chat",
                     EVENTS + "/myEvents",
                     EVENTS + "/myEvents/createdEvents",
