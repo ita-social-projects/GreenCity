@@ -437,11 +437,11 @@ class NotificationServiceImplTest {
         notification.setTargetUser(targetUser);
         when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_USER_TAG))
-                .thenReturn(Collections.singletonList(notification));
+            .thenReturn(Collections.singletonList(notification));
         notificationService.sendTaggedInCommentScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient, times(1)).sendScheduledEmailNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient, times(1)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
             assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());

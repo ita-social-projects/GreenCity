@@ -187,7 +187,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendTaggedInCommentScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
-                NotificationType.EVENT_COMMENT_USER_TAG);
+            NotificationType.EVENT_COMMENT_USER_TAG);
         sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS);
     }
 
