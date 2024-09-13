@@ -392,10 +392,8 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public PlaceInfoDto getInfoById(Long id) {
-        Place place =
-            placeRepo
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
+        Place place = placeRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         PlaceInfoDto placeInfoDto = modelMapper.map(place, PlaceInfoDto.class);
         placeInfoDto.setRate(placeRepo.getAverageRate(id));
         return placeInfoDto;
