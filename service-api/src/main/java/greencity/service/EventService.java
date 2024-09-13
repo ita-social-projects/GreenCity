@@ -6,13 +6,12 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.search.SearchEventsDto;
-import greencity.enums.EventType;
 import java.security.Principal;
+import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,43 +42,11 @@ public interface EventService {
     EventDto getEvent(Long eventId, Principal principal);
 
     /**
-     * Method for getting all Event instances.
-     *
-     * @return List of {@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal);
-
-    /**
      * Method for getting all Event instances filtered.
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventPreviewDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
-        String title);
-
-    /**
-     * Method for getting all Event instances that user attended.
-     *
-     * @return List of {@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String latitude,
-        String longitude, EventType eventType);
-
-    /**
-     * Method for getting page of events which were created user.
-     *
-     * @return a page of{@link EventDto} instance.
-     * @author Nikita Korzh.
-     */
-    PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable pageable, String email);
-
-    /**
-     * Method for getting pages of users events and events which were created by
-     * this user.
-     *
-     * @return a page of{@link EventDto} instance.
-     */
-    PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable pageable, String name);
+    PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId);
 
     /**
      * Add an attender to the Event by id.
@@ -156,29 +123,10 @@ public interface EventService {
     EventVO findById(Long eventId);
 
     /**
-     * Method for getting all user's favorite events.
-     *
-     * @param pageable {@link Pageable}
-     * @param email    {@link String}
-     * @return a page of {@link EventDto} instance.
-     * @author Midianyi Yurii.
-     */
-    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, String email);
-
-    /**
-     * Method for getting all events' addresses.
-     *
-     * @return set of {@link AddressDto} instances.
-     * @author Olena Sotnik.
-     */
-    Set<AddressDto> getAllEventsAddresses();
-
-    /**
      * Method for getting Events by searchQuery.
      *
      * @param searchQuery  query to search
      * @param languageCode {@link String}
-     *
      * @return PageableDto of {@link SearchEventsDto} instances
      * @author Anton Bondar
      */
@@ -190,19 +138,32 @@ public interface EventService {
      * @param pageable     {@link Pageable}
      * @param searchQuery  query to search
      * @param languageCode {@link String}
-     *
      * @return PageableDto of {@link SearchEventsDto} instances
      * @author Anton Bondar
      */
     PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
-     * Method for getting amount of events organized and attended by user id.
+     * Method for getting all events' addresses.
+     *
+     * @return list of {@link AddressDto} instances.
+     * @author Olena Sotnik.
+     */
+    List<AddressDto> getAllEventsAddresses();
+
+    /**
+     * Method for getting amount of attended events by user id.
      *
      * @param userId {@link Long} user id.
-     * @return {@link Long} amount of organized and attended events by user id.
-     *
-     * @author Olena Sotnik
+     * @return {@link Long} amount of attended events by user id.
      */
-    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
+    Long getCountOfAttendedEventsByUserId(Long userId);
+
+    /**
+     * Method for getting amount of organized events by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return {@link Long} amount of organized events by user id.
+     */
+    Long getCountOfOrganizedEventsByUserId(Long userId);
 }

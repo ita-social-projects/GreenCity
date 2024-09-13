@@ -18,15 +18,6 @@ public interface FactOfTheDayService {
     PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable);
 
     /**
-     * Method find {@link FactOfTheDayVO} by id.
-     *
-     * @param id of {@link FactOfTheDayVO}
-     * @return {@link FactOfTheDayVO}
-     * @author Mykola Lehkyi
-     */
-    FactOfTheDayDTO getFactOfTheDayById(Long id);
-
-    /**
      * Method saves new {@link FactOfTheDayVO} and
      * {@link FactOfTheDayTranslationVO}.
      *
@@ -45,16 +36,6 @@ public interface FactOfTheDayService {
      * @author Mykola Lehkyi
      */
     FactOfTheDayPostDTO updateFactOfTheDayAndTranslations(FactOfTheDayPostDTO fact);
-
-    /**
-     * Method updates {@link FactOfTheDayVO}{@link FactOfTheDayVO} and
-     * {@link FactOfTheDayTranslationVO}.
-     *
-     * @param fact {@link FactOfTheDayVO}
-     * @return instance of {@link FactOfTheDayVO}
-     * @author Mykola Lehkyi
-     */
-    FactOfTheDayVO update(FactOfTheDayPostDTO fact);
 
     /**
      * Method deletes {@link FactOfTheDayVO} and {@link FactOfTheDayTranslationVO}

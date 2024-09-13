@@ -44,6 +44,14 @@ import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.User;
+import greencity.entity.Photo;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
@@ -59,6 +67,7 @@ import greencity.repository.options.PlaceFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
 /**
@@ -83,6 +92,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
     private final FavoritePlaceRepo favoritePlaceRepo;
+    private final FileService fileService;
 
     /**
      * {@inheritDoc}
@@ -547,7 +557,7 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email) {
+    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
         User user = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException("User with email " + email + " doesn't exist"));
@@ -560,8 +570,21 @@ public class PlaceServiceImpl implements PlaceService {
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
         place.setAuthor(user);
         place.setLocation(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class));
-
+        mapMultipartFilesToPhotos(images, place, user);
         return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
+    }
+
+    private void mapMultipartFilesToPhotos(MultipartFile[] images, Place place, User user) {
+        if (images != null && images.length > 0 && images[0] != null) {
+            List<Photo> placePhotos = new ArrayList<>();
+            for (int i = 0; i < images.length; i++) {
+                if (images[i] != null) {
+                    placePhotos
+                        .add(Photo.builder().place(place).name(fileService.upload(images[i])).user(user).build());
+                }
+            }
+            place.setPhotos(placePhotos);
+        }
     }
 
     private AddPlaceLocation initializeGeoCodingResults(

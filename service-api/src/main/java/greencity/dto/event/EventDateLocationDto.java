@@ -13,8 +13,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 public class EventDateLocationDto extends AbstractEventDateLocationDto {
     private Long id;
-
     private EventDto event;
-
     private AddressDto coordinates;
 }
