@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
@@ -19,12 +20,14 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.HabitAssign;
 import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
+import greencity.rating.RatingCalculation;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
@@ -36,11 +39,9 @@ import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.options.HabitTranslationFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -58,12 +59,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.ArrayList;
-import java.util.stream.Stream;
+
+import static greencity.ModelUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -118,6 +117,13 @@ class HabitServiceImplTest {
 
     @Mock
     private HabitAssignService habitAssignService;
+
+    @Mock
+    private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementCalculation achievementCalculation;
+    @Mock
+    private UserNotificationServiceImpl userNotificationService;
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -185,27 +191,29 @@ class HabitServiceImplTest {
         habitDto.setIsCustomHabit(true);
         UserVO userVO = ModelUtils.getUserVO();
         List<Long> requestedCustomHabitIds = List.of(1L);
-        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
+        when(habitRepo.findVisibleCustomHabitsIdsByUserId(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
             requestedCustomHabitIds, userVO.getId(), "en")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
         when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("en");
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
+        assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
             anyList(), anyLong(), anyString());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
-        verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitRepo).findVisibleCustomHabitsIdsByUserId(anyLong());
         verify(habitRepo).findById(1L);
         verify(userRepo).findUserLanguageCodeByUserId(anyLong());
     }
@@ -222,28 +230,31 @@ class HabitServiceImplTest {
         habit.setUserId(1L);
         HabitDto habitDto = ModelUtils.getHabitDto();
         habitDto.setIsCustomHabit(true);
+        habitDto.setHabitAssignStatus(HabitAssignStatus.ACQUIRED);
         UserVO userVO = ModelUtils.getUserVO();
         List<Long> requestedCustomHabitIds = new ArrayList<>();
-        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
+        when(habitRepo.findVisibleCustomHabitsIdsByUserId(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
             requestedCustomHabitIds, userVO.getId(), "ua")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign()));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
         when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("ua");
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
+        assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
             anyList(), anyLong(), anyString());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
-        verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitRepo).findVisibleCustomHabitsIdsByUserId(anyLong());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(habitRepo).findById(1L);
         verify(userRepo).findUserLanguageCodeByUserId(anyLong());
@@ -296,322 +307,47 @@ class HabitServiceImplTest {
             habitService.getAllByTagsAndLanguageCode(pageable, tags, "en", excludeAssigned, userId));
     }
 
-    private static Stream<Arguments> getAllByDifferentParametersArguments() {
-        return Stream.of(
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.of(List.of(1))),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(false), Optional.of(List.of(1))),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.empty()),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(false), Optional.empty()),
-            arguments(Optional.empty(), Optional.of(true), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.of(false), Optional.of(List.of(1))),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.of(true), Optional.empty()),
-            arguments(Optional.empty(), Optional.of(false), Optional.empty()),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.empty()),
-            arguments(Optional.empty(), Optional.empty(), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.of(false), Optional.empty()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("getAllByDifferentParametersArguments")
-    void getAllByDifferentParameters(Optional<List<String>> tags, Optional<Boolean> isCustomHabit,
-        Optional<List<Integer>> complexities) {
+    @Test
+    void getAllByDifferentParameters() {
         Pageable pageable = PageRequest.of(0, 2);
-        String tag = "HABIT";
-        Long userId = ModelUtils.getUser().getId();
-        List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
-        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
-        HabitDto habitDto = ModelUtils.getHabitDto();
+        UserVO userVO = getUserVO();
+        List<String> tags = List.of("reusable");
+        List<Integer> complexities = List.of(1, 2, 3);
+        Boolean isCustomHabit = true;
+        String languageCode = "ua";
+        HabitTranslation habitTranslation = getHabitTranslation();
+        HabitTranslation habitTranslationUa = getHabitTranslationUa();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        Habit habit = getHabit();
+        habit.setIsCustomHabit(true);
+        habit.setUserId(1L);
+        HabitDto habitDto = getHabitDto();
+        habitDto.setIsCustomHabit(true);
+        habitDto.setHabitAssignStatus(HabitAssignStatus.ACQUIRED);
+
+        when(habitTranslationRepo.findAll(any(HabitTranslationFilter.class), any(Pageable.class)))
+            .thenReturn(habitTranslationPage);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign()));
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
 
-        List<Long> requestedCustomHabitIds = List.of(1L);
-        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId)).thenReturn(requestedCustomHabitIds);
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
-        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
-        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.getHabitWithCustom()));
+        assertEquals(pageableDto, habitService.getAllByDifferentParameters(userVO, pageable, Optional.of(tags),
+            Optional.of(isCustomHabit), Optional.of(complexities), languageCode));
+        assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
-        when(habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(any(Pageable.class),
-            anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(any(Pageable.class), anyList(), any(),
-            anyString())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(
-            any(Pageable.class), anyList(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(any(Pageable.class), anyList(),
-            anyString())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
-            any(Pageable.class), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(any(Pageable.class), any(),
-            anyString())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(
-            any(Pageable.class), anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(any(Pageable.class),
-            anyString(), anyList(), anyLong()))
-            .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString()))
-            .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(any(Pageable.class), any(),
-            anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
-            any(Pageable.class), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.getHabitTranslationByUaLanguage(anyLong())).thenReturn(habitTranslationUa);
-
-        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
-                    complexities, "en");
-            }
-        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags,
-                    "en");
-            }
-        } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities,
-                    "en");
-            }
-        } else if (complexities.isPresent() && tags.isPresent()) {
-            habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
-            }
-        } else if (tags.isPresent()) {
-            habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                lowerCaseTags, "en", requestedCustomHabitIds, userId);
-        } else if (complexities.isPresent()) {
-            habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                complexities, "en", requestedCustomHabitIds, userId);
-        }
-
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
-            isCustomHabit, complexities, "en"));
-
+        verify(habitTranslationRepo).findAll(any(HabitTranslationFilter.class), any(Pageable.class));
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitRepo).findById(1L);
+        verify(habitRepo).findById(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
-
-        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags, complexities,
-                        "en");
-            }
-        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, "en", requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags, "en");
-            }
-        } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable, complexities,
-                        "en", requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities,
-                        "en");
-            }
-        } else if (complexities.isPresent() && tags.isPresent()) {
-            verify(habitTranslationRepo, times(2))
-                .findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable, lowerCaseTags,
-                    complexities, "en", requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable, "en",
-                        requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
-            }
-        } else if (tags.isPresent()) {
-            verify(habitTranslationRepo, times(2))
-                .findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                    lowerCaseTags, "en", requestedCustomHabitIds, userId);
-        } else if (complexities.isPresent()) {
-            verify(habitTranslationRepo, times(2))
-                .findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, "en", requestedCustomHabitIds, userId);
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("getAllByDifferentParametersArguments")
-    void getAllByDifferentParametersWhenRequestedCustomHabitIdsIsEmpty(Optional<List<String>> tags,
-        Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities) {
-        Pageable pageable = PageRequest.of(0, 2);
-        String tag = "HABIT";
-        Long userId = ModelUtils.getUser().getId();
-        List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
-        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
-        HabitDto habitDto = ModelUtils.getHabitDto();
-        Page<HabitTranslation> habitTranslationPage =
-            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
-        List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
-        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
-            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
-
-        List<Long> requestedCustomHabitIds = new ArrayList<>();
-        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId)).thenReturn(requestedCustomHabitIds);
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
-        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
-        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.getHabitWithCustom()));
-
-        when(habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(any(Pageable.class),
-            anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(any(Pageable.class), anyList(), any(),
-            anyString())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(
-            any(Pageable.class), anyList(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(any(Pageable.class), anyList(),
-            anyString())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
-            any(Pageable.class), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(any(Pageable.class), any(),
-            anyString())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(
-            any(Pageable.class), anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(any(Pageable.class),
-            anyString(), anyList(), anyLong()))
-            .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString()))
-            .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(any(Pageable.class), any(),
-            anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
-            any(Pageable.class), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.getHabitTranslationByUaLanguage(anyLong())).thenReturn(habitTranslationUa);
-
-        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
-                    complexities, "en");
-            }
-        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags,
-                    "en");
-            }
-        } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities,
-                    "en");
-            }
-        } else if (complexities.isPresent() && tags.isPresent()) {
-            habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent()) {
-            if (isCustomHabit.get()) {
-                habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    "en", requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
-            }
-        } else if (tags.isPresent()) {
-            habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                lowerCaseTags, "en", requestedCustomHabitIds, userId);
-        } else if (complexities.isPresent()) {
-            habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                complexities, "en", requestedCustomHabitIds, userId);
-        }
-
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
-            isCustomHabit, complexities, "en"));
-
-        verify(modelMapper).map(habitTranslation, HabitDto.class);
-        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitRepo).findById(1L);
-        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
-
-        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags, complexities,
-                        "en");
-            }
-        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, "en", requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags, "en");
-            }
-        } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable, complexities,
-                        "en", requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities,
-                        "en");
-            }
-        } else if (complexities.isPresent() && tags.isPresent()) {
-            verify(habitTranslationRepo, times(2))
-                .findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable, lowerCaseTags,
-                    complexities, "en", requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent()) {
-            if (isCustomHabit.get()) {
-                verify(habitTranslationRepo, times(2))
-                    .findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable, "en",
-                        requestedCustomHabitIds, userId);
-            } else {
-                verify(habitTranslationRepo, times(2))
-                    .findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
-            }
-        } else if (tags.isPresent()) {
-            verify(habitTranslationRepo, times(2))
-                .findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                    lowerCaseTags, "en", requestedCustomHabitIds, userId);
-        } else if (complexities.isPresent()) {
-            verify(habitTranslationRepo, times(2))
-                .findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, "en", requestedCustomHabitIds, userId);
-        }
     }
 
     @Test
@@ -791,7 +527,7 @@ class HabitServiceImplTest {
         verify(customShoppingListResponseDtoMapper).mapAllToList(List.of(customShoppingListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
-        verify(fileService).upload(any());
+        verify(fileService).upload(any(MultipartFile.class));
     }
 
     @Test
@@ -1125,7 +861,7 @@ class HabitServiceImplTest {
         newItem.setId(null);
 
         CustomHabitDtoRequest customHabitDtoRequest = ModelUtils
-            .getСustomHabitDtoRequestWithNewCustomShoppingListItem();
+            .getCustomHabitDtoRequestWithNewCustomShoppingListItem();
         CustomHabitDtoResponse customHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
         when(customShoppingListMapper.mapAllToList(any()))
             .thenReturn(List.of(newItem));
@@ -1271,5 +1007,90 @@ class HabitServiceImplTest {
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo, times(0)).save(any(Habit.class));
+    }
+
+    @Test
+    void likeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = getHabit().setUserId(user.getId());
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        habitService.like(habit.getId(), userVO);
+
+        assertTrue(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(modelMapper).map(userVO, User.class);
+        verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(user.getId());
+    }
+
+    @Test
+    void removeLikeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = getHabit().setUserId(user.getId());
+        habit.getUsersLiked().add(user);
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        habitService.like(habit.getId(), userVO);
+        assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(user.getId());
+    }
+
+    @Test
+    void removeLikeRemoveIfTest() {
+        User user = getUser();
+        Habit habit = getHabit();
+        habit.getUsersLiked().add(user);
+
+        UserVO userVO = getUserVO();
+        userVO.setName("New Name");
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        habitService.like(habit.getId(), userVO);
+        assertFalse(habit.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+        verify(habitRepo).findById(habit.getId());
+    }
+
+    @Test
+    void likeHabitHabitNotFoundTest() {
+        UserVO userVO = getUserVO();
+        Habit habit = getHabit();
+        Long habitId = habit.getId();
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitService.like(habitId, userVO));
+        assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habit.getId(), exception.getMessage());
+
+        verify(habitRepo).findById(habit.getId());
+    }
+
+    @Test
+    void likeHabitUserNotFoundTest() {
+        UserVO userVO = getUserVO();
+        Habit habit = getHabit();
+        Long habitId = habit.getId();
+        User user = getUser();
+        habit.setUserId(user.getId());
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findById(habit.getUserId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitService.like(habitId, userVO));
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId(), exception.getMessage());
+
+        verify(habitRepo).findById(habit.getId());
+        verify(userRepo).findById(habit.getUserId());
     }
 }

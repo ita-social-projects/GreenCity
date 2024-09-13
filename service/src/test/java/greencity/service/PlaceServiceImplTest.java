@@ -2,7 +2,6 @@ package greencity.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
@@ -42,7 +41,6 @@ import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
-
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -67,6 +65,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 class PlaceServiceImplTest {
@@ -174,13 +173,15 @@ class PlaceServiceImplTest {
     UserRepo userRepo;
     @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
+    @Mock
+    private FileService fileService;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
-            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo);
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService);
     }
 
     @Test
@@ -297,12 +298,21 @@ class PlaceServiceImplTest {
     @Test
     void getInfoByIdTest() {
         Place place = ModelUtils.getPlace();
+        place.setDescription("description");
+        place.setEmail("http://www.websitetest.com");
+        place.setPhotos(new ArrayList<>());
+
         PlaceInfoDto gen = modelMapper.map(place, PlaceInfoDto.class);
         gen.setRate(1.5);
+
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
         when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
-        PlaceInfoDto res = placeService.getInfoById(anyLong());
+
+        PlaceInfoDto res = placeService.getInfoById(1L);
+
         assertEquals(gen, res);
+        verify(placeRepo).findById(anyLong());
+        verify(placeRepo).getAverageRate(anyLong());
     }
 
     @Test
@@ -644,7 +654,7 @@ class PlaceServiceImplTest {
         Place place = ModelUtils.getPlace();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail("test@mail.com")).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
         when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
         when(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class))
@@ -652,7 +662,7 @@ class PlaceServiceImplTest {
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceResponse.class)).thenReturn(placeResponse);
 
-        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, "test@mail.com"));
+        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, "test@mail.com", null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail("test@mail.com");
@@ -661,6 +671,19 @@ class PlaceServiceImplTest {
         verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);
         verify(placeRepo).save(place);
         verify(modelMapper).map(place, PlaceResponse.class);
+
+        MultipartFile multipartFile = ModelUtils.getMultipartFile();
+        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        assertEquals(placeResponse,
+            placeService.addPlaceFromUi(dto, user.getEmail(),
+                new MultipartFile[] {multipartFile}));
+
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        assertEquals(placeResponse,
+            placeService.addPlaceFromUi(dto, ModelUtils.getUser().getEmail(), multipartFiles));
+        verify(fileService, times(3)).upload(any(MultipartFile.class));
     }
 
     @Test
@@ -669,11 +692,12 @@ class PlaceServiceImplTest {
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         User user = ModelUtils.getUser();
         user.setUserStatus(UserStatus.BLOCKED);
+        String email = user.getEmail();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
-        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, user.getEmail()));
+        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());

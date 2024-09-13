@@ -33,45 +33,12 @@ public interface EcoNewsService {
     EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
     /**
-     * Method for getting last three eco news.
-     *
-     * @return list of {@link EcoNewsDto} instances.
-     */
-    List<EcoNewsDto> getThreeLastEcoNews();
-
-    /**
      * Method for getting three recommended eco news.
      *
-     * @param openedEcoNewsId don't include into the list
+     * @param ecoNewsId don't include into the list
      * @return list of three {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId);
-
-    /**
-     * Method for getting all eco news by page.
-     *
-     * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsGenericDto} instances.
-     */
-    PageableAdvancedDto<EcoNewsGenericDto> findGenericAll(Pageable page);
-
-    /**
-     * Method for getting all users eco news by page.
-     *
-     * @param user author of news.
-     * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsGenericDto} instances.
-     */
-    PageableAdvancedDto<EcoNewsGenericDto> findAllByUser(UserVO user, Pageable page);
-
-    /**
-     * Method for getting eco news by params.
-     *
-     * @param page parameters of to search.
-     * @param tags tags to search.
-     * @return PageableDto with {@link EcoNewsDto} instance.
-     */
-    PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags);
+    List<EcoNewsDto> getThreeRecommendedEcoNews(Long ecoNewsId);
 
     /**
      * Method for getting eco news by filter params.
@@ -81,7 +48,7 @@ public interface EcoNewsService {
      * @param title title to search.
      * @return PageableDto with {@link EcoNewsDto} instance.
      */
-    PageableAdvancedDto<EcoNewsGenericDto> findByFilters(Pageable page, List<String> tags, String title);
+    PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags, String title, Long authorId);
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
@@ -92,18 +59,10 @@ public interface EcoNewsService {
     EcoNewsVO findById(Long id);
 
     /**
-     * Method for getting the {@link EcoNewsDto} instance by its id.
-     *
-     * @param id {@link EcoNewsDto} instance id.
-     * @return {@link EcoNewsDto} instance.
-     */
-    EcoNewsDto getById(Long id);
-
-    /**
      * Method for getting the{@link EcoNewsDto} instance by its id and language of
      * tags.
      *
-     * @param id       {@link Long} econews id.
+     * @param id       {@link Long} ecoNews id.
      * @param language {@link String} language for searching tags.
      * @return {@link EcoNewsDto} instance
      */
@@ -144,29 +103,20 @@ public interface EcoNewsService {
     PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
-     * Method for getting all published news by user id.
-     *
-     * @param userId {@link Long} user id.
-     * @return list of {@link EcoNewsDto} instances.
-     * @author Vira Maksymets
-     */
-    List<EcoNewsDto> getAllPublishedNewsByUserId(Long userId);
-
-    /**
      * Method for getting all published news by authorised user.
      *
      * @param user {@link UserVO}.
      * @return list of {@link EcoNewsDto} instances.
      */
-    List<EcoNewsDto> getAllPublishedNewsByUser(UserVO user);
+    List<EcoNewsDto> getAllByUser(UserVO user);
 
     /**
-     * Method for getting amount of published news by user id.
+     * Method for getting amount of all published news or only for one user.
      *
-     * @param id {@link Long} user id.
-     * @return amount of published news by user id.
+     * @param id {@link Long} user id. May be null.
+     * @return amount of published news by user id or all news.
      */
-    Long getAmountOfPublishedNewsByUserId(Long id);
+    Long getAmountOfPublishedNews(Long id);
 
     /**
      * Method to mark comment as liked by User.
@@ -197,7 +147,7 @@ public interface EcoNewsService {
      * Method for updating {@link EcoNewsVO} instance.
      *
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
-     * @return instance of {@link EcoNewsDto};=.
+     * @return instance of {@link EcoNewsGenericDto}.
      */
     EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
 
@@ -247,20 +197,11 @@ public interface EcoNewsService {
     /**
      * Method to check if user liked news.
      *
-     * @param id   - id of {@link EcoNewsVO} to check liked or not.
-     * @param user - current {@link UserVO}.
+     * @param id     - id of {@link EcoNewsVO} to check liked or not.
+     * @param userId - id of {@link UserVO}.
      * @return user liked news or not.
      */
-
-    Boolean checkNewsIsLikedByUser(Long id, UserVO user);
-
-    /**
-     * Method to upload news images.
-     *
-     * @param images - array of eco news images
-     * @return array of images path
-     */
-    String[] uploadImages(MultipartFile[] images);
+    Boolean checkNewsIsLikedByUser(Long id, Long userId);
 
     /**
      * Method for getting some fields in eco news by id.

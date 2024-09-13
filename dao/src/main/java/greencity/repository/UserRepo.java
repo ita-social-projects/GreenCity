@@ -426,7 +426,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @author Anton Bondar
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM users u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+        value = "SELECT * FROM users u WHERE (:searchQuery = '' OR LOWER(u.name) "
+            + "LIKE LOWER(CONCAT('%', :searchQuery, '%'))) LIMIT 10")
     List<User> searchUsers(String searchQuery);
 
     /**

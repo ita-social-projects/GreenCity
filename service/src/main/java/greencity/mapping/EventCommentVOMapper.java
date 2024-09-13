@@ -6,6 +6,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.event.EventComment;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 /**
@@ -13,17 +14,18 @@ import java.util.stream.Collectors;
  * {@link EventCommentVO}.
  */
 
+@Component
 public class EventCommentVOMapper extends AbstractConverter<EventComment, EventCommentVO> {
     @Override
-    protected EventCommentVO convert(EventComment eventComment) {
+    public EventCommentVO convert(EventComment eventComment) {
         return EventCommentVO.builder()
             .id(eventComment.getId())
             .text(eventComment.getText())
             .createdDate(eventComment.getCreatedDate())
             .modifiedDate(eventComment.getModifiedDate())
-            .parentComment(EventCommentVO.builder()
+            .parentComment(eventComment.getParentComment() != null ? EventCommentVO.builder()
                 .id(eventComment.getParentComment().getId())
-                .build())
+                .build() : null)
             .user(UserVO.builder()
                 .id(eventComment.getUser().getId())
                 .role(eventComment.getUser().getRole())
@@ -33,12 +35,12 @@ public class EventCommentVOMapper extends AbstractConverter<EventComment, EventC
                 .id(eventComment.getEvent().getId())
                 .build())
             .currentUserLiked(eventComment.isCurrentUserLiked())
-            .usersLiked(eventComment.getUsersLiked().stream()
+            .usersLiked(eventComment.getUsersLiked() != null ? eventComment.getUsersLiked().stream()
                 .map(user -> UserVO.builder()
                     .id(user.getId())
                     .build())
-                .collect(Collectors.toSet()))
-            .status(eventComment.getStatus().toString())
+                .collect(Collectors.toSet()) : null)
+            .status(eventComment.getStatus() != null ? eventComment.getStatus().toString() : null)
             .build();
     }
 }

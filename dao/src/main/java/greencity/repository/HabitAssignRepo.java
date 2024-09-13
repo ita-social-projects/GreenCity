@@ -42,7 +42,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
-        + " WHERE ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + " WHERE ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED','REQUESTED')")
     List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
 
     /**
@@ -91,7 +91,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      */
     @Query("SELECT ha FROM HabitAssign ha "
         + "WHERE ha.habit.id = :habitId AND ha.user.id = :userId "
-        + "AND DATE(ha.createDate) = :dateTime AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + "AND DATE(ha.createDate) = :dateTime AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED','REQUESTED')")
     Optional<HabitAssign> findByHabitIdAndUserIdAndCreateDate(@Param("habitId") Long habitId,
         @Param("userId") Long userId,
         @Param("dateTime") ZonedDateTime dateTime);
@@ -153,8 +153,9 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance.
      */
     @Query(value = "SELECT * FROM habit_assign ha"
-        + " WHERE habit_id = :habitId AND user_id = :userId AND upper(ha.status) = 'CANCELLED'", nativeQuery = true)
-    HabitAssign findByHabitIdAndUserIdAndStatusIsCancelled(@Param("habitId") Long habitId,
+        + " WHERE habit_id = :habitId AND user_id = :userId AND upper(ha.status) IN ('CANCELLED','REQUESTED')",
+        nativeQuery = true)
+    HabitAssign findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
     /**
@@ -185,6 +186,21 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
     Optional<HabitAssign> findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(
         @Param("habitAssignId") Long habitAssignId,
+        @Param("userId") Long userId);
+
+    /**
+     * Method to find a list of {@link HabitAssign} instances by {@link User} id and
+     * {@link Habit} id (with not cancelled and not expired status).
+     *
+     * @param userId  {@link User} id.
+     * @param habitId {@link Habit} id.
+     * @return List of {@link HabitAssign} instances, if none exist returns an empty
+     *         list.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign AS ha "
+        + "WHERE ha.habit.id = :habitId AND ha.user.id = :userId "
+        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    List<HabitAssign> findHabitsByHabitIdAndUserId(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
     /**

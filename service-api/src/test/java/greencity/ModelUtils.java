@@ -21,10 +21,14 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.message.GeneralEmailMessage;
+import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.HabitAssignNotificationMessage;
+import greencity.message.UserReceivedCommentMessage;
+import greencity.message.UserReceivedCommentReplyMessage;
+import greencity.message.UserTaggedInCommentMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.MalformedURLException;
@@ -230,5 +234,50 @@ public class ModelUtils {
 
     public static URL getUrl() throws MalformedURLException {
         return new URL(TestConst.SITE);
+    }
+
+    public static UserTaggedInCommentMessage getUserTaggedInCommentMessage() {
+        return UserTaggedInCommentMessage.builder()
+            .baseLink("http://localhost:8060/events/1")
+            .taggerName("Denys")
+            .receiverName("Ivan")
+            .language("en")
+            .receiverEmail("Ivan@gmail.com")
+            .build();
+    }
+
+    public static UserReceivedCommentMessage getUserReceivedCommentMessage() {
+        return UserReceivedCommentMessage.builder()
+            .commentText("test")
+            .baseLink("http://localhost:8060/events/1")
+            .authorName("Denys")
+            .receiverName("Ivan")
+            .language("en")
+            .receiverEmail("Ivan@gmail.com")
+            .build();
+    }
+
+    public static UserReceivedCommentReplyMessage getUserReceivedCommentReplyMessage() {
+        return UserReceivedCommentReplyMessage.builder()
+            .commentText("test")
+            .baseLink("http://localhost:8060/events/1")
+            .authorName("Denys")
+            .receiverName("Ivan")
+            .language("en")
+            .receiverEmail("Ivan@gmail.com")
+            .parentCommentText("parent comment")
+            .parentCommentAuthorName("Dmytro")
+            .build();
+    }
+
+    public static ScheduledEmailMessage getScheduledEmailMessage() {
+        return ScheduledEmailMessage.builder()
+            .username("test")
+            .body("test")
+            .subject("test")
+            .language("en")
+            .baseLink("test")
+            .email("test@gmail.com")
+            .build();
     }
 }

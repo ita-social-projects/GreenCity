@@ -1,9 +1,9 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.comment.PlaceCommentRequestDto;
-import greencity.dto.comment.CommentAdminDto;
-import greencity.dto.comment.PlaceCommentResponseDto;
+import greencity.dto.placecomment.PlaceCommentRequestDto;
+import greencity.dto.placecomment.PlaceCommentAdminDto;
+import greencity.dto.placecomment.PlaceCommentResponseDto;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -47,5 +47,5 @@ public interface PlaceCommentService {
      * @return {@link PageableDto}
      * @author Rostyslav Khasanov.
      */
-    PageableDto<CommentAdminDto> getAllComments(Pageable pageable);
+    PageableDto<PlaceCommentAdminDto> getAllComments(Pageable pageable);
 }
