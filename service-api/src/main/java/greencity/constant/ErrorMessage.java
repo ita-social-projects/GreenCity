@@ -177,6 +177,8 @@ public class ErrorMessage {
     public static final String HAVE_ALREADY_RATED = "You have already rated this event";
     public static final String EVENT_IS_NOT_FINISHED = "Event is not finished yet";
     public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";
+    public static final String EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL =
+        "Event id in path param and eco news id in entity not equal";
     public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES =
         "User has already added this event to favorites.";
     public static final String EVENT_IS_NOT_IN_FAVORITES = "This event is not in favorites.";
