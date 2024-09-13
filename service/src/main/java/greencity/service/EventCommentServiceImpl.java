@@ -391,7 +391,8 @@ public class EventCommentServiceImpl implements EventCommentService {
                     .build();
                 notificationService.sendUsersTaggedInCommentEmailNotification(message);
                 userNotificationService.createNotification(modelMapper.map(user, UserVO.class), commentVO.getUser(),
-                        NotificationType.EVENT_COMMENT_USER_TAG);
+                        NotificationType.EVENT_COMMENT_USER_TAG, commentVO.getId(),
+                        commentText, eventVO.getId(), eventVO.getTitle());
             }
         }
     }
