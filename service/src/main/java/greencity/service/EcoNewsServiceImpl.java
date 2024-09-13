@@ -23,7 +23,6 @@ import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.message.GeneralEmailMessage;
