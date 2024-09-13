@@ -6,6 +6,8 @@ import greencity.dto.econews.EcoNewsViewDto;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
+
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.criteria.*;
@@ -45,6 +47,9 @@ class EcoNewsSpecificationTest {
     private Path<Object> pathEcoNewsAuthorNameMock;
 
     @Mock
+    private Path<Object> pathEcoNewsCreationDateMock;
+
+    @Mock
     private Predicate andTitlePredicate;
 
     @Mock
@@ -55,6 +60,9 @@ class EcoNewsSpecificationTest {
 
     @Mock
     private Predicate andTagPredicate;
+
+    @Mock
+    private Predicate andCreationDatePredicate;
 
     @Mock
     private ListAttribute<EcoNews, Tag> tags;
@@ -81,7 +89,7 @@ class EcoNewsSpecificationTest {
     @BeforeEach
     void setUp() {
         EcoNewsViewDto ecoNewsViewDto =
-            new EcoNewsViewDto("", "anyTitle", "anyAuthor", "weather", "", "", "News");
+            new EcoNewsViewDto("", "anyTitle", "anyAuthor", "weather", "2024-08-20", "", "News", "");
 
         criteriaList = new ArrayList<>();
         criteriaList.add(
@@ -101,6 +109,12 @@ class EcoNewsSpecificationTest {
                 .key(EcoNews_.TEXT)
                 .type(EcoNews_.TEXT)
                 .value(ecoNewsViewDto.getText())
+                .build());
+        criteriaList.add(
+            SearchCriteria.builder()
+                .key(EcoNews_.CREATION_DATE)
+                .type(EcoNews_.CREATION_DATE)
+                .value(ecoNewsViewDto.getStartDate())
                 .build());
         criteriaList.add(
             SearchCriteria.builder()
@@ -146,6 +160,12 @@ class EcoNewsSpecificationTest {
 
         when(criteriaBuilderMock.and(andAuthorPredicate, andTextPredicate)).thenReturn(andTextPredicate);
 
+        when(ecoNewsRootMock.get(EcoNews_.CREATION_DATE)).thenReturn(pathEcoNewsCreationDateMock);
+
+        when(criteriaBuilderMock.between(any(), any(ZonedDateTime.class), any(ZonedDateTime.class))).thenReturn(andCreationDatePredicate);
+
+        when(criteriaBuilderMock.and(andTextPredicate, andCreationDatePredicate)).thenReturn(andCreationDatePredicate);
+
         when(ecoNewsRootMock.join(EcoNews_.tags)).thenReturn(tagJoinMock);
 
         when(tagJoinMock.join(Tag_.tagTranslations)).thenReturn(tagTranslationJoinMock);
@@ -153,20 +173,24 @@ class EcoNewsSpecificationTest {
         when(tagTranslationJoinMock.get(TagTranslation_.name)).thenReturn(pathTagTranslationNameMock);
 
         when(criteriaBuilderMock
-            .like(pathTagTranslationNameMock.as(String.class), "%" + criteriaList.get(3).getValue() + "%"))
+            .like(pathTagTranslationNameMock.as(String.class), "%" + criteriaList.get(4).getValue() + "%"))
                 .thenReturn(andTagPredicate);
 
-        when(criteriaBuilderMock.and(andTextPredicate, andTagPredicate)).thenReturn(andTagPredicate);
+        when(criteriaBuilderMock.and(List.of(andTagPredicate).toArray(new Predicate[0]))).thenReturn(andTagPredicate);
+
+        when(criteriaBuilderMock.and(andCreationDatePredicate, andTagPredicate)).thenReturn(andTagPredicate);
 
         ecoNewsSpecification.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
 
         verify(ecoNewsRootMock, never()).get(EcoNews_.ID);
-        verify(ecoNewsRootMock, never()).get(EcoNews_.CREATION_DATE);
         verify(ecoNewsRootMock, never()).get(EcoNews_.IMAGE_PATH);
         verify(ecoNewsRootMock, never()).get(EcoNews_.SOURCE);
+        verify(ecoNewsRootMock, never()).get(EcoNews_.HIDDEN);
+        verify(ecoNewsRootMock, never()).get("dateRange");
         verify(criteriaBuilderMock).and(predicateMock, andTitlePredicate);
         verify(criteriaBuilderMock).and(andTitlePredicate, andAuthorPredicate);
         verify(criteriaBuilderMock).and(andAuthorPredicate, andTextPredicate);
-        verify(criteriaBuilderMock).and(andTextPredicate, andTagPredicate);
+        verify(criteriaBuilderMock).and(andTextPredicate, andCreationDatePredicate);
+        verify(criteriaBuilderMock).and(andCreationDatePredicate, andTagPredicate);
     }
 }

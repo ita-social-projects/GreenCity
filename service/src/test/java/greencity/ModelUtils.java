@@ -1715,7 +1715,7 @@ public class ModelUtils {
 
     public static EcoNewsViewDto getEcoNewsViewDto() {
         return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
-            "endDate", "tag");
+            "endDate", "tag", "true");
     }
 
     public static HabitDto getHabitDto() {

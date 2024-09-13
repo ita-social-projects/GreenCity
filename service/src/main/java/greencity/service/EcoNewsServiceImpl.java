@@ -149,27 +149,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * {@inheritDoc}
      *
-     * @author Kovaliv Taras.
-     */
-    @Override
-    public PageableAdvancedDto<EcoNewsDto> findAll(Pageable page) {
-        // TODO: remove this method
-        Page<EcoNews> pages;
-        if (page.getSort().isEmpty()) {
-            pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
-        } else {
-            if (page.getSort().isUnsorted()) {
-                pages = ecoNewsRepo.findAll(page);
-            } else {
-                throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-            }
-        }
-        return buildPageableAdvancedDto(pages);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @author Danylo Hlynskyi.
      */
     @Override
@@ -426,13 +405,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-    }
-
-    @Override
-    public PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
-        // TODO: remove this method
-        Page<EcoNews> page = ecoNewsRepo.searchEcoNewsBy(paging, query);
-        return buildPageableAdvancedDto(page);
     }
 
     private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,

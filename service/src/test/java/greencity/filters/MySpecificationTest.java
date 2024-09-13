@@ -112,4 +112,13 @@ class MySpecificationTest {
         Predicate actual = ecoNewsSpecification.getAuthorPredicate(newsRoot, criteriaBuilder, searchCriteriaForAll);
         assertEquals(expected, actual);
     }
+
+    @Test
+    void getBooleanPredicate() {
+        when(newsRoot.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
+        String searchCriteriaValue = (String) searchCriteriaForAll.getValue();
+        when(criteriaBuilder.equal(any(), eq(Boolean.parseBoolean(searchCriteriaValue)))).thenReturn(expected);
+        Predicate actual = ecoNewsSpecification.getBooleanPredicate(newsRoot, criteriaBuilder, searchCriteriaForAll);
+        assertEquals(expected, actual);
+    }
 }

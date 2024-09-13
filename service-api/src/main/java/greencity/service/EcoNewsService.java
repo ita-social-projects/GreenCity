@@ -51,14 +51,6 @@ public interface EcoNewsService {
      * Method for getting all eco news by page.
      *
      * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsDto} instances.
-     */
-    PageableAdvancedDto<EcoNewsDto> findAll(Pageable page);
-
-    /**
-     * Method for getting all eco news by page.
-     *
-     * @param page parameters of to search.
      * @return PageableDto of {@link EcoNewsGenericDto} instances.
      */
     PageableAdvancedDto<EcoNewsGenericDto> findGenericAll(Pageable page);
@@ -193,15 +185,6 @@ public interface EcoNewsService {
      * @author Dovganyuk Taras
      */
     void unlikeComment(UserVO user, EcoNewsCommentVO comment);
-
-    /**
-     * Method returns {@link EcoNewsDto} by search query and page.
-     *
-     * @param paging {@link Pageable}.
-     * @param query  query to search.
-     * @return list of {@link EcoNewsDto}.
-     */
-    PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
 
     /**
      * Method for updating {@link EcoNewsVO} instance.
