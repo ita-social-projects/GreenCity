@@ -367,7 +367,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             byQuery = ecoNewsRepo.searchEcoNewsBy(pageable, query);
         }
         Page<EcoNews> filteredByFields = null;
-        boolean isFilterByFieldsPresent = (ecoNewsViewDto != null && !ecoNewsViewDto.isEmpty()) || pageable.getSort().isSorted();
+        boolean isFilterByFieldsPresent =
+            (ecoNewsViewDto != null && !ecoNewsViewDto.isEmpty()) || pageable.getSort().isSorted();
         if (isFilterByFieldsPresent) {
             filteredByFields = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
         }

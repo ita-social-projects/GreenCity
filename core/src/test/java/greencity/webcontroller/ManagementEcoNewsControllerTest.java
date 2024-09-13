@@ -204,10 +204,11 @@ class ManagementEcoNewsControllerTest {
                 true, true, true, true);
         String query = "some query";
         List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
-                .id(1L)
-                .name("News").build());
+            .id(1L)
+            .name("News").build());
         when(tagsService.findAllEcoNewsTags(Locale.getDefault().getLanguage())).thenReturn(tagDtoList);
-        when(ecoNewsService.getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, Locale.getDefault())).thenReturn(ecoNewsDtoPageableDto);
+        when(ecoNewsService.getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, Locale.getDefault()))
+            .thenReturn(ecoNewsDtoPageableDto);
         this.mockMvc.perform(get(managementEcoNewsLink + "?query=" + query)
             .param("page", "0")
             .param("size", "10")
@@ -227,22 +228,23 @@ class ManagementEcoNewsControllerTest {
         Pageable pageable = PageRequest.of(0, 10);
         List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
         PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
-                new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0,
-                        true, true, true, true);
+            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0,
+                true, true, true, true);
         List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
-                .id(1L)
-                .name("News").build());
+            .id(1L)
+            .name("News").build());
         when(tagsService.findAllEcoNewsTags(Locale.getDefault().getLanguage())).thenReturn(tagDtoList);
-        when(ecoNewsService.getFilteredDataForManagementByPage(null, pageable, ecoNewsViewDto, Locale.getDefault())).thenReturn(ecoNewsDtoPageableDto);
+        when(ecoNewsService.getFilteredDataForManagementByPage(null, pageable, ecoNewsViewDto, Locale.getDefault()))
+            .thenReturn(ecoNewsDtoPageableDto);
         this.mockMvc.perform(get(managementEcoNewsLink + "?id=1&title=title&startDate=2024-08-20&hidden=true")
-                .param("page", "0")
-                .param("size", "10")
-                .locale(Locale.getDefault()))
-                .andExpect(view().name("core/management_eco_news"))
-                .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
-                .andExpect(model().attribute("fields", ecoNewsViewDto))
-                .andExpect(model().attribute("ecoNewsTag", tagDtoList))
-                .andExpect(status().isOk());
+            .param("page", "0")
+            .param("size", "10")
+            .locale(Locale.getDefault()))
+            .andExpect(view().name("core/management_eco_news"))
+            .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
+            .andExpect(model().attribute("fields", ecoNewsViewDto))
+            .andExpect(model().attribute("ecoNewsTag", tagDtoList))
+            .andExpect(status().isOk());
         verify(ecoNewsService).getFilteredDataForManagementByPage(null, pageable, ecoNewsViewDto, Locale.getDefault());
     }
 
