@@ -8,7 +8,7 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.EcoNews;
@@ -258,6 +258,30 @@ class CommentServiceImplTest {
         assertThrows(NotFoundException.class, () -> commentService.countCommentsForHabit(habitId));
 
         verify(habitRepo).findById(1L);
+    }
+
+    @Test
+    void countCommentsForEcoNews() {
+        EcoNews ecoNews = getEcoNews();
+
+        when(econewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(commentRepo.countNotDeletedCommentsByEcoNews(ecoNews.getId())).thenReturn(1);
+
+        assertEquals(1, commentService.countCommentsForEcoNews(ecoNews.getId()));
+
+        verify(econewsRepo).findById(1L);
+        verify(commentRepo).countNotDeletedCommentsByEcoNews(ecoNews.getId());
+    }
+
+    @Test
+    void countCommentsEcoNewsNotFoundException() {
+        Long ecoNewsId = 1L;
+
+        when(econewsRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> commentService.countCommentsForEcoNews(ecoNewsId));
+
+        verify(econewsRepo).findById(1L);
     }
 
     @Test

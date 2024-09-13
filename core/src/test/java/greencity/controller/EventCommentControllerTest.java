@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;

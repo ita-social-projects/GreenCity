@@ -8,7 +8,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.*;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
@@ -65,6 +64,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
+    private final CommentService commentService;
     private final UserNotificationService userNotificationService;
 
     private static final String ECO_NEWS_TITLE = "title";
@@ -284,26 +284,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public Long getAmountOfPublishedNews(Long authorId) {
         return authorId == null ? ecoNewsRepo.count() : ecoNewsRepo.countByAuthorId(authorId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void likeComment(UserVO user, EcoNewsCommentVO comment) {
-        comment.getUsersLiked().add(user);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
-            AchievementAction.ASSIGN);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
-        comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user,
-            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
     @Override
@@ -557,10 +537,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags) {
         User author = ecoNews.getAuthor();
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
-        int countOfComments = ecoNews.getEcoNewsComments() != null
-            ? (int) ecoNews.getEcoNewsComments().stream()
-                .filter(ecoNewsComment -> !ecoNewsComment.getStatus().equals(CommentStatus.DELETED)).count()
-            : 0;
+        int countOfComments = commentService.countCommentsForEcoNews(ecoNews.getId());
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
         return EcoNewsGenericDto.builder()
             .id(ecoNews.getId())

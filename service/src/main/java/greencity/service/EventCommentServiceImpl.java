@@ -4,7 +4,7 @@ import greencity.achievement.AchievementCalculation;
 import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -187,11 +187,10 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     /**
-     * Method to change the existing {@link greencity.entity.EcoNewsComment}.
+     * Method to change the existing event comment.
      *
-     * @param commentText new text of {@link greencity.entity.EcoNewsComment}.
-     * @param id          to specify {@link greencity.entity.EcoNewsComment} that
-     *                    user wants to change.
+     * @param commentText new text of event comment.
+     * @param id          to specify event comment that user wants to change.
      * @param userVO      current {@link User} that wants to change.
      */
     @Override

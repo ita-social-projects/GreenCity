@@ -35,12 +35,8 @@ import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -149,7 +145,6 @@ import greencity.entity.Tag;
 import greencity.entity.Language;
 import greencity.entity.EcoNews;
 import greencity.entity.VerifyEmail;
-import greencity.entity.EcoNewsComment;
 import greencity.entity.HabitAssign;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.HabitStatusCalendar;
@@ -584,16 +579,25 @@ public class ModelUtils {
         tag.setTagTranslations(
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
-        return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text", false,
-            List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
-            Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
+        return EcoNews.builder()
+            .id(1L)
+            .creationDate(zonedDateTime)
+            .imagePath(TestConst.SITE)
+            .source("source")
+            .shortInfo("shortInfo")
+            .author(getUser())
+            .title("title")
+            .text("text")
+            .hidden(false)
+            .tags(Collections.singletonList(tag))
+            .build();
     }
 
-    public static EcoNewsComment getEcoNewsComment(CommentStatus commentStatus) {
-        return EcoNewsComment.builder()
+    public static Comment getEcoNewsComment(CommentStatus commentStatus) {
+        return Comment.builder()
             .status(commentStatus)
             .text("sdfs")
+            .articleType(ArticleType.ECO_NEWS)
             .build();
     }
 
@@ -603,23 +607,18 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false,
-            List.of(getEcoNewsComment(CommentStatus.EDITED),
-                getEcoNewsComment(CommentStatus.ORIGINAL),
-                getEcoNewsComment(CommentStatus.DELETED),
-                getEcoNewsComment(CommentStatus.DELETED)),
-            Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
+            "title", "text", false, Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false, null, Collections.singletonList(getTag()), Collections.emptySet(),
+            "title", "text", false, Collections.singletonList(getTag()), Collections.emptySet(),
             Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {
         return new EcoNewsVO(1L, zonedDateTime, TestConst.SITE, null, getUserVO(),
-            "title", "text", null, Collections.emptySet(), Collections.singletonList(getTagVO()),
+            "title", "text", Collections.emptySet(), Collections.singletonList(getTagVO()),
             Collections.emptySet());
     }
 
@@ -1321,109 +1320,15 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
-        return AddEcoNewsCommentDtoResponse.builder()
-            .id(getEcoNewsComment().getId())
-            .author(getEcoNewsCommentAuthorDto())
-            .text(getEcoNewsComment().getText())
-            .modifiedDate(getEcoNewsComment().getModifiedDate())
-            .build();
-    }
-
-    public static EcoNewsComment getEcoNewsComment() {
-        return EcoNewsComment.builder()
+    public static Comment getEcoNewsComment() {
+        return Comment.builder()
             .id(1L)
             .status(CommentStatus.ORIGINAL)
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
             .user(getUser())
-            .ecoNews(getEcoNews())
-            .build();
-    }
-
-    public static EcoNewsCommentVO getEcoNewsCommentVOWithoutParentWithData() {
-        return EcoNewsCommentVO.builder()
-            .id(278L)
-            .user(UserVO.builder()
-                .id(13L)
-                .role(Role.ROLE_ADMIN)
-                .name("name")
-                .build())
-            .modifiedDate(LocalDateTime.now())
-            .text("I find this topic very useful!")
-            .status(CommentStatus.ORIGINAL)
-            .currentUserLiked(true)
-            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
-            .usersLiked(new HashSet<>(Arrays.asList(
-                UserVO.builder()
-                    .id(76L)
-                    .build(),
-                UserVO.builder()
-                    .id(543L)
-                    .build(),
-                UserVO.builder()
-                    .id(349L)
-                    .build())))
-            .ecoNews(EcoNewsVO.builder()
-                .id(32L)
-                .build())
-            .build();
-    }
-
-    public static EcoNewsCommentVO getEcoNewsCommentVOWithParentWithData() {
-        return EcoNewsCommentVO.builder()
-            .id(278L)
-            .user(UserVO.builder()
-                .id(13L)
-                .role(Role.ROLE_ADMIN)
-                .name("name")
-                .build())
-            .modifiedDate(LocalDateTime.now())
-            .text("I find this topic very useful!")
-            .parentComment(EcoNewsCommentVO.builder()
-                .id(277L)
-                .user(UserVO.builder()
-                    .id(13L)
-                    .role(Role.ROLE_ADMIN)
-                    .name("name")
-                    .build())
-                .modifiedDate(LocalDateTime.now())
-                .text("I find this topic very useful!")
-                .status(CommentStatus.ORIGINAL)
-                .currentUserLiked(true)
-                .parentComment(null)
-                .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
-                .usersLiked(new HashSet<>(Arrays.asList(
-                    UserVO.builder()
-                        .id(76L)
-                        .build(),
-                    UserVO.builder()
-                        .id(543L)
-                        .build(),
-                    UserVO.builder()
-                        .id(349L)
-                        .build())))
-                .ecoNews(EcoNewsVO.builder()
-                    .id(32L)
-                    .build())
-                .build())
-            .status(CommentStatus.ORIGINAL)
-            .currentUserLiked(true)
-            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
-            .usersLiked(new HashSet<>(Arrays.asList(
-                UserVO.builder()
-                    .id(76L)
-                    .build(),
-                UserVO.builder()
-                    .id(543L)
-                    .build(),
-                UserVO.builder()
-                    .id(349L)
-                    .build())))
-            .ecoNews(EcoNewsVO.builder()
-                .id(32L)
-                .build())
+            .articleType(ArticleType.ECO_NEWS)
             .build();
     }
 
@@ -1432,23 +1337,6 @@ public class ModelUtils {
             .id(getUser().getId())
             .name(getUser().getName().trim())
             .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
-        return new AddEcoNewsCommentDtoRequest("text", 0L);
-    }
-
-    public static EcoNewsCommentDto getEcoNewsCommentDto() {
-        return EcoNewsCommentDto.builder()
-            .id(1L)
-            .modifiedDate(LocalDateTime.now())
-            .author(getEcoNewsCommentAuthorDto())
-            .text("text")
-            .replies(0)
-            .likes(0)
-            .currentUserLiked(false)
-            .status(CommentStatus.ORIGINAL)
             .build();
     }
 
@@ -1731,12 +1619,6 @@ public class ModelUtils {
             Collections.singletonList("tag"));
     }
 
-    public static EcoNewsCommentVO getEcoNewsCommentVO() {
-        return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
-            new ArrayList<>(), getUserVO(), getEcoNewsVO(),
-            false, new HashSet<>(), CommentStatus.ORIGINAL);
-    }
-
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
         return new EcoNewsDtoManagement(1L, "title", "text", ZonedDateTime.now(),
             Collections.singletonList("tag"), "imagePath", "source");
@@ -1985,7 +1867,6 @@ public class ModelUtils {
                         .build())
                     .profilePicturePath("../")
                     .ecoNewsLiked(null)
-                    .ecoNewsCommentsLiked(null)
                     .firstName("dfsfsdf")
                     .showLocation(true)
                     .showEcoPlace(true)

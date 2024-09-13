@@ -18,10 +18,6 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDateLocationDto;
@@ -76,9 +72,8 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Advice;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
+import greencity.entity.Comment;
 import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FavoritePlace;
 import greencity.entity.Habit;
@@ -100,6 +95,7 @@ import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.enums.FactOfDayStatus;
 import greencity.enums.HabitAssignStatus;
@@ -205,11 +201,6 @@ public class ModelUtils {
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList());
-    }
-
-    public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false, null, Collections.singletonList(getTag()), null, null);
     }
 
     public static EcoNewsDto getEcoNewsDto() {
@@ -414,49 +405,15 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
-    public static EcoNewsComment getEcoNewsComment() {
-        return EcoNewsComment.builder()
+    public static Comment getEcoNewsComment() {
+        return Comment.builder()
             .id(1L)
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
             .status(CommentStatus.ORIGINAL)
             .user(getUser())
-            .ecoNews(getEcoNews())
-            .build();
-    }
-
-    public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
-        return new AddEcoNewsCommentDtoRequest("text", 0L);
-    }
-
-    public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
-        return AddEcoNewsCommentDtoResponse.builder()
-            .id(getEcoNewsComment().getId())
-            .author(getEcoNewsCommentAuthorDto())
-            .text(getEcoNewsComment().getText())
-            .modifiedDate(getEcoNewsComment().getModifiedDate())
-            .build();
-    }
-
-    public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
-        return EcoNewsCommentAuthorDto.builder()
-            .id(getUser().getId())
-            .name(getUser().getName().trim())
-            .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static EcoNewsCommentDto getEcoNewsCommentDto() {
-        return EcoNewsCommentDto.builder()
-            .id(1L)
-            .modifiedDate(LocalDateTime.now())
-            .author(getEcoNewsCommentAuthorDto())
-            .text("text")
-            .replies(0)
-            .likes(0)
-            .currentUserLiked(false)
-            .status(CommentStatus.ORIGINAL)
+            .articleType(ArticleType.ECO_NEWS)
             .build();
     }
 

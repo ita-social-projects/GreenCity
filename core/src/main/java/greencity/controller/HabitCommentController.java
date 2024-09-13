@@ -9,7 +9,7 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;

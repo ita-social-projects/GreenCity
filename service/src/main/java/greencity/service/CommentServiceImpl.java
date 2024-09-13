@@ -7,7 +7,9 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
+import greencity.dto.user.UserSearchDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.EcoNews;
@@ -29,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -47,6 +50,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
     private final ModelMapper modelMapper;
+    private final SimpMessagingTemplate messagingTemplate;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
 
@@ -219,6 +223,16 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
+    public int countCommentsForEcoNews(Long ecoNewsId) {
+        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId));
+        return commentRepo.countNotDeletedCommentsByEcoNews(ecoNews.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int countAllActiveReplies(Long parentCommentId) {
         if (commentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED).isEmpty()) {
             throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId);
@@ -354,5 +368,20 @@ public class CommentServiceImpl implements CommentService {
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
         commentRepo.save(comment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public void searchUsers(UserSearchDto searchUsers) {
+        List<User> users = userRepo.searchUsers(searchUsers.getSearchQuery());
+
+        List<UserTagDto> usersToTag = users.stream()
+            .map(u -> modelMapper.map(u, UserTagDto.class))
+            .toList();
+
+        messagingTemplate.convertAndSend("/topic/" + searchUsers.getCurrentUserId() + "/searchUsers", usersToTag);
     }
 }

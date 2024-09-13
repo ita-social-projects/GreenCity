@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.*;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
 import java.util.Set;
@@ -123,24 +122,6 @@ public interface EcoNewsService {
      * @return amount of published news by user id or all news.
      */
     Long getAmountOfPublishedNews(Long id);
-
-    /**
-     * Method to mark comment as liked by User.
-     *
-     * @param user    {@link UserVO}.
-     * @param comment {@link EcoNewsCommentVO}
-     * @author Dovganyuk Taras
-     */
-    void likeComment(UserVO user, EcoNewsCommentVO comment);
-
-    /**
-     * Method to mark comment as unliked by User.
-     *
-     * @param user    {@link UserVO}.
-     * @param comment {@link EcoNewsCommentVO}
-     * @author Dovganyuk Taras
-     */
-    void unlikeComment(UserVO user, EcoNewsCommentVO comment);
 
     /**
      * Method returns {@link EcoNewsDto} by search query and page.
