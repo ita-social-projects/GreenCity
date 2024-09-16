@@ -67,24 +67,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
                     criteriaBuilder.and(allPredicates, getBooleanPredicate(root, criteriaBuilder, searchCriteria));
             }
         }
-        List<Order> orderList = new ArrayList<>();
-        for (Order order : criteriaQuery.getOrderList()) {
-            String sortField = order.getExpression().toString();
-            if (sortField.equals("likes")) {
-                orderList
-                    .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersLikedNews")))
-                        : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersLikedNews"))));
-            } else if (sortField.equals("dislikes")) {
-                orderList
-                    .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersDislikedNews")))
-                        : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersDislikedNews"))));
-            } else {
-                orderList.add(order.isAscending() ? criteriaBuilder.asc(root.get(sortField))
-                    : criteriaBuilder.desc(root.get(sortField)));
-            }
-        }
-
-        criteriaQuery.orderBy(orderList);
+        criteriaQuery.orderBy(getOrderList(root, criteriaQuery, criteriaBuilder));
         return allPredicates;
     }
 
@@ -119,5 +102,25 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
         } catch (DateTimeParseException ex) {
             return criteriaBuilder.disjunction();
         }
+    }
+
+    private List<Order> getOrderList(Root<EcoNews> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+        List<Order> orderList = new ArrayList<>();
+        for (Order order : criteriaQuery.getOrderList()) {
+            String sortField = order.getExpression().toString();
+            if (sortField.equals("likes")) {
+                orderList
+                        .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersLikedNews")))
+                                : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersLikedNews"))));
+            } else if (sortField.equals("dislikes")) {
+                orderList
+                        .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersDislikedNews")))
+                                : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersDislikedNews"))));
+            } else {
+                orderList.add(order.isAscending() ? criteriaBuilder.asc(root.get(sortField))
+                        : criteriaBuilder.desc(root.get(sortField)));
+            }
+        }
+        return orderList;
     }
 }
