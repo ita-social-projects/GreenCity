@@ -72,12 +72,12 @@ public class ManagementEventsController {
         @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
         if (eventViewDto.getId() != null && !eventViewDto.isEmpty()) {
-            allEvents = eventService.getAll(pageable, null);
+            allEvents = eventService.getEvents(pageable, null, null);
             model.addAttribute("fields", eventViewDto);
             model.addAttribute("query", "");
         } else {
             allEvents = query == null || query.isEmpty()
-                ? eventService.getAll(pageable, null)
+                ? eventService.getEvents(pageable, null, null)
                 : eventService.searchEventsBy(pageable, query);
             model.addAttribute("fields", new EventViewDto());
             model.addAttribute("query", query);

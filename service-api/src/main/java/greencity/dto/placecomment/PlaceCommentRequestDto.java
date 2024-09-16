@@ -1,4 +1,4 @@
-package greencity.dto.comment;
+package greencity.dto.placecomment;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.photo.PhotoAddDto;
@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddCommentDto {
+public class PlaceCommentRequestDto {
     @NotBlank
     @Length(min = ServiceValidationConstants.COMMENT_MIN_LENGTH, max = ServiceValidationConstants.COMMENT_MAX_LENGTH)
     private String text;

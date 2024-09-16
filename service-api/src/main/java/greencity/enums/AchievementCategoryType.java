@@ -11,5 +11,6 @@ public enum AchievementCategoryType {
     HABIT,
     ACHIEVEMENT,
     CREATE_EVENT,
-    JOIN_EVENT
+    JOIN_EVENT,
+    LIKE_HABIT
 }

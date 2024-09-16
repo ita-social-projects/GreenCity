@@ -4,6 +4,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public interface AchievementService {
      * @return List AchievementVO Returns a list of achievements matching the given
      *         criteria.
      */
-    List<AchievementVO> findAllByType(String principalEmail, String achievementStatus);
+    List<AchievementVO> findAllByType(String principalEmail, AchievementStatus achievementStatus);
 
     /**
      * Method for achieve.

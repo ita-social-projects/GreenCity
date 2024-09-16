@@ -36,6 +36,36 @@ public interface NotificationService {
     void sendMonthlyReport();
 
     /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with likes. Sending is performed 2 times a day.
+     */
+    void sendLikeScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with comments. Sending is performed 2 times a day.
+     */
+    void sendCommentScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with comment replies. Sending is performed 2 times a day.
+     */
+    void sendCommentReplyScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with friend requests. Sending is performed 2 times a day.
+     */
+    void sendFriendRequestScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with tagging in the comment. Sending is performed 2 times a day.
+     */
+    void sendTaggedInCommentScheduledEmail();
+
+    /**
      * method sends a general email notification to many Users.
      *
      * @param usersEmails {@link Set} to this users email will be sent.
@@ -66,4 +96,10 @@ public interface NotificationService {
      * @param message {@link UserTaggedInCommentMessage}.
      */
     void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message);
+
+    public void sendEmailNotificationLikes(GeneralEmailMessage generalEmailMessage);
+
+    public void sendEmailNotificationComments(GeneralEmailMessage generalEmailMessage);
+
+    public void sendEmailNotificationInvites(GeneralEmailMessage generalEmailMessage);
 }

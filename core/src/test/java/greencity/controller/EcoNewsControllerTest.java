@@ -1,6 +1,8 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUserVO;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
@@ -10,16 +12,13 @@ import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
 import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -32,19 +31,14 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUserVO;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EcoNewsControllerTest {
-    private static final String ecoNewsLink = "/econews";
-    private static final String uploadImageLink = "/uploadImage";
+    private static final String ecoNewsLink = "/eco-news";
     private MockMvc mockMvc;
     @InjectMocks
     private EcoNewsController ecoNewsController;
@@ -74,14 +68,6 @@ class EcoNewsControllerTest {
     }
 
     @Test
-    void getThreeLastEcoNewsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/newest"))
-            .andExpect(status().isOk());
-
-        verify(ecoNewsService).getThreeLastEcoNews();
-    }
-
-    @Test
     void saveTest() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("Olivia.Johnson@gmail.com");
@@ -89,8 +75,7 @@ class EcoNewsControllerTest {
             "\"title\": \"title\",\n" +
             " \"tags\": [\"news\"],\n" +
             " \"text\": \"content content content\", \n" +
-            "\"source\": \"\",\n" +
-            " \"image\": null\n" +
+            "\"source\": \"\"\n" +
             "}";
         MockMultipartFile jsonFile =
             new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
@@ -120,22 +105,10 @@ class EcoNewsControllerTest {
 
     @Test
     void getEcoNewsById() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/{id}", 1))
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}", 1))
             .andExpect(status().isOk());
 
         verify(ecoNewsService).findDtoByIdAndLanguage(1L, "en");
-    }
-
-    @Test
-    void getEcoNewsByUserTest() throws Exception {
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-
-        mockMvc.perform(get(ecoNewsLink + "/byUser")
-            .principal(principal))
-            .andExpect(status().isOk());
-
-        verify(ecoNewsService).getAllPublishedNewsByUser(userVO);
     }
 
     @Test
@@ -147,20 +120,19 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "?page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findByFilters(pageable, null, null);
+        verify(ecoNewsService).find(pageable, null, null, null);
     }
 
     @Test
-    @SneakyThrows
-    void getEcoNewsByUserByPage() {
+    void findAllByUserTest() throws Exception {
         int pageNumber = 1;
-        int pageSize = 2;
+        int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        mockMvc.perform(get(ecoNewsLink + "/byUserPage?page=1&size=2"))
+        mockMvc.perform(get(ecoNewsLink + "?author-id=1&page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAllByUser(null, pageable);
+        verify(ecoNewsService).find(pageable, null, null, 1L);
     }
 
     @Test
@@ -176,33 +148,8 @@ class EcoNewsControllerTest {
     }
 
     @Test
-    void getEcoNewsTest() throws Exception {
-        int pageNumber = 5;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        List<String> tags = Collections.singletonList("eco");
-
-        mockMvc.perform(get("/econews/tags?page=5&tags=eco"))
-            .andExpect(status().isOk());
-
-        verify(ecoNewsService).find(pageable, tags);
-    }
-
-    @Test
-    void getEcoNewsEmptyTagsListTest() throws Exception {
-        int pageNumber = 5;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        mockMvc.perform(get("/econews/tags?page=5"))
-            .andExpect(status().isOk());
-
-        verify(ecoNewsService).findGenericAll(pageable);
-    }
-
-    @Test
     void getThreeRecommendedEcoNewsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/recommended?openedEcoNewsId=" + 1L))
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/recommended", 1L))
             .andExpect(status().isOk());
 
         verify(ecoNewsService).getThreeRecommendedEcoNews(1L);
@@ -211,7 +158,7 @@ class EcoNewsControllerTest {
     @Test
     void findAllEcoNewsTagsTest() throws Exception {
         String language = "en";
-        mockMvc.perform(get(ecoNewsLink + "/tags/all?lang=" + language))
+        mockMvc.perform(get(ecoNewsLink + "/tags?lang=" + language))
             .andExpect(status().isOk());
 
         verify(tagsService).findAllEcoNewsTags(language);
@@ -222,7 +169,7 @@ class EcoNewsControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(post(ecoNewsLink + "/like?id=1")
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/likes", 1)
             .principal(principal))
             .andExpect(status().isOk());
 
@@ -231,24 +178,29 @@ class EcoNewsControllerTest {
 
     @Test
     void dislikeTest() throws Exception {
-        // given
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
-        // when
-        mockMvc.perform(post(ecoNewsLink + "/dislike?id=1")
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/dislikes", 1)
             .principal(principal))
             .andExpect(status().isOk());
-        // then
         verify(ecoNewsService).dislike(userVO, 1L);
 
     }
 
     @Test
     void countLikesForEcoNewsTest() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/countLikes/{econewsId}", 1L))
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/likes/count", 1L))
             .andExpect(status().isOk());
 
         verify(ecoNewsService).countLikesForEcoNews(1L);
+    }
+
+    @Test
+    void countDislikesForEcoNewsTest() throws Exception {
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/dislikes/count", 1L))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).countDislikesForEcoNews(1L);
     }
 
     @Test
@@ -256,25 +208,25 @@ class EcoNewsControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(get(ecoNewsLink + "/isLikedByUser?econewsId=1")
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/likes/{userId}", 1, 1)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).checkNewsIsLikedByUser(1L, userVO);
+        verify(ecoNewsService).checkNewsIsLikedByUser(1L, userVO.getId());
     }
 
     @Test
     void findAmountOfPublishedNews() throws Exception {
         mockMvc.perform(get(ecoNewsLink + "/count")
-            .param("userId", "1"))
+            .param("author-id", "1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).getAmountOfPublishedNewsByUserId(1L);
+        verify(ecoNewsService).getAmountOfPublishedNews(1L);
     }
 
     @Test
     void getContentAndSourceForEcoNewsById() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/contentAndSourceForEcoNews/{id}", 1L))
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/summary", 1L))
             .andExpect(status().isOk());
 
         verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);
@@ -283,10 +235,9 @@ class EcoNewsControllerTest {
 
     @Test
     void getContentAndSourceForEcoNewsByIdNot_Found_Request() throws Exception {
-
         Mockito.when(ecoNewsService.getContentAndSourceForEcoNewsById(1L)).thenThrow(NotFoundException.class);
 
-        mockMvc.perform(get(ecoNewsLink + "/contentAndSourceForEcoNews/{id}", 1L))
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/summary", 1L))
             .andExpect(status().isNotFound());
 
         verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);

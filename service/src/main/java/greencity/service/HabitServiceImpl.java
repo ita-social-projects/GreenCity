@@ -1,8 +1,10 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.HabitTranslationFilterDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
@@ -16,7 +18,12 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementAction;
+import greencity.enums.NotificationType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
@@ -25,6 +32,7 @@ import greencity.mapping.CustomShoppingListMapper;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
+import greencity.rating.RatingCalculation;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
@@ -39,11 +47,13 @@ import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.options.HabitTranslationFilter;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.Transactional;
@@ -72,6 +82,9 @@ public class HabitServiceImpl implements HabitService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
+    private final UserNotificationService userNotificationService;
+    private final RatingCalculation ratingCalculation;
+    private final AchievementCalculation achievementCalculation;
 
     /**
      * Method returns Habit by its id.
@@ -109,7 +122,7 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable) {
         long userId = userVO.getId();
-        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
+        List<Long> requestedCustomHabitIds = habitRepo.findVisibleCustomHabitsIdsByUserId(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
         String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
 
@@ -175,75 +188,18 @@ public class HabitServiceImpl implements HabitService {
     public PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable,
         Optional<List<String>> tags, Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities,
         String languageCode) {
-        List<String> lowerCaseTags = new ArrayList<>();
-        List<Integer> complexitiesList = new ArrayList<>();
-        if (tags.isPresent()) {
-            lowerCaseTags = tags.get().stream().map(String::toLowerCase).collect(Collectors.toList());
-        }
-        if (complexities.isPresent()) {
-            complexitiesList = new ArrayList<>(complexities.get());
-        }
-        Page<HabitTranslation> habitTranslationsPage;
-        long userId = userVO.getId();
-        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
-        checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
+        Long userId = userVO.getId();
+        HabitTranslationFilterDto filterDto = HabitTranslationFilterDto.builder()
+            .userId(userId)
+            .languageCode(languageCode)
+            .tags(tags.orElse(new ArrayList<>()))
+            .complexities(complexities.orElse(new ArrayList<>()))
+            .isCustom(isCustomHabit.orElse(null))
+            .build();
 
-        if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty() && !complexitiesList.isEmpty()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage =
-                    habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, complexities, languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage =
-                    habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
-                        complexities, languageCode);
-            }
-        } else if (!complexitiesList.isEmpty() && isCustomHabit.isPresent()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage =
-                    habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
-                        pageable,
-                        complexities, languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage =
-                    habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable,
-                        complexities, languageCode);
-            }
-        } else if (!complexitiesList.isEmpty() && !lowerCaseTags.isEmpty()) {
-            habitTranslationsPage =
-                habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, complexities, languageCode, requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage = habitTranslationRepo
-                    .findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable,
-                    lowerCaseTags, languageCode);
-            }
-        } else if (!lowerCaseTags.isEmpty()) {
-            habitTranslationsPage =
-                habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                    lowerCaseTags, languageCode, requestedCustomHabitIds, userId);
-        } else if (isCustomHabit.isPresent()) {
-            boolean checkIsCustomHabit = isCustomHabit.get();
-            if (checkIsCustomHabit) {
-                habitTranslationsPage =
-                    habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                        languageCode, requestedCustomHabitIds, userId);
-            } else {
-                habitTranslationsPage = habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable,
-                    languageCode);
-            }
-        } else {
-            habitTranslationsPage =
-                habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, languageCode, requestedCustomHabitIds, userId);
-        }
+        Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
+        Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
+
         return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO);
     }
 
@@ -281,9 +237,11 @@ public class HabitServiceImpl implements HabitService {
         for (HabitDto habitDto : habits) {
             Habit habit = habitRepo.findById(habitDto.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitDto.getId()));
-            Optional<HabitAssign> habitAssign =
-                habitAssignRepo.findByHabitIdAndUserId(habitDto.getId(), userVO.getId());
-            habitAssign.ifPresent(assign -> habitDto.setHabitAssignStatus(assign.getStatus()));
+            List<HabitAssign> habitAssigns =
+                habitAssignRepo.findHabitsByHabitIdAndUserId(habitDto.getId(), userVO.getId());
+            if (!habitAssigns.isEmpty()) {
+                habitDto.setHabitAssignStatus(assignHabitStatus(habitAssigns));
+            }
             boolean isCustomHabit = habit.getIsCustomHabit();
             habitDto.setIsCustomHabit(isCustomHabit);
             if (isCustomHabit) {
@@ -349,6 +307,7 @@ public class HabitServiceImpl implements HabitService {
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         habit.setUserId(user.getId());
         habit.setIsDeleted(false);
+        habit.setIsSharedWithFriends(addCustomHabitDtoRequest.getIsSharedWithFriends());
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
         setCustomShoppingListItemToHabit(addCustomHabitDtoRequest, habit, user);
@@ -371,6 +330,7 @@ public class HabitServiceImpl implements HabitService {
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
+        response.setIsSharedWithFriends(habit.getIsSharedWithFriends());
         return response;
     }
 
@@ -526,11 +486,61 @@ public class HabitServiceImpl implements HabitService {
         habitRepo.save(toDelete);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void like(Long habitId, UserVO userVO) {
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+
+        User habitAuthor = null;
+
+        if (habit.getUserId() != null) {
+            habitAuthor = userRepo.findById(habit.getUserId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + habitId));
+        }
+        if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_HABIT, userVO);
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
+                AchievementAction.DELETE);
+            if (habitAuthor != null) {
+                userNotificationService.removeActionUserFromNotification(modelMapper.map(habitAuthor, UserVO.class),
+                    userVO, habitId, NotificationType.HABIT_LIKE);
+            }
+        } else {
+            habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_HABIT, userVO);
+            achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
+                AchievementAction.ASSIGN);
+            if (habitAuthor != null) {
+                userNotificationService.createNotification(modelMapper.map(habitAuthor, UserVO.class), userVO,
+                    NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
+            }
+        }
+        habitRepo.save(habit);
+    }
+
     private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {
         if (!userId.equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(habit.getId(), userId)
             .forEach(haId -> habitAssignService.deleteHabitAssign(haId, userId));
+    }
+
+    private HabitAssignStatus assignHabitStatus(List<HabitAssign> habitAssigns) {
+        if (habitAssigns.isEmpty()) {
+            throw new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST);
+        }
+
+        for (HabitAssign habitAssign : habitAssigns) {
+            HabitAssignStatus status = habitAssign.getStatus();
+            if (status == HabitAssignStatus.INPROGRESS || status == HabitAssignStatus.REQUESTED) {
+                return status;
+            }
+        }
+        return HabitAssignStatus.ACQUIRED;
     }
 }

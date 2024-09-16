@@ -1,6 +1,9 @@
 package greencity.constant;
 
-public final class EventTupleConstant {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class EventTupleConstant {
     public static final String eventId = "eventId";
     public static final String title = "title";
     public static final String organizerId = "organizerId";
@@ -8,6 +11,7 @@ public final class EventTupleConstant {
     public static final String creationDate = "creation_date";
     public static final String titleImage = "title_image";
     public static final String isOpen = "is_open";
+    public static final String type = "type";
     public static final String isRelevant = "isRelevant";
     public static final String likes = "likes";
     public static final String countComments = "countComments";
