@@ -39,6 +39,8 @@ class MySpecificationTest {
     private Path<Object> objectPath;
     @Mock
     private Expression<String> as;
+    @Mock
+    private SearchCriteria searchCriteriaEmpty;
     TagSpecification tagSpecification;
     List<SearchCriteria> searchCriteriaList;
     TagViewDto tagViewDto;
@@ -119,6 +121,14 @@ class MySpecificationTest {
         String searchCriteriaValue = (String) searchCriteriaForAll.getValue();
         when(criteriaBuilder.equal(any(), eq(Boolean.parseBoolean(searchCriteriaValue)))).thenReturn(expected);
         Predicate actual = ecoNewsSpecification.getBooleanPredicate(newsRoot, criteriaBuilder, searchCriteriaForAll);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getBooleanPredicateEmptyValue() {
+        when(searchCriteriaEmpty.getValue()).thenReturn("");
+        when(criteriaBuilder.conjunction()).thenReturn(expected);
+        Predicate actual = ecoNewsSpecification.getBooleanPredicate(newsRoot, criteriaBuilder, searchCriteriaEmpty);
         assertEquals(expected, actual);
     }
 }

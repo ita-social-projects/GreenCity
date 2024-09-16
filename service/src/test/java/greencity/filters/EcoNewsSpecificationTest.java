@@ -1,5 +1,6 @@
 package greencity.filters;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import greencity.dto.econews.EcoNewsViewDto;
@@ -10,7 +11,14 @@ import greencity.entity.localization.TagTranslation_;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +58,15 @@ class EcoNewsSpecificationTest {
     private Path<Object> pathEcoNewsCreationDateMock;
 
     @Mock
+    private Path<Object> pathEcoNewsHiddenMock;
+
+    @Mock
+    private Path<Object> pathEcoNewsLikesMock;
+
+    @Mock
+    private Path<Object> pathEcoNewsDislikesMock;
+
+    @Mock
     private Predicate andTitlePredicate;
 
     @Mock
@@ -63,6 +80,12 @@ class EcoNewsSpecificationTest {
 
     @Mock
     private Predicate andCreationDatePredicate;
+
+    @Mock
+    private Predicate andBooleanPredicate;
+
+    @Mock
+    private Predicate emptyPredicate;
 
     @Mock
     private ListAttribute<EcoNews, Tag> tags;
@@ -82,9 +105,26 @@ class EcoNewsSpecificationTest {
     @Mock
     private Path<String> pathTagTranslationNameMock;
 
+    @Mock
+    private Expression<Integer> likesExpressionMock;
+
+    @Mock
+    private Expression<Integer> dislikesExpressionMock;
+
+    @Mock
+    private Expression<?> titleExpressionMock;
+
     private EcoNewsSpecification ecoNewsSpecification;
 
     private List<SearchCriteria> criteriaList;
+
+    private Order likesOrder;
+
+    private Order titleOrder;
+
+    private Order dislikesOrder;
+
+    private List<Order> orderList;
 
     @BeforeEach
     void setUp() {
@@ -122,12 +162,71 @@ class EcoNewsSpecificationTest {
                 .type(EcoNews_.TAGS)
                 .value(ecoNewsViewDto.getTags())
                 .build());
+        criteriaList.add(
+                SearchCriteria.builder()
+                        .key(EcoNews_.HIDDEN)
+                        .type(EcoNews_.HIDDEN)
+                        .value("true")
+                        .build());
 
         EcoNews_.tags = tags;
         Tag_.tagTranslations = tagTranslations;
         TagTranslation_.name = name;
 
         ecoNewsSpecification = new EcoNewsSpecification(criteriaList);
+
+        likesOrder = new Order() {
+            @Override
+            public Order reverse() {
+                return null;
+            }
+
+            @Override
+            public boolean isAscending() {
+                return true;
+            }
+
+            @Override
+            public Expression<?> getExpression() {
+                return likesExpressionMock;
+            }
+        };
+        titleOrder = new Order() {
+            @Override
+            public Order reverse() {
+                return null;
+            }
+
+            @Override
+            public boolean isAscending() {
+                return true;
+            }
+
+            @Override
+            public Expression<?> getExpression() {
+                return titleExpressionMock;
+            }
+        };
+        orderList = new ArrayList<>();
+        orderList.add(likesOrder);
+        orderList.add(titleOrder);
+
+        dislikesOrder = new Order() {
+            @Override
+            public Order reverse() {
+                return null;
+            }
+
+            @Override
+            public boolean isAscending() {
+                return true;
+            }
+
+            @Override
+            public Expression<?> getExpression() {
+                return dislikesExpressionMock;
+            }
+        };
     }
 
     @Test
@@ -180,17 +279,96 @@ class EcoNewsSpecificationTest {
 
         when(criteriaBuilderMock.and(andCreationDatePredicate, andTagPredicate)).thenReturn(andTagPredicate);
 
+        when(ecoNewsRootMock.get(EcoNews_.HIDDEN)).thenReturn(pathEcoNewsHiddenMock);
+
+        when(criteriaBuilderMock.equal(any(), eq(true))).thenReturn(andBooleanPredicate);
+
+        when(criteriaBuilderMock.and(andTagPredicate, andBooleanPredicate)).thenReturn(andBooleanPredicate);
+
+        when(criteriaQueryMock.getOrderList()).thenReturn(List.of(dislikesOrder));
+        when(dislikesExpressionMock.toString()).thenReturn("dislikes");
+        when(ecoNewsRootMock.get("usersDislikedNews")).thenReturn(pathEcoNewsDislikesMock);
+        when(criteriaBuilderMock.size(any(Expression.class))).thenReturn(dislikesExpressionMock);
+        when(criteriaBuilderMock.asc(dislikesExpressionMock)).thenReturn(dislikesOrder);
+        when(criteriaQueryMock.orderBy(eq(List.of(dislikesOrder)))).thenReturn(criteriaQueryMock);
+
         ecoNewsSpecification.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
 
         verify(ecoNewsRootMock, never()).get(EcoNews_.ID);
         verify(ecoNewsRootMock, never()).get(EcoNews_.IMAGE_PATH);
         verify(ecoNewsRootMock, never()).get(EcoNews_.SOURCE);
-        verify(ecoNewsRootMock, never()).get(EcoNews_.HIDDEN);
         verify(ecoNewsRootMock, never()).get("dateRange");
         verify(criteriaBuilderMock).and(predicateMock, andTitlePredicate);
         verify(criteriaBuilderMock).and(andTitlePredicate, andAuthorPredicate);
         verify(criteriaBuilderMock).and(andAuthorPredicate, andTextPredicate);
         verify(criteriaBuilderMock).and(andTextPredicate, andCreationDatePredicate);
         verify(criteriaBuilderMock).and(andCreationDatePredicate, andTagPredicate);
+        verify(criteriaBuilderMock).and(andTagPredicate, andBooleanPredicate);
+        verify(criteriaQueryMock).orderBy(eq(List.of(dislikesOrder)));
+    }
+
+    @Test
+    void toPredicateTagsEmpty() {
+        List<SearchCriteria> emptyTagsList = List.of(SearchCriteria.builder()
+                .key(EcoNews_.TAGS)
+                .type(EcoNews_.TAGS)
+                .value("")
+                .build());
+        EcoNewsSpecification specificationForEmpty = new EcoNewsSpecification(emptyTagsList);
+        when(criteriaBuilderMock.conjunction()).thenReturn(emptyPredicate);
+        when(criteriaBuilderMock.and(emptyPredicate, emptyPredicate)).thenReturn(emptyPredicate);
+        Predicate actual = specificationForEmpty.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(emptyPredicate, actual);
+        verify(criteriaBuilderMock).and(emptyPredicate, emptyPredicate);
+    }
+
+    @Test
+    void toPredicateCreationDateEmpty() {
+        List<SearchCriteria> emptyCreationDateList = List.of(SearchCriteria.builder()
+                .key(EcoNews_.CREATION_DATE)
+                .type(EcoNews_.CREATION_DATE)
+                .value("")
+                .build());
+        EcoNewsSpecification specificationForEmpty = new EcoNewsSpecification(emptyCreationDateList);
+        when(criteriaBuilderMock.conjunction()).thenReturn(emptyPredicate);
+        when(criteriaBuilderMock.and(emptyPredicate, emptyPredicate)).thenReturn(emptyPredicate);
+        Predicate actual = specificationForEmpty.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(emptyPredicate, actual);
+        verify(criteriaBuilderMock).and(emptyPredicate, emptyPredicate);
+    }
+
+    @Test
+    void toPredicateInvalidCreationDate() {
+        List<SearchCriteria> invalidCreationDateList = List.of(SearchCriteria.builder()
+                .key(EcoNews_.CREATION_DATE)
+                .type(EcoNews_.CREATION_DATE)
+                .value("invalidDate")
+                .build());
+        EcoNewsSpecification specificationForInvalidDate = new EcoNewsSpecification(invalidCreationDateList);
+        when(criteriaBuilderMock.conjunction()).thenReturn(emptyPredicate);
+        when(criteriaBuilderMock.disjunction()).thenReturn(emptyPredicate);
+        when(criteriaBuilderMock.and(emptyPredicate, emptyPredicate)).thenReturn(emptyPredicate);
+        Predicate actual = specificationForInvalidDate.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(emptyPredicate, actual);
+        verify(criteriaBuilderMock).and(emptyPredicate, emptyPredicate);
+    }
+
+    @Test
+    void toPredicateSortOrder() {
+        EcoNewsSpecification specificationForSortList = new EcoNewsSpecification(new ArrayList<>());
+        when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
+        when(criteriaQueryMock.getOrderList()).thenReturn(orderList);
+        when(likesExpressionMock.toString()).thenReturn("likes");
+        when(ecoNewsRootMock.get("usersLikedNews")).thenReturn(pathEcoNewsLikesMock);
+        when(criteriaBuilderMock.size(any(Expression.class))).thenReturn(likesExpressionMock);
+        when(criteriaBuilderMock.asc(likesExpressionMock)).thenReturn(likesOrder);
+        when(titleExpressionMock.toString()).thenReturn("title");
+        when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
+        when(criteriaBuilderMock.asc(pathEcoNewsTitleMock)).thenReturn(titleOrder);
+        when(criteriaQueryMock.orderBy(eq(orderList))).thenReturn(criteriaQueryMock);
+        Predicate actual = specificationForSortList.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(predicateMock, actual);
+        verify(criteriaBuilderMock).conjunction();
+        verify(criteriaQueryMock).orderBy(eq(orderList));
     }
 }
