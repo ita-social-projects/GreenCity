@@ -1,8 +1,6 @@
 package greencity.controller;
 
 import greencity.service.FactOfTheDayService;
-import greencity.service.FactOfTheDayTranslationService;
-import greencity.service.LanguageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,17 +22,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class FactOfTheDayControllerTest {
-    private static final String factOfTheDayLink = "/factoftheday";
+    private static final String factOfTheDayLink = "/fact-of-the-day";
 
     private MockMvc mockMvc;
     @InjectMocks
     private FactOfTheDayController factOfTheDayController;
     @Mock
-    private FactOfTheDayTranslationService factOfTheDayTranslationService;
-    @Mock
     private FactOfTheDayService factOfTheDayService;
-    @Mock
-    private LanguageService languageService;
 
     @Mock
     private Validator mockValidator;
@@ -42,38 +36,15 @@ class FactOfTheDayControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(factOfTheDayController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .setValidator(mockValidator)
             .build();
     }
 
     @Test
     void getRandomFactOfTheDayTest() throws Exception {
-        mockMvc.perform(get(factOfTheDayLink + "/"))
+        mockMvc.perform(get(factOfTheDayLink + "/random"))
             .andExpect(status().isOk());
         verify(factOfTheDayService).getRandomGeneralFactOfTheDay("en");
-    }
-
-    @Test
-    void getAllFactOfTheDayTest() throws Exception {
-        mockMvc.perform(get(factOfTheDayLink + "/all?page=0&size=10"))
-            .andExpect(status().isOk());
-        Pageable pageable = PageRequest.of(0, 10);
-        verify(factOfTheDayService).getAllFactsOfTheDay(pageable);
-    }
-
-    @Test
-    void findFactOfTheDayTest() throws Exception {
-        mockMvc.perform(get(factOfTheDayLink + "/find?id=1"))
-            .andExpect(status().isOk());
-        verify(factOfTheDayService).getFactOfTheDayById(1L);
-    }
-
-    @Test
-    void getLanguagesTest() throws Exception {
-        mockMvc.perform(get(factOfTheDayLink + "/languages"))
-            .andExpect(status().isOk());
-        verify(languageService).getAllLanguages();
     }
 
     @Test

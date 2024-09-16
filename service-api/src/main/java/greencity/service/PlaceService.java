@@ -8,6 +8,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {@code Place} entity.
@@ -217,5 +218,5 @@ public interface PlaceService {
     /**
      * Method for create new place From UI.
      */
-    PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email);
+    PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images);
 }

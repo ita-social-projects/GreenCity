@@ -67,24 +67,6 @@ class FactOfTheDayServiceImplTest {
     private FactOfTheDayServiceImpl factOfTheDayService;
 
     @Test
-    void getFactOfTheDayByIdTest() {
-        FactOfTheDayDTO factDto = ModelUtils.getFactOfTheDayDto();
-        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
-
-        when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
-        when(modelMapper.map(fact, FactOfTheDayDTO.class)).thenReturn(factDto);
-        FactOfTheDayDTO factDtoRes = factOfTheDayService.getFactOfTheDayById(1L);
-
-        assertEquals(Long.valueOf(1), factDtoRes.getId());
-    }
-
-    @Test
-    void getFactOfTheDayByIdTestFailed() {
-        when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> factOfTheDayService.getFactOfTheDayById(1L));
-    }
-
-    @Test
     void getAllFactsOfTheDayTest() {
         int pageNumber = 0;
         int pageSize = 1;
@@ -113,28 +95,6 @@ class FactOfTheDayServiceImplTest {
         when(factOfTheDayRepo.findAll(any(Pageable.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> factOfTheDayService.getAllFactsOfTheDay(pageable));
-    }
-
-    @Test
-    void updateTest() {
-        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
-        FactOfTheDayVO factOfTheDayVO = ModelUtils.getFactOfTheDayVO();
-
-        when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
-        when(factOfTheDayRepo.save(fact)).thenReturn(fact);
-        when(modelMapper.map(fact, FactOfTheDayVO.class)).thenReturn(factOfTheDayVO);
-
-        FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
-
-        assertEquals(factOfTheDayVO, factOfTheDayService.update(factDtoPost));
-    }
-
-    @Test
-    void updateTestFailed() {
-        FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
-        when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotUpdatedException.class);
-
-        assertThrows(NotUpdatedException.class, () -> factOfTheDayService.update(factDtoPost));
     }
 
     @Test

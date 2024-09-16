@@ -9,6 +9,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.service.EventCommentService;
 import greencity.service.UserService;
@@ -44,8 +45,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @Import(SecurityConfig.class)
 class EventCommentControllerTest {
-    private static final String EVENT_COMMENT_CONTROLLER_LINK = "/events/comments";
+    private static final String EVENT_COMMENT_CONTROLLER_LINK = "/events/{eventId}/comments";
     private MockMvc mockMvc;
     @InjectMocks
     private EventCommentController eventCommentController;
@@ -77,15 +80,16 @@ class EventCommentControllerTest {
     @Test
     @SneakyThrows
     void save() {
+        Long eventId = 1L;
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "{\n"
             + "  \"text\": \"string\",\n"
             + "  \"parentCommentId\": \"100\"\n"
             + "}";
 
-        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{eventId}", 1)
+        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK, eventId)
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
@@ -96,13 +100,13 @@ class EventCommentControllerTest {
             mapper.readValue(content, AddEventCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(eventCommentService).save(1L, addEventCommentDtoRequest, userVO, Locale.of("en"));
+        verify(eventCommentService).save(eventId, addEventCommentDtoRequest, userVO, Locale.of("en"));
     }
 
     @Test
     @SneakyThrows
     void saveBadRequestTest() {
-        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{eventId}", 1)
+        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK, 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))
             .andExpect(status().isBadRequest());
@@ -110,37 +114,86 @@ class EventCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void getEventCommentById() {
-        String content = "{\n"
-            + "  \"text\": \"string\"\n"
-            + "}";
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{id}", 1)
+    void updateTest() {
+        Long eventId = 1L;
+        Long commentId = 1L;
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+        String content = "string";
+
+        mockMvc.perform(put(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}", eventId, commentId)
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isOk());
+
+        verify(userService).findByEmail("test@gmail.com");
+        verify(eventCommentService).update("string", eventId, commentId, userVO, Locale.of("en"));
     }
 
     @Test
     @SneakyThrows
-    void getAllActiveComments() {
+    void deleteTest() {
+        Long commentId = 1L;
+        Long eventId = 1L;
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-        int pageNumber = 5;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/active?eventId=1&page=5")
+        mockMvc.perform(delete(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}", eventId, commentId)
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(eventCommentService).getAllActiveComments(pageable, userVO, 1L);
+        verify(eventCommentService).delete(eventId, commentId, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventCommentById() {
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}", 1, 1))
+            .andExpect(status().isOk());
+
+        verify(eventCommentService).getEventCommentById(1L, 1L, null);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventCommentByIdWithUser() {
+        UserVO userVO = getUserVO();
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}", 1, 1)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(eventCommentService).getEventCommentById(1L, 1L, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllComments() {
+        UserVO userVO = getUserVO();
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        int pageNumber = 5;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "?statuses=EDITED,ORIGINAL&page=5&size=20", 1)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail("test@gmail.com");
+        verify(eventCommentService).getAllComments(pageable, userVO, 1L, statuses);
     }
 
     @Test
     @SneakyThrows
     void countComments() {
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/count/{eventId}", 1))
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/count", 1))
             .andExpect(status().isOk());
 
         verify(eventCommentService).countComments(1L);
@@ -148,63 +201,70 @@ class EventCommentControllerTest {
 
     @Test
     @SneakyThrows
-    void findAllActiveReplies() {
+    void findAllReplies() {
         Long parentCommentId = 1L;
+        Long eventId = 1L;
         int pageNumber = 0;
         int pageSize = 20;
-
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<EventCommentDto> eventCommentReplies = getPageableEventCommentDtos();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(eventCommentReplies);
 
-        when(eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO))
+        when(eventCommentService.findAllReplies(pageable, eventId, parentCommentId, statuses, userVO))
             .thenReturn(eventCommentReplies);
 
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/replies/active/{parentCommentId}", parentCommentId)
-            .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
+        mockMvc
+            .perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies?statuses=EDITED,ORIGINAL", eventId,
+                parentCommentId)
+                .principal(principal)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
-        verify(eventCommentService).findAllActiveReplies(pageable, parentCommentId, userVO);
+        verify(eventCommentService).findAllReplies(pageable, eventId, parentCommentId, statuses, userVO);
         verify(userService).findByEmail(principal.getName());
     }
 
     @Test
     @SneakyThrows
-    void findAllActiveRepliesWithNotValidIdBadRequestTest() {
+    void findAllRepliesWithNotValidIdBadRequestTest() {
         String notValidId = "id";
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/replies/active/{parentCommentId}", notValidId))
+        Long eventId = 1L;
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies", eventId, notValidId))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     @SneakyThrows
-    void findAllActiveRepliesWithNonexistentIdNotFoundTest() {
+    void findAllRepliesWithNonexistentIdNotFoundTest() {
         Long parentCommentId = 1L;
+        Long eventId = 1L;
+        List<CommentStatus> statuses = List.of(CommentStatus.ORIGINAL, CommentStatus.EDITED);
 
         int pageNumber = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(eventCommentService)
-            .findAllActiveReplies(pageable, parentCommentId, userVO);
+            .findAllReplies(pageable, eventId, parentCommentId, statuses, userVO);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc
-                .perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/replies/active/{parentCommentId}", parentCommentId)
+                .perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies?statuses=ORIGINAL,EDITED",
+                    eventId, parentCommentId)
                     .principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
@@ -214,22 +274,25 @@ class EventCommentControllerTest {
     @SneakyThrows
     void getCountOfActiveRepliesTest() {
         Long parentCommentId = 1L;
+        Long eventId = 1L;
         int repliesAmount = 10;
         String expectedResponse = "<Integer>10</Integer>";
-        when(eventCommentService.countAllActiveReplies(parentCommentId)).thenReturn(repliesAmount);
+        when(eventCommentService.countAllActiveReplies(eventId, parentCommentId)).thenReturn(repliesAmount);
 
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/replies/active/count/{parentCommentId}", parentCommentId))
+        mockMvc
+            .perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies/count", eventId, parentCommentId))
             .andExpect(status().isOk())
             .andExpect(content().xml(expectedResponse));
 
-        verify(eventCommentService).countAllActiveReplies(parentCommentId);
+        verify(eventCommentService).countAllActiveReplies(eventId, parentCommentId);
     }
 
     @Test
     @SneakyThrows
     void getCountOfActiveRepliesBadRequestTest() {
         String notValidId = "id";
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/replies/active/count/{parentCommentId}", notValidId))
+        Long eventId = 1L;
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies/count", eventId, notValidId))
             .andExpect(status().isBadRequest());
     }
 
@@ -237,17 +300,17 @@ class EventCommentControllerTest {
     @SneakyThrows
     void getCountOfActiveRepliesNotFoundTest() {
         Long parentCommentId = 1L;
-
+        Long eventId = 1L;
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(eventCommentService)
-            .countAllActiveReplies(parentCommentId);
+            .countAllActiveReplies(eventId, parentCommentId);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc
                 .perform(
-                    get(EVENT_COMMENT_CONTROLLER_LINK + "/replies/active/count/{parentCommentId}", parentCommentId))
+                    get(EVENT_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies/count", eventId, parentCommentId))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
     }
@@ -256,17 +319,17 @@ class EventCommentControllerTest {
     @SneakyThrows
     void likeTest() {
         String commentId = "1";
+        Long eventId = 1L;
         Long numericCommentId = Long.valueOf(commentId);
 
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/like")
-            .param("commentId", commentId)
+        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}/likes", eventId, commentId)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventCommentService).like(numericCommentId, userVO);
+        verify(eventCommentService).like(eventId, numericCommentId, userVO);
     }
 
     @Test
@@ -274,8 +337,7 @@ class EventCommentControllerTest {
     void likeWithNotValidIdBadRequestTest() {
         String notValidId = "id";
 
-        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/like")
-            .param("commentId", notValidId)
+        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}/likes", 1L, notValidId)
             .principal(principal))
             .andExpect(status().isBadRequest());
     }
@@ -284,20 +346,20 @@ class EventCommentControllerTest {
     @SneakyThrows
     void likeNotFoundTest() {
         Long commentId = 1L;
+        Long eventId = 1L;
         String commentIdParam = "1";
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(eventCommentService)
-            .like(commentId, userVO);
+            .like(eventId, commentId, userVO);
 
         Assertions.assertThatThrownBy(
-            () -> mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/like")
-                .param("commentId", commentIdParam)
+            () -> mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}/likes", eventId, commentIdParam)
                 .principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
@@ -307,10 +369,11 @@ class EventCommentControllerTest {
     @SneakyThrows
     void countLikesTest() {
         Long commentId = 1L;
+        Long eventId = 1L;
         int likesAmount = 10;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         AmountCommentLikesDto result = AmountCommentLikesDto.builder()
             .id(commentId)
@@ -323,23 +386,24 @@ class EventCommentControllerTest {
         objectMapper.findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(result);
 
-        when(eventCommentService.countLikes(commentId, userVO)).thenReturn(result);
+        when(eventCommentService.countLikes(eventId, commentId, userVO)).thenReturn(result);
 
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/likes/count/{commentId}", commentId)
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}/likes/count", eventId, commentId)
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventCommentService).countLikes(commentId, userVO);
+        verify(eventCommentService).countLikes(eventId, commentId, userVO);
     }
 
     @Test
     @SneakyThrows
     void countLikesNotValidIdBadRequestTest() {
         String notValidId = "id";
-        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/likes/count/{commentId}", notValidId)
+        Long eventId = 1L;
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}/likes/count", eventId, notValidId)
             .principal(principal))
             .andExpect(status().isBadRequest());
     }
@@ -348,18 +412,19 @@ class EventCommentControllerTest {
     @SneakyThrows
     void countLikesNotFoundTest() {
         Long commentId = 1L;
+        Long eventId = 1L;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(eventCommentService)
-            .countLikes(commentId, userVO);
+            .countLikes(eventId, commentId, userVO);
 
         Assertions.assertThatThrownBy(
-            () -> mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/likes/count/{commentId}", commentId)
+            () -> mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{commentId}/likes/count", eventId, commentId)
                 .principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
@@ -389,5 +454,4 @@ class EventCommentControllerTest {
             1,
             1);
     }
-
 }
