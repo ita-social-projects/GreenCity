@@ -1,8 +1,9 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import static greencity.ModelUtils.*;
-import greencity.achievement.AchievementCalculation;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getUserAchievement;
+import static greencity.ModelUtils.getActionDto;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -15,15 +16,13 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementAction;
 import static greencity.enums.AchievementStatus.ACHIEVED;
 import static greencity.enums.AchievementStatus.UNACHIEVED;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,9 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -46,7 +43,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,26 +57,19 @@ class AchievementServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private AchievementCategoryService achievementCategoryService;
-    @Mock
     private RestClient restClient;
     @Mock
     private UserActionService userActionService;
     @Mock
     private UserAchievementRepo userAchievementRepo;
-    @Mock
-    private AchievementCalculation achievementCalculation;
     @InjectMocks
     private AchievementServiceImpl achievementService;
     @Mock
-    private UserRepo userRepo;
-
-    @Mock
     private UserService userService;
     @Mock
-    HttpServletRequest httpServletRequest;
-    @Mock
     private SimpMessagingTemplate messagingTemplate;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
 
     @Test
     void findAllWithEmptyListTest() {
@@ -158,8 +147,7 @@ class AchievementServiceImplTest {
         userActionVOS.add(userActionVO);
         userVO.setUserActions(userActionVOS);
         when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
-        when(achievementCategoryService.findByName("Test")).thenReturn(achievementCategoryVO);
-        when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);
+        when(achievementCategoryRepo.findByName("Test")).thenReturn(Optional.of(achievementCategory));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         when(restClient.findAll()).thenReturn(Collections.singletonList(userVO));
@@ -170,21 +158,13 @@ class AchievementServiceImplTest {
     }
 
     @Test
-    void findByIdTest() {
-        Achievement achievement = ModelUtils.getAchievement();
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        AchievementVO expected = achievementService.findById(1L);
-        assertEquals(expected, achievementVO);
-    }
-
-    @Test
     void updateTest() {
         Achievement achievement = ModelUtils.getAchievement();
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
         when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
+        when(achievementCategoryRepo.findByName(achievementManagementDto.getAchievementCategory().getName()))
+            .thenReturn(Optional.of(ModelUtils.getAchievementCategory()));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementPostDto.class)).thenReturn(achievementPostDto);
         AchievementPostDto expected = achievementService.update(achievementManagementDto);
@@ -236,17 +216,6 @@ class AchievementServiceImplTest {
         when(achievementRepo.findByAchievementCategoryIdAndCondition(1L, 1)).thenReturn(Optional.of(achievement));
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
-    }
-
-    @Test
-    void calculateAchievement() {
-        when(userService.findById(anyLong())).thenReturn(getUserVO());
-        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        verify(achievementCalculation).calculateAchievement(
-            eq(getUserVO()),
-            any(AchievementCategoryType.class),
-            eq(AchievementAction.ASSIGN));
-        verify(userService).findById(anyLong());
     }
 
     @Test
