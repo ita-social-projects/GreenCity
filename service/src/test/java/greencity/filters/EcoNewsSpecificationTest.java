@@ -438,7 +438,7 @@ class EcoNewsSpecificationTest {
         when(titleExpressionMock.toString()).thenReturn("title");
         when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
         when(criteriaBuilderMock.asc(pathEcoNewsTitleMock)).thenReturn(titleOrderAsc);
-        when(criteriaQueryMock.orderBy(eq(orderListAsc))).thenReturn(criteriaQueryMock);
+        when(criteriaQueryMock.orderBy(orderListAsc)).thenReturn(criteriaQueryMock);
         Predicate actual =
             specificationForSortList.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
         assertEquals(predicateMock, actual);
