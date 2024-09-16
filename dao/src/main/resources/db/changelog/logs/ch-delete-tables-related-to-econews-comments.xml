@@ -9,15 +9,9 @@
                    tableName="econews_comment"/>
     </changeSet>
 
-    <changeSet author="Ivan Holotsvan" id="dropTable-eco_news_users_likes">
+    <changeSet author="Ivan Holotsvan" id="dropTable-econews_comment_users_likes">
         <dropTable cascadeConstraints="true"
                    schemaName="public"
-                   tableName="eco_news_users_likes"/>
-    </changeSet>
-
-    <changeSet author="Ivan Holotsvan" id="dropTable-eco_news_users_dislikes">
-        <dropTable cascadeConstraints="true"
-                   schemaName="public"
-                   tableName="eco_news_users_dislikes"/>
+                   tableName="econews_comment_users_liked"/>
     </changeSet>
 </databaseChangeLog>
