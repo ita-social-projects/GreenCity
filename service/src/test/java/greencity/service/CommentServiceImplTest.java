@@ -49,6 +49,8 @@ import static greencity.ModelUtils.getCommentDto;
 import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getEcoNews;
+import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -315,6 +317,78 @@ class CommentServiceImplTest {
         verify(modelMapper).map(comment, CommentDto.class);
 
     }
+
+    @Test
+    void getAllActiveCommentsEcoNews() {
+        int pageNumber = 1;
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = getUserVO();
+        Long ecoNewsId = 1L;
+        EcoNews ecoNews = getEcoNews();
+        Comment comment = getComment();
+        CommentDto commentDto = ModelUtils.getCommentDto();
+        Page<Comment> pages = new PageImpl<>(Collections.singletonList(comment), pageable, 1);
+
+        when(econewsRepo.findById(ecoNewsId)).thenReturn(Optional.of(ecoNews));
+        when(commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
+                pageable, ecoNewsId, ArticleType.ECO_NEWS, CommentStatus.DELETED))
+                .thenReturn(pages);
+        when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
+
+        PageableDto<CommentDto> allComments = commentService.getAllActiveComments(
+                pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS);
+
+        assertEquals(commentDto, allComments.getPage().getFirst());
+        assertEquals(4, allComments.getTotalElements());
+        assertEquals(1, allComments.getCurrentPage());
+        assertEquals(1, allComments.getPage().size());
+
+        verify(econewsRepo).findById(ecoNewsId);
+        verify(commentRepo).findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
+                pageable, ecoNewsId, ArticleType.ECO_NEWS, CommentStatus.DELETED);
+        verify(modelMapper).map(comment, CommentDto.class);
+    }
+
+
+    @Test
+    void getAllActiveComments_HabitNotFound() {
+        int pageNumber = 1;
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = getUserVO();
+        Long habitId = 1L;
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+                commentService.getAllActiveComments(pageable, userVO, habitId, ArticleType.HABIT)
+        );
+
+        assertEquals(HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
+
+        verify(habitRepo).findById(habitId);
+    }
+
+    @Test
+    void getAllActiveComments_EcoNewsNotFound() {
+        int pageNumber = 1;
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = getUserVO();
+        Long ecoNewsId = 1L;
+
+        when(econewsRepo.findById(ecoNewsId)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+                commentService.getAllActiveComments(pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS)
+        );
+
+        assertEquals(ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId, exception.getMessage());
+
+        verify(econewsRepo).findById(ecoNewsId);
+    }
+
 
     @Test
     void update() {
