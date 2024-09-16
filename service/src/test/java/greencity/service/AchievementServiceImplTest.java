@@ -11,7 +11,6 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
@@ -31,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -135,7 +135,6 @@ class AchievementServiceImplTest {
         Achievement achievement = ModelUtils.getAchievement();
         AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
-        AchievementCategoryVO achievementCategoryVO = ModelUtils.getAchievementCategoryVO();
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
         UserVO userVO = getUserVO();
         UserAchievementVO userAchievement = ModelUtils.getUserAchievementVO();
@@ -227,5 +226,23 @@ class AchievementServiceImplTest {
 
         verify(messagingTemplate).convertAndSend("/topic/" + dto.getUserId() + "/notification", true);
         verify(userAchievementRepo).getUserAchievementByUserId(dto.getUserId());
+    }
+
+    @Test
+    public void searchAchievementByTest_WithValidQuery() {
+        String query = "test query";
+        Pageable paging = PageRequest.of(0, 10);
+        List<Achievement> achievementList = Collections.singletonList(ModelUtils.getAchievement());
+        Page<Achievement> achievementPage = new PageImpl<>(achievementList, paging, 1);
+
+        when(achievementRepo.searchAchievementsBy(paging, query)).thenReturn(achievementPage);
+
+        PageableAdvancedDto<AchievementVO> result = achievementService.searchAchievementBy(paging, query);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getPage().size());
+
+        verify(achievementRepo, times(1)).searchAchievementsBy(paging, query);
     }
 }
