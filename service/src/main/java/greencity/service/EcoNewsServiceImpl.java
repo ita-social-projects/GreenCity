@@ -372,30 +372,32 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             filteredByFields = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
         }
         if (isQueryPresent && isFilterByFieldsPresent) {
-            Iterator<EcoNews> iteratorByField = filteredByFields.iterator();
-            while (iteratorByField.hasNext()) {
-                EcoNews currentEcoNews = iteratorByField.next();
-                boolean isPresentByQuery = false;
-                Iterator<EcoNews> iteratorByQuery = byQuery.iterator();
-                while (iteratorByQuery.hasNext()) {
-                    EcoNews ecoNewsByQuery = iteratorByQuery.next();
-                    if (currentEcoNews.getId().equals(ecoNewsByQuery.getId())) {
-                        isPresentByQuery = true;
-                        break;
-                    }
-                }
-                if (!isPresentByQuery) {
-                    iteratorByField.remove();
-                }
-            }
-            return buildPageableAdvancedDto(filteredByFields);
-        } else if (isQueryPresent) {
+            return buildPageableAdvancedDto(getCommonEcoNews(filteredByFields, byQuery));
+        } else if (isQueryPresent && byQuery != null) {
             return buildPageableAdvancedDto(byQuery);
         } else if (isFilterByFieldsPresent) {
             return buildPageableAdvancedDto(filteredByFields);
         } else {
             return buildPageableAdvancedDto(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageable));
         }
+    }
+
+    private Page<EcoNews> getCommonEcoNews(Page<EcoNews> sortedPage, Page<EcoNews> page) {
+        Iterator<EcoNews> iteratorByField = sortedPage.iterator();
+        while (iteratorByField.hasNext()) {
+            EcoNews currentEcoNews = iteratorByField.next();
+            boolean isPresentByQuery = false;
+            for (EcoNews ecoNewsByQuery : page) {
+                if (currentEcoNews.getId().equals(ecoNewsByQuery.getId())) {
+                    isPresentByQuery = true;
+                    break;
+                }
+            }
+            if (!isPresentByQuery) {
+                iteratorByField.remove();
+            }
+        }
+        return sortedPage;
     }
 
     /**
