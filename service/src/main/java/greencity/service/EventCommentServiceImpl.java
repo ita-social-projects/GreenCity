@@ -343,6 +343,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                     .baseLink(getBaseLink(eventVO.getId()))
                     .build();
                 notificationService.sendUsersTaggedInCommentEmailNotification(message);
+                userNotificationService.createNotification(modelMapper.map(user, UserVO.class), commentVO.getUser(),
+                    NotificationType.EVENT_COMMENT_USER_TAG, commentVO.getId(),
+                    commentText, eventVO.getId(), eventVO.getTitle());
             }
         }
     }
