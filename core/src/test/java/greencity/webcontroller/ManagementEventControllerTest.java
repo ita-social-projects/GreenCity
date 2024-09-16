@@ -179,7 +179,7 @@ class ManagementEventControllerTest {
     }
 
     @Test
-    public void testGetEditPage() throws Exception {
+    void testGetEditPage() throws Exception {
         EventDto mockEventDto = new EventDto();
         when(restClient.findByEmail(anyString())).thenReturn(new UserVO());
         mockEventDto.setId(1L);

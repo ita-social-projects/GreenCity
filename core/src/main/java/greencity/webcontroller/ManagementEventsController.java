@@ -49,6 +49,7 @@ import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 @RequiredArgsConstructor
 @RequestMapping("/management/events")
 public class ManagementEventsController {
+    public static final String BACKEND_ADDRESS_ATTRIBUTE = "backendAddress";
     private final EventService eventService;
     private final TagsService tagsService;
     private final RestClient restClient;
@@ -94,7 +95,7 @@ public class ManagementEventsController {
         }
         model.addAttribute("eventsTag", tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en"));
         model.addAttribute("pageSize", pageable.getPageSize());
-        model.addAttribute("backendAddress", backendAddress);
+        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
         return "core/management_events";
     }
 
@@ -102,7 +103,7 @@ public class ManagementEventsController {
     public String getEventCreatePage(Model model, Principal principal) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
         model.addAttribute("images", new MultipartFile[] {});
-        model.addAttribute("backendAddress", backendAddress);
+        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
         model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
         model.addAttribute("googleMapApiKey", googleMapApiKey);
         return "core/management_create_event";
@@ -154,7 +155,7 @@ public class ManagementEventsController {
 
     @GetMapping("/edit/{id}")
     public String editEvent(@PathVariable("id") Long id, Model model, Principal principal) {
-        model.addAttribute("backendAddress", backendAddress);
+        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
         model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
         model.addAttribute("eventDto", eventService.getEvent(id, principal));
         model.addAttribute("googleMapApiKey", googleMapApiKey);
