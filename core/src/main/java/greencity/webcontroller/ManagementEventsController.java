@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.sql.Update;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,10 +40,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.util.List;
-
 import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
 @Slf4j
@@ -73,7 +69,7 @@ public class ManagementEventsController {
      */
     @GetMapping
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-                               @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
+        @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
         if (eventViewDto.getId() != null && !eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
@@ -81,8 +77,8 @@ public class ManagementEventsController {
             model.addAttribute("query", "");
         } else {
             allEvents = query == null || query.isEmpty()
-                    ? eventService.getAll(pageable, null)
-                    : eventService.searchEventsBy(pageable, query);
+                ? eventService.getAll(pageable, null)
+                : eventService.searchEventsBy(pageable, query);
             model.addAttribute("fields", new EventViewDto());
             model.addAttribute("query", query);
         }
@@ -105,7 +101,7 @@ public class ManagementEventsController {
     @GetMapping("/create-event")
     public String getEventCreatePage(Model model, Principal principal) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[]{});
+        model.addAttribute("images", new MultipartFile[] {});
         model.addAttribute("backendAddress", backendAddress);
         model.addAttribute("author", restClient.findByEmail(principal.getName()).getName());
         model.addAttribute("googleMapApiKey", googleMapApiKey);
@@ -114,11 +110,11 @@ public class ManagementEventsController {
 
     @PostMapping
     public String createEvent(@RequestPart("addEventDtoRequest") AddEventDtoRequest addEventDtoRequest,
-                              @RequestPart("images") MultipartFile[] images,
-                              Principal principal,
-                              Model model) {
+        @RequestPart("images") MultipartFile[] images,
+        Principal principal,
+        Model model) {
         model.addAttribute("addEventDtoRequest", new AddEventDtoRequest());
-        model.addAttribute("images", new MultipartFile[]{});
+        model.addAttribute("images", new MultipartFile[] {});
         eventService.save(addEventDtoRequest, principal.getName(), images);
         return "redirect:/management/events";
     }
@@ -134,30 +130,26 @@ public class ManagementEventsController {
 
     @Operation(summary = "Update event")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-                    content = @Content(schema = @Schema(implementation = EventDto.class))),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = EventDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PutMapping(
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> update(
-            @Parameter(required = true,
-                    description = UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventRequestDto eventDto,
-            @Parameter(hidden = true) Principal principal,
-            @RequestPart(required = false) @Nullable MultipartFile[] images) {
-        eventDto.getDatesLocations().forEach(location -> {
-            log.info("Updating event with startDate {}", location.getStartDate());
-            log.info("Updating event with finishDate {}", location.getFinishDate());
-        });
+        @Parameter(required = true,
+            description = UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventRequestDto eventDto,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                eventService.update(eventDto, principal.getName(), images));
+            eventService.update(eventDto, principal.getName(), images));
     }
 
     @GetMapping("/edit/{id}")
