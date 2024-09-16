@@ -253,28 +253,30 @@ class ManagementEcoNewsControllerTest {
         EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto();
         List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
         PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
-                new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
+            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
         List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
-                .id(1L)
-                .name("News").build());
+            .id(1L)
+            .name("News").build());
         when(tagsService.findAllEcoNewsTags(Locale.getDefault().getLanguage())).thenReturn(tagDtoList);
-        when(ecoNewsService.getFilteredDataForManagementByPage(eq(""), any(Pageable.class), eq(ecoNewsViewDto), eq(Locale.getDefault())))
-                .thenReturn(ecoNewsDtoPageableDto);
+        when(ecoNewsService.getFilteredDataForManagementByPage(eq(""), any(Pageable.class), eq(ecoNewsViewDto),
+            eq(Locale.getDefault())))
+            .thenReturn(ecoNewsDtoPageableDto);
 
         String sortModel = "id,ASC&sort=text,DESC";
         this.mockMvc.perform(get(managementEcoNewsLink + "?sort=" + sortModel)
-                        .param("page", "0")
-                        .param("size", "10")
-                        .param("query", "")
-                        .locale(Locale.getDefault()))
-                .andExpect(view().name("core/management_eco_news"))
-                .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
-                .andExpect(model().attribute("fields", ecoNewsViewDto))
-                .andExpect(model().attribute("ecoNewsTag", tagDtoList))
-                .andExpect(model().attribute("sortModel", sortModel))
-                .andExpect(status().isOk());
+            .param("page", "0")
+            .param("size", "10")
+            .param("query", "")
+            .locale(Locale.getDefault()))
+            .andExpect(view().name("core/management_eco_news"))
+            .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
+            .andExpect(model().attribute("fields", ecoNewsViewDto))
+            .andExpect(model().attribute("ecoNewsTag", tagDtoList))
+            .andExpect(model().attribute("sortModel", sortModel))
+            .andExpect(status().isOk());
 
-        verify(ecoNewsService).getFilteredDataForManagementByPage(eq(""), any(), eq(ecoNewsViewDto), eq(Locale.getDefault()));
+        verify(ecoNewsService).getFilteredDataForManagementByPage(eq(""), any(), eq(ecoNewsViewDto),
+            eq(Locale.getDefault()));
     }
 
     @Test
