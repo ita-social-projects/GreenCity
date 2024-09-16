@@ -92,7 +92,7 @@ public class ManagementEcoNewsController {
                     orderUrl.append("&sort=").append(order.getProperty()).append(",").append(order.getDirection());
                 }
             }
-            model.addAttribute("sortModel", orderUrl);
+            model.addAttribute("sortModel", orderUrl.toString());
         }
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags(locale.getLanguage()));
         model.addAttribute("pageSize", pageable.getPageSize());

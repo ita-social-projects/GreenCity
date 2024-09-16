@@ -481,14 +481,18 @@ class EcoNewsServiceImplTest {
     @Test
     void getFilteredDataForManagementByPageWithQueryAndEcoNewsViewDtoTest() {
         Pageable pageable = PageRequest.of(0, 2);
-        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
-        Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, ecoNews.size());
+        List<EcoNews> ecoNewsByFields = Collections.singletonList(ModelUtils.getEcoNews());
+        List<EcoNews> ecoNewsByQuery = new ArrayList<>();
+        ecoNewsByQuery.add(ModelUtils.getEcoNews());
+        ecoNewsByQuery.add(EcoNews.builder().id(2L).build());
+        Page<EcoNews> pageByFields = new PageImpl<>(ecoNewsByFields, pageable, ecoNewsByFields.size());
+        Page<EcoNews> pageByQuery = new PageImpl<>(ecoNewsByQuery, pageable, ecoNewsByQuery.size());
         EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
         EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
         String query = "query";
-        when(ecoNewsRepo.findAll(any(EcoNewsSpecification.class), any(Pageable.class))).thenReturn(page);
-        when(ecoNewsRepo.searchEcoNewsBy(any(Pageable.class), eq(query))).thenReturn(page);
-        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        when(ecoNewsRepo.findAll(any(EcoNewsSpecification.class), any(Pageable.class))).thenReturn(pageByFields);
+        when(ecoNewsRepo.searchEcoNewsBy(any(Pageable.class), eq(query))).thenReturn(pageByQuery);
+        when(modelMapper.map(ecoNewsByFields, EcoNewsDto.class)).thenReturn(ecoNewsDto);
         PageableAdvancedDto<EcoNewsDto> actual =
             ecoNewsService.getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, Locale.getDefault());
         PageableAdvancedDto<EcoNewsDto> expected =
