@@ -229,7 +229,7 @@ class AchievementServiceImplTest {
     }
 
     @Test
-    public void searchAchievementByTest_WithValidQuery() {
+    void searchAchievementByTest_WithValidQuery() {
         String query = "test query";
         Pageable paging = PageRequest.of(0, 10);
         List<Achievement> achievementList = Collections.singletonList(ModelUtils.getAchievement());
