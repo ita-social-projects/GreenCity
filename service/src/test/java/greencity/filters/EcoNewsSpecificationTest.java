@@ -163,11 +163,11 @@ class EcoNewsSpecificationTest {
                 .value(ecoNewsViewDto.getTags())
                 .build());
         criteriaList.add(
-                SearchCriteria.builder()
-                        .key(EcoNews_.HIDDEN)
-                        .type(EcoNews_.HIDDEN)
-                        .value("true")
-                        .build());
+            SearchCriteria.builder()
+                .key(EcoNews_.HIDDEN)
+                .type(EcoNews_.HIDDEN)
+                .value("true")
+                .build());
 
         EcoNews_.tags = tags;
         Tag_.tagTranslations = tagTranslations;
@@ -310,10 +310,10 @@ class EcoNewsSpecificationTest {
     @Test
     void toPredicateTagsEmpty() {
         List<SearchCriteria> emptyTagsList = List.of(SearchCriteria.builder()
-                .key(EcoNews_.TAGS)
-                .type(EcoNews_.TAGS)
-                .value("")
-                .build());
+            .key(EcoNews_.TAGS)
+            .type(EcoNews_.TAGS)
+            .value("")
+            .build());
         EcoNewsSpecification specificationForEmpty = new EcoNewsSpecification(emptyTagsList);
         when(criteriaBuilderMock.conjunction()).thenReturn(emptyPredicate);
         when(criteriaBuilderMock.and(emptyPredicate, emptyPredicate)).thenReturn(emptyPredicate);
@@ -325,10 +325,10 @@ class EcoNewsSpecificationTest {
     @Test
     void toPredicateCreationDateEmpty() {
         List<SearchCriteria> emptyCreationDateList = List.of(SearchCriteria.builder()
-                .key(EcoNews_.CREATION_DATE)
-                .type(EcoNews_.CREATION_DATE)
-                .value("")
-                .build());
+            .key(EcoNews_.CREATION_DATE)
+            .type(EcoNews_.CREATION_DATE)
+            .value("")
+            .build());
         EcoNewsSpecification specificationForEmpty = new EcoNewsSpecification(emptyCreationDateList);
         when(criteriaBuilderMock.conjunction()).thenReturn(emptyPredicate);
         when(criteriaBuilderMock.and(emptyPredicate, emptyPredicate)).thenReturn(emptyPredicate);
@@ -340,15 +340,16 @@ class EcoNewsSpecificationTest {
     @Test
     void toPredicateInvalidCreationDate() {
         List<SearchCriteria> invalidCreationDateList = List.of(SearchCriteria.builder()
-                .key(EcoNews_.CREATION_DATE)
-                .type(EcoNews_.CREATION_DATE)
-                .value("invalidDate")
-                .build());
+            .key(EcoNews_.CREATION_DATE)
+            .type(EcoNews_.CREATION_DATE)
+            .value("invalidDate")
+            .build());
         EcoNewsSpecification specificationForInvalidDate = new EcoNewsSpecification(invalidCreationDateList);
         when(criteriaBuilderMock.conjunction()).thenReturn(emptyPredicate);
         when(criteriaBuilderMock.disjunction()).thenReturn(emptyPredicate);
         when(criteriaBuilderMock.and(emptyPredicate, emptyPredicate)).thenReturn(emptyPredicate);
-        Predicate actual = specificationForInvalidDate.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        Predicate actual =
+            specificationForInvalidDate.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
         assertEquals(emptyPredicate, actual);
         verify(criteriaBuilderMock).and(emptyPredicate, emptyPredicate);
     }
@@ -366,7 +367,8 @@ class EcoNewsSpecificationTest {
         when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
         when(criteriaBuilderMock.asc(pathEcoNewsTitleMock)).thenReturn(titleOrder);
         when(criteriaQueryMock.orderBy(eq(orderList))).thenReturn(criteriaQueryMock);
-        Predicate actual = specificationForSortList.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        Predicate actual =
+            specificationForSortList.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
         assertEquals(predicateMock, actual);
         verify(criteriaBuilderMock).conjunction();
         verify(criteriaQueryMock).orderBy(eq(orderList));
