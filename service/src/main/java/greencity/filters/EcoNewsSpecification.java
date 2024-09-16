@@ -104,21 +104,22 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
         }
     }
 
-    private List<Order> getOrderList(Root<EcoNews> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+    private List<Order> getOrderList(Root<EcoNews> root, CriteriaQuery<?> criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
         List<Order> orderList = new ArrayList<>();
         for (Order order : criteriaQuery.getOrderList()) {
             String sortField = order.getExpression().toString();
             if (sortField.equals("likes")) {
                 orderList
-                        .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersLikedNews")))
-                                : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersLikedNews"))));
+                    .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersLikedNews")))
+                        : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersLikedNews"))));
             } else if (sortField.equals("dislikes")) {
                 orderList
-                        .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersDislikedNews")))
-                                : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersDislikedNews"))));
+                    .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersDislikedNews")))
+                        : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersDislikedNews"))));
             } else {
                 orderList.add(order.isAscending() ? criteriaBuilder.asc(root.get(sortField))
-                        : criteriaBuilder.desc(root.get(sortField)));
+                    : criteriaBuilder.desc(root.get(sortField)));
             }
         }
         return orderList;
