@@ -381,7 +381,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                     EcoNews ecoNewsByQuery = iteratorByQuery.next();
                     if (currentEcoNews.getId().equals(ecoNewsByQuery.getId())) {
                         isPresentByQuery = true;
-                        iteratorByQuery.remove();
                         break;
                     }
                 }
