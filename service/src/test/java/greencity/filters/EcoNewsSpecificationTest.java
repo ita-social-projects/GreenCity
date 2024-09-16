@@ -67,6 +67,12 @@ class EcoNewsSpecificationTest {
     private Path<Object> pathEcoNewsDislikesMock;
 
     @Mock
+    private Path<Object> pathEcoNewsIdMock;
+
+    @Mock
+    private Path<Object> pathEcoNewsDateRangeMock;
+
+    @Mock
     private Predicate andTitlePredicate;
 
     @Mock
@@ -86,6 +92,12 @@ class EcoNewsSpecificationTest {
 
     @Mock
     private Predicate emptyPredicate;
+
+    @Mock
+    private Predicate andIdPredicate;
+
+    @Mock
+    private Predicate andDateRangePredicate;
 
     @Mock
     private ListAttribute<EcoNews, Tag> tags;
@@ -118,13 +130,21 @@ class EcoNewsSpecificationTest {
 
     private List<SearchCriteria> criteriaList;
 
-    private Order likesOrder;
+    private Order likesOrderAsc;
 
-    private Order titleOrder;
+    private Order titleOrderAsc;
 
-    private Order dislikesOrder;
+    private Order dislikesOrderAsc;
 
-    private List<Order> orderList;
+    private List<Order> orderListAsc;
+
+    private Order likesOrderDesc;
+
+    private Order titleOrderDesc;
+
+    private Order dislikesOrderDesc;
+
+    private List<Order> orderListDesc;
 
     @BeforeEach
     void setUp() {
@@ -175,7 +195,7 @@ class EcoNewsSpecificationTest {
 
         ecoNewsSpecification = new EcoNewsSpecification(criteriaList);
 
-        likesOrder = new Order() {
+        likesOrderAsc = new Order() {
             @Override
             public Order reverse() {
                 return null;
@@ -191,7 +211,7 @@ class EcoNewsSpecificationTest {
                 return likesExpressionMock;
             }
         };
-        titleOrder = new Order() {
+        titleOrderAsc = new Order() {
             @Override
             public Order reverse() {
                 return null;
@@ -207,11 +227,47 @@ class EcoNewsSpecificationTest {
                 return titleExpressionMock;
             }
         };
-        orderList = new ArrayList<>();
-        orderList.add(likesOrder);
-        orderList.add(titleOrder);
+        orderListAsc = new ArrayList<>();
+        orderListAsc.add(likesOrderAsc);
+        orderListAsc.add(titleOrderAsc);
 
-        dislikesOrder = new Order() {
+        likesOrderDesc = new Order() {
+            @Override
+            public Order reverse() {
+                return null;
+            }
+
+            @Override
+            public boolean isAscending() {
+                return false;
+            }
+
+            @Override
+            public Expression<?> getExpression() {
+                return likesExpressionMock;
+            }
+        };
+        titleOrderDesc = new Order() {
+            @Override
+            public Order reverse() {
+                return null;
+            }
+
+            @Override
+            public boolean isAscending() {
+                return false;
+            }
+
+            @Override
+            public Expression<?> getExpression() {
+                return titleExpressionMock;
+            }
+        };
+        orderListDesc = new ArrayList<>();
+        orderListDesc.add(likesOrderDesc);
+        orderListDesc.add(titleOrderDesc);
+
+        dislikesOrderAsc = new Order() {
             @Override
             public Order reverse() {
                 return null;
@@ -220,6 +276,22 @@ class EcoNewsSpecificationTest {
             @Override
             public boolean isAscending() {
                 return true;
+            }
+
+            @Override
+            public Expression<?> getExpression() {
+                return dislikesExpressionMock;
+            }
+        };
+        dislikesOrderDesc = new Order() {
+            @Override
+            public Order reverse() {
+                return null;
+            }
+
+            @Override
+            public boolean isAscending() {
+                return false;
             }
 
             @Override
@@ -285,12 +357,12 @@ class EcoNewsSpecificationTest {
 
         when(criteriaBuilderMock.and(andTagPredicate, andBooleanPredicate)).thenReturn(andBooleanPredicate);
 
-        when(criteriaQueryMock.getOrderList()).thenReturn(List.of(dislikesOrder));
+        when(criteriaQueryMock.getOrderList()).thenReturn(List.of(dislikesOrderAsc));
         when(dislikesExpressionMock.toString()).thenReturn("dislikes");
         when(ecoNewsRootMock.get("usersDislikedNews")).thenReturn(pathEcoNewsDislikesMock);
         when(criteriaBuilderMock.size(any(Expression.class))).thenReturn(dislikesExpressionMock);
-        when(criteriaBuilderMock.asc(dislikesExpressionMock)).thenReturn(dislikesOrder);
-        when(criteriaQueryMock.orderBy(eq(List.of(dislikesOrder)))).thenReturn(criteriaQueryMock);
+        when(criteriaBuilderMock.asc(dislikesExpressionMock)).thenReturn(dislikesOrderAsc);
+        when(criteriaQueryMock.orderBy(eq(List.of(dislikesOrderAsc)))).thenReturn(criteriaQueryMock);
 
         ecoNewsSpecification.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
 
@@ -304,7 +376,7 @@ class EcoNewsSpecificationTest {
         verify(criteriaBuilderMock).and(andTextPredicate, andCreationDatePredicate);
         verify(criteriaBuilderMock).and(andCreationDatePredicate, andTagPredicate);
         verify(criteriaBuilderMock).and(andTagPredicate, andBooleanPredicate);
-        verify(criteriaQueryMock).orderBy(eq(List.of(dislikesOrder)));
+        verify(criteriaQueryMock).orderBy(eq(List.of(dislikesOrderAsc)));
     }
 
     @Test
@@ -355,22 +427,78 @@ class EcoNewsSpecificationTest {
     }
 
     @Test
-    void toPredicateSortOrder() {
+    void toPredicateSortOrderAsc() {
         EcoNewsSpecification specificationForSortList = new EcoNewsSpecification(new ArrayList<>());
         when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
-        when(criteriaQueryMock.getOrderList()).thenReturn(orderList);
+        when(criteriaQueryMock.getOrderList()).thenReturn(orderListAsc);
         when(likesExpressionMock.toString()).thenReturn("likes");
         when(ecoNewsRootMock.get("usersLikedNews")).thenReturn(pathEcoNewsLikesMock);
         when(criteriaBuilderMock.size(any(Expression.class))).thenReturn(likesExpressionMock);
-        when(criteriaBuilderMock.asc(likesExpressionMock)).thenReturn(likesOrder);
+        when(criteriaBuilderMock.asc(likesExpressionMock)).thenReturn(likesOrderAsc);
         when(titleExpressionMock.toString()).thenReturn("title");
         when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
-        when(criteriaBuilderMock.asc(pathEcoNewsTitleMock)).thenReturn(titleOrder);
-        when(criteriaQueryMock.orderBy(eq(orderList))).thenReturn(criteriaQueryMock);
+        when(criteriaBuilderMock.asc(pathEcoNewsTitleMock)).thenReturn(titleOrderAsc);
+        when(criteriaQueryMock.orderBy(eq(orderListAsc))).thenReturn(criteriaQueryMock);
         Predicate actual =
             specificationForSortList.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
         assertEquals(predicateMock, actual);
         verify(criteriaBuilderMock).conjunction();
-        verify(criteriaQueryMock).orderBy(eq(orderList));
+        verify(criteriaQueryMock).orderBy(eq(orderListAsc));
+    }
+
+    @Test
+    void toPredicateSortOrderDesc() {
+        EcoNewsSpecification specificationForSortList = new EcoNewsSpecification(new ArrayList<>());
+        when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
+        when(criteriaQueryMock.getOrderList()).thenReturn(orderListDesc);
+        when(likesExpressionMock.toString()).thenReturn("likes");
+        when(ecoNewsRootMock.get("usersLikedNews")).thenReturn(pathEcoNewsLikesMock);
+        when(criteriaBuilderMock.size(any(Expression.class))).thenReturn(likesExpressionMock);
+        when(criteriaBuilderMock.desc(likesExpressionMock)).thenReturn(likesOrderDesc);
+        when(titleExpressionMock.toString()).thenReturn("title");
+        when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
+        when(criteriaBuilderMock.desc(pathEcoNewsTitleMock)).thenReturn(titleOrderDesc);
+        when(criteriaQueryMock.orderBy(eq(orderListDesc))).thenReturn(criteriaQueryMock);
+        Predicate actual =
+            specificationForSortList.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(predicateMock, actual);
+        verify(criteriaBuilderMock).conjunction();
+        verify(criteriaQueryMock).orderBy(eq(orderListDesc));
+    }
+
+    @Test
+    void toPredicateIdAndDateRangeSortOrderDislikesDesc() {
+        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
+        searchCriteriaList.add(SearchCriteria.builder()
+            .key(EcoNews_.ID)
+            .type(EcoNews_.ID)
+            .value("1")
+            .build());
+        searchCriteriaList.add(SearchCriteria.builder()
+            .key("dateRange")
+            .type("dateRange")
+            .value(new String[] {"2023-09-01", "2023-09-12"})
+            .build());
+        EcoNewsSpecification specificationForSortList = new EcoNewsSpecification(searchCriteriaList);
+        when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
+        when(ecoNewsRootMock.get(EcoNews_.ID)).thenReturn(pathEcoNewsIdMock);
+        when(criteriaBuilderMock.equal(any(), anyString())).thenReturn(andIdPredicate);
+        when(criteriaBuilderMock.and(predicateMock, andIdPredicate)).thenReturn(andIdPredicate);
+        when(ecoNewsRootMock.get(eq("dateRange"))).thenReturn(pathEcoNewsDateRangeMock);
+        when(criteriaBuilderMock.between(any(), any(ZonedDateTime.class), any(ZonedDateTime.class)))
+            .thenReturn(andDateRangePredicate);
+        when(criteriaBuilderMock.and(andIdPredicate, andDateRangePredicate)).thenReturn(andDateRangePredicate);
+
+        when(criteriaQueryMock.getOrderList()).thenReturn(List.of(dislikesOrderDesc));
+        when(dislikesExpressionMock.toString()).thenReturn("dislikes");
+        when(ecoNewsRootMock.get("usersDislikedNews")).thenReturn(pathEcoNewsDislikesMock);
+        when(criteriaBuilderMock.size(any(Expression.class))).thenReturn(dislikesExpressionMock);
+        when(criteriaBuilderMock.desc(dislikesExpressionMock)).thenReturn(dislikesOrderDesc);
+        when(criteriaQueryMock.orderBy(eq(List.of(dislikesOrderDesc)))).thenReturn(criteriaQueryMock);
+        Predicate actual =
+            specificationForSortList.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(andDateRangePredicate, actual);
+        verify(criteriaBuilderMock).conjunction();
+        verify(criteriaQueryMock).orderBy(eq(List.of(dislikesOrderDesc)));
     }
 }

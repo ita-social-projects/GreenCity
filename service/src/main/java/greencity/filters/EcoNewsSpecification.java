@@ -117,8 +117,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
             ZonedDateTime zdt2 = ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MAX), ZoneOffset.UTC);
             return criteriaBuilder.between(root.get(searchCriteria.getKey()), zdt1, zdt2);
         } catch (DateTimeParseException ex) {
-            return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
-                : criteriaBuilder.disjunction();
+            return criteriaBuilder.disjunction();
         }
     }
 }

@@ -21,12 +21,19 @@ class EcoNewsViewDtoTest {
         "1, title, author, '', 2020.12.12, 2021.02.01, News, true",
         "1, title, author, text, '', 2021.02.01, News, true",
         "1, title, author, text, 2020.12.12, '', News, true",
-        "1, title, author, text, 2020.12.12, 2021.02.01, '', true"
+        "1, title, author, text, 2020.12.12, 2021.02.01, '', true",
+        "1, title, author, text, 2020.12.12, 2021.02.01, News, ''"
     })
     void isEmptyFalse(String id, String title, String author, String text, String startDate, String endDate,
         String tags, String hidden) {
         EcoNewsViewDto ecoNewsViewDto =
             new EcoNewsViewDto(id, title, author, text, startDate, endDate, tags, hidden);
         assertFalse(ecoNewsViewDto.isEmpty());
+    }
+
+    @Test
+    void isEmptyTrueNullValues() {
+        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto(null, null, null, null, null, null, null, null);
+        assertTrue(ecoNewsViewDto.isEmpty());
     }
 }
