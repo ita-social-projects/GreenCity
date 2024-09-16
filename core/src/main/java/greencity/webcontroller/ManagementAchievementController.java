@@ -103,17 +103,6 @@ public class ManagementAchievementController {
     }
 
     /**
-     * Method for getting econews by id.
-     *
-     * @param id of Eco New
-     * @return {@link AchievementVO} instance.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<AchievementVO> getAchievementById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findById(id));
-    }
-
-    /**
      * Method which updates {@link AchievementVO}.
      *
      * @param achievementManagementDto of {@link AchievementManagementDto}.

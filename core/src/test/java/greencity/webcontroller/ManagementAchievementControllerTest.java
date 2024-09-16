@@ -138,14 +138,6 @@ class ManagementAchievementControllerTest {
     }
 
     @Test
-    void getAchievementByIdTest() throws Exception {
-        this.mockMvc.perform(get(link + "/1")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-            .andExpect(status().isOk());
-        verify(achievementService).findById(1L);
-    }
-
-    @Test
     void updateTest() throws Exception {
         AchievementManagementDto achievementManagementDto = new AchievementManagementDto(1L);
         String content = objectMapper.writeValueAsString(achievementManagementDto);
