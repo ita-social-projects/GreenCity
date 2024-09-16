@@ -251,9 +251,9 @@ public class CommentServiceImpl implements CommentService {
             if (habit.isEmpty()) {
                 throw new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId);
             }
-        }else if(articleType == ArticleType.ECO_NEWS){
+        } else if (articleType == ArticleType.ECO_NEWS) {
             Optional<EcoNews> ecoNews = ecoNewsRepo.findById(articleId);
-            if(ecoNews.isEmpty()) {
+            if (ecoNews.isEmpty()) {
                 throw new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId);
             }
         }

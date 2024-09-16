@@ -332,12 +332,12 @@ class CommentServiceImplTest {
 
         when(econewsRepo.findById(ecoNewsId)).thenReturn(Optional.of(ecoNews));
         when(commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
-                pageable, ecoNewsId, ArticleType.ECO_NEWS, CommentStatus.DELETED))
-                .thenReturn(pages);
+            pageable, ecoNewsId, ArticleType.ECO_NEWS, CommentStatus.DELETED))
+            .thenReturn(pages);
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
 
         PageableDto<CommentDto> allComments = commentService.getAllActiveComments(
-                pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS);
+            pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS);
 
         assertEquals(commentDto, allComments.getPage().getFirst());
         assertEquals(4, allComments.getTotalElements());
@@ -346,10 +346,9 @@ class CommentServiceImplTest {
 
         verify(econewsRepo).findById(ecoNewsId);
         verify(commentRepo).findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
-                pageable, ecoNewsId, ArticleType.ECO_NEWS, CommentStatus.DELETED);
+            pageable, ecoNewsId, ArticleType.ECO_NEWS, CommentStatus.DELETED);
         verify(modelMapper).map(comment, CommentDto.class);
     }
-
 
     @Test
     void getAllActiveComments_HabitNotFound() {
@@ -361,9 +360,8 @@ class CommentServiceImplTest {
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                commentService.getAllActiveComments(pageable, userVO, habitId, ArticleType.HABIT)
-        );
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> commentService.getAllActiveComments(pageable, userVO, habitId, ArticleType.HABIT));
 
         assertEquals(HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
 
@@ -380,15 +378,13 @@ class CommentServiceImplTest {
 
         when(econewsRepo.findById(ecoNewsId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                commentService.getAllActiveComments(pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS)
-        );
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> commentService.getAllActiveComments(pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS));
 
         assertEquals(ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId, exception.getMessage());
 
         verify(econewsRepo).findById(ecoNewsId);
     }
-
 
     @Test
     void update() {
