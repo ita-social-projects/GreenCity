@@ -1853,3 +1853,139 @@ a.lightgrey {
     display: flex;
     justify-content: space-between;
 }
+
+.filter-container {
+    background-color: #ffffff;
+    border: 1px solid #9CA7B0;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    position: absolute;
+    top: 100%;
+    margin-left: -10px;
+}
+.filter-container__search .visibility {
+    display: inline;
+    position: absolute;
+}
+
+.filter-container__search input[type="radio"] {
+    opacity: 0.01;
+    z-index: 100;
+}
+
+.filter-container__search input[type="radio"]:checked+label,
+.Checked+label {
+    border: 1px solid #13AA57;
+    background-color: #13AA57;
+    color: #ffffff;
+}
+
+.filter-container__search .visibility-label {
+    border: 1px solid #13AA57;
+    background-color: #ffffff;
+    color: #13AA57;
+    border-radius: 5px;
+    width: 140px;
+    height: 40px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.filter-container__search {
+    align-self: stretch;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.filter-container__search .form-search {
+    width: 100%;
+    padding-right: 30px; /* Add padding to the right to make space for the icon */
+    box-sizing: border-box;
+}
+
+.eco-news .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-40%);
+    color: #9CA7B0;
+}
+
+.filter-container__search .material-icons {
+    font-size: 20px;
+}
+
+.filter-container__buttons {
+    align-self: flex-end;
+}
+
+.filter-container__buttons input {
+    margin-top: .5rem;
+}
+
+.filter-container__buttons .btn-secondary {
+    width: 98px;
+}
+
+.table-filter-icon.active {
+    background-image: url("/img/filter-icon-active.svg");
+}
+
+.table-filter-icon.filtered {
+    background-image: url("/img/filter-icon-active.svg");
+}
+
+.material-icons.sorted {
+    color: #13AA57;
+}
+
+.eco-news .form-inline.searching {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.radio-buttons .filter-container__search {
+    display: grid;
+    justify-content: start;
+}
+
+.radio-buttons .btn {
+    margin: 10px 0 0 0;
+    width: 70px;
+    height: 35px;
+}
+
+.filter-container__search.tags {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.custom-checkbox.tag span, .custom-checkbox.date span {
+    margin-left: 10px;
+    color: #13AA57;
+    font-weight: 600;
+}
+
+.custom-checkbox.tag input[type="checkbox"]:checked + label:after,
+.custom-checkbox.date input[type="checkbox"]:checked + label:after {
+    transform: translateY(10px);
+}
+
+.form-control.end-date {
+    margin-top: 10px;
+}
+
+.filter-container__search.tags,
+.filter-container__search.date {
+    padding: 10px;
+}
