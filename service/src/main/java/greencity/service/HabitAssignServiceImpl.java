@@ -396,6 +396,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void enhanceAssignWithCustomProperties(HabitAssign habitAssign,
         HabitAssignPropertiesDto props) {
         habitAssign.setDuration(props.getDuration());
+        habitAssign.setIsPrivate(props.getIsPrivate());
     }
 
     /**
