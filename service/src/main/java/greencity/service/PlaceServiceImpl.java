@@ -611,7 +611,7 @@ public class PlaceServiceImpl implements PlaceService {
                 .map(Photo::getName)
                 .collect(Collectors.toList());
             List<OpenHoursDto> openingHoursList = place.getOpeningHoursList().stream()
-                .map((element) -> modelMapper.map(element, OpenHoursDto.class))
+                .map(element -> modelMapper.map(element, OpenHoursDto.class))
                 .toList();
             adminPlaceDto.setImages(photoNames);
             adminPlaceDto.setOpeningHoursList(openingHoursList);
