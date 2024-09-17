@@ -1710,7 +1710,9 @@ public class ModelUtils {
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
-        return new AchievementManagementDto(1L);
+        return new AchievementManagementDto(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(),
+            1);
     }
 
     public static UserAchievementVO getUserAchievementVO() {

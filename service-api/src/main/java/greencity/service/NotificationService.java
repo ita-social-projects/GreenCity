@@ -60,6 +60,12 @@ public interface NotificationService {
     void sendFriendRequestScheduledEmail();
 
     /**
+     * Method for sending scheduled email to user has unread notifications connected
+     * with tagging in the comment. Sending is performed 2 times a day.
+     */
+    void sendTaggedInCommentScheduledEmail();
+
+    /**
      * method sends a general email notification to many Users.
      *
      * @param usersEmails {@link Set} to this users email will be sent.

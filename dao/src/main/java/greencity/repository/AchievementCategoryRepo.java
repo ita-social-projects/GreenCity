@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.AchievementCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
 public interface AchievementCategoryRepo extends JpaRepository<AchievementCategory, Long> {
     /**
@@ -10,5 +11,5 @@ public interface AchievementCategoryRepo extends JpaRepository<AchievementCatego
      * @param name to find by.
      * @return a category by name.
      */
-    AchievementCategory findByName(String name);
+    Optional<AchievementCategory> findByName(String name);
 }
