@@ -31,7 +31,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +69,7 @@ class UserServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
 
-    private UserVO userVO = UserVO.builder()
+    private final UserVO userVO = UserVO.builder()
         .id(1L)
         .name("Test Testing")
         .email("test@gmail.com")
@@ -122,8 +121,6 @@ class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime localDateTime = LocalDateTime.of(
-            2015, Month.JULY, 29, 19, 30, 40);
         User user = ModelUtils.getUser();
 
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
