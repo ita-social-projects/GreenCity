@@ -214,12 +214,10 @@ class UserNotificationServiceImplTest {
     @Test
     void deleteNotificationTest() {
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
 
         userNotificationService.deleteNotification(getPrincipal(), 1L);
 
         verify(userService).findByEmail("danylo@gmail.com");
-        verify(modelMapper).map(TEST_USER_VO, User.class);
     }
 
     @Test

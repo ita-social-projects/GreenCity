@@ -209,7 +209,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void deleteNotification(Principal principal, Long notificationId) {
-        Long userId = modelMapper.map(userService.findByEmail(principal.getName()), User.class).getId();
+        Long userId = userService.findByEmail(principal.getName()).getId();
         notificationRepo.deleteNotificationByIdAndTargetUserId(notificationId, userId);
     }
 

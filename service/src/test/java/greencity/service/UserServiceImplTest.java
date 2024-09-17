@@ -50,7 +50,6 @@ import static greencity.enums.UserStatus.CREATED;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -125,7 +124,6 @@ class UserServiceImplTest {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         LocalDateTime localDateTime = LocalDateTime.of(
             2015, Month.JULY, 29, 19, 30, 40);
-        Timestamp userLastActivityTime = Timestamp.valueOf(localDateTime);
         User user = ModelUtils.getUser();
 
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
@@ -188,12 +186,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testFindByEmailReturnNull() {
+    void testFindByEmailThrowException() {
         when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
 
-        UserVO actual = userService.findByEmail(TEST_EMAIL);
-
-        assertNull(actual);
+        assertThrows(WrongIdException.class, () -> userService.findByEmail(TEST_EMAIL));
 
         verify(userRepo).findByEmail(TEST_EMAIL);
     }
