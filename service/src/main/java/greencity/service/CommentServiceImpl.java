@@ -9,17 +9,9 @@ import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Comment;
-import greencity.entity.EcoNews;
-import greencity.entity.Habit;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.entity.event.Event;
-import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.Role;
-import greencity.enums.AchievementAction;
-import greencity.enums.RatingCalculationEnum;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -49,6 +41,7 @@ public class CommentServiceImpl implements CommentService {
     private final ModelMapper modelMapper;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
@@ -82,6 +75,10 @@ public class CommentServiceImpl implements CommentService {
                 throw new NotFoundException(message);
             }
             comment.setParentComment(parentComment);
+            userNotificationService.createNotification(
+                    modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
+                    userVO, NotificationType.HABIT_COMMENT,
+                    articleId, getArticleTitle(articleType, articleId), comment.getId(), comment.getText());
         }
 
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
@@ -91,6 +88,11 @@ public class CommentServiceImpl implements CommentService {
         AddCommentDtoResponse addCommentDtoResponse = modelMapper.map(
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
+
+        userNotificationService.createNotification(
+                modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
+                userVO, NotificationType.HABIT_COMMENT,
+                articleId, getArticleTitle(articleType, articleId), comment.getId(), comment.getText());
         return addCommentDtoResponse;
     }
 
@@ -128,6 +130,22 @@ public class CommentServiceImpl implements CommentService {
         }
         return userRepo.findById(articleAuthorId)
             .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + articleAuthorId));
+    }
+
+    protected String getArticleTitle(ArticleType articleType, Long articleId) {
+        String articleName;
+        switch (articleType) {
+            case HABIT:
+                Habit habit = habitRepo.findById(articleId)
+                        .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+                HabitTranslation habitTranslation = habit.getHabitTranslations().getFirst();
+                articleName = habitTranslation.getName();
+                break;
+
+            default:
+                throw new BadRequestException("Unsupported article type");
+        }
+        return articleName;
     }
 
     /**
