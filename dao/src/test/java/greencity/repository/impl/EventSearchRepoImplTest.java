@@ -33,19 +33,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class EventSearchRepoImplTest {
     @Mock
     private EntityManager entityManager;
@@ -139,7 +142,7 @@ class EventSearchRepoImplTest {
 
         when(criteriaQuery.select(eventRoot)).thenReturn(criteriaQuery);
         when(criteriaQuery.distinct(true)).thenReturn(criteriaQuery);
-        lenient().when(criteriaQuery.where(any(Predicate.class))).thenReturn(criteriaQuery);
+        when(criteriaQuery.where(any(Predicate.class))).thenReturn(criteriaQuery);
 
         List<Event> events = List.of(new Event(), new Event(), new Event());
         when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
@@ -150,7 +153,7 @@ class EventSearchRepoImplTest {
         when(criteriaBuilder.createQuery(Long.class)).thenReturn(countQuery);
         when(countQuery.from(Event.class)).thenReturn(eventRoot);
         when(countQuery.select(any())).thenReturn(countQuery);
-        lenient().when(countQuery.where(any(Predicate.class))).thenReturn(countQuery);
+        when(countQuery.where(any(Predicate.class))).thenReturn(countQuery);
         TypedQuery<Long> countTypedQuery = mock(TypedQuery.class);
         when(entityManager.createQuery(countQuery)).thenReturn(countTypedQuery);
         when(countTypedQuery.getSingleResult()).thenReturn(3L);

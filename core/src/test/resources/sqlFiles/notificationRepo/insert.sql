@@ -1,0 +1,2 @@
+INSERT INTO notifications (id, custom_message, second_message, notification_type, project_name, target_id, second_message_id, time, viewed, target_user_id) VALUES (1, '111111111', null, 'EVENT_CREATED', 'GREENCITY', 1, null, '2024-08-13 20:00:00.000000', false, 1);
+INSERT INTO notifications (id, custom_message, second_message, notification_type, project_name, target_id, second_message_id, time, viewed, target_user_id) VALUES (2, '22222222', null, 'EVENT_CANCELED', 'GREENCITY', 1, null, '2024-08-14 20:00:00.000000', true, 1);

@@ -57,9 +57,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findById(Long id) {
-        User user = userRepo.findById(id)
+        return userRepo.findById(id)
+            .map(user -> modelMapper.map(user, UserVO.class))
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(user, UserVO.class);
     }
 
     /**
@@ -67,8 +67,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findByEmail(String email) {
-        Optional<User> optionalUser = userRepo.findByEmail(email);
-        return optionalUser.map(user -> modelMapper.map(user, UserVO.class)).orElse(null);
+        return userRepo.findByEmail(email)
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
@@ -82,14 +83,12 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
      */
     @Override
     public Long findIdByEmail(String email) {
         log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
-        return userRepo.findIdByEmail(email).orElseThrow(
-            () -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        return userRepo.findIdByEmail(email)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
 
     /**

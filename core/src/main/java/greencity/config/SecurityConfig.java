@@ -66,11 +66,12 @@ public class SecurityConfig {
     private static final String RANDOM = "/random";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
-    private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
-        + "custom-shopping-list-items";
+    private static final String CUSTOM_SHOPPING_LIST_URL = CUSTOM_SHOPPING_LIST + "/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
+    private static final String NOTIFICATIONS = "/notifications";
+    private static final String NOTIFICATION_ID = "/{notificationId}";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -252,9 +253,7 @@ public class SecurityConfig {
                     FRIENDS + "/{userId}/all-user-friends",
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
-                    "/notification",
-                    "/notification/all",
-                    "/notification/new",
+                    NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
@@ -270,6 +269,8 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + ATTENDERS,
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
+                    NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
+                    NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     "/files",
                     HABIT_ASSIGN_ID,
@@ -322,8 +323,6 @@ public class SecurityConfig {
                     USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
-                    "/notification/unread/{notificationId}",
-                    "/notification/view/{notificationId}",
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
@@ -349,7 +348,7 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    "/notification/{notificationId}")
+                    NOTIFICATIONS + NOTIFICATION_ID)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",

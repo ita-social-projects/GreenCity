@@ -1,6 +1,5 @@
 package greencity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.achievement.AchievementPostDto;
@@ -22,7 +21,6 @@ import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -54,8 +52,6 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.FactOfDayStatus;
-import greencity.enums.NotificationType;
-import greencity.enums.ProjectName;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
@@ -72,15 +68,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import static greencity.enums.EventStatus.CLOSED;
-import static greencity.enums.EventStatus.CREATED;
-import static greencity.enums.EventStatus.JOINED;
-import static greencity.enums.EventStatus.OPEN;
-import static greencity.enums.EventStatus.SAVED;
-import static greencity.enums.EventTime.FUTURE;
 
 public class ModelUtils {
     public static List<TagTranslationVO> getTagTranslationsVO() {
@@ -158,10 +146,6 @@ public class ModelUtils {
 
     public static NewsSubscriberRequestDto getNewsSubscriberRequestDto() {
         return new NewsSubscriberRequestDto("test@gmail.com");
-    }
-
-    public static ObjectMapper getObjectMapper() {
-        return new ObjectMapper();
     }
 
     public static HabitFactVO getHabitFactVO() {
@@ -406,15 +390,6 @@ public class ModelUtils {
         return ActionDto.builder().build();
     }
 
-    public static Pageable getPageable() {
-        return PageRequest.of(0, 20);
-    }
-
-    public static FilterNotificationDto getFilterNotificationDto() {
-        return FilterNotificationDto.builder().projectName(new ProjectName[] {})
-            .notificationType(new NotificationType[] {}).build();
-    }
-
     public static PageableAdvancedDto<EventDto> getEventDtoPageableAdvancedDto(Pageable pageable) {
         return new PageableAdvancedDto<>(
             ModelUtils.getListEventDto(),
@@ -528,14 +503,5 @@ public class ModelUtils {
             commentDtos.size(),
             1,
             1);
-    }
-
-    public static FilterEventDto getFilterEventDto() {
-        return FilterEventDto.builder()
-            .time(FUTURE)
-            .cities(List.of("Kyiv"))
-            .statuses(List.of(OPEN, CLOSED, JOINED, CREATED, SAVED))
-            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
-            .build();
     }
 }
