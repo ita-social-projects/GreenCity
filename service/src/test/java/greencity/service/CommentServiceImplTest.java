@@ -307,11 +307,12 @@ class CommentServiceImplTest {
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
 
-      BadRequestException badRequestException =  assertThrows(BadRequestException.class, () -> {
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> {
             commentService.getCommentById(articleType, commentId, new UserVO());
         });
 
-      assertEquals(badRequestException.getMessage(),"Comment with id: " + 1 + " doesn't belong to " + articleType.getLink());
+        assertEquals(badRequestException.getMessage(),
+            "Comment with id: " + 1 + " doesn't belong to " + articleType.getLink());
     }
 
     @Test
@@ -826,7 +827,6 @@ class CommentServiceImplTest {
         verify(userRepo, times(1)).searchUsers("testQuery");
         verify(messagingTemplate, times(1)).convertAndSend("/topic/1/searchUsers", Arrays.asList(userTagDto));
     }
-
 
     @Test
     void testCheckArticleExistsThrowsNotFoundExceptionForEvent() {
