@@ -839,7 +839,7 @@ class CommentServiceImplTest {
             commentService.checkArticleExists(articleType, eventId);
         });
 
-        assertEquals("Event not found by id: " + eventId, exception.getMessage());
+        assertEquals("Event doesn't exist by this id: " + eventId, exception.getMessage());
     }
 
 }
