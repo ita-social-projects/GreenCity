@@ -10,6 +10,7 @@ import greencity.entity.Place;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +21,12 @@ import java.util.List;
  */
 @Component
 public class PlaceInfoDtoMapper extends AbstractConverter<Place, PlaceInfoDto> {
+    private final ProposePlaceMapper proposePlaceMapper;
+
+    public PlaceInfoDtoMapper(ProposePlaceMapper proposePlaceMapper) {
+        this.proposePlaceMapper = proposePlaceMapper;
+    }
+
     /**
      * Method convert {@link Place} to {@link PlaceInfoDto}.
      *
@@ -41,24 +48,26 @@ public class PlaceInfoDtoMapper extends AbstractConverter<Place, PlaceInfoDto> {
         placeInfoDto.setPlaceImages(images);
         placeInfoDto.setDescription(source.getDescription());
         placeInfoDto.setWebsiteUrl(source.getEmail());
-
-        List<OpenHoursDto> openingHoursList = source.getOpeningHoursList()
-            .stream().map(this::convertToOpeningHoursToOpenHoursDto).toList();
-
-        placeInfoDto.setOpeningHoursList(openingHoursList);
+        placeInfoDto.setOpeningHoursList(mapFromOpeningHoursToOpenHoursDto(source));
         return placeInfoDto;
     }
 
-    private OpenHoursDto convertToOpeningHoursToOpenHoursDto(OpeningHours openingHours) {
-        return OpenHoursDto.builder()
-            .id(openingHours.getId())
-            .openTime(openingHours.getOpenTime())
-            .breakTime(BreakTimeDto.builder()
-                .startTime(openingHours.getBreakTime().getStartTime())
-                .endTime(openingHours.getBreakTime().getEndTime())
-                .build())
-            .closeTime(openingHours.getCloseTime())
-            .weekDay(openingHours.getWeekDay())
-            .build();
+    private List<OpenHoursDto> mapFromOpeningHoursToOpenHoursDto(Place place) {
+        List<OpenHoursDto> list = new ArrayList<>();
+        for (OpeningHours openingHours : place.getOpeningHoursList()) {
+            OpenHoursDto openHoursDto = new OpenHoursDto();
+            openHoursDto.setId(openingHours.getId());
+            openHoursDto.setOpenTime(openingHours.getOpenTime());
+            openHoursDto.setWeekDay(openingHours.getWeekDay());
+            openHoursDto.setCloseTime(openingHours.getCloseTime());
+            if (openHoursDto.getBreakTime() != null) {
+                openHoursDto.setBreakTime(BreakTimeDto.builder()
+                    .startTime(openingHours.getBreakTime().getStartTime())
+                    .endTime(openingHours.getBreakTime().getEndTime())
+                    .build());
+            }
+            list.add(openHoursDto);
+        }
+        return list;
     }
 }
