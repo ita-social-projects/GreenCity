@@ -304,11 +304,11 @@ class CommentServiceImplTest {
         ArticleType articleType = ArticleType.ECO_NEWS;
         Comment comment = new Comment();
         comment.setArticleType(ArticleType.HABIT);
-
+        UserVO userVO = getUserVO();
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
 
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> {
-            commentService.getCommentById(articleType, commentId, new UserVO());
+            commentService.getCommentById(articleType, commentId, userVO);
         });
 
         assertEquals(badRequestException.getMessage(),
