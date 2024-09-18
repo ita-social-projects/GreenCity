@@ -15,6 +15,7 @@ import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.*;
 import org.junit.jupiter.api.Test;
@@ -66,6 +67,8 @@ class CommentServiceImplTest {
     private AchievementCalculation achievementCalculation;
     @Mock
     private UserNotificationService userNotificationService;
+    @Mock
+    private NotificationService notificationService;
 
     @Test
     void save() {
@@ -107,6 +110,44 @@ class CommentServiceImplTest {
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
         verify(modelMapper).map(any(Comment.class), eq(AddCommentDtoResponse.class));
+    }
+
+    @Test
+    void sendNotificationIfUserTaggedInComment() {
+        String commentText = "test data-userid=\"5\" test";
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO().setText(commentText);
+        AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
+        AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
+                .text(commentText)
+                .build();
+        ArticleType articleType = ArticleType.HABIT;
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
+        when(modelMapper.map(any(UserVO.class), eq(CommentAuthorDto.class))).thenReturn(commentAuthorDto);
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
+                .id(5L)
+                .email("test@email.com")
+                .build()));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
+        when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+                .thenReturn(Optional.of(habitTranslation));
+
+        commentService.save(articleType, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
+
+        verify(notificationService, times(1))
+                .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
     }
 
     @Test
