@@ -60,12 +60,10 @@ public class PlaceInfoDtoMapper extends AbstractConverter<Place, PlaceInfoDto> {
             openHoursDto.setOpenTime(openingHours.getOpenTime());
             openHoursDto.setWeekDay(openingHours.getWeekDay());
             openHoursDto.setCloseTime(openingHours.getCloseTime());
-            if (openHoursDto.getBreakTime() != null) {
-                openHoursDto.setBreakTime(BreakTimeDto.builder()
-                    .startTime(openingHours.getBreakTime().getStartTime())
-                    .endTime(openingHours.getBreakTime().getEndTime())
-                    .build());
-            }
+            openHoursDto.setBreakTime(BreakTimeDto.builder()
+                .startTime(openingHours.getBreakTime().getStartTime())
+                .endTime(openingHours.getBreakTime().getEndTime())
+                .build());
             list.add(openHoursDto);
         }
         return list;
