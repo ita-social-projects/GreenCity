@@ -37,6 +37,8 @@ public class XSSSafelist {
     private static final String TARGET_ATTR = "target";
     private static final String FRAMEBORDER_ATTR = "frameborder";
     private static final String ALLOWFULLSCREEN_ATTR = "allowfullscreen";
+    private static final String CONTENTEDITABLE_ATTR = "contenteditable";
+    private static final String DATA_USER_ID_ATTR = "data-userid";
 
     static {
         Safelist safelistForEvent = new Safelist()
@@ -74,12 +76,29 @@ public class XSSSafelist {
             .fields(List.of("description", "descriptionUa"))
             .build();
 
+        Safelist safelistForComments = new Safelist()
+            .addTags(A_TAG)
+            .addEnforcedAttribute(A_TAG, CONTENTEDITABLE_ATTR, "false")
+            .addAttributes(DATA_USER_ID_ATTR, STYLE_ATTR);
+
+        XSSAllowedElements allowedElementsForComments = XSSAllowedElements.builder()
+            .safelist(safelistForComments)
+            .fields(List.of("text", "commentText"))
+            .build();
+
         endpointRules.put("/events/create", allowedElementsForEvent);
         endpointRules.put("/events/update", allowedElementsForEvent);
         endpointRules.put("/eco-news", allowedElementsForEcoNews);
         endpointRules.put("/eco-news/{id}", allowedElementsForEcoNews);
         endpointRules.put("/habit/custom", allowedElementsForHabit);
         endpointRules.put("/habit/update{id}", allowedElementsForHabit);
+        endpointRules.put("/events/{eventId}/comments", allowedElementsForComments);
+        endpointRules.put("/events/{eventId}/comments/{commentId}", allowedElementsForComments);
+        endpointRules.put("/eco-news/{ecoNewsId}/comments", allowedElementsForComments);
+        endpointRules.put("/eco-news/{ecoNewsId}/comments/{commentId}", allowedElementsForComments);
+        endpointRules.put("/habits/{habitId}/comments", allowedElementsForComments);
+        endpointRules.put("/habits/comments", allowedElementsForComments);
+        endpointRules.put("/place/{placeId}/comments", allowedElementsForComments);
     }
 
     public static XSSAllowedElements getAllowedElementsForEndpoint(String endpoint) {
