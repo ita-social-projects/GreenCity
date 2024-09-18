@@ -2,13 +2,22 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
-import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Set;
+import java.util.Locale;
 
 public interface EcoNewsService {
     /**
@@ -36,14 +45,6 @@ public interface EcoNewsService {
      * @return list of three {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> getThreeRecommendedEcoNews(Long ecoNewsId);
-
-    /**
-     * Method for getting all eco news by page.
-     *
-     * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsDto} instances.
-     */
-    PageableAdvancedDto<EcoNewsDto> findAll(Pageable page);
 
     /**
      * Method for getting eco news by filter params.
@@ -124,15 +125,6 @@ public interface EcoNewsService {
     Long getAmountOfPublishedNews(Long id);
 
     /**
-     * Method returns {@link EcoNewsDto} by search query and page.
-     *
-     * @param paging {@link Pageable}.
-     * @param query  query to search.
-     * @return list of {@link EcoNewsDto}.
-     */
-    PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query);
-
-    /**
      * Method for updating {@link EcoNewsVO} instance.
      *
      * @param ecoNewsDtoManagement - instance of {@link EcoNewsDtoManagement}.
@@ -153,8 +145,10 @@ public interface EcoNewsService {
      * @return a dto of {@link PageableDto}.
      * @author Dovganyuk Taras
      */
-    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(Pageable pageable,
-        EcoNewsViewDto ecoNewsViewDto);
+    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
+        Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto,
+        Locale locale);
 
     /**
      * Method to mark news as liked by User.

@@ -22,7 +22,6 @@ import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.message.GeneralEmailMessage;
@@ -125,24 +124,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     /**
      * {@inheritDoc}
-     */
-    @Override
-    public PageableAdvancedDto<EcoNewsDto> findAll(Pageable page) {
-        Page<EcoNews> pages;
-        if (page.getSort().isEmpty()) {
-            pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
-        } else {
-            if (page.getSort().isUnsorted()) {
-                pages = ecoNewsRepo.findAll(page);
-            } else {
-                throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-            }
-        }
-        return buildPageableAdvancedDto(pages);
-    }
-
-    /**
-     * {@inheritDoc}
+     *
+     * @author Danylo Hlynskyi.
      */
     @Override
     public List<EcoNewsDto> getAllByUser(UserVO user) {
@@ -286,12 +269,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return authorId == null ? ecoNewsRepo.count() : ecoNewsRepo.countByAuthorId(authorId);
     }
 
-    @Override
-    public PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
-        Page<EcoNews> page = ecoNewsRepo.searchEcoNewsBy(paging, query);
-        return buildPageableAdvancedDto(page);
-    }
-
     private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,
         MultipartFile image) {
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
@@ -359,10 +336,48 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
-        Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
-        Page<EcoNews> page = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
-        return buildPageableAdvancedDto(page);
+    public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(String query,
+        Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto,
+        Locale locale) {
+        Page<EcoNews> byQuery = null;
+        boolean isQueryPresent = query != null && !query.isEmpty();
+        if (isQueryPresent) {
+            byQuery = ecoNewsRepo.searchEcoNewsBy(pageable, query);
+        }
+        Page<EcoNews> filteredByFields = null;
+        boolean isFilterByFieldsPresent =
+            (ecoNewsViewDto != null && !ecoNewsViewDto.isEmpty()) || pageable.getSort().isSorted();
+        if (isFilterByFieldsPresent) {
+            filteredByFields = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
+        }
+        if (isQueryPresent && isFilterByFieldsPresent) {
+            return buildPageableAdvancedDto(getCommonEcoNews(filteredByFields, byQuery));
+        } else if (isQueryPresent && byQuery != null) {
+            return buildPageableAdvancedDto(byQuery);
+        } else if (isFilterByFieldsPresent) {
+            return buildPageableAdvancedDto(filteredByFields);
+        } else {
+            return buildPageableAdvancedDto(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageable));
+        }
+    }
+
+    private Page<EcoNews> getCommonEcoNews(Page<EcoNews> sortedPage, Page<EcoNews> page) {
+        Iterator<EcoNews> iteratorByField = sortedPage.iterator();
+        while (iteratorByField.hasNext()) {
+            EcoNews currentEcoNews = iteratorByField.next();
+            boolean isPresentByQuery = false;
+            for (EcoNews ecoNewsByQuery : page) {
+                if (currentEcoNews.getId().equals(ecoNewsByQuery.getId())) {
+                    isPresentByQuery = true;
+                    break;
+                }
+            }
+            if (!isPresentByQuery) {
+                iteratorByField.remove();
+            }
+        }
+        return sortedPage;
     }
 
     /**
@@ -482,15 +497,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         setValueIfNotEmpty(criteriaList, EcoNews_.AUTHOR, ecoNewsViewDto.getAuthor());
         setValueIfNotEmpty(criteriaList, EcoNews_.TEXT, ecoNewsViewDto.getText());
         setValueIfNotEmpty(criteriaList, EcoNews_.TAGS, ecoNewsViewDto.getTags());
+        setValueIfNotEmpty(criteriaList, EcoNews_.HIDDEN, ecoNewsViewDto.getHidden());
 
-        SearchCriteria searchCriteria;
-        if (!ecoNewsViewDto.getStartDate().isEmpty() && !ecoNewsViewDto.getEndDate().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
+        if ((ecoNewsViewDto.getStartDate() != null && !ecoNewsViewDto.getStartDate().isEmpty())
+            && (ecoNewsViewDto.getEndDate() != null && !ecoNewsViewDto.getEndDate().isEmpty())) {
+            SearchCriteria searchCriteria = SearchCriteria.builder()
                 .key(EcoNews_.CREATION_DATE)
                 .type("dateRange")
                 .value(new String[] {ecoNewsViewDto.getStartDate(), ecoNewsViewDto.getEndDate()})
                 .build();
             criteriaList.add(searchCriteria);
+        } else {
+            setValueIfNotEmpty(criteriaList, EcoNews_.CREATION_DATE, ecoNewsViewDto.getStartDate());
         }
 
         return criteriaList;

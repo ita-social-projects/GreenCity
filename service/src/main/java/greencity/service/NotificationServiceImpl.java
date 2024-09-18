@@ -178,6 +178,19 @@ public class NotificationServiceImpl implements NotificationService {
         sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Roman Kasarab
+     */
+    @Scheduled(cron = "0 0 13,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Override
+    public void sendTaggedInCommentScheduledEmail() {
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+            NotificationType.EVENT_COMMENT_USER_TAG);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS);
+    }
+
     private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {

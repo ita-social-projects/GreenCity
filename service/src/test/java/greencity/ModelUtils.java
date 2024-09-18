@@ -1598,7 +1598,9 @@ public class ModelUtils {
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
-        return new AchievementManagementDto(1L);
+        return new AchievementManagementDto(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(),
+            1);
     }
 
     public static UserAchievementVO getUserAchievementVO() {
@@ -1652,7 +1654,7 @@ public class ModelUtils {
 
     public static EcoNewsViewDto getEcoNewsViewDto() {
         return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
-            "endDate", "tag");
+            "endDate", "tag", "true");
     }
 
     public static HabitDto getHabitDto() {

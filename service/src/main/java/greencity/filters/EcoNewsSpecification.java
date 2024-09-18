@@ -6,8 +6,16 @@ import greencity.entity.Tag_;
 import greencity.entity.localization.TagTranslation_;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,11 +54,20 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
                 allPredicates = criteriaBuilder
                     .and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
             }
+            if (searchCriteria.getType().equals("creationDate")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getCreationDatePredicate(root, criteriaBuilder, searchCriteria));
+            }
             if (searchCriteria.getType().equals("tags")) {
                 allPredicates =
                     criteriaBuilder.and(allPredicates, getTagsPredicate(root, criteriaBuilder, searchCriteria));
             }
+            if (searchCriteria.getType().equals("hidden")) {
+                allPredicates =
+                    criteriaBuilder.and(allPredicates, getBooleanPredicate(root, criteriaBuilder, searchCriteria));
+            }
         }
+        criteriaQuery.orderBy(getOrderList(root, criteriaQuery, criteriaBuilder));
         return allPredicates;
     }
 
@@ -59,8 +76,52 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
         if (searchCriteria.getValue().toString().trim().isEmpty()) {
             return criteriaBuilder.conjunction();
         }
-        return criteriaBuilder.like(
-            root.join(EcoNews_.tags).join(Tag_.tagTranslations).get(TagTranslation_.name).as(String.class),
-            "%" + searchCriteria.getValue() + "%");
+        String[] tags = searchCriteria.getValue().toString().split(",");
+        List<Predicate> tagPredicates = new ArrayList<>();
+        for (String tag : tags) {
+            tagPredicates.add(
+                criteriaBuilder.like(
+                    root.join(EcoNews_.tags).join(Tag_.tagTranslations).get(TagTranslation_.name)
+                        .as(String.class),
+                    "%" + tag.trim() + "%"));
+        }
+        return criteriaBuilder.and(tagPredicates.toArray(new Predicate[0]));
+    }
+
+    private Predicate getCreationDatePredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder,
+        SearchCriteria searchCriteria) {
+        if (searchCriteria.getValue().toString().trim().isEmpty()) {
+            return criteriaBuilder.conjunction();
+        }
+        try {
+            String date = (String) searchCriteria.getValue();
+            LocalDate localDate = LocalDate.parse(date);
+            ZonedDateTime zdt1 = localDate.atStartOfDay(ZoneOffset.UTC);
+            ZonedDateTime zdt2 = ZonedDateTime.of(LocalDateTime.of(localDate, LocalTime.MAX), ZoneOffset.UTC);
+            return criteriaBuilder.between(root.get(searchCriteria.getKey()), zdt1, zdt2);
+        } catch (DateTimeParseException ex) {
+            return criteriaBuilder.disjunction();
+        }
+    }
+
+    private List<Order> getOrderList(Root<EcoNews> root, CriteriaQuery<?> criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
+        List<Order> orderList = new ArrayList<>();
+        for (Order order : criteriaQuery.getOrderList()) {
+            String sortField = order.getExpression().toString();
+            if (sortField.equals("likes")) {
+                orderList
+                    .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersLikedNews")))
+                        : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersLikedNews"))));
+            } else if (sortField.equals("dislikes")) {
+                orderList
+                    .add(order.isAscending() ? criteriaBuilder.asc(criteriaBuilder.size(root.get("usersDislikedNews")))
+                        : criteriaBuilder.desc(criteriaBuilder.size(root.get("usersDislikedNews"))));
+            } else {
+                orderList.add(order.isAscending() ? criteriaBuilder.asc(root.get(sortField))
+                    : criteriaBuilder.desc(root.get(sortField)));
+            }
+        }
+        return orderList;
     }
 }
