@@ -63,8 +63,7 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementCategory achievementCategory =
             findCategoryByName(achievementPostDto.getAchievementCategory().getName());
         populateAchievement(achievement, achievementPostDto, achievementCategory);
-        AchievementVO achievementVO = mapToVO(achievementRepo.save(achievement));
-        return achievementVO;
+        return mapToVO(achievementRepo.save(achievement));
     }
 
     /**
