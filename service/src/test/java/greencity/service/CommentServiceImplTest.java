@@ -307,9 +307,11 @@ class CommentServiceImplTest {
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
 
-        assertThrows(BadRequestException.class, () -> {
+      BadRequestException badRequestException =  assertThrows(BadRequestException.class, () -> {
             commentService.getCommentById(articleType, commentId, new UserVO());
         });
+
+      assertEquals(badRequestException.getMessage(),"Comment with id: " + 1 + " doesn't belong to " + articleType.getLink());
     }
 
     @Test
@@ -808,7 +810,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    public void testSearchUsers() {
+    void testSearchUsers() {
         UserSearchDto searchUsers = getUserSearchDto();
         searchUsers.setSearchQuery("testQuery");
         searchUsers.setCurrentUserId(1L);
@@ -823,6 +825,21 @@ class CommentServiceImplTest {
 
         verify(userRepo, times(1)).searchUsers("testQuery");
         verify(messagingTemplate, times(1)).convertAndSend("/topic/1/searchUsers", Arrays.asList(userTagDto));
+    }
+
+
+    @Test
+    void testCheckArticleExistsThrowsNotFoundExceptionForEvent() {
+        Long eventId = 1L;
+        ArticleType articleType = ArticleType.EVENT;
+
+        when(eventRepo.findById(eventId)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            commentService.checkArticleExists(articleType, eventId);
+        });
+
+        assertEquals("Event not found by id: " + eventId, exception.getMessage());
     }
 
 }
