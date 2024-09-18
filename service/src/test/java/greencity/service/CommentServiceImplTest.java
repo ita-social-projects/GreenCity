@@ -6,9 +6,11 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
-import greencity.dto.comment.AmountCommentLikesDto;
+import greencity.dto.user.UserSearchDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.EcoNews;
@@ -22,49 +24,56 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
+import greencity.repository.EcoNewsRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserRepo;
-import greencity.repository.EcoNewsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static greencity.ModelUtils.getAddCommentDtoRequest;
-import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getComment;
 import static greencity.ModelUtils.getCommentDto;
-import static greencity.ModelUtils.getHabit;
-import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getEcoNews;
+import static greencity.ModelUtils.getEvent;
+import static greencity.ModelUtils.getHabit;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserSearchDto;
+import static greencity.ModelUtils.getUserTagDto;
+import static greencity.ModelUtils.getUserVO;
 import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class CommentServiceImplTest {
     @Mock
     private CommentRepo commentRepo;
@@ -80,6 +89,8 @@ class CommentServiceImplTest {
     private CommentServiceImpl commentService;
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
     @Mock
     private RatingCalculation ratingCalculation;
     @Mock
@@ -119,17 +130,48 @@ class CommentServiceImplTest {
 
     @Test
     void testSaveThrowsNotFoundExceptionWhenArticleAuthorIsNull() {
+        ArticleType articleType = ArticleType.HABIT;
         Long articleId = 1L;
-        ArticleType articleType = ArticleType.ECO_NEWS;
-        AddCommentDtoRequest request = getAddCommentDtoRequest();
+        AddCommentDtoRequest addCommentDtoRequest = new AddCommentDtoRequest();
         UserVO userVO = new UserVO();
 
-        when(econewsRepo.findById(articleId)).thenReturn(Optional.of(new EcoNews().setAuthor(new User().setId(2L))));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.empty());
+        CommentServiceImpl spyCommentService = spy(commentService);
+        doReturn(null).when(spyCommentService).getArticleAuthor(articleType, articleId);
 
-        assertThrows(NotFoundException.class, () -> {
-            commentService.save(articleType, articleId, request, userVO);
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            spyCommentService.save(articleType, articleId, addCommentDtoRequest, userVO);
         });
+
+        assertEquals("Article author not found", exception.getMessage());
+    }
+
+    @Test
+    void saveReplyToReplyThrowException() {
+        Long parentCommentId = 2L;
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
+        AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
+        addCommentDtoRequest.setParentCommentId(parentCommentId);
+        Comment comment = getComment().setParentComment(getComment().setId(2L));
+
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
+        when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(comment));
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
+
+        BadRequestException badRequestException =
+            assertThrows(BadRequestException.class,
+                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO));
+
+        assertEquals(ErrorMessage.CANNOT_REPLY_THE_REPLY, badRequestException.getMessage());
+
+        verify(habitRepo).findById(anyLong());
+        verify(commentRepo).findById(parentCommentId);
+        verify(userRepo).findById(anyLong());
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
     }
 
     @Test
@@ -764,4 +806,23 @@ class CommentServiceImplTest {
         verify(econewsRepo).findById(articleId);
         verify(userRepo).findById(getUser().getId());
     }
+
+    @Test
+    public void testSearchUsers() {
+        UserSearchDto searchUsers = getUserSearchDto();
+        searchUsers.setSearchQuery("testQuery");
+        searchUsers.setCurrentUserId(1L);
+
+        UserTagDto userTagDto = getUserTagDto();
+        User user = getUser();
+
+        when(userRepo.searchUsers("testQuery")).thenReturn(Arrays.asList(user));
+        when(modelMapper.map(user, UserTagDto.class)).thenReturn(userTagDto);
+
+        commentService.searchUsers(searchUsers);
+
+        verify(userRepo, times(1)).searchUsers("testQuery");
+        verify(messagingTemplate, times(1)).convertAndSend("/topic/1/searchUsers", Arrays.asList(userTagDto));
+    }
+
 }
