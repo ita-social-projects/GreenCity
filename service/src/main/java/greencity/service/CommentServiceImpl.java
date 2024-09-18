@@ -273,6 +273,12 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * Creates a notification for a comment on an article.
+     *
+     * @param articleType  the type of the article, {@link ArticleType}.
+     * @param articleId    the ID of the article, {@link Long}.
+     * @param comment      the comment that was made, {@link Comment}.
+     * @param userVO       the user who made the comment, {@link UserVO}.
+     * @param locale       the locale used for localization of the notification, {@link Locale}.
      */
     private void createCommentNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO, Locale locale) {
         createNotification(articleType, articleId, comment,
@@ -282,6 +288,12 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * Creates a notification for a reply to a comment.
+     *
+     * @param articleType  the type of the article, {@link ArticleType}.
+     * @param articleId    the ID of the article, {@link Long}.
+     * @param comment      the comment that was made, {@link Comment}.
+     * @param receiver     the user who receive a notification, {@link UserVO}.
+     * @param locale       the locale used for localization of the notification, {@link Locale}.
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver, Locale locale) {
         createNotification(articleType, articleId, comment, receiver,
@@ -291,6 +303,12 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * Creates a notification for tagging a user in a comment.
+     *
+     * @param articleType  the type of the article, {@link ArticleType}.
+     * @param articleId    the ID of the article, {@link Long}.
+     * @param comment      the comment where the user is tagged, {@link Comment}.
+     * @param receiver     the user who is tagged in the comment, {@link UserVO}.
+     * @param locale       the locale used for localization of the notification, {@link Locale}.
      */
     private void createUserTagInCommentsNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver, Locale locale) {
         createNotification(articleType, articleId, comment, receiver,
