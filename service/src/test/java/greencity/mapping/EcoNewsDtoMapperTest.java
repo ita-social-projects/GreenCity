@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.CommentStatus;
 import greencity.service.CommentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

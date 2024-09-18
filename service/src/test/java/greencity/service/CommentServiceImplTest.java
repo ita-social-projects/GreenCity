@@ -40,8 +40,11 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import static greencity.ModelUtils.getAddCommentDtoRequest;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getComment;
@@ -112,6 +115,21 @@ class CommentServiceImplTest {
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
         verify(modelMapper).map(any(Comment.class), eq(AddCommentDtoResponse.class));
+    }
+
+    @Test
+    void testSaveThrowsNotFoundExceptionWhenArticleAuthorIsNull() {
+        Long articleId = 1L;
+        ArticleType articleType = ArticleType.ECO_NEWS;
+        AddCommentDtoRequest request = getAddCommentDtoRequest();
+        UserVO userVO = new UserVO();
+
+        when(econewsRepo.findById(articleId)).thenReturn(Optional.of(new EcoNews().setAuthor(new User().setId(2L))));
+        when(userRepo.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            commentService.save(articleType, articleId, request, userVO);
+        });
     }
 
     @Test
@@ -239,6 +257,20 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void testGetCommentByIdThrowsBadRequestExceptionWhenTypeMismatch() {
+        Long commentId = 1L;
+        ArticleType articleType = ArticleType.ECO_NEWS;
+        Comment comment = new Comment();
+        comment.setArticleType(ArticleType.HABIT);
+
+        when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
+
+        assertThrows(BadRequestException.class, () -> {
+            commentService.getCommentById(articleType, commentId, new UserVO());
+        });
+    }
+
+    @Test
     void countCommentsForHabit() {
         Habit habit = getHabit();
 
@@ -351,7 +383,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getAllActiveComments_HabitNotFound() {
+    void getAllActiveCommentsHabitNotFound() {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -369,7 +401,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getAllActiveComments_EcoNewsNotFound() {
+    void getAllActiveCommentsEcoNewsNotFound() {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -653,6 +685,39 @@ class CommentServiceImplTest {
         assertTrue(result.isLiked());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+    }
+
+    @Test
+    void testCountLikesHandlesNullUserVO() {
+        Long commentId = 1L;
+        Comment comment = new Comment();
+        comment.setUsersLiked(Set.of());
+
+        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+
+        AmountCommentLikesDto result = commentService.countLikes(commentId, null);
+
+        assertEquals(0, result.getUserId());
+        assertFalse(result.isLiked());
+        assertEquals(0, result.getAmountLikes());
+    }
+
+    @Test
+    void testCountLikesHandlesNonNullUserVO() {
+        Long commentId = 1L;
+        UserVO userVO = new UserVO();
+        userVO.setId(1L);
+
+        Comment comment = new Comment();
+        comment.setUsersLiked(Set.of(new User().setId(1L)));
+
+        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+
+        AmountCommentLikesDto result = commentService.countLikes(commentId, userVO);
+
+        assertEquals(1L, result.getUserId());
+        assertTrue(result.isLiked());
+        assertEquals(1, result.getAmountLikes());
     }
 
     @Test
