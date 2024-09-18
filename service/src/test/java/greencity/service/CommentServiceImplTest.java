@@ -10,13 +10,11 @@ import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Comment;
-import greencity.entity.EcoNews;
-import greencity.entity.Habit;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.entity.event.Event;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
+import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -40,24 +38,16 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 
-import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getComment;
-import static greencity.ModelUtils.getCommentDto;
-import static greencity.ModelUtils.getHabit;
-import static greencity.ModelUtils.getEvent;
-import static greencity.ModelUtils.getEcoNews;
+import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
@@ -79,6 +69,8 @@ class CommentServiceImplTest {
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementCalculation achievementCalculation;
+    @Mock
+    private UserNotificationService userNotificationService;
 
     @Test
     void save() {
@@ -93,19 +85,24 @@ class CommentServiceImplTest {
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(commentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(modelMapper.map(userVO, CommentAuthorDto.class)).thenReturn(commentAuthorDto);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
         when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddCommentDtoResponse());
 
-        commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO);
+        doNothing().when(userNotificationService).createNotification(
+                any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+                anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
-        verify(habitRepo).findById(anyLong());
+        verify(habitRepo, times(5)).findById(anyLong());
         verify(commentRepo).save(any(Comment.class));
         verify(commentRepo).findById(anyLong());
-        verify(userRepo).findById(anyLong());
+        verify(userRepo, times(3)).findById(anyLong());
         verify(modelMapper).map(userVO, CommentAuthorDto.class);
         verify(modelMapper).map(userVO, User.class);
         verify(modelMapper).map(addCommentDtoRequest, Comment.class);
@@ -130,7 +127,7 @@ class CommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO));
+                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en")));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
 
@@ -167,7 +164,7 @@ class CommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO));
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO, Locale.of("en")));
 
         String expectedErrorMessage = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
             + " in Habit with id: " + habit.getId();
@@ -209,7 +206,7 @@ class CommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO));
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO, Locale.of("en")));
 
         String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;
 
@@ -604,5 +601,58 @@ class CommentServiceImplTest {
 
         verify(econewsRepo).findById(articleId);
         verify(userRepo).findById(getUser().getId());
+    }
+
+    @Test
+    void getHabitAuthorTest() {
+        Long articleId = 1L;
+        Habit habit = getHabit();
+        habit.setUserId(1L);
+        User user = getUser();
+
+        when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        User result = commentService.getArticleAuthor(ArticleType.HABIT, articleId);
+
+        assertEquals(user, result);
+        verify(habitRepo).findById(articleId);
+        verify(userRepo).findById(user.getId());
+    }
+
+    @Test
+    void getArticleHabitTitleTest() {
+        Long articleId = 1L;
+        String expectedName = "Habit Title";
+        Habit habit = new Habit();
+        HabitTranslation habitTranslation = getHabitTranslation();
+        habitTranslation.setName(expectedName);
+        habit.setHabitTranslations(Collections.singletonList(habitTranslation));
+
+        when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+
+        String result = commentService.getArticleTitle(ArticleType.HABIT, articleId);
+
+        assertEquals(expectedName, result);
+        verify(habitRepo).findById(articleId);
+    }
+
+    @Test
+    void getArticleHabitTitleNotFoundTest() {
+        Long articleId = 1L;
+
+        when(habitRepo.findById(articleId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> commentService.getArticleTitle(ArticleType.HABIT, articleId));
+
+        verify(habitRepo).findById(articleId);
+    }
+
+    @Test
+    void getArticleTitleUnSupportedArticleTypeTest() {
+        Long articleId = 1L;
+
+        assertThrows(IllegalArgumentException.class, () -> commentService.getArticleTitle(ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId));
+
+        verifyNoInteractions(habitRepo);
     }
 }
