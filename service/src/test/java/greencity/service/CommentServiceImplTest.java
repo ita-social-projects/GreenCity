@@ -16,11 +16,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.rating.RatingCalculation;
-import greencity.repository.CommentRepo;
-import greencity.repository.EventRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.UserRepo;
-import greencity.repository.EcoNewsRepo;
+import greencity.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
@@ -58,6 +54,8 @@ class CommentServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     HabitRepo habitRepo;
+    @Mock
+    private HabitTranslationRepo habitTranslationRepo;
     @InjectMocks
     private CommentServiceImpl commentService;
     @Mock
@@ -78,6 +76,7 @@ class CommentServiceImplTest {
         Comment comment = getComment();
         CommentVO commentVO = getCommentVO();
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        HabitTranslation habitTranslation = getHabitTranslation();
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
@@ -90,6 +89,8 @@ class CommentServiceImplTest {
         when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddCommentDtoResponse());
         when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+                .thenReturn(Optional.of(habitTranslation));
 
         doNothing().when(userNotificationService).createNotification(
                 any(UserVO.class), any(UserVO.class), any(NotificationType.class),
@@ -629,8 +630,10 @@ class CommentServiceImplTest {
         habit.setHabitTranslations(Collections.singletonList(habitTranslation));
 
         when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+                .thenReturn(Optional.of(habitTranslation));
 
-        String result = commentService.getArticleTitle(ArticleType.HABIT, articleId);
+        String result = commentService.getArticleTitle(ArticleType.HABIT, articleId, Locale.of("en"));
 
         assertEquals(expectedName, result);
         verify(habitRepo).findById(articleId);
@@ -641,7 +644,8 @@ class CommentServiceImplTest {
         Long articleId = 1L;
 
         when(habitRepo.findById(articleId)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> commentService.getArticleTitle(ArticleType.HABIT, articleId));
+        assertThrows(NotFoundException.class, () ->
+                commentService.getArticleTitle(ArticleType.HABIT, articleId, Locale.of("en")));
 
         verify(habitRepo).findById(articleId);
     }
@@ -650,7 +654,9 @@ class CommentServiceImplTest {
     void getArticleTitleUnSupportedArticleTypeTest() {
         Long articleId = 1L;
 
-        assertThrows(IllegalArgumentException.class, () -> commentService.getArticleTitle(ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId));
+        assertThrows(IllegalArgumentException.class, () ->
+                commentService.getArticleTitle(
+                        ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId, Locale.of("en")));
 
         verifyNoInteractions(habitRepo);
     }

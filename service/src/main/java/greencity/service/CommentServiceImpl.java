@@ -38,6 +38,7 @@ public class CommentServiceImpl implements CommentService {
     private final EcoNewsRepo ecoNewsRepo;
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
+    private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
@@ -78,7 +79,7 @@ public class CommentServiceImpl implements CommentService {
                 throw new NotFoundException(message);
             }
             comment.setParentComment(parentComment);
-            createCommentReplyNotification(articleType, articleId, comment, modelMapper.map(parentComment.getUser(), UserVO.class));
+            createCommentReplyNotification(articleType, articleId, comment, modelMapper.map(parentComment.getUser(), UserVO.class), locale);
         }
 
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
@@ -89,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
 
-        createCommentNotification(articleType, articleId, comment, userVO);
+        createCommentNotification(articleType, articleId, comment, userVO, locale);
         sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, userVO, locale);
 
         return addCommentDtoResponse;
@@ -126,7 +127,8 @@ public class CommentServiceImpl implements CommentService {
                 notificationService.sendUsersTaggedInCommentEmailNotification(message);
                 createUserTagInCommentsNotification(articleType, commentVO.getArticleId(),
                         modelMapper.map(commentVO, Comment.class),
-                        modelMapper.map(user, UserVO.class));
+                        modelMapper.map(user, UserVO.class),
+                        locale);
             }
         }
     }
@@ -206,13 +208,14 @@ public class CommentServiceImpl implements CommentService {
      *
      * @return article title {@link User}.
      */
-    protected String getArticleTitle(ArticleType articleType, Long articleId) {
+    protected String getArticleTitle(ArticleType articleType, Long articleId, Locale locale) {
         String articleName;
         switch (articleType) {
             case HABIT:
                 Habit habit = habitRepo.findById(articleId)
                         .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-                HabitTranslation habitTranslation = habit.getHabitTranslations().getFirst();
+                HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
+                        .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
                 articleName = habitTranslation.getName();
                 break;
 
@@ -234,13 +237,13 @@ public class CommentServiceImpl implements CommentService {
      *
      * @throws BadRequestException if the article type is not supported.
      */
-    private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver, UserVO sender, NotificationType notificationType) {
+    private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver, UserVO sender, NotificationType notificationType, Locale locale) {
         userNotificationService.createNotification(
                 receiver,
                 sender,
                 notificationType,
                 articleId,
-                getArticleTitle(articleType, articleId),
+                getArticleTitle(articleType, articleId, locale),
                 comment.getId(),
                 comment.getText()
         );
@@ -271,28 +274,28 @@ public class CommentServiceImpl implements CommentService {
     /**
      * Creates a notification for a comment on an article.
      */
-    private void createCommentNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO) {
+    private void createCommentNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO, Locale locale) {
         createNotification(articleType, articleId, comment,
                 modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-                userVO, getNotificationType(articleType, CommentActionType.COMMENT));
+                userVO, getNotificationType(articleType, CommentActionType.COMMENT), locale);
     }
 
     /**
      * Creates a notification for a reply to a comment.
      */
-    private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver) {
+    private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver, Locale locale) {
         createNotification(articleType, articleId, comment, receiver,
                 modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-                getNotificationType(articleType, CommentActionType.COMMENT_REPLY));
+                getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
     }
 
     /**
      * Creates a notification for tagging a user in a comment.
      */
-    private void createUserTagInCommentsNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver) {
+    private void createUserTagInCommentsNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver, Locale locale) {
         createNotification(articleType, articleId, comment, receiver,
                 modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-                getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG));
+                getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
     }
 
     /**
