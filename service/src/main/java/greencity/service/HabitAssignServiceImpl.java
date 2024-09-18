@@ -50,8 +50,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
-import greencity.exception.exceptions.UserCouldNotAssignPrivateHabit;
-import greencity.exception.exceptions.UserCouldNotInviteToPrivateHabit;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
@@ -147,7 +145,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
-        validateAssignToPrivateHabit(habitId, user);
         HabitAssign habitAssign =
             habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, user.getId());
 
@@ -197,7 +194,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
-        validateAssignToPrivateHabit(habitId, user);
         HabitAssign habitAssign =
             habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, user.getId());
         if (habitAssign != null) {
@@ -1494,15 +1490,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
         Locale locale) {
-        Habit habit = getHabitById(habitId);
-        if (habitRepo.isHabitPrivate(habitId) && !userVO.getId().equals(habit.getUserId())) {
-            throw new UserCouldNotInviteToPrivateHabit(ErrorMessage.YOU_COULD_NOT_INVITE_TO_PRIVATE_HABIT);
-        }
         friendsIds.forEach(friendId -> {
             checkIfUserIsAFriend(userVO.getId(), friendId);
             User friend = getUserById(friendId);
             UserVO friendVO = mapToUserVO(friend);
             checkStatusInProgressExists(habitId, friendVO);
+            Habit habit = getHabitById(habitId);
             validateHabitForAssign(habitId, friend);
             HabitAssign habitAssign = getHabitAssignById(habitId, friend);
             if (habitAssign != null) {
@@ -1622,12 +1615,5 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return new PageableAdvancedDto<>(habitAssignPreviewDtos, returnedPage.getTotalElements(),
             returnedPage.getPageable().getPageNumber(), returnedPage.getTotalPages(), returnedPage.getNumber(),
             returnedPage.hasPrevious(), returnedPage.hasNext(), returnedPage.isFirst(), returnedPage.isLast());
-    }
-
-    private void validateAssignToPrivateHabit(Long habitId, User user) {
-        if (habitRepo.isHabitPrivate(habitId)
-            && !habitRepo.canAssignPrivateHabitByUserIdAndHabitId(user.getId(), habitId)) {
-            throw new UserCouldNotAssignPrivateHabit(ErrorMessage.YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT);
-        }
     }
 }
