@@ -2701,15 +2701,15 @@ public class ModelUtils {
 
     public static CommentVO getCommentVO() {
         return CommentVO.builder()
-                .id(1L)
-                .articleType("HABIT")
-                .articleId(10L)
-                .text("text")
-                .usersLiked(new HashSet<>())
-                .createdDate(LocalDateTime.now())
-                .user(getUserVO())
-                .status("ORIGINAL")
-                .build();
+            .id(1L)
+            .articleType("HABIT")
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .status("ORIGINAL")
+            .build();
     }
 
     public static Comment getSubComment() {

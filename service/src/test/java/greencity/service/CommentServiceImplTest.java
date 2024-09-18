@@ -93,11 +93,11 @@ class CommentServiceImplTest {
             .thenReturn(ModelUtils.getAddCommentDtoResponse());
         when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
-                .thenReturn(Optional.of(habitTranslation));
+            .thenReturn(Optional.of(habitTranslation));
 
         doNothing().when(userNotificationService).createNotification(
-                any(UserVO.class), any(UserVO.class), any(NotificationType.class),
-                anyLong(), anyString(), anyLong(), anyString());
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
 
         commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
@@ -123,8 +123,8 @@ class CommentServiceImplTest {
         CommentVO commentVO = getCommentVO().setText(commentText);
         AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
         AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
-                .text(commentText)
-                .build();
+            .text(commentText)
+            .build();
         ArticleType articleType = ArticleType.HABIT;
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
 
@@ -135,19 +135,19 @@ class CommentServiceImplTest {
         when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
-                .id(5L)
-                .email("test@email.com")
-                .build()));
+            .id(5L)
+            .email("test@email.com")
+            .build()));
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
-                .thenReturn(Optional.of(habitTranslation));
+            .thenReturn(Optional.of(habitTranslation));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
 
         verify(notificationService, times(1))
-                .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
+            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
     }
 
     @Test
@@ -205,7 +205,8 @@ class CommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO, Locale.of("en")));
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO,
+                    Locale.of("en")));
 
         String expectedErrorMessage = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
             + " in Habit with id: " + habit.getId();
@@ -247,7 +248,8 @@ class CommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO, Locale.of("en")));
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO,
+                    Locale.of("en")));
 
         String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;
 
@@ -672,7 +674,7 @@ class CommentServiceImplTest {
 
         when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
-                .thenReturn(Optional.of(habitTranslation));
+            .thenReturn(Optional.of(habitTranslation));
 
         String result = commentService.getArticleTitle(ArticleType.HABIT, articleId, Locale.of("en"));
 
@@ -685,8 +687,8 @@ class CommentServiceImplTest {
         Long articleId = 1L;
 
         when(habitRepo.findById(articleId)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () ->
-                commentService.getArticleTitle(ArticleType.HABIT, articleId, Locale.of("en")));
+        assertThrows(NotFoundException.class,
+            () -> commentService.getArticleTitle(ArticleType.HABIT, articleId, Locale.of("en")));
 
         verify(habitRepo).findById(articleId);
     }
@@ -695,9 +697,8 @@ class CommentServiceImplTest {
     void getArticleTitleUnSupportedArticleTypeTest() {
         Long articleId = 1L;
 
-        assertThrows(IllegalArgumentException.class, () ->
-                commentService.getArticleTitle(
-                        ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId, Locale.of("en")));
+        assertThrows(IllegalArgumentException.class, () -> commentService.getArticleTitle(
+            ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId, Locale.of("en")));
 
         verifyNoInteractions(habitRepo);
     }
