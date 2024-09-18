@@ -4,10 +4,7 @@ import greencity.ModelUtils;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.AddCommentDtoRequest;
-import greencity.dto.comment.AddCommentDtoResponse;
-import greencity.dto.comment.CommentAuthorDto;
-import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.*;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
@@ -79,6 +76,7 @@ class CommentServiceImplTest {
         Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
         AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
         Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
@@ -91,6 +89,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
         when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddCommentDtoResponse());
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
 
         doNothing().when(userNotificationService).createNotification(
                 any(UserVO.class), any(UserVO.class), any(NotificationType.class),
