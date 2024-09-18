@@ -21,12 +21,6 @@ import java.util.List;
  */
 @Component
 public class PlaceInfoDtoMapper extends AbstractConverter<Place, PlaceInfoDto> {
-    private final ProposePlaceMapper proposePlaceMapper;
-
-    public PlaceInfoDtoMapper(ProposePlaceMapper proposePlaceMapper) {
-        this.proposePlaceMapper = proposePlaceMapper;
-    }
-
     /**
      * Method convert {@link Place} to {@link PlaceInfoDto}.
      *
