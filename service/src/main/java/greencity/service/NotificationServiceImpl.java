@@ -59,6 +59,11 @@ public class NotificationServiceImpl implements NotificationService {
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     private final String emailLanguage = Locale.ENGLISH.getLanguage();
     private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
+    private LocalDateTime lastLikesEmailNotificationTime = LocalDateTime.now();
+    private LocalDateTime lastCommentEmailNotificationTime = LocalDateTime.now();
+    private LocalDateTime lastCommentReplyEmailNotificationTime = LocalDateTime.now();
+    private LocalDateTime lastFriendRequestEmailNotificationTime = LocalDateTime.now();
+    private LocalDateTime lastTaggedInCommentEmailNotificationTime = LocalDateTime.now();
     @Value("${client.address}")
     private String clientAddress;
 
@@ -126,11 +131,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendLikeScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE, EmailPreference.LIKES);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE, EmailPreference.LIKES, lastLikesEmailNotificationTime);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES);
+        sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES, lastLikesEmailNotificationTime);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES, lastLikesEmailNotificationTime);
+        lastLikesEmailNotificationTime = LocalDateTime.now();
     }
 
     /**
@@ -142,9 +148,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendCommentScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS, lastCommentEmailNotificationTime);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS, lastCommentEmailNotificationTime);
+        lastCommentEmailNotificationTime = LocalDateTime.now();
     }
 
     /**
@@ -157,9 +164,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendCommentReplyScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
             NotificationType.ECONEWS_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS, lastCommentReplyEmailNotificationTime);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS, lastCommentReplyEmailNotificationTime);
+        lastCommentReplyEmailNotificationTime = LocalDateTime.now();
     }
 
     /**
@@ -172,10 +180,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendFriendRequestScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
             NotificationType.FRIEND_REQUEST_RECEIVED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES);
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES, lastFriendRequestEmailNotificationTime);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
             NotificationType.FRIEND_REQUEST_ACCEPTED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES);
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES, lastFriendRequestEmailNotificationTime);
+        lastFriendRequestEmailNotificationTime = LocalDateTime.now();
     }
 
     /**
@@ -188,14 +197,15 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendTaggedInCommentScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
             NotificationType.EVENT_COMMENT_USER_TAG);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS, lastTaggedInCommentEmailNotificationTime);
+        lastTaggedInCommentEmailNotificationTime = LocalDateTime.now();
     }
 
-    private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference) {
+    private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference, LocalDateTime dateTimeOfLastNotification) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                List<Notification> notifications = notificationRepo.findAllByNotificationTypeAndViewedIsFalse(type);
+                List<Notification> notifications = notificationRepo.findAllByNotificationByTypeAndByTimeAndViewedIsFalse(type, dateTimeOfLastNotification);
                 if (!notifications.isEmpty()) {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notifications.stream()
