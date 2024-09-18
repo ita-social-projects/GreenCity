@@ -17,13 +17,10 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.tag.TagDto;
-import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EcoNewsService;
-import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -58,14 +55,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
-    private final TagsService tagService;
 
     /**
      * Method for creating {@link EcoNewsVO}.
      *
      * @param addEcoNewsDtoRequest - dto for {@link EcoNewsVO} entity.
      * @return dto {@link AddEcoNewsDtoResponse} instance.
-     * @author Yuriy Olkhovskyi & Kovaliv Taras.
      */
     @Operation(summary = "Add new eco news.")
     @ApiResponses(value = {
@@ -114,14 +109,13 @@ public class EcoNewsController {
         if (!ecoNewsId.equals(updateEcoNewsDto.getId())) {
             throw new WrongIdException(ErrorMessage.ECO_NEWS_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.update(updateEcoNewsDto, image, user));
+        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, user));
     }
 
     /**
      * Method for getting eco news by id.
      *
      * @return {@link EcoNewsDto} instance.
-     * @author Kovaliv Taras
      */
     @Operation(summary = "Get eco news by id.")
     @ApiResponses(value = {
@@ -136,15 +130,13 @@ public class EcoNewsController {
     public ResponseEntity<EcoNewsDto> getEcoNewsById(
         @PathVariable Long ecoNewsId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(ecoNewsService.findDtoByIdAndLanguage(ecoNewsId, locale.getLanguage()));
+        return ResponseEntity.ok().body(ecoNewsService.findDtoByIdAndLanguage(ecoNewsId, locale.getLanguage()));
     }
 
     /**
      * Method for getting eco news by page.
      *
      * @return PageableDto of {@link EcoNewsDto} instances.
-     * @author Yuriy Olkhovskyi & Kovaliv Taras.
      */
     @Operation(summary = "Find eco news by page.")
     @ApiResponses(value = {
@@ -160,7 +152,7 @@ public class EcoNewsController {
             required = false) List<String> tags,
         @RequestParam(required = false) String title,
         @RequestParam(required = false, name = "author-id") Long authorId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, tags, title, authorId));
+        return ResponseEntity.ok().body(ecoNewsService.find(page, tags, title, authorId));
     }
 
     /**
@@ -168,7 +160,6 @@ public class EcoNewsController {
      *
      * @param ecoNewsId {@link EcoNewsVO} id which will be deleted.
      * @return id of deleted {@link EcoNewsVO}.
-     * @author Yuriy Olkhovskyi.
      */
     @Operation(summary = "Delete eco news.")
     @ApiResponses(value = {
@@ -183,49 +174,27 @@ public class EcoNewsController {
         @PathVariable Long ecoNewsId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         ecoNewsService.delete(ecoNewsId, user);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Method for getting three eco news for recommendations widget.
      *
      * @return list of three recommended {@link EcoNewsDto} instances.
-     * @author Yurii Zhurakovskyi.
      */
     @Operation(summary = "Get three recommended eco news.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
     })
     @GetMapping("/{ecoNewsId}/recommended")
-    public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(
-        @PathVariable Long ecoNewsId) {
-        List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(ecoNewsId);
-        return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
-    }
-
-    /**
-     * The method which returns all EcoNews {@link TagVO}s.
-     *
-     * @return list of {@link String} (tag's names).
-     * @author Kovaliv Taras
-     */
-    @Operation(summary = "Find all eco news tags")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-    })
-    @ApiLocale
-    @GetMapping("/tags")
-    public ResponseEntity<List<TagDto>> findAllEcoNewsTags(@Parameter(hidden = true) @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags(locale.getLanguage()));
+    public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(@PathVariable Long ecoNewsId) {
+        return ResponseEntity.ok().body(ecoNewsService.getThreeRecommendedEcoNews(ecoNewsId));
     }
 
     /**
      * The method find count of published eco news.
      *
      * @return count of published eco news.
-     * @author Mamchuk Orest
      */
     @Operation(summary = "Find count of published eco news")
     @ApiResponses(value = {
@@ -238,7 +207,7 @@ public class EcoNewsController {
     @GetMapping("/count")
     public ResponseEntity<Long> findAmountOfPublishedNews(
         @RequestParam(required = false, name = "author-id") Long authorId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNews(authorId));
+        return ResponseEntity.ok().body(ecoNewsService.getAmountOfPublishedNews(authorId));
     }
 
     /**
@@ -290,7 +259,7 @@ public class EcoNewsController {
     })
     @GetMapping("/{ecoNewsId}/likes/count")
     public ResponseEntity<Integer> countLikesForEcoNews(@PathVariable Long ecoNewsId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.countLikesForEcoNews(ecoNewsId));
+        return ResponseEntity.ok().body(ecoNewsService.countLikesForEcoNews(ecoNewsId));
     }
 
     /**
@@ -308,7 +277,7 @@ public class EcoNewsController {
     })
     @GetMapping("/{ecoNewsId}/dislikes/count")
     public ResponseEntity<Integer> countDislikesForEcoNews(@PathVariable Long ecoNewsId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.countDislikesForEcoNews(ecoNewsId));
+        return ResponseEntity.ok().body(ecoNewsService.countDislikesForEcoNews(ecoNewsId));
     }
 
     /**
@@ -330,7 +299,7 @@ public class EcoNewsController {
     public ResponseEntity<Boolean> checkNewsIsLikedByUser(
         @PathVariable("ecoNewsId") Long ecoNewsId,
         @PathVariable Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.checkNewsIsLikedByUser(ecoNewsId, userId));
+        return ResponseEntity.ok().body(ecoNewsService.checkNewsIsLikedByUser(ecoNewsId, userId));
     }
 
     /**
@@ -350,6 +319,6 @@ public class EcoNewsController {
     })
     @GetMapping("/{ecoNewsId}/summary")
     public ResponseEntity<EcoNewContentSourceDto> getContentAndSourceForEcoNewsById(@PathVariable Long ecoNewsId) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
+        return ResponseEntity.ok().body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
     }
 }
