@@ -160,7 +160,7 @@ public class CommentServiceImpl implements CommentService {
                 return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
 
             default:
-                throw new BadRequestException("Unsupported article type");
+                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
     }
 
@@ -194,7 +194,7 @@ public class CommentServiceImpl implements CommentService {
                 break;
 
             default:
-                throw new BadRequestException("Unsupported article type");
+                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
         return userRepo.findById(articleAuthorId)
             .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + articleAuthorId));
@@ -220,7 +220,7 @@ public class CommentServiceImpl implements CommentService {
                 break;
 
             default:
-                throw new BadRequestException("Unsupported article type");
+                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
         return articleName;
     }
@@ -263,11 +263,11 @@ public class CommentServiceImpl implements CommentService {
                     case COMMENT -> NotificationType.HABIT_COMMENT;
                     case COMMENT_REPLY -> NotificationType.HABIT_COMMENT_REPLY;
                     case COMMENT_USER_TAG -> NotificationType.HABIT_COMMENT_USER_TAG;
-                    default -> throw new BadRequestException("Unsupported action type");
+                    default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
                 };
 
             default:
-                throw new BadRequestException("Unsupported article type");
+                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
     }
 
