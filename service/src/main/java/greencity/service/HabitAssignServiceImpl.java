@@ -177,6 +177,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void enhanceAssignWithDefaultProperties(HabitAssign habitAssign) {
+        habitAssign.setIsPrivate(false);
         habitAssign.setDuration(habitAssign.getHabit().getDefaultDuration());
     }
 
