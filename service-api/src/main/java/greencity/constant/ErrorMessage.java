@@ -197,4 +197,6 @@ public class ErrorMessage {
     public static final String YOU_COULD_NOT_INVITE_TO_PRIVATE_HABIT = "You could not invite to private habit";
     public static final String YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT =
         "You could not assign to this private habit";
+    public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
+    public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
 }
