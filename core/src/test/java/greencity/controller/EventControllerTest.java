@@ -15,6 +15,7 @@ import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EventService;
 import greencity.service.UserService;
 import java.security.Principal;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,9 +78,7 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void getAllEventsTest() {
-        int pageNumber = 0;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(0, 20);
         Long userId = 1L;
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = getEventDtoPageableAdvancedDto(pageable);
@@ -88,14 +87,17 @@ class EventControllerTest {
         objectMapper.findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(eventDtoPageableAdvancedDto);
 
-        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
+        FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
 
         when(eventService.getEvents(pageable, filterEventDto, userId))
             .thenReturn(eventDtoPageableAdvancedDto);
 
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "?page=0&size=20&user-id=" + userId)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
+                .param("page", "0")
+                .param("size", "20")
+                .param("user-id", userId.toString())
+                .param("statuses", filterEventDto.getStatuses().stream().map(Enum::name).collect(Collectors.joining(",")))
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
