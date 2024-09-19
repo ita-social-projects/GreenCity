@@ -198,4 +198,6 @@ public class ErrorMessage {
         "You could not assign to this private habit";
     public static final String STATUSES_REQUIRE_USER_ID =
         "JOINED, CREATED and SAVED statuses required user-id parameter";
+    public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
+    public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
 }
