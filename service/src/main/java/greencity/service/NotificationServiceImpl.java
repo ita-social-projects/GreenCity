@@ -195,7 +195,8 @@ public class NotificationServiceImpl implements NotificationService {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                List<Notification> notifications = notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
+                List<Notification> notifications =
+                    notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
                 if (!notifications.isEmpty()) {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notifications.stream()

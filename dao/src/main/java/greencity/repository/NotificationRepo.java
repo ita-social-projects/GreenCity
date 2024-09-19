@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -137,5 +136,6 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
         + "WHERE n.notificationType = :notificationType "
         + "AND n.viewed = false "
         + "AND n.emailSent = false")
-    List<Notification> findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType notificationType);
+    List<Notification> findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(
+        NotificationType notificationType);
 }
