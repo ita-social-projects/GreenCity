@@ -12,7 +12,11 @@
     </changeSet>
     <changeSet id="nazarprots4" author="Nazar Prots">
         <sql>
-            DELETE FROM tags WHERE id = 26
+            DELETE FROM habits_tags WHERE tag_id = 26;
         </sql>
+
+        <delete tableName="tags">
+            <where>id = 26</where>
+        </delete>
     </changeSet>
 </databaseChangeLog>
