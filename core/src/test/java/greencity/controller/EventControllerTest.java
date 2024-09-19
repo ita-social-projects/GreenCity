@@ -9,6 +9,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.enums.EventStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
@@ -108,7 +109,8 @@ class EventControllerTest {
     @SneakyThrows
     void getEventsThrowExceptionTest() {
         assertThatThrownBy(
-            () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "?statuses=JOINED"))
+            () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
+                .param("statuses", EventStatus.JOINED.name()))
                 .andExpect(status().isBadRequest()))
             .hasCause(new BadRequestException(ErrorMessage.STATUSES_REQUIRE_USER_ID));
     }
