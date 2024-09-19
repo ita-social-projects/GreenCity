@@ -7,35 +7,48 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.CommentVO;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.EcoNews;
 import greencity.entity.Habit;
+import greencity.entity.HabitTranslation;
 import greencity.entity.User;
 import greencity.entity.event.Event;
-import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.Role;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.ArticleType;
+import greencity.enums.CommentActionType;
+import greencity.enums.CommentStatus;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
-import greencity.repository.*;
+import greencity.repository.CommentRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.EventRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.HabitTranslationRepo;
+import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
-import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
+import java.util.Set;
 import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 
 @Service
@@ -46,9 +59,15 @@ public class CommentServiceImpl implements CommentService {
     private final EcoNewsRepo ecoNewsRepo;
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
+    private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
+    private final UserNotificationService userNotificationService;
+    private final NotificationService notificationService;
+    private final EventCommentServiceImpl eventCommentServiceImpl;
+    @Value("${client.address}")
+    private String clientAddress;
 
     /**
      * {@inheritDoc}
@@ -56,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
-        AddCommentDtoRequest addCommentDtoRequest, UserVO userVO) {
+        AddCommentDtoRequest addCommentDtoRequest, UserVO userVO, Locale locale) {
         if (getArticleAuthor(articleType, articleId) == null) {
             throw new NotFoundException("Article author not found");
         }
@@ -82,6 +101,8 @@ public class CommentServiceImpl implements CommentService {
                 throw new NotFoundException(message);
             }
             comment.setParentComment(parentComment);
+            createCommentReplyNotification(articleType, articleId, comment,
+                modelMapper.map(parentComment.getUser(), UserVO.class), locale);
         }
 
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
@@ -91,7 +112,57 @@ public class CommentServiceImpl implements CommentService {
         AddCommentDtoResponse addCommentDtoResponse = modelMapper.map(
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
+
+        createCommentNotification(articleType, articleId, comment, userVO, locale);
+        sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, userVO, locale);
+
         return addCommentDtoResponse;
+    }
+
+    /**
+     * Sends a notification to users tagged in a comment on a specific article.
+     *
+     * @param commentVO   the comment containing the tag, {@link CommentVO}.
+     * @param articleType the type of the article where the comment is made,
+     *                    {@link ArticleType}.
+     * @param userVO      the user who made the comment, {@link UserVO}.
+     * @param locale      the locale used for localization of the notification,
+     *                    {@link Locale}.
+     * @throws NotFoundException if a tagged user is not found by ID.
+     */
+    private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, UserVO userVO,
+        Locale locale) {
+        String commentText = commentVO.getText();
+        Set<Long> usersId = eventCommentServiceImpl.getUserIdFromComment(commentText);
+        if (!usersId.isEmpty()) {
+            for (Long userId : usersId) {
+                User user = userRepo.findById(userId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+                UserTaggedInCommentMessage message = UserTaggedInCommentMessage.builder()
+                    .commentedElementId(commentVO.getArticleId())
+                    .elementName(commentVO.getText())
+                    .taggerName(userVO.getName())
+                    .language(locale.getLanguage())
+                    .creationDate(commentVO.getCreatedDate())
+                    .receiverName(user.getName())
+                    .receiverEmail(user.getEmail())
+                    .commentText(commentText)
+                    .baseLink(getBaseLink(articleType, commentVO.getArticleId(), userVO.getId()))
+                    .build();
+                notificationService.sendUsersTaggedInCommentEmailNotification(message);
+                createUserTagInCommentsNotification(articleType, commentVO.getArticleId(),
+                    modelMapper.map(commentVO, Comment.class),
+                    modelMapper.map(user, UserVO.class),
+                    locale);
+            }
+        }
+    }
+
+    private String getBaseLink(ArticleType articleType, Long articleId, Long userId) {
+        if (articleType == ArticleType.HABIT) {
+            return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
+        }
+        throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
     }
 
     /**
@@ -99,7 +170,6 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param articleType {@link ArticleType}.
      * @param articleId   {@link Long} id of an article.
-     *
      * @return article author {@link User}.
      */
     protected User getArticleAuthor(ArticleType articleType, Long articleId) {
@@ -124,10 +194,128 @@ public class CommentServiceImpl implements CommentService {
                 break;
 
             default:
-                throw new BadRequestException("Unsupported article type");
+                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
         return userRepo.findById(articleAuthorId)
             .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + articleAuthorId));
+    }
+
+    /**
+     * Method to return title of article.
+     *
+     * @param articleType {@link ArticleType}.
+     * @param articleId   {@link Long} id of an article.
+     * @return article title {@link User}.
+     */
+    protected String getArticleTitle(ArticleType articleType, Long articleId, Locale locale) {
+        String articleName;
+        if (articleType == ArticleType.HABIT) {
+            Habit habit = habitRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+            HabitTranslation habitTranslation =
+                habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
+            articleName = habitTranslation.getName();
+        } else {
+            throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+        }
+        return articleName;
+    }
+
+    /**
+     * Generic method for creating a notification for various comment-related
+     * actions on an article.
+     *
+     * @param articleType      the type of the article, {@link ArticleType}.
+     * @param articleId        the ID of the article, {@link Long}.
+     * @param comment          the comment that triggered the notification,
+     *                         {@link Comment}.
+     * @param receiver         the user receiving the notification, {@link UserVO}.
+     * @param sender           the user sending the notification, {@link UserVO}.
+     * @param notificationType the type of notification, {@link NotificationType}.
+     * @throws BadRequestException if the article type is not supported.
+     */
+    private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver,
+        UserVO sender, NotificationType notificationType, Locale locale) {
+        userNotificationService.createNotification(
+            receiver,
+            sender,
+            notificationType,
+            articleId,
+            getArticleTitle(articleType, articleId, locale),
+            comment.getId(),
+            comment.getText());
+    }
+
+    /**
+     * Determines the appropriate notification type based on article and action
+     * type.
+     *
+     * @param articleType the type of the article, {@link ArticleType}.
+     * @param actionType  the type of action (COMMENT, REPLY, TAG).
+     * @return the corresponding {@link NotificationType}.
+     */
+    private NotificationType getNotificationType(ArticleType articleType, CommentActionType actionType) {
+        return switch (articleType) {
+            case HABIT -> switch (actionType) {
+                case COMMENT -> NotificationType.HABIT_COMMENT;
+                case COMMENT_REPLY -> NotificationType.HABIT_COMMENT_REPLY;
+                case COMMENT_USER_TAG -> NotificationType.HABIT_COMMENT_USER_TAG;
+                default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
+            };
+            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+        };
+    }
+
+    /**
+     * Creates a notification for a comment on an article.
+     *
+     * @param articleType the type of the article, {@link ArticleType}.
+     * @param articleId   the ID of the article, {@link Long}.
+     * @param comment     the comment that was made, {@link Comment}.
+     * @param userVO      the user who made the comment, {@link UserVO}.
+     * @param locale      the locale used for localization of the notification,
+     *                    {@link Locale}.
+     */
+    private void createCommentNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO,
+        Locale locale) {
+        createNotification(articleType, articleId, comment,
+            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
+            userVO, getNotificationType(articleType, CommentActionType.COMMENT), locale);
+    }
+
+    /**
+     * Creates a notification for a reply to a comment.
+     *
+     * @param articleType the type of the article, {@link ArticleType}.
+     * @param articleId   the ID of the article, {@link Long}.
+     * @param comment     the comment that was made, {@link Comment}.
+     * @param receiver    the user who receive a notification, {@link UserVO}.
+     * @param locale      the locale used for localization of the notification,
+     *                    {@link Locale}.
+     */
+    private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
+        UserVO receiver, Locale locale) {
+        createNotification(articleType, articleId, comment, receiver,
+            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
+            getNotificationType(articleType, CommentActionType.COMMENT_REPLY), locale);
+    }
+
+    /**
+     * Creates a notification for tagging a user in a comment.
+     *
+     * @param articleType the type of the article, {@link ArticleType}.
+     * @param articleId   the ID of the article, {@link Long}.
+     * @param comment     the comment where the user is tagged, {@link Comment}.
+     * @param receiver    the user who is tagged in the comment, {@link UserVO}.
+     * @param locale      the locale used for localization of the notification,
+     *                    {@link Locale}.
+     */
+    private void createUserTagInCommentsNotification(ArticleType articleType, Long articleId, Comment comment,
+        UserVO receiver, Locale locale) {
+        createNotification(articleType, articleId, comment, receiver,
+            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
+            getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG), locale);
     }
 
     /**

@@ -68,6 +68,9 @@ public class HabitAssign {
     @Column(name = "progress_notification_has_displayed", nullable = false)
     private Boolean progressNotificationHasDisplayed;
 
+    @Column(name = "is_private", nullable = false)
+    private Boolean isPrivate;
+
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserShoppingListItem> userShoppingListItems;
 

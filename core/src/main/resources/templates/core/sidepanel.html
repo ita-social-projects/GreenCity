@@ -38,12 +38,6 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/management/facts}">
-                        <div class="img_nested_list"><img th:src="@{/img/habit_fact.png}"></div>
-                        <span>[[#{greenCity.sidebar.habits.facts}]]</span>
-                    </a>
-                </li>
-                <li>
                     <a th:href="@{/management/advices}">
                         <div class="img_nested_list"><img th:src="@{/img/habit_advices.png}"></div>
                         <span>[[#{greenCity.sidebar.habits.advice}]]</span>
@@ -101,27 +95,11 @@
             <div class="img_n"><img th:src="@{/img/social_net_icon.png}"></div>
             <span>[[#{greenCity.sidebar.socialNetworksImagines}]]</span></a></li>
 
-        <li class="accordion">
-            <dropdown>
+        <li>
+            <a th:href="@{/management/achievement}">
                 <div class="img_n"><img th:src="@{/img/achievements_icon.png}"></div>
-                <span>[[#{greenCity.sidebar.achievements}]]</span></dropdown>
+                <span>[[#{greenCity.sidebar.achievements}]]</span></a>
         </li>
-        <div class="panel">
-            <ul>
-                <li>
-                    <a th:href="@{/management/achievement}">
-                        <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
-                        <span>[[#{greenCity.sidebar.achievements.all}]]</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#2-2">
-                        <!--<div class="img_nested_list"><img th:src="@{/img/icon_user.png}"></div>-->
-                        <span>[[#{greenCity.sidebar.achievements.setup}]]</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
 
         <li><a th:href="@{/management/factoftheday}">
             <div class="img_n"><img th:src="@{/img/facts_of_day_icon.png}"></div>

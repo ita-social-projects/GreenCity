@@ -46,6 +46,7 @@ class PlaceInfoDtoMapperTest {
             .id(1L)
             .openTime(LocalTime.of(8, 30))
             .breakTime(BreakTime.builder()
+                .id(1L)
                 .startTime(LocalTime.of(10, 0))
                 .endTime(LocalTime.of(10, 30))
                 .build())
