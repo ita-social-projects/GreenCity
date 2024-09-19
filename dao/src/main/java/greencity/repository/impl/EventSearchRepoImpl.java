@@ -137,7 +137,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         if (cities != null && !cities.isEmpty()) {
             Join<EventDateLocation, Address> addressJoin = eventRoot
                 .join(Event_.dates, JoinType.LEFT).join(EventDateLocation_.address);
-            predicates.add(addressJoin.get(Address_.CITY_EN).in(cities));
+            predicates.add(criteriaBuilder.upper(addressJoin.get(Address_.CITY_EN)).in(cities));
         }
     }
 
@@ -170,7 +170,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
     private void addTagsPredicate(List<String> tags, Root<Event> eventRoot, List<Predicate> predicates) {
         if (tags != null && !tags.isEmpty()) {
             ListJoin<Tag, TagTranslation> tagsJoin = eventRoot.join(Event_.tags).join(Tag_.tagTranslations);
-            predicates.add(tagsJoin.get(TagTranslation_.NAME).in(tags));
+            predicates.add(criteriaBuilder.upper(tagsJoin.get(TagTranslation_.NAME)).in(tags));
         }
     }
 
