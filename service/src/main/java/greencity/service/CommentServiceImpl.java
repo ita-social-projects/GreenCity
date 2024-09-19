@@ -159,13 +159,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private String getBaseLink(ArticleType articleType, Long articleId, Long userId) {
-        switch (articleType) {
-            case HABIT:
-                return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
-
-            default:
-                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+        if (articleType == ArticleType.HABIT) {
+            return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
         }
+        throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
     }
 
     /**
@@ -214,18 +211,15 @@ public class CommentServiceImpl implements CommentService {
      */
     protected String getArticleTitle(ArticleType articleType, Long articleId, Locale locale) {
         String articleName;
-        switch (articleType) {
-            case HABIT:
-                Habit habit = habitRepo.findById(articleId)
-                    .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-                HabitTranslation habitTranslation =
-                    habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
-                        .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
-                articleName = habitTranslation.getName();
-                break;
-
-            default:
-                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+        if (articleType == ArticleType.HABIT) {
+            Habit habit = habitRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+            HabitTranslation habitTranslation =
+                habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
+            articleName = habitTranslation.getName();
+        } else {
+            throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
         return articleName;
     }
@@ -265,18 +259,15 @@ public class CommentServiceImpl implements CommentService {
      * @return the corresponding {@link NotificationType}.
      */
     private NotificationType getNotificationType(ArticleType articleType, CommentActionType actionType) {
-        switch (articleType) {
-            case HABIT:
-                return switch (actionType) {
-                    case COMMENT -> NotificationType.HABIT_COMMENT;
-                    case COMMENT_REPLY -> NotificationType.HABIT_COMMENT_REPLY;
-                    case COMMENT_USER_TAG -> NotificationType.HABIT_COMMENT_USER_TAG;
-                    default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
-                };
-
-            default:
-                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
-        }
+        return switch (articleType) {
+            case HABIT -> switch (actionType) {
+                case COMMENT -> NotificationType.HABIT_COMMENT;
+                case COMMENT_REPLY -> NotificationType.HABIT_COMMENT_REPLY;
+                case COMMENT_USER_TAG -> NotificationType.HABIT_COMMENT_USER_TAG;
+                default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
+            };
+            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+        };
     }
 
     /**
