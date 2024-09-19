@@ -30,10 +30,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,6 +66,8 @@ class CommentServiceImplTest {
     private UserNotificationService userNotificationService;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private EventCommentServiceImpl eventCommentServiceImpl;
 
     @Test
     void save() {
@@ -127,6 +126,7 @@ class CommentServiceImplTest {
             .build();
         ArticleType articleType = ArticleType.HABIT;
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        Set<Long> userIds = Set.of(5L);
 
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
@@ -143,11 +143,14 @@ class CommentServiceImplTest {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
+        when(eventCommentServiceImpl.getUserIdFromComment(commentText)).thenReturn(userIds);
 
         commentService.save(articleType, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
 
         verify(notificationService, times(1))
             .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
+
+        verify(commentRepo, times(1)).save(any(Comment.class));
     }
 
     @Test
@@ -166,9 +169,8 @@ class CommentServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
 
-        NotFoundException notFoundException =
-            assertThrows(NotFoundException.class,
-                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en")));
+        NotFoundException notFoundException = assertThrows(NotFoundException.class,
+            () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.ENGLISH));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
 
@@ -206,7 +208,7 @@ class CommentServiceImplTest {
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
                 () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO,
-                    Locale.of("en")));
+                    Locale.ENGLISH));
 
         String expectedErrorMessage = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
             + " in Habit with id: " + habit.getId();
@@ -249,7 +251,7 @@ class CommentServiceImplTest {
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
                 () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO,
-                    Locale.of("en")));
+                    Locale.ENGLISH));
 
         String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;
 
@@ -688,7 +690,7 @@ class CommentServiceImplTest {
 
         when(habitRepo.findById(articleId)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class,
-            () -> commentService.getArticleTitle(ArticleType.HABIT, articleId, Locale.of("en")));
+            () -> commentService.getArticleTitle(ArticleType.HABIT, articleId, Locale.ENGLISH));
 
         verify(habitRepo).findById(articleId);
     }
@@ -697,8 +699,9 @@ class CommentServiceImplTest {
     void getArticleTitleUnSupportedArticleTypeTest() {
         Long articleId = 1L;
 
-        assertThrows(IllegalArgumentException.class, () -> commentService.getArticleTitle(
-            ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId, Locale.of("en")));
+        assertThrows(IllegalArgumentException.class,
+            () -> commentService.getArticleTitle(
+                ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId, Locale.ENGLISH));
 
         verifyNoInteractions(habitRepo);
     }

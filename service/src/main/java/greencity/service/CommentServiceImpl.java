@@ -23,8 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
@@ -44,6 +42,7 @@ public class CommentServiceImpl implements CommentService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final NotificationService notificationService;
+    private final EventCommentServiceImpl eventCommentServiceImpl;
     @Value("${client.address}")
     private String clientAddress;
 
@@ -112,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
     private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, UserVO userVO,
         Locale locale) {
         String commentText = commentVO.getText();
-        Set<Long> usersId = getUserIdFromComment(commentText);
+        Set<Long> usersId = eventCommentServiceImpl.getUserIdFromComment(commentText);
         if (!usersId.isEmpty()) {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
@@ -135,27 +134,6 @@ public class CommentServiceImpl implements CommentService {
                     locale);
             }
         }
-    }
-
-    /**
-     * Method to extract user id from comment.
-     *
-     * @param message - comment
-     * @return user id if present or null.
-     */
-    private Set<Long> getUserIdFromComment(String message) {
-        String regEx = "data-userid=\"(\\d+)\"";
-        Pattern pattern = Pattern.compile(regEx);
-        Matcher matcher = pattern.matcher(message);
-        Set<Long> userIds = new HashSet<>();
-        if (!matcher.find()) {
-            return userIds;
-        }
-        matcher.reset();
-        while (matcher.find()) {
-            userIds.add(Long.valueOf(matcher.group(1)));
-        }
-        return userIds;
     }
 
     private String getBaseLink(ArticleType articleType, Long articleId, Long userId) {
