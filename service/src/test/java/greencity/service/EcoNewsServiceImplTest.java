@@ -66,14 +66,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import java.net.MalformedURLException;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -158,7 +152,6 @@ class EcoNewsServiceImplTest {
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -244,42 +237,6 @@ class EcoNewsServiceImplTest {
         EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, null, TestConst.EMAIL);
 
         assertEquals(ecoNewsGenericDto, actual);
-    }
-
-    @Test
-    void findAll() {
-        ZonedDateTime now = ZonedDateTime.now();
-
-        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
-
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        Page<EcoNews> translationPage = new PageImpl<>(ecoNews,
-            pageRequest, ecoNews.size());
-
-        List<EcoNewsDto> dtoList = Collections.singletonList(
-            EcoNewsDto.builder()
-                .creationDate(now)
-                .imagePath("test image path")
-                .id(1L)
-                .title("test title")
-                .content("content")
-                .shortInfo(null)
-                .author(ModelUtils.getEcoNewsAuthorDto())
-                .tags(Collections.emptyList())
-                .tagsUa(Collections.emptyList())
-                .likes(1)
-                .countComments(0)
-                .hidden(false)
-                .build());
-        PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
-            0, false, false, true, true);
-
-        when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
-        when(modelMapper.map(ecoNews.getFirst(), EcoNewsDto.class)).thenReturn(dtoList.getFirst());
-
-        PageableAdvancedDto<EcoNewsDto> actual = ecoNewsService.findAll(pageRequest);
-
-        assertEquals(pageableDto, actual);
     }
 
     @Test
@@ -394,22 +351,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void searchEcoNewsBy() {
-        Pageable pageable = PageRequest.of(0, 2);
-        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
-        Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, 2);
-        EcoNews ecoNews1 = ModelUtils.getEcoNews();
-        EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
-        when(ecoNewsRepo.searchEcoNewsBy(pageable, "query")).thenReturn(page);
-        when(modelMapper.map(ecoNews1, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        PageableAdvancedDto<EcoNewsDto> actual =
-            new PageableAdvancedDto<>(Collections.singletonList(ecoNewsDto),
-                2, 1, 2, 1, true, true, true, false);
-        PageableAdvancedDto<EcoNewsDto> expected = ecoNewsService.searchEcoNewsBy(pageable, "query");
-        assertEquals(expected.getTotalElements(), actual.getTotalElements());
-    }
-
-    @Test
     void updateVoidTest() {
         EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
@@ -490,12 +431,70 @@ class EcoNewsServiceImplTest {
         Pageable pageable = PageRequest.of(0, 2);
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, ecoNews.size());
+        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto();
+        EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
+        when(ecoNewsRepo.findAllByOrderByCreationDateDesc(any(Pageable.class))).thenReturn(page);
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        PageableAdvancedDto<EcoNewsDto> actual =
+            ecoNewsService.getFilteredDataForManagementByPage("", pageable, ecoNewsViewDto, Locale.getDefault());
+        PageableAdvancedDto<EcoNewsDto> expected =
+            new PageableAdvancedDto<>(Collections.singletonList(ecoNewsDto), 1, 1, 1,
+                1, false, false, false, false);
+        assertEquals(expected.getTotalElements(), actual.getTotalElements());
+    }
+
+    @Test
+    void getFilteredDataForManagementByPageWithEcoNewsViewDtoTest() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, ecoNews.size());
         EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
         EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
         when(ecoNewsRepo.findAll(any(EcoNewsSpecification.class), any(Pageable.class))).thenReturn(page);
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
         PageableAdvancedDto<EcoNewsDto> actual =
-            ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
+            ecoNewsService.getFilteredDataForManagementByPage("", pageable, ecoNewsViewDto, Locale.getDefault());
+        PageableAdvancedDto<EcoNewsDto> expected =
+            new PageableAdvancedDto<>(Collections.singletonList(ecoNewsDto), 1, 1, 1,
+                1, false, false, false, false);
+        assertEquals(expected.getTotalElements(), actual.getTotalElements());
+    }
+
+    @Test
+    void getFilteredDataForManagementByPageWithQueryTest() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, ecoNews.size());
+        EcoNewsViewDto ecoNewsViewDto = null;
+        EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
+        String query = "query";
+        when(ecoNewsRepo.searchEcoNewsBy(any(Pageable.class), eq(query))).thenReturn(page);
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        PageableAdvancedDto<EcoNewsDto> actual =
+            ecoNewsService.getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, Locale.getDefault());
+        PageableAdvancedDto<EcoNewsDto> expected =
+            new PageableAdvancedDto<>(Collections.singletonList(ecoNewsDto), 1, 1, 1,
+                1, false, false, false, false);
+        assertEquals(expected.getTotalElements(), actual.getTotalElements());
+    }
+
+    @Test
+    void getFilteredDataForManagementByPageWithQueryAndEcoNewsViewDtoTest() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<EcoNews> ecoNewsByFields = Collections.singletonList(ModelUtils.getEcoNews());
+        List<EcoNews> ecoNewsByQuery = new ArrayList<>();
+        ecoNewsByQuery.add(ModelUtils.getEcoNews());
+        ecoNewsByQuery.add(EcoNews.builder().id(2L).build());
+        Page<EcoNews> pageByFields = new PageImpl<>(ecoNewsByFields, pageable, ecoNewsByFields.size());
+        Page<EcoNews> pageByQuery = new PageImpl<>(ecoNewsByQuery, pageable, ecoNewsByQuery.size());
+        EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
+        EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
+        String query = "query";
+        when(ecoNewsRepo.findAll(any(EcoNewsSpecification.class), any(Pageable.class))).thenReturn(pageByFields);
+        when(ecoNewsRepo.searchEcoNewsBy(any(Pageable.class), eq(query))).thenReturn(pageByQuery);
+        when(modelMapper.map(ecoNewsByFields, EcoNewsDto.class)).thenReturn(ecoNewsDto);
+        PageableAdvancedDto<EcoNewsDto> actual =
+            ecoNewsService.getFilteredDataForManagementByPage(query, pageable, ecoNewsViewDto, Locale.getDefault());
         PageableAdvancedDto<EcoNewsDto> expected =
             new PageableAdvancedDto<>(Collections.singletonList(ecoNewsDto), 1, 1, 1,
                 1, false, false, false, false);
@@ -512,10 +511,18 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void buildSearchCriteriaTest() {
+    void buildSearchCriteriaWithDateRangeTest() {
         EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
         List<SearchCriteria> actual = ecoNewsService.buildSearchCriteria(ecoNewsViewDto);
-        assertEquals(6, actual.size());
+        assertEquals(7, actual.size());
+    }
+
+    @Test
+    void buildSearchCriteriaWithStartDateTest() {
+        EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
+        ecoNewsViewDto.setEndDate(null);
+        List<SearchCriteria> actual = ecoNewsService.buildSearchCriteria(ecoNewsViewDto);
+        assertEquals(7, actual.size());
     }
 
     @Test

@@ -22,8 +22,6 @@ import greencity.exception.exceptions.TagNotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserCouldNotAssignPrivateHabit;
-import greencity.exception.exceptions.UserCouldNotInviteToPrivateHabit;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoShoppingListItemsException;

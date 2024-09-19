@@ -11,6 +11,7 @@ public class EventTupleConstant {
     public static final String creationDate = "creation_date";
     public static final String titleImage = "title_image";
     public static final String isOpen = "is_open";
+    public static final String type = "type";
     public static final String isRelevant = "isRelevant";
     public static final String likes = "likes";
     public static final String countComments = "countComments";
