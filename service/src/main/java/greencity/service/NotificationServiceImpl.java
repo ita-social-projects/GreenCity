@@ -206,6 +206,8 @@ public class NotificationServiceImpl implements NotificationService {
                             restClient.sendScheduledEmailNotification(message);
                         });
                 }
+                notifications = notifications.stream().map(notification -> notification.setEmailSent(true)).toList();
+                notificationRepo.saveAll(notifications);
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }
