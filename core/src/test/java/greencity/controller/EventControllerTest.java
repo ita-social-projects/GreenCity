@@ -37,6 +37,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -104,6 +105,15 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
+    void getEventsThrowExceptionTest() {
+        assertThatThrownBy(
+            () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "?statuses=JOINED"))
+                .andExpect(status().isBadRequest()))
+            .hasCause(new BadRequestException(ErrorMessage.STATUSES_REQUIRE_USER_ID));
+    }
+
+    @Test
+    @SneakyThrows
     void addAttenderTest() {
         Long eventId = 1L;
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId)
@@ -129,7 +139,7 @@ class EventControllerTest {
             .when(eventService)
             .addAttender(eventId, principal.getName());
 
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
             () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId)
                 .principal(principal))
                 .andExpect(status().isNotFound()))
@@ -145,7 +155,7 @@ class EventControllerTest {
             .when(eventService)
             .addAttender(eventId, principal.getName());
 
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
             () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId)
                 .principal(principal))
                 .andExpect(status().isBadRequest()))
@@ -234,7 +244,7 @@ class EventControllerTest {
             .when(eventService)
             .removeAttender(eventId, principal.getName());
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(delete(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId).principal(principal))
             .andExpect(status().isNotFound())).hasCause(new NotFoundException("ErrorMessage"));
     }
@@ -303,7 +313,7 @@ class EventControllerTest {
             return request;
         });
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(builder
                 .file(jsonFile)
                 .principal(principal)
@@ -366,7 +376,7 @@ class EventControllerTest {
             .when(eventService)
             .rateEvent(eventId, principal.getName(), grade);
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/ratings", eventId)
                 .principal(principal)
                 .content(String.valueOf(grade))
@@ -384,7 +394,7 @@ class EventControllerTest {
             .when(eventService)
             .rateEvent(eventId, principal.getName(), grade);
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/ratings", eventId)
                 .principal(principal)
                 .content(String.valueOf(grade))
@@ -482,7 +492,7 @@ class EventControllerTest {
             .when(eventService)
             .getAllEventAttenders(eventId);
 
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
             () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException("ErrorMessage"));

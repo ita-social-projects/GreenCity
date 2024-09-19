@@ -197,4 +197,6 @@ public class ErrorMessage {
     public static final String YOU_COULD_NOT_INVITE_TO_PRIVATE_HABIT = "You could not invite to private habit";
     public static final String YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT =
         "You could not assign to this private habit";
+    public static final String STATUSES_REQUIRE_USER_ID =
+        "JOINED, CREATED and SAVED statuses required user-id parameter";
 }

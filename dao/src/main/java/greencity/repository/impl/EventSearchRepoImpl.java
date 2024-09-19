@@ -151,13 +151,13 @@ public class EventSearchRepoImpl implements EventSearchRepo {
                 } else if (status == EventStatus.CLOSED) {
                     statusesPredicate.add(criteriaBuilder.isFalse(eventRoot.get(Event_.IS_OPEN)));
                 } else if (status == EventStatus.CREATED && userId != null) {
-                    Join<Event, User> organizerJoin = eventRoot.join(Event_.organizer);
+                    Join<Event, User> organizerJoin = eventRoot.join(Event_.organizer, JoinType.LEFT);
                     statusesPredicate.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
                 } else if (status == EventStatus.JOINED && userId != null) {
-                    SetJoin<Event, User> attendersJoin = eventRoot.join(Event_.attenders);
+                    SetJoin<Event, User> attendersJoin = eventRoot.join(Event_.attenders, JoinType.LEFT);
                     statusesPredicate.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
                 } else if (status == EventStatus.SAVED && userId != null) {
-                    SetJoin<Event, User> followersJoin = eventRoot.join(Event_.followers);
+                    SetJoin<Event, User> followersJoin = eventRoot.join(Event_.followers, JoinType.LEFT);
                     statusesPredicate.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
                 }
             });
