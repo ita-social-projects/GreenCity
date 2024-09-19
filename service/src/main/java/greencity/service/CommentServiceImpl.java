@@ -3,18 +3,38 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.*;
+import greencity.dto.comment.AddCommentDtoRequest;
+import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.CommentVO;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Comment;
+import greencity.entity.EcoNews;
+import greencity.entity.Habit;
+import greencity.entity.HabitTranslation;
+import greencity.entity.User;
 import greencity.entity.event.Event;
-import greencity.enums.*;
+import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.ArticleType;
+import greencity.enums.CommentActionType;
+import greencity.enums.CommentStatus;
+import greencity.enums.NotificationType;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
-import greencity.repository.*;
+import greencity.repository.CommentRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.EventRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.HabitTranslationRepo;
+import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +42,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.*;
-import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 
 @Service
@@ -105,7 +128,6 @@ public class CommentServiceImpl implements CommentService {
      * @param userVO      the user who made the comment, {@link UserVO}.
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
-     *
      * @throws NotFoundException if a tagged user is not found by ID.
      */
     private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, UserVO userVO,
@@ -148,7 +170,6 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param articleType {@link ArticleType}.
      * @param articleId   {@link Long} id of an article.
-     *
      * @return article author {@link User}.
      */
     protected User getArticleAuthor(ArticleType articleType, Long articleId) {
@@ -184,7 +205,6 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param articleType {@link ArticleType}.
      * @param articleId   {@link Long} id of an article.
-     *
      * @return article title {@link User}.
      */
     protected String getArticleTitle(ArticleType articleType, Long articleId, Locale locale) {
@@ -213,7 +233,6 @@ public class CommentServiceImpl implements CommentService {
      * @param receiver         the user receiving the notification, {@link UserVO}.
      * @param sender           the user sending the notification, {@link UserVO}.
      * @param notificationType the type of notification, {@link NotificationType}.
-     *
      * @throws BadRequestException if the article type is not supported.
      */
     private void createNotification(ArticleType articleType, Long articleId, Comment comment, UserVO receiver,

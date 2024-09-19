@@ -694,15 +694,4 @@ class CommentServiceImplTest {
 
         verify(habitRepo).findById(articleId);
     }
-
-    @Test
-    void getArticleTitleUnSupportedArticleTypeTest() {
-        Long articleId = 1L;
-
-        assertThrows(IllegalArgumentException.class,
-            () -> commentService.getArticleTitle(
-                ArticleType.valueOf("UNSUPPORTED_TYPE"), articleId, Locale.ENGLISH));
-
-        verifyNoInteractions(habitRepo);
-    }
 }
