@@ -122,7 +122,7 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable) {
         long userId = userVO.getId();
-        List<Long> requestedCustomHabitIds = habitRepo.findVisibleCustomHabitsIdsByUserId(userId);
+        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
         String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
 
@@ -307,7 +307,6 @@ public class HabitServiceImpl implements HabitService {
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         habit.setUserId(user.getId());
         habit.setIsDeleted(false);
-        habit.setIsSharedWithFriends(addCustomHabitDtoRequest.getIsSharedWithFriends());
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
         setCustomShoppingListItemToHabit(addCustomHabitDtoRequest, habit, user);
@@ -330,7 +329,6 @@ public class HabitServiceImpl implements HabitService {
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
-        response.setIsSharedWithFriends(habit.getIsSharedWithFriends());
         return response;
     }
 
