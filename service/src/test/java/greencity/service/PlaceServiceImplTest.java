@@ -422,7 +422,16 @@ class PlaceServiceImplTest {
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.findAll(pageable)).thenReturn(pages);
         List<AdminPlaceDto> placeDtos =
-            pages.stream().map(elem -> modelMapper.map(elem, AdminPlaceDto.class)).collect(Collectors.toList());
+            pages.stream().map(elem -> {
+                AdminPlaceDto adminPlaceDto = modelMapper.map(place, AdminPlaceDto.class);
+                List<String> photoNames = Optional.ofNullable(place.getPhotos())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(Photo::getName)
+                    .collect(Collectors.toList());
+                adminPlaceDto.setImages(photoNames);
+                return adminPlaceDto;
+            }).collect(Collectors.toList());
         PageableDto<AdminPlaceDto> expected =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
         PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, null);
@@ -460,6 +469,12 @@ class PlaceServiceImplTest {
         AdminPlaceDto actual = resultPageableDto.getPage().get(0);
 
         AdminPlaceDto expected = modelMapper.map(place, AdminPlaceDto.class);
+        List<String> photoNames = Optional.ofNullable(place.getPhotos())
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(Photo::getName)
+            .collect(Collectors.toList());
+        expected.setImages(photoNames);
         expected.setIsFavorite(true);
 
         assertEquals(expected, actual);
@@ -626,7 +641,16 @@ class PlaceServiceImplTest {
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.searchBy(pageable, searchQuery)).thenReturn(pages);
         List<AdminPlaceDto> placeDtos =
-            pages.stream().map(p -> modelMapper.map(p, AdminPlaceDto.class)).collect(Collectors.toList());
+            pages.stream().map(elem -> {
+                AdminPlaceDto adminPlaceDto = modelMapper.map(place, AdminPlaceDto.class);
+                List<String> photoNames = Optional.ofNullable(place.getPhotos())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(Photo::getName)
+                    .collect(Collectors.toList());
+                adminPlaceDto.setImages(photoNames);
+                return adminPlaceDto;
+            }).collect(Collectors.toList());
         PageableDto<AdminPlaceDto> result =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
         assertEquals(result, placeService.searchBy(pageable, searchQuery));

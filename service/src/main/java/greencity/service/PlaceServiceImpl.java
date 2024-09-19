@@ -5,11 +5,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import greencity.dto.openhours.OpenHoursDto;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
@@ -101,9 +103,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PageableDto<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
         Page<Place> places = placeRepo.findAllByStatusOrderByModifiedDateDesc(placeStatus, pageable);
-        List<AdminPlaceDto> list = places.stream()
-            .map(place -> modelMapper.map(place, AdminPlaceDto.class))
-            .collect(Collectors.toList());
+        List<AdminPlaceDto> list = createAdminPageableDtoList(places);
         return new PageableDto<>(list, places.getTotalElements(), places.getPageable().getPageNumber(),
             places.getTotalPages());
     }
@@ -301,10 +301,8 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal) {
         log.info(LogMessage.IN_FIND_ALL);
-
         Page<Place> pages = placeRepo.findAll(pageable);
-        List<AdminPlaceDto> placeDtos =
-            pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
+        List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(pages);
         if (!CollectionUtils.isEmpty(placeDtos) && principal != null) {
             setIsFavoriteToAdminPlaceDto(placeDtos, principal.getName());
         }
@@ -420,11 +418,9 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PageableDto<AdminPlaceDto> searchBy(Pageable pageable, String searchQuery) {
         Page<Place> pages = placeRepo.searchBy(pageable, searchQuery);
-        List<AdminPlaceDto> adminPlaceDtos = pages.stream()
-            .map(place -> modelMapper.map(place, AdminPlaceDto.class))
-            .collect(Collectors.toList());
+        List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(pages);
         return new PageableDto<>(
-            adminPlaceDtos,
+            placeDtos,
             pages.getTotalElements(),
             pageable.getPageNumber(),
             pages.getTotalPages());
@@ -528,12 +524,9 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable) {
         Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
-        List<AdminPlaceDto> adminPlaceDtos =
-            list.getContent().stream()
-                .map(user -> modelMapper.map(user, AdminPlaceDto.class))
-                .collect(Collectors.toList());
+        List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(list);
         return new PageableDto<>(
-            adminPlaceDtos,
+            placeDtos,
             list.getTotalElements(),
             list.getPageable().getPageNumber(),
             list.getTotalPages());
@@ -569,6 +562,8 @@ public class PlaceServiceImpl implements PlaceService {
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
         place.setAuthor(user);
         place.setLocation(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class));
+        Optional.ofNullable(place.getOpeningHoursList()).orElse(Collections.emptySet())
+            .forEach(openingHours -> openingHours.setPlace(place));
         mapMultipartFilesToPhotos(images, place, user);
         return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
     }
@@ -605,5 +600,22 @@ public class PlaceServiceImpl implements PlaceService {
                 .anyMatch(locationId -> locationId.equals(dto.getLocation().getId()));
             dto.setIsFavorite(isFavorite);
         });
+    }
+
+    private List<AdminPlaceDto> createAdminPageableDtoList(Page<Place> places) {
+        return places.stream().map(place -> {
+            AdminPlaceDto adminPlaceDto = modelMapper.map(place, AdminPlaceDto.class);
+            List<String> photoNames = Optional.ofNullable(place.getPhotos())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(Photo::getName)
+                .collect(Collectors.toList());
+            List<OpenHoursDto> openingHoursList = place.getOpeningHoursList().stream()
+                .map(element -> modelMapper.map(element, OpenHoursDto.class))
+                .toList();
+            adminPlaceDto.setImages(photoNames);
+            adminPlaceDto.setOpeningHoursList(openingHoursList);
+            return adminPlaceDto;
+        }).collect(Collectors.toList());
     }
 }
