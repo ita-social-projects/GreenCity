@@ -7,7 +7,7 @@
 
     <changeSet id="Herchanivska-4" author="Viktoriia Herchanivska">
         <addColumn tableName="notifications">
-            <column name="emailSent" type="BOOLEAN" defaultValue="false">
+            <column name="email_sent" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

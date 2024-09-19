@@ -220,4 +220,5 @@
     <include file="db/changelog/logs/ch-add-table-fact-of-the-day-tags-and-assign-tag-Chekhovska.xml"/>
     <include file="/db/changelog/logs/ch-add-column-type-to-events-Rozhko.xml"/>
     <include file="/db/changelog/logs/ch-create-indexes-Rozhko.xml"/>
+    <include file="/db/changelog/logs/ch-add-column-notifications-Herchanivska-4.xml"/>
 </databaseChangeLog>
