@@ -223,4 +223,5 @@
     <include file="db/changelog/logs/ch-change-table-habit-assign-Prots.xml"/>
     <include file="db/changelog/logs/ch-delete-column-from-habit-Prots.xml"/>
     <include file="db/changelog/logs/ch-delete-rows-from-tags-tags-translation-habit-Prots.xml" />
+    <include file="db/changelog/logs/ch-drop-habit_facts-table-and-habit_fact_translations-table.xml"/>
 </databaseChangeLog>
