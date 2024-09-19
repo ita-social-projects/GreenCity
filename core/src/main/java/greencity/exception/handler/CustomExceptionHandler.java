@@ -561,22 +561,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @ExceptionHandler(UserCouldNotInviteToPrivateHabit.class)
-    public final ResponseEntity<Object> handleUserCouldNotInviteToPrivateHabit(UserCouldNotInviteToPrivateHabit ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(UserCouldNotAssignPrivateHabit.class)
-    public final ResponseEntity<Object> handleUserCouldNotAssignPrivateHabit(UserCouldNotAssignPrivateHabit ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
     /**
      * Customize the response for MultipartXSSProcessingException.
      *
