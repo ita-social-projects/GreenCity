@@ -93,11 +93,11 @@ class EventControllerTest {
             .thenReturn(eventDtoPageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
-                .param("page", "0")
-                .param("size", "20")
-                .param("user-id", userId.toString())
-                .param("statuses", filterEventDto.getStatuses().stream().map(Enum::name).collect(Collectors.joining(",")))
-                .accept(MediaType.APPLICATION_JSON))
+            .param("page", "0")
+            .param("size", "20")
+            .param("user-id", userId.toString())
+            .param("statuses", filterEventDto.getStatuses().stream().map(Enum::name).collect(Collectors.joining(",")))
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
