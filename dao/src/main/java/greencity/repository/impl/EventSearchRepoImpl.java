@@ -135,9 +135,10 @@ public class EventSearchRepoImpl implements EventSearchRepo {
 
     private void addCitiesPredicate(List<String> cities, Root<Event> eventRoot, List<Predicate> predicates) {
         if (cities != null && !cities.isEmpty()) {
+            List<String> citiesInUpperCase = listToUpperCase(cities);
             Join<EventDateLocation, Address> addressJoin = eventRoot
                 .join(Event_.dates, JoinType.LEFT).join(EventDateLocation_.address);
-            predicates.add(criteriaBuilder.upper(addressJoin.get(Address_.CITY_EN)).in(cities));
+            predicates.add(criteriaBuilder.upper(addressJoin.get(Address_.CITY_EN)).in(citiesInUpperCase));
         }
     }
 
@@ -169,8 +170,9 @@ public class EventSearchRepoImpl implements EventSearchRepo {
 
     private void addTagsPredicate(List<String> tags, Root<Event> eventRoot, List<Predicate> predicates) {
         if (tags != null && !tags.isEmpty()) {
+            List<String> tagsInUpperCase = listToUpperCase(tags);
             ListJoin<Tag, TagTranslation> tagsJoin = eventRoot.join(Event_.tags).join(Tag_.tagTranslations);
-            predicates.add(criteriaBuilder.upper(tagsJoin.get(TagTranslation_.NAME)).in(tags));
+            predicates.add(criteriaBuilder.upper(tagsJoin.get(TagTranslation_.NAME)).in(tagsInUpperCase));
         }
     }
 
@@ -262,5 +264,11 @@ public class EventSearchRepoImpl implements EventSearchRepo {
 
         countQuery.select(criteriaBuilder.count(countRoot)).where(getPredicate(searchingText, countRoot));
         return entityManager.createQuery(countQuery).getSingleResult();
+    }
+
+    private List<String> listToUpperCase(List<String> objects) {
+        return objects.stream()
+            .map(String::toUpperCase)
+            .toList();
     }
 }
