@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -135,7 +134,8 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
     @Query("SELECT n FROM Notification n "
         + "JOIN FETCH n.targetUser "
         + "JOIN FETCH n.actionUsers "
-        + "WHERE n.notificationType = :notificationType AND n.viewed = false "
-        + "AND n.time > :lastNotificationDateTime")
-    List<Notification> findAllByNotificationByTypeAndByTimeAndViewedIsFalse(NotificationType notificationType, LocalDateTime lastNotificationDateTime);
+        + "WHERE n.notificationType = :notificationType "
+        + "AND n.viewed = false "
+        + "AND n.emailSent = false")
+    List<Notification> findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType notificationType);
 }

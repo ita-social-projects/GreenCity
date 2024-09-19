@@ -3216,6 +3216,7 @@ public class ModelUtils {
             .viewed(true)
             .time(LocalDateTime.of(2100, 1, 31, 12, 0))
             .actionUsers(List.of(getUser()))
+            .emailSent(true)
             .build();
     }
 
@@ -3239,6 +3240,7 @@ public class ModelUtils {
             .viewed(true)
             .time(LocalDateTime.of(2100, 1, 31, 12, 0))
             .actionUsers(actionUsers)
+            .emailSent(true)
             .build();
     }
 
