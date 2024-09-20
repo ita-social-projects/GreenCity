@@ -35,7 +35,7 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
      * @return a {@link Page} containing the filtered {@link Comment} objects,
      *         ordered by creation date in descending order.
      */
-    Page<Comment> findAllByArticleTypeAndArticleIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable,
+    Page<Comment> findAllByArticleTypeAndArticleIdAndStatusInOrderByCreatedDateDesc(Pageable pageable,
         ArticleType articleType, Long articleId, List<CommentStatus> statuses);
 
     /**

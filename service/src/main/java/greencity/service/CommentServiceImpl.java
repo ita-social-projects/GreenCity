@@ -424,9 +424,8 @@ public class CommentServiceImpl implements CommentService {
             habitRepo.findById(articleId).orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
         }
 
-        Page<Comment> pages = commentRepo
-            .findAllByArticleTypeAndArticleIdAndStatusNotOrderByCreatedDateDesc(pageable, articleType, articleId,
-                statuses);
+        Page<Comment> pages = commentRepo.findAllByArticleTypeAndArticleIdAndStatusInOrderByCreatedDateDesc(pageable,
+            articleType, articleId, statuses);
 
         pages = setCurrentUserLiked(pages, user);
 
