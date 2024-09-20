@@ -9,14 +9,15 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.enums.EventStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EventService;
 import greencity.service.UserService;
 import java.security.Principal;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -77,9 +79,7 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void getAllEventsTest() {
-        int pageNumber = 0;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(0, 20);
         Long userId = 1L;
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = getEventDtoPageableAdvancedDto(pageable);
@@ -88,18 +88,31 @@ class EventControllerTest {
         objectMapper.findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(eventDtoPageableAdvancedDto);
 
-        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
+        FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
 
         when(eventService.getEvents(pageable, filterEventDto, userId))
             .thenReturn(eventDtoPageableAdvancedDto);
 
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "?page=0&size=20&user-id=" + userId)
-            .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
+            .param("page", "0")
+            .param("size", "20")
+            .param("user-id", userId.toString())
+            .param("statuses", filterEventDto.getStatuses().stream().map(Enum::name).collect(Collectors.joining(",")))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
         verify(eventService).getEvents(pageable, filterEventDto, userId);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventsThrowExceptionTest() {
+        assertThatThrownBy(
+            () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
+                .param("statuses", EventStatus.JOINED.name()))
+                .andExpect(status().isBadRequest()))
+            .hasCause(new BadRequestException(ErrorMessage.STATUSES_REQUIRE_USER_ID));
     }
 
     @Test
@@ -129,7 +142,7 @@ class EventControllerTest {
             .when(eventService)
             .addAttender(eventId, principal.getName());
 
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
             () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId)
                 .principal(principal))
                 .andExpect(status().isNotFound()))
@@ -145,7 +158,7 @@ class EventControllerTest {
             .when(eventService)
             .addAttender(eventId, principal.getName());
 
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
             () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId)
                 .principal(principal))
                 .andExpect(status().isBadRequest()))
@@ -234,7 +247,7 @@ class EventControllerTest {
             .when(eventService)
             .removeAttender(eventId, principal.getName());
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(delete(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId).principal(principal))
             .andExpect(status().isNotFound())).hasCause(new NotFoundException("ErrorMessage"));
     }
@@ -303,7 +316,7 @@ class EventControllerTest {
             return request;
         });
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(builder
                 .file(jsonFile)
                 .principal(principal)
@@ -366,7 +379,7 @@ class EventControllerTest {
             .when(eventService)
             .rateEvent(eventId, principal.getName(), grade);
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/ratings", eventId)
                 .principal(principal)
                 .content(String.valueOf(grade))
@@ -384,7 +397,7 @@ class EventControllerTest {
             .when(eventService)
             .rateEvent(eventId, principal.getName(), grade);
 
-        Assertions.assertThatThrownBy(() -> mockMvc
+        assertThatThrownBy(() -> mockMvc
             .perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/ratings", eventId)
                 .principal(principal)
                 .content(String.valueOf(grade))
@@ -482,7 +495,7 @@ class EventControllerTest {
             .when(eventService)
             .getAllEventAttenders(eventId);
 
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
             () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException("ErrorMessage"));
