@@ -23,15 +23,15 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
         CommentStatus commentStatus);
 
     /**
-     * Retrieves all {@link Comment} objects by page for a specific article,
-     * filtered by the given article type, article ID, and a list of excluded
+     * Retrieves a paginated list of {@link Comment} objects for a specific article,
+     * filtered by the provided article type, article ID, and a list of allowed
      * statuses.
      *
      * @param pageable    the pagination information (page number, size, etc.).
-     * @param articleType the type of the article (e.g., blog, news, event).
-     * @param articleId   the ID of the article for which comments are being
-     *                    retrieved.
-     * @param statuses    a list of comment statuses to exclude from the results.
+     * @param articleType the type of the article (e.g., habit, eco_news, event).
+     * @param articleId   the ID of the article whose comments are being retrieved.
+     * @param statuses    a list of allowed {@link CommentStatus} to include in the
+     *                    results.
      * @return a {@link Page} containing the filtered {@link Comment} objects,
      *         ordered by creation date in descending order.
      */
