@@ -56,8 +56,6 @@ import java.util.stream.Collectors;
 
 /**
  * Custom exception handler.
- *
- * @author Marian Milian
  */
 @AllArgsConstructor
 @RestControllerAdvice
@@ -556,22 +554,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserHasNoFriendWithIdException.class)
     public final ResponseEntity<Object> handleUserHasNoFriendWithIdException(
         UserHasNoFriendWithIdException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(UserCouldNotInviteToPrivateHabit.class)
-    public final ResponseEntity<Object> handleUserCouldNotInviteToPrivateHabit(UserCouldNotInviteToPrivateHabit ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(UserCouldNotAssignPrivateHabit.class)
-    public final ResponseEntity<Object> handleUserCouldNotAssignPrivateHabit(UserCouldNotAssignPrivateHabit ex,
-        WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
