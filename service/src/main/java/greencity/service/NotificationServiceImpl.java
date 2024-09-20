@@ -195,7 +195,8 @@ public class NotificationServiceImpl implements NotificationService {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                List<Notification> notifications = notificationRepo.findAllByNotificationTypeAndViewedIsFalse(type);
+                List<Notification> notifications =
+                    notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
                 if (!notifications.isEmpty()) {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notifications.stream()
@@ -206,6 +207,8 @@ public class NotificationServiceImpl implements NotificationService {
                             restClient.sendScheduledEmailNotification(message);
                         });
                 }
+                notifications = notifications.stream().map(notification -> notification.setEmailSent(true)).toList();
+                notificationRepo.saveAll(notifications);
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }

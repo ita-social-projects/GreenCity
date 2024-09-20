@@ -223,6 +223,7 @@
     <include file="db/changelog/logs/ch-change-table-habit-assign-Prots.xml"/>
     <include file="db/changelog/logs/ch-delete-column-from-habit-Prots.xml"/>
     <include file="db/changelog/logs/ch-delete-rows-from-tags-tags-translation-habit-Prots.xml" />
+    <include file="/db/changelog/logs/ch-add-column-notifications-Herchanivska-4.xml"/>
     <include file="db/changelog/logs/ch-move-data-from-econews_comments-to-comments.xml"/>
     <include file="db/changelog/logs/ch-delete-tables-related-to-econews-comments.xml"/>
 </databaseChangeLog>
