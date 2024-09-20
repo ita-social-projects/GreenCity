@@ -20,10 +20,7 @@ import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.AddCommentDtoRequest;
-import greencity.dto.comment.AddCommentDtoResponse;
-import greencity.dto.comment.CommentAuthorDto;
-import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.*;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -1673,7 +1670,9 @@ public class ModelUtils {
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
-        return new AchievementManagementDto(1L);
+        return new AchievementManagementDto(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(),
+            1);
     }
 
     public static UserAchievementVO getUserAchievementVO() {
@@ -1733,7 +1732,7 @@ public class ModelUtils {
 
     public static EcoNewsViewDto getEcoNewsViewDto() {
         return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
-            "endDate", "tag");
+            "endDate", "tag", "true");
     }
 
     public static HabitDto getHabitDto() {
@@ -2637,6 +2636,19 @@ public class ModelUtils {
             .user(getUser())
             .comments(List.of(getSubComment()))
             .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
+    public static CommentVO getCommentVO() {
+        return CommentVO.builder()
+            .id(1L)
+            .articleType("HABIT")
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .status("ORIGINAL")
             .build();
     }
 

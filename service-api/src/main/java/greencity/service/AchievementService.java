@@ -1,9 +1,10 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.*;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementAction;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.ActionDto;
 import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
@@ -55,15 +56,6 @@ public interface AchievementService {
     void deleteAll(List<Long> ids);
 
     /**
-     * Method find {@link AchievementVO} by id.
-     *
-     * @param id of {@link AchievementVO}
-     * @return {@link AchievementVO}
-     * @author Orest Mamchuk
-     */
-    AchievementVO findById(Long id);
-
-    /**
      * Method updates {@link AchievementVO}.
      *
      * @param achievementManagementDto {@link AchievementManagementDto}
@@ -81,12 +73,6 @@ public interface AchievementService {
      * @author Orest Mamchuk
      */
     AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
-
-    /**
-     * Method for achievement Calculation.
-     */
-    void calculateAchievements(Long id, AchievementCategoryType achievementCategory,
-        AchievementAction achievementAction);
 
     /**
      * Retrieves a list of achievements based on the given type and the principal's

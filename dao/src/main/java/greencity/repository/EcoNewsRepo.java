@@ -84,7 +84,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @return list of {@link EcoNews}.
      */
     @Query(nativeQuery = true,
-        value = "Select e.id, e.title, e.author_id, e.text, u.name, e.creation_date, e.source, tt.name, e.image_path "
+        value = "Select DISTINCT e.* "
             + "FROM eco_news e "
             + "JOIN users u on u.id = e.author_id "
             + "JOIN eco_news_tags ent on e.id = ent.eco_news_id "

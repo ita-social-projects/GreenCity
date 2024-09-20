@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -29,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import java.util.Locale;
 
 @Validated
 @AllArgsConstructor
@@ -59,10 +61,11 @@ public class HabitCommentController {
     @PostMapping("/{habitId}/comments")
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long habitId,
         @Valid @RequestBody AddCommentDtoRequest request,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.HABIT, habitId, request, userVO));
+            .body(commentService.save(ArticleType.HABIT, habitId, request, userVO, locale));
     }
 
     /**

@@ -429,4 +429,23 @@ class NotificationServiceImplTest {
             assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
         }
     }
+
+    @Test
+    void sendTaggedInCommentScheduledEmail() {
+        Notification notification = ModelUtils.getNotification();
+        User targetUser = ModelUtils.getUser();
+        notification.setTargetUser(targetUser);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
+        when(notificationRepo.findAllByNotificationTypeAndViewedIsFalse(NotificationType.EVENT_COMMENT_USER_TAG))
+            .thenReturn(Collections.singletonList(notification));
+        notificationService.sendTaggedInCommentScheduledEmail();
+        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient, times(1)).sendScheduledEmailNotification(captor.capture()));
+        List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
+        for (ScheduledEmailMessage capturedMessage : capturedMessages) {
+            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
+        }
+    }
 }

@@ -343,6 +343,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                     .baseLink(getBaseLink(eventVO.getId()))
                     .build();
                 notificationService.sendUsersTaggedInCommentEmailNotification(message);
+                userNotificationService.createNotification(modelMapper.map(user, UserVO.class), commentVO.getUser(),
+                    NotificationType.EVENT_COMMENT_USER_TAG, commentVO.getId(),
+                    commentText, eventVO.getId(), eventVO.getTitle());
             }
         }
     }
@@ -353,7 +356,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @param message comment from {@link AddEventCommentDtoResponse}.
      * @return user id if present or null.
      */
-    private Set<Long> getUserIdFromComment(String message) {
+    public Set<Long> getUserIdFromComment(String message) {
         String regEx = "data-userid=\"(\\d+)\"";
         Pattern pattern = Pattern.compile(regEx);
         Matcher matcher = pattern.matcher(message);

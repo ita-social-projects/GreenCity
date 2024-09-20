@@ -1,6 +1,7 @@
 package greencity.config;
 
 import greencity.security.filters.AccessTokenAuthenticationFilter;
+import greencity.security.filters.XSSFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
@@ -108,6 +109,8 @@ public class SecurityConfig {
         })).csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
             .addFilterBefore(new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new XSSFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
                 .sendError(SC_UNAUTHORIZED, "Authorize first."))

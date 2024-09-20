@@ -10,6 +10,7 @@ import greencity.entity.Place;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,24 +42,24 @@ public class PlaceInfoDtoMapper extends AbstractConverter<Place, PlaceInfoDto> {
         placeInfoDto.setPlaceImages(images);
         placeInfoDto.setDescription(source.getDescription());
         placeInfoDto.setWebsiteUrl(source.getEmail());
-
-        List<OpenHoursDto> openingHoursList = source.getOpeningHoursList()
-            .stream().map(this::convertToOpeningHoursToOpenHoursDto).toList();
-
-        placeInfoDto.setOpeningHoursList(openingHoursList);
+        placeInfoDto.setOpeningHoursList(mapFromOpeningHoursToOpenHoursDto(source));
         return placeInfoDto;
     }
 
-    private OpenHoursDto convertToOpeningHoursToOpenHoursDto(OpeningHours openingHours) {
-        return OpenHoursDto.builder()
-            .id(openingHours.getId())
-            .openTime(openingHours.getOpenTime())
-            .breakTime(BreakTimeDto.builder()
+    private List<OpenHoursDto> mapFromOpeningHoursToOpenHoursDto(Place place) {
+        List<OpenHoursDto> list = new ArrayList<>();
+        for (OpeningHours openingHours : place.getOpeningHoursList()) {
+            OpenHoursDto openHoursDto = new OpenHoursDto();
+            openHoursDto.setId(openingHours.getId());
+            openHoursDto.setOpenTime(openingHours.getOpenTime());
+            openHoursDto.setWeekDay(openingHours.getWeekDay());
+            openHoursDto.setCloseTime(openingHours.getCloseTime());
+            openHoursDto.setBreakTime(BreakTimeDto.builder()
                 .startTime(openingHours.getBreakTime().getStartTime())
                 .endTime(openingHours.getBreakTime().getEndTime())
-                .build())
-            .closeTime(openingHours.getCloseTime())
-            .weekDay(openingHours.getWeekDay())
-            .build();
+                .build());
+            list.add(openHoursDto);
+        }
+        return list;
     }
 }
