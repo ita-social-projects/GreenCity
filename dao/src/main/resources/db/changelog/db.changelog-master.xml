@@ -225,4 +225,5 @@
     <include file="db/changelog/logs/ch-delete-rows-from-tags-tags-translation-habit-Prots.xml" />
     <include file="/db/changelog/logs/ch-add-column-notifications-Herchanivska-4.xml"/>
     <include file="db/changelog/logs/ch-drop-habit_facts-table-and-habit_fact_translations-table.xml"/>
+    <include file="db/changelog/logs/ch-change-table-subscriptions-Rozhko.xml"/>
 </databaseChangeLog>

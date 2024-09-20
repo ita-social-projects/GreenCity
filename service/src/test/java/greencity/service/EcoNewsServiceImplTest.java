@@ -91,8 +91,6 @@ class EcoNewsServiceImplTest {
     @Mock
     ModelMapper modelMapper;
     @Mock
-    NewsSubscriberService newsSubscriberService;
-    @Mock
     RestClient restClient;
     @Mock
     TagsService tagService;
@@ -152,7 +150,6 @@ class EcoNewsServiceImplTest {
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
-        when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
