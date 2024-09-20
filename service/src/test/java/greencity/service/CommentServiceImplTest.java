@@ -160,6 +160,7 @@ class CommentServiceImplTest {
     void testSaveThrowsNotFoundExceptionWhenArticleAuthorIsNull() {
         ArticleType articleType = ArticleType.HABIT;
         Long articleId = 1L;
+        Locale locale = Locale.of("en");
         AddCommentDtoRequest addCommentDtoRequest = new AddCommentDtoRequest();
         UserVO userVO = new UserVO();
 
@@ -167,7 +168,7 @@ class CommentServiceImplTest {
         doReturn(null).when(spyCommentService).getArticleAuthor(articleType, articleId);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            spyCommentService.save(articleType, articleId, addCommentDtoRequest, userVO, Locale.of("en"));
+            spyCommentService.save(articleType, articleId, addCommentDtoRequest, userVO, locale);
         });
 
         assertEquals("Article author not found", exception.getMessage());
@@ -177,6 +178,7 @@ class CommentServiceImplTest {
     void saveReplyToReplyThrowException() {
         Long parentCommentId = 2L;
         UserVO userVO = getUserVO();
+        Locale locale = Locale.of("en");
         User user = getUser();
         Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
         AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
@@ -191,7 +193,7 @@ class CommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en")));
+                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, locale));
 
         assertEquals(ErrorMessage.CANNOT_REPLY_THE_REPLY, badRequestException.getMessage());
 
