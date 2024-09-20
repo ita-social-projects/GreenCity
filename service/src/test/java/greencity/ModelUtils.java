@@ -20,10 +20,7 @@ import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.AddCommentDtoRequest;
-import greencity.dto.comment.AddCommentDtoResponse;
-import greencity.dto.comment.CommentAuthorDto;
-import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.*;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -2617,6 +2614,19 @@ public class ModelUtils {
             .build();
     }
 
+    public static CommentVO getCommentVO() {
+        return CommentVO.builder()
+            .id(1L)
+            .articleType("HABIT")
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUserVO())
+            .status("ORIGINAL")
+            .build();
+    }
+
     public static Comment getSubComment() {
         return Comment.builder()
             .id(5L)
@@ -3131,6 +3141,7 @@ public class ModelUtils {
             .viewed(true)
             .time(LocalDateTime.of(2100, 1, 31, 12, 0))
             .actionUsers(List.of(getUser()))
+            .emailSent(true)
             .build();
     }
 
@@ -3154,6 +3165,7 @@ public class ModelUtils {
             .viewed(true)
             .time(LocalDateTime.of(2100, 1, 31, 12, 0))
             .actionUsers(actionUsers)
+            .emailSent(true)
             .build();
     }
 
