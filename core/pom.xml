@@ -251,6 +251,11 @@
             <artifactId>jna</artifactId>
             <version>${net.java.dev.jna.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.18.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

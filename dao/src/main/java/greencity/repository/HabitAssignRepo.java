@@ -352,6 +352,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "WHERE (uf.user_id = :userId OR uf.friend_id = :userId) "
         + "AND uf.status = 'FRIEND' "
         + "AND ha.habit_id = :habitId "
+        + "AND ha.is_private = FALSE "
         + "AND ha.user_id != :userId "
         + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')", nativeQuery = true)
     List<Long> findFriendsIdsTrackingHabit(@Param("habitId") Long habitId, @Param("userId") Long userId);
