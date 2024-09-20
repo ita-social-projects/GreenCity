@@ -193,9 +193,8 @@ public class ErrorMessage {
     public static final String NOT_FOUND_IN_CURRENT_TIME_RANGE = "Not found backups in current time range";
     public static final String COMMENT_NOT_FOUND_BY_ID = "Comment doesn't exist by this id: ";
     public static final String EMPTY_HABIT_ASSIGN_LIST = "Habit Assigns list cannot be empty";
-    public static final String YOU_COULD_NOT_INVITE_TO_PRIVATE_HABIT = "You could not invite to private habit";
-    public static final String YOU_COULD_NOT_ASSIGN_TO_THIS_PRIVATE_HABIT =
-        "You could not assign to this private habit";
+    public static final String XSS_MULTIPART_PROCESSING_ERROR =
+        "Error during processing xss escaping of multipart file";
     public static final String STATUSES_REQUIRE_USER_ID =
         "JOINED, CREATED and SAVED statuses required user-id parameter";
     public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
