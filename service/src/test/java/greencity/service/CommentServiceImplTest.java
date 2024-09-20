@@ -335,6 +335,22 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void getAllCommentForHabitThatDoesntExistThrowException() {
+        int pageNumber = 1;
+        int pageSize = 10;
+        Long habitId = 1L;
+        UserVO userVO = getUserVO();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            commentService.getAllComments(pageable, ArticleType.HABIT, habitId, userVO, statuses);
+        });
+    }
+
+    @Test
     void getAllActiveComments() {
         int pageNumber = 1;
         int pageSize = 3;

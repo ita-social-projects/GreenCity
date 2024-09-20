@@ -41,7 +41,6 @@ import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;

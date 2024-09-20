@@ -421,7 +421,10 @@ public class CommentServiceImpl implements CommentService {
     public PageableDto<CommentDto> getAllComments(Pageable pageable, ArticleType articleType, Long articleId,
         UserVO user, List<CommentStatus> statuses) {
         if (articleType == ArticleType.HABIT) {
-            habitRepo.findById(articleId).orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+            Optional<Habit> habit = habitRepo.findById(articleId);
+            if (habit.isEmpty()) {
+                throw new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId);
+            }
         }
 
         Page<Comment> pages = commentRepo.findAllByArticleTypeAndArticleIdAndStatusInOrderByCreatedDateDesc(pageable,
