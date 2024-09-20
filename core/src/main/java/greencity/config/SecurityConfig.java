@@ -217,9 +217,6 @@ public class SecurityConfig {
                     HABIT_ASSIGN_ID + "/all",
                     "/habit/statistic/acquired/count",
                     "/habit/statistic/in-progress/count",
-                    "/facts",
-                    "/facts/random/{habitId}",
-                    "/facts/dayFact/{languageId}",
                     FACT_OF_THE_DAY + RANDOM + "/by-tags",
                     "/newsSubscriber/unsubscribe",
                     "/place/{status}",
@@ -377,12 +374,10 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     ADVICES,
-                    "/facts",
                     "/user/filter")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PUT,
-                    ADVICES + "/{id}",
-                    "/facts/{factId}")
+                    ADVICES + "/{id}")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
@@ -392,7 +387,6 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     ADVICES + "/{id}",
-                    "/facts/{factId}",
                     COMMENTS)
                 .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))
