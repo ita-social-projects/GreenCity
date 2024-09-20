@@ -3,7 +3,6 @@ package greencity.webcontroller;
 import com.google.gson.Gson;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
@@ -42,9 +41,6 @@ class ManagementHabitControllerTest {
 
     @Mock
     private ManagementHabitService managementHabitService;
-
-    @Mock
-    private HabitFactService habitFactService;
 
     @Mock
     private LanguageService languageService;
@@ -100,9 +96,6 @@ class ManagementHabitControllerTest {
 
     @Test
     void getHabitByIdPage() throws Exception {
-        Pageable pageable = PageRequest.of(0, 5);
-
-        PageableDto<HabitFactVO> hfacts = habitFactService.getAllHabitFactsVO(pageable);
         List<ShoppingListItemManagementDto> hshops = shoppingListItemService.getShoppingListByHabitId(1L);
         HabitManagementDto habit = managementHabitService.getById(1L);
         List<LanguageTranslationDTO> hadvices = adviceService.getAllByHabitIdAndLanguage(1L, "en");
@@ -114,7 +107,6 @@ class ManagementHabitControllerTest {
             .param("page", "0")
             .param("size", "5"))
             .andExpect(view().name("core/management_user_habit"))
-            .andExpect(model().attribute("hfacts", hfacts))
             .andExpect(model().attribute("hshops", hshops))
             .andExpect(model().attribute("habit", habit))
             .andExpect(model().attribute("hadvices", hadvices))
