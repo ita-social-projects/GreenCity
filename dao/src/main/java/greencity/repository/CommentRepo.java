@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepo extends JpaRepository<Comment, Long> {
@@ -20,6 +21,22 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
      */
     Page<Comment> findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable, Long parentCommentId,
         CommentStatus commentStatus);
+
+    /**
+     * Retrieves all {@link Comment} objects by page for a specific article,
+     * filtered by the given article type, article ID, and a list of excluded
+     * statuses.
+     *
+     * @param pageable    the pagination information (page number, size, etc.).
+     * @param articleType the type of the article (e.g., blog, news, event).
+     * @param articleId   the ID of the article for which comments are being
+     *                    retrieved.
+     * @param statuses    a list of comment statuses to exclude from the results.
+     * @return a {@link Page} containing the filtered {@link Comment} objects,
+     *         ordered by creation date in descending order.
+     */
+    Page<Comment> findAllByArticleTypeAndArticleIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable,
+        ArticleType articleType, Long articleId, List<CommentStatus> statuses);
 
     /**
      * The method returns the count of not deleted comments, specified by.

@@ -14,6 +14,7 @@ import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
+import greencity.enums.CommentStatus;
 import greencity.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Locale;
 
 @Validated
@@ -89,6 +91,23 @@ public class HabitCommentController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(commentService.getCommentById(ArticleType.HABIT, id, userVO));
+    }
+
+    @Operation(summary = "Get all comments.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @GetMapping("/{habitId}/comments")
+    @ApiPageableWithoutSort
+    public ResponseEntity<PageableDto<CommentDto>> getAllComments(
+        @Parameter(hidden = true) Pageable pageable,
+        @PathVariable Long habitId,
+        @RequestParam List<CommentStatus> statuses,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok()
+            .body(commentService.getAllComments(pageable, ArticleType.HABIT, habitId, userVO, statuses));
     }
 
     /**

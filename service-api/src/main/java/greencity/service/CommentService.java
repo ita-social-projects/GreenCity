@@ -8,7 +8,9 @@ import greencity.dto.comment.CommentVO;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
+import greencity.enums.CommentStatus;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 import java.util.Locale;
 
 public interface CommentService {
@@ -61,6 +63,21 @@ public interface CommentService {
      * @return amount of replies.
      */
     int countAllActiveReplies(Long parentCommentId);
+
+    /**
+     * Method to get all active comments for article specified by ArticleType and
+     * articleId.
+     *
+     * @param pageable    page of event.
+     * @param articleType specifies type of article
+     * @param articleId   specifies for specific article to which we search for
+     *                    comments
+     * @param user        {@link UserVO} that get the comments.
+     * @param statuses    statuses of comments.
+     * @return all active comments to certain event specified by eventId.
+     */
+    PageableDto<CommentDto> getAllComments(Pageable pageable, ArticleType articleType,
+        Long articleId, UserVO user, List<CommentStatus> statuses);
 
     /**
      * Method to get all active comments for article specified by articleId.

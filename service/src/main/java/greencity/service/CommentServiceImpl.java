@@ -418,6 +418,25 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
+    public PageableDto<CommentDto> getAllComments(Pageable pageable, ArticleType articleType, Long articleId,
+        UserVO user, List<CommentStatus> statuses) {
+        if (articleType == ArticleType.HABIT) {
+            habitRepo.findById(articleId).orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+        }
+
+        Page<Comment> pages = commentRepo
+            .findAllByArticleTypeAndArticleIdAndStatusNotOrderByCreatedDateDesc(pageable, articleType, articleId,
+                statuses);
+
+        pages = setCurrentUserLiked(pages, user);
+
+        return convertPagesToCommentDtos(pages, user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId,
         ArticleType articleType) {
         if (articleType == ArticleType.HABIT) {
