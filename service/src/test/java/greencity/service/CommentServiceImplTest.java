@@ -303,6 +303,39 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void getAllCommentsForHabit() {
+        int pageNumber = 1;
+        int pageSize = 10;
+        UserVO userVO = getUserVO();
+        Long habitId = 1L;
+        Comment comment = getComment();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Comment> pages = new PageImpl<>(Collections.singletonList(comment), pageable, 1);
+        CommentDto commentDto = getCommentDto();
+        Habit habit = getHabit();
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
+
+        when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
+        when(commentRepo.findAllByArticleTypeAndArticleIdAndStatusInOrderByCreatedDateDesc(
+                pageable, ArticleType.HABIT, habitId, statuses
+        )).thenReturn(pages);
+        when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
+
+        PageableDto<CommentDto> allComments = commentService.getAllComments(
+                pageable, ArticleType.HABIT, habitId, userVO, statuses);
+
+        assertEquals(commentDto, allComments.getPage().getFirst());
+        assertEquals(11, allComments.getTotalElements());
+        assertEquals(1, allComments.getCurrentPage());
+        assertEquals(1, allComments.getPage().size());
+
+        verify(habitRepo).findById(1L);
+        verify(commentRepo).findAllByArticleTypeAndArticleIdAndStatusInOrderByCreatedDateDesc(
+                pageable, ArticleType.HABIT, habitId, statuses);
+        verify(modelMapper).map(comment, CommentDto.class);
+    }
+
+    @Test
     void getAllActiveComments() {
         int pageNumber = 1;
         int pageSize = 3;

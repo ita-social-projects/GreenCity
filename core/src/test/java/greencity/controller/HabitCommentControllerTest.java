@@ -9,6 +9,7 @@ import greencity.dto.comment.CommentDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
+import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.service.CommentService;
 import greencity.service.UserService;
@@ -33,12 +34,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Locale;
 
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.longThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;
@@ -122,6 +125,25 @@ class HabitCommentControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllCommentForHabitTest() {
+        UserVO userVO = getUserVO();
+        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        Long habitId = 1L;
+        int pageNumber = 5;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        mockMvc.perform(get(HABIT_LINK + "/{habitId}/comments?statuses=EDITED,ORIGINAL&page=5&size=20", habitId)
+                .principal(principal))
+                .andExpect(status().isOk());
+
+        verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).getAllComments(pageable, ArticleType.HABIT, habitId, userVO, statuses);
     }
 
     @Test
