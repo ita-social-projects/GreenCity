@@ -139,8 +139,8 @@ class HabitCommentControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(HABIT_LINK + "/{habitId}/comments?statuses=EDITED,ORIGINAL&page=5&size=20", habitId)
-                .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).getAllComments(pageable, ArticleType.HABIT, habitId, userVO, statuses);

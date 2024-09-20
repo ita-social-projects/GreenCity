@@ -317,12 +317,11 @@ class CommentServiceImplTest {
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.of(habit));
         when(commentRepo.findAllByArticleTypeAndArticleIdAndStatusInOrderByCreatedDateDesc(
-                pageable, ArticleType.HABIT, habitId, statuses
-        )).thenReturn(pages);
+            pageable, ArticleType.HABIT, habitId, statuses)).thenReturn(pages);
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
 
         PageableDto<CommentDto> allComments = commentService.getAllComments(
-                pageable, ArticleType.HABIT, habitId, userVO, statuses);
+            pageable, ArticleType.HABIT, habitId, userVO, statuses);
 
         assertEquals(commentDto, allComments.getPage().getFirst());
         assertEquals(11, allComments.getTotalElements());
@@ -331,7 +330,7 @@ class CommentServiceImplTest {
 
         verify(habitRepo).findById(1L);
         verify(commentRepo).findAllByArticleTypeAndArticleIdAndStatusInOrderByCreatedDateDesc(
-                pageable, ArticleType.HABIT, habitId, statuses);
+            pageable, ArticleType.HABIT, habitId, statuses);
         verify(modelMapper).map(comment, CommentDto.class);
     }
 
