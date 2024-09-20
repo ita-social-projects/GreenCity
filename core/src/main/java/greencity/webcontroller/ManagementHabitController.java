@@ -44,7 +44,6 @@ import java.util.Locale;
 public class ManagementHabitController {
     private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
-    private final HabitFactService habitFactService;
     private final ShoppingListItemService shoppingListItemService;
     private final AdviceService adviceService;
     private final HabitAssignService habitAssignService;
@@ -108,9 +107,7 @@ public class ManagementHabitController {
     })
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
-        @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) Locale locale, Model model) {
-        model.addAttribute("hfacts", habitFactService.getAllHabitFactsVO(pageable));
         model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
         model.addAttribute("hadvices", adviceService.getAllByHabitIdAndLanguage(id, locale.getLanguage()));

@@ -78,12 +78,6 @@ import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactUpdateDto;
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -152,8 +146,6 @@ import greencity.entity.FavoritePlace;
 import greencity.entity.Filter;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
-import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
 import greencity.entity.HabitStatistic;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
@@ -184,7 +176,6 @@ import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
-import greencity.enums.FactOfDayStatus;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.NotificationType;
@@ -1144,34 +1135,6 @@ public class ModelUtils {
         return placeAddDto;
     }
 
-    public static HabitFactTranslation getFactTranslation() {
-        return HabitFactTranslation.builder()
-            .id(1L)
-            .factOfDayStatus(FactOfDayStatus.CURRENT)
-            .habitFact(null)
-            .content("Content")
-            .language(getLanguage())
-            .build();
-    }
-
-    public static HabitFactTranslationVO getFactTranslationVO() {
-        return HabitFactTranslationVO.builder()
-            .id(1L)
-            .factOfDayStatus(FactOfDayStatus.CURRENT)
-            .habitFact(null)
-            .language(getLanguageVO())
-            .content("Content")
-            .build();
-    }
-
-    public static HabitFact getHabitFact() {
-        return new HabitFact(1L, Collections.singletonList(getFactTranslation()), null);
-    }
-
-    public static HabitFactVO getHabitFactVO() {
-        return new HabitFactVO(1L, Collections.singletonList(getFactTranslationVO()), null);
-    }
-
     public static LanguageTranslationDTO getLanguageTranslationDTO() {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
@@ -1311,37 +1274,6 @@ public class ModelUtils {
         List<SocialNetworkVO> socialNetworkVO = new ArrayList<>();
         socialNetworkVO.add(SocialNetworkVO.builder().id(1L).url("url").build());
         return socialNetworkVO;
-    }
-
-    public static HabitFactTranslation getHabitFactTranslation() {
-        return HabitFactTranslation.builder()
-            .id(1L)
-            .habitFact(getHabitFact())
-            .factOfDayStatus(FactOfDayStatus.POTENTIAL)
-            .language(getLanguage())
-            .content("content")
-            .build();
-    }
-
-    public static HabitFactDto getHabitFactDto() {
-        return HabitFactDto.builder()
-            .id(1L)
-            .habit(HabitDto.builder()
-                .id(1L)
-                .image("")
-                .habitTranslation(null)
-                .build())
-            .content("content")
-            .build();
-    }
-
-    public static HabitFactPostDto getHabitFactPostDto() {
-        return HabitFactPostDto.builder()
-            .habit(HabitIdRequestDto.builder()
-                .id(1L)
-                .build())
-            .translations(Collections.singletonList(getLanguageTranslationDTO()))
-            .build();
     }
 
     public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
@@ -1541,23 +1473,6 @@ public class ModelUtils {
             .lng(12.12d)
             .lat(12.12d)
             .build();
-    }
-
-    public static HabitFactUpdateDto getHabitFactUpdateDto() {
-        return HabitFactUpdateDto.builder()
-            .habit(HabitIdRequestDto.builder()
-                .id(1L)
-                .build())
-            .translations(getHabitFactTranslationUpdateDtos())
-            .build();
-    }
-
-    public static List<HabitFactTranslationUpdateDto> getHabitFactTranslationUpdateDtos() {
-        return new ArrayList<>(Arrays.asList(
-            HabitFactTranslationUpdateDto.builder().content("ua").factOfDayStatus(FactOfDayStatus.POTENTIAL)
-                .language(getLanguageDTO()).build(),
-            HabitFactTranslationUpdateDto.builder().content("en").factOfDayStatus(FactOfDayStatus.POTENTIAL)
-                .language(getLanguageDTO()).build()));
     }
 
     public static List<AdviceTranslation> getAdviceTranslations() {
@@ -3226,6 +3141,7 @@ public class ModelUtils {
             .viewed(true)
             .time(LocalDateTime.of(2100, 1, 31, 12, 0))
             .actionUsers(List.of(getUser()))
+            .emailSent(true)
             .build();
     }
 
@@ -3249,6 +3165,7 @@ public class ModelUtils {
             .viewed(true)
             .time(LocalDateTime.of(2100, 1, 31, 12, 0))
             .actionUsers(actionUsers)
+            .emailSent(true)
             .build();
     }
 

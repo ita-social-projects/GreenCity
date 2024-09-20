@@ -67,4 +67,7 @@ public class Notification {
 
     @Column
     private LocalDateTime time;
+
+    @Column
+    private boolean emailSent;
 }

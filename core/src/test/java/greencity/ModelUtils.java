@@ -27,17 +27,10 @@ import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactUpdateDto;
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
@@ -53,7 +46,6 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.enums.FactOfDayStatus;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.enums.Role;
@@ -162,41 +154,6 @@ public class ModelUtils {
 
     public static ObjectMapper getObjectMapper() {
         return new ObjectMapper();
-    }
-
-    public static HabitFactVO getHabitFactVO() {
-        return HabitFactVO.builder()
-            .id(1L)
-            .habit(HabitVO.builder()
-                .id(1L)
-                .image("string")
-                .build())
-            .translations(Collections.singletonList(HabitFactTranslationVO.builder()
-                .id(1L)
-                .content("content")
-                .factOfDayStatus(FactOfDayStatus.POTENTIAL)
-                .habitFact(null)
-                .language(LanguageVO.builder()
-                    .id(1L)
-                    .code("ua")
-                    .build())
-                .build()))
-            .build();
-    }
-
-    public static HabitFactPostDto getHabitFactPostDto() {
-        return HabitFactPostDto.builder()
-            .translations(List.of(getLanguageTranslationDTO()))
-            .habit(new HabitIdRequestDto(1L))
-            .build();
-    }
-
-    public static HabitFactUpdateDto getHabitFactUpdateDto() {
-        return HabitFactUpdateDto.builder()
-            .habit(new HabitIdRequestDto(1L))
-            .translations(Collections.singletonList(
-                new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL, getLanguageDTO(), "")))
-            .build();
     }
 
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
