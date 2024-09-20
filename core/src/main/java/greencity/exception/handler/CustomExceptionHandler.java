@@ -11,6 +11,7 @@ import greencity.exception.exceptions.BadSocialNetworkLinksException;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.MultipartXSSProcessingException;
 import greencity.exception.exceptions.NotCurrentUserException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -555,6 +556,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserHasNoFriendWithIdException.class)
     public final ResponseEntity<Object> handleUserHasNoFriendWithIdException(
         UserHasNoFriendWithIdException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Customize the response for MultipartXSSProcessingException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(MultipartXSSProcessingException.class)
+    public final ResponseEntity<Object> handleMultipartXSSProcessingException(
+        MultipartXSSProcessingException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
