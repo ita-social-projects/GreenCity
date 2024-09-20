@@ -9,6 +9,8 @@ import greencity.dto.specification.SpecificationNameDto;
 import greencity.service.CategoryService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
+
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -24,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -88,26 +92,21 @@ class ManagementPlacesControllerTest {
 
     @Test
     void savePlace() throws Exception {
-        this.mockMvc.perform(post("/management/places/")
-            .content("{\n" +
-                "  \"category\": {\n" +
-                "   \"name\": \"Food\"\n" +
-                "  },\n" +
-                "  \"status\": \"APPROVED\",\n" +
-                "  \"discountValues\": null,\n" +
-                "  \"location\": {\n" +
-                "    \"address\": \"string\",\n" +
-                "    \"lat\": 111,\n" +
-                "    \"lng\": 111\n" +
-                "  },\n" +
-                "  \"name\": \"string\",\n" +
-                "  \"openingHoursList\":null,\n" +
-                "  \"photos\": null\n" +
-                "}")
-            .contentType(MediaType.APPLICATION_JSON))
+        Principal principal = Mockito.mock(Principal.class);
+        MockMultipartFile addPlaceDto = new MockMultipartFile(
+            "addPlaceDto",
+            "",
+            "application/json",
+            "{\"placeName\":\"Тестове місце\",\"locationName\":\"смиків, південна 7\",\"status\":\"APPROVED\",\"categoryName\":\"Recycling points\",\"discountValues\":null,\"openingHoursList\":[{\"weekDay\":\"MONDAY\",\"openTime\":\"17:34\",\"closeTime\":\"19:34\",\"breakTime\":null}]}"
+                .getBytes());
+
+        this.mockMvc.perform(multipart("/management/places/")
+            .file(addPlaceDto)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
-        verify(placeService).save(any(), any());
+        verify(placeService).addPlaceFromUi(any(), any(), any());
     }
 
     @Test
