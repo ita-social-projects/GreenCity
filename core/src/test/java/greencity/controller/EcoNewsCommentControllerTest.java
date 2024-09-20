@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
+import java.util.Locale;
 
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
@@ -77,6 +78,7 @@ class EcoNewsCommentControllerTest {
     @SneakyThrows
     void saveTest() {
         UserVO userVO = getUserVO();
+        Locale locale = Locale.of("en");
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = """
@@ -97,7 +99,7 @@ class EcoNewsCommentControllerTest {
             mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, userVO);
+        verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, userVO, locale);
     }
 
     @Test
