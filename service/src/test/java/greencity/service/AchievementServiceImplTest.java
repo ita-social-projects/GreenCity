@@ -4,15 +4,11 @@ import greencity.ModelUtils;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getUserAchievement;
 import static greencity.ModelUtils.getActionDto;
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import static greencity.enums.AchievementStatus.ACHIEVED;
@@ -44,7 +40,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,10 +51,6 @@ class AchievementServiceImplTest {
     private AchievementRepo achievementRepo;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private RestClient restClient;
-    @Mock
-    private UserActionService userActionService;
     @Mock
     private UserAchievementRepo userAchievementRepo;
     @InjectMocks
@@ -136,21 +127,11 @@ class AchievementServiceImplTest {
         AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        UserVO userVO = getUserVO();
-        UserAchievementVO userAchievement = ModelUtils.getUserAchievementVO();
-        List<UserAchievementVO> userAchievements = new ArrayList<>();
-        userAchievements.add(userAchievement);
-        userVO.setUserAchievements(userAchievements);
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        List<UserActionVO> userActionVOS = new ArrayList<>();
-        userActionVOS.add(userActionVO);
-        userVO.setUserActions(userActionVOS);
+
         when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
         when(achievementCategoryRepo.findByName("Test")).thenReturn(Optional.of(achievementCategory));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        when(restClient.findAll()).thenReturn(Collections.singletonList(userVO));
-        when(userActionService.findUserAction(1L, 1L)).thenReturn(null);
 
         AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);

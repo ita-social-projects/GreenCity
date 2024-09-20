@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
+import java.util.Locale;
 
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -97,7 +98,7 @@ class HabitCommentControllerTest {
             mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO);
+        verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
     }
 
     @Test

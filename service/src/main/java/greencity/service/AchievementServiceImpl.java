@@ -1,15 +1,11 @@
 package greencity.service;
 
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
@@ -39,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
     private final ModelMapper modelMapper;
-    private final RestClient restClient;
-    private final UserActionService userActionService;
     private final UserService userService;
     private final UserAchievementRepo userAchievementRepo;
     private final SimpMessagingTemplate messagingTemplate;
@@ -69,24 +63,7 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementCategory achievementCategory =
             findCategoryByName(achievementPostDto.getAchievementCategory().getName());
         populateAchievement(achievement, achievementPostDto, achievementCategory);
-        AchievementVO achievementVO = mapToVO(achievementRepo.save(achievement));
-        UserAchievementVO userAchievementVO = new UserAchievementVO();
-        UserActionVO userActionVO = new UserActionVO();
-        userAchievementVO.setAchievement(achievementVO);
-        restClient.findAll().forEach(userVO -> {
-            UserActionVO userActionByUserIdAndAchievementCategory =
-                userActionService.findUserAction(userVO.getId(),
-                    achievementCategory.getId());
-            if (userActionByUserIdAndAchievementCategory == null) {
-                userActionVO.setAchievementCategory(modelMapper.map(achievementCategory, AchievementCategoryVO.class));
-                userActionVO.setUser(userVO);
-                userActionService.save(userActionVO);
-            }
-            userVO.getUserAchievements().add(userAchievementVO);
-            userAchievementVO.setUser(userVO);
-            userService.updateUserRating(userVO.getId(), userVO.getRating());
-        });
-        return achievementVO;
+        return mapToVO(achievementRepo.save(achievement));
     }
 
     /**

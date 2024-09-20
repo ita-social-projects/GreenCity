@@ -11,6 +11,7 @@ import greencity.exception.exceptions.BadSocialNetworkLinksException;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.MultipartXSSProcessingException;
 import greencity.exception.exceptions.NotCurrentUserException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -21,8 +22,6 @@ import greencity.exception.exceptions.TagNotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserCouldNotAssignPrivateHabit;
-import greencity.exception.exceptions.UserCouldNotInviteToPrivateHabit;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
@@ -562,17 +561,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @ExceptionHandler(UserCouldNotInviteToPrivateHabit.class)
-    public final ResponseEntity<Object> handleUserCouldNotInviteToPrivateHabit(UserCouldNotInviteToPrivateHabit ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(UserCouldNotAssignPrivateHabit.class)
-    public final ResponseEntity<Object> handleUserCouldNotAssignPrivateHabit(UserCouldNotAssignPrivateHabit ex,
-        WebRequest request) {
+    /**
+     * Customize the response for MultipartXSSProcessingException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(MultipartXSSProcessingException.class)
+    public final ResponseEntity<Object> handleMultipartXSSProcessingException(
+        MultipartXSSProcessingException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

@@ -191,7 +191,7 @@ class HabitServiceImplTest {
         habitDto.setIsCustomHabit(true);
         UserVO userVO = ModelUtils.getUserVO();
         List<Long> requestedCustomHabitIds = List.of(1L);
-        when(habitRepo.findVisibleCustomHabitsIdsByUserId(1L)).thenReturn(requestedCustomHabitIds);
+        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
             requestedCustomHabitIds, userVO.getId(), "en")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
@@ -213,7 +213,7 @@ class HabitServiceImplTest {
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
         verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
-        verify(habitRepo).findVisibleCustomHabitsIdsByUserId(anyLong());
+        verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
         verify(habitRepo).findById(1L);
         verify(userRepo).findUserLanguageCodeByUserId(anyLong());
     }
@@ -233,7 +233,7 @@ class HabitServiceImplTest {
         habitDto.setHabitAssignStatus(HabitAssignStatus.ACQUIRED);
         UserVO userVO = ModelUtils.getUserVO();
         List<Long> requestedCustomHabitIds = new ArrayList<>();
-        when(habitRepo.findVisibleCustomHabitsIdsByUserId(1L)).thenReturn(requestedCustomHabitIds);
+        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
             requestedCustomHabitIds, userVO.getId(), "ua")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
@@ -254,7 +254,7 @@ class HabitServiceImplTest {
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
         verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
-        verify(habitRepo).findVisibleCustomHabitsIdsByUserId(anyLong());
+        verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
         verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(habitRepo).findById(1L);
         verify(userRepo).findUserLanguageCodeByUserId(anyLong());

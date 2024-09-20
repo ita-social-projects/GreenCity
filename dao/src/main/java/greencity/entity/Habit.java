@@ -90,7 +90,4 @@ public class Habit {
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> usersLiked;
-
-    @Column(name = "is_shared_with_friends")
-    private Boolean isSharedWithFriends;
 }

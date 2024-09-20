@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -43,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Locale;
+
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -73,10 +76,11 @@ public class EcoNewsCommentController {
     @PostMapping("/{ecoNewsId}/comments")
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long ecoNewsId,
         @Valid @RequestBody AddCommentDtoRequest request,
+        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.ECO_NEWS, ecoNewsId, request, user));
+            .body(commentService.save(ArticleType.ECO_NEWS, ecoNewsId, request, user, locale));
     }
 
     /**
