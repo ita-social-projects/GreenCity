@@ -85,7 +85,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1, 0);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+                0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
@@ -114,7 +115,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1, 0);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+                0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
@@ -149,7 +151,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1, 0);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+                0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any())).thenReturn(userActionVO);
@@ -252,7 +255,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1, 0);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+                0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any(), any())).thenReturn(userActionVO);
@@ -280,7 +284,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1, 0);
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+                0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserAction(any(), any(), any())).thenReturn(userActionVO);

@@ -85,12 +85,14 @@ public interface AchievementService {
      * @return List AchievementVO Returns a list of achievements matching the given
      *         criteria.
      */
-    List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus, Long achievementCategoryId);
+    List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId);
 
     /**
      * Method for achieve.
      */
     void achieve(ActionDto user);
 
-    Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus, Long achievementCategoryId);
+    Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId);
 }

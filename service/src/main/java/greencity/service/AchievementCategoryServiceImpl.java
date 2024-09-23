@@ -40,7 +40,9 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
      */
     @Override
     public List<AchievementCategoryTranslationDto> findAll() {
-        return achievementCategoryRepo.findAll().stream().map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class)).toList();
+        return achievementCategoryRepo.findAll().stream()
+            .map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class))
+            .toList();
     }
 
     /**
