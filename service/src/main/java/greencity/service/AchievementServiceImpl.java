@@ -192,7 +192,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     private List<AchievementVO> findAllAchievementsWithAnyStatus(Long userId, Long achievementCategoryId) {
         if (achievementCategoryId == null) {
-            List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
             return achievementRepo.findAll()
                 .stream()
                 .map(this::mapToVO)
@@ -207,7 +206,6 @@ public class AchievementServiceImpl implements AchievementService {
 
     private List<AchievementVO> findAllAchieved(Long userId, Long achievementCategoryId) {
         if (achievementCategoryId == null) {
-            List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
             return userAchievementRepo.getUserAchievementByUserId(userId)
                 .stream()
                 .map(userAchievement -> userAchievement.getAchievement().getId())
