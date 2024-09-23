@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import java.util.List;
 
@@ -15,12 +16,20 @@ public interface AchievementCategoryService {
     AchievementCategoryVO save(AchievementCategoryDto achievementCategoryDto);
 
     /**
+     * Method for finding all {@link AchievementCategoryTranslationDto}.
+     *
+     * @return list of {@link AchievementCategoryTranslationDto}.
+     * @author Viktoriia Herchanivska
+     */
+    List<AchievementCategoryTranslationDto> findAll();
+
+    /**
      * Method for finding all {@link AchievementCategoryVO}.
      *
      * @return list of {@link AchievementCategoryVO}.
      * @author Orest Mamchuk
      */
-    List<AchievementCategoryVO> findAll();
+    List<AchievementCategoryVO> findAllForManagement();
 
     /**
      * Method for finding {@link AchievementCategoryVO}.

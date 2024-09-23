@@ -18,6 +18,7 @@ import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserActionRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -61,12 +62,15 @@ class AchievementServiceImplTest {
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
+    @Mock
+    private UserActionRepo userActionRepo;
 
     @Test
     void findAllWithEmptyListTest() {
         when(userService.findByEmail("email@gmail.com")).thenReturn(getUserVO());
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", null);
+        when(userActionRepo.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
+        List<AchievementVO> findAllResult = achievementService.findAllByTypeAndCategory("email@gmail.com", null, null);
         assertTrue(findAllResult.isEmpty());
     }
 
@@ -77,7 +81,8 @@ class AchievementServiceImplTest {
         when(achievementRepo.findAll()).thenReturn(Collections.singletonList(achievement));
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(ModelUtils.getAchievementVO());
         when(userService.findByEmail("email@gmail.com")).thenReturn(getUserVO());
-        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", null);
+        when(userActionRepo.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
+        List<AchievementVO> findAllResult = achievementService.findAllByTypeAndCategory("email@gmail.com", null, null);
         assertEquals(1L, (long) findAllResult.getFirst().getId());
     }
 
@@ -101,11 +106,13 @@ class AchievementServiceImplTest {
         when(achievementRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievement()));
         when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
-        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", ACHIEVED);
+        when(userActionRepo.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
+        List<AchievementVO> findAllResult = achievementService.findAllByTypeAndCategory("email@gmail.com", ACHIEVED, null);
         assertEquals(1L, (long) findAllResult.getFirst().getId());
         verify(userService).findByEmail("email@gmail.com");
         verify(userAchievementRepo).getUserAchievementByUserId(anyLong());
         verify(modelMapper).map(ModelUtils.getAchievement(), AchievementVO.class);
+        verify(userActionRepo).findAllByUserId(anyLong());
     }
 
     @Test
@@ -115,10 +122,12 @@ class AchievementServiceImplTest {
             .thenReturn(List.of(ModelUtils.getAchievement()));
         when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
-        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", UNACHIEVED);
+        when(userActionRepo.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
+        List<AchievementVO> findAllResult = achievementService.findAllByTypeAndCategory("email@gmail.com", UNACHIEVED, null);
         assertEquals(1L, (long) findAllResult.getFirst().getId());
         verify(userService).findByEmail("email@gmail.com");
         verify(achievementRepo).searchAchievementsUnAchieved(anyLong());
+        verify(userActionRepo).findAllByUserId(anyLong());
     }
 
     @Test

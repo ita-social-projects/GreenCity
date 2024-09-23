@@ -56,7 +56,7 @@ class AchievementCategoryServiceImplTest {
     }
 
     @Test
-    void findAllTest() {
+    void findAllForManagementTest() {
         List<AchievementCategory> list = Collections.singletonList(ModelUtils.getAchievementCategory());
         List<AchievementCategoryVO> expected = Collections.singletonList(ModelUtils.getAchievementCategoryVO());
 
@@ -64,7 +64,7 @@ class AchievementCategoryServiceImplTest {
         when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryVO.class))
             .thenReturn(ModelUtils.getAchievementCategoryVO());
 
-        List<AchievementCategoryVO> actual = achievementCategoryService.findAll();
+        List<AchievementCategoryVO> actual = achievementCategoryService.findAllForManagement();
 
         assertEquals(expected, actual);
     }

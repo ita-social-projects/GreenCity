@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class AchievementCategoryGenericDto {
+public class AchievementCategoryTranslationDto {
     @NotEmpty
     private Long id;
 

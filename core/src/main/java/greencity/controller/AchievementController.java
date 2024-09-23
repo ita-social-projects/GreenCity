@@ -3,8 +3,9 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.achievementcategory.AchievementCategoryGenericDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.enums.AchievementStatus;
+import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AchievementController {
     private final AchievementService achievementService;
+    private final AchievementCategoryService achievementCategoryService;
 
     /**
      * Method returns all achievements, available for achieving.
@@ -69,8 +71,7 @@ public class AchievementController {
     }
 
     @GetMapping("/getAllCategories")
-    public ResponseEntity<List<AchievementCategoryGenericDto>> getAchievementCategories(@Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok(List.of(new AchievementCategoryGenericDto()));
-        //TODO: create service method
+    public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(@Parameter(hidden = true) Principal principal) {
+        return ResponseEntity.ok().body(achievementCategoryService.findAll());
     }
 }

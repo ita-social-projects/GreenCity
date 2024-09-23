@@ -225,4 +225,7 @@
     <include file="db/changelog/logs/ch-delete-rows-from-tags-tags-translation-habit-Prots.xml" />
     <include file="/db/changelog/logs/ch-add-column-notifications-Herchanivska-4.xml"/>
     <include file="db/changelog/logs/ch-drop-habit_facts-table-and-habit_fact_translations-table.xml"/>
+    <include file="db/changelog/logs/ch-add-columns-achievement-categories-Herchanivska-5.xml"/>
+    <include file="db/changelog/logs/ch-update-achievement-categories-Herchanivska-6.xml"/>
+    <include file="db/changelog/logs/ch-update-columns-achievement-categories-Herchanivska-7.xml"/>
 </databaseChangeLog>

@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
@@ -38,7 +39,15 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementCategoryVO> findAll() {
+    public List<AchievementCategoryTranslationDto> findAll() {
+        return achievementCategoryRepo.findAll().stream().map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class)).toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AchievementCategoryVO> findAllForManagement() {
         return achievementCategoryRepo.findAll().stream().map(this::mapToVO).toList();
     }
 

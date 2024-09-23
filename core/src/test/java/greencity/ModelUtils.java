@@ -177,7 +177,7 @@ public class ModelUtils {
     public static AchievementVO getAchievementVO() {
         return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
             "Acquired habit 14 days",
-            new AchievementCategoryVO(1L, "name"), 1);
+            new AchievementCategoryVO(1L, "name"), 1, 0);
     }
 
     public static UserManagementDto getUserManagementDto() {
