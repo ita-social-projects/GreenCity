@@ -85,11 +85,31 @@ public class AchievementServiceImpl implements AchievementService {
     public List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
         Long achievementCategoryId) {
         Long userId = userService.findByEmail(principalEmail).getId();
-        return switch (achievementStatus) {
+        List<AchievementVO> achievements = switch (achievementStatus) {
             case ACHIEVED -> findAllAchieved(userId, achievementCategoryId);
             case UNACHIEVED -> findUnachieved(userId, achievementCategoryId);
             case null, default -> findAllAchievementsWithAnyStatus(userId, achievementCategoryId);
         };
+        if (achievementCategoryId == null) {
+            List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
+            return achievements.stream().map(achievementVO -> {
+                        int achievementCategoryProgress = 0;
+                        for (UserAction action : allActions) {
+                            if (action.getAchievementCategory().getId()
+                                    .equals(achievementVO.getAchievementCategory().getId())) {
+                                achievementCategoryProgress = action.getCount();
+                                break;
+                            }
+                        }
+                        return achievementVO.setProgress(achievementCategoryProgress);
+                    })
+                    .toList();
+        } else {
+            UserAction achievementAction =
+                    userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
+            int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
+            return achievements.stream().map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress)).toList();
+        }
     }
 
     /**
@@ -175,26 +195,11 @@ public class AchievementServiceImpl implements AchievementService {
             return achievementRepo.findAll()
                 .stream()
                 .map(this::mapToVO)
-                .map(achievementVO -> {
-                    int achievementCategoryProgress = 0;
-                    for (UserAction action : allActions) {
-                        if (action.getAchievementCategory().getId()
-                            .equals(achievementVO.getAchievementCategory().getId())) {
-                            achievementCategoryProgress = action.getCount();
-                            break;
-                        }
-                    }
-                    return achievementVO.setProgress(achievementCategoryProgress);
-                })
                 .toList();
         } else {
-            UserAction achievementAction =
-                userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
-            int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
             return achievementRepo.findAllByAchievementCategoryId(achievementCategoryId)
                 .stream()
                 .map(this::mapToVO)
-                .map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
                 .toList();
         }
     }
@@ -208,22 +213,8 @@ public class AchievementServiceImpl implements AchievementService {
                 .map(achievementRepo::findById)
                 .flatMap(Optional::stream)
                 .map(this::mapToVO)
-                .map(achievementVO -> {
-                    int achievementCategoryProgress = 0;
-                    for (UserAction action : allActions) {
-                        if (action.getAchievementCategory().getId()
-                            .equals(achievementVO.getAchievementCategory().getId())) {
-                            achievementCategoryProgress = action.getCount();
-                            break;
-                        }
-                    }
-                    return achievementVO.setProgress(achievementCategoryProgress);
-                })
                 .toList();
         } else {
-            UserAction achievementAction =
-                userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
-            int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
             return userAchievementRepo
                 .findAllByUserIdAndAchievement_AchievementCategoryId(userId, achievementCategoryId)
                 .stream()
@@ -231,37 +222,20 @@ public class AchievementServiceImpl implements AchievementService {
                 .map(achievementRepo::findById)
                 .flatMap(Optional::stream)
                 .map(this::mapToVO)
-                .map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
                 .toList();
         }
     }
 
     private List<AchievementVO> findUnachieved(Long userId, Long achievementCategoryId) {
         if (achievementCategoryId == null) {
-            List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
             return achievementRepo.searchAchievementsUnAchieved(userId)
                 .stream()
                 .map(this::mapToVO)
-                .map(achievementVO -> {
-                    int achievementCategoryProgress = 0;
-                    for (UserAction action : allActions) {
-                        if (action.getAchievementCategory().getId()
-                            .equals(achievementVO.getAchievementCategory().getId())) {
-                            achievementCategoryProgress = action.getCount();
-                            break;
-                        }
-                    }
-                    return achievementVO.setProgress(achievementCategoryProgress);
-                })
                 .toList();
         } else {
-            UserAction achievementAction =
-                userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
-            int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
             return achievementRepo.searchAchievementsUnAchievedByCategory(userId, achievementCategoryId)
                 .stream()
                 .map(this::mapToVO)
-                .map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
                 .toList();
         }
     }
