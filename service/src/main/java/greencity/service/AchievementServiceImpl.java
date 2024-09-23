@@ -91,7 +91,7 @@ public class AchievementServiceImpl implements AchievementService {
         List<AchievementVO> achievements = switch (achievementStatus) {
             case ACHIEVED -> findAllAchieved(userId, searchAchievementCategoryId);
             case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
-            case null, default -> findAllAchievementsWithAnyStatus(userId, searchAchievementCategoryId);
+            case null, default -> findAllAchievementsWithAnyStatus(searchAchievementCategoryId);
         };
         if (achievementCategoryId == null) {
             List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
@@ -198,7 +198,7 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setCondition(achievementPostDto.getCondition());
     }
 
-    private List<AchievementVO> findAllAchievementsWithAnyStatus(Long userId, Long achievementCategoryId) {
+    private List<AchievementVO> findAllAchievementsWithAnyStatus(Long achievementCategoryId) {
         if (achievementCategoryId == null) {
             return achievementRepo.findAll()
                 .stream()

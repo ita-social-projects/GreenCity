@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
@@ -86,5 +87,19 @@ class AchievementCategoryServiceImplTest {
     void findByNameThrowException() {
         when(achievementCategoryRepo.findByName("Not Exist")).thenReturn(Optional.empty());
         assertThrows(BadCategoryRequestException.class, () -> achievementCategoryService.findByName("Not Exist"));
+    }
+
+    @Test
+    void findAllTest() {
+        List<AchievementCategory> list = List.of(ModelUtils.getAchievementCategory());
+        List<AchievementCategoryTranslationDto> expected = List.of(ModelUtils.getAchievementCategoryTranslationDto());
+
+        when(achievementCategoryRepo.findAll()).thenReturn(list);
+        when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryTranslationDto.class))
+            .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
+
+        List<AchievementCategoryTranslationDto> actual = achievementCategoryService.findAll();
+
+        assertEquals(expected, actual);
     }
 }

@@ -13,6 +13,7 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceTranslationVO;
@@ -1619,6 +1620,10 @@ public class ModelUtils {
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
         return new AchievementCategoryVO(1L, "Category");
+    }
+
+    public static AchievementCategoryTranslationDto getAchievementCategoryTranslationDto() {
+        return new AchievementCategoryTranslationDto(1L, "Назва", "Title");
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
