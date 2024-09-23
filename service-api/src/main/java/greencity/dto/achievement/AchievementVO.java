@@ -22,4 +22,6 @@ public class AchievementVO {
 
     @NotEmpty
     private Integer condition;
+
+    private Integer progress;
 }

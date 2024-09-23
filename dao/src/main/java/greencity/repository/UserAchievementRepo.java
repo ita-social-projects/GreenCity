@@ -29,4 +29,6 @@ public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long
     @Query(value = "DELETE FROM user_achievements "
         + "WHERE user_id = :userId AND achievement_id = :achievementId", nativeQuery = true)
     void deleteByUserAndAchievementId(Long userId, Long achievementId);
+
+    List<UserAchievement> findAllByUserIdAndAchievement_AchievementCategoryId(Long userId, Long achievementCategoryId);
 }

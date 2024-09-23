@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -108,4 +109,13 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "                 from user_achievements "
         + "                 where user_id = :userId)", nativeQuery = true)
     List<Achievement> searchAchievementsUnAchieved(Long userId);
+
+    @Query(value = "SELECT * from achievements "
+            + "where id not in (select achievement_id "
+            + "                 from user_achievements "
+            + "                 where user_id = :userId) "
+            + "and achievement_category_id = :achievementCategoryId", nativeQuery = true)
+    List<Achievement> searchAchievementsUnAchievedByCategory(Long userId, Long achievementCategoryId);
+
+    List<Achievement> findAllByAchievementCategoryId(Long achievementCategoryId);
 }

@@ -4,7 +4,6 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievementcategory.AchievementCategoryGenericDto;
-import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.enums.AchievementStatus;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +48,7 @@ public class AchievementController {
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
-        return ResponseEntity.ok().body(achievementService.findAllByType(principal.getName(), achievementStatus));
+        return ResponseEntity.ok().body(achievementService.findAllByTypeAndCategory(principal.getName(), achievementStatus, achievementCategoryId));
     }
 
     /**
@@ -66,8 +65,7 @@ public class AchievementController {
                                                               + " Leave this field empty if you need items with any status") @RequestParam(
                                                               required = false) AchievementStatus achievementStatus,
                                                                    @RequestParam(required = false) Long achievementCategoryId) {
-        return ResponseEntity.ok().body(1);
-        //TODO: create service method
+        return ResponseEntity.ok().body(achievementService.findAchievementCountByTypeAndCategory(principal.getName(), achievementStatus, achievementCategoryId));
     }
 
     @GetMapping("/getAllCategories")
