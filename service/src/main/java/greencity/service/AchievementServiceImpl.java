@@ -146,6 +146,9 @@ public class AchievementServiceImpl implements AchievementService {
             .orElse(null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
         Long achievementCategoryId) {

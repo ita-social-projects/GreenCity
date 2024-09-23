@@ -32,7 +32,8 @@ public class AchievementController {
     private final AchievementCategoryService achievementCategoryService;
 
     /**
-     * Method returns all achievements, available for achieving.
+     * Method returns all achievements, available for achieving with optional
+     * filters by category or achievement status(ACHIEVED, UNACHIEVED) for user.
      *
      * @return list of {@link AchievementVO}
      */
@@ -62,6 +63,13 @@ public class AchievementController {
         achievementService.achieve(user);
     }
 
+    /**
+     * Method returns all achievements quantity, available for achieving with
+     * optional filters by category or achievement status(ACHIEVED, UNACHIEVED) for
+     * user.
+     *
+     * @return Integer value
+     */
     @GetMapping("/count")
     public ResponseEntity<Integer> getAchievementCount(@Parameter(hidden = true) Principal principal,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
@@ -72,6 +80,11 @@ public class AchievementController {
             achievementStatus, achievementCategoryId));
     }
 
+    /**
+     * Method returns all available achievement categories.
+     *
+     * @return list of {@link AchievementCategoryTranslationDto}
+     */
     @GetMapping("/getAllCategories")
     public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(
         @Parameter(hidden = true) Principal principal) {

@@ -40,5 +40,12 @@ public interface UserActionRepo extends JpaRepository<UserAction, Long> {
         + "AND ua.habit.id = :habitId")
     UserAction findByUserIdAndAchievementCategoryIdAndHabitId(Long userId, Long achievementCategoryId, Long habitId);
 
+    /**
+     * Method find {@link UserAction} by userId.
+     *
+     * @param userId of {@link User}
+     * @return UserAction {@link UserAction}
+     * @author Viktoriia Herchanivska
+     */
     List<UserAction> findAllByUserId(Long userId);
 }

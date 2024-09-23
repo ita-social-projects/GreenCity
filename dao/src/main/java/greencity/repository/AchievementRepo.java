@@ -109,6 +109,17 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "                 where user_id = :userId)", nativeQuery = true)
     List<Achievement> searchAchievementsUnAchieved(Long userId);
 
+    /**
+     * Searches for achievements that have not yet been achieved by the specified
+     * user and achievement category.
+     *
+     * @param userId                The ID of the user for whom to find unachieved
+     *                              achievements.
+     * @param achievementCategoryId The ID of the category to find unachieved
+     *                              achievements in.
+     * @return A list of achievements that the user has not yet achieved by
+     *         specified category.
+     */
     @Query(value = "SELECT * from achievements "
         + "where id not in (select achievement_id "
         + "                 from user_achievements "
@@ -116,5 +127,12 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "and achievement_category_id = :achievementCategoryId", nativeQuery = true)
     List<Achievement> searchAchievementsUnAchievedByCategory(Long userId, Long achievementCategoryId);
 
+    /**
+     * Method find {@link Achievement} by categoryId.
+     *
+     * @param achievementCategoryId of {@link Achievement}
+     * @return Achievement
+     * @author Viktoriia Herchanivska
+     */
     List<Achievement> findAllByAchievementCategoryId(Long achievementCategoryId);
 }
