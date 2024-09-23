@@ -14,6 +14,7 @@ import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import java.util.Optional;
@@ -85,10 +86,12 @@ public class AchievementServiceImpl implements AchievementService {
     public List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
         Long achievementCategoryId) {
         Long userId = userService.findByEmail(principalEmail).getId();
+        Long searchAchievementCategoryId =
+            achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
         List<AchievementVO> achievements = switch (achievementStatus) {
-            case ACHIEVED -> findAllAchieved(userId, achievementCategoryId);
-            case UNACHIEVED -> findUnachieved(userId, achievementCategoryId);
-            case null, default -> findAllAchievementsWithAnyStatus(userId, achievementCategoryId);
+            case ACHIEVED -> findAllAchieved(userId, searchAchievementCategoryId);
+            case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
+            case null, default -> findAllAchievementsWithAnyStatus(userId, searchAchievementCategoryId);
         };
         if (achievementCategoryId == null) {
             List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
@@ -179,6 +182,11 @@ public class AchievementServiceImpl implements AchievementService {
     private AchievementCategory findCategoryByName(String name) {
         return achievementCategoryRepo.findByName(name)
             .orElseThrow(() -> new BadCategoryRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME));
+    }
+
+    private AchievementCategory findCategoryById(Long id) {
+        return achievementCategoryRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
     }
 
     private void populateAchievement(Achievement achievement, AchievementPostDto achievementPostDto,

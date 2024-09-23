@@ -3,6 +3,8 @@ package greencity.controller;
 import greencity.dto.achievement.ActionDto;
 import static greencity.enums.AchievementStatus.ACHIEVED;
 import static greencity.enums.AchievementStatus.UNACHIEVED;
+
+import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,9 @@ class AchievementControllerTest {
 
     @Mock
     private AchievementService achievementService;
+
+    @Mock
+    private AchievementCategoryService achievementCategoryService;
 
     @InjectMocks
     private AchievementController achievementController;
@@ -67,5 +72,36 @@ class AchievementControllerTest {
         var dto = getActionDto();
         achievementController.achieve(ActionDto.builder().build());
         verify(achievementService).achieve(dto);
+    }
+
+    @Test
+    void countAllTest() throws Exception {
+        mockMvc.perform(get(achievementLink + "/count").principal(principal)).andExpect(status().isOk());
+        verify(achievementService).findAchievementCountByTypeAndCategory("test@gmail.com", null, null);
+    }
+
+    @Test
+    void countAllAchievedTest() throws Exception {
+        mockMvc
+            .perform(
+                get(achievementLink + "/count").principal(principal).param("achievementStatus", ACHIEVED.toString()))
+            .andExpect(status().isOk());
+        verify(achievementService).findAchievementCountByTypeAndCategory("test@gmail.com", ACHIEVED, null);
+    }
+
+    @Test
+    void countAllUnAchievedTest() throws Exception {
+        mockMvc
+            .perform(
+                get(achievementLink + "/count").principal(principal).param("achievementStatus", UNACHIEVED.toString()))
+            .andExpect(status().isOk());
+        verify(achievementService).findAchievementCountByTypeAndCategory("test@gmail.com", UNACHIEVED, null);
+    }
+
+    @Test
+    void getAchievementCategoriesTest() throws Exception {
+        mockMvc.perform(get(achievementLink + "/getAllCategories").principal(principal))
+            .andExpect(status().isOk());
+        verify(achievementCategoryService).findAll();
     }
 }

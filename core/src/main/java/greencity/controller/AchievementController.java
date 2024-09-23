@@ -37,13 +37,15 @@ public class AchievementController {
      *
      * @return list of {@link AchievementVO}
      */
-    @Operation(summary = "Get all achievements by type.")
+    @Operation(summary = "Get all achievements by type and category.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping
     public ResponseEntity<List<AchievementVO>> getAll(@Parameter(hidden = true) Principal principal,
@@ -70,6 +72,16 @@ public class AchievementController {
      *
      * @return Integer value
      */
+    @Operation(summary = "Get quantity of all achievements by type and category.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
     @GetMapping("/count")
     public ResponseEntity<Integer> getAchievementCount(@Parameter(hidden = true) Principal principal,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
@@ -85,6 +97,12 @@ public class AchievementController {
      *
      * @return list of {@link AchievementCategoryTranslationDto}
      */
+    @Operation(summary = "Get all achievements categories.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
     @GetMapping("/getAllCategories")
     public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(
         @Parameter(hidden = true) Principal principal) {
