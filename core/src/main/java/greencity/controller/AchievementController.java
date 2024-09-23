@@ -3,6 +3,8 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.achievementcategory.AchievementCategoryGenericDto;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.enums.AchievementStatus;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +47,8 @@ public class AchievementController {
     public ResponseEntity<List<AchievementVO>> getAll(@Parameter(hidden = true) Principal principal,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
-                required = false) AchievementStatus achievementStatus) {
+                required = false) AchievementStatus achievementStatus,
+        @RequestParam(required = false) Long achievementCategoryId) {
         return ResponseEntity.ok().body(achievementService.findAllByType(principal.getName(), achievementStatus));
     }
 
@@ -55,5 +58,21 @@ public class AchievementController {
     @MessageMapping("/achieve")
     public void achieve(@Payload ActionDto user) {
         achievementService.achieve(user);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getAchievementCount(@Parameter(hidden = true) Principal principal,
+                                                      @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
+                                                              + " Leave this field empty if you need items with any status") @RequestParam(
+                                                              required = false) AchievementStatus achievementStatus,
+                                                                   @RequestParam(required = false) Long achievementCategoryId) {
+        return ResponseEntity.ok().body(1);
+        //TODO: create service method
+    }
+
+    @GetMapping("/getAllCategories")
+    public ResponseEntity<List<AchievementCategoryGenericDto>> getAchievementCategories(@Parameter(hidden = true) Principal principal) {
+        return ResponseEntity.ok(List.of(new AchievementCategoryGenericDto()));
+        //TODO: create service method
     }
 }
