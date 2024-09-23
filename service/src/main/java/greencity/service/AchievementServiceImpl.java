@@ -93,22 +93,23 @@ public class AchievementServiceImpl implements AchievementService {
         if (achievementCategoryId == null) {
             List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
             return achievements.stream().map(achievementVO -> {
-                        int achievementCategoryProgress = 0;
-                        for (UserAction action : allActions) {
-                            if (action.getAchievementCategory().getId()
-                                    .equals(achievementVO.getAchievementCategory().getId())) {
-                                achievementCategoryProgress = action.getCount();
-                                break;
-                            }
-                        }
-                        return achievementVO.setProgress(achievementCategoryProgress);
-                    })
-                    .toList();
+                int achievementCategoryProgress = 0;
+                for (UserAction action : allActions) {
+                    if (action.getAchievementCategory().getId()
+                        .equals(achievementVO.getAchievementCategory().getId())) {
+                        achievementCategoryProgress = action.getCount();
+                        break;
+                    }
+                }
+                return achievementVO.setProgress(achievementCategoryProgress);
+            })
+                .toList();
         } else {
             UserAction achievementAction =
-                    userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
+                userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
             int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
-            return achievements.stream().map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress)).toList();
+            return achievements.stream().map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
+                .toList();
         }
     }
 
