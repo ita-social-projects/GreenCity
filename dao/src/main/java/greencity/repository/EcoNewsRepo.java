@@ -106,4 +106,26 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     @Query(nativeQuery = true,
         value = "select count(id) from eco_news")
     int totalCountOfCreationNews();
+
+    /**
+     * Method for getting 3 most liked and commented eco-news.
+     *
+     * @return list of {@link EcoNews}.
+     */
+    @Query(nativeQuery = true,
+        value = """
+            SELECT e.*
+            FROM eco_news e
+            LEFT JOIN (SELECT eco_news_id, count(*) AS count_likes
+                       FROM eco_news_users_likes
+                       GROUP BY eco_news_id) likes ON e.id = likes.eco_news_id
+            LEFT JOIN (SELECT eco_news_id, count(*) AS count_comments
+                       FROM econews_comment
+                       GROUP BY eco_news_id) comments ON e.id = comments.eco_news_id
+            WHERE e.creation_date > now() - INTERVAL '7 DAY'
+            ORDER BY likes.count_likes DESC NULLS LAST,
+                     comments.count_comments DESC NULLS LAST
+            LIMIT 3;
+            """)
+    List<EcoNews> findThreeInterestingEcoNews();
 }

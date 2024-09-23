@@ -2,15 +2,23 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.List;
 
 public interface EcoNewsService {
     /**
@@ -234,4 +242,11 @@ public interface EcoNewsService {
      * @param value value to be set to hidden field.
      */
     void setHiddenValue(Long id, UserVO user, boolean value);
+
+    /**
+     * Method for getting 3 eco-news sorted by likes and then by comments.
+     *
+     * @return list of {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> getThreeInterestingEcoNews();
 }

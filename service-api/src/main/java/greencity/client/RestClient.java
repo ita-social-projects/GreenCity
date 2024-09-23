@@ -421,7 +421,6 @@ public class RestClient {
      * send EcoNewsForSendEmailDto to GreenCityUser.
      *
      * @param message with information for sending email about adding new eco news.
-     * @author Taras Kavkalo
      */
     public void addEcoNews(EcoNewsForSendEmailDto message) {
         HttpHeaders headers = setHeader();
