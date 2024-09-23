@@ -49,6 +49,13 @@ public interface EventService {
     PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId);
 
     /**
+     * Method for getting all Event instances filtered.
+     *
+     * @return List of {@link EventDto} instance.
+     */
+    PageableAdvancedDto<EventDto> getEventsManagement(Pageable page, FilterEventDto filterEventDto, Long userId);
+
+    /**
      * Add an attender to the Event by id.
      *
      * @param eventId - event id.

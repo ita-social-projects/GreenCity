@@ -1,13 +1,14 @@
 package greencity.webcontroller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.client.RestClient;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventViewDto;
 import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.enums.TagType;
 import greencity.service.EventService;
 import greencity.service.TagsService;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 
 @Slf4j
@@ -69,33 +71,39 @@ public class ManagementEventsController {
      * @return View template path {@link String}.
      */
     @GetMapping
-    public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-        @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
+    @ApiLocale
+    public String getAllEvents(@RequestParam(required = false, name = "query") String query,
+        Model model,
+        @Parameter(hidden = true) Pageable pageable,
+        FilterEventDto filterEventDto,
+        @Parameter(hidden = true) Locale locale) {
         PageableAdvancedDto<EventDto> allEvents;
-        if (eventViewDto.getId() != null && !eventViewDto.isEmpty()) {
-            allEvents = eventService.getEvents(pageable, null, null);
-            model.addAttribute("fields", eventViewDto);
-            model.addAttribute("query", "");
+        if (query != null && !query.isEmpty()) {
+            allEvents = eventService.searchEventsBy(pageable, query);
         } else {
-            allEvents = query == null || query.isEmpty()
-                ? eventService.getEvents(pageable, null, null)
-                : eventService.searchEventsBy(pageable, query);
-            model.addAttribute("fields", new EventViewDto());
-            model.addAttribute("query", query);
+            allEvents = eventService.getEventsManagement(pageable, filterEventDto, null);
         }
-
         model.addAttribute("pageable", allEvents);
         Sort sort = pageable.getSort();
         StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
+                if (!orderUrl.isEmpty()) {
+                    orderUrl.append("&");
+                }
+                orderUrl.append("sort=").append(order.getProperty()).append(",").append(order.getDirection().name());
             }
-            model.addAttribute("sortModel", orderUrl);
         }
-        model.addAttribute("eventsTag", tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en"));
+        model.addAttribute("filterEventDto", filterEventDto);
+        model.addAttribute("sortModel", orderUrl.toString());
+        model.addAttribute("eventsTag", tagsService.findByTypeAndLanguageCode(TagType.EVENT, locale.getLanguage()));
         model.addAttribute("pageSize", pageable.getPageSize());
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
+        model.addAttribute("cities",
+            eventService.getAllEventsAddresses().stream()
+                .map(e -> "en".equals(locale.getLanguage()) ? e.getCityEn() : e.getCityUa())
+                .distinct());
+
         return "core/management_events";
     }
 

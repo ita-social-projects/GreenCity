@@ -222,6 +222,7 @@ import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.description;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
@@ -2965,29 +2966,31 @@ public class ModelUtils {
 
     public static List<Tuple> getTuples(TupleElement<?>[] elements) {
         TupleMetadata tupleMetadata = new TupleMetadata(
-            elements, new String[] {eventId, title, tagId, languageCode, tagName,
+            elements, new String[] {eventId, title, description, tagId, languageCode, tagName,
                 isOpen, type, organizerId, organizerName, titleImage, creationDate, startDate,
                 finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
                 cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
                 formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
                 isFavorite});
 
-        Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, "ONLINE", 1L,
+        Object[] row1 = new Object[] {1L, "test1", "<p>description</p>", 1L, "en", "Social", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row2 = new Object[] {1L, "test1", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
+        Object[] row2 = new Object[] {1L, "test1", "<p>description</p>", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row3 = new Object[] {3L, "test3", 2L, "en", "Social1", true, "ONLINE_OFFLINE", 2L,
+        Object[] row3 = new Object[] {3L, "test3", "<p>description</p>", 2L, "en", "Social1", true, "ONLINE_OFFLINE",
+            2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row4 = new Object[] {3L, "test3", 2L, "ua", "Соціальний1", true, "ONLINE_OFFLINE", 2L,
+        Object[] row4 = new Object[] {3L, "test3", "<p>description</p>", 2L, "ua", "Соціальний1", true,
+            "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
@@ -3000,6 +3003,7 @@ public class ModelUtils {
         return new TupleElement<?>[] {
             new TupleElementImpl<>(Long.class, eventId),
             new TupleElementImpl<>(String.class, title),
+            new TupleElementImpl<>(String.class, description),
             new TupleElementImpl<>(Long.class, tagId),
             new TupleElementImpl<>(String.class, languageCode),
             new TupleElementImpl<>(String.class, tagName),
@@ -3040,6 +3044,7 @@ public class ModelUtils {
             EventDto.builder()
                 .id(3L)
                 .title("test3")
+                .description("<p>description</p>")
                 .organizer(EventAuthorDto.builder().id(2L).name("Test3").build())
                 .creationDate(Date.valueOf("2024-04-14").toLocalDate())
                 .dates(List.of(
@@ -3073,6 +3078,7 @@ public class ModelUtils {
                 .build(),
             EventDto.builder()
                 .id(1L)
+                .description("<p>description</p>")
                 .title("test1")
                 .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
                 .creationDate(Date.valueOf("2024-04-16").toLocalDate())

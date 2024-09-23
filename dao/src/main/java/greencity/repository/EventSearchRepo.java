@@ -16,6 +16,15 @@ public interface EventSearchRepo {
     Page<Long> findEventsIds(Pageable pageable, FilterEventDto filterEventDto, Long userId);
 
     /**
+     * Method for search list event ids by {@link FilterEventDto}.
+     *
+     * @param pageable       {@link Pageable}.
+     * @param filterEventDto {@link FilterEventDto}.
+     * @return list of event ids.
+     */
+    Page<Long> findEventsIdsManagement(Pageable pageable, FilterEventDto filterEventDto, Long userId);
+
+    /**
      * Method for search events by title,text,short info and tag name.
      *
      * @param pageable      {@link Pageable}

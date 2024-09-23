@@ -495,4 +495,11 @@ public class ModelUtils {
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
     }
+
+    public static List<AddressDto> getAddressesDtoList() {
+        return List.of(
+            AddressDto.builder().formattedAddressUa("Дніпро").formattedAddressEn("Dnipro").build(),
+            AddressDto.builder().formattedAddressUa("Дніпро").formattedAddressEn("Dnipro").build(),
+            AddressDto.builder().formattedAddressUa("Дніпро").formattedAddressEn("Dnipro").build());
+    }
 }

@@ -1,18 +1,23 @@
 package greencity.webcontroller;
 
+import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.event.Event;
 import greencity.enums.TagType;
+import greencity.repository.EventRepo;
 import greencity.service.EventService;
 import greencity.service.TagsService;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,12 +27,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -44,6 +52,8 @@ class ManagementEventControllerTest {
     private static final String managementEventsLink = "/management/events";
     @Mock
     EventService eventService;
+    @Mock
+    EventRepo eventRepo;
     @InjectMocks
     ManagementEventsController managementEventsController;
     private MockMvc mockMvc;
@@ -53,11 +63,14 @@ class ManagementEventControllerTest {
     private RestClient restClient;
     @Mock
     private Principal principal;
+    @Mock
+    private Validator mockValidator;
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setValidator(mockValidator)
             .build();
     }
 
@@ -65,47 +78,62 @@ class ManagementEventControllerTest {
     @SneakyThrows
     void getAllEventsWithQuery() {
         Pageable pageable = PageRequest.of(0, 10);
-        List<EventDto> eventDtos = Collections.singletonList(new EventDto());
+        List<Event> events = List.of(new Event(), new Event());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Event> page = new PageImpl<>(events, pageRequest, events.size());
+        List<EventDto> eventDtos = Collections.singletonList(new EventDto().setTitle("title"));
         PageableAdvancedDto<EventDto> eventsDtoPageableDto =
             new PageableAdvancedDto<>(eventDtos, 2, 0, 3, 0, true, true, true, true);
         List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
             .id(1L)
             .name("Social").build());
         when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en")).thenReturn(tagDtoList);
-        when(eventService.searchEventsBy(pageable, "query")).thenReturn(eventsDtoPageableDto);
+        when(eventRepo.searchEventsBy(pageable, "title")).thenReturn(page);
+        when(eventService.searchEventsBy(pageable, "title")).thenReturn(eventsDtoPageableDto);
+        when(eventService.getAllEventsAddresses()).thenReturn(ModelUtils.getAddressesDtoList());
 
         this.mockMvc.perform(get(managementEventsLink)
+            .param("query", "title")
             .param("page", "0")
-            .param("size", "10")
-            .param("query", "query"))
-            .andExpect(view().name("core/management_events"))
-            .andExpect(model().attribute("pageable", eventsDtoPageableDto))
-            .andExpect(status().isOk());
-
-        verify(eventService).searchEventsBy(pageable, "query");
-    }
-
-    @Test
-    @SneakyThrows
-    void getAllEvents() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<EventDto> eventDtos = Collections.singletonList(new EventDto());
-        PageableAdvancedDto<EventDto> eventsDtoPageableDto =
-            new PageableAdvancedDto<>(eventDtos, 2, 0, 3, 0, true, true, true, true);
-        List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
-            .id(1L)
-            .name("Social").build());
-        when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en")).thenReturn(tagDtoList);
-        when(eventService.getEvents(pageable, null, null)).thenReturn(eventsDtoPageableDto);
-
-        this.mockMvc.perform(get(managementEventsLink)
-            .param("page", "0")
+            .locale(Locale.ENGLISH)
             .param("size", "10"))
             .andExpect(view().name("core/management_events"))
             .andExpect(model().attribute("pageable", eventsDtoPageableDto))
             .andExpect(status().isOk());
 
-        verify(eventService).getEvents(pageable, null, null);
+        verify(eventService).searchEventsBy(pageable, "title");
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllEvents_withFilterEventDto() {
+        Pageable pageable = PageRequest.of(0, 10);
+        FilterEventDto filterEventDto = new FilterEventDto();
+        List<EventDto> eventDtos = Collections.singletonList(new EventDto());
+        PageableAdvancedDto<EventDto> eventsDtoPageableDto =
+            new PageableAdvancedDto<>(eventDtos, 1, 0, 1, 0, true, false, true, true);
+
+        List<TagDto> tagDtoList = Collections.singletonList(
+            TagDto.builder().id(1L).name("Social").build());
+
+        when(eventService.getEventsManagement(pageable, filterEventDto, null))
+            .thenReturn(eventsDtoPageableDto);
+        when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en"))
+            .thenReturn(tagDtoList);
+        when(eventService.getAllEventsAddresses())
+            .thenReturn(ModelUtils.getAddressesDtoList());
+
+        this.mockMvc.perform(get(managementEventsLink)
+            .param("page", "0")
+            .param("size", "10")
+            .locale(Locale.ENGLISH))
+            .andExpect(view().name("core/management_events"))
+            .andExpect(model().attribute("pageable", eventsDtoPageableDto))
+            .andExpect(model().attribute("filterEventDto", filterEventDto))
+            .andExpect(status().isOk());
+
+        verify(eventService).getEventsManagement(pageable, filterEventDto, null);
+        verify(tagsService).findByTypeAndLanguageCode(TagType.EVENT, "en");
     }
 
     @Test
