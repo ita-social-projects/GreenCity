@@ -87,7 +87,6 @@ public class EventDtoRequestValidator
             }
 
             if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC))
-                || eventDateLocationDto.getStartDate().isBefore(eventDateLocationDto.getFinishDate().minusDays(1L))
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())
                 || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC)
                     .plusYears(MAX_YEARS_OF_PLANNING))) {
