@@ -24,10 +24,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <link rel="stylesheet" th:href="@{/management/css/slider.css}">
-    <link rel="stylesheet" th:href="@{/management/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
 
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
-    <script th:src="@{/management/habits/jquery.liTextLength.js}"></script>
+<!--    <script th:src="@{/management/habits/jquery.liTextLength.js}"></script>-->
     <script>
         $(function () {
             $('.pr').liTextLength({
@@ -64,8 +64,8 @@
 
 <body>
 <div id="page">
-    <div id="header" th:insert="core/header"></div>
-    <div id="sidebar" th:insert="core/sidepanel"></div>
+    <div id="header" th:insert="~{core/header}"></div>
+    <div id="sidebar" th:insert="~{core/sidepanel}"></div>
     <div class="main-content">
         <div class="container-xl">
             <div class="table-responsive">
@@ -263,12 +263,6 @@
                                         <a href="#"> <img th:src="@{/img/lock.png}"></a>
                                     </td>
                                     <td style="white-space: nowrap">
-                                        <a href="#">
-                                            <img th:src="@{/img/habit_fact_dark.png}">
-                                        </a>
-                                        <a href="#">
-                                            <img th:src="@{/img/habit_advices_dark.png}">
-                                        </a>
                                         <a href="#">
                                             <img th:src="@{/img/shopping_list_dark.png}">
                                         </a>
@@ -498,7 +492,7 @@
             </div>
         </div>
     </div>
-    <div id="footer" th:insert="core/footer"></div>
+    <div id="footer" th:insert="~{core/footer}"></div>
 </div>
 <script th:src="@{/management/habits/buttonsAJAX.js}"></script>
 <script>
