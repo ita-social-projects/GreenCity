@@ -188,23 +188,30 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignManagementDto> assignCustomHabitForUser(Long habitId, UserVO userVO,
         HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
-        User user = modelMapper.map(userVO, User.class);
-
         checkStatusInProgressExists(habitId, userVO);
+
+        User user = modelMapper.map(userVO, User.class);
+        validateHabitForAssign(habitId, user);
 
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        validateHabitForAssign(habitId, user);
-        HabitAssign habitAssign =
-            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, user.getId());
-        if (habitAssign != null) {
-            habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
-            habitAssign.setCreateDate(ZonedDateTime.now());
-        } else {
-            habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
+        HabitAssign habitAssign = createHabitAssign(user, habit, habitAssignCustomPropertiesDto);
+        habitAssignRepo.save(habitAssign);
+
+        List<HabitAssignManagementDto> habitAssignManagementDtoList = List.of(
+            modelMapper.map(habitAssign, HabitAssignManagementDto.class));
+
+        if (!CollectionUtils.isEmpty(habitAssignCustomPropertiesDto.getFriendsIdsList())) {
+            assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
+                habitAssignManagementDtoList);
         }
 
-        enhanceAssignWithCustomProperties(habitAssign, habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
+        return habitAssignManagementDtoList;
+    }
+
+    private HabitAssign createHabitAssign(User user, Habit habit,
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
+        HabitAssign habitAssign = createInProgressHabitAssign(habit, user);
 
         if (!habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems().isEmpty()) {
             List<ShoppingListItem> shoppingList =
@@ -213,21 +220,24 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         .getDefaultShoppingListItems());
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
+        enhanceAssignWithCustomProperties(habitAssign, habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
         setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
             habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
         saveCustomShoppingListItemList(habitAssignCustomPropertiesDto.getCustomShoppingListItemList(), user, habit);
 
-        habitAssignRepo.save(habitAssign);
+        return habitAssignRepo.save(habitAssign);
+    }
 
-        List<HabitAssignManagementDto> habitAssignManagementDtoList = new ArrayList<>();
-        habitAssignManagementDtoList.add(modelMapper.map(habitAssign, HabitAssignManagementDto.class));
-
-        if (!CollectionUtils.isEmpty(habitAssignCustomPropertiesDto.getFriendsIdsList())) {
-            assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
-                habitAssignManagementDtoList);
+    private HabitAssign createInProgressHabitAssign(Habit habit, User user){
+        HabitAssign habitAssign =
+                habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(), user.getId());
+        if (habitAssign != null) {
+            habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+            habitAssign.setCreateDate(ZonedDateTime.now());
+        } else {
+            habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
         }
-
-        return habitAssignManagementDtoList;
+        return habitAssign;
     }
 
     private void saveCustomShoppingListItemList(List<CustomShoppingListItemSaveRequestDto> saveList,
