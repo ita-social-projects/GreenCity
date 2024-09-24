@@ -14,9 +14,6 @@ import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.advice.AdviceTranslationVO;
-import greencity.dto.advice.AdviceVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
@@ -117,7 +114,6 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -132,7 +128,6 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.Advice;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
 import greencity.entity.Comment;
@@ -169,7 +164,6 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
-import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.ArticleType;
@@ -635,12 +629,12 @@ public class ModelUtils {
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList());
+            Collections.emptyList());
     }
 
     public static Language getLanguageUa() {
         return new Language(2L, "ua", Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList());
+            Collections.emptyList());
     }
 
     public static EcoNews getEcoNews() {
@@ -692,7 +686,7 @@ public class ModelUtils {
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList()))
             .shoppingListItem(
                 new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -704,7 +698,7 @@ public class ModelUtils {
             .id(1L)
             .language(
                 new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList()))
             .shoppingListItem(
                 new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -1016,7 +1010,7 @@ public class ModelUtils {
             ShoppingListItemTranslation.builder()
                 .id(2L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .shoppingListItem(
                     new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -1024,7 +1018,7 @@ public class ModelUtils {
             ShoppingListItemTranslation.builder()
                 .id(11L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
                 .shoppingListItem(
                     new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -1445,15 +1439,6 @@ public class ModelUtils {
         return new PlaceCommentRequestDto("comment", null, null);
     }
 
-    public static AdviceTranslation getAdviceTranslation() {
-        return AdviceTranslation.builder()
-            .id(1L)
-            .language(getLanguage())
-            .content("Text content")
-            .advice(getAdvice())
-            .build();
-    }
-
     public static OpeningHours getOpeningHours() {
         OpeningHours openingHoursTest = new OpeningHours();
         openingHoursTest.setOpenTime(getLocalTime());
@@ -1475,36 +1460,11 @@ public class ModelUtils {
             .build();
     }
 
-    public static List<AdviceTranslation> getAdviceTranslations() {
-        Language defaultLanguage = getLanguage();
-        return new ArrayList<>(Arrays.asList(
-            AdviceTranslation.builder().id(1L).language(defaultLanguage).content("hello").build(),
-            AdviceTranslation.builder().id(2L).language(defaultLanguage).content("text").build(),
-            AdviceTranslation.builder().id(3L).language(defaultLanguage).content("smile").build()));
-    }
-
-    public static List<AdviceTranslationVO> getAdviceTranslationVOs() {
-        LanguageVO defaultLanguage = getLanguageVO();
-        return new ArrayList<>(Arrays.asList(
-            AdviceTranslationVO.builder().id(1L).language(defaultLanguage).content("hello").build(),
-            AdviceTranslationVO.builder().id(2L).language(defaultLanguage).content("text").build(),
-            AdviceTranslationVO.builder().id(3L).language(defaultLanguage).content("smile").build()));
-    }
-
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
         return Arrays.asList(
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
-    }
-
-    public static List<Advice> getAdvices() {
-        List<AdviceTranslation> adviceTranslations = getAdviceTranslations();
-        return new ArrayList<>(Arrays.asList(
-            Advice.builder().id(1L).habit(Habit.builder().id(1L).build())
-                .translations(adviceTranslations).build(),
-            Advice.builder().id(2L).habit(Habit.builder().id(1L).build()).translations(adviceTranslations).build(),
-            Advice.builder().id(3L).habit(Habit.builder().id(1L).build()).translations(adviceTranslations).build()));
     }
 
     public static Habit getHabit() {
@@ -1570,24 +1530,6 @@ public class ModelUtils {
             .image("image")
             .habitTranslations(null)
             .build();
-    }
-
-    public static Advice getAdvice() {
-        return Advice.builder().id(1L)
-            .translations(getAdviceTranslations())
-            .habit(getHabit())
-            .build();
-    }
-
-    public static AdviceVO getAdviceVO() {
-        return AdviceVO.builder().id(1L)
-            .translations(getAdviceTranslationVOs())
-            .habit(new HabitIdRequestDto(1L))
-            .build();
-    }
-
-    public static AdvicePostDto getAdvicePostDto() {
-        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 
     public static Achievement getAchievement() {
@@ -2846,7 +2788,7 @@ public class ModelUtils {
                 .description("")
                 .habitItem("")
                 .language(new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList()))
                 .build()))
             .build();
     }
