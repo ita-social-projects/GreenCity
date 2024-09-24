@@ -225,5 +225,6 @@
     <include file="db/changelog/logs/ch-delete-rows-from-tags-tags-translation-habit-Prots.xml" />
     <include file="/db/changelog/logs/ch-add-column-notifications-Herchanivska-4.xml"/>
     <include file="db/changelog/logs/ch-drop-habit_facts-table-and-habit_fact_translations-table.xml"/>
+    <include file="db/changelog/logs/ch-add-on-delete-cascade-econews-comments-users-liked-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-drop-tables-advices-and-advice_translations-Chekhovska.xml"/>
 </databaseChangeLog>
