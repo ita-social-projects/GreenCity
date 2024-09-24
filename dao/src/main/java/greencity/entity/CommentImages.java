@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class CommentImages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column
     @NotNull
