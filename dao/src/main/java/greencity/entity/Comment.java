@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.entity.event.EventImages;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import jakarta.persistence.*;
@@ -69,4 +70,7 @@ public class Comment {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CommentStatus status;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentImages> additionalImages = new ArrayList<>();
 }
