@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.*;
