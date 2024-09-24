@@ -895,6 +895,67 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getEventsManagementForAuthorizedUserTest() {
+        Pageable pageable = PageRequest.of(0, 6);
+        Long userId = 1L;
+        FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
+        TupleElement<?>[] elements = getTupleElements();
+
+        List<Tuple> tuples = getTuples(elements);
+        List<EventDto> eventPreviewDtoList = getEventPreviewDtos();
+        PageableAdvancedDto<EventDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+            eventPreviewDtoList,
+            idsPage.getTotalElements(),
+            pageable.getPageNumber(),
+            idsPage.getTotalPages(),
+            idsPage.getNumber(),
+            idsPage.hasPrevious(),
+            idsPage.hasNext(),
+            idsPage.isFirst(),
+            idsPage.isLast());
+        when(restClient.findById(userId)).thenReturn(getUserVO());
+        when(eventRepo.findEventsIdsManagement(pageable, filterEventDto, userId)).thenReturn(idsPage);
+        when(eventRepo.loadEventDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
+
+        PageableAdvancedDto<EventDto> result = eventService.getEventsManagement(pageable, filterEventDto, userId);
+        assertEquals(eventPreviewDtoPage, result);
+
+        verify(restClient).findById(userId);
+        verify(eventRepo).findEventsIdsManagement(pageable, filterEventDto, userId);
+        verify(eventRepo).loadEventDataByIds(idsPage.getContent(), userId);
+    }
+
+    @Test
+    void getEventsManagementForUnauthorizedUserTest() {
+        Pageable pageable = PageRequest.of(0, 6);
+        FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
+        TupleElement<?>[] elements = getTupleElements();
+
+        List<Tuple> tuples = getTuples(elements);
+        List<EventDto> eventPreviewDtoList = getEventPreviewDtos();
+        PageableAdvancedDto<EventDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+            eventPreviewDtoList,
+            idsPage.getTotalElements(),
+            pageable.getPageNumber(),
+            idsPage.getTotalPages(),
+            idsPage.getNumber(),
+            idsPage.hasPrevious(),
+            idsPage.hasNext(),
+            idsPage.isFirst(),
+            idsPage.isLast());
+        when(eventRepo.findEventsIdsManagement(pageable, filterEventDto, null)).thenReturn(idsPage);
+        when(eventRepo.loadEventDataByIds(idsPage.getContent())).thenReturn(tuples);
+
+        PageableAdvancedDto<EventDto> result = eventService.getEventsManagement(pageable, filterEventDto, null);
+        assertEquals(eventPreviewDtoPage, result);
+
+        verify(eventRepo).findEventsIdsManagement(pageable, filterEventDto, null);
+        verify(eventRepo).loadEventDataByIds(idsPage.getContent());
+    }
+
+    @Test
     void testCheckTitleImageInImagesToDelete_TitleImageInImagesToDelete_AdditionalImagesNotEmpty() throws Exception {
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
         updateEventDto.setTitleImage("titleImage");

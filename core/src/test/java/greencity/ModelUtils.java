@@ -485,8 +485,8 @@ public class ModelUtils {
 
     public static List<AddressDto> getAddressesDtoList() {
         return List.of(
-            AddressDto.builder().formattedAddressUa("Дніпро").formattedAddressEn("Dnipro").build(),
-            AddressDto.builder().formattedAddressUa("Дніпро").formattedAddressEn("Dnipro").build(),
-            AddressDto.builder().formattedAddressUa("Дніпро").formattedAddressEn("Dnipro").build());
+            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUa("Львів").cityEn("Lviv").build());
     }
 }

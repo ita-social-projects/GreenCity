@@ -102,7 +102,8 @@ public class ManagementEventsController {
         model.addAttribute("cities",
             eventService.getAllEventsAddresses().stream()
                 .map(e -> "en".equals(locale.getLanguage()) ? e.getCityEn() : e.getCityUa())
-                .distinct());
+                .distinct()
+                .toList());
 
         return "core/management_events";
     }
