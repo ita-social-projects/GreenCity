@@ -56,7 +56,7 @@ class ManagementEventControllerTest {
     @Mock
     EventRepo eventRepo;
     @InjectMocks
-    ManagementEventsController managementEventsController;
+    ManagementEventController managementEventController;
     private MockMvc mockMvc;
     @Mock
     private TagsService tagsService;
@@ -69,7 +69,7 @@ class ManagementEventControllerTest {
 
     @BeforeEach
     void setUp() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventsController)
+        this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .setValidator(mockValidator)
             .build();

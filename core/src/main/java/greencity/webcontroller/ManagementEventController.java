@@ -50,7 +50,7 @@ import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/management/events")
-public class ManagementEventsController {
+public class ManagementEventController {
     public static final String BACKEND_ADDRESS_ATTRIBUTE = "backendAddress";
     private final EventService eventService;
     private final TagsService tagsService;
