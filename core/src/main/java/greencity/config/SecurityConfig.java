@@ -43,7 +43,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfig {
     private static final String COMMENTS = "/comments";
-    private static final String ADVICES = "/advices";
     private static final String CATEGORIES = "/categories";
     private static final String ECO_NEWS = "/eco-news";
     private static final String ECO_NEWS_ID = "/{ecoNewsId}";
@@ -193,9 +192,6 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,
                     "/achievements",
-                    ADVICES,
-                    ADVICES + "/{id}",
-                    ADVICES + "/random",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST,
                     CUSTOM_SHOPPING_LIST_URL,
@@ -373,11 +369,7 @@ public class SecurityConfig {
                     "/place")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
-                    ADVICES,
                     "/user/filter")
-                .hasAnyRole(ADMIN)
-                .requestMatchers(HttpMethod.PUT,
-                    ADVICES + "/{id}")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
@@ -386,7 +378,6 @@ public class SecurityConfig {
                     "/user/update/role")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
-                    ADVICES + "/{id}",
                     COMMENTS)
                 .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))

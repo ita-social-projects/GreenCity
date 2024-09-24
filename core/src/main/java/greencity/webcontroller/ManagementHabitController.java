@@ -45,7 +45,6 @@ public class ManagementHabitController {
     private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
     private final ShoppingListItemService shoppingListItemService;
-    private final AdviceService adviceService;
     private final HabitAssignService habitAssignService;
 
     /**
@@ -110,7 +109,6 @@ public class ManagementHabitController {
         @Parameter(hidden = true) Locale locale, Model model) {
         model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
-        model.addAttribute("hadvices", adviceService.getAllByHabitIdAndLanguage(id, locale.getLanguage()));
         model.addAttribute("acquired",
             habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.ACQUIRED));
         model.addAttribute("inProgress",
