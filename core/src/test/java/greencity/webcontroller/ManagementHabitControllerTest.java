@@ -49,9 +49,6 @@ class ManagementHabitControllerTest {
     private ShoppingListItemService shoppingListItemService;
 
     @Mock
-    private AdviceService adviceService;
-
-    @Mock
     private HabitAssignService habitAssignService;
 
     @InjectMocks
@@ -98,7 +95,6 @@ class ManagementHabitControllerTest {
     void getHabitByIdPage() throws Exception {
         List<ShoppingListItemManagementDto> hshops = shoppingListItemService.getShoppingListByHabitId(1L);
         HabitManagementDto habit = managementHabitService.getById(1L);
-        List<LanguageTranslationDTO> hadvices = adviceService.getAllByHabitIdAndLanguage(1L, "en");
         Long acquired = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.ACQUIRED);
         Long inProgress = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.INPROGRESS);
         Long canceled = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.CANCELLED);
@@ -109,7 +105,6 @@ class ManagementHabitControllerTest {
             .andExpect(view().name("core/management_user_habit"))
             .andExpect(model().attribute("hshops", hshops))
             .andExpect(model().attribute("habit", habit))
-            .andExpect(model().attribute("hadvices", hadvices))
             .andExpect(model().attribute("acquired", acquired))
             .andExpect(model().attribute("inProgress", inProgress))
             .andExpect(model().attribute("canceled", canceled))
