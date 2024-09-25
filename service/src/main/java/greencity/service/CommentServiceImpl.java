@@ -213,19 +213,23 @@ public class CommentServiceImpl implements CommentService {
      */
     protected String getArticleTitle(ArticleType articleType, Long articleId, Locale locale) {
         String articleName;
-        if (articleType == ArticleType.HABIT) {
-            Habit habit = habitRepo.findById(articleId)
-                .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-            HabitTranslation habitTranslation =
-                habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
-            articleName = habitTranslation.getName();
-        } else if (articleType == ArticleType.ECO_NEWS) {
-            EcoNews ecoNews = ecoNewsRepo.findById(articleId)
-                .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
-            articleName = ecoNews.getTitle();
-        } else {
-            throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+        switch (articleType) {
+            case HABIT -> {
+                Habit habit = habitRepo.findById(articleId)
+                    .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
+                HabitTranslation habitTranslation =
+                    habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
+                        .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
+                articleName = habitTranslation.getName();
+            }
+            case ECO_NEWS -> {
+                EcoNews ecoNews = ecoNewsRepo.findById(articleId)
+                    .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
+                articleName = ecoNews.getTitle();
+            }
+            default -> {
+                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+            }
         }
         return articleName;
     }
