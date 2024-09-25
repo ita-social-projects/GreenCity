@@ -26,7 +26,8 @@ public class AddCommentDtoResponseMapper extends AbstractConverter<Comment, AddC
         addCommentDtoResponse.setText(comment.getText());
         addCommentDtoResponse.setCreatedDate(comment.getCreatedDate());
         if (comment.getAdditionalImages() != null) {
-            addCommentDtoResponse.setAdditionalImages(comment.getAdditionalImages().stream().map(CommentImages::getLink).toList());
+            addCommentDtoResponse
+                .setAdditionalImages(comment.getAdditionalImages().stream().map(CommentImages::getLink).toList());
         }
         return addCommentDtoResponse;
     }

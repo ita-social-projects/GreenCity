@@ -94,24 +94,24 @@ class HabitCommentControllerTest {
             """;
 
         MockMultipartFile jsonFile = new MockMultipartFile(
-                "request",
-                "",
-                "application/json",
-                content.getBytes());
+            "request",
+            "",
+            "application/json",
+            content.getBytes());
 
         MockMultipartFile imageFile = new MockMultipartFile(
-                "images",
-                "image.jpg",
-                "image/jpeg",
-                "image data".getBytes());
+            "images",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes());
 
         mockMvc.perform(multipart(HABIT_LINK + "/{habitId}/comments", 1)
-                        .file(jsonFile)
-                        .file(imageFile)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isCreated());
+            .file(jsonFile)
+            .file(imageFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA))
+            .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         AddCommentDtoRequest addCommentDtoRequest =
@@ -119,13 +119,13 @@ class HabitCommentControllerTest {
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest,
-                new MultipartFile[]{imageFile}, userVO, Locale.of("en"));
+            new MultipartFile[] {imageFile}, userVO, Locale.of("en"));
         verify(commentService).save(eq(ArticleType.HABIT),
-                eq(1L),
-                eq(addCommentDtoRequest),
-                any(MultipartFile[].class),
-                eq(userVO),
-                eq(Locale.of("en")));
+            eq(1L),
+            eq(addCommentDtoRequest),
+            any(MultipartFile[].class),
+            eq(userVO),
+            eq(Locale.of("en")));
     }
 
     @Test

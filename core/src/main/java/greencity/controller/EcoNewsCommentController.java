@@ -78,11 +78,11 @@ public class EcoNewsCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @PostMapping(path = "/{ecoNewsId}/comments",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long ecoNewsId,
         @Valid @RequestPart AddCommentDtoRequest request,
-        @RequestPart(value = "images", required = false) @Nullable
-        @ImageArrayValidation @Size(max = 5, message = "Download up to 5 images") MultipartFile[] images,
+        @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,
+            message = "Download up to 5 images") MultipartFile[] images,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity

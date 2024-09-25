@@ -66,8 +66,8 @@ public class HabitCommentController {
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long habitId,
         @Valid @RequestPart AddCommentDtoRequest request,
-        @RequestPart(value = "images", required = false) @Nullable
-        @ImageArrayValidation @Size(max = 5, message = "Download up to 5 images") MultipartFile[] images,
+        @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,
+            message = "Download up to 5 images") MultipartFile[] images,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity

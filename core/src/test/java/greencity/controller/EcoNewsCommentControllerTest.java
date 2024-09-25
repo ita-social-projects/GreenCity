@@ -94,23 +94,23 @@ class EcoNewsCommentControllerTest {
             """;
 
         MockMultipartFile jsonFile = new MockMultipartFile(
-                "request",
-                "",
-                "application/json",
-                content.getBytes());
+            "request",
+            "",
+            "application/json",
+            content.getBytes());
 
         MockMultipartFile imageFile = new MockMultipartFile(
-                "images",
-                "image.jpg",
-                "image/jpeg",
-                "image data".getBytes());
+            "images",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes());
 
         mockMvc.perform(multipart(ECONEWS_LINK + "/{ecoNewsId}/comments", 1)
-                        .file(jsonFile)
-                        .file(imageFile)
+            .file(jsonFile)
+            .file(imageFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .content(content))
             .andExpect(status().isCreated());
 
@@ -120,13 +120,13 @@ class EcoNewsCommentControllerTest {
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest,
-                new MultipartFile[]{imageFile}, userVO, locale);
+            new MultipartFile[] {imageFile}, userVO, locale);
         verify(commentService).save(eq(ArticleType.ECO_NEWS),
-                eq(1L),
-                eq(addCommentDtoRequest),
-                any(MultipartFile[].class),
-                eq(userVO),
-                eq(Locale.of("en")));
+            eq(1L),
+            eq(addCommentDtoRequest),
+            any(MultipartFile[].class),
+            eq(userVO),
+            eq(Locale.of("en")));
     }
 
     @Test

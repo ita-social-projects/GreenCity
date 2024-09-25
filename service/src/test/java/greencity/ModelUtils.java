@@ -1772,18 +1772,18 @@ public class ModelUtils {
 
     public static MultipartFile getMultipartImageFile() {
         return new MockMultipartFile(
-                "images",
-                "image.jpg",
-                "image/jpeg",
-                "image data".getBytes());
+            "images",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes());
     }
 
     public static MultipartFile[] getMultipartImageFiles() {
         return new MockMultipartFile[] {
-                new MockMultipartFile(
-                        "images", "image.jpg", "image/jpeg", "image data".getBytes()),
-                new MockMultipartFile(
-                        "images", "image.jpg", "image/jpeg", "image data".getBytes())};
+            new MockMultipartFile(
+                "images", "image.jpg", "image/jpeg", "image data".getBytes()),
+            new MockMultipartFile(
+                "images", "image.jpg", "image/jpeg", "image data".getBytes())};
     }
 
     public static AddressDto getAddressDtoWithNullRegionUa() {
@@ -2457,16 +2457,16 @@ public class ModelUtils {
 
     public static Comment getParentComment() {
         return Comment.builder()
-                .id(1L)
-                .articleType(ArticleType.HABIT)
-                .articleId(10L)
-                .text("text")
-                .usersLiked(new HashSet<>())
-                .createdDate(LocalDateTime.now())
-                .user(getUser())
-                .comments(List.of(getSubComment()))
-                .status(CommentStatus.ORIGINAL)
-                .build();
+            .id(1L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .comments(List.of(getSubComment()))
+            .status(CommentStatus.ORIGINAL)
+            .build();
     }
 
     public static CommentVO getCommentVO() {
@@ -2521,12 +2521,12 @@ public class ModelUtils {
             .build();
     }
 
-    public static CommentImages getCommentImage(){
+    public static CommentImages getCommentImage() {
         return CommentImages.builder()
-                .id(1L)
-                .link("http://example.com/image1.jpg")
-                .comment(getComment())
-                .build();
+            .id(1L)
+            .link("http://example.com/image1.jpg")
+            .comment(getComment())
+            .build();
     }
 
     public static AddCommentDtoRequest getAddCommentDtoRequest() {

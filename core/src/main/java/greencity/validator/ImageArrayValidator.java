@@ -15,11 +15,11 @@ public class ImageArrayValidator implements ConstraintValidator<ImageArrayValida
         if (images == null) {
             return true;
         }
-        for (MultipartFile image: images) {
+        for (MultipartFile image : images) {
             if (image == null) {
                 return true;
             } else {
-                long maxSize = 10 * 1024 * 1024; //10mb
+                long maxSize = 10 * (long) 1024 * 1024; // 10mb
                 if (image.getSize() > maxSize) {
                     return false;
                 }

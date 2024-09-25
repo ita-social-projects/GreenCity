@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import greencity.entity.event.EventImages;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import jakarta.persistence.*;
