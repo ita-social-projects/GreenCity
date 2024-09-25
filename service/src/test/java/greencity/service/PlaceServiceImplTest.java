@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -733,7 +734,7 @@ class PlaceServiceImplTest {
     public void getFilteredPlacesForAdminTest() {
         FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
         filterDto.setName("test name");
-        filterDto.setStatus("ACTIVE");
+        filterDto.setStatus("APPROVED");
 
         Pageable pageable = Pageable.ofSize(10);
 
@@ -742,7 +743,7 @@ class PlaceServiceImplTest {
         place.setName("test name");
         place.setStatus(PlaceStatus.APPROVED);
 
-        List<Place> places = Arrays.asList(place);
+        List<Place> places = List.of(place);
         Page<Place> page = new PageImpl<>(places, pageable, places.size());
 
         when(placeRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
@@ -751,5 +752,11 @@ class PlaceServiceImplTest {
 
         assertEquals(1, result.getPage().size());
         assertEquals(places.size(), result.getTotalElements());
+
+        ArgumentCaptor<Specification<Place>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        verify(placeRepo).findAll(specCaptor.capture(), eq(pageable));
+
+        Specification<Place> capturedSpec = specCaptor.getValue();
+        assertNotNull(capturedSpec);
     }
 }
