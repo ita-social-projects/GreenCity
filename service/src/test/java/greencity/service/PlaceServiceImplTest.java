@@ -738,7 +738,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    public void getFilteredPlacesForAdminTest() {
+    void getFilteredPlacesForAdminTest() {
         FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
         filterDto.setName("test name");
         filterDto.setStatus("APPROVED");
@@ -768,7 +768,7 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    public void getFilteredPlacesForAdminWithAllFiltersTest() {
+    void getFilteredPlacesForAdminWithAllFiltersTest() {
         FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
         filterDto.setId("1");
         filterDto.setName("test name");

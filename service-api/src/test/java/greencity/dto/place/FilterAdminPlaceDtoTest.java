@@ -5,16 +5,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FilterAdminPlaceDtoTest {
+class FilterAdminPlaceDtoTest {
 
     @Test
-    public void isEmptyWithAllFieldsNullTest() {
+    void isEmptyWithAllFieldsNullTest() {
         FilterAdminPlaceDto filter = new FilterAdminPlaceDto();
         assertTrue(filter.isEmpty());
     }
 
     @Test
-    public void isEmptyWithAllFieldsEmptyTest() {
+    void isEmptyWithAllFieldsEmptyTest() {
         FilterAdminPlaceDto filter = new FilterAdminPlaceDto();
         filter.setId("");
         filter.setName("");
@@ -26,7 +26,7 @@ public class FilterAdminPlaceDtoTest {
     }
 
     @Test
-    public void isEmptyWithSomeFieldsTest() {
+    void isEmptyWithSomeFieldsTest() {
         FilterAdminPlaceDto filter = new FilterAdminPlaceDto();
         filter.setId("1");
 
@@ -34,7 +34,7 @@ public class FilterAdminPlaceDtoTest {
     }
 
     @Test
-    public void isEmptyWithAllFieldsTest() {
+    void isEmptyWithAllFieldsTest() {
         FilterAdminPlaceDto filter = new FilterAdminPlaceDto();
         filter.setId("1");
         filter.setName("test name");
