@@ -8,7 +8,6 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -41,11 +40,13 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.Comment;
 import greencity.entity.User;
+import greencity.enums.ArticleType;
+import greencity.enums.CommentStatus;
 import greencity.enums.EventStatus;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
@@ -138,6 +139,18 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
+    public static Comment getEcoNewsComment() {
+        return Comment.builder()
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .status(CommentStatus.ORIGINAL)
+            .user(getUser())
+            .articleType(ArticleType.ECO_NEWS)
+            .build();
+    }
+
     public static Principal getPrincipal() {
         return () -> "test@gmail.com";
     }
@@ -155,10 +168,6 @@ public class ModelUtils {
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
-    }
-
-    public static AdvicePostDto getAdvicePostDto() {
-        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 
     public static ShoppingListItemPostDto getShoppingListItemPostDto() {

@@ -1,3 +1,4 @@
+
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
@@ -21,6 +22,20 @@ function initMap() {
     // Adds a marker at the center of the map.
     addMarker(mapCenter);
 }
+
+$(document).ready(function() {
+    $('#locationInputType').change(function() {
+        var selectedValue = $(this).val();
+
+        if (selectedValue === 'map') {
+            $('#mapSection').show();
+            $('#addressSection').hide();
+        } else if (selectedValue === 'address') {
+            $('#mapSection').hide();
+            $('#addressSection').show();
+        }
+    });
+});
 
 // Adds a marker to the map and push to the array.
 function addMarker(location) {
@@ -109,45 +124,55 @@ $(document).ready(function () {
     $('#submitAddBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
-        let formData = $('#addPlaceForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        let place = {
-            "name": formData.name,
-            "location":
-                {
-                    "address": formData.address,
-                    "lat": formData.latitude,
-                    "lng": formData.longitude
-                },
-            "status": formData.status,
-            "category": formData.category,
-            "photo": formData.photo
-        }
-        place.discountValues = getDiscountValues();
-        place.openingHoursList = getOpeningHours();
-        if (formData.id !== '') {
-            place.id = formData.id;
+
+        let formData = new FormData(document.getElementById('addPlaceForm'));
+
+        let place;
+        let type = $('#id').val() ? 'PUT' : 'POST';
+
+        if (type === 'POST') {
+            place = {
+                "placeName": formData.get('name'),
+                "locationName": formData.get('address'),
+                "status": formData.get('status'),
+                "categoryName": formData.get('category')
+            };
+        } else {
+            place = {
+                "id": formData.get('id'),
+                "placeName": formData.get('name'),
+                "locationName": formData.get('address'),
+                "status": formData.get('status'),
+                "categoryName": formData.get('category')
+            };
         }
 
-        // Ajax request
-        let type = $('#id').val() ? 'put' : 'post';
+        place.discountValues = getDiscountValues();
+        place.openingHoursList = getOpeningHours();
+
+        formData.append('addPlaceDto', JSON.stringify(place));
+        var file = document.getElementById("creationFile").files[0];
+        console.log(file);
+        formData.append("images", file);
         $.ajax({
             url: '/management/places',
             type: type,
-            dataType: 'json',
-            contentType: 'application/json',
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
                         $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError);
-                    })
+                    });
                 } else {
                     location.reload();
                 }
             },
-            data: JSON.stringify(place)
+            error: function (xhr, status, error) {
+                console.error(error);
+                alert('Error');
+            }
         });
     });
 
@@ -308,4 +333,63 @@ $(document).ready(function () {
             removeButton + "</div>"
         $('#discounts').append(discDiv);
     }
+});
+
+$(document).ready(function () {
+    const sortParamKey = 'sortParam';
+    const sortDirectionKey = 'sortDirection';
+
+    function switchSort(sort) {
+        return sort === "asc" ? "desc" : "asc";
+    }
+
+    function getSortDirection() {
+        const savedSortDirection = localStorage.getItem(sortDirectionKey);
+        return savedSortDirection ? savedSortDirection : 'asc';
+    }
+
+    function initTableSorting() {
+        let isSorting = false;
+
+        const savedSortParam = localStorage.getItem(sortParamKey);
+        const savedSortDirection = getSortDirection();
+
+        if (savedSortParam) {
+            $(`[data-sort-param="${savedSortParam}"]`).addClass(savedSortDirection);
+        }
+        $('.table-container').on('click', '.sort-icon', function () {
+            if (isSorting) return;
+
+            let $icon = $(this);
+            let sortParam = $icon.data('field');
+            let currentSortDirection = getSortDirection();
+            let newSortDirection = switchSort(currentSortDirection);
+
+            localStorage.setItem(sortParamKey, sortParam);
+            localStorage.setItem(sortDirectionKey, newSortDirection);
+
+            $('.table-filter-icon').removeClass('asc desc');
+            $icon.addClass(newSortDirection);
+
+            isSorting = true;
+            $.ajax({
+                url: '/management/places',
+                type: 'GET',
+                data: {
+                    sort: sortParam + ',' + newSortDirection
+                },
+                success: function (data) {
+                    $('#placeTable').html($(data).find('#placeTable').html());
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                },
+                complete: function () {
+                    isSorting = false;
+                }
+            });
+        });
+    }
+
+    initTableSorting();
 });

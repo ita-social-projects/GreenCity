@@ -1,6 +1,8 @@
 package greencity.repository;
 
 import greencity.entity.Comment;
+import greencity.entity.EcoNews;
+import greencity.entity.Habit;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import org.springframework.data.domain.Page;
@@ -25,14 +27,23 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
      * The method returns the count of not deleted comments, specified by.
      *
      * @param habitId {@link Long} - id of habit.
-     *
-     * @return count of not deleted comments, specified by
-     *         {@link greencity.entity.Habit}
+     * @return count of not deleted comments, specified by {@link Habit}
      */
     @Query(value = "select count(c.id) from comments c"
         + " join habits h on h.id = c.article_id"
         + " where h.id = :habitId and c.status <>'DELETED'", nativeQuery = true)
     int countNotDeletedCommentsByHabit(Long habitId);
+
+    /**
+     * The method returns the count of not deleted comments, specified by.
+     *
+     * @param ecoNewsId {@link Long} - id of eco-news
+     * @return count of not deleted commnents, specified by {@link EcoNews}
+     */
+    @Query(value = "SELECT COUNT(c.id) from comments c "
+        + "join eco_news e on e.id = c.article_id "
+        + "where e.id =:ecoNewsId and c.status <> 'DELETED'", nativeQuery = true)
+    int countNotDeletedCommentsByEcoNews(Long ecoNewsId);
 
     /**
      * The method returns not deleted comment {@link Comment}, specified by id.
