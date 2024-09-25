@@ -20,6 +20,7 @@ import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterAdminPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
@@ -65,6 +66,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -725,5 +727,29 @@ class PlaceServiceImplTest {
 
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
+    }
+
+    @Test
+    public void getFilteredPlacesForAdminTest() {
+        FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
+        filterDto.setName("test name");
+        filterDto.setStatus("ACTIVE");
+
+        Pageable pageable = Pageable.ofSize(10);
+
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test name");
+        place.setStatus(PlaceStatus.APPROVED);
+
+        List<Place> places = Arrays.asList(place);
+        Page<Place> page = new PageImpl<>(places, pageable, places.size());
+
+        when(placeRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+
+        PageableDto<AdminPlaceDto> result = placeService.getFilteredPlacesForAdmin(filterDto, pageable);
+
+        assertEquals(1, result.getPage().size());
+        assertEquals(places.size(), result.getTotalElements());
     }
 }
