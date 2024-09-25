@@ -11,11 +11,6 @@ public class ImageArrayValidator implements ConstraintValidator<ImageArrayValida
     private final List<String> validType = Arrays.asList("image/jpeg", "image/png", "image/jpg");
 
     @Override
-    public void initialize(ImageArrayValidation constraintAnnotation) {
-        // Initializes the validator in preparation for #isValid calls
-    }
-
-    @Override
     public boolean isValid(MultipartFile[] images, ConstraintValidatorContext constraintValidatorContext) {
         if (images == null) {
             return true;
