@@ -2,7 +2,6 @@ package greencity.dto.user;
 
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
@@ -74,8 +73,6 @@ public class UserVO {
     private String profilePicturePath;
 
     private Set<EcoNewsVO> ecoNewsLiked;
-
-    private Set<EcoNewsCommentVO> ecoNewsCommentsLiked;
 
     private String firstName;
 

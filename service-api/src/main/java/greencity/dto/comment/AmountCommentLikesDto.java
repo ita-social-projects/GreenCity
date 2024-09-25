@@ -1,4 +1,4 @@
-package greencity.dto.econewscomment;
+package greencity.dto.comment;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.NoArgsConstructor;
