@@ -26,7 +26,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Locale;
 
 @Validated
@@ -83,7 +81,7 @@ public class EcoNewsCommentController {
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long ecoNewsId,
         @Valid @RequestPart AddCommentDtoRequest request,
-        @RequestPart(required = false) @Nullable
+        @RequestPart(value = "images", required = false) @Nullable
         @ImageArrayValidation @Size(max = 5, message = "Download up to 5 images") MultipartFile[] images,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
