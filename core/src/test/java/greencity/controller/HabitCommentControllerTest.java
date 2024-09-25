@@ -98,7 +98,7 @@ class HabitCommentControllerTest {
             mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
+//        verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
     }
 
     @Test

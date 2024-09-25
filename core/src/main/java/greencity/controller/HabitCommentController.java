@@ -27,9 +27,12 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Locale;
 
 @Validated
@@ -58,14 +61,16 @@ public class HabitCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @PostMapping("/{habitId}/comments")
+    @PostMapping(path = "/{habitId}/comments",
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long habitId,
-        @Valid @RequestBody AddCommentDtoRequest request,
+        @Valid @RequestPart AddCommentDtoRequest request,
+        @RequestPart(required = false) @Nullable MultipartFile[] images,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.HABIT, habitId, request, userVO, locale));
+            .body(commentService.save(ArticleType.HABIT, habitId, request, images, userVO, locale));
     }
 
     /**
