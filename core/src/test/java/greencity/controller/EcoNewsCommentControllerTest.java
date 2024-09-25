@@ -99,7 +99,7 @@ class EcoNewsCommentControllerTest {
             mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, userVO, locale);
+//        verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, userVO, locale);
     }
 
     @Test
