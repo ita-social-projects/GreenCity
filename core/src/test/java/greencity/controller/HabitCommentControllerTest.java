@@ -6,7 +6,7 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.CommentDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import greencity.exception.exceptions.NotFoundException;

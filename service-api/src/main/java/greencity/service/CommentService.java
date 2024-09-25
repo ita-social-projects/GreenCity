@@ -5,7 +5,8 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
+import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +53,14 @@ public interface CommentService {
      * @return amount of comments
      */
     int countCommentsForHabit(Long habitId);
+
+    /**
+     * Method to count not deleted comments for eco-news.
+     *
+     * @param ecoNewsId to specify article
+     * @return {@code int} amount of comments
+     */
+    int countCommentsForEcoNews(Long ecoNewsId);
 
     /**
      * Method to count not deleted replies for to certain {@link CommentVO}
@@ -106,4 +115,13 @@ public interface CommentService {
      * @param userVO current {@link CommentVO} that wants to delete.
      */
     void delete(Long id, UserVO userVO);
+
+    /**
+     * Method that allow you to search users by name.
+     *
+     * @param searchUsers dto with current user ID and search query
+     *                    {@link UserSearchDto}.
+     * @author Anton Bondar
+     */
+    void searchUsers(UserSearchDto searchUsers);
 }
