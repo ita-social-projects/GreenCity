@@ -75,7 +75,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doNothing;
@@ -184,12 +183,13 @@ class CommentServiceImplTest {
         when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
             .thenReturn(getAddCommentDtoResponse());
         when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        MultipartFile[] images = getMultipartImageFiles();
 
         doNothing().when(userNotificationService).createNotification(
             any(UserVO.class), any(UserVO.class), any(NotificationType.class),
             anyLong(), anyString(), anyLong(), anyString());
 
-        commentService.save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
+        commentService.save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
         verify(econewsRepo, times(5)).findById(anyLong());
