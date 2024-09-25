@@ -124,9 +124,10 @@ public class EcoNewsCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @ApiPageable
-    @GetMapping("/comments/{parentCommentId}/replies/active")
+    @GetMapping("{ecoNewsId}/comments/{parentCommentId}/replies/active")
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
+        @PathVariable Long ecoNewsId,
         @PathVariable Long parentCommentId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
@@ -148,8 +149,8 @@ public class EcoNewsCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @GetMapping("comments/{parentCommentId}/replies/active/count")
-    public int getCountOfActiveReplies(@PathVariable Long parentCommentId) {
+    @GetMapping("{ecoNewsId}/comments/{parentCommentId}/replies/active/count")
+    public int getCountOfActiveReplies(@PathVariable Long ecoNewsId, @PathVariable Long parentCommentId) {
         return commentService.countAllActiveReplies(parentCommentId);
     }
 
@@ -179,7 +180,7 @@ public class EcoNewsCommentController {
     /**
      * Method to update certain {@link CommentVO} specified by id.
      *
-     * @param id          of {@link CommentVO} to update
+     * @param commentId   of {@link CommentVO} to update
      * @param commentText edited text of {@link CommentVO}
      */
     @Operation(summary = "Update comment.")
@@ -196,10 +197,10 @@ public class EcoNewsCommentController {
     })
     @PatchMapping("comments")
     public void update(
-        @RequestParam Long id,
+        @RequestParam Long commentId,
         @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
-        commentService.update(commentText, id, user);
+        commentService.update(commentText, commentId, user);
     }
 
     /**
@@ -252,11 +253,11 @@ public class EcoNewsCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @GetMapping("/comments/active")
+    @GetMapping("{ecoNewsId}/comments/active")
     @ApiPageableWithoutSort
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveComments(
         @Parameter(hidden = true) Pageable pageable,
-        Long ecoNewsId,
+        @PathVariable Long ecoNewsId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(commentService.getAllActiveComments(pageable, user, ecoNewsId, ArticleType.ECO_NEWS));
