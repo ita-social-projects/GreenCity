@@ -8,7 +8,6 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -41,7 +40,6 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -170,10 +168,6 @@ public class ModelUtils {
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
-    }
-
-    public static AdvicePostDto getAdvicePostDto() {
-        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 
     public static ShoppingListItemPostDto getShoppingListItemPostDto() {

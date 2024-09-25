@@ -38,7 +38,6 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     private final LanguageService languageService;
     private final FileService fileService;
     private final HabitAssignService habitAssignService;
-    private final AdviceService adviceService;
     private final ModelMapper modelMapper;
 
     /**
@@ -196,7 +195,6 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         HabitVO habitVO = modelMapper.map(habit, HabitVO.class);
 
         habitTranslationRepo.deleteAllByHabit(habit);
-        adviceService.deleteAllByHabit(habitVO);
         habitAssignService.deleteAllHabitAssignsByHabit(habitVO);
         habitRepo.delete(habit);
     }
