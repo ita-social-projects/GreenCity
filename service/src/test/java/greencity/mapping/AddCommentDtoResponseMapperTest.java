@@ -8,12 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class AddCommentDtoResponseMapperTest {
@@ -48,7 +47,7 @@ class AddCommentDtoResponseMapperTest {
         comment.setId(2L);
         comment.setText("Comment");
         comment.setCreatedDate(LocalDateTime.now());
-        comment.setAdditionalImages(Collections.emptyList());
+        comment.setAdditionalImages(null);
 
         AddCommentDtoResponse result = mapper.convert(comment);
 
@@ -56,7 +55,6 @@ class AddCommentDtoResponseMapperTest {
         assertEquals(2L, result.getId());
         assertEquals("Comment", result.getText());
         assertNotNull(result.getCreatedDate());
-        assert result.getAdditionalImages() != null;
-        assertTrue(result.getAdditionalImages().isEmpty());
+        assertNull(result.getAdditionalImages());
     }
 }

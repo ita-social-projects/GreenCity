@@ -129,7 +129,7 @@ class CommentServiceImplTest {
         CommentVO commentVO = getCommentVO();
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         HabitTranslation habitTranslation = getHabitTranslation();
-        MultipartFile[] images = getMultipartImageFiles();
+        MultipartFile[] images = null;
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
@@ -148,6 +148,49 @@ class CommentServiceImplTest {
         doNothing().when(userNotificationService).createNotification(
             any(UserVO.class), any(UserVO.class), any(NotificationType.class),
             anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
+        assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
+
+        verify(habitRepo, times(5)).findById(anyLong());
+        verify(commentRepo).save(any(Comment.class));
+        verify(commentRepo).findById(anyLong());
+        verify(userRepo, times(3)).findById(anyLong());
+        verify(modelMapper).map(userVO, CommentAuthorDto.class);
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
+        verify(modelMapper).map(any(Comment.class), eq(AddCommentDtoResponse.class));
+    }
+
+    @Test
+    void saveWithNullElementOfImages() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
+        AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        HabitTranslation habitTranslation = getHabitTranslation();
+        MultipartFile[] images = new MultipartFile[]{null};
+
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(commentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(userVO, CommentAuthorDto.class)).thenReturn(commentAuthorDto);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
+        when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
+                .thenReturn(getAddCommentDtoResponse());
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+                .thenReturn(Optional.of(habitTranslation));
+
+        doNothing().when(userNotificationService).createNotification(
+                any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+                anyLong(), anyString(), anyLong(), anyString());
 
         commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
