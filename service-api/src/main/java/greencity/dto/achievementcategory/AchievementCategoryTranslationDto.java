@@ -24,4 +24,10 @@ public class AchievementCategoryTranslationDto {
 
     @NotBlank
     private String titleEn;
+
+    @NotEmpty
+    private Integer totalQuantity;
+
+    @NotEmpty
+    private Integer achieved;
 }

@@ -21,7 +21,7 @@ public interface AchievementCategoryService {
      * @return list of {@link AchievementCategoryTranslationDto}.
      * @author Viktoriia Herchanivska
      */
-    List<AchievementCategoryTranslationDto> findAll();
+    List<AchievementCategoryTranslationDto> findAll(String email);
 
     /**
      * Method for finding all {@link AchievementCategoryVO}.

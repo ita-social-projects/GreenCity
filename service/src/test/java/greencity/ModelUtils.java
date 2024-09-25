@@ -1623,7 +1623,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategoryTranslationDto getAchievementCategoryTranslationDto() {
-        return new AchievementCategoryTranslationDto(1L, "Назва", "Title");
+        return new AchievementCategoryTranslationDto(1L, "Назва", "Title", null, null);
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {

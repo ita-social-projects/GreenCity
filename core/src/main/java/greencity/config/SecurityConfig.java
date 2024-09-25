@@ -72,6 +72,7 @@ public class SecurityConfig {
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
+    private static final String ACHIEVEMENTS = "/achievements";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -192,7 +193,9 @@ public class SecurityConfig {
                     "/place/filter")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,
-                    "/achievements",
+                    ACHIEVEMENTS,
+                    ACHIEVEMENTS + "/count",
+                    ACHIEVEMENTS + "/getAllCategories",
                     ADVICES,
                     ADVICES + "/{id}",
                     ADVICES + "/random",

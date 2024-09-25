@@ -3,9 +3,7 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.enums.AchievementStatus;
-import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AchievementController {
     private final AchievementService achievementService;
-    private final AchievementCategoryService achievementCategoryService;
 
     /**
      * Method returns all achievements, available for achieving with optional
@@ -90,22 +87,5 @@ public class AchievementController {
         @RequestParam(required = false) Long achievementCategoryId) {
         return ResponseEntity.ok().body(achievementService.findAchievementCountByTypeAndCategory(principal.getName(),
             achievementStatus, achievementCategoryId));
-    }
-
-    /**
-     * Method returns all available achievement categories.
-     *
-     * @return list of {@link AchievementCategoryTranslationDto}
-     */
-    @Operation(summary = "Get all achievements categories.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
-    })
-    @GetMapping("/getAllCategories")
-    public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(
-        @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok().body(achievementCategoryService.findAll());
     }
 }

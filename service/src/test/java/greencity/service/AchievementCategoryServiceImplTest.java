@@ -4,9 +4,12 @@ import greencity.ModelUtils;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
+import greencity.repository.UserAchievementRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static greencity.ModelUtils.getUserVO;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,6 +32,15 @@ class AchievementCategoryServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private AchievementRepo achievementRepo;
+
+    @Mock
+    private UserAchievementRepo userAchievementRepo;
 
     @InjectMocks
     private AchievementCategoryServiceImpl achievementCategoryService;
@@ -92,13 +105,20 @@ class AchievementCategoryServiceImplTest {
     @Test
     void findAllTest() {
         List<AchievementCategory> list = List.of(ModelUtils.getAchievementCategory());
-        List<AchievementCategoryTranslationDto> expected = List.of(ModelUtils.getAchievementCategoryTranslationDto());
+        AchievementCategoryTranslationDto expectedDto = ModelUtils.getAchievementCategoryTranslationDto();
+        expectedDto.setAchieved(0);
+        expectedDto.setTotalQuantity(0);
+        List<AchievementCategoryTranslationDto> expected = List.of(expectedDto);
+        UserVO userVO = ModelUtils.getUserVO();
 
         when(achievementCategoryRepo.findAll()).thenReturn(list);
         when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryTranslationDto.class))
             .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
+        when(userService.findByEmail("email@gmail.com")).thenReturn(userVO);
+        when(achievementRepo.findAllByAchievementCategoryId(expectedDto.getId())).thenReturn(Collections.emptyList());
+        when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userVO.getId(), expectedDto.getId())).thenReturn(Collections.emptyList());
 
-        List<AchievementCategoryTranslationDto> actual = achievementCategoryService.findAll();
+        List<AchievementCategoryTranslationDto> actual = achievementCategoryService.findAll("email@gmail.com");
 
         assertEquals(expected, actual);
     }
