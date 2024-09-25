@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static greencity.ModelUtils.getUserVO;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 

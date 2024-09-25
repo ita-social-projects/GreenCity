@@ -116,8 +116,7 @@ public class SecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
                 .sendError(SC_UNAUTHORIZED, "Authorize first."))
                 .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities.")))
-            .authorizeHttpRequests(req -> {
-                req
+            .authorizeHttpRequests(req -> req
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/error").permitAll()
                     .requestMatchers("/", "/management/", "/management/login").permitAll()
@@ -202,8 +201,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.GET,
                         ACHIEVEMENTS,
-                        ACHIEVEMENTS + "/count",
-                        ACHIEVEMENTS + "/categories",
+                        ACHIEVEMENTS + COUNT,
+                        ACHIEVEMENTS + CATEGORIES,
                         CUSTOM_SHOPPING_LIST_ITEMS,
                         CUSTOM_SHOPPING_LIST,
                         CUSTOM_SHOPPING_LIST_URL,
@@ -395,8 +394,8 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.DELETE,
                         COMMENTS)
                     .hasAnyRole(ADMIN)
-                    .anyRequest().hasAnyRole(ADMIN);
-            })
+                    .anyRequest().hasAnyRole(ADMIN)
+            )
             .logout(logout -> logout.logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))
                 .clearAuthentication(true)
