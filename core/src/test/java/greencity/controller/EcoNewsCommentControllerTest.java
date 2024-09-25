@@ -9,6 +9,7 @@ import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
+
 import greencity.exception.exceptions.NotFoundException;
 import greencity.service.CommentService;
 import greencity.service.UserService;
@@ -31,10 +32,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
 import java.util.Locale;
-
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -134,7 +133,7 @@ class EcoNewsCommentControllerTest {
         int pageNumber = 5;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        mockMvc.perform(get(ECONEWS_LINK + "/comments/active?page=5&ecoNewsId=1")
+        mockMvc.perform(get(ECONEWS_LINK + "/{ecoNewsId}/comments/active?page=5&ecoNewsId=1", 1)
             .principal(principal))
             .andExpect(status().isOk());
 
@@ -171,7 +170,7 @@ class EcoNewsCommentControllerTest {
         when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
             .thenReturn(commentReplies);
 
-        mockMvc.perform(get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active", parentCommentId)
+        mockMvc.perform(get(ECONEWS_LINK + "/{ecoNewsId}/comments/{parentCommentId}/replies/active", 1, parentCommentId)
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -185,7 +184,7 @@ class EcoNewsCommentControllerTest {
     @SneakyThrows
     void getAllActiveRepliesWithNotValidIdBadRequestTest() {
         String notValidId = "id";
-        mockMvc.perform(get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active", notValidId))
+        mockMvc.perform(get(ECONEWS_LINK + "/1/comments/{parentCommentId}/replies/active", notValidId))
             .andExpect(status().isBadRequest());
     }
 
@@ -208,7 +207,7 @@ class EcoNewsCommentControllerTest {
             .getAllActiveReplies(pageable, parentCommentId, userVO);
 
         Assertions.assertThatThrownBy(
-            () -> mockMvc.perform(get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active",
+            () -> mockMvc.perform(get(ECONEWS_LINK + "/1/comments/{parentCommentId}/replies/active",
                 parentCommentId).principal(principal)).andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
@@ -224,7 +223,7 @@ class EcoNewsCommentControllerTest {
         String expectedResponse = "<Integer>10</Integer>";
         when(commentService.countAllActiveReplies(parentCommentId)).thenReturn(repliesAmount);
 
-        mockMvc.perform(get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active/count", parentCommentId))
+        mockMvc.perform(get(ECONEWS_LINK + "/1/comments/{parentCommentId}/replies/active/count", parentCommentId))
             .andExpect(status().isOk())
             .andExpect(content().xml(expectedResponse));
 
@@ -235,7 +234,7 @@ class EcoNewsCommentControllerTest {
     @SneakyThrows
     void getCountOfActiveRepliesBadRequestTest() {
         String notValidId = "id";
-        mockMvc.perform(get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active/count", notValidId))
+        mockMvc.perform(get(ECONEWS_LINK + "/1/comments/{parentCommentId}/replies/active/count", notValidId))
             .andExpect(status().isBadRequest());
     }
 
@@ -250,7 +249,7 @@ class EcoNewsCommentControllerTest {
             .countAllActiveReplies(parentCommentId);
 
         Assertions.assertThatThrownBy(() -> mockMvc.perform(
-            get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active/count", parentCommentId))
+            get(ECONEWS_LINK + "/1/comments/{parentCommentId}/replies/active/count", parentCommentId))
             .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
@@ -387,7 +386,7 @@ class EcoNewsCommentControllerTest {
         mockMvc.perform(patch(ECONEWS_LINK + "/comments")
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
-            .param("id", "1")
+            .param("commentId", "1")
             .content(content))
             .andExpect(status().isOk());
 
