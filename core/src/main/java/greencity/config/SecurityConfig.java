@@ -167,7 +167,7 @@ public class SecurityConfig {
                         ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE + COUNT,
                         ECO_NEWS + COMMENTS,
                         ECO_NEWS + COMMENTS + "/id",
-                        ECO_NEWS + COMMENTS + "/like",
+                        ECO_NEWS + COMMENTS + LIKE,
                         ECO_NEWS + COMMENTS + COMMENT_ID + LIKES + COUNT,
                         ECO_NEWS + COMMENTS + ACTIVE,
                         ECO_NEWS_COMMENTS + COUNT,

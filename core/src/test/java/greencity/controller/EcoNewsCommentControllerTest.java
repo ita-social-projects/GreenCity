@@ -9,8 +9,7 @@ import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
-import greencity.enums.NotificationType;
+
 import greencity.exception.exceptions.NotFoundException;
 import greencity.service.CommentService;
 import greencity.service.UserService;
@@ -33,18 +32,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
 import java.util.Locale;
-
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
