@@ -136,6 +136,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
+
     @Transactional
     @Override
     public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
@@ -194,10 +195,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         HabitAssign habitAssign = createHabitAssign(user, habit, habitAssignCustomPropertiesDto);
-        habitAssignRepo.save(habitAssign);
 
-        List<HabitAssignManagementDto> habitAssignManagementDtoList = List.of(
-            modelMapper.map(habitAssign, HabitAssignManagementDto.class));
+        List<HabitAssignManagementDto> habitAssignManagementDtoList = new ArrayList<>();
+        habitAssignManagementDtoList.add(modelMapper.map(habitAssign, HabitAssignManagementDto.class));
 
         if (!CollectionUtils.isEmpty(habitAssignCustomPropertiesDto.getFriendsIdsList())) {
             assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
@@ -243,12 +243,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendOfUser.getId());
             }
             checkHabitAssignmentValidity(habit.getId(), friendOfUser);
+
             HabitAssign habitAssign = addProgressStatusToHabitAssign(habit, friendOfUser, HabitAssignStatus.REQUESTED);
             enhanceAssignWithCustomProperties(habitAssign,
                 habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
             setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
                 habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
-            habitAssignRepo.save(habitAssign);
+            habitAssign = habitAssignRepo.save(habitAssign);
+
             habitAssignManagementDtoList.add(modelMapper.map(habitAssign, HabitAssignManagementDto.class));
         }
     }
@@ -373,17 +375,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @return {@link HabitAssign} instance.
      */
     private HabitAssign buildHabitAssign(Habit habit, User user, HabitAssignStatus assignStatus) {
-        return habitAssignRepo.save(
-            HabitAssign.builder()
-                .habit(habit)
-                .status(assignStatus)
-                .createDate(ZonedDateTime.now())
-                .user(user)
-                .duration(habit.getDefaultDuration())
-                .habitStreak(0)
-                .workingDays(0)
-                .lastEnrollmentDate(ZonedDateTime.now())
-                .build());
+        return HabitAssign.builder()
+            .habit(habit)
+            .status(assignStatus)
+            .createDate(ZonedDateTime.now())
+            .user(user)
+            .duration(habit.getDefaultDuration())
+            .habitStreak(0)
+            .workingDays(0)
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
     }
 
     /**
@@ -1459,19 +1460,32 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
         Locale locale) {
-        friendsIds.forEach(friendId -> {
-            checkIfUserIsAFriend(userVO.getId(), friendId);
-            User friend = getUserById(friendId);
-            UserVO friendVO = mapToUserVO(friend);
-            checkHabitAssignmentValidity(habitId, friend);
-            Habit habit = getHabitById(habitId);
-            HabitAssign habitAssign = addProgressStatusToHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
+        friendsIds.stream()
+            .map(friendId -> getValidatedFriend(userVO, friendId, habitId))
+            .forEach(friend -> processHabitInvite(userVO, friend, habitId, locale));
+    }
 
-            String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
-            userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
+    private User getValidatedFriend(UserVO userVO, Long friendId, Long habitId) {
+        User friend = getUserById(friendId);
+        checkIfUserIsAFriend(userVO.getId(), friendId);
+        checkHabitAssignmentValidity(habitId, friend);
+        return friend;
+    }
 
-            sendHabitAssignNotificationToFriend(userVO, friendVO, habitAssign, locale);
-        });
+    private void processHabitInvite(UserVO userVO, User friend, Long habitId, Locale locale) {
+        UserVO friendVO = mapToUserVO(friend);
+        Habit habit = getHabitById(habitId);
+        HabitAssign habitAssign = assignHabitToFriend(habit, friend);
+
+        assignShoppingListToUser(habitId, habitAssign);
+        String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
+        userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
+        sendHabitAssignNotificationToFriend(userVO, friendVO, habitAssign, locale);
+    }
+
+    private HabitAssign assignHabitToFriend(Habit habit, User friend) {
+        HabitAssign habitAssign = addProgressStatusToHabitAssign(habit, friend, HabitAssignStatus.REQUESTED);
+        return habitAssignRepo.save(habitAssign);
     }
 
     private void checkIfUserIsAFriend(Long userId, Long friendId) {
@@ -1497,12 +1511,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private HabitAssign getHabitAssignById(Long habitId, Long userId) {
         return habitAssignRepo
             .findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, userId);
-    }
-
-    private void updateHabitAssign(HabitAssign habitAssign) {
-        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
-        habitAssign.setCreateDate(ZonedDateTime.now());
-        habitAssignRepo.save(habitAssign);
     }
 
     private void sendHabitAssignNotificationToFriend(UserVO sender, UserVO receiver, HabitAssign habitAssign,
@@ -1580,27 +1588,27 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private HabitAssign createHabitAssign(User user, Habit habit,
-                                          HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
         HabitAssign habitAssign = addProgressStatusToHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
 
         if (!habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems().isEmpty()) {
             List<ShoppingListItem> shoppingList =
-                    shoppingListItemRepo
-                            .getShoppingListByListOfId(habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto()
-                                    .getDefaultShoppingListItems());
+                shoppingListItemRepo
+                    .getShoppingListByListOfId(habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto()
+                        .getDefaultShoppingListItems());
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
         enhanceAssignWithCustomProperties(habitAssign, habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
         setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
-                habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
+            habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
         saveCustomShoppingListItemList(habitAssignCustomPropertiesDto.getCustomShoppingListItemList(), user, habit);
 
         return habitAssignRepo.save(habitAssign);
     }
 
-    private HabitAssign addProgressStatusToHabitAssign(Habit habit, User user, HabitAssignStatus status){
+    private HabitAssign addProgressStatusToHabitAssign(Habit habit, User user, HabitAssignStatus status) {
         HabitAssign habitAssign =
-                getHabitAssignById(habit.getId(), user.getId());
+            getHabitAssignById(habit.getId(), user.getId());
         if (habitAssign != null) {
             habitAssign.setStatus(status);
             habitAssign.setCreateDate(ZonedDateTime.now());
