@@ -220,6 +220,10 @@ public class CommentServiceImpl implements CommentService {
                 habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
             articleName = habitTranslation.getName();
+        } else if (articleType == ArticleType.ECO_NEWS) {
+            EcoNews ecoNews = ecoNewsRepo.findById(articleId)
+                .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
+            articleName = ecoNews.getTitle();
         } else {
             throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
@@ -265,6 +269,12 @@ public class CommentServiceImpl implements CommentService {
                 case COMMENT -> NotificationType.HABIT_COMMENT;
                 case COMMENT_REPLY -> NotificationType.HABIT_COMMENT_REPLY;
                 case COMMENT_USER_TAG -> NotificationType.HABIT_COMMENT_USER_TAG;
+                default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
+            };
+            case ECO_NEWS -> switch (actionType) {
+                case COMMENT -> NotificationType.ECONEWS_COMMENT;
+                case COMMENT_REPLY -> NotificationType.ECONEWS_COMMENT_REPLY;
+                case COMMENT_USER_TAG -> NotificationType.ECONEWS_COMMENT_USER_TAG;
                 default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
             };
             default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);

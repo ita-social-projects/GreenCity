@@ -48,6 +48,7 @@ public class SecurityConfig {
     private static final String ECO_NEWS_ID = "/{ecoNewsId}";
     private static final String ECO_NEWS_COMMENTS = ECO_NEWS + ECO_NEWS_ID + COMMENTS;
     private static final String REPLIES = "/replies";
+    private static final String LIKE = "/like";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
     private static final String COUNT = "/count";
@@ -161,6 +162,7 @@ public class SecurityConfig {
                         ECO_NEWS + ECO_NEWS_ID + LIKES + COUNT,
                         ECO_NEWS + ECO_NEWS_ID + DISLIKES + COUNT,
                         ECO_NEWS_COMMENTS,
+                        ECO_NEWS_COMMENTS + ACTIVE,
                         ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
                         ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE + COUNT,
                         ECO_NEWS + COMMENTS,
@@ -265,6 +267,7 @@ public class SecurityConfig {
                         ECO_NEWS,
                         ECO_NEWS + ECO_NEWS_ID + LIKES,
                         ECO_NEWS + ECO_NEWS_ID + DISLIKES,
+                        ECO_NEWS + COMMENTS + LIKE,
                         ECO_NEWS_COMMENTS,
                         ECO_NEWS_COMMENTS + COMMENT_ID + LIKES,
                         EVENTS_COMMENTS,
@@ -315,6 +318,7 @@ public class SecurityConfig {
                     .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                     .requestMatchers(HttpMethod.PATCH,
                         HABITS + COMMENTS,
+                        ECO_NEWS + COMMENTS,
                         CUSTOM_SHOPPING_LIST_ITEMS,
                         CUSTOM_SHOPPING_LIST_URL,
                         HABIT_ASSIGN_ID,
@@ -332,6 +336,7 @@ public class SecurityConfig {
                     .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                     .requestMatchers(HttpMethod.DELETE,
                         ECO_NEWS + ECO_NEWS_ID,
+                        ECO_NEWS + COMMENTS + ECO_NEWS_ID,
                         ECO_NEWS_COMMENTS + COMMENT_ID,
                         HABITS + "/comments/{id}",
                         CUSTOM_SHOPPING_LIST_ITEMS,
