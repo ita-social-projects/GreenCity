@@ -103,7 +103,7 @@ class AchievementCategoryServiceImplTest {
     }
 
     @Test
-    void findAllTest() {
+    void findAllWithAtLeastOneAchievementTest() {
         List<AchievementCategory> list = List.of(ModelUtils.getAchievementCategory());
         AchievementCategoryTranslationDto expectedDto = ModelUtils.getAchievementCategoryTranslationDto();
         expectedDto.setAchieved(0);
@@ -111,7 +111,7 @@ class AchievementCategoryServiceImplTest {
         List<AchievementCategoryTranslationDto> expected = List.of(expectedDto);
         UserVO userVO = ModelUtils.getUserVO();
 
-        when(achievementCategoryRepo.findAll()).thenReturn(list);
+        when(achievementCategoryRepo.findAllWithAtLeastOneAchievement()).thenReturn(list);
         when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryTranslationDto.class))
             .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
         when(userService.findByEmail("email@gmail.com")).thenReturn(userVO);
