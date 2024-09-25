@@ -6,12 +6,10 @@ import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
-import greencity.entity.User;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -47,14 +45,16 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementCategoryTranslationDto> findAll(String email) {
+    public List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(String email) {
         UserVO user = userService.findByEmail(email);
-        return achievementCategoryRepo.findAll().stream()
+        return achievementCategoryRepo.findAllWithAtLeastOneAchievement().stream()
             .map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class))
             .map(achievementCategory -> {
                 Long achievementCategoryId = achievementCategory.getId();
-                achievementCategory.setTotalQuantity(achievementRepo.findAllByAchievementCategoryId(achievementCategoryId).size());
-                achievementCategory.setAchieved(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
+                achievementCategory
+                    .setTotalQuantity(achievementRepo.findAllByAchievementCategoryId(achievementCategoryId).size());
+                achievementCategory.setAchieved(userAchievementRepo
+                    .findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
                 return achievementCategory;
             })
             .toList();

@@ -116,9 +116,11 @@ class AchievementCategoryServiceImplTest {
             .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
         when(userService.findByEmail("email@gmail.com")).thenReturn(userVO);
         when(achievementRepo.findAllByAchievementCategoryId(expectedDto.getId())).thenReturn(Collections.emptyList());
-        when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userVO.getId(), expectedDto.getId())).thenReturn(Collections.emptyList());
+        when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userVO.getId(),
+            expectedDto.getId())).thenReturn(Collections.emptyList());
 
-        List<AchievementCategoryTranslationDto> actual = achievementCategoryService.findAll("email@gmail.com");
+        List<AchievementCategoryTranslationDto> actual =
+            achievementCategoryService.findAllWithAtLeastOneAchievement("email@gmail.com");
 
         assertEquals(expected, actual);
     }

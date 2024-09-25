@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.security.Principal;
 import java.util.List;
 
@@ -31,13 +30,14 @@ public class AchievementCategoryController {
      */
     @Operation(summary = "Get all achievements categories.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
     public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(
-            @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok().body(achievementCategoryService.findAll(principal.getName()));
+        @Parameter(hidden = true) Principal principal) {
+        return ResponseEntity.ok()
+            .body(achievementCategoryService.findAllWithAtLeastOneAchievement(principal.getName()));
     }
 }

@@ -39,15 +39,15 @@ class AchievementCategoryControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(achievementCategoryController)
-                .build();
+            .build();
     }
 
     @Test
     void getAchievementCategoriesTest() throws Exception {
-        when(achievementCategoryService.findAll(anyString())).thenReturn(Collections.emptyList());
+        when(achievementCategoryService.findAllWithAtLeastOneAchievement(anyString())).thenReturn(Collections.emptyList());
         mockMvc.perform(get(achievementCategoryLink).principal(principal))
                 .andExpect(status().isOk());
-        verify(achievementCategoryService).findAll("test@gmail.com");
+        verify(achievementCategoryService).findAllWithAtLeastOneAchievement("test@gmail.com");
     }
 
 }
