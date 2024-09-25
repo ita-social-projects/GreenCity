@@ -5,10 +5,12 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.user.UserSearchDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.EcoNews;
@@ -21,8 +23,8 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentActionType;
 import greencity.enums.CommentStatus;
-import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -33,13 +35,14 @@ import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
-import greencity.repository.HabitTranslationRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.HabitTranslationRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -61,6 +64,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepo commentRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
+    private final SimpMessagingTemplate messagingTemplate;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
@@ -407,6 +411,16 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
+    public int countCommentsForEcoNews(Long ecoNewsId) {
+        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId));
+        return commentRepo.countNotDeletedCommentsByEcoNews(ecoNews.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int countAllActiveReplies(Long parentCommentId) {
         if (commentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED).isEmpty()) {
             throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId);
@@ -420,12 +434,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId,
         ArticleType articleType) {
-        if (articleType == ArticleType.HABIT) {
-            Optional<Habit> habit = habitRepo.findById(articleId);
-            if (habit.isEmpty()) {
-                throw new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId);
-            }
-        }
+        checkArticleExists(articleType, articleId);
 
         Page<Comment> pages =
             commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
@@ -542,5 +551,51 @@ public class CommentServiceImpl implements CommentService {
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
         commentRepo.save(comment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public void searchUsers(UserSearchDto searchUsers) {
+        List<User> users = userRepo.searchUsers(searchUsers.getSearchQuery());
+
+        List<UserTagDto> usersToTag = users.stream()
+            .map(u -> modelMapper.map(u, UserTagDto.class))
+            .toList();
+
+        messagingTemplate.convertAndSend("/topic/" + searchUsers.getCurrentUserId() + "/searchUsers", usersToTag);
+    }
+
+    /**
+     * Method to check if article exist.
+     *
+     * @param articleType {@link ArticleType}.
+     * @param articleId   {@link Long} id of an article.
+     * @throws NotFoundException with message for give {@link ArticleType}
+     */
+    void checkArticleExists(ArticleType articleType, Long articleId) {
+        switch (articleType) {
+            case HABIT -> {
+                Optional<Habit> habit = habitRepo.findById(articleId);
+                if (habit.isEmpty()) {
+                    throw new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId);
+                }
+            }
+            case ECO_NEWS -> {
+                Optional<EcoNews> ecoNews = ecoNewsRepo.findById(articleId);
+                if (ecoNews.isEmpty()) {
+                    throw new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId);
+                }
+            }
+            case EVENT -> {
+                Optional<Event> event = eventRepo.findById(articleId);
+                if (event.isEmpty()) {
+                    throw new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId);
+                }
+            }
+            default -> throw new BadRequestException("Unsupported article type");
+        }
     }
 }
