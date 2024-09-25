@@ -17,7 +17,7 @@ public @interface ImageArrayValidation {
      *
      * @return message
      */
-    String message() default "Download PNG or JPEG only. Max size of 10 Mb each.";
+    String message() default "Download PNG or JPEG or GIF only. Max size of 10Mb each.";
 
     /**
      * Let you select to split the annotations into different groups to apply
