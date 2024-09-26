@@ -9,16 +9,19 @@ import greencity.dto.achievement.ActionDto;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
+import greencity.entity.UserAction;
 import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserActionRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.EnableCaching;
@@ -39,6 +42,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserAchievementRepo userAchievementRepo;
     private final SimpMessagingTemplate messagingTemplate;
     private final AchievementCategoryRepo achievementCategoryRepo;
+    private final UserActionRepo userActionRepo;
 
     /**
      * {@inheritDoc}
@@ -79,13 +83,37 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementVO> findAllByType(String principalEmail, AchievementStatus achievementStatus) {
+    public List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId) {
         Long userId = userService.findByEmail(principalEmail).getId();
-        return switch (achievementStatus) {
-            case ACHIEVED -> findAllAchieved(userId);
-            case UNACHIEVED -> findUnachieved(userId);
-            case null, default -> findAllAchievementsWithAnyStatus();
+        Long searchAchievementCategoryId =
+            achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
+        List<AchievementVO> achievements = switch (achievementStatus) {
+            case ACHIEVED -> findAllAchieved(userId, searchAchievementCategoryId);
+            case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
+            case null, default -> findAllAchievementsWithAnyStatus(searchAchievementCategoryId);
         };
+        if (achievementCategoryId == null) {
+            List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
+            return achievements.stream().map(achievementVO -> {
+                int achievementCategoryProgress = 0;
+                for (UserAction action : allActions) {
+                    if (action.getAchievementCategory().getId()
+                        .equals(achievementVO.getAchievementCategory().getId())) {
+                        achievementCategoryProgress = action.getCount();
+                        break;
+                    }
+                }
+                return achievementVO.setProgress(achievementCategoryProgress);
+            })
+                .toList();
+        } else {
+            UserAction achievementAction =
+                userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
+            int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
+            return achievements.stream().map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
+                .toList();
+        }
     }
 
     /**
@@ -142,9 +170,23 @@ public class AchievementServiceImpl implements AchievementService {
             .orElse(null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId) {
+        return findAllByTypeAndCategory(principalEmail, achievementStatus, achievementCategoryId).size();
+    }
+
     private AchievementCategory findCategoryByName(String name) {
         return achievementCategoryRepo.findByName(name)
             .orElseThrow(() -> new BadCategoryRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME));
+    }
+
+    private AchievementCategory findCategoryById(Long id) {
+        return achievementCategoryRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + id));
     }
 
     private void populateAchievement(Achievement achievement, AchievementPostDto achievementPostDto,
@@ -156,28 +198,53 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setCondition(achievementPostDto.getCondition());
     }
 
-    private List<AchievementVO> findAllAchievementsWithAnyStatus() {
-        return achievementRepo.findAll()
-            .stream()
-            .map(this::mapToVO)
-            .collect(Collectors.toList());
+    private List<AchievementVO> findAllAchievementsWithAnyStatus(Long achievementCategoryId) {
+        if (achievementCategoryId == null) {
+            return achievementRepo.findAll()
+                .stream()
+                .map(this::mapToVO)
+                .toList();
+        } else {
+            return achievementRepo.findAllByAchievementCategoryId(achievementCategoryId)
+                .stream()
+                .map(this::mapToVO)
+                .toList();
+        }
     }
 
-    private List<AchievementVO> findAllAchieved(Long userId) {
-        return userAchievementRepo.getUserAchievementByUserId(userId)
-            .stream()
-            .map(userAchievement -> userAchievement.getAchievement().getId())
-            .map(achievementRepo::findById)
-            .flatMap(Optional::stream)
-            .map(this::mapToVO)
-            .collect(Collectors.toList());
+    private List<AchievementVO> findAllAchieved(Long userId, Long achievementCategoryId) {
+        if (achievementCategoryId == null) {
+            return userAchievementRepo.getUserAchievementByUserId(userId)
+                .stream()
+                .map(userAchievement -> userAchievement.getAchievement().getId())
+                .map(achievementRepo::findById)
+                .flatMap(Optional::stream)
+                .map(this::mapToVO)
+                .toList();
+        } else {
+            return userAchievementRepo
+                .findAllByUserIdAndAchievement_AchievementCategoryId(userId, achievementCategoryId)
+                .stream()
+                .map(userAchievement -> userAchievement.getAchievement().getId())
+                .map(achievementRepo::findById)
+                .flatMap(Optional::stream)
+                .map(this::mapToVO)
+                .toList();
+        }
     }
 
-    private List<AchievementVO> findUnachieved(Long userId) {
-        return achievementRepo.searchAchievementsUnAchieved(userId)
-            .stream()
-            .map(this::mapToVO)
-            .toList();
+    private List<AchievementVO> findUnachieved(Long userId, Long achievementCategoryId) {
+        if (achievementCategoryId == null) {
+            return achievementRepo.searchAchievementsUnAchieved(userId)
+                .stream()
+                .map(this::mapToVO)
+                .toList();
+        } else {
+            return achievementRepo.searchAchievementsUnAchievedByCategory(userId, achievementCategoryId)
+                .stream()
+                .map(this::mapToVO)
+                .toList();
+        }
     }
 
     private PageableAdvancedDto<AchievementVO> createPageable(Page<Achievement> pages) {

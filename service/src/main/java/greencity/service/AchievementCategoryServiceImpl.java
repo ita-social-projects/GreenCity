@@ -2,10 +2,14 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
+import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,6 +22,9 @@ import java.util.List;
 @Slf4j
 public class AchievementCategoryServiceImpl implements AchievementCategoryService {
     private final AchievementCategoryRepo achievementCategoryRepo;
+    private final AchievementRepo achievementRepo;
+    private final UserAchievementRepo userAchievementRepo;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     /**
@@ -38,7 +45,26 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementCategoryVO> findAll() {
+    public List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(String email) {
+        UserVO user = userService.findByEmail(email);
+        return achievementCategoryRepo.findAllWithAtLeastOneAchievement().stream()
+            .map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class))
+            .map(achievementCategory -> {
+                Long achievementCategoryId = achievementCategory.getId();
+                achievementCategory
+                    .setTotalQuantity(achievementRepo.findAllByAchievementCategoryId(achievementCategoryId).size());
+                achievementCategory.setAchieved(userAchievementRepo
+                    .findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
+                return achievementCategory;
+            })
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AchievementCategoryVO> findAllForManagement() {
         return achievementCategoryRepo.findAll().stream().map(this::mapToVO).toList();
     }
 
