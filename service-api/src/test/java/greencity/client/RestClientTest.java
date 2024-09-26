@@ -169,7 +169,7 @@ class RestClientTest {
         restClient.updateUser(userManagementDto);
 
         assertEquals(ResponseEntity.ok(object), restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-                                                                      + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class));
+            + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class));
     }
 
     @Test
