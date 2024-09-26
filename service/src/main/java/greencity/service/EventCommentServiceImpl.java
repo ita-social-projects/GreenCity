@@ -4,7 +4,7 @@ import greencity.achievement.AchievementCalculation;
 import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;

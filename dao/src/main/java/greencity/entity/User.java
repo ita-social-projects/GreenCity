@@ -199,9 +199,6 @@ public class User {
     @ManyToMany(mappedBy = "usersLikedNews")
     private Set<EcoNews> ecoNewsLiked;
 
-    @ManyToMany(mappedBy = "usersLiked")
-    private Set<EcoNewsComment> ecoNewsCommentsLiked;
-
     @OneToMany
     @Builder.Default
     @JoinTable(name = "users_friends",

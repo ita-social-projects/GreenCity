@@ -192,6 +192,8 @@ public class ErrorMessage {
     public static final String EMPTY_HABIT_ASSIGN_LIST = "Habit Assigns list cannot be empty";
     public static final String XSS_MULTIPART_PROCESSING_ERROR =
         "Error during processing xss escaping of multipart file";
+    public static final String STATUSES_REQUIRE_USER_ID =
+        "JOINED, CREATED and SAVED statuses required user-id parameter";
     public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
     public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
 }

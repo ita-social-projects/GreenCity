@@ -12,6 +12,8 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.enums.EventStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +54,8 @@ import static greencity.constant.SwaggerExampleModel.UPDATE_EVENT;
 @RequestMapping("/events")
 @RequiredArgsConstructor
 public class EventController {
+    private static final List<EventStatus> STATUSES_THAT_REQUIRE_USER_ID =
+        List.of(EventStatus.JOINED, EventStatus.CREATED, EventStatus.SAVED);
     private final EventService eventService;
 
     /**
@@ -158,7 +162,6 @@ public class EventController {
      * Method for getting pages of events.
      *
      * @return a page of {@link EventDto} instance.
-     * @author Max Bohonko, Olena Sotnik.
      */
     @Operation(summary = "Get all events")
     @ApiResponses(value = {
@@ -168,11 +171,20 @@ public class EventController {
     })
     @ApiPageableWithoutSort
     @GetMapping
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvents(
         @Parameter(hidden = true) Pageable pageable,
         @RequestParam(required = false, name = "user-id") Long userId,
         FilterEventDto filterEventDto) {
+        if (filterEventDto != null && filterEventDto.getStatuses() != null) {
+            validateStatusesRequireUserId(filterEventDto.getStatuses(), userId);
+        }
         return ResponseEntity.ok().body(eventService.getEvents(pageable, filterEventDto, userId));
+    }
+
+    private void validateStatusesRequireUserId(List<EventStatus> statuses, Long userId) {
+        if (statuses.stream().anyMatch(STATUSES_THAT_REQUIRE_USER_ID::contains) && userId == null) {
+            throw new BadRequestException(ErrorMessage.STATUSES_REQUIRE_USER_ID);
+        }
     }
 
     /**

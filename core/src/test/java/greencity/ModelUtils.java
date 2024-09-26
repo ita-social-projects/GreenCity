@@ -8,7 +8,6 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -40,11 +39,14 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.Comment;
 import greencity.entity.User;
+import greencity.enums.ArticleType;
+import greencity.enums.CommentStatus;
+import greencity.enums.EventStatus;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.enums.Role;
@@ -65,13 +67,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import static greencity.enums.EventStatus.CLOSED;
-import static greencity.enums.EventStatus.CREATED;
-import static greencity.enums.EventStatus.JOINED;
-import static greencity.enums.EventStatus.OPEN;
-import static greencity.enums.EventStatus.SAVED;
-import static greencity.enums.EventTime.FUTURE;
 
 public class ModelUtils {
     public static List<TagTranslationVO> getTagTranslationsVO() {
@@ -143,6 +138,18 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
+    public static Comment getEcoNewsComment() {
+        return Comment.builder()
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .status(CommentStatus.ORIGINAL)
+            .user(getUser())
+            .articleType(ArticleType.ECO_NEWS)
+            .build();
+    }
+
     public static Principal getPrincipal() {
         return () -> "test@gmail.com";
     }
@@ -156,10 +163,6 @@ public class ModelUtils {
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
             new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
-    }
-
-    public static AdvicePostDto getAdvicePostDto() {
-        return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 
     public static ShoppingListItemPostDto getShoppingListItemPostDto() {
@@ -178,7 +181,7 @@ public class ModelUtils {
     public static AchievementVO getAchievementVO() {
         return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
             "Acquired habit 14 days",
-            new AchievementCategoryVO(1L, "name"), 1);
+            new AchievementCategoryVO(1L, "name"), 1, 0);
     }
 
     public static UserManagementDto getUserManagementDto() {
@@ -350,8 +353,10 @@ public class ModelUtils {
             .build();
     }
 
-    public static FilterEventDto getNullFilterEventDto() {
-        return FilterEventDto.builder().build();
+    public static FilterEventDto getFilterEventDto() {
+        return FilterEventDto.builder()
+            .statuses(List.of(EventStatus.JOINED))
+            .build();
     }
 
     public static ActionDto getActionDto() {
@@ -480,14 +485,5 @@ public class ModelUtils {
             commentDtos.size(),
             1,
             1);
-    }
-
-    public static FilterEventDto getFilterEventDto() {
-        return FilterEventDto.builder()
-            .time(FUTURE)
-            .cities(List.of("Kyiv"))
-            .statuses(List.of(OPEN, CLOSED, JOINED, CREATED, SAVED))
-            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
-            .build();
     }
 }

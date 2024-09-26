@@ -15,7 +15,6 @@ import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
@@ -89,13 +88,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
-    private static final String ECO_NEWS_JOIN_TAG = "tags";
-    private static final String ECO_NEWS_TAG_TRANSLATION = "tagTranslations";
-    private static final String ECO_NEWS_TAG_TRANSLATION_NAME = "name";
-    private final AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
-    private final EcoNews ecoNews = ModelUtils.getEcoNews();
-    private final AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
-    private final EcoNewsGenericDto ecoNewsGenericDto = ModelUtils.getEcoNewsGenericDto();
     @Mock
     EcoNewsRepo ecoNewsRepo;
     @Mock
@@ -120,10 +112,21 @@ class EcoNewsServiceImplTest {
     private AchievementCalculation achievementCalculation;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private CommentService commentService;
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
     @Mock
     private UserNotificationService userNotificationService;
+
+    private final AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
+    private final EcoNews ecoNews = ModelUtils.getEcoNews();
+    private final AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
+    private final EcoNewsGenericDto ecoNewsGenericDto = ModelUtils.getEcoNewsGenericDto();
+
+    private static final String ECO_NEWS_JOIN_TAG = "tags";
+    private static final String ECO_NEWS_TAG_TRANSLATION = "tagTranslations";
+    private static final String ECO_NEWS_TAG_TRANSLATION_NAME = "name";
 
     @Test
     void save() throws MalformedURLException {
@@ -202,6 +205,7 @@ class EcoNewsServiceImplTest {
     void saveEcoNews() throws Exception {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -315,22 +319,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void likeCommentTest() {
-        UserVO userVO = ModelUtils.getUserVO();
-        EcoNewsCommentVO ecoNewsCommentVO = ModelUtils.getEcoNewsCommentVO();
-        ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-        assertEquals(1, ecoNewsCommentVO.getUsersLiked().size());
-    }
-
-    @Test
-    void unlikeCommentTest() {
-        UserVO userVO = ModelUtils.getUserVO();
-        EcoNewsCommentVO ecoNewsCommentVO = ModelUtils.getEcoNewsCommentVO();
-        ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
-        assertEquals(0, ecoNewsCommentVO.getUsersLiked().size());
-    }
-
-    @Test
     void updateVoidTest() {
         EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
@@ -350,6 +338,7 @@ class EcoNewsServiceImplTest {
         MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(file)).thenReturn("https://google.com/");
