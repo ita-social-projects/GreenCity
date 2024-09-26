@@ -18,8 +18,8 @@ public interface EventSearchRepo {
     /**
      * Method for search events by title,text,short info and tag name.
      *
-     * @param pageable      {@link Pageable}
-     * @param searchingText - text criteria for searching.
+     * @param pageable      {@link Pageable}.
+     * @param searchingText text criteria for searching.
      * @return all finding events, their tags and also count of finding events.
      * @author Anton Bondar
      */

@@ -55,7 +55,6 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
@@ -169,9 +168,7 @@ import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
-import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
-import greencity.enums.ProjectName;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
@@ -207,6 +204,7 @@ import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
@@ -243,24 +241,8 @@ import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
 import static greencity.enums.EventStatus.OPEN;
 import static greencity.enums.EventTime.PAST;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
-import static greencity.enums.NotificationType.ECONEWS_CREATED;
-import static greencity.enums.NotificationType.ECONEWS_LIKE;
-import static greencity.enums.NotificationType.EVENT_CANCELED;
-import static greencity.enums.NotificationType.EVENT_COMMENT;
-import static greencity.enums.NotificationType.EVENT_COMMENT_LIKE;
-import static greencity.enums.NotificationType.EVENT_COMMENT_REPLY;
 import static greencity.enums.NotificationType.EVENT_CREATED;
-import static greencity.enums.NotificationType.EVENT_JOINED;
-import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
-import static greencity.enums.NotificationType.EVENT_UPDATED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
-import static greencity.enums.NotificationType.HABIT_LIKE;
 import static greencity.enums.ProjectName.GREENCITY;
-import static greencity.enums.ProjectName.PICKUP;
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
@@ -1059,14 +1041,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static FactOfTheDayVO getFactOfTheDayVO() {
-        return FactOfTheDayVO.builder()
-            .id(1L)
-            .name("name")
-            .factOfTheDayTranslations(Collections.singletonList(ModelUtils.getFactOfTheDayTranslationVO()))
-            .build();
-    }
-
     public static FactOfTheDayTranslation getFactOfTheDayTranslation() {
         return FactOfTheDayTranslation.builder()
             .id(1L)
@@ -1400,17 +1374,6 @@ public class ModelUtils {
             .language(getLanguage())
             .name("тест")
             .habit(getHabit())
-            .build();
-    }
-
-    public static HabitTranslation getHabitTranslationWithCustom() {
-        return HabitTranslation.builder()
-            .id(1L)
-            .description("test description")
-            .habitItem("test habit item")
-            .language(getLanguage())
-            .name("test name")
-            .habit(getHabitWithCustom())
             .build();
     }
 
@@ -1904,29 +1867,6 @@ public class ModelUtils {
                 .nameUa("Соціальний").build()))
             .isFavorite(false)
             .isSubscribed(false)
-            .build();
-    }
-
-    public static EventDto getSecondEventDto() {
-        return EventDto.builder()
-            .id(2L)
-            .countComments(2)
-            .likes(1)
-            .description("Description2")
-            .organizer(EventAuthorDto.builder()
-                .name("User2")
-                .id(2L)
-                .build())
-            .title("Title2")
-            .dates(List.of(EventDateLocationDto.builder()
-                .id(1L)
-                .event(null)
-                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-                .onlineLink("/url")
-                .coordinates(getSecondAddressDtoCorrect()).build()))
-            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
-                .nameUa("Соціальний").build()))
             .build();
     }
 
@@ -3034,29 +2974,6 @@ public class ModelUtils {
             .time(LocalDateTime.of(2100, 1, 31, 12, 0))
             .actionUsers(actionUsers)
             .emailSent(true)
-            .build();
-    }
-
-    public static FilterNotificationDto getFilterNotificationDto() {
-        return FilterNotificationDto.builder()
-            .projectName(new ProjectName[] {GREENCITY, PICKUP})
-            .notificationType(new NotificationType[] {
-                ECONEWS_COMMENT_REPLY,
-                ECONEWS_COMMENT_LIKE,
-                ECONEWS_LIKE,
-                ECONEWS_CREATED,
-                ECONEWS_COMMENT,
-                EVENT_COMMENT_REPLY,
-                EVENT_COMMENT_LIKE,
-                EVENT_CREATED,
-                EVENT_CANCELED,
-                EVENT_NAME_UPDATED,
-                EVENT_UPDATED,
-                EVENT_JOINED,
-                EVENT_COMMENT,
-                FRIEND_REQUEST_ACCEPTED,
-                FRIEND_REQUEST_RECEIVED,
-                HABIT_LIKE})
             .build();
     }
 

@@ -2,10 +2,10 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.NotificationType;
+import greencity.enums.ProjectName;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.security.Principal;
@@ -14,49 +14,18 @@ import java.util.List;
 @Service
 public interface UserNotificationService {
     /**
-     * Method to return three last new notifications.
-     *
-     * @param principal user to get notifications
-     * @param language  language code
-     * @return list of 3 last new notifications
-     * @author Volodymyr Mladonov
-     */
-    List<NotificationDto> getThreeLastNotifications(Principal principal, String language);
-
-    /**
      * Method for getting Notification instances filtered.
      *
-     * @param pageable              page of notifications
-     * @param principal             user to get notifications
-     * @param filterNotificationDto contains instructions to filter notifications
-     * @param language              language code
+     * @param pageable          page of notifications
+     * @param principal         user to get notifications
+     * @param language          language code
+     * @param projectName       project name
+     * @param notificationTypes types of notification
+     * @param viewed            notification is viewed or not. Can be null
      * @return Page of {@link NotificationDto} instance.
-     * @author Volodymyr Mladonov
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
-        FilterNotificationDto filterNotificationDto, String language);
-
-    /**
-     * Method for getting page of Notification instances.
-     *
-     * @param pageable  page of notifications
-     * @param principal user to get notifications
-     * @param language  language code
-     * @return Page of {@link NotificationDto} instance.
-     * @author Volodymyr Mladonov
-     */
-    PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal, String language);
-
-    /**
-     * Method for getting Notification instance and marking Notification as viewed.
-     *
-     * @param notificationId id of requested notification
-     * @param principal      user to get notifications
-     * @param language       language code
-     * @return {@link NotificationDto} instance.
-     * @author Volodymyr Mladonov
-     */
-    NotificationDto getNotification(Principal principal, Long notificationId, String language);
+        String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed);
 
     /**
      * Method for sending socket.
@@ -177,14 +146,6 @@ public interface UserNotificationService {
      * @param notificationId id of notification, that should be marked
      */
     void viewNotification(Long notificationId);
-
-    /**
-     * Checks for any unread notifications for the specified user.
-     *
-     * @param userId the ID of the user whose unread notifications are to be
-     *               checked.
-     */
-    void checkUnreadNotification(Long userId);
 
     /**
      * Method to create a new or update an existing habit invite notification. If a
