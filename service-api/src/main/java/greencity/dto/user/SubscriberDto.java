@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class SubscriberDto {
     private String name;
     private String email;
+    private String language;
     private UUID unsubscribeToken;
 }
