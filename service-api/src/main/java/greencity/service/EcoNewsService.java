@@ -2,15 +2,22 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
-import java.util.Locale;
-import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Set;
+import java.util.Locale;
 
 public interface EcoNewsService {
     /**
@@ -116,24 +123,6 @@ public interface EcoNewsService {
      * @return amount of published news by user id or all news.
      */
     Long getAmountOfPublishedNews(Long id);
-
-    /**
-     * Method to mark comment as liked by User.
-     *
-     * @param user    {@link UserVO}.
-     * @param comment {@link EcoNewsCommentVO}
-     * @author Dovganyuk Taras
-     */
-    void likeComment(UserVO user, EcoNewsCommentVO comment);
-
-    /**
-     * Method to mark comment as unliked by User.
-     *
-     * @param user    {@link UserVO}.
-     * @param comment {@link EcoNewsCommentVO}
-     * @author Dovganyuk Taras
-     */
-    void unlikeComment(UserVO user, EcoNewsCommentVO comment);
 
     /**
      * Method for updating {@link EcoNewsVO} instance.

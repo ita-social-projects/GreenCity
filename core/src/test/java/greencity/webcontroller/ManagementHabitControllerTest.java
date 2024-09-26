@@ -3,9 +3,7 @@ package greencity.webcontroller;
 import com.google.gson.Gson;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
-import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.*;
@@ -44,16 +42,10 @@ class ManagementHabitControllerTest {
     private ManagementHabitService managementHabitService;
 
     @Mock
-    private HabitFactService habitFactService;
-
-    @Mock
     private LanguageService languageService;
 
     @Mock
     private ShoppingListItemService shoppingListItemService;
-
-    @Mock
-    private AdviceService adviceService;
 
     @Mock
     private HabitAssignService habitAssignService;
@@ -100,12 +92,8 @@ class ManagementHabitControllerTest {
 
     @Test
     void getHabitByIdPage() throws Exception {
-        Pageable pageable = PageRequest.of(0, 5);
-
-        PageableDto<HabitFactVO> hfacts = habitFactService.getAllHabitFactsVO(pageable);
         List<ShoppingListItemManagementDto> hshops = shoppingListItemService.getShoppingListByHabitId(1L);
         HabitManagementDto habit = managementHabitService.getById(1L);
-        List<LanguageTranslationDTO> hadvices = adviceService.getAllByHabitIdAndLanguage(1L, "en");
         Long acquired = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.ACQUIRED);
         Long inProgress = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.INPROGRESS);
         Long canceled = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.CANCELLED);
@@ -114,10 +102,8 @@ class ManagementHabitControllerTest {
             .param("page", "0")
             .param("size", "5"))
             .andExpect(view().name("core/management_user_habit"))
-            .andExpect(model().attribute("hfacts", hfacts))
             .andExpect(model().attribute("hshops", hshops))
             .andExpect(model().attribute("habit", habit))
-            .andExpect(model().attribute("hadvices", hadvices))
             .andExpect(model().attribute("acquired", acquired))
             .andExpect(model().attribute("inProgress", inProgress))
             .andExpect(model().attribute("canceled", canceled))

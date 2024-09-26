@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -10,7 +11,7 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
@@ -27,9 +28,12 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Locale;
 
 @Validated
@@ -58,14 +62,17 @@ public class HabitCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @PostMapping("/{habitId}/comments")
+    @PostMapping(path = "/{habitId}/comments",
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long habitId,
-        @Valid @RequestBody AddCommentDtoRequest request,
+        @Valid @RequestPart AddCommentDtoRequest request,
+        @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,
+            message = "Download up to 5 images") MultipartFile[] images,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.HABIT, habitId, request, userVO, locale));
+            .body(commentService.save(ArticleType.HABIT, habitId, request, images, userVO, locale));
     }
 
     /**

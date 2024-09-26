@@ -43,12 +43,12 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfig {
     private static final String COMMENTS = "/comments";
-    private static final String ADVICES = "/advices";
     private static final String CATEGORIES = "/categories";
     private static final String ECO_NEWS = "/eco-news";
     private static final String ECO_NEWS_ID = "/{ecoNewsId}";
     private static final String ECO_NEWS_COMMENTS = ECO_NEWS + ECO_NEWS_ID + COMMENTS;
     private static final String REPLIES = "/replies";
+    private static final String LIKE = "/like";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
     private static final String COUNT = "/count";
@@ -65,12 +65,14 @@ public class SecurityConfig {
     private static final String HABITS = "/habits";
     private static final String FACT_OF_THE_DAY = "/fact-of-the-day";
     private static final String RANDOM = "/random";
+    private static final String ACTIVE = "/active";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = CUSTOM_SHOPPING_LIST + "/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
+    private static final String ACHIEVEMENTS = "/achievements";
     private static final String NOTIFICATIONS = "/notifications";
     private static final String NOTIFICATION_ID = "/{notificationId}";
     private final JwtTool jwtTool;
@@ -161,8 +163,14 @@ public class SecurityConfig {
                     ECO_NEWS + ECO_NEWS_ID + LIKES + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES + COUNT,
                     ECO_NEWS_COMMENTS,
-                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES,
-                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + COUNT,
+                    ECO_NEWS_COMMENTS + ACTIVE,
+                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
+                    ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE + COUNT,
+                    ECO_NEWS + COMMENTS,
+                    ECO_NEWS + COMMENTS + "/id",
+                    ECO_NEWS + COMMENTS + LIKE,
+                    ECO_NEWS + COMMENTS + COMMENT_ID + LIKES + COUNT,
+                    ECO_NEWS + COMMENTS + ACTIVE,
                     ECO_NEWS_COMMENTS + COUNT,
                     EVENTS_COMMENTS,
                     EVENTS_COMMENTS + COMMENT_ID,
@@ -193,10 +201,9 @@ public class SecurityConfig {
                     "/place/filter")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,
-                    "/achievements",
-                    ADVICES,
-                    ADVICES + "/{id}",
-                    ADVICES + "/random",
+                    ACHIEVEMENTS,
+                    ACHIEVEMENTS + COUNT,
+                    ACHIEVEMENTS + CATEGORIES,
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST,
                     CUSTOM_SHOPPING_LIST_URL,
@@ -213,14 +220,11 @@ public class SecurityConfig {
                     "/habit/assign/active/{date}",
                     "/habit/assign/{habitAssignId}/more",
                     "/habit/assign/activity/{from}/to/{to}",
-                    HABIT_ASSIGN_ID + "/active",
+                    HABIT_ASSIGN_ID + ACTIVE,
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/all",
                     "/habit/statistic/acquired/count",
                     "/habit/statistic/in-progress/count",
-                    "/facts",
-                    "/facts/random/{habitId}",
-                    "/facts/dayFact/{languageId}",
                     FACT_OF_THE_DAY + RANDOM + "/by-tags",
                     "/newsSubscriber/unsubscribe",
                     "/place/{status}",
@@ -264,6 +268,7 @@ public class SecurityConfig {
                     ECO_NEWS,
                     ECO_NEWS + ECO_NEWS_ID + LIKES,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES,
+                    ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS_COMMENTS,
                     ECO_NEWS_COMMENTS + COMMENT_ID + LIKES,
                     EVENTS_COMMENTS,
@@ -316,6 +321,7 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PATCH,
                     HABITS + COMMENTS,
+                    ECO_NEWS + COMMENTS,
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
                     HABIT_ASSIGN_ID,
@@ -331,6 +337,7 @@ public class SecurityConfig {
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
+                    ECO_NEWS + COMMENTS + ECO_NEWS_ID,
                     ECO_NEWS_COMMENTS + COMMENT_ID,
                     HABITS + "/comments/{id}",
                     CUSTOM_SHOPPING_LIST_ITEMS,
@@ -375,13 +382,7 @@ public class SecurityConfig {
                     "/place")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
-                    ADVICES,
-                    "/facts",
                     "/user/filter")
-                .hasAnyRole(ADMIN)
-                .requestMatchers(HttpMethod.PUT,
-                    ADVICES + "/{id}",
-                    "/facts/{factId}")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
@@ -390,8 +391,6 @@ public class SecurityConfig {
                     "/user/update/role")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
-                    ADVICES + "/{id}",
-                    "/facts/{factId}",
                     COMMENTS)
                 .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))

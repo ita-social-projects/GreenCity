@@ -15,7 +15,6 @@ import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
@@ -128,7 +127,8 @@ class EcoNewsServiceImplTest {
     private AchievementCategoryRepo achievementCategoryRepo;
     @Mock
     private RatingCalculationEnum ratingCalculationEnum;
-
+    @Mock
+    private CommentService commentService;
     @Mock
     private NotificationService notificationService;
 
@@ -222,6 +222,7 @@ class EcoNewsServiceImplTest {
     void saveEcoNews() throws Exception {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -335,22 +336,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void likeCommentTest() {
-        UserVO userVO = ModelUtils.getUserVO();
-        EcoNewsCommentVO ecoNewsCommentVO = ModelUtils.getEcoNewsCommentVO();
-        ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-        assertEquals(1, ecoNewsCommentVO.getUsersLiked().size());
-    }
-
-    @Test
-    void unlikeCommentTest() {
-        UserVO userVO = ModelUtils.getUserVO();
-        EcoNewsCommentVO ecoNewsCommentVO = ModelUtils.getEcoNewsCommentVO();
-        ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
-        assertEquals(0, ecoNewsCommentVO.getUsersLiked().size());
-    }
-
-    @Test
     void updateVoidTest() {
         EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
@@ -371,6 +356,7 @@ class EcoNewsServiceImplTest {
         MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
+        when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(file)).thenReturn("https://google.com/");

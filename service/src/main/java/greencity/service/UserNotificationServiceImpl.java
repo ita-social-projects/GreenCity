@@ -74,6 +74,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .time(LocalDateTime.now())
                 .targetId(targetId)
                 .customMessage(message)
+                .emailSent(false)
                 .build();
             notificationRepo.save(notification);
             sendNotification(notification.getTargetUser().getId());
@@ -95,6 +96,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .targetId(targetId)
                 .customMessage(message)
                 .secondMessage(title)
+                .emailSent(false)
                 .build();
             notificationRepo.save(notification);
             sendNotification(notification.getTargetUser().getId());
@@ -112,6 +114,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .targetUser(modelMapper.map(targetUser, User.class))
             .time(LocalDateTime.now())
             .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
+            .emailSent(false)
             .build();
         notificationRepo.save(notification);
         sendNotification(notification.getTargetUser().getId());
@@ -133,6 +136,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .actionUsers(new ArrayList<>())
                 .targetId(targetId)
                 .customMessage(customMessage)
+                .emailSent(false)
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
@@ -159,6 +163,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .customMessage(customMessage)
                 .secondMessageId(secondMessageId)
                 .secondMessage(secondMessageText)
+                .emailSent(false)
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
@@ -179,6 +184,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .targetId(targetId)
             .customMessage(customMessage)
             .time(LocalDateTime.now())
+            .emailSent(false)
             .build();
         notificationRepo.save(notification);
         sendNotification(notification.getTargetUser().getId());

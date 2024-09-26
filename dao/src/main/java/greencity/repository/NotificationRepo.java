@@ -92,6 +92,9 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
     @Query("SELECT n FROM Notification n "
         + "JOIN FETCH n.targetUser "
         + "JOIN FETCH n.actionUsers "
-        + "WHERE n.notificationType = :notificationType AND n.viewed = false")
-    List<Notification> findAllByNotificationTypeAndViewedIsFalse(NotificationType notificationType);
+        + "WHERE n.notificationType = :notificationType "
+        + "AND n.viewed = false "
+        + "AND n.emailSent = false")
+    List<Notification> findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(
+        NotificationType notificationType);
 }
