@@ -56,10 +56,12 @@ class SubscriptionControllerTest {
         when(subscriptionService.createSubscription(subscriptionRequestDto)).thenReturn(subscriptionResponseDto);
 
         mockMvc.perform(post(subscriptionLink)
-            .content("{\n" +
-                "  \"email\": \"test@example.com\",\n" +
-                "  \"subscriptionType\": \"ECO_NEWS\"\n" +
-                "}")
+            .content("""
+                {
+                  "email": "test@example.com",
+                  "subscriptionType": "ECO_NEWS"
+                }
+                """)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());

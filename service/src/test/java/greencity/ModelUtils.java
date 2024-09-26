@@ -204,7 +204,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import org.hibernate.sql.results.internal.TupleElementImpl;
 import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
