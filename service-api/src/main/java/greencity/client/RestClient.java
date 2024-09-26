@@ -1,6 +1,7 @@
 package greencity.client;
 
 import greencity.constant.AppConstant;
+import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
@@ -41,7 +42,6 @@ import com.google.gson.Gson;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
-import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.place.PlaceVO;
 import greencity.enums.EmailNotification;
 import static greencity.constant.AppConstant.AUTHORIZATION;
@@ -418,16 +418,16 @@ public class RestClient {
     }
 
     /**
-     * send EcoNewsForSendEmailDto to GreenCityUser.
+     * send InterestingEcoNewsDto to GreenCityUser.
      *
      * @param message with information for sending email about adding new eco news.
      */
-    public void addEcoNews(EcoNewsForSendEmailDto message) {
+    public void sendInterestingEcoNews(InterestingEcoNewsDto message) {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, headers);
+        HttpEntity<InterestingEcoNewsDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class);
     }
 
     /**

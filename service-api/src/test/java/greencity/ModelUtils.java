@@ -2,7 +2,8 @@ package greencity;
 
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
@@ -15,6 +16,7 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.SubscribersDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -114,16 +116,28 @@ public class ModelUtils {
             Arrays.asList("Новини", "News", "Новины"));
     }
 
-    public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto() {
-        return EcoNewsForSendEmailDto.builder()
-            .unsubscribeToken("string")
-            .creationDate(ZonedDateTime.now())
-            .imagePath("string")
-            .author(ModelUtils.getPlaceAuthorDto())
-            .text("string")
-            .source("string")
-            .title("string")
+    public static InterestingEcoNewsDto getInterestingEcoNewsDto() {
+        return InterestingEcoNewsDto.builder()
+            .ecoNewsList(getShortEcoNewsDto())
+            .subscribers(getSubscribers())
             .build();
+    }
+
+    private static List<SubscribersDto> getSubscribers() {
+        return List.of(SubscribersDto.builder()
+            .email("email@gmail.com")
+            .name("Ilia")
+            .unsubscribeToken("123")
+            .build());
+    }
+
+    private static List<ShortEcoNewsDto> getShortEcoNewsDto() {
+        return List.of(ShortEcoNewsDto.builder()
+            .ecoNewsId(1L)
+            .imagePath("https://google.com")
+            .text("Text")
+            .title("Title")
+            .build());
     }
 
     public static EventCommentForSendEmailDto getEventCommentForSendEmailDto() {

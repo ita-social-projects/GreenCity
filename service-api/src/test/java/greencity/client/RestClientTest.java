@@ -1,6 +1,8 @@
 package greencity.client;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
+
+import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
@@ -12,7 +14,6 @@ import greencity.ModelUtils;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
-import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -374,22 +375,22 @@ class RestClientTest {
     }
 
     @Test
-    void addEcoNews() {
-        EcoNewsForSendEmailDto message = ModelUtils.getEcoNewsForSendEmailDto();
+    void sendInterestingEcoNews() {
+        InterestingEcoNewsDto message = ModelUtils.getInterestingEcoNewsDto();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, httpHeaders);
+        HttpEntity<InterestingEcoNewsDto> entity = new HttpEntity<>(message, httpHeaders);
 
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
+            + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class))
             .thenReturn(ResponseEntity.ok(Object));
 
-        restClient.addEcoNews(message);
+        restClient.sendInterestingEcoNews(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class);
     }
 
     @Test

@@ -1,7 +1,5 @@
 package greencity.dto.econews;
 
-import greencity.dto.user.PlaceAuthorDto;
-import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,12 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class EcoNewsForSendEmailDto {
-    private String unsubscribeToken;
-    private ZonedDateTime creationDate;
+public class ShortEcoNewsDto {
+    private Long ecoNewsId;
     private String imagePath;
-    private String source;
-    private PlaceAuthorDto author;
     private String title;
     private String text;
 }
