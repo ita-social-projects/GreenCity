@@ -545,7 +545,7 @@ public class ModelUtils {
             .userCredo("save the world")
             .firstName("name")
             .emailNotification(EmailNotification.MONTHLY)
-            .userStatus(UserStatus.ACTIVATED)
+            .userStatus(ACTIVATED)
             .rating(13.4)
             .verifyEmail(VerifyEmailVO.builder()
                 .id(32L)
@@ -621,6 +621,10 @@ public class ModelUtils {
                     .id(13L)
                     .build())
                 .build()))
+            .languageVO(LanguageVO.builder()
+                .id(1L)
+                .code("ua")
+                .build())
             .build();
     }
 

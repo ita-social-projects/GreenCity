@@ -48,6 +48,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -62,7 +65,10 @@ class RestClientTest {
     @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
-    private java.lang.Object Object;
+    private Object Object;
+    @Mock
+    private RequestAttributes requestAttributes;
+
     private static final String GREEN_CITY_USER_ADDRESS = "https://www.greencity.com.ua";
     private static final String SYSTEM_EMAIL = "test-service-mail@greencity.ua";
     private static final String TOKEN = "token";
@@ -74,6 +80,7 @@ class RestClientTest {
     @BeforeEach
     void init() {
         restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, httpServletRequest, jwtTool, SYSTEM_EMAIL);
+        RequestContextHolder.setRequestAttributes(requestAttributes);
     }
 
     @Test
