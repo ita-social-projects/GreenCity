@@ -1,5 +1,7 @@
 package greencity.dto.comment;
 
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,6 +9,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,4 +40,8 @@ public class CommentDto {
     private boolean currentUserLiked = false;
 
     private String status;
+
+    @Nullable
+    @Max(5)
+    private List<String> additionalImages;
 }
