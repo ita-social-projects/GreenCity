@@ -2,10 +2,14 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
+import greencity.repository.UserAchievementRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +31,15 @@ class AchievementCategoryServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private AchievementRepo achievementRepo;
+
+    @Mock
+    private UserAchievementRepo userAchievementRepo;
 
     @InjectMocks
     private AchievementCategoryServiceImpl achievementCategoryService;
@@ -56,7 +69,7 @@ class AchievementCategoryServiceImplTest {
     }
 
     @Test
-    void findAllTest() {
+    void findAllForManagementTest() {
         List<AchievementCategory> list = Collections.singletonList(ModelUtils.getAchievementCategory());
         List<AchievementCategoryVO> expected = Collections.singletonList(ModelUtils.getAchievementCategoryVO());
 
@@ -64,7 +77,7 @@ class AchievementCategoryServiceImplTest {
         when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryVO.class))
             .thenReturn(ModelUtils.getAchievementCategoryVO());
 
-        List<AchievementCategoryVO> actual = achievementCategoryService.findAll();
+        List<AchievementCategoryVO> actual = achievementCategoryService.findAllForManagement();
 
         assertEquals(expected, actual);
     }
@@ -86,5 +99,28 @@ class AchievementCategoryServiceImplTest {
     void findByNameThrowException() {
         when(achievementCategoryRepo.findByName("Not Exist")).thenReturn(Optional.empty());
         assertThrows(BadCategoryRequestException.class, () -> achievementCategoryService.findByName("Not Exist"));
+    }
+
+    @Test
+    void findAllWithAtLeastOneAchievementTest() {
+        List<AchievementCategory> list = List.of(ModelUtils.getAchievementCategory());
+        AchievementCategoryTranslationDto expectedDto = ModelUtils.getAchievementCategoryTranslationDto();
+        expectedDto.setAchieved(0);
+        expectedDto.setTotalQuantity(0);
+        List<AchievementCategoryTranslationDto> expected = List.of(expectedDto);
+        UserVO userVO = ModelUtils.getUserVO();
+
+        when(achievementCategoryRepo.findAllWithAtLeastOneAchievement()).thenReturn(list);
+        when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryTranslationDto.class))
+            .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
+        when(userService.findByEmail("email@gmail.com")).thenReturn(userVO);
+        when(achievementRepo.findAllByAchievementCategoryId(expectedDto.getId())).thenReturn(Collections.emptyList());
+        when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userVO.getId(),
+            expectedDto.getId())).thenReturn(Collections.emptyList());
+
+        List<AchievementCategoryTranslationDto> actual =
+            achievementCategoryService.findAllWithAtLeastOneAchievement("email@gmail.com");
+
+        assertEquals(expected, actual);
     }
 }

@@ -13,6 +13,7 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
@@ -1425,17 +1426,17 @@ public class ModelUtils {
         return new Achievement(1L,
             "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
             Collections.emptyList(),
-            new AchievementCategory(1L, "CREATE_NEWS", new ArrayList<>()), 1);
+            new AchievementCategory(1L, "CREATE_NEWS", "Створи Еко Новини", "Create Eco News", new ArrayList<>()), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "HABIT", Collections.emptyList());
+        return new AchievementCategory(1L, "HABIT", "Набудь Звички", "Acquire Habits", Collections.emptyList());
     }
 
     public static AchievementVO getAchievementVO() {
         return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
             "Acquired habit 14 days", new AchievementCategoryVO(),
-            1);
+            1, 0);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
@@ -1450,6 +1451,10 @@ public class ModelUtils {
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
         return new AchievementCategoryVO(1L, "Category");
+    }
+
+    public static AchievementCategoryTranslationDto getAchievementCategoryTranslationDto() {
+        return new AchievementCategoryTranslationDto(1L, "Назва", "Title", null, null);
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
