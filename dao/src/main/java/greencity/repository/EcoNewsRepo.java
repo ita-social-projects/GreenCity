@@ -119,9 +119,10 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
             LEFT JOIN (SELECT eco_news_id, count(*) AS count_likes
                        FROM eco_news_users_likes
                        GROUP BY eco_news_id) likes ON e.id = likes.eco_news_id
-            LEFT JOIN (SELECT eco_news_id, count(*) AS count_comments
-                       FROM econews_comment
-                       GROUP BY eco_news_id) comments ON e.id = comments.eco_news_id
+            LEFT JOIN (SELECT article_id, count(*) AS count_comments
+                       FROM comments
+                       WHERE article_type = 'ECO_NEWS'
+                       GROUP BY article_id) comments ON e.id = comments.article_id
             WHERE e.creation_date > now() - INTERVAL '7 DAY'
             ORDER BY likes.count_likes DESC NULLS LAST,
                      comments.count_comments DESC NULLS LAST
