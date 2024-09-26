@@ -87,7 +87,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private List<ShortEcoNewsDto> getInterestingEcoNews() {
         return ecoNewsService.getThreeInterestingEcoNews().stream()
             .map(e -> modelMapper.map(e, ShortEcoNewsDto.class))
+            .map(e -> e.setText(cutText(e.getText())))
             .toList();
+    }
+
+    private String cutText(String htmlText) {
+        String text = htmlText
+            .replaceAll("<[^>]*>", "")
+            .replaceAll("&[a-zA-Z]+;", " ");
+
+        int maxLength = 300;
+        if (text.length() > maxLength) {
+            int lastSpaceIndex = text.lastIndexOf(' ', maxLength);
+            if (lastSpaceIndex > 0) {
+                text = text.substring(0, lastSpaceIndex);
+            } else {
+                text = text.substring(0, maxLength);
+            }
+            text += "...";
+        }
+        return text;
     }
 
     private List<SubscriberDto> getSubscribers(Page<Subscription> subscriptions) {
