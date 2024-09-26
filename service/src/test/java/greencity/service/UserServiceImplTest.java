@@ -31,7 +31,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +49,6 @@ import static greencity.enums.UserStatus.CREATED;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +69,7 @@ class UserServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
 
-    private UserVO userVO = UserVO.builder()
+    private final UserVO userVO = UserVO.builder()
         .id(1L)
         .name("Test Testing")
         .email("test@gmail.com")
@@ -123,9 +121,6 @@ class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime localDateTime = LocalDateTime.of(
-            2015, Month.JULY, 29, 19, 30, 40);
-        Timestamp userLastActivityTime = Timestamp.valueOf(localDateTime);
         User user = ModelUtils.getUser();
 
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
@@ -188,12 +183,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testFindByEmailReturnNull() {
+    void testFindByEmailThrowException() {
         when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
 
-        UserVO actual = userService.findByEmail(TEST_EMAIL);
-
-        assertNull(actual);
+        assertThrows(WrongIdException.class, () -> userService.findByEmail(TEST_EMAIL));
 
         verify(userRepo).findByEmail(TEST_EMAIL);
     }
