@@ -47,9 +47,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -61,6 +63,7 @@ import static greencity.ModelUtils.getEcoNews;
 import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitTranslation;
+import static greencity.ModelUtils.getMultipartImageFiles;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserSearchDto;
 import static greencity.ModelUtils.getUserTagDto;
@@ -96,6 +99,8 @@ class CommentServiceImplTest {
     @Mock
     HabitRepo habitRepo;
     @Mock
+    private FileService fileService;
+    @Mock
     private HabitTranslationRepo habitTranslationRepo;
     @InjectMocks
     private CommentServiceImpl commentService;
@@ -124,6 +129,7 @@ class CommentServiceImplTest {
         CommentVO commentVO = getCommentVO();
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         HabitTranslation habitTranslation = getHabitTranslation();
+        MultipartFile[] images = null;
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
@@ -143,7 +149,50 @@ class CommentServiceImplTest {
             any(UserVO.class), any(UserVO.class), any(NotificationType.class),
             anyLong(), anyString(), anyLong(), anyString());
 
-        commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
+        commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
+        assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
+
+        verify(habitRepo, times(5)).findById(anyLong());
+        verify(commentRepo).save(any(Comment.class));
+        verify(commentRepo).findById(anyLong());
+        verify(userRepo, times(3)).findById(anyLong());
+        verify(modelMapper).map(userVO, CommentAuthorDto.class);
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
+        verify(modelMapper).map(any(Comment.class), eq(AddCommentDtoResponse.class));
+    }
+
+    @Test
+    void saveWithNullElementOfImages() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
+        AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        HabitTranslation habitTranslation = getHabitTranslation();
+        MultipartFile[] images = new MultipartFile[] {null};
+
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(commentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(userVO, CommentAuthorDto.class)).thenReturn(commentAuthorDto);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
+        when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
+            .thenReturn(getAddCommentDtoResponse());
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+            .thenReturn(Optional.of(habitTranslation));
+
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
         verify(habitRepo, times(5)).findById(anyLong());
@@ -177,12 +226,13 @@ class CommentServiceImplTest {
         when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
             .thenReturn(getAddCommentDtoResponse());
         when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        MultipartFile[] images = getMultipartImageFiles();
 
         doNothing().when(userNotificationService).createNotification(
             any(UserVO.class), any(UserVO.class), any(NotificationType.class),
             anyLong(), anyString(), anyLong(), anyString());
 
-        commentService.save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
+        commentService.save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
         assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
 
         verify(econewsRepo, times(5)).findById(anyLong());
@@ -202,12 +252,13 @@ class CommentServiceImplTest {
         Locale locale = Locale.of("en");
         AddCommentDtoRequest addCommentDtoRequest = new AddCommentDtoRequest();
         UserVO userVO = new UserVO();
+        MultipartFile[] images = getMultipartImageFiles();
 
         CommentServiceImpl spyCommentService = spy(commentService);
         doReturn(null).when(spyCommentService).getArticleAuthor(articleType, articleId);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            spyCommentService.save(articleType, articleId, addCommentDtoRequest, userVO, locale);
+            spyCommentService.save(articleType, articleId, addCommentDtoRequest, images, userVO, locale);
         });
 
         assertEquals("Article author not found", exception.getMessage());
@@ -223,6 +274,7 @@ class CommentServiceImplTest {
         AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
         addCommentDtoRequest.setParentCommentId(parentCommentId);
         Comment comment = getComment().setParentComment(getComment().setId(2L));
+        MultipartFile[] images = getMultipartImageFiles();
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(comment));
@@ -232,7 +284,7 @@ class CommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, locale));
+                () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, locale));
 
         assertEquals(ErrorMessage.CANNOT_REPLY_THE_REPLY, badRequestException.getMessage());
 
@@ -259,6 +311,7 @@ class CommentServiceImplTest {
         ArticleType articleType = ArticleType.HABIT;
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         Set<Long> userIds = Set.of(5L);
+        MultipartFile[] images = getMultipartImageFiles();
 
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
@@ -276,8 +329,9 @@ class CommentServiceImplTest {
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
         when(eventCommentServiceImpl.getUserIdFromComment(commentText)).thenReturn(userIds);
+        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
-        commentService.save(articleType, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
+        commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(notificationService, times(1))
             .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
@@ -294,6 +348,7 @@ class CommentServiceImplTest {
         AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
         addCommentDtoRequest.setParentCommentId(parentCommentId);
         Comment comment = getComment();
+        MultipartFile[] images = getMultipartImageFiles();
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(commentRepo.findById(parentCommentId)).thenReturn(Optional.empty());
@@ -302,7 +357,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
 
         NotFoundException notFoundException = assertThrows(NotFoundException.class,
-            () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.ENGLISH));
+            () -> commentService.save(ArticleType.HABIT, 1L, addCommentDtoRequest, images, userVO, Locale.ENGLISH));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
 
@@ -330,6 +385,7 @@ class CommentServiceImplTest {
         parentComment.setId(parentCommentId);
         parentComment.setArticleType(ArticleType.HABIT);
         parentComment.setArticleId(parentCommentHabit.getId());
+        MultipartFile[] images = getMultipartImageFiles();
 
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
         when(commentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentComment));
@@ -339,7 +395,7 @@ class CommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO,
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, images, userVO,
                     Locale.ENGLISH));
 
         String expectedErrorMessage = ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId
@@ -361,6 +417,7 @@ class CommentServiceImplTest {
         User user = getUser();
         AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
         addCommentDtoRequest.setParentCommentId(parentCommentId);
+        MultipartFile[] images = getMultipartImageFiles();
 
         Comment comment = getComment();
 
@@ -382,7 +439,7 @@ class CommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, userVO,
+                () -> commentService.save(ArticleType.HABIT, replyHabitId, addCommentDtoRequest, images, userVO,
                     Locale.ENGLISH));
 
         String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;

@@ -128,6 +128,7 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
 import greencity.entity.Comment;
+import greencity.entity.CommentImages;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
@@ -1774,6 +1775,22 @@ public class ModelUtils {
             new MockMultipartFile("secondFile.tmp", "Hello World".getBytes())};
     }
 
+    public static MultipartFile getMultipartImageFile() {
+        return new MockMultipartFile(
+            "images",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes());
+    }
+
+    public static MultipartFile[] getMultipartImageFiles() {
+        return new MockMultipartFile[] {
+            new MockMultipartFile(
+                "images", "image.jpg", "image/jpeg", "image data".getBytes()),
+            new MockMultipartFile(
+                "images", "image.jpg", "image/jpeg", "image data".getBytes())};
+    }
+
     public static AddressDto getAddressDtoWithNullRegionUa() {
         return AddressDto.builder()
             .latitude(13.4567236)
@@ -2443,6 +2460,20 @@ public class ModelUtils {
             .build();
     }
 
+    public static Comment getParentComment() {
+        return Comment.builder()
+            .id(1L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .comments(List.of(getSubComment()))
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
     public static CommentVO getCommentVO() {
         return CommentVO.builder()
             .id(1L)
@@ -2492,6 +2523,14 @@ public class ModelUtils {
             .id(getUser().getId())
             .name(getUser().getName().trim())
             .profilePicturePath(getUser().getProfilePicturePath())
+            .build();
+    }
+
+    public static CommentImages getCommentImage() {
+        return CommentImages.builder()
+            .id(1L)
+            .link("http://example.com/image1.jpg")
+            .comment(getComment())
             .build();
     }
 
