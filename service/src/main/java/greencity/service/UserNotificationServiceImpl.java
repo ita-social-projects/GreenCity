@@ -2,111 +2,53 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.ResourceBundle;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link UserNotificationService}.
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class UserNotificationServiceImpl implements UserNotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
     private final UserService userService;
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
     private static final String TOPIC = "/topic/";
     private static final String NOTIFICATION = "/notification";
 
     /**
      * {@inheritDoc}
-     *
-     * @return List of 3 last new notifications
-     */
-    public List<NotificationDto> getThreeLastNotifications(Principal principal, String language) {
-        User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
-        Long userId = currentUser.getId();
-        List<Notification> notifications = notificationRepo.findTop3ByTargetUserIdAndViewedFalseOrderByTimeDesc(userId);
-        return notifications.stream()
-            .map(notification -> createNotificationDto(notification, language))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return Page of {@link NotificationDto} instance.
      */
     @Override
     public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
-        FilterNotificationDto filter, String language) {
-        User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
-        Long userId = currentUser.getId();
-        if (filter.getProjectName().length == 0) {
-            filter.setProjectName(ProjectName.values());
-        }
-        if (filter.getNotificationType().length == 0) {
-            filter.setNotificationType(NotificationType.values());
-        }
+        String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed) {
+        Long userId = userService.findByEmail(principal.getName()).getId();
         Page<Notification> notifications =
-            notificationRepo.findByTargetUserIdAndProjectNameInAndNotificationTypeInOrderByTimeDesc(userId,
-                filter.getProjectName(),
-                filter.getNotificationType(), page);
+            notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
         return buildPageableAdvancedDto(notifications, language);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return Page of {@link NotificationDto} instance.
-     */
-    @Override
-    public PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal,
-        String language) {
-        User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
-        Long userId = currentUser.getId();
-        Page<Notification> notifications = notificationRepo.findByTargetUserId(userId, pageable);
-        return buildPageableAdvancedDto(notifications, language);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link NotificationDto} instance.
-     */
-    @Override
-    public NotificationDto getNotification(Principal principal, Long notificationId, String language) {
-        Long userId = modelMapper.map(userService.findByEmail(principal.getName()), User.class).getId();
-        Notification notification = notificationRepo.findByIdAndTargetUserId(notificationId, userId);
-        if (notification == null) {
-            throw new NotFoundException("Notification not found with id: " + notificationId);
-        }
-        notificationRepo.markNotificationAsViewed(notificationId);
-        return createNotificationDto(notification, language);
     }
 
     /**
@@ -114,10 +56,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void notificationSocket(ActionDto user) {
-        boolean isExist =
-            notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
-        messagingTemplate
-            .convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, isExist);
+        boolean isExist = notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
+        messagingTemplate.convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, isExist);
     }
 
     /**
@@ -209,7 +149,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void createNotification(UserVO targetUserVO, UserVO actionUserVO, NotificationType notificationType,
-        Long targetId, String customMessage, Long secondMessageId, String secondMessageText) {
+        Long targetId, String customMessage, Long secondMessageId,
+        String secondMessageText) {
         Notification notification = notificationRepo
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
                 notificationType, targetId)
@@ -274,7 +215,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void deleteNotification(Principal principal, Long notificationId) {
-        Long userId = modelMapper.map(userService.findByEmail(principal.getName()), User.class).getId();
+        Long userId = userService.findByEmail(principal.getName()).getId();
         notificationRepo.deleteNotificationByIdAndTargetUserId(notificationId, userId);
     }
 
@@ -358,17 +299,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     private void sendNotification(Long userId) {
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void checkUnreadNotification(Long userId) {
-        long unreadNotifications = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
-        if (unreadNotifications == 0) {
-            messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, false);
-        }
     }
 
     @Override
