@@ -240,6 +240,9 @@ public class User {
     @Column(name = "event_organizer_rating")
     private Double eventOrganizerRating;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Language language;
+
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAction> userActions = new ArrayList<>();
