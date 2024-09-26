@@ -37,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.google.gson.Gson;
 import greencity.constant.RestTemplateLinks;
@@ -418,7 +419,7 @@ public class RestClient {
     }
 
     /**
-     * send InterestingEcoNewsDto to GreenCityUser.
+     * Send InterestingEcoNewsDto to GreenCityUser.
      *
      * @param message with information for sending email about adding new eco news.
      */
@@ -540,11 +541,13 @@ public class RestClient {
      */
     private HttpHeaders setHeader() {
         String accessToken = null;
-        Cookie[] cookies = httpServletRequest.getCookies();
-        String uri = httpServletRequest.getRequestURI();
+        if (RequestContextHolder.getRequestAttributes() != null) {
+            Cookie[] cookies = httpServletRequest.getCookies();
+            String uri = httpServletRequest.getRequestURI();
 
-        if (cookies != null && uri.startsWith("/management")) {
-            accessToken = getTokenFromCookies(cookies);
+            if (cookies != null && uri.startsWith("/management")) {
+                accessToken = getTokenFromCookies(cookies);
+            }
         }
 
         if (!StringUtils.hasLength(accessToken)) {
@@ -610,9 +613,7 @@ public class RestClient {
      * @param message {@link ScheduledEmailMessage}.
      */
     public void sendScheduledEmailNotification(ScheduledEmailMessage message) {
-        String accessToken = AppConstant.TOKEN_PREFIX + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
+        HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress

@@ -16,7 +16,7 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
-import greencity.dto.user.SubscribersDto;
+import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -31,6 +31,7 @@ import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.UserReceivedCommentMessage;
 import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
+import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.MalformedURLException;
@@ -123,11 +124,11 @@ public class ModelUtils {
             .build();
     }
 
-    private static List<SubscribersDto> getSubscribers() {
-        return List.of(SubscribersDto.builder()
+    private static List<SubscriberDto> getSubscribers() {
+        return List.of(SubscriberDto.builder()
             .email("email@gmail.com")
             .name("Ilia")
-            .unsubscribeToken("123")
+            .unsubscribeToken(UUID.randomUUID())
             .build());
     }
 

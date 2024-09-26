@@ -1,10 +1,13 @@
 package greencity.service;
 
+import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.subscription.SubscriptionRequestDto;
 import greencity.dto.subscription.SubscriptionResponseDto;
+import greencity.dto.user.SubscriberDto;
 import greencity.entity.Subscription;
 import greencity.enums.SubscriptionType;
 import greencity.exception.exceptions.BadRequestException;
@@ -26,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepo subscriptionRepo;
     private final EcoNewsService ecoNewsService;
+    private final UserService userService;
+    private final RestClient restClient;
     private final ModelMapper modelMapper;
 
     /**
@@ -62,17 +67,45 @@ public class SubscriptionServiceImpl implements SubscriptionService {
      */
     @Scheduled(cron = "${cron.sendContentToSubscribers}", zone = AppConstant.UKRAINE_TIMEZONE)
     public void sendContentToSubscribers() {
-        List<EcoNewsDto> interestingEcoNews = ecoNewsService.getThreeInterestingEcoNews();
-
-        for (int i = 0; true; i++) {
-            PageRequest pageable = PageRequest.of(i, 20);
-            Page<Subscription> subscriptions = subscriptionRepo.findAll(pageable);
-
-            // Build object and sent it through RestClient.
-
-            if (!subscriptions.hasNext()) {
-                break;
-            }
+        List<ShortEcoNewsDto> interestingEcoNews = getInterestingEcoNews();
+        if (interestingEcoNews.isEmpty()) {
+            return;
         }
+
+        int page = 0;
+        Page<Subscription> subscriptions;
+        do {
+            subscriptions = subscriptionRepo.findAll(PageRequest.of(page, 20));
+            if (!subscriptions.isEmpty()) {
+                List<SubscriberDto> subscribers = getSubscribers(subscriptions);
+                restClient.sendInterestingEcoNews(new InterestingEcoNewsDto(interestingEcoNews, subscribers));
+            }
+            page++;
+        } while (subscriptions.hasNext());
+    }
+
+    private List<ShortEcoNewsDto> getInterestingEcoNews() {
+        return ecoNewsService.getThreeInterestingEcoNews().stream()
+            .map(e -> modelMapper.map(e, ShortEcoNewsDto.class))
+            .toList();
+    }
+
+    private List<SubscriberDto> getSubscribers(Page<Subscription> subscriptions) {
+        List<String> emails = subscriptions.stream()
+            .map(Subscription::getEmail)
+            .toList();
+
+        return userService.findByEmails(emails).stream()
+            .map(u -> modelMapper.map(u, SubscriberDto.class))
+            .map(s -> s.setUnsubscribeToken(findUnsubscribeToken(s.getEmail(), subscriptions)))
+            .toList();
+    }
+
+    private UUID findUnsubscribeToken(String email, Page<Subscription> subscriptions) {
+        return subscriptions.stream()
+            .filter(s -> s.getEmail().equals(email))
+            .map(Subscription::getUnsubscribeToken)
+            .findFirst()
+            .orElseThrow();
     }
 }

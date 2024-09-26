@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class SubscribersDto {
+public class SubscriberDto {
     private String name;
     private String email;
-    private String unsubscribeToken;
+    private UUID unsubscribeToken;
 }
