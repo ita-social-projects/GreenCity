@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,15 +37,16 @@ public class SubscriptionController {
      */
     @Operation(summary = "Save email in database for receiving news.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = SubscriptionRequestDto.class))),
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
+            content = @Content(schema = @Schema(implementation = SubscriptionResponseDto.class))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
     })
     @PostMapping
     public ResponseEntity<SubscriptionResponseDto> subscribe(
         @RequestBody @Valid SubscriptionRequestDto subscriptionRequestDto) {
-        return ResponseEntity.ok().body(subscriptionService.createSubscription(subscriptionRequestDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(subscriptionService.createSubscription(subscriptionRequestDto));
     }
 
     /**
