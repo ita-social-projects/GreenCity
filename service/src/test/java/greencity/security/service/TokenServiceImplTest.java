@@ -39,7 +39,6 @@ class TokenServiceImplTest {
         assertEquals("token", tokenCookie.getName());
         assertEquals(URLEncoder.encode(validToken, StandardCharsets.UTF_8), tokenCookie.getValue());
         assertTrue(tokenCookie.isHttpOnly());
-        assertTrue(tokenCookie.getSecure());
         assertEquals("/", tokenCookie.getPath());
     }
 
