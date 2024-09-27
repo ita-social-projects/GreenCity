@@ -22,7 +22,6 @@ public class TokenServiceImpl implements TokenService {
         String sanitizedToken = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
         Cookie cookie = new Cookie("token", sanitizedToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
