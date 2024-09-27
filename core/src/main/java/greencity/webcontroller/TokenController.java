@@ -32,7 +32,10 @@ public class TokenController {
     })
     @GetMapping
     public String passTokenToCookies(@RequestParam String accessToken, HttpServletResponse response) {
-        tokenService.passTokenToCookies(accessToken, response);
-        return "redirect:/management";
+        if (accessToken != null && accessToken.matches("^[a-zA-Z0-9-._~+]+$")) {
+            tokenService.passTokenToCookies(accessToken, response);
+            return "redirect:/management";
+        }
+        return "redirect:/error";
     }
 }
