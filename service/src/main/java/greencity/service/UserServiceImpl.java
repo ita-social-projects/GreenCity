@@ -254,4 +254,14 @@ public class UserServiceImpl implements UserService {
         }
         return new UserFilterDto(criteria, role, status);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserVO> findByEmails(List<String> emails) {
+        return userRepo.findAllByEmailIn(emails).stream()
+            .map(u -> modelMapper.map(u, UserVO.class))
+            .toList();
+    }
 }

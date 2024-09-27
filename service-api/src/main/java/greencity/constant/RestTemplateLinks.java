@@ -7,7 +7,7 @@ public class RestTemplateLinks {
     public static final String USER_LANG = "/user/lang";
     public static final String USER_REASONS = "/user/reasons";
     public static final String ADMIN_LANG = "&admin=";
-    public static final String ADD_ECO_NEWS = "/email/addEcoNews";
+    public static final String SEND_INTERESTING_ECO_NEWS = "/email/sendInterestingEcoNews";
     public static final String EMAIL = "?email=";
     public static final String USER_FIND_BY_EMAIL = "/user/findByEmail";
     public static final String ID = "?id=";
@@ -40,8 +40,5 @@ public class RestTemplateLinks {
     public static final String SEND_GENERAL_EMAIL_NOTIFICATION = "/email/general/notification";
     public static final String SEND_HABIT_ASSIGN_NOTIFICATION = "/email/habitAssign/notification";
     public static final String SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION = "/email/taggedUserInComment/notification";
-    public static final String SEND_USER_RECEIVED_COMMENT_NOTIFICATION = "/email/userReceivedComment/notification";
-    public static final String SEND_USER_RECEIVED_COMMENT_REPLY_NOTIFICATION =
-        "/email/userReceivedCommentReply/notification";
     public static final String SEND_SCHEDULED_NOTIFICATION = "/email/scheduled/notification";
 }
