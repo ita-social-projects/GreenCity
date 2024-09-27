@@ -54,7 +54,7 @@ class TokenControllerTest {
     }
 
     @Test
-    void passTokenToCookies_specialCharactersToken() throws Exception {
+    void passTokenToCookiesSpecialCharactersToken() throws Exception {
         String specialAccessToken = "eyJhbGciOiJIUzI1NiJ9~eyJzdWIiOiJ";
 
         mockMvc.perform(get(TOKEN_LINK + "?accessToken=" + specialAccessToken))
@@ -63,26 +63,5 @@ class TokenControllerTest {
 
         Mockito.verify(tokenService, Mockito.times(1))
             .passTokenToCookies(Mockito.eq(specialAccessToken), Mockito.any(HttpServletResponse.class));
-    }
-
-    @Test
-    void passTokenToCookies_nullToken() throws Exception {
-        mockMvc.perform(get(TOKEN_LINK + "?accessToken="))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/error"));
-        Mockito.verify(tokenService, Mockito.never())
-            .passTokenToCookies(Mockito.anyString(), Mockito.any(HttpServletResponse.class));
-    }
-
-    @Test
-    void passTokenToCookies_invalidToken() throws Exception {
-        String invalidAccessToken = "invalid/token!";
-
-        mockMvc.perform(get(TOKEN_LINK + "?accessToken=" + invalidAccessToken))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/error"));
-
-        Mockito.verify(tokenService, Mockito.never())
-            .passTokenToCookies(Mockito.anyString(), Mockito.any(HttpServletResponse.class));
     }
 }

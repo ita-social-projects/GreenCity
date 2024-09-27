@@ -23,7 +23,6 @@ public class TokenServiceImpl implements TokenService {
 
         Cookie cookie = new Cookie("token", sanitizedToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
