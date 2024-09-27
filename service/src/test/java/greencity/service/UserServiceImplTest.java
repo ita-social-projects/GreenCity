@@ -44,6 +44,7 @@ import static greencity.ModelUtils.TEST_USER_ROLE_USER;
 import static greencity.ModelUtils.TEST_USER_STATUS_DTO;
 import static greencity.ModelUtils.TEST_USER_VO;
 import static greencity.ModelUtils.TEST_USER_VO_ROLE_USER;
+import static greencity.ModelUtils.getUser;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.CREATED;
 
@@ -110,7 +111,7 @@ class UserServiceImplTest {
     void checkIfTheUserIsOnlineEqualsTrueTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
         Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-        User user = ModelUtils.getUser();
+        User user = getUser();
 
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
@@ -121,7 +122,7 @@ class UserServiceImplTest {
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
         ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        User user = ModelUtils.getUser();
+        User user = getUser();
 
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.empty());
@@ -152,7 +153,7 @@ class UserServiceImplTest {
 
     @Test
     void checkUpdatableUserTest() {
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(getUser()));
         when(modelMapper.map(any(), any())).thenReturn(userVO);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
             userService.checkUpdatableUser(1L, "email");
@@ -162,7 +163,7 @@ class UserServiceImplTest {
 
     @Test
     void getInitialsByIdTest() {
-        when(userRepo.findById(any())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findById(any())).thenReturn(Optional.of(getUser()));
         when(modelMapper.map(any(), any())).thenReturn(userVO);
         assertEquals("TT", userService.getInitialsById(12L));
         userVO.setName("Taras");
@@ -292,7 +293,7 @@ class UserServiceImplTest {
 
     @Test
     void updateUserRatingTest() {
-        User user = ModelUtils.getUser();
+        User user = getUser();
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
         doNothing().when(userRepo).updateUserRating(1L, 6.0d);
 
@@ -307,5 +308,17 @@ class UserServiceImplTest {
         when(userRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> userService.updateUserRating(1L, 6.0d));
         verify(userRepo).findById(1L);
+    }
+
+    @Test
+    void findByEmailsTest() {
+        List<String> emails = List.of("email@gmail.com", "gmail@gmail.com");
+
+        when(userRepo.findAllByEmailIn(emails)).thenReturn(List.of(getUser(), getUser()));
+        when(modelMapper.map(getUser(), UserVO.class)).thenReturn(userVO);
+
+        assertEquals(List.of(userVO, userVO), userService.findByEmails(emails));
+
+        verify(userRepo).findAllByEmailIn(emails);
     }
 }

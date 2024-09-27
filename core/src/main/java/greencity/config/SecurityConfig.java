@@ -65,6 +65,7 @@ public class SecurityConfig {
     private static final String HABITS = "/habits";
     private static final String FACT_OF_THE_DAY = "/fact-of-the-day";
     private static final String RANDOM = "/random";
+    private static final String SUBSCRIPTIONS = "/subscriptions";
     private static final String ACTIVE = "/active";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
@@ -197,8 +198,12 @@ public class SecurityConfig {
                     "/database/backupFiles")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
+                    SUBSCRIPTIONS,
                     "/place/getListPlaceLocationByMapsBounds",
                     "/place/filter")
+                .permitAll()
+                .requestMatchers(HttpMethod.DELETE,
+                    SUBSCRIPTIONS + "/{unsubscribeToken}")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,
                     ACHIEVEMENTS,
@@ -226,7 +231,6 @@ public class SecurityConfig {
                     "/habit/statistic/acquired/count",
                     "/habit/statistic/in-progress/count",
                     FACT_OF_THE_DAY + RANDOM + "/by-tags",
-                    "/newsSubscriber/unsubscribe",
                     "/place/{status}",
                     "/place/v2/filteredPlacesCategories",
                     "/social-networks/image",
@@ -289,7 +293,6 @@ public class SecurityConfig {
                     "/habit/like",
                     HABITS + "/{habitId}/comments",
                     HABITS + "/comments/like",
-                    "/newsSubscriber",
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
@@ -361,7 +364,6 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
-                    "/newsSubscriber",
                     COMMENTS,
                     COMMENTS + "/{id}",
                     "/user/all",

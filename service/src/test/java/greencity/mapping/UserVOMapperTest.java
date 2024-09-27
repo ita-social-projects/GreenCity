@@ -112,6 +112,10 @@ class UserVOMapperTest {
                         .build())
                     .build())
                 .collect(Collectors.toList()) : new ArrayList<>())
+            .language(Language.builder()
+                .id(1L)
+                .code("ua")
+                .build())
             .build();
 
         assertEquals(expected, mapper.convert(userToBeConverted));

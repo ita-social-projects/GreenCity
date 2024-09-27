@@ -27,6 +27,7 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
@@ -110,6 +111,7 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -527,7 +529,7 @@ public class ModelUtils {
             .userCredo("save the world")
             .firstName("name")
             .emailNotification(EmailNotification.MONTHLY)
-            .userStatus(UserStatus.ACTIVATED)
+            .userStatus(ACTIVATED)
             .rating(13.4)
             .verifyEmail(VerifyEmailVO.builder()
                 .id(32L)
@@ -603,6 +605,10 @@ public class ModelUtils {
                     .id(13L)
                     .build())
                 .build()))
+            .languageVO(LanguageVO.builder()
+                .id(1L)
+                .code("ua")
+                .build())
             .build();
     }
 
@@ -1453,6 +1459,15 @@ public class ModelUtils {
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
             List.of(tagsUa), List.of(tagsEn), 0, 1, 0);
+    }
+
+    public static ShortEcoNewsDto getShortEcoNewsDto() {
+        return ShortEcoNewsDto.builder()
+            .text("content")
+            .title("title")
+            .imagePath("imagePath")
+            .ecoNewsId(1L)
+            .build();
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
@@ -3016,6 +3031,14 @@ public class ModelUtils {
             .user(getUserVO())
             .event(getEventVO())
             .status(String.valueOf(CommentStatus.ORIGINAL))
+            .build();
+    }
+
+    public static SubscriberDto getSubscriberDto() {
+        return SubscriberDto.builder()
+            .language("ua")
+            .name("Ilia")
+            .email("test@example.com")
             .build();
     }
 }
