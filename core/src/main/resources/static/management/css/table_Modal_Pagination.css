@@ -1919,6 +1919,14 @@ a.lightgrey {
     color: #9CA7B0;
 }
 
+.places .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-40%);
+    color: #9CA7B0;
+}
+
 .filter-container__search .material-icons {
     font-size: 20px;
 }
@@ -1948,6 +1956,12 @@ a.lightgrey {
 }
 
 .eco-news .form-inline.searching {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.places .form-inline.searching {
     position: relative;
     display: flex;
     align-items: center;
