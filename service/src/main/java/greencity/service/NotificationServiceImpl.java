@@ -13,6 +13,7 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.message.GeneralEmailMessage;
@@ -32,6 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -193,6 +196,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        LocalDateTime now = LocalDateTime.now();
         emailThreadPool.submit(() -> {
             try {
                 List<Notification> notifications =
@@ -200,8 +204,23 @@ public class NotificationServiceImpl implements NotificationService {
                 if (!notifications.isEmpty()) {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notifications.stream()
-                        .filter(n -> !userNotificationPreferenceRepo
-                            .existsByUserIdAndEmailPreference(n.getTargetUser().getId(), emailPreference))
+                        .filter(n -> {
+                            boolean timeToSend = userNotificationPreferenceRepo
+                                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+                            if (now.getHour() > 18) {
+                                timeToSend = timeToSend || userNotificationPreferenceRepo
+                                        .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.DAILY);
+                            }
+                            if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
+                                timeToSend = timeToSend || userNotificationPreferenceRepo
+                                        .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.WEEKLY);
+                            }
+                            if (now.getDayOfMonth() == 1) {
+                                timeToSend = timeToSend || userNotificationPreferenceRepo
+                                        .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.MONTHLY);
+                            }
+                            return timeToSend;
+                        })
                         .forEach(notification -> {
                             ScheduledEmailMessage message = createScheduledEmailMessage(notification, emailLanguage);
                             restClient.sendScheduledEmailNotification(message);

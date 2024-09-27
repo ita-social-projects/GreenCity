@@ -235,4 +235,6 @@
     <include file="db/changelog/logs/ch-update-achievement-categories-Herchanivska-6.xml"/>
     <include file="db/changelog/logs/ch-update-columns-achievement-categories-Herchanivska-7.xml"/>
     <include file="db/changelog/logs/ch-change-table-subscriptions-Rozhko.xml"/>
+    <include file="db/changelog/logs/ch-add-column-user_email_preferences-Herchanivska-8.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-user_email_preferences-Herchanivska-9.xml"/>
 </databaseChangeLog>
