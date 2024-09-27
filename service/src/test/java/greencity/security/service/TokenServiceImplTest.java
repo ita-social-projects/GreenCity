@@ -8,11 +8,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +29,8 @@ class TokenServiceImplTest {
     TokenServiceImpl tokenService;
 
     @Test
-    void passTokenToCookies_validToken() {
+    void passTokenToCookies_validToken_Secure() {
+        ReflectionTestUtils.setField(tokenService, "security", "true");
         String validToken = "eyJhbGciOiJIUzI1NiJ9.someValidTokenData";
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -39,7 +42,23 @@ class TokenServiceImplTest {
         assertEquals("token", tokenCookie.getName());
         assertEquals(URLEncoder.encode(validToken, StandardCharsets.UTF_8), tokenCookie.getValue());
         assertTrue(tokenCookie.isHttpOnly());
+        assertTrue(tokenCookie.getSecure());
         assertEquals("/", tokenCookie.getPath());
+    }
+
+    @Test
+    void passTokenToCookies_validToken_noSecure() {
+        ReflectionTestUtils.setField(tokenService, "security", "false");
+
+        String validToken = "eyJhbGciOiJIUzI1NiJ9.someValidTokenData";
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        tokenService.passTokenToCookies(validToken, response);
+
+        Cookie[] cookies = response.getCookies();
+        assertEquals(1, cookies.length, "There should be one cookie.");
+        Cookie tokenCookie = cookies[0];
+        assertFalse(tokenCookie.getSecure());
     }
 
     @Test
