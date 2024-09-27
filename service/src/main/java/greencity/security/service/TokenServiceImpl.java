@@ -1,6 +1,7 @@
 package greencity.security.service;
 
 import greencity.exception.exceptions.BadRequestException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,10 +10,12 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class TokenServiceImpl implements TokenService {
+    @Value("${use-https}")
+    private String security;
+
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("java:S2092")
     @Override
     public void passTokenToCookies(String accessToken, HttpServletResponse response) {
         String checkToken = "eyJhbGciOiJIUzI1NiJ9";
@@ -22,6 +25,7 @@ public class TokenServiceImpl implements TokenService {
         String sanitizedToken = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
         Cookie cookie = new Cookie("token", sanitizedToken);
         cookie.setHttpOnly(true);
+        cookie.setSecure(security.equals("true"));
         cookie.setPath("/");
         response.addCookie(cookie);
     }
