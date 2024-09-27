@@ -18,11 +18,10 @@ public class TokenServiceImpl implements TokenService {
         if (!accessToken.contains(checkToken)) {
             throw new BadRequestException("bad access token");
         }
-
         String sanitizedToken = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
-
         Cookie cookie = new Cookie("token", sanitizedToken);
         cookie.setHttpOnly(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
