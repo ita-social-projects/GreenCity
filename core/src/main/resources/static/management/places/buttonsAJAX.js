@@ -336,60 +336,164 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    const sortParamKey = 'sortParam';
-    const sortDirectionKey = 'sortDirection';
-
-    function switchSort(sort) {
-        return sort === "asc" ? "desc" : "asc";
-    }
-
-    function getSortDirection() {
-        const savedSortDirection = localStorage.getItem(sortDirectionKey);
-        return savedSortDirection ? savedSortDirection : 'asc';
-    }
-
-    function initTableSorting() {
-        let isSorting = false;
-
-        const savedSortParam = localStorage.getItem(sortParamKey);
-        const savedSortDirection = getSortDirection();
-
-        if (savedSortParam) {
-            $(`[data-sort-param="${savedSortParam}"]`).addClass(savedSortDirection);
+    $('.filter-container').hide();
+    setPageSizeFromLocalStorage();
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('th').length) {
+            $('.filter-container').hide();
+            $('.eFilterBtn').removeClass('active');
         }
-        $('.table-container').on('click', '.sort-icon', function () {
-            if (isSorting) return;
+    });
 
-            let $icon = $(this);
-            let sortParam = $icon.data('field');
-            let currentSortDirection = getSortDirection();
-            let newSortDirection = switchSort(currentSortDirection);
+    $('.eFilterBtn').on('click', function () {
+        const $filterContainer = $(this).closest('th').find('.filter-container');
+        $('.eFilterBtn').not(this).removeClass('active');
+        $('.filter-container').not($filterContainer).hide();
+        $(this).toggleClass('active');
+        $filterContainer.toggle();
+    });
+});
 
-            localStorage.setItem(sortParamKey, sortParam);
-            localStorage.setItem(sortDirectionKey, newSortDirection);
+function getUrlSearchParams() {
+    const allParam = window.location.search;
+    const urlSearch = new URLSearchParams(allParam);
 
-            $('.table-filter-icon').removeClass('asc desc');
-            $icon.addClass(newSortDirection);
+    const params = {
+        id: urlSearch.get("id"),
+        status: urlSearch.get("status"),
+        name: urlSearch.get("name"),
+        author: urlSearch.get("author"),
+        address: urlSearch.get("address"),
+    };
 
-            isSorting = true;
-            $.ajax({
-                url: '/management/places',
-                type: 'GET',
-                data: {
-                    sort: sortParam + ',' + newSortDirection
-                },
-                success: function (data) {
-                    $('#placeTable').html($(data).find('#placeTable').html());
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", error);
-                },
-                complete: function () {
-                    isSorting = false;
-                }
-            });
-        });
+    if (params.page !== null) {
+        params.page = "0";
     }
 
-    initTableSorting();
-});
+    const newUrlSearch = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== null) {
+            newUrlSearch.set(key, value);
+        }
+    });
+    if (urlSearch.has("sort")) {
+        const sortParams = urlSearch.getAll("sort").filter(Boolean);
+        sortParams.forEach(param => newUrlSearch.append("sort", param));
+    }
+
+    return newUrlSearch;
+}
+
+function searchByNameField(searchValue, fieldName, searchValue2 = null, fieldName2 = null) {
+    let urlSearch = getUrlSearchParams();
+    if (searchValue !== null && searchValue !== "") {
+        urlSearch.set(fieldName, searchValue);
+    }
+    if (searchValue2 !== null && searchValue2 !== "") {
+        urlSearch.set(fieldName2, searchValue2);
+    }
+
+    let url = "/management/places?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function removeFilter(filterName) {
+    let urlSearch = getUrlSearchParams();
+    console.log(urlSearch.toString())
+    urlSearch.delete(filterName);
+    console.log(urlSearch.toString())
+    let newUrl = "/management/places?" + urlSearch.toString();
+
+    if (!urlSearch.toString()) {
+        newUrl = "/management/places";
+    }
+    window.location.href = newUrl;
+}
+
+
+function orderByNameField(sortOrder, fieldName) {
+    const urlSearch = getUrlSearchParams();
+    const sortParams = urlSearch.getAll("sort").filter(Boolean);
+    const fieldIndex = sortParams.findIndex(param => param.startsWith(fieldName + ','));
+
+    if (fieldIndex !== -1) {
+        let [field, order] = sortParams[fieldIndex].split(',');
+        if (order === sortOrder) {
+            sortParams.splice(fieldIndex, 1);
+        } else {
+            sortParams[fieldIndex] = `${fieldName},${sortOrder}`;
+        }
+    } else {
+        sortParams.push(`${fieldName},${sortOrder}`);
+    }
+
+    urlSearch.delete("sort");
+    sortParams.forEach(param => urlSearch.append("sort", param));
+
+    const url = "/management/places?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function () {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function saveItemsOnPage(itemsOnPage) {
+    var allParam = window.location.search;
+    localStorage.setItem('pageSize', itemsOnPage);
+    document.getElementById('currentPageSize').innerText = itemsOnPage;
+    console.log(itemsOnPage)
+    var urlSearch = new URLSearchParams(allParam);
+    localStorage.setItem("size", itemsOnPage);
+    let url = "/management/places?";
+    urlSearch.set("size", itemsOnPage);
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function setPageSizeFromLocalStorage() {
+    let pageSize = localStorage.getItem('pageSize') || 20;
+    document.getElementById('currentPageSize').innerText = pageSize;
+}
+
+function searchByQuery(query) {
+    if (query === null || query === '') {
+        removeFilter('query');
+    }
+    let urlSearch = getUrlSearchParams();
+    urlSearch.set("query", query);
+
+    let url = "/management/places?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function getSelectedStatus() {
+    const radios = document.getElementsByName('status');
+    for (const radio of radios) {
+        if (radio.checked) {
+            return radio.value;
+        }
+    }
+    return '';
+}
+

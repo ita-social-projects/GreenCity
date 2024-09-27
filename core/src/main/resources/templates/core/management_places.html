@@ -21,15 +21,20 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
     <script th:src="@{/management/places/buttonsAJAX.js}"></script>
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
-    <style>
-        .displayNone {
-            display: none;
-        }
 
-        table {
-            table-layout: auto;
+    <style>
+        .table-container {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .table-container .table {
+            flex-grow: 1;
         }
     </style>
 </head>
@@ -38,7 +43,7 @@
 <div id="sidebar" th:insert="core/sidepanel"></div>
 <div class="main-content">
     <div class="container-xl">
-        <div class="table-responsive">
+        <div class="table-responsive places">
             <div class="table-wrapper">
                 <div class="table-title">
                     <div class="row manager-user">
@@ -54,13 +59,27 @@
                             </a>
                         </div>
                     </div>
+
                     <div class="row-box-and-sort">
                         <div class="main-search">
                             <!-- Search Form  -->
-                            <form class="form-inline searching" action="#">
-                                <input id="placeSearch" type="text" class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}">
+                            <form class="form-inline searching" onsubmit="return searchByQuery(document.getElementById('placeSearch').value)">
+                                <input id="placeSearch" type="text" class="form-search" name="query" th:value="${query}" th:placeholder="#{greenCity.pages.search}">
+                                <label for="placeSearch" class="search-icon" style="transform: translateY(-50%);"><i class="material-icons">&#xE8B6;</i></label>
                                 <input class="search-submit-btn" type="submit">
                             </form>
+                        </div>
+
+                        <div class="filter-list-grid">
+                            <div class="dropdown size">
+                                <img src="/img/arrow-down.svg" alt="arrow-icon" class="change_color">
+                                <button class="dropbtn size" id="currentPageSize"></button>
+                                <div class="dropdown-content size">
+                                    <a class="lightgrey" onclick="saveItemsOnPage('20')">20</a>
+                                    <a class="lightgrey" onclick="saveItemsOnPage('40')">40</a>
+                                    <a class="lightgrey" onclick="saveItemsOnPage('100')">100</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="table-container">
@@ -68,48 +87,81 @@
                             <thead>
                             <tr class="table-primary">
                                 <th>
-                <span class="custom-checkbox">
-                    <input type="checkbox" id="selectAll">
-                    <label for="selectAll"></label>
-                </span>
+                                    <span class="custom-checkbox">
+                                        <input type="checkbox" id="selectAll">
+                                        <label for="selectAll"></label>
+                                    </span>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.id}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
                                         <span onclick="orderByNameField('asc', 'id')" data-field="id" data-order="asc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
                                         <span onclick="orderByNameField('desc', 'id')" data-field="id" data-order="desc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-places-by-id" type="text" class="form-search" th:value="${fields.id}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-places-by-id" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('id')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-id" onclick="searchByNameField(document.getElementById('search-eco-news-by-id').value, 'id')">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.name}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
                                         <span onclick="orderByNameField('asc', 'name')" data-field="name" data-order="asc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
                                         <span onclick="orderByNameField('desc', 'name')" data-field="name" data-order="desc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-places-by-name" type="text" class="form-search" th:value="${fields.name}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-places-by-name" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('name')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-name" onclick="searchByNameField(document.getElementById('search-places-by-name').value, 'name')">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.status}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
                                         <span onclick="orderByNameField('asc', 'status')" data-field="status" data-order="asc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
                                         <span onclick="orderByNameField('desc', 'status')" data-field="status" data-order="desc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-places-by-status" type="text" class="form-search" th:value="${fields.status}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-places-by-status" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('status')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-status" onclick="searchByNameField(document.getElementById('search-places-by-status').value, 'status')">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
@@ -120,19 +172,41 @@
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.author}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
                                         <span onclick="orderByNameField('asc', 'authorName')" data-field="authorName" data-order="asc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                                        </span>
                                         <span onclick="orderByNameField('desc', 'authorName')" data-field="authorName" data-order="desc" class="sort-icon">
-                        <i class="material-icons" data-toggle="tooltip"
-                           th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
-                    </span>
+                                            <i class="material-icons" data-toggle="tooltip"
+                                                th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                                        </span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-places-by-author" type="text" class="form-search" th:value="${fields.author}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-places-by-author" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('author')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-author" onclick="searchByNameField(document.getElementById('search-places-by-author').value, 'author')">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
                                     <div class="table-header-container">
                                         <span class="header-text">[[#{greenCity.pages.table.address}]]</span>
+                                        <span class="table-filter-icon filter eFilterBtn"></span>
+                                    </div>
+                                    <div class="filter-container">
+                                        <div class="filter-container__search">
+                                            <input id="search-places-by-address" type="text" class="form-search" th:value="${fields.address}" th:placeholder="#{greenCity.pages.search}">
+                                            <label for="search-places-by-address" class="search-icon"><i class="material-icons">&#xE8B6;</i></label>
+                                        </div>
+                                        <div class="filter-container__buttons">
+                                            <input class="btn btn-secondary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}" onclick="removeFilter('address')">
+                                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.apply.}" id="filter-by-address" onclick="searchByNameField(document.getElementById('search-places-by-address').value, 'address')">
+                                        </div>
                                     </div>
                                 </th>
                                 <th>
@@ -157,12 +231,12 @@
                             <th:block th:each="place, iterStatus : ${pageable.getPage()}">
                                 <tr>
                                     <td>
-                    <span class="custom-checkbox">
-                        <input id="checkbox+${iterStatus.count}" name="options[]"
-                               th:disabled="${place.getStatus().toString().equals('DELETED')}"
-                               th:id="checkbox+${iterStatus.count}" th:value="${place.getId()}" type="checkbox">
-                        <label th:for="checkbox+${iterStatus.count}"></label>
-                    </span>
+                                        <span class="custom-checkbox">
+                                            <input id="checkbox+${iterStatus.count}" name="options[]"
+                                                th:disabled="${place.getStatus().toString().equals('DELETED')}"
+                                                th:id="checkbox+${iterStatus.count}" th:value="${place.getId()}" type="checkbox">
+                                            <label th:for="checkbox+${iterStatus.count}"></label>
+                                        </span>
                                     </td>
                                     <td th:text="${place.getId()}"></td>
                                     <td th:text="${place.getName()}"></td>
