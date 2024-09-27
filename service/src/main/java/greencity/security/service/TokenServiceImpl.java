@@ -12,6 +12,7 @@ public class TokenServiceImpl implements TokenService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("java:S5167")
     @Override
     public void passTokenToCookies(String accessToken, HttpServletResponse response) {
         String checkToken = "eyJhbGciOiJIUzI1NiJ9";
