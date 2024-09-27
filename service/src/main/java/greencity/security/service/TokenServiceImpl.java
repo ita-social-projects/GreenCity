@@ -4,6 +4,8 @@ import greencity.exception.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class TokenServiceImpl implements TokenService {
@@ -16,8 +18,13 @@ public class TokenServiceImpl implements TokenService {
         if (!accessToken.contains(checkToken)) {
             throw new BadRequestException("bad access token");
         }
-        Cookie cookie = new Cookie("accessToken", accessToken);
+
+        String sanitizedToken = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+
+        Cookie cookie = new Cookie("token", sanitizedToken);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 }
