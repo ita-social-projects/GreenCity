@@ -1569,7 +1569,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         if (habitAssign != null) {
             habitAssign.setStatus(status);
             habitAssign.setCreateDate(ZonedDateTime.now());
-
         } else {
             habitAssign = buildHabitAssign(habit, user, status);
         }

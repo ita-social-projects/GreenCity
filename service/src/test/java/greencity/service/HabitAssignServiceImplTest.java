@@ -276,18 +276,31 @@ class HabitAssignServiceImplTest {
 
     @Test
     void assignDefaultHabitForUserThatWasCancelled() {
-        habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+        HabitAssign assign = getHabitAssign();
+        assign.setStatus(HabitAssignStatus.CANCELLED);
+
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findAllByUserId(user.getId()))
+            .thenReturn(List.of(assign));
+        when(habitAssignRepo.countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(user.getId())).thenReturn(3);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(
+            eq(habit.getId()),
+            eq(user.getId()),
+            any(ZonedDateTime.class))).thenReturn(Optional.empty());
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(), user.getId()))
-            .thenReturn(habitAssign);
-        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+            .thenReturn(assign);
+        when(habitAssignRepo.save(assign)).thenReturn(assign);
+        when(modelMapper.map(assign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
     }
 
     @Test
     void assignDefaultHabitForUserAlreadyHasTheHabit() {
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(HABIT_ASSIGN_IN_PROGRESS));
 
         assertThrows(UserAlreadyHasHabitAssignedException.class,
