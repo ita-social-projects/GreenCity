@@ -1,6 +1,8 @@
 package greencity.client;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
+
+import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
@@ -12,7 +14,6 @@ import greencity.ModelUtils;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
-import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -47,6 +48,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -61,7 +65,10 @@ class RestClientTest {
     @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
-    private java.lang.Object Object;
+    private Object object;
+    @Mock
+    private RequestAttributes requestAttributes;
+
     private static final String GREEN_CITY_USER_ADDRESS = "https://www.greencity.com.ua";
     private static final String SYSTEM_EMAIL = "test-service-mail@greencity.ua";
     private static final String TOKEN = "token";
@@ -73,6 +80,7 @@ class RestClientTest {
     @BeforeEach
     void init() {
         restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, httpServletRequest, jwtTool, SYSTEM_EMAIL);
+        RequestContextHolder.setRequestAttributes(requestAttributes);
     }
 
     @Test
@@ -156,11 +164,11 @@ class RestClientTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
 
         restClient.updateUser(userManagementDto);
 
-        assertEquals(ResponseEntity.ok(Object), restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+        assertEquals(ResponseEntity.ok(object), restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class));
     }
 
@@ -308,7 +316,7 @@ class RestClientTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
 
         restClient.deactivateUser(1L, test);
 
@@ -325,7 +333,7 @@ class RestClientTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_ACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
 
         restClient.setActivatedStatus(1L);
 
@@ -365,7 +373,7 @@ class RestClientTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
 
         restClient.managementRegisterUser(userManagementDto);
 
@@ -374,22 +382,22 @@ class RestClientTest {
     }
 
     @Test
-    void addEcoNews() {
-        EcoNewsForSendEmailDto message = ModelUtils.getEcoNewsForSendEmailDto();
+    void sendInterestingEcoNews() {
+        InterestingEcoNewsDto message = ModelUtils.getInterestingEcoNewsDto();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, httpHeaders);
+        HttpEntity<InterestingEcoNewsDto> entity = new HttpEntity<>(message, httpHeaders);
 
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(object));
 
-        restClient.addEcoNews(message);
+        restClient.sendInterestingEcoNews(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class);
     }
 
     @Test
@@ -403,7 +411,7 @@ class RestClientTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
 
         restClient.sendNewEventComment(message);
 
@@ -417,7 +425,7 @@ class RestClientTest {
         HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(message, ModelUtils.getHeaders());
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
         when(jwtTool.createAccessToken(SYSTEM_EMAIL, Role.ROLE_ADMIN)).thenReturn("accessToken");
         restClient.sendReport(message);
 
@@ -437,7 +445,7 @@ class RestClientTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
 
         restClient.changePlaceStatus(message);
 
@@ -452,7 +460,7 @@ class RestClientTest {
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
         when(jwtTool.createAccessToken(SYSTEM_EMAIL, Role.ROLE_ADMIN)).thenReturn("accessToken");
 
         restClient.sendHabitNotification(notification);
@@ -520,7 +528,7 @@ class RestClientTest {
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
             HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
         restClient.scheduleDeleteDeactivatedUsers();
 
         verify(restTemplate, times(1)).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
@@ -584,7 +592,7 @@ class RestClientTest {
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendEmailNotification(notification);
@@ -603,7 +611,7 @@ class RestClientTest {
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_HABIT_ASSIGN_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendHabitAssignNotification(notification);
@@ -622,7 +630,7 @@ class RestClientTest {
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendUserTaggedInCommentNotification(message);
@@ -642,7 +650,7 @@ class RestClientTest {
 
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(object));
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendScheduledEmailNotification(message);

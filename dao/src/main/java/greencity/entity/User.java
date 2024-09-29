@@ -199,9 +199,6 @@ public class User {
     @ManyToMany(mappedBy = "usersLikedNews")
     private Set<EcoNews> ecoNewsLiked;
 
-    @ManyToMany(mappedBy = "usersLiked")
-    private Set<EcoNewsComment> ecoNewsCommentsLiked;
-
     @OneToMany
     @Builder.Default
     @JoinTable(name = "users_friends",
@@ -239,6 +236,9 @@ public class User {
 
     @Column(name = "event_organizer_rating")
     private Double eventOrganizerRating;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Language language;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

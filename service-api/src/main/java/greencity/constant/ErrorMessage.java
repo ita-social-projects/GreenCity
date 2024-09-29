@@ -52,10 +52,9 @@ public class ErrorMessage {
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
     public static final String FACT_OF_THE_DAY_PROPERTY_NOT_FOUND =
         "For type Fact of the day  not found this property :";
-    public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
-    public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
-        "Subscriber with this email address not found in the database.";
-    public static final String INVALID_UNSUBSCRIBE_TOKEN = "Invalid unsubscribe token";
+    public static final String SUBSCRIPTION_EXIST =
+        "Subscriber with this email address and subscription type is exists.";
+    public static final String UBSCRIPTION_BY_TOKEN_NOT_FOUND = "Subscriber with this token not found.";
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String HABIT_ALREADY_ACQUIRED = "You have already acquired habit with id: ";
@@ -75,8 +74,6 @@ public class ErrorMessage {
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
     public static final String USER_SUSPENDED_ASSIGNED_HABIT_FOR_CURRENT_DAY_ALREADY =
         "User already assigned and suspended this habit for today with id: ";
-    public static final String HABIT_FACT_NOT_FOUND_BY_ID = "The habitfact does not exist by id: ";
-    public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The habitfact does not deleted by id: ";
     public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
         "The specification value does not exist by this id: ";
     public static final String CUSTOM_HABIT_NOT_FOUND = "Custom habit does not exist by id: ";
@@ -148,7 +145,6 @@ public class ErrorMessage {
     public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The achievement does not exist by this id: ";
     public static final String ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID =
         "The achievement category does not exist by this id: ";
-    public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
     public static final String MULTIPART_FILE_BAD_REQUEST =
         "Can`t convert To Multipart Image. Bad inputted image string : ";
     public static final String INCORRECT_INPUT_ITEM_STATUS = "Incorrect input status to update item.";
@@ -172,7 +168,8 @@ public class ErrorMessage {
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
     public static final String YOU_ARE_NOT_EVENT_SUBSCRIBER = "You are not event subscriber";
-    public static final String YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT = "The event is close. You can't subscribe to it";
+    public static final String YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT =
+        "The event is close. You can't createSubscription to it";
     public static final String HAVE_ALREADY_RATED = "You have already rated this event";
     public static final String EVENT_IS_NOT_FINISHED = "Event is not finished yet";
     public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";

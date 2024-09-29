@@ -6,7 +6,7 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.CommentDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import greencity.exception.exceptions.NotFoundException;
@@ -28,9 +28,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.Locale;
@@ -38,10 +40,13 @@ import java.util.Locale;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getPageableCommentDtos;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -87,10 +92,24 @@ class HabitCommentControllerTest {
             }
             """;
 
-        mockMvc.perform(post(HABIT_LINK + "/{habitId}/comments", 1)
+        MockMultipartFile jsonFile = new MockMultipartFile(
+            "request",
+            "",
+            "application/json",
+            content.getBytes());
+
+        MockMultipartFile imageFile = new MockMultipartFile(
+            "images",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes());
+
+        mockMvc.perform(multipart(HABIT_LINK + "/{habitId}/comments", 1)
+            .file(jsonFile)
+            .file(imageFile)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -98,7 +117,14 @@ class HabitCommentControllerTest {
             mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
+        verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest,
+            new MultipartFile[] {imageFile}, userVO, Locale.of("en"));
+        verify(commentService).save(eq(ArticleType.HABIT),
+            eq(1L),
+            eq(addCommentDtoRequest),
+            any(MultipartFile[].class),
+            eq(userVO),
+            eq(Locale.of("en")));
     }
 
     @Test

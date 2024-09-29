@@ -184,6 +184,16 @@ public interface PlaceService {
     PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable);
 
     /**
+     * Method finds all filtered places for admin page.
+     *
+     * @param filterDto contains objects whose values determine the filter
+     *                  parameters of the returned list.
+     * @param pageable  pageable configuration.
+     * @return list of {@link AdminPlaceDto}
+     */
+    PageableDto<AdminPlaceDto> getFilteredPlacesForAdmin(FilterAdminPlaceDto filterDto, Pageable pageable);
+
+    /**
      * Get list of available statuses of {@link PlaceVO}.
      *
      * @return available {@link PlaceVO} statuses.

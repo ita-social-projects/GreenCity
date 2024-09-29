@@ -22,12 +22,13 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      * @return list of {@link Event}.
      */
     @Query(nativeQuery = true,
-        value = "SELECT e.id, e.title, e.descripton, e.author_id, u.name, tt.name "
+        value = "SELECT DISTINCT e.* "
             + "FROM events e "
-            + "JOIN users u on u.id = e.author_id "
+            + "JOIN users u on u.id = e.organizer_id "
             + "JOIN events_tags ent on e.id = ent.event_id "
-            + "JOIN tag_translations tt on tt.tag_id = ent.tags_id "
-            + "WHERE concat(e.id,'') like :query or "
+            + "JOIN events_dates_locations edl on e.id = edl.event_id "
+            + "JOIN tag_translations tt on tt.tag_id = ent.tag_id "
+            + "WHERE concat(e.id,'') like lower(concat(:query, '%')) or "
             + "    lower(e.title) like lower(concat('%', :query, '%')) or "
             + "    lower(e.description) like lower(concat('%', :query, '%')) or "
             + "    lower(u.name) like lower(concat('%', :query, '%')) or "
@@ -102,7 +103,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      *         IDs.
      */
     @Query(nativeQuery = true, value = """
-        SELECT e.id AS eventId, e.title, et.tag_id AS tagId, l.code AS languageCode,
+        SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
                tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
                e.title_image, e.creation_date, start_date, finish_date, online_link,
                latitude, longitude, street_en, street_ua, house_number, city_en, city_ua,
@@ -118,7 +119,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                (false)             AS isFavorite
         FROM events e
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
-                 LEFT JOIN events_comment ec ON e.id = ec.event_id
+                LEFT JOIN events_comment ec ON e.id = ec.event_id AND ec.status != 'DELETED'
                  LEFT JOIN events_users_likes eul ON e.id = eul.event_id
                  LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
                  LEFT JOIN events_tags et ON e.id = et.event_id
@@ -142,7 +143,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      *         IDs.
      */
     @Query(nativeQuery = true, value = """
-        SELECT e.id AS eventId, e.title, et.tag_id AS tagId, l.code AS languageCode,
+        SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
                tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
                e.title_image, e.creation_date, start_date, finish_date, online_link,
                latitude, longitude, street_en, street_ua, house_number, city_en, city_ua,
@@ -158,7 +159,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                (ef.user_id IS NOT NULL)                          AS isFavorite
         FROM events e
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
-                 LEFT JOIN events_comment ec ON e.id = ec.event_id
+                    LEFT JOIN events_comment ec ON e.id = ec.event_id AND ec.status != 'DELETED'
                  LEFT JOIN events_users_likes eul ON e.id = eul.event_id
                  LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
                  LEFT JOIN events_tags et ON e.id = et.event_id

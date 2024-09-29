@@ -3,6 +3,7 @@ package greencity.mapping;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
@@ -101,6 +102,10 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                         .build())
                     .build())
                 .collect(Collectors.toList()) : new ArrayList<>())
+            .languageVO(user.getLanguage() != null ? LanguageVO.builder()
+                .id(user.getLanguage().getId())
+                .code(user.getLanguage().getCode())
+                .build() : null)
             .build();
     }
 

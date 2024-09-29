@@ -69,4 +69,7 @@ public class Comment {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CommentStatus status;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentImages> additionalImages = new ArrayList<>();
 }

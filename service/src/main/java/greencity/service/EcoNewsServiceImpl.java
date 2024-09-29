@@ -7,8 +7,15 @@ import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
@@ -19,20 +26,31 @@ import greencity.entity.EcoNews_;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.*;
+import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.NotificationType;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.message.GeneralEmailMessage;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,6 +69,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @EnableCaching
+@Transactional
 @RequiredArgsConstructor
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
@@ -59,11 +78,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final TagsService tagService;
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
-    private final greencity.rating.RatingCalculation ratingCalculation;
+    private final RatingCalculation ratingCalculation;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
+    private final CommentService commentService;
     private final UserNotificationService userNotificationService;
 
     private static final String ECO_NEWS_TITLE = "title";
@@ -188,10 +208,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsVO findById(Long id) {
-        EcoNews ecoNews = ecoNewsRepo
-            .findById(id)
+        return ecoNewsRepo.findById(id)
+            .map(n -> modelMapper.map(n, EcoNewsVO.class))
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(ecoNews, EcoNewsVO.class);
     }
 
     /**
@@ -199,7 +218,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsDto findDtoByIdAndLanguage(Long id, String language) {
-        var ecoNews = ecoNewsRepo.findById(id)
+        EcoNews ecoNews = ecoNewsRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
         List<String> tags = new ArrayList<>();
         for (String lang : languageCode) {
@@ -267,26 +286,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public Long getAmountOfPublishedNews(Long authorId) {
         return authorId == null ? ecoNewsRepo.count() : ecoNewsRepo.countByAuthorId(authorId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void likeComment(UserVO user, EcoNewsCommentVO comment) {
-        comment.getUsersLiked().add(user);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
-            AchievementAction.ASSIGN);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
-        comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user,
-            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
     private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,
@@ -574,11 +573,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags) {
         User author = ecoNews.getAuthor();
-        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
-        int countOfComments = ecoNews.getEcoNewsComments() != null
-            ? (int) ecoNews.getEcoNewsComments().stream()
-                .filter(ecoNewsComment -> !ecoNewsComment.getStatus().equals(CommentStatus.DELETED)).count()
-            : 0;
+        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
+        int countOfComments = commentService.countCommentsForEcoNews(ecoNews.getId());
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
         return EcoNewsGenericDto.builder()
             .id(ecoNews.getId())
@@ -732,5 +728,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ecoNews.setHidden(value);
 
         ecoNewsRepo.save(ecoNews);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<EcoNewsDto> getThreeInterestingEcoNews() {
+        return mapEcoNewsListToEcoNewsDtoList(ecoNewsRepo.findThreeInterestingEcoNews());
     }
 }

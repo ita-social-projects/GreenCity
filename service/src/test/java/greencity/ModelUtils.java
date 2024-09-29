@@ -13,6 +13,7 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
@@ -26,13 +27,10 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -58,7 +56,6 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
@@ -114,6 +111,7 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -131,10 +129,11 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
 import greencity.entity.Comment;
+import greencity.entity.CommentImages;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
+import greencity.entity.VerifyEmail;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.FavoritePlace;
@@ -158,7 +157,6 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserShoppingListItem;
-import greencity.entity.VerifyEmail;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
@@ -172,9 +170,7 @@ import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
-import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
-import greencity.enums.ProjectName;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
@@ -210,12 +206,14 @@ import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.description;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
@@ -246,24 +244,8 @@ import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
 import static greencity.enums.EventStatus.OPEN;
 import static greencity.enums.EventTime.PAST;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_LIKE;
-import static greencity.enums.NotificationType.ECONEWS_COMMENT_REPLY;
-import static greencity.enums.NotificationType.ECONEWS_CREATED;
-import static greencity.enums.NotificationType.ECONEWS_LIKE;
-import static greencity.enums.NotificationType.EVENT_CANCELED;
-import static greencity.enums.NotificationType.EVENT_COMMENT;
-import static greencity.enums.NotificationType.EVENT_COMMENT_LIKE;
-import static greencity.enums.NotificationType.EVENT_COMMENT_REPLY;
 import static greencity.enums.NotificationType.EVENT_CREATED;
-import static greencity.enums.NotificationType.EVENT_JOINED;
-import static greencity.enums.NotificationType.EVENT_NAME_UPDATED;
-import static greencity.enums.NotificationType.EVENT_UPDATED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_ACCEPTED;
-import static greencity.enums.NotificationType.FRIEND_REQUEST_RECEIVED;
-import static greencity.enums.NotificationType.HABIT_LIKE;
 import static greencity.enums.ProjectName.GREENCITY;
-import static greencity.enums.ProjectName.PICKUP;
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
@@ -548,7 +530,7 @@ public class ModelUtils {
             .userCredo("save the world")
             .firstName("name")
             .emailNotification(EmailNotification.MONTHLY)
-            .userStatus(UserStatus.ACTIVATED)
+            .userStatus(ACTIVATED)
             .rating(13.4)
             .verifyEmail(VerifyEmailVO.builder()
                 .id(32L)
@@ -624,6 +606,10 @@ public class ModelUtils {
                     .id(13L)
                     .build())
                 .build()))
+            .languageVO(LanguageVO.builder()
+                .id(1L)
+                .code("ua")
+                .build())
             .build();
     }
 
@@ -642,16 +628,25 @@ public class ModelUtils {
         tag.setTagTranslations(
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
-        return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text", false,
-            List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
-            Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
+        return EcoNews.builder()
+            .id(1L)
+            .creationDate(zonedDateTime)
+            .imagePath(TestConst.SITE)
+            .source("source")
+            .shortInfo("shortInfo")
+            .author(getUser())
+            .title("title")
+            .text("text")
+            .hidden(false)
+            .tags(Collections.singletonList(tag))
+            .build();
     }
 
-    public static EcoNewsComment getEcoNewsComment(CommentStatus commentStatus) {
-        return EcoNewsComment.builder()
+    public static Comment getEcoNewsComment(CommentStatus commentStatus) {
+        return Comment.builder()
             .status(commentStatus)
             .text("sdfs")
+            .articleType(ArticleType.ECO_NEWS)
             .build();
     }
 
@@ -661,23 +656,18 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false,
-            List.of(getEcoNewsComment(CommentStatus.EDITED),
-                getEcoNewsComment(CommentStatus.ORIGINAL),
-                getEcoNewsComment(CommentStatus.DELETED),
-                getEcoNewsComment(CommentStatus.DELETED)),
-            Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
+            "title", "text", false, Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false, null, Collections.singletonList(getTag()), Collections.emptySet(),
+            "title", "text", false, Collections.singletonList(getTag()), Collections.emptySet(),
             Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {
         return new EcoNewsVO(1L, zonedDateTime, TestConst.SITE, null, getUserVO(),
-            "title", "text", null, Collections.emptySet(), Collections.singletonList(getTagVO()),
+            "title", "text", Collections.emptySet(), Collections.singletonList(getTagVO()),
             Collections.emptySet());
     }
 
@@ -1058,14 +1048,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static FactOfTheDayVO getFactOfTheDayVO() {
-        return FactOfTheDayVO.builder()
-            .id(1L)
-            .name("name")
-            .factOfTheDayTranslations(Collections.singletonList(ModelUtils.getFactOfTheDayTranslationVO()))
-            .build();
-    }
-
     public static FactOfTheDayTranslation getFactOfTheDayTranslation() {
         return FactOfTheDayTranslation.builder()
             .id(1L)
@@ -1270,109 +1252,15 @@ public class ModelUtils {
         return socialNetworkVO;
     }
 
-    public static AddEcoNewsCommentDtoResponse getAddEcoNewsCommentDtoResponse() {
-        return AddEcoNewsCommentDtoResponse.builder()
-            .id(getEcoNewsComment().getId())
-            .author(getEcoNewsCommentAuthorDto())
-            .text(getEcoNewsComment().getText())
-            .modifiedDate(getEcoNewsComment().getModifiedDate())
-            .build();
-    }
-
-    public static EcoNewsComment getEcoNewsComment() {
-        return EcoNewsComment.builder()
+    public static Comment getEcoNewsComment() {
+        return Comment.builder()
             .id(1L)
             .status(CommentStatus.ORIGINAL)
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
             .user(getUser())
-            .ecoNews(getEcoNews())
-            .build();
-    }
-
-    public static EcoNewsCommentVO getEcoNewsCommentVOWithoutParentWithData() {
-        return EcoNewsCommentVO.builder()
-            .id(278L)
-            .user(UserVO.builder()
-                .id(13L)
-                .role(Role.ROLE_ADMIN)
-                .name("name")
-                .build())
-            .modifiedDate(LocalDateTime.now())
-            .text("I find this topic very useful!")
-            .status(CommentStatus.ORIGINAL)
-            .currentUserLiked(true)
-            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
-            .usersLiked(new HashSet<>(Arrays.asList(
-                UserVO.builder()
-                    .id(76L)
-                    .build(),
-                UserVO.builder()
-                    .id(543L)
-                    .build(),
-                UserVO.builder()
-                    .id(349L)
-                    .build())))
-            .ecoNews(EcoNewsVO.builder()
-                .id(32L)
-                .build())
-            .build();
-    }
-
-    public static EcoNewsCommentVO getEcoNewsCommentVOWithParentWithData() {
-        return EcoNewsCommentVO.builder()
-            .id(278L)
-            .user(UserVO.builder()
-                .id(13L)
-                .role(Role.ROLE_ADMIN)
-                .name("name")
-                .build())
-            .modifiedDate(LocalDateTime.now())
-            .text("I find this topic very useful!")
-            .parentComment(EcoNewsCommentVO.builder()
-                .id(277L)
-                .user(UserVO.builder()
-                    .id(13L)
-                    .role(Role.ROLE_ADMIN)
-                    .name("name")
-                    .build())
-                .modifiedDate(LocalDateTime.now())
-                .text("I find this topic very useful!")
-                .status(CommentStatus.ORIGINAL)
-                .currentUserLiked(true)
-                .parentComment(null)
-                .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
-                .usersLiked(new HashSet<>(Arrays.asList(
-                    UserVO.builder()
-                        .id(76L)
-                        .build(),
-                    UserVO.builder()
-                        .id(543L)
-                        .build(),
-                    UserVO.builder()
-                        .id(349L)
-                        .build())))
-                .ecoNews(EcoNewsVO.builder()
-                    .id(32L)
-                    .build())
-                .build())
-            .status(CommentStatus.ORIGINAL)
-            .currentUserLiked(true)
-            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
-            .usersLiked(new HashSet<>(Arrays.asList(
-                UserVO.builder()
-                    .id(76L)
-                    .build(),
-                UserVO.builder()
-                    .id(543L)
-                    .build(),
-                UserVO.builder()
-                    .id(349L)
-                    .build())))
-            .ecoNews(EcoNewsVO.builder()
-                .id(32L)
-                .build())
+            .articleType(ArticleType.ECO_NEWS)
             .build();
     }
 
@@ -1381,23 +1269,6 @@ public class ModelUtils {
             .id(getUser().getId())
             .name(getUser().getName().trim())
             .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static AddEcoNewsCommentDtoRequest getAddEcoNewsCommentDtoRequest() {
-        return new AddEcoNewsCommentDtoRequest("text", 0L);
-    }
-
-    public static EcoNewsCommentDto getEcoNewsCommentDto() {
-        return EcoNewsCommentDto.builder()
-            .id(1L)
-            .modifiedDate(LocalDateTime.now())
-            .author(getEcoNewsCommentAuthorDto())
-            .text("text")
-            .replies(0)
-            .likes(0)
-            .currentUserLiked(false)
-            .status(CommentStatus.ORIGINAL)
             .build();
     }
 
@@ -1513,17 +1384,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static HabitTranslation getHabitTranslationWithCustom() {
-        return HabitTranslation.builder()
-            .id(1L)
-            .description("test description")
-            .habitItem("test habit item")
-            .language(getLanguage())
-            .name("test name")
-            .habit(getHabitWithCustom())
-            .build();
-    }
-
     public static HabitManagementDto gethabitManagementDto() {
         return HabitManagementDto.builder()
             .id(1L)
@@ -1536,17 +1396,17 @@ public class ModelUtils {
         return new Achievement(1L,
             "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
             Collections.emptyList(),
-            new AchievementCategory(1L, "CREATE_NEWS", new ArrayList<>()), 1);
+            new AchievementCategory(1L, "CREATE_NEWS", "Створи Еко Новини", "Create Eco News", new ArrayList<>()), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "HABIT", Collections.emptyList());
+        return new AchievementCategory(1L, "HABIT", "Набудь Звички", "Acquire Habits", Collections.emptyList());
     }
 
     public static AchievementVO getAchievementVO() {
         return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
             "Acquired habit 14 days", new AchievementCategoryVO(),
-            1);
+            1, 0);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
@@ -1561,6 +1421,10 @@ public class ModelUtils {
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
         return new AchievementCategoryVO(1L, "Category");
+    }
+
+    public static AchievementCategoryTranslationDto getAchievementCategoryTranslationDto() {
+        return new AchievementCategoryTranslationDto(1L, "Назва", "Title", null, null);
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
@@ -1598,6 +1462,15 @@ public class ModelUtils {
             List.of(tagsUa), List.of(tagsEn), 0, 1, 0);
     }
 
+    public static ShortEcoNewsDto getShortEcoNewsDto() {
+        return ShortEcoNewsDto.builder()
+            .text("content")
+            .title("title")
+            .imagePath("imagePath")
+            .ecoNewsId(1L)
+            .build();
+    }
+
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
             getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0,
@@ -1611,12 +1484,6 @@ public class ModelUtils {
     public static SearchNewsDto getSearchNewsDto() {
         return new SearchNewsDto(1L, "title", getEcoNewsAuthorDto(), ZonedDateTime.now(),
             Collections.singletonList("tag"));
-    }
-
-    public static EcoNewsCommentVO getEcoNewsCommentVO() {
-        return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
-            new ArrayList<>(), getUserVO(), getEcoNewsVO(),
-            false, new HashSet<>(), CommentStatus.ORIGINAL);
     }
 
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
@@ -1887,6 +1754,22 @@ public class ModelUtils {
             new MockMultipartFile("secondFile.tmp", "Hello World".getBytes())};
     }
 
+    public static MultipartFile getMultipartImageFile() {
+        return new MockMultipartFile(
+            "images",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes());
+    }
+
+    public static MultipartFile[] getMultipartImageFiles() {
+        return new MockMultipartFile[] {
+            new MockMultipartFile(
+                "images", "image.jpg", "image/jpeg", "image data".getBytes()),
+            new MockMultipartFile(
+                "images", "image.jpg", "image/jpeg", "image data".getBytes())};
+    }
+
     public static AddressDto getAddressDtoWithNullRegionUa() {
         return AddressDto.builder()
             .latitude(13.4567236)
@@ -2000,29 +1883,6 @@ public class ModelUtils {
                 .nameUa("Соціальний").build()))
             .isFavorite(false)
             .isSubscribed(false)
-            .build();
-    }
-
-    public static EventDto getSecondEventDto() {
-        return EventDto.builder()
-            .id(2L)
-            .countComments(2)
-            .likes(1)
-            .description("Description2")
-            .organizer(EventAuthorDto.builder()
-                .name("User2")
-                .id(2L)
-                .build())
-            .title("Title2")
-            .dates(List.of(EventDateLocationDto.builder()
-                .id(1L)
-                .event(null)
-                .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-                .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
-                .onlineLink("/url")
-                .coordinates(getSecondAddressDtoCorrect()).build()))
-            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
-                .nameUa("Соціальний").build()))
             .build();
     }
 
@@ -2556,6 +2416,20 @@ public class ModelUtils {
             .build();
     }
 
+    public static Comment getParentComment() {
+        return Comment.builder()
+            .id(1L)
+            .articleType(ArticleType.HABIT)
+            .articleId(10L)
+            .text("text")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .comments(List.of(getSubComment()))
+            .status(CommentStatus.ORIGINAL)
+            .build();
+    }
+
     public static CommentVO getCommentVO() {
         return CommentVO.builder()
             .id(1L)
@@ -2605,6 +2479,14 @@ public class ModelUtils {
             .id(getUser().getId())
             .name(getUser().getName().trim())
             .profilePicturePath(getUser().getProfilePicturePath())
+            .build();
+    }
+
+    public static CommentImages getCommentImage() {
+        return CommentImages.builder()
+            .id(1L)
+            .link("http://example.com/image1.jpg")
+            .comment(getComment())
             .build();
     }
 
@@ -2907,29 +2789,31 @@ public class ModelUtils {
 
     public static List<Tuple> getTuples(TupleElement<?>[] elements) {
         TupleMetadata tupleMetadata = new TupleMetadata(
-            elements, new String[] {eventId, title, tagId, languageCode, tagName,
+            elements, new String[] {eventId, title, description, tagId, languageCode, tagName,
                 isOpen, type, organizerId, organizerName, titleImage, creationDate, startDate,
                 finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
                 cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
                 formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
                 isFavorite});
 
-        Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, "ONLINE", 1L,
+        Object[] row1 = new Object[] {1L, "test1", "<p>description</p>", 1L, "en", "Social", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row2 = new Object[] {1L, "test1", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
+        Object[] row2 = new Object[] {1L, "test1", "<p>description</p>", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row3 = new Object[] {3L, "test3", 2L, "en", "Social1", true, "ONLINE_OFFLINE", 2L,
+        Object[] row3 = new Object[] {3L, "test3", "<p>description</p>", 2L, "en", "Social1", true, "ONLINE_OFFLINE",
+            2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row4 = new Object[] {3L, "test3", 2L, "ua", "Соціальний1", true, "ONLINE_OFFLINE", 2L,
+        Object[] row4 = new Object[] {3L, "test3", "<p>description</p>", 2L, "ua", "Соціальний1", true,
+            "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
@@ -2942,6 +2826,7 @@ public class ModelUtils {
         return new TupleElement<?>[] {
             new TupleElementImpl<>(Long.class, eventId),
             new TupleElementImpl<>(String.class, title),
+            new TupleElementImpl<>(String.class, description),
             new TupleElementImpl<>(Long.class, tagId),
             new TupleElementImpl<>(String.class, languageCode),
             new TupleElementImpl<>(String.class, tagName),
@@ -2982,6 +2867,7 @@ public class ModelUtils {
             EventDto.builder()
                 .id(3L)
                 .title("test3")
+                .description("<p>description</p>")
                 .organizer(EventAuthorDto.builder().id(2L).name("Test3").build())
                 .creationDate(Date.valueOf("2024-04-14").toLocalDate())
                 .dates(List.of(
@@ -3015,6 +2901,7 @@ public class ModelUtils {
                 .build(),
             EventDto.builder()
                 .id(1L)
+                .description("<p>description</p>")
                 .title("test1")
                 .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
                 .creationDate(Date.valueOf("2024-04-16").toLocalDate())
@@ -3111,29 +2998,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static FilterNotificationDto getFilterNotificationDto() {
-        return FilterNotificationDto.builder()
-            .projectName(new ProjectName[] {GREENCITY, PICKUP})
-            .notificationType(new NotificationType[] {
-                ECONEWS_COMMENT_REPLY,
-                ECONEWS_COMMENT_LIKE,
-                ECONEWS_LIKE,
-                ECONEWS_CREATED,
-                ECONEWS_COMMENT,
-                EVENT_COMMENT_REPLY,
-                EVENT_COMMENT_LIKE,
-                EVENT_CREATED,
-                EVENT_CANCELED,
-                EVENT_NAME_UPDATED,
-                EVENT_UPDATED,
-                EVENT_JOINED,
-                EVENT_COMMENT,
-                FRIEND_REQUEST_ACCEPTED,
-                FRIEND_REQUEST_RECEIVED,
-                HABIT_LIKE})
-            .build();
-    }
-
     public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationDto() {
         return new PageableAdvancedDto<>(Collections.singletonList(getNotificationDto()),
             1, 0, 1, 0,
@@ -3173,6 +3037,14 @@ public class ModelUtils {
             .user(getUserVO())
             .event(getEventVO())
             .status(String.valueOf(CommentStatus.ORIGINAL))
+            .build();
+    }
+
+    public static SubscriberDto getSubscriberDto() {
+        return SubscriberDto.builder()
+            .language("ua")
+            .name("Ilia")
+            .email("test@example.com")
             .build();
     }
 }
