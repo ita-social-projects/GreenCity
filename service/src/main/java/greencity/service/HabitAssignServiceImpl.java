@@ -142,12 +142,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto = buildCustomHabitAssignPropertiesDto(habit);
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto = buildDefaultHabitAssignPropertiesDto(habit);
         HabitAssign habitAssign = assignHabitForUser(habit, userVO, habitAssignCustomPropertiesDto);
 
         HabitAssignManagementDto habitAssignManagementDto =
             modelMapper.map(habitAssign, HabitAssignManagementDto.class);
         habitAssignManagementDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
+
         return habitAssignManagementDto;
     }
 
@@ -173,7 +174,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignManagementDtoList;
     }
 
-    private void saveCustomShoppingListItemList(List<CustomShoppingListItemSaveRequestDto> saveList,
+    private void saveCustomShoppingListItems(List<CustomShoppingListItemSaveRequestDto> saveList,
         User user, Habit habit) {
         if (!CollectionUtils.isEmpty(saveList)) {
             saveList.forEach(item -> {
@@ -213,7 +214,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             HabitAssign habitAssign = addProgressStatusToHabitAssign(habit, friendOfUser, HabitAssignStatus.REQUESTED);
             enhanceAssignWithCustomProperties(habitAssign,
                 habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
-            setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
+            saveDefaultShoppingListItems(habitAssign,
                 habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
             habitAssign = habitAssignRepo.save(habitAssign);
 
@@ -221,7 +222,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
     }
 
-    private void setDefaultShoppingListItemsIntoCustomHabit(HabitAssign habitAssign,
+    private void saveDefaultShoppingListItems(HabitAssign habitAssign,
         List<Long> defaultShoppingListItems) {
         if (!defaultShoppingListItems.isEmpty()) {
             List<ShoppingListItem> shoppingList =
@@ -1558,19 +1559,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
         HabitAssign habitAssign = addProgressStatusToHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
 
-        HabitAssignPropertiesDto defaultProperties = habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto();
-        List<Long> defaultShoppingList = defaultProperties.getDefaultShoppingListItems();
+        HabitAssignPropertiesDto customAssignProperties = habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto();
+        List<Long> defaultShoppingList = customAssignProperties.getDefaultShoppingListItems();
 
-        if (CollectionUtils.isNotEmpty(defaultShoppingList)) {
-            List<ShoppingListItem> shoppingList =
-                shoppingListItemRepo
-                    .getShoppingListByListOfId(defaultShoppingList);
-            saveUserShoppingListItems(shoppingList, habitAssign);
-        }
-        enhanceAssignWithCustomProperties(habitAssign, defaultProperties);
-        setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
+        enhanceAssignWithCustomProperties(habitAssign, customAssignProperties);
+        saveDefaultShoppingListItems(habitAssign,
             defaultShoppingList);
-        saveCustomShoppingListItemList(habitAssignCustomPropertiesDto.getCustomShoppingListItemList(), user, habit);
+        saveCustomShoppingListItems(habitAssignCustomPropertiesDto.getCustomShoppingListItemList(), user, habit);
 
         return habitAssignRepo.save(habitAssign);
     }
@@ -1600,7 +1595,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return createHabitAssign(user, habit, habitAssignCustomPropertiesDto);
     }
 
-    private HabitAssignCustomPropertiesDto buildCustomHabitAssignPropertiesDto(Habit habit) {
+    private HabitAssignCustomPropertiesDto buildDefaultHabitAssignPropertiesDto(Habit habit) {
         HabitAssignPropertiesDto habitAssignPropertiesDto = HabitAssignPropertiesDto.builder()
             .defaultShoppingListItems(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId()))
             .duration(habit.getDefaultDuration())
