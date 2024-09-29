@@ -295,6 +295,18 @@ class HabitAssignServiceImplTest {
 
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
+
+        verify(habitRepo).findById(habit.getId());
+        verify(modelMapper).map(userVO, User.class);
+        verify(habitAssignRepo).findAllByUserId(user.getId());
+        verify(habitAssignRepo).countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(user.getId());
+        verify(habitAssignRepo).findByHabitIdAndUserIdAndCreateDate(
+            eq(habit.getId()),
+            eq(user.getId()),
+            any(ZonedDateTime.class));
+        verify(habitAssignRepo).findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habit.getId(), user.getId());
+        verify(habitAssignRepo).save(assign);
+        verify(modelMapper).map(assign, HabitAssignManagementDto.class);
     }
 
     @Test
