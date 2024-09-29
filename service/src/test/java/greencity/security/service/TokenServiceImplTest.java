@@ -44,7 +44,7 @@ class TokenServiceImplTest {
         tokenService.passTokenToCookies(accessToken, response);
 
         verify(response).addCookie(argThat(cookie -> {
-            assertEquals("token", cookie.getName());
+            assertEquals("accessToken", cookie.getName());
             assertEquals(URLEncoder.encode(accessToken, StandardCharsets.UTF_8), cookie.getValue());
             assertTrue(cookie.isHttpOnly());
             assertTrue(cookie.getSecure());
@@ -62,7 +62,7 @@ class TokenServiceImplTest {
         tokenService.passTokenToCookies(accessToken, response);
 
         verify(response).addCookie(argThat(cookie -> {
-            assertEquals("token", cookie.getName());
+            assertEquals("accessToken", cookie.getName());
             assertEquals(URLEncoder.encode(accessToken, StandardCharsets.UTF_8), cookie.getValue());
             assertTrue(cookie.isHttpOnly());
             assertFalse(cookie.getSecure());
