@@ -1,19 +1,20 @@
 package greencity.message;
 
-import java.io.Serializable;
+import greencity.enums.PlaceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@ToString
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public final class SendChangePlaceStatusEmailMessage implements Serializable, EmailMessage {
+public final class ChangePlaceStatusDto implements EmailMessage {
     private String authorFirstName;
+    private String authorLanguage;
     private String placeName;
-    private String placeStatus;
+    private PlaceStatus placeStatus;
     private String authorEmail;
 
     @Override

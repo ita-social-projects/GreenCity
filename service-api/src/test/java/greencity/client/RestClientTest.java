@@ -17,9 +17,9 @@ import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
+import greencity.message.ChangePlaceStatusDto;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.ScheduledEmailMessage;
-import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
@@ -436,11 +436,11 @@ class RestClientTest {
 
     @Test
     void changePlaceStatus() {
-        SendChangePlaceStatusEmailMessage message = ModelUtils.getSendChangePlaceStatusEmailMessage();
+        ChangePlaceStatusDto message = ModelUtils.getSendChangePlaceStatusEmailMessage();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<SendChangePlaceStatusEmailMessage> entity = new HttpEntity<>(message, httpHeaders);
+        HttpEntity<ChangePlaceStatusDto> entity = new HttpEntity<>(message, httpHeaders);
 
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS

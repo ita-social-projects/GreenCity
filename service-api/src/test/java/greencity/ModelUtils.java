@@ -20,16 +20,15 @@ import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
+import greencity.message.ChangePlaceStatusDto;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.ScheduledEmailMessage;
-import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.HabitAssignNotificationMessage;
-import greencity.message.UserReceivedCommentMessage;
-import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import java.util.UUID;
 import org.springframework.http.HttpHeaders;
@@ -71,9 +70,9 @@ public class ModelUtils {
             .build();
     }
 
-    public static SendChangePlaceStatusEmailMessage getSendChangePlaceStatusEmailMessage() {
-        return SendChangePlaceStatusEmailMessage.builder()
-            .placeStatus("status")
+    public static ChangePlaceStatusDto getSendChangePlaceStatusEmailMessage() {
+        return ChangePlaceStatusDto.builder()
+            .placeStatus(PlaceStatus.APPROVED)
             .authorEmail("test@gmail.com")
             .placeName("placeName")
             .authorFirstName("taras")
@@ -258,30 +257,6 @@ public class ModelUtils {
             .receiverName("Ivan")
             .language("en")
             .receiverEmail("Ivan@gmail.com")
-            .build();
-    }
-
-    public static UserReceivedCommentMessage getUserReceivedCommentMessage() {
-        return UserReceivedCommentMessage.builder()
-            .commentText("test")
-            .baseLink("http://localhost:8060/events/1")
-            .authorName("Denys")
-            .receiverName("Ivan")
-            .language("en")
-            .receiverEmail("Ivan@gmail.com")
-            .build();
-    }
-
-    public static UserReceivedCommentReplyMessage getUserReceivedCommentReplyMessage() {
-        return UserReceivedCommentReplyMessage.builder()
-            .commentText("test")
-            .baseLink("http://localhost:8060/events/1")
-            .authorName("Denys")
-            .receiverName("Ivan")
-            .language("en")
-            .receiverEmail("Ivan@gmail.com")
-            .parentCommentText("parent comment")
-            .parentCommentAuthorName("Dmytro")
             .build();
     }
 

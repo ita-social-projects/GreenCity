@@ -9,6 +9,7 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
+import greencity.message.ChangePlaceStatusDto;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import java.util.Optional;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.ScheduledEmailMessage;
-import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.UserTaggedInCommentMessage;
@@ -474,18 +474,16 @@ public class RestClient {
     }
 
     /**
-     * send SendChangePlaceStatusEmailMessage to GreenCityUser.
+     * Send ChangePlaceStatusDto to GreenCityUser.
      *
      * @param changePlaceStatusEmailMessage with information for sending email
      *                                      during status update for {@link PlaceVO}
      *                                      when PlaceStatus.PROPOSED.
-     * @author Taras Kavkalo
      */
-    public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
+    public void changePlaceStatus(ChangePlaceStatusDto changePlaceStatusEmailMessage) {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<SendChangePlaceStatusEmailMessage> entity =
-            new HttpEntity<>(changePlaceStatusEmailMessage, headers);
+        HttpEntity<ChangePlaceStatusDto> entity = new HttpEntity<>(changePlaceStatusEmailMessage, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class);
     }
