@@ -59,7 +59,8 @@ public class SecurityConfig {
     private static final String ATTENDERS = "/attenders";
     private static final String ORGANIZERS = "/organizers";
     private static final String RATINGS = "/ratings";
-    private static final String EVENTS_COMMENTS = EVENTS + EVENT_ID + COMMENTS;
+    private static final String EVENTS_ID_COMMENTS = EVENTS + EVENT_ID + COMMENTS;
+    private static final String EVENTS_COMMENTS = EVENTS + COMMENTS;
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
     private static final String FACT_OF_THE_DAY = "/fact-of-the-day";
@@ -169,11 +170,13 @@ public class SecurityConfig {
                         ECO_NEWS + COMMENTS + COMMENT_ID + LIKES + COUNT,
                         ECO_NEWS + COMMENTS + ACTIVE,
                         ECO_NEWS_COMMENTS + COUNT,
-                        EVENTS_COMMENTS,
+                        EVENTS_ID_COMMENTS,
+                        EVENTS_ID_COMMENTS + COMMENT_ID,
                         EVENTS_COMMENTS + COMMENT_ID,
-                        EVENTS_COMMENTS + COMMENT_ID + COUNT,
-                        EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES,
+                        EVENTS_ID_COMMENTS + COMMENT_ID + COUNT,
+                        EVENTS_ID_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
                         EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES + COUNT,
+                        EVENTS_COMMENTS + LIKE,
                         EVENTS_COMMENTS + COMMENT_ID + LIKES + COUNT,
                         EVENTS,
                         EVENTS + "/addresses",
@@ -267,8 +270,8 @@ public class SecurityConfig {
                         ECO_NEWS + ECO_NEWS_ID + DISLIKES,
                         ECO_NEWS_COMMENTS,
                         ECO_NEWS_COMMENTS + COMMENT_ID + LIKES,
-                        EVENTS_COMMENTS,
-                        EVENTS_COMMENTS + COMMENT_ID + LIKES,
+                        EVENTS_ID_COMMENTS,
+                        EVENTS_COMMENTS + LIKE + COMMENT_ID,
                         EVENTS,
                         EVENTS + EVENT_ID + ATTENDERS,
                         EVENTS + EVENT_ID + FAVORITES,
@@ -315,6 +318,8 @@ public class SecurityConfig {
                     .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                     .requestMatchers(HttpMethod.PATCH,
                         HABITS + COMMENTS,
+                        ECO_NEWS + COMMENTS,
+                        EVENTS_COMMENTS + COMMENT_ID,
                         CUSTOM_SHOPPING_LIST_ITEMS,
                         CUSTOM_SHOPPING_LIST_URL,
                         HABIT_ASSIGN_ID,

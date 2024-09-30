@@ -1,8 +1,8 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.eventcomment.EventCommentDto;
-import greencity.entity.event.EventComment;
+import greencity.dto.comment.CommentDto;
+import greencity.entity.Comment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,21 +13,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class EventCommentDtoMapperTest {
     @InjectMocks
-    private EventCommentDtoMapper eventCommentDtoMapper;
+    private CommentDtoMapper commentDtoMapper;
 
     @Test
     void convertTest() {
-        EventComment eventComment = ModelUtils.getEventCommentWithReplies();
-        EventCommentDto actual = eventCommentDtoMapper.convert(eventComment);
+        Comment comment = ModelUtils.getComment();
+        CommentDto actual = commentDtoMapper.convert(comment);
 
-        assertEquals(eventComment.getId(), actual.getId());
-        assertEquals(eventComment.getText(), actual.getText());
-        assertEquals(eventComment.getModifiedDate(), actual.getModifiedDate());
-        assertEquals(eventComment.getComments().size(), actual.getNumberOfReplies());
-        assertEquals(eventComment.getUsersLiked().size(), actual.getLikes());
-        assertEquals(eventComment.isCurrentUserLiked(), actual.isCurrentUserLiked());
-        assertEquals(eventComment.getUser().getId(), actual.getAuthor().getId());
-        assertEquals(eventComment.getUser().getName(), actual.getAuthor().getName());
-        assertEquals(eventComment.getUser().getProfilePicturePath(), actual.getAuthor().getUserProfilePicturePath());
+        assertEquals(comment.getId(), actual.getId());
+        assertEquals(comment.getText(), actual.getText());
+        assertEquals(comment.getModifiedDate(), actual.getModifiedDate());
+        assertEquals(comment.getComments().size(), actual.getReplies());
+        assertEquals(comment.getUsersLiked().size(), actual.getLikes());
+        assertEquals(comment.isCurrentUserLiked(), actual.isCurrentUserLiked());
+        assertEquals(comment.getUser().getId(), actual.getAuthor().getId());
+        assertEquals(comment.getUser().getName(), actual.getAuthor().getName());
+        assertEquals(comment.getUser().getProfilePicturePath(), actual.getAuthor().getProfilePicturePath());
     }
 }

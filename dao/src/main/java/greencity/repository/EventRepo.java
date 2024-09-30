@@ -118,7 +118,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                (false)             AS isFavorite
         FROM events e
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
-                 LEFT JOIN events_comment ec ON e.id = ec.event_id
+                 LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT'
                  LEFT JOIN events_users_likes eul ON e.id = eul.event_id
                  LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
                  LEFT JOIN events_tags et ON e.id = et.event_id
@@ -158,7 +158,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                (ef.user_id IS NOT NULL)                          AS isFavorite
         FROM events e
                  LEFT JOIN events_grades eg ON e.id = eg.event_id
-                 LEFT JOIN events_comment ec ON e.id = ec.event_id
+                 LEFT JOIN comments ec ON e.id = ec.article_id AND ec.article_type = 'EVENT'
                  LEFT JOIN events_users_likes eul ON e.id = eul.event_id
                  LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
                  LEFT JOIN events_tags et ON e.id = et.event_id

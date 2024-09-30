@@ -111,8 +111,6 @@ class CommentServiceImplTest {
     private UserNotificationService userNotificationService;
     @Mock
     private NotificationService notificationService;
-    @Mock
-    private EventCommentServiceImpl eventCommentServiceImpl;
 
     @Test
     void save() {
@@ -236,7 +234,7 @@ class CommentServiceImplTest {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
-        when(eventCommentServiceImpl.getUserIdFromComment(commentText)).thenReturn(userIds);
+//        when(comment.getUserIdFromComment(commentText)).thenReturn(userIds);
 
         commentService.save(articleType, 1L, addCommentDtoRequest, userVO, Locale.of("en"));
 
