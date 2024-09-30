@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,10 +36,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import greencity.dto.comment.CommentVO;
 import greencity.dto.event.EventVO;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Locale;
 
 @Validated
@@ -68,12 +72,14 @@ public class EventCommentController {
     @PostMapping("/{eventId}/comments")
     public ResponseEntity<AddCommentDtoResponse> save(
         @PathVariable Long eventId,
-        @Valid @RequestBody AddCommentDtoRequest request,
+        @Valid @RequestPart AddCommentDtoRequest request,
         @Parameter(hidden = true) @CurrentUser UserVO user,
+        @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,
+            message = "Download up to 5 images") MultipartFile[] images,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.EVENT, eventId, request, user, locale));
+            .body(commentService.save(ArticleType.EVENT, eventId, request, images, user, locale));
     }
 
     /**

@@ -326,7 +326,6 @@ class CommentServiceImplTest {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
-        when(commentService.getUserIdFromComment(commentText)).thenReturn(userIds);
         when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));

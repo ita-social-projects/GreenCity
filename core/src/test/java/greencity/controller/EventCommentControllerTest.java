@@ -29,9 +29,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +47,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -87,9 +91,24 @@ class EventCommentControllerTest {
             + "  \"parentCommentId\": \"100\"\n"
             + "}";
 
-        mockMvc.perform(post(EVENT_ID_COMMENT_CONTROLLER_LINK, eventId)
+        MockMultipartFile jsonFile = new MockMultipartFile(
+            "request",
+            "",
+            "application/json",
+            content.getBytes());
+
+        MockMultipartFile imageFile = new MockMultipartFile(
+            "images",
+            "image.jpg",
+            "image/jpeg",
+            "image data".getBytes());
+
+        mockMvc.perform(multipart(EVENT_ID_COMMENT_CONTROLLER_LINK, eventId)
+            .file(jsonFile)
+            .file(imageFile)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .content(content))
             .andExpect(status().isCreated());
 
@@ -98,7 +117,8 @@ class EventCommentControllerTest {
             mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).save(ArticleType.EVENT, eventId, addCommentDtoRequest, userVO, Locale.of("en"));
+        verify(commentService).save(ArticleType.EVENT, eventId, addCommentDtoRequest, new MultipartFile[] {imageFile},
+            userVO, Locale.of("en"));
     }
 
     @Test

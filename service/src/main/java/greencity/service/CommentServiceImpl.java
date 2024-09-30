@@ -301,12 +301,6 @@ public class CommentServiceImpl implements CommentService {
                 case COMMENT_USER_TAG -> NotificationType.ECONEWS_COMMENT_USER_TAG;
                 default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
             };
-            case ECO_NEWS -> switch (actionType) {
-                case COMMENT -> NotificationType.ECONEWS_COMMENT;
-                case COMMENT_REPLY -> NotificationType.ECONEWS_COMMENT_REPLY;
-                case COMMENT_USER_TAG -> NotificationType.ECONEWS_COMMENT_USER_TAG;
-                default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
-            };
             case EVENT -> switch (actionType) {
                 case COMMENT -> NotificationType.EVENT_COMMENT;
                 case COMMENT_REPLY -> NotificationType.EVENT_COMMENT_REPLY;

@@ -2316,6 +2316,7 @@ public class ModelUtils {
     public static Comment getComment() {
         return Comment.builder()
             .id(1L)
+            .user(getUser())
             .articleType(ArticleType.HABIT)
             .articleId(10L)
             .text("text")
@@ -2921,6 +2922,14 @@ public class ModelUtils {
             .requesterId(1L)
             .friendStatus("FRIEND")
             .chatId(1L)
+            .build();
+    }
+
+    public static SubscriberDto getSubscriberDto() {
+        return SubscriberDto.builder()
+            .language("ua")
+            .name("Ilia")
+            .email("test@example.com")
             .build();
     }
 }
