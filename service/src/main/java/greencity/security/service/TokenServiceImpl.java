@@ -1,8 +1,7 @@
 package greencity.security.service;
 
 import greencity.exception.exceptions.BadRequestException;
-import lombok.AllArgsConstructor;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,9 +9,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Service
-@AllArgsConstructor
 public class TokenServiceImpl implements TokenService {
-    private Environment environment;
+    @Value("${use-secure-cookies}")
+    private boolean secureCookie;
 
     /**
      * {@inheritDoc}
@@ -27,20 +26,8 @@ public class TokenServiceImpl implements TokenService {
         String sanitizedToken = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
         Cookie cookie = new Cookie("accessToken", sanitizedToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(isProdProfile());
+        cookie.setSecure(secureCookie);
         cookie.setPath("/");
         response.addCookie(cookie);
-    }
-
-    private boolean isProdProfile() {
-        String[] activeProfiles = environment.getActiveProfiles();
-        boolean isProd = false;
-        for (String profile : activeProfiles) {
-            if ("prod".equalsIgnoreCase(profile)) {
-                isProd = true;
-                break;
-            }
-        }
-        return isProd;
     }
 }
