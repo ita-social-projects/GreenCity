@@ -96,6 +96,7 @@ public class SecurityConfig {
      *
      * @param http {@link HttpSecurity}
      */
+    @SuppressWarnings("java:S4502")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
