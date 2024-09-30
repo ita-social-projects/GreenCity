@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class CommentVOMapperTest {
@@ -47,4 +48,32 @@ class CommentVOMapperTest {
         assertEquals(comment.isCurrentUserLiked(), actual.isCurrentUserLiked());
         assertEquals(usersLiked, actual.getUsersLiked());
     }
+
+    @Test
+    void convertTestWithNullValues() {
+        Comment comment = ModelUtils.getComment()
+            .setParentComment(null)
+            .setStatus(null);
+
+        CommentVO actual = commentVOMapper.convert(comment);
+
+        Set<UserVO> usersLiked = comment.getUsersLiked().stream()
+            .map(user -> UserVO.builder()
+                .id(user.getId())
+                .build())
+            .collect(Collectors.toSet());
+
+        assertEquals(comment.getId(), actual.getId());
+        assertEquals(comment.getText(), actual.getText());
+        assertEquals(comment.getCreatedDate(), actual.getCreatedDate());
+        assertEquals(comment.getArticleType().toString(), actual.getArticleType());
+        assertNull(actual.getParentComment());
+        assertEquals(comment.getUser().getId(), actual.getUser().getId());
+        assertEquals(comment.getUser().getName(), actual.getUser().getName());
+        assertEquals(comment.getUser().getRole().name(), actual.getUser().getRole().name());
+        assertNull(actual.getStatus());
+        assertEquals(comment.isCurrentUserLiked(), actual.isCurrentUserLiked());
+        assertEquals(usersLiked, actual.getUsersLiked());
+    }
+
 }

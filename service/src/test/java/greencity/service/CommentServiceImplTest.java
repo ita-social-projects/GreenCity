@@ -530,6 +530,30 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void countCommentsForEvent() {
+        Event event = getEvent();
+
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(commentRepo.countNotDeletedCommentsByEcoNews(event.getId())).thenReturn(1);
+
+        assertEquals(1, commentService.countCommentsForEcoNews(event.getId()));
+
+        verify(econewsRepo).findById(1L);
+        verify(commentRepo).countNotDeletedCommentsByEcoNews(event.getId());
+    }
+
+    @Test
+    void countCommentsEventNotFoundException() {
+        Long eventId = 1L;
+
+        when(eventRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> commentService.countCommentsForEcoNews(eventId));
+
+        verify(econewsRepo).findById(1L);
+    }
+
+    @Test
     void getAllActiveComments() {
         int pageNumber = 1;
         int pageSize = 3;
