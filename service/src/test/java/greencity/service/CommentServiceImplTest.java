@@ -348,7 +348,6 @@ class CommentServiceImplTest {
             .build();
         ArticleType articleType = ArticleType.HABIT;
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
-        Set<Long> userIds = Set.of(5L);
         MultipartFile[] images = getMultipartImageFiles();
 
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);

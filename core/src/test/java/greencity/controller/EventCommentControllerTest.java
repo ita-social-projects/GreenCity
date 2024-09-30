@@ -9,7 +9,6 @@ import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.service.CommentService;
 import greencity.service.UserService;
@@ -34,9 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
-import java.util.List;
 import java.util.Locale;
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
@@ -228,7 +225,6 @@ class EventCommentControllerTest {
         Long eventId = 1L;
         int pageNumber = 0;
         int pageSize = 20;
-        List<CommentStatus> statuses = List.of(CommentStatus.EDITED, CommentStatus.ORIGINAL);
         UserVO userVO = getUserVO();
 
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
