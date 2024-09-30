@@ -534,12 +534,12 @@ class CommentServiceImplTest {
         Event event = getEvent();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(commentRepo.countNotDeletedCommentsByEcoNews(event.getId())).thenReturn(1);
+        when(commentRepo.countNotDeletedCommentsByEvent(event.getId())).thenReturn(1);
 
-        assertEquals(1, commentService.countCommentsForEcoNews(event.getId()));
+        assertEquals(1, commentService.countCommentsForEvent(event.getId()));
 
-        verify(econewsRepo).findById(1L);
-        verify(commentRepo).countNotDeletedCommentsByEcoNews(event.getId());
+        verify(eventRepo).findById(1L);
+        verify(commentRepo).countNotDeletedCommentsByEvent(event.getId());
     }
 
     @Test
@@ -548,9 +548,9 @@ class CommentServiceImplTest {
 
         when(eventRepo.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.countCommentsForEcoNews(eventId));
+        assertThrows(NotFoundException.class, () -> commentService.countCommentsForEvent(eventId));
 
-        verify(econewsRepo).findById(1L);
+        verify(eventRepo).findById(1L);
     }
 
     @Test
