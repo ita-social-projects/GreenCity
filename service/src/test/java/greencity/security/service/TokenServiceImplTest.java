@@ -34,8 +34,6 @@ class TokenServiceImplTest {
     @Test
     void testPassTokenToCookies_SecureCookieEnabled_Success() {
         String accessToken = "eyJhbGciOiJIUzI1NiJ9.validtoken";
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        TokenServiceImpl tokenService = new TokenServiceImpl();
         ReflectionTestUtils.setField(tokenService, "secureCookie", true);
 
         ArgumentCaptor<Cookie> cookieCaptor = ArgumentCaptor.forClass(Cookie.class);
@@ -52,10 +50,8 @@ class TokenServiceImplTest {
     }
 
     @Test
-    void testPassTokenToCookies_SecureCookieDisabled_Success() throws Exception {
+    void testPassTokenToCookies_SecureCookieDisabled_Success(){
         String accessToken = "eyJhbGciOiJIUzI1NiJ9.validtoken";
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        TokenServiceImpl tokenService = new TokenServiceImpl();
         ReflectionTestUtils.setField(tokenService, "secureCookie", false);
 
         ArgumentCaptor<Cookie> cookieCaptor = ArgumentCaptor.forClass(Cookie.class);
@@ -74,8 +70,6 @@ class TokenServiceImplTest {
     @Test
     void testPassTokenToCookies_InvalidToken_ThrowsBadRequestException() {
         String invalidToken = "invalid.token";
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        TokenServiceImpl tokenService = new TokenServiceImpl();
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             tokenService.passTokenToCookies(invalidToken, response);
@@ -86,10 +80,8 @@ class TokenServiceImplTest {
     }
 
     @Test
-    void testPassTokenToCookies_TokenEncoding_Success() throws Exception {
+    void testPassTokenToCookies_TokenEncoding_Success() {
         String accessToken = "eyJhbGciOiJIUzI1NiJ9.tokenWithSpecialChars!@#";
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        TokenServiceImpl tokenService = new TokenServiceImpl();
         ReflectionTestUtils.setField(tokenService, "secureCookie", true);
 
         ArgumentCaptor<Cookie> cookieCaptor = ArgumentCaptor.forClass(Cookie.class);
