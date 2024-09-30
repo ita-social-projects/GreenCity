@@ -20,6 +20,7 @@ import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterAdminPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
@@ -53,9 +54,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -65,6 +74,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -725,5 +735,102 @@ class PlaceServiceImplTest {
 
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
+    }
+
+    @Test
+    void getFilteredPlacesForAdminTest() {
+        FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
+        filterDto.setName("test name");
+        filterDto.setStatus("APPROVED");
+
+        Pageable pageable = Pageable.ofSize(10);
+
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test name");
+        place.setStatus(PlaceStatus.APPROVED);
+
+        List<Place> places = List.of(place);
+        Page<Place> page = new PageImpl<>(places, pageable, places.size());
+
+        when(placeRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+
+        PageableDto<AdminPlaceDto> result = placeService.getFilteredPlacesForAdmin(filterDto, pageable);
+
+        assertEquals(1, result.getPage().size());
+        assertEquals(places.size(), result.getTotalElements());
+
+        ArgumentCaptor<Specification<Place>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        verify(placeRepo).findAll(specCaptor.capture(), eq(pageable));
+
+        Specification<Place> capturedSpec = specCaptor.getValue();
+        assertNotNull(capturedSpec);
+    }
+
+    @Test
+    void getFilteredPlacesForAdminWithAllFiltersTest() {
+        FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
+        filterDto.setId("1");
+        filterDto.setName("test name");
+        filterDto.setStatus("APPROVED");
+        filterDto.setAuthor("author name");
+        filterDto.setAddress("test address");
+        Pageable pageable = Pageable.ofSize(10);
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test name");
+        place.setStatus(PlaceStatus.APPROVED);
+        List<Place> places = List.of(place);
+        Page<Place> page = new PageImpl<>(places, pageable, places.size());
+
+        when(placeRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        Root<Place> root = mock(Root.class);
+        Join<Object, Object> authorJoin = mock(Join.class);
+        Join<Object, Object> locationJoin = mock(Join.class);
+
+        when(root.join("author")).thenReturn(authorJoin);
+        when(root.join("location")).thenReturn(locationJoin);
+
+        when(authorJoin.get("name")).thenReturn(mock(Path.class));
+        when(locationJoin.get("address")).thenReturn(mock(Path.class));
+        when(root.get("id")).thenReturn(mock(Path.class));
+        when(root.get("name")).thenReturn(mock(Path.class));
+        when(root.get("status")).thenReturn(mock(Path.class));
+
+        Predicate idPredicate = mock(Predicate.class);
+        Predicate namePredicate = mock(Predicate.class);
+        Predicate statusPredicate = mock(Predicate.class);
+        Predicate authorPredicate = mock(Predicate.class);
+        Predicate addressPredicate = mock(Predicate.class);
+        Predicate combinedPredicate = mock(Predicate.class);
+
+        when(cb.equal(root.get("id"), "1")).thenReturn(idPredicate);
+        when(cb.like(root.get("name"), "%test name%")).thenReturn(namePredicate);
+        when(cb.equal(root.get("status"), PlaceStatus.APPROVED)).thenReturn(statusPredicate);
+        when(cb.like(authorJoin.get("name"), "%author name%")).thenReturn(authorPredicate);
+        when(cb.like(locationJoin.get("address"), "%test address%")).thenReturn(addressPredicate);
+        when(cb.and(idPredicate, namePredicate, statusPredicate, authorPredicate, addressPredicate))
+            .thenReturn(combinedPredicate);
+
+        PageableDto<AdminPlaceDto> result = placeService.getFilteredPlacesForAdmin(filterDto, pageable);
+        assertEquals(1, result.getPage().size());
+        assertEquals(places.size(), result.getTotalElements());
+
+        ArgumentCaptor<Specification<Place>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        verify(placeRepo).findAll(specCaptor.capture(), eq(pageable));
+
+        Specification<Place> capturedSpec = specCaptor.getValue();
+
+        Predicate predicate = capturedSpec.toPredicate(root, query, cb);
+
+        assertNotNull(predicate);
+        verify(cb).equal(root.get("id"), "1");
+        verify(cb).like(root.get("name"), "%test name%");
+        verify(cb).equal(root.get("status"), PlaceStatus.APPROVED);
+        verify(cb).like(authorJoin.get("name"), "%author name%");
+        verify(cb).like(locationJoin.get("address"), "%test address%");
     }
 }

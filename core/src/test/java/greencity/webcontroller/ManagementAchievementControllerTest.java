@@ -70,7 +70,7 @@ class ManagementAchievementControllerTest {
             3, 0, false, true, true, false);
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
         when(achievementService.findAll(paging)).thenReturn(allAchievements);
-        when(achievementCategoryService.findAll()).thenReturn(achievementCategoryList);
+        when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
         this.mockMvc.perform(get(link)
             .param("page", "0")
             .param("size", "3"))
@@ -79,7 +79,7 @@ class ManagementAchievementControllerTest {
             .andExpect(view().name("core/management_achievement"))
             .andExpect(status().isOk());
         verify(achievementService).findAll(paging);
-        verify(achievementCategoryService).findAll();
+        verify(achievementCategoryService).findAllForManagement();
     }
 
     @Test
@@ -91,7 +91,7 @@ class ManagementAchievementControllerTest {
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
         List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
         when(achievementService.searchAchievementBy(pageable, "query")).thenReturn(allAchievements);
-        when(achievementCategoryService.findAll()).thenReturn(achievementCategoryList);
+        when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
         when(languageService.getAllLanguages()).thenReturn(languages);
         this.mockMvc.perform(get(link + "?query=query")
             .param("page", "0")
@@ -102,7 +102,7 @@ class ManagementAchievementControllerTest {
             .andExpect(view().name("core/management_achievement"))
             .andExpect(status().isOk());
         verify(achievementService).searchAchievementBy(pageable, "query");
-        verify(achievementCategoryService).findAll();
+        verify(achievementCategoryService).findAllForManagement();
         verify(languageService).getAllLanguages();
     }
 

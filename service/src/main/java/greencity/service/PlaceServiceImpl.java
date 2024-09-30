@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import greencity.dto.openhours.OpenHoursDto;
+import greencity.dto.place.FilterAdminPlaceDto;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
@@ -524,6 +526,41 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable) {
         Page<Place> list = placeRepo.findAll(new PlaceFilter(filterDto), pageable);
+        List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(list);
+        return new PageableDto<>(
+            placeDtos,
+            list.getTotalElements(),
+            list.getPageable().getPageNumber(),
+            list.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Dmytro Dmytruk
+     */
+    @Override
+    public PageableDto<AdminPlaceDto> getFilteredPlacesForAdmin(FilterAdminPlaceDto filterDto, Pageable pageable) {
+        Page<Place> list = placeRepo.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Optional.ofNullable(filterDto.getId())
+                .filter(id -> !id.isEmpty())
+                .ifPresent(id -> predicates.add(cb.equal(root.get("id"), id)));
+            Optional.ofNullable(filterDto.getName())
+                .filter(name -> !name.isEmpty())
+                .ifPresent(name -> predicates.add(cb.like(root.get("name"), "%" + name + "%")));
+            Optional.ofNullable(filterDto.getStatus())
+                .filter(status -> !status.isEmpty())
+                .ifPresent(status -> predicates.add(cb.equal(root.get("status"), PlaceStatus.valueOf(status))));
+            Optional.ofNullable(filterDto.getAuthor())
+                .filter(author -> !author.isEmpty())
+                .ifPresent(author -> predicates.add(cb.like(root.join("author").get("name"), "%" + author + "%")));
+            Optional.ofNullable(filterDto.getAddress())
+                .filter(address -> !address.isEmpty())
+                .ifPresent(
+                    address -> predicates.add(cb.like(root.join("location").get("address"), "%" + address + "%")));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(list);
         return new PageableDto<>(
             placeDtos,

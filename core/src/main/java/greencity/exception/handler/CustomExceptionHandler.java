@@ -56,8 +56,6 @@ import java.util.stream.Collectors;
 
 /**
  * Custom exception handler.
- *
- * @author Marian Milian
  */
 @AllArgsConstructor
 @RestControllerAdvice

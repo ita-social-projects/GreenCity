@@ -78,17 +78,38 @@ public interface AchievementService {
      * Retrieves a list of achievements based on the given type and the principal's
      * email.
      *
-     * @param principalEmail    The email of the principal (usually the logged-in
-     *                          user) for whom the achievements need to be fetched.
-     * @param achievementStatus The status of the achievements to filter by (e.g.,
-     *                          "ACHIEVED", "UNACHIEVED").
+     * @param principalEmail        The email of the principal (usually the
+     *                              logged-in user) for whom the achievements need
+     *                              to be fetched.
+     * @param achievementStatus     The status of the achievements to filter by
+     *                              (e.g., "ACHIEVED", "UNACHIEVED").
+     * @param achievementCategoryId The ID of the achievement category to filter by
+     *                              category.
      * @return List AchievementVO Returns a list of achievements matching the given
      *         criteria.
      */
-    List<AchievementVO> findAllByType(String principalEmail, AchievementStatus achievementStatus);
+    List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId);
 
     /**
      * Method for achieve.
      */
     void achieve(ActionDto user);
+
+    /**
+     * Retrieves a quantity of achievements based on the given type and the
+     * principal's email.
+     *
+     * @param principalEmail        The email of the principal (usually the
+     *                              logged-in user) for whom the achievements need
+     *                              to be fetched.
+     * @param achievementStatus     The status of the achievements to filter by
+     *                              (e.g., "ACHIEVED", "UNACHIEVED").
+     * @param achievementCategoryId The ID of the achievement category to filter by
+     *                              category.
+     * @return Integer Returns a quantity of achievements matching the given
+     *         criteria.
+     */
+    Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+        Long achievementCategoryId);
 }

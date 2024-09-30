@@ -13,6 +13,7 @@ import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
+import greencity.entity.CommentImages;
 import greencity.entity.EcoNews;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -46,6 +47,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -67,6 +70,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepo commentRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
+    private final FileService fileService;
     private final SimpMessagingTemplate messagingTemplate;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
@@ -81,7 +85,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
-        AddCommentDtoRequest addCommentDtoRequest, UserVO userVO, Locale locale) {
+        AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO, Locale locale) {
         if (getArticleAuthor(articleType, articleId) == null) {
             throw new NotFoundException("Article author not found");
         }
@@ -109,6 +113,16 @@ public class CommentServiceImpl implements CommentService {
             comment.setParentComment(parentComment);
             createCommentReplyNotification(articleType, articleId, comment,
                 modelMapper.map(parentComment.getUser(), UserVO.class), locale);
+        }
+
+        if (images != null && images.length > 0 && images[0] != null) {
+            List<CommentImages> commentImages = new ArrayList<>();
+            for (MultipartFile image : images) {
+                if (image != null) {
+                    commentImages.add(CommentImages.builder().comment(comment).link(fileService.upload(image)).build());
+                }
+            }
+            comment.setAdditionalImages(commentImages);
         }
 
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
@@ -279,6 +293,12 @@ public class CommentServiceImpl implements CommentService {
                 case COMMENT -> NotificationType.HABIT_COMMENT;
                 case COMMENT_REPLY -> NotificationType.HABIT_COMMENT_REPLY;
                 case COMMENT_USER_TAG -> NotificationType.HABIT_COMMENT_USER_TAG;
+                default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
+            };
+            case ECO_NEWS -> switch (actionType) {
+                case COMMENT -> NotificationType.ECONEWS_COMMENT;
+                case COMMENT_REPLY -> NotificationType.ECONEWS_COMMENT_REPLY;
+                case COMMENT_USER_TAG -> NotificationType.ECONEWS_COMMENT_USER_TAG;
                 default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
             };
             case ECO_NEWS -> switch (actionType) {

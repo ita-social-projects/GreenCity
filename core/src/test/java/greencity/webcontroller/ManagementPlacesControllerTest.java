@@ -23,8 +23,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -63,23 +61,21 @@ class ManagementPlacesControllerTest {
 
     @Test
     void getAllPlaces() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
         List<AdminPlaceDto> placeDtos = Collections.singletonList(new AdminPlaceDto());
         PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
-        when(placeService.findAll(pageable, null)).thenReturn(adminPlaceDtoPageableDto);
+        when(placeService.getFilteredPlacesForAdmin(any(), any())).thenReturn(adminPlaceDtoPageableDto);
         when(categoryService.findAllCategoryDto())
             .thenReturn(Collections.singletonList(new CategoryDto("test", "test", null)));
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
         this.mockMvc.perform(get("/management/places")
-            .param("page", "0")
-            .param("size", "10"))
+            .param("page", "0"))
             .andExpect(view().name("core/management_places"))
             .andExpect(model().attribute("pageable", adminPlaceDtoPageableDto))
             .andExpect(status().isOk());
 
-        verify(placeService).findAll(pageable, null);
+        verify(placeService).getFilteredPlacesForAdmin(any(), any());
         verify(categoryService).findAllCategoryDto();
         verify(specificationService).findAllSpecificationDto();
     }

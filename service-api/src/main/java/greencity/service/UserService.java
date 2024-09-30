@@ -137,4 +137,12 @@ public interface UserService {
      * @author Anton Bondar.
      */
     void updateUserRating(Long userId, Double rating);
+
+    /**
+     * Find list of {@link UserVO}'s by emails.
+     *
+     * @param emails user emails.
+     * @return list of {@link UserVO}.
+     */
+    List<UserVO> findByEmails(List<String> emails);
 }

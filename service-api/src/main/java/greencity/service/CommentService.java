@@ -10,6 +10,7 @@ import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Locale;
 
 public interface CommentService {
@@ -25,7 +26,7 @@ public interface CommentService {
      * @author Dmytro Fedotov
      */
     AddCommentDtoResponse save(ArticleType articleType, Long articleId, AddCommentDtoRequest addCommentDtoRequest,
-        UserVO userVO, Locale locale);
+        MultipartFile[] images, UserVO userVO, Locale locale);
 
     /**
      * Method to get certain comment specified by commentId.

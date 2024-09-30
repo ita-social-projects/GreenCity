@@ -1,5 +1,7 @@
 package greencity.dto.comment;
 
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +12,7 @@ import lombok.Setter;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,4 +32,8 @@ public class AddCommentDtoResponse {
 
     @CreatedDate
     private LocalDateTime createdDate;
+
+    @Nullable
+    @Max(5)
+    private List<String> additionalImages;
 }

@@ -30,6 +30,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Optional<User> findByEmail(String email);
 
     /**
+     * Find list of {@link User}'s by emails.
+     *
+     * @param emails user emails.
+     * @return list of {@link User}.
+     */
+    List<User> findAllByEmailIn(List<String> emails);
+
+    /**
      * Find all {@link UserManagementVO}.
      *
      * @param filter   filter parameters

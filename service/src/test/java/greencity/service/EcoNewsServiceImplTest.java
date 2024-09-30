@@ -23,12 +23,12 @@ import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
-import greencity.enums.NotificationType;
-import greencity.enums.RatingCalculationEnum;
-import greencity.enums.TagType;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.NotificationType;
+import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -36,19 +36,24 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
-import greencity.repository.AchievementCategoryRepo;
-import greencity.repository.AchievementRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
-import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -64,8 +69,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-import java.net.MalformedURLException;
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -90,8 +93,6 @@ class EcoNewsServiceImplTest {
     @Mock
     ModelMapper modelMapper;
     @Mock
-    NewsSubscriberService newsSubscriberService;
-    @Mock
     RestClient restClient;
     @Mock
     TagsService tagService;
@@ -108,30 +109,13 @@ class EcoNewsServiceImplTest {
     @Mock
     private RatingCalculation ratingCalculation;
     @Mock
-    private AchievementService achievementService;
-    @Mock
     private AchievementCalculation achievementCalculation;
-    @InjectMocks
-    private EcoNewsServiceImpl ecoNewsService;
-    @Mock
-    private UserActionService userActionService;
-    @Mock
-    private AchievementCategoryService achievementCategoryService;
-    @Mock
-    private UserAchievementRepo userAchievementRepo;
-    @Mock
-    private AchievementRepo achievementRepo;
-    @Mock
-    private UserRepo userRepo;
-    @Mock
-    private AchievementCategoryRepo achievementCategoryRepo;
-    @Mock
-    private RatingCalculationEnum ratingCalculationEnum;
-    @Mock
-    private CommentService commentService;
     @Mock
     private NotificationService notificationService;
-
+    @Mock
+    private CommentService commentService;
+    @InjectMocks
+    private EcoNewsServiceImpl ecoNewsService;
     @Mock
     private UserNotificationService userNotificationService;
 
@@ -152,7 +136,6 @@ class EcoNewsServiceImplTest {
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
-        when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
@@ -340,9 +323,8 @@ class EcoNewsServiceImplTest {
         EcoNewsDtoManagement ecoNewsDtoManagement = ModelUtils.getEcoNewsDtoManagement();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
-        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         ecoNewsService.update(ecoNewsDtoManagement, any(MultipartFile.class));
         assertEquals(ecoNewsDtoManagement.getTitle(), ecoNews.getTitle());
@@ -355,7 +337,7 @@ class EcoNewsServiceImplTest {
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
         MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
@@ -381,7 +363,7 @@ class EcoNewsServiceImplTest {
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
         MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, EcoNewsGenericDto.class)).thenReturn(ecoNewsDto);
         List<TagVO> tags = ModelUtils.getEcoNewsVO().getTags();
@@ -406,7 +388,7 @@ class EcoNewsServiceImplTest {
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         assertThrows(BadRequestException.class, () -> ecoNewsService.update(updateEcoNewsDto, null, user));
 
