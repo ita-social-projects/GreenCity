@@ -244,6 +244,46 @@ class CommentServiceImplTest {
     }
 
     @Test
+    void saveEventComment() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = ModelUtils.getEvent().setOrganizer(user);
+        AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO();
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.ofNullable(event));
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(commentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(userVO, CommentAuthorDto.class)).thenReturn(commentAuthorDto);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
+        when(modelMapper.map(any(Comment.class), eq(AddCommentDtoResponse.class)))
+            .thenReturn(getAddCommentDtoResponse());
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        MultipartFile[] images = getMultipartImageFiles();
+
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.save(ArticleType.EVENT, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
+        assertEquals(CommentStatus.ORIGINAL, comment.getStatus());
+
+        verify(eventRepo, times(5)).findById(anyLong());
+        verify(commentRepo).save(any(Comment.class));
+        verify(commentRepo).findById(anyLong());
+        verify(userRepo, times(3)).findById(anyLong());
+        verify(modelMapper).map(userVO, CommentAuthorDto.class);
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(addCommentDtoRequest, Comment.class);
+        verify(modelMapper).map(any(Comment.class), eq(AddCommentDtoResponse.class));
+    }
+
+    @Test
     void testSaveThrowsNotFoundExceptionWhenArticleAuthorIsNull() {
         ArticleType articleType = ArticleType.HABIT;
         Long articleId = 1L;

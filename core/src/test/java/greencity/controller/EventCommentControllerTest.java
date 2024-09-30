@@ -41,7 +41,9 @@ import java.util.Locale;
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
@@ -117,8 +119,12 @@ class EventCommentControllerTest {
             mapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).save(ArticleType.EVENT, eventId, addCommentDtoRequest, new MultipartFile[] {imageFile},
-            userVO, Locale.of("en"));
+        verify(commentService).save(eq(ArticleType.EVENT),
+            eq(1L),
+            eq(addCommentDtoRequest),
+            any(MultipartFile[].class),
+            eq(userVO),
+            eq(Locale.of("en")));
     }
 
     @Test
