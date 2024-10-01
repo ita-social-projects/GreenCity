@@ -16,6 +16,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.entity.RatingPoints;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -26,6 +27,7 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.RatingPointsRepo;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,7 +87,8 @@ class EventCommentServiceImplTest {
     private AchievementCalculation achievementCalculation;
     @Mock
     private UserRepo userRepo;
-
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
     @Mock
     private SimpMessagingTemplate messagingTemplate;
 
@@ -498,7 +501,9 @@ class EventCommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         EventComment comment = getEventComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 

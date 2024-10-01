@@ -19,7 +19,6 @@ import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.CommentStatus;
 import greencity.enums.NotificationType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -30,6 +29,7 @@ import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +61,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
     private final UserRepo userRepo;
+    private final RatingPointsRepo ratingPointsRepo;
     @Value("${client.address}")
     private String clientAddress;
 
@@ -100,7 +101,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         EventCommentVO eventCommentVO = eventCommentVOMapper.convert(eventComment);
         sendNotificationToTaggedUser(eventVO, userVO, eventCommentVO, locale);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         userNotificationService.createNotification(eventVO.getOrganizer(), userVO, NotificationType.EVENT_COMMENT,
@@ -191,7 +192,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventComment.getComments()
                 .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, user);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_COMMENT_OR_REPLY"), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
@@ -258,7 +259,8 @@ public class EventCommentServiceImpl implements EventCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
             userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
@@ -267,7 +269,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
             notificationService.sendEmailNotificationLikes(GeneralEmailMessage.builder()
                 .email(comment.getUser().getEmail())
                 .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)

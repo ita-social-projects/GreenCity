@@ -19,6 +19,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -33,6 +34,7 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.RatingPointsRepo;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import java.lang.reflect.InvocationTargetException;
@@ -128,6 +130,8 @@ class EventServiceImplTest {
     private NotificationService notificationService;
     @Mock
     private UserNotificationService userNotificationService;
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
 
     @Test
     void save() {
@@ -137,7 +141,9 @@ class EventServiceImplTest {
         Event event = ModelUtils.getEvent();
         List<Tag> tags = ModelUtils.getEventTags();
         User user = ModelUtils.getUser();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("CREATE_EVENT").points(40).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT")).thenReturn(ratingPoints);
         when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);

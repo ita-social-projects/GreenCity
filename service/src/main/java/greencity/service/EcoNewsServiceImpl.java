@@ -19,6 +19,7 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.*;
+import greencity.repository.RatingPointsRepo;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -65,6 +66,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final UserService userService;
     private final CommentService commentService;
     private final UserNotificationService userNotificationService;
+    private final RatingPointsRepo ratingPointsRepo;
 
     private static final String ECO_NEWS_TITLE = "title";
     private static final String ECO_NEWS_JOIN_TAG = "tags";
@@ -83,7 +85,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         UserVO userVO = userService.findById(toSave.getAuthor().getId());
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"),
+            modelMapper.map(toSave, UserVO.class));
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(email)
             .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
@@ -103,7 +106,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
         final EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
         UserVO user = userService.findByEmail(email);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
@@ -221,7 +224,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_NEWS, user);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_NEWS"), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
 
@@ -397,7 +400,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (isLiked) {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
             if (isAuthor) {
@@ -405,7 +409,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             }
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
 

@@ -156,6 +156,7 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserShoppingListItem;
+import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
@@ -3100,5 +3101,13 @@ public class ModelUtils {
             .event(getEventVO())
             .status(String.valueOf(CommentStatus.ORIGINAL))
             .build();
+    }
+
+    public static RatingPoints getRatingPointsUndoAcquiredHabit14Days() {
+        return RatingPoints.builder().id(1L).name("UNDO_ACQUIRED_HABIT_14_DAYS").points(-20).build();
+    }
+
+    public static RatingPoints getRatingPointsAcquiredHabit14Days() {
+        return RatingPoints.builder().id(1L).name("ACQUIRED_HABIT_14_DAYS").points(20).build();
     }
 }
