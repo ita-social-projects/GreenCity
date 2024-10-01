@@ -1,6 +1,5 @@
 package greencity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.achievement.AchievementPostDto;
@@ -21,7 +20,6 @@ import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -30,7 +28,6 @@ import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
@@ -48,8 +45,6 @@ import greencity.entity.User;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
 import greencity.enums.EventStatus;
-import greencity.enums.NotificationType;
-import greencity.enums.ProjectName;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
@@ -66,7 +61,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public class ModelUtils {
@@ -153,14 +147,6 @@ public class ModelUtils {
 
     public static Principal getPrincipal() {
         return () -> "test@gmail.com";
-    }
-
-    public static NewsSubscriberRequestDto getNewsSubscriberRequestDto() {
-        return new NewsSubscriberRequestDto("test@gmail.com");
-    }
-
-    public static ObjectMapper getObjectMapper() {
-        return new ObjectMapper();
     }
 
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
@@ -368,15 +354,6 @@ public class ModelUtils {
         return ActionDto.builder().build();
     }
 
-    public static Pageable getPageable() {
-        return PageRequest.of(0, 20);
-    }
-
-    public static FilterNotificationDto getFilterNotificationDto() {
-        return FilterNotificationDto.builder().projectName(new ProjectName[] {})
-            .notificationType(new NotificationType[] {}).build();
-    }
-
     public static PageableAdvancedDto<EventDto> getEventDtoPageableAdvancedDto(Pageable pageable) {
         return new PageableAdvancedDto<>(
             ModelUtils.getListEventDto(),
@@ -490,5 +467,12 @@ public class ModelUtils {
             commentDtos.size(),
             1,
             1);
+    }
+
+    public static List<AddressDto> getAddressesDtoList() {
+        return List.of(
+            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUa("Львів").cityEn("Lviv").build());
     }
 }

@@ -60,20 +60,23 @@ public class SecurityConfig {
     private static final String ATTENDERS = "/attenders";
     private static final String ORGANIZERS = "/organizers";
     private static final String RATINGS = "/ratings";
-    private static final String EVENTS_COMMENTS = EVENTS + EVENT_ID + COMMENTS;
+    private static final String EVENTS_ID_COMMENTS = EVENTS + EVENT_ID + COMMENTS;
+    private static final String EVENTS_COMMENTS = EVENTS + COMMENTS;
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
     private static final String FACT_OF_THE_DAY = "/fact-of-the-day";
     private static final String RANDOM = "/random";
+    private static final String SUBSCRIPTIONS = "/subscriptions";
     private static final String ACTIVE = "/active";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
-    private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
-        + "custom-shopping-list-items";
+    private static final String CUSTOM_SHOPPING_LIST_URL = CUSTOM_SHOPPING_LIST + "/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
     private static final String ACHIEVEMENTS = "/achievements";
+    private static final String NOTIFICATIONS = "/notifications";
+    private static final String NOTIFICATION_ID = "/{notificationId}";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -94,6 +97,7 @@ public class SecurityConfig {
      *
      * @param http {@link HttpSecurity}
      */
+    @SuppressWarnings("java:S4502")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
@@ -171,11 +175,13 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + COMMENT_ID + LIKES + COUNT,
                     ECO_NEWS + COMMENTS + ACTIVE,
                     ECO_NEWS_COMMENTS + COUNT,
-                    EVENTS_COMMENTS,
+                    EVENTS_ID_COMMENTS,
+                    EVENTS_ID_COMMENTS + COMMENT_ID,
                     EVENTS_COMMENTS + COMMENT_ID,
-                    EVENTS_COMMENTS + COMMENT_ID + COUNT,
-                    EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES,
+                    EVENTS_ID_COMMENTS + COMMENT_ID + COUNT,
+                    EVENTS_ID_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
                     EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES + COUNT,
+                    EVENTS_COMMENTS + LIKE,
                     EVENTS_COMMENTS + COMMENT_ID + LIKES + COUNT,
                     EVENTS,
                     EVENTS + "/addresses",
@@ -196,8 +202,12 @@ public class SecurityConfig {
                     "/database/backupFiles")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
+                    SUBSCRIPTIONS,
                     "/place/getListPlaceLocationByMapsBounds",
                     "/place/filter")
+                .permitAll()
+                .requestMatchers(HttpMethod.DELETE,
+                    SUBSCRIPTIONS + "/{unsubscribeToken}")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,
                     ACHIEVEMENTS,
@@ -225,7 +235,6 @@ public class SecurityConfig {
                     "/habit/statistic/acquired/count",
                     "/habit/statistic/in-progress/count",
                     FACT_OF_THE_DAY + RANDOM + "/by-tags",
-                    "/newsSubscriber/unsubscribe",
                     "/place/{status}",
                     "/place/v2/filteredPlacesCategories",
                     "/social-networks/image",
@@ -259,9 +268,7 @@ public class SecurityConfig {
                     FRIENDS + "/{userId}/all-user-friends",
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
-                    "/notification",
-                    "/notification/all",
-                    "/notification/new",
+                    NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
@@ -272,12 +279,14 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS_COMMENTS,
                     ECO_NEWS_COMMENTS + COMMENT_ID + LIKES,
-                    EVENTS_COMMENTS,
-                    EVENTS_COMMENTS + COMMENT_ID + LIKES,
+                    EVENTS_ID_COMMENTS,
+                    EVENTS_COMMENTS + LIKE + COMMENT_ID,
                     EVENTS,
                     EVENTS + EVENT_ID + ATTENDERS,
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
+                    NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
+                    NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     "/files",
                     HABIT_ASSIGN_ID,
@@ -288,7 +297,6 @@ public class SecurityConfig {
                     "/habit/like",
                     HABITS + "/{habitId}/comments",
                     HABITS + "/comments/like",
-                    "/newsSubscriber",
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
@@ -321,6 +329,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH,
                     HABITS + COMMENTS,
                     ECO_NEWS + COMMENTS,
+                    EVENTS_COMMENTS + COMMENT_ID,
+                    ECO_NEWS + COMMENTS,
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
                     HABIT_ASSIGN_ID,
@@ -331,8 +341,6 @@ public class SecurityConfig {
                     USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
-                    "/notification/unread/{notificationId}",
-                    "/notification/view/{notificationId}",
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
@@ -359,10 +367,9 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    "/notification/{notificationId}")
+                    NOTIFICATIONS + NOTIFICATION_ID)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
-                    "/newsSubscriber",
                     COMMENTS,
                     COMMENTS + "/{id}",
                     "/user/all",

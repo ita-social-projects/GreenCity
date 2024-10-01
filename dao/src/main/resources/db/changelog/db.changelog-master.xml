@@ -234,5 +234,8 @@
     <include file="db/changelog/logs/ch-add-columns-achievement-categories-Herchanivska-5.xml"/>
     <include file="db/changelog/logs/ch-update-achievement-categories-Herchanivska-6.xml"/>
     <include file="db/changelog/logs/ch-update-columns-achievement-categories-Herchanivska-7.xml"/>
+    <include file="db/changelog/logs/ch-change-table-subscriptions-Rozhko.xml"/>
+    <include file="db/changelog/logs/ch-move-data-from-events_comments-to-comments.xml"/>
+    <include file="db/changelog/logs/ch-delete-tables-related-to-event-comments.xml"/>
     <include file="db/changelog/logs/ch-add-table-rating_points-Chekhovska.xml"/>
 </databaseChangeLog>

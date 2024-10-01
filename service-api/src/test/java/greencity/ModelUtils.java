@@ -2,11 +2,9 @@ package greencity;
 
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsForSendEmailDto;
-import greencity.dto.event.EventAuthorDto;
+import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
@@ -15,6 +13,7 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -29,6 +28,7 @@ import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.UserReceivedCommentMessage;
 import greencity.message.UserReceivedCommentReplyMessage;
 import greencity.message.UserTaggedInCommentMessage;
+import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.MalformedURLException;
@@ -114,43 +114,28 @@ public class ModelUtils {
             Arrays.asList("Новини", "News", "Новины"));
     }
 
-    public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto() {
-        return EcoNewsForSendEmailDto.builder()
-            .unsubscribeToken("string")
-            .creationDate(ZonedDateTime.now())
-            .imagePath("string")
-            .author(ModelUtils.getPlaceAuthorDto())
-            .text("string")
-            .source("string")
-            .title("string")
+    public static InterestingEcoNewsDto getInterestingEcoNewsDto() {
+        return InterestingEcoNewsDto.builder()
+            .ecoNewsList(getShortEcoNewsDto())
+            .subscribers(getSubscribers())
             .build();
     }
 
-    public static EventCommentForSendEmailDto getEventCommentForSendEmailDto() {
-        return EventCommentForSendEmailDto.builder()
-            .id(1L)
-            .organizer(ModelUtils.getEventAuthorDto())
-            .createdDate(LocalDateTime.now())
-            .author(ModelUtils.getEventCommentAuthorDto())
-            .text("text")
-            .eventId(1L)
-            .build();
+    private static List<SubscriberDto> getSubscribers() {
+        return List.of(SubscriberDto.builder()
+            .email("email@gmail.com")
+            .name("Ilia")
+            .unsubscribeToken(UUID.randomUUID())
+            .build());
     }
 
-    public static EventAuthorDto getEventAuthorDto() {
-        return EventAuthorDto.builder()
-            .id(1L)
-            .name("Inna")
-            .organizerRating(1.0)
-            .build();
-    }
-
-    public static EventCommentAuthorDto getEventCommentAuthorDto() {
-        return EventCommentAuthorDto.builder()
-            .id(ModelUtils.getUserVO().getId())
-            .name(ModelUtils.getUserVO().getName().trim())
-            .userProfilePicturePath(ModelUtils.getUserVO().getProfilePicturePath())
-            .build();
+    private static List<ShortEcoNewsDto> getShortEcoNewsDto() {
+        return List.of(ShortEcoNewsDto.builder()
+            .ecoNewsId(1L)
+            .imagePath("https://google.com")
+            .text("Text")
+            .title("Title")
+            .build());
     }
 
     public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();

@@ -33,10 +33,11 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "    AND uach.habit_id = :habitId"
         + ") "
         + "AND ach.condition > ("
-        + "    SELECT ua.count "
+        + "    SELECT MAX(ua.count) "
         + "    FROM user_actions ua "
         + "    WHERE ua.user_id = :userId "
-        + "    AND ua.achievement_category_id = :achievementCategoryId"
+        + "    AND ua.achievement_category_id = :achievementCategoryId "
+        + "    AND ua.habit_id = :habitId"
         + ") "
         + "AND ach.achievement_category_id = :achievementCategoryId ",
         nativeQuery = true)
