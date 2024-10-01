@@ -18,7 +18,12 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.*;
+import greencity.dto.comment.AddCommentDtoRequest;
+import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.AmountCommentLikesDto;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.CommentVO;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -29,8 +34,6 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.comment.AmountCommentLikesDto;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -42,11 +45,6 @@ import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentDto;
-import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -133,7 +131,6 @@ import greencity.entity.CommentImages;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
-import greencity.entity.VerifyEmail;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.FavoritePlace;
@@ -157,9 +154,9 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserShoppingListItem;
+import greencity.entity.VerifyEmail;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
-import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -177,6 +174,11 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
+import org.hibernate.sql.results.internal.TupleElementImpl;
+import org.hibernate.sql.results.internal.TupleImpl;
+import org.hibernate.sql.results.internal.TupleMetadata;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -201,11 +203,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.hibernate.sql.results.internal.TupleElementImpl;
-import org.hibernate.sql.results.internal.TupleImpl;
-import org.hibernate.sql.results.internal.TupleMetadata;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
@@ -1264,14 +1261,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
-        return EcoNewsCommentAuthorDto.builder()
-            .id(getUser().getId())
-            .name(getUser().getName().trim())
-            .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
     public static PlaceByBoundsDto getPlaceByBoundsDtoForFindAllTest() {
         return PlaceByBoundsDto.builder()
             .id(1L)
@@ -2314,84 +2303,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddEventCommentDtoResponse getAddEventCommentDtoResponse() {
-        return AddEventCommentDtoResponse.builder()
-            .id(getEventComment().getId())
-            .author(getEventCommentAuthorDto())
-            .text(getEcoNewsComment().getText())
-            .build();
-    }
-
-    public static EventComment getEventComment() {
-        return EventComment.builder()
-            .id(1L)
-            .text("text")
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUser())
-            .event(getEvent())
-            .status(CommentStatus.ORIGINAL)
-            .comments(List.of(getSubEventComment()))
-            .build();
-    }
-
-    public static EventComment getSubEventComment() {
-        return EventComment.builder()
-            .id(4L)
-            .text("SubEventComment")
-            .status(CommentStatus.ORIGINAL)
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUser())
-            .event(getEvent())
-            .build();
-    }
-
-    public static EventComment getEventCommentWithReplies() {
-        User user = getUser();
-        user.setProfilePicturePath("path-to-picture");
-        return EventComment.builder()
-            .id(1L)
-            .text("Some comment")
-            .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
-            .status(CommentStatus.ORIGINAL)
-            .user(user)
-            .event(getEvent())
-            .parentComment(EventComment.builder()
-                .id(12L)
-                .status(CommentStatus.ORIGINAL)
-                .build())
-            .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
-            .currentUserLiked(true)
-            .usersLiked(Set.of(user, new User()))
-            .build();
-    }
-
-    public static EventCommentAuthorDto getEventCommentAuthorDto() {
-        return EventCommentAuthorDto.builder()
-            .id(getUser().getId())
-            .name(getUser().getName().trim())
-            .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
-        return new AddEventCommentDtoRequest("text", 100L);
-    }
-
-    public static EventCommentDto getEventCommentDto() {
-        return EventCommentDto.builder()
-            .id(1L)
-            .status(CommentStatus.ORIGINAL.toString())
-
-            .author(getEventCommentAuthorDto())
-            .text("text")
-            .likes(0)
-            .numberOfReplies(0)
-            .currentUserLiked(false)
-            .build();
-    }
-
     public static EventVO getEventVO() {
         return EventVO.builder()
             .id(1L)
@@ -2405,6 +2316,7 @@ public class ModelUtils {
     public static Comment getComment() {
         return Comment.builder()
             .id(1L)
+            .user(getUser())
             .articleType(ArticleType.HABIT)
             .articleId(10L)
             .text("text")
@@ -3010,33 +2922,6 @@ public class ModelUtils {
             .requesterId(1L)
             .friendStatus("FRIEND")
             .chatId(1L)
-            .build();
-    }
-
-    public static EventCommentVO getEventCommentVO() {
-        return EventCommentVO.builder()
-            .id(1L)
-            .text("text")
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUserVO())
-            .event(getEventVO())
-            .parentComment(EventCommentVO.builder()
-                .id(5L)
-                .build())
-            .status(String.valueOf(CommentStatus.ORIGINAL))
-            .build();
-    }
-
-    public static EventCommentVO getEventCommentVOWithTaggedUser() {
-        return EventCommentVO.builder()
-            .id(1L)
-            .text("test data-userid=\"5\" test")
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUserVO())
-            .event(getEventVO())
-            .status(String.valueOf(CommentStatus.ORIGINAL))
             .build();
     }
 
