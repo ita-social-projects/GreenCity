@@ -64,6 +64,14 @@ public interface CommentService {
     int countCommentsForEcoNews(Long ecoNewsId);
 
     /**
+     * Method to count not deleted comments for eco-news.
+     *
+     * @param eventId to specify article
+     * @return {@code int} amount of comments
+     */
+    int countCommentsForEvent(Long eventId);
+
+    /**
      * Method to count not deleted replies for to certain {@link CommentVO}
      * specified by id.
      *
