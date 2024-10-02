@@ -371,6 +371,8 @@ class NotificationServiceImplTest {
                 EmailPreference.INVITES, EmailPreferencePeriodicity.DAILY)).thenReturn(false);
             when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
                 EmailPreference.INVITES, EmailPreferencePeriodicity.WEEKLY)).thenReturn(true);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY)).thenReturn(false);
 
             notificationService.sendFriendRequestScheduledEmail();
             ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
@@ -403,6 +405,10 @@ class NotificationServiceImplTest {
                 EmailPreference.COMMENTS, EmailPreferencePeriodicity.TWICE_A_DAY)).thenReturn(false);
             when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
                 EmailPreference.COMMENTS, EmailPreferencePeriodicity.DAILY)).thenReturn(true);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY)).thenReturn(false);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY)).thenReturn(false);
 
             notificationService.sendCommentReplyScheduledEmail();
             ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
@@ -433,6 +439,12 @@ class NotificationServiceImplTest {
                 .thenReturn(Collections.singletonList(notification));
             when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
                 EmailPreference.COMMENTS, EmailPreferencePeriodicity.TWICE_A_DAY)).thenReturn(true);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.DAILY)).thenReturn(false);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY)).thenReturn(false);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY)).thenReturn(false);
 
             notificationService.sendCommentScheduledEmail();
             ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
