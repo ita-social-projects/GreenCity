@@ -283,15 +283,6 @@ public class CommentServiceImpl implements CommentService {
             comment.getText());
     }
 
-    /*
-     * userNotificationService.createNotification( receiver, sender,
-     * notificationType, articleId, getArticleTitle(articleType, articleId, locale),
-     * comment.getId(), comment.getText());
-     */
-
-    // ECONEWS_COMMENT=You received {message} from {user} on your news
-    // {secondMessage}.
-
     /**
      * Determines the appropriate notification type based on article and action
      * type.
