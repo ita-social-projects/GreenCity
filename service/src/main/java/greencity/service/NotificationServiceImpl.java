@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -220,18 +219,22 @@ public class NotificationServiceImpl implements NotificationService {
     private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference) {
         LocalDateTime now = LocalDateTime.now();
         boolean timeToSend = userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+            .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
+                EmailPreferencePeriodicity.TWICE_A_DAY);
         if (now.getHour() > 18) {
             timeToSend = timeToSend || userNotificationPreferenceRepo
-                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.DAILY);
+                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
+                    EmailPreferencePeriodicity.DAILY);
         }
         if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
             timeToSend = timeToSend || userNotificationPreferenceRepo
-                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.WEEKLY);
+                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
+                    EmailPreferencePeriodicity.WEEKLY);
         }
         if (now.getDayOfMonth() == 1) {
             timeToSend = timeToSend || userNotificationPreferenceRepo
-                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.MONTHLY);
+                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
+                    EmailPreferencePeriodicity.MONTHLY);
         }
         return timeToSend;
     }

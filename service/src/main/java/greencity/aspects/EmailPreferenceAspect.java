@@ -32,7 +32,8 @@ public class EmailPreferenceAspect {
         UserVO user = userServiceImpl.findByEmail(email);
 
         boolean hasPreference =
-            userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
+            userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(), emailPreference,
+                EmailPreferencePeriodicity.IMMEDIATELY);
 
         if (hasPreference) {
             return proceedingJoinPoint.proceed();

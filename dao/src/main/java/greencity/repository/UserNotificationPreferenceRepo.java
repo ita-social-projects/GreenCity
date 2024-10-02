@@ -11,7 +11,6 @@ public interface UserNotificationPreferenceRepo extends JpaRepository<UserNotifi
 
     Set<UserNotificationPreference> findAllByUserId(Long id);
 
-    boolean existsByUserIdAndEmailPreference(Long id, EmailPreference emailPreference);
-
-    boolean existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(Long id, EmailPreference emailPreference, EmailPreferencePeriodicity periodicity);
+    boolean existsByUserIdAndEmailPreferenceAndPeriodicity(Long id, EmailPreference emailPreference,
+        EmailPreferencePeriodicity periodicity);
 }

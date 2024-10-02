@@ -58,7 +58,8 @@ class EmailPreferenceAspectTest {
         UserVO user = ModelUtils.getUserVO();
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(),
+            emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
             .thenReturn(true);
 
         Object expectedResult = new Object();
@@ -84,7 +85,8 @@ class EmailPreferenceAspectTest {
 
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(),
+            emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
             .thenReturn(false);
 
         Object result = emailPreferenceAspect.checkEmailPreference(proceedingJoinPoint, checkEmailPreference);
