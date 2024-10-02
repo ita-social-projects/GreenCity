@@ -33,6 +33,7 @@ import greencity.repository.EcoNewsRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.NotificationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.RatingPointsRepo;
 import org.junit.jupiter.api.Test;
@@ -108,6 +109,8 @@ class CommentServiceImplTest {
     private CommentServiceImpl commentService;
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private NotificationRepo notificationRepo;
     @Mock
     private SimpMessagingTemplate messagingTemplate;
     @Mock
