@@ -23,6 +23,7 @@ import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomShoppingListResponseDtoMapper;
@@ -216,6 +217,132 @@ class HabitServiceImplTest {
         verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
         verify(habitRepo).findById(1L);
         verify(userRepo).findUserLanguageCodeByUserId(anyLong());
+    }
+
+    @Test
+    void getAllHabitsOfFriend(){
+        Pageable pageable = PageRequest.of(0, 2);
+        Long userId = 0L;
+        Long friendId = 1L;
+        String languageCode = "en";
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
+        HabitDto habitDto = ModelUtils.getHabitDto();
+        habitDto.setIsCustomHabit(true);
+        List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
+        Page<HabitTranslation> habitTranslationPage =
+                new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        PageableDto<HabitDto> pageableDto = new PageableDto<>(habitDtoList, habitTranslationPage.getTotalElements(),
+                habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+        Habit habit = ModelUtils.getHabit();
+        habit.setIsCustomHabit(true);
+        habit.setUserId(1L);
+        UserVO userVO = ModelUtils.getUserVO();
+        List<Long> requestedCustomHabitIds = List.of(1L);
+
+        when(userRepo.isFriend(userId, friendId)).thenReturn(true);
+        when(userRepo.findUserLanguageCodeByUserId(userId)).thenReturn(languageCode);
+        when(habitTranslationRepo.findAllHabitsOfFriend(pageable, friendId, languageCode)).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
+                requestedCustomHabitIds, userVO.getId(), languageCode)).thenReturn(habitTranslationPage);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+                .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
+        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn(languageCode);
+
+        assertEquals(pageableDto, habitService.getAllHabitsOfFriend(userId, friendId, pageable));
+
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).findUserLanguageCodeByUserId(userId);
+        verify(habitTranslationRepo).findAllHabitsOfFriend(pageable, friendId, languageCode);
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
+        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitRepo).findById(1L);
+        verify(userRepo).findUserLanguageCodeByUserId(anyLong());
+    }
+
+    @Test
+    void getAllHabitsOfFriendUserHasNoFriendException(){
+        Long userId = 1L;
+        Long friendId = 2L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+
+        assertThrows(UserHasNoFriendWithIdException.class, () -> {
+            habitService.getAllHabitsOfFriend(userId, friendId, pageable);
+        });
+
+        verify(userRepo, never()).findUserLanguageCodeByUserId(anyLong());
+        verify(habitTranslationRepo, never()).findAllMutualHabitsWithFriend(any(Pageable.class), anyLong(), anyLong(), anyString());
+    }
+
+    @Test
+    void getAllMutualHabitsWithFriend(){
+        Pageable pageable = PageRequest.of(0, 2);
+        Long userId = 0L;
+        Long friendId = 1L;
+        String languageCode = "en";
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
+        HabitDto habitDto = ModelUtils.getHabitDto();
+        habitDto.setIsCustomHabit(true);
+        List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
+        Page<HabitTranslation> habitTranslationPage =
+                new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        PageableDto<HabitDto> pageableDto = new PageableDto<>(habitDtoList, habitTranslationPage.getTotalElements(),
+                habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+        Habit habit = ModelUtils.getHabit();
+        habit.setIsCustomHabit(true);
+        habit.setUserId(1L);
+        UserVO userVO = ModelUtils.getUserVO();
+        List<Long> requestedCustomHabitIds = List.of(1L);
+
+        when(userRepo.isFriend(userId, friendId)).thenReturn(true);
+        when(userRepo.findUserLanguageCodeByUserId(userId)).thenReturn(languageCode);
+        when(habitTranslationRepo.findAllMutualHabitsWithFriend(pageable, userId,friendId, languageCode)).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
+                requestedCustomHabitIds, userVO.getId(), languageCode)).thenReturn(habitTranslationPage);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+                .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
+        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn(languageCode);
+
+        assertEquals(pageableDto, habitService.getAllMutualHabitsWithFriend(userId, friendId, pageable));
+
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).findUserLanguageCodeByUserId(userId);
+        verify(habitTranslationRepo).findAllMutualHabitsWithFriend(pageable, userId, friendId, languageCode);
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
+        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitRepo).findById(1L);
+        verify(userRepo).findUserLanguageCodeByUserId(anyLong());
+    }
+
+    @Test
+    void getAllMutualHabitsWithFriendUserHasNoFriendException(){
+        Long userId = 1L;
+        Long friendId = 2L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+
+        assertThrows(UserHasNoFriendWithIdException.class, () -> {
+            habitService.getAllMutualHabitsWithFriend(userId, friendId, pageable);
+        });
+
+        verify(userRepo, never()).findUserLanguageCodeByUserId(anyLong());
+        verify(habitTranslationRepo, never()).findAllMutualHabitsWithFriend(any(Pageable.class), anyLong(), anyLong(), anyString());
     }
 
     @Test
