@@ -5,5 +5,6 @@ public enum EmailPreferencePeriodicity {
     TWICE_A_DAY,
     DAILY,
     WEEKLY,
-    MONTHLY
+    MONTHLY,
+    NEVER
 }

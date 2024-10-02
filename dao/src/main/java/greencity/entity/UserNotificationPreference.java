@@ -42,6 +42,6 @@ public class UserNotificationPreference {
     private EmailPreference emailPreference;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "periodicity")
-    private EmailPreferencePeriodicity emailPreferencePeriodicity;
+    @Column
+    private EmailPreferencePeriodicity periodicity;
 }
