@@ -20,6 +20,7 @@ public enum NotificationType {
     HABIT_LIKE,
     HABIT_INVITE,
     HABIT_COMMENT,
+    HABIT_COMMENT_LIKE,
     HABIT_COMMENT_REPLY,
     HABIT_COMMENT_USER_TAG
 }
