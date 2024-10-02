@@ -97,4 +97,25 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
         + "AND n.emailSent = false")
     List<Notification> findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(
         NotificationType notificationType);
+
+    /**
+     * Method to return count of action user in notification by target user, type,
+     * target id and not viewed.
+     *
+     * @param targetUserId     id of target user
+     * @param notificationType type of notification
+     * @param targetId         id of object related to notification
+     *
+     * @return count of action users
+     */
+    @Query("SELECT COUNT(n) FROM Notification n "
+        + "JOIN n.actionUsers u "
+        + "WHERE n.targetUser.id = :targetUserId "
+        + "AND n.notificationType = :notificationType "
+        + "AND n.targetId = :targetId "
+        + "AND n.viewed = false")
+    long countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
+        Long targetUserId,
+        NotificationType notificationType,
+        Long targetId);
 }
