@@ -715,7 +715,6 @@ class CommentServiceImplTest {
         verify(commentRepo).findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
             pageable, habitId, ArticleType.HABIT, CommentStatus.DELETED);
         verify(modelMapper).map(comment, CommentDto.class);
-
     }
 
     @Test

@@ -252,7 +252,6 @@ public class CommentServiceImpl implements CommentService {
                 articleName = event.getTitle();
             }
             default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
-
         }
         return articleName;
     }
