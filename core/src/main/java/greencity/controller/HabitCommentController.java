@@ -202,9 +202,8 @@ public class HabitCommentController {
     })
     @PostMapping("/comments/like")
     public void like(@RequestParam("commentId") Long commentId,
-                     @Parameter(hidden = true) @CurrentUser UserVO user,
-                     @Parameter(hidden = true) @ValidLanguage Locale locale
-                     ) {
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         commentService.like(commentId, user, locale);
     }
 

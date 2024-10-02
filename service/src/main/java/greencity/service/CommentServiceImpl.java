@@ -556,12 +556,11 @@ public class CommentServiceImpl implements CommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
             userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
-                    userVO, commentId, getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
+                userVO, commentId, getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
         }
         commentRepo.save(comment);
