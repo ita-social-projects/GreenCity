@@ -403,17 +403,17 @@ class NotificationServiceImplTest {
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(mockDateTime);
             when(notificationRepo
-                    .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT))
-                    .thenReturn(Collections.singletonList(notification));
+                .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT))
+                .thenReturn(Collections.singletonList(notification));
             when(notificationRepo
-                    .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT))
-                    .thenReturn(Collections.singletonList(notification));
+                .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT))
+                .thenReturn(Collections.singletonList(notification));
             when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(eq(targetUser.getId()),
-                    eq(EmailPreference.COMMENTS), any())).thenReturn(true);
+                eq(EmailPreference.COMMENTS), any())).thenReturn(true);
             notificationService.sendCommentScheduledEmail();
             ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
             await().atMost(5, SECONDS)
-                    .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+                .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
             List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
             for (ScheduledEmailMessage capturedMessage : capturedMessages) {
                 assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
