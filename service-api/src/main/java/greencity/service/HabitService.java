@@ -32,7 +32,9 @@ public interface HabitService {
      */
     PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable);
 
-    PageableDto<HabitDto> getAllHabitOfFriend(Long userId, Long friendId, Pageable pageable);
+    PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable);
+
+    PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable);
 
     /**
      * Method returns shopping list in specific language by habit id.

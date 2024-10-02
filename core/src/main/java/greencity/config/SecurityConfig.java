@@ -261,6 +261,7 @@ public class SecurityConfig {
                     "/habit/tags/search",
                     "/habit/search",
                     "/habit/all/{friendId}",
+                    "/habit/allMutualHabits/{friendId}",
                     "/habit/{habitId}/friends/profile-pictures",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",

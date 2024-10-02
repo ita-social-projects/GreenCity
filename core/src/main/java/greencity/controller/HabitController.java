@@ -8,7 +8,6 @@ import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
-import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.*;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
@@ -110,7 +109,16 @@ public class HabitController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitOfFriend(userVO.getId(), friendId, pageable));
+            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable));
+    }
+
+    @GetMapping("/allMutualHabits/{friendId}")
+    public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
+        @PathVariable Long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable));
     }
 
     /**

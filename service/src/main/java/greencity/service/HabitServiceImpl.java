@@ -134,7 +134,7 @@ public class HabitServiceImpl implements HabitService {
     }
 
     @Override
-    public PageableDto<HabitDto> getAllHabitOfFriend(Long userId, Long friendId, Pageable pageable) {
+    public PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable) {
         if (!userRepo.isFriend(userId, friendId)) {
             throw new UserHasNoFriendWithIdException(
                 ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
@@ -142,6 +142,19 @@ public class HabitServiceImpl implements HabitService {
         String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllHabitsOfFriend(pageable, friendId, languageCode);
+
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, friendId);
+    }
+
+    @Override
+    public PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable) {
+        if (!userRepo.isFriend(userId, friendId)) {
+            throw new UserHasNoFriendWithIdException(
+                ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
+        }
+        String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
+        Page<HabitTranslation> habitTranslationPage =
+            habitTranslationRepo.findAllMutualHabitsWithFriend(pageable, userId, friendId, languageCode);
 
         return buildPageableDtoForDifferentParameters(habitTranslationPage, friendId);
     }
