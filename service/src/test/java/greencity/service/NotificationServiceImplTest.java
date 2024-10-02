@@ -25,6 +25,7 @@ import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
@@ -412,8 +413,14 @@ class NotificationServiceImplTest {
             when(notificationRepo
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT))
                 .thenReturn(Collections.singletonList(notification));
-            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(eq(targetUser.getId()),
-                eq(EmailPreference.COMMENTS), any())).thenReturn(true);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                EmailPreference.COMMENTS, EmailPreferencePeriodicity.TWICE_A_DAY)).thenReturn(true);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.DAILY)).thenReturn(true);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY)).thenReturn(true);
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
+                    EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY)).thenReturn(true);
             notificationService.sendCommentScheduledEmail();
             ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
             await().atMost(5, SECONDS)
