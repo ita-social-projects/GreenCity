@@ -17,8 +17,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.function.TriFunction;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -33,38 +36,29 @@ import org.springframework.stereotype.Component;
 public class EcoNewsSpecification implements MySpecification<EcoNews> {
     private final transient List<SearchCriteria> searchCriteriaList;
 
+    private final Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> predCreators =
+        Map.of(
+            "id", this::getNumericPredicate,
+            "title", this::getStringPredicate,
+            "text", this::getStringPredicate,
+            "imagePath", this::getStringPredicate,
+            "source", this::getStringPredicate,
+            "author", this::getAuthorPredicate,
+            "dateRange", this::getDataRangePredicate,
+            "creationDate", this::getCreationDatePredicate,
+            "tags", this::getTagsPredicate,
+            "hidden", this::getBooleanPredicate);
+
     @Override
-    public Predicate toPredicate(Root<EcoNews> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(@NotNull Root<EcoNews> root, @NotNull CriteriaQuery<?> criteriaQuery,
+        CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
-            if (searchCriteria.getType().equals("id")) {
-                allPredicates =
-                    criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
-            }
-            if (searchCriteria.getType().equals("title") || searchCriteria.getType().equals("text")
-                || searchCriteria.getType().equals("imagePath") || searchCriteria.getType().equals("source")) {
-                allPredicates =
-                    criteriaBuilder.and(allPredicates, getStringPredicate(root, criteriaBuilder, searchCriteria));
-            }
-            if (searchCriteria.getType().equals("author")) {
-                allPredicates =
-                    criteriaBuilder.and(allPredicates, getAuthorPredicate(root, criteriaBuilder, searchCriteria));
-            }
-            if (searchCriteria.getType().equals("dateRange")) {
-                allPredicates = criteriaBuilder
-                    .and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
-            }
-            if (searchCriteria.getType().equals("creationDate")) {
-                allPredicates =
-                    criteriaBuilder.and(allPredicates, getCreationDatePredicate(root, criteriaBuilder, searchCriteria));
-            }
-            if (searchCriteria.getType().equals("tags")) {
-                allPredicates =
-                    criteriaBuilder.and(allPredicates, getTagsPredicate(root, criteriaBuilder, searchCriteria));
-            }
-            if (searchCriteria.getType().equals("hidden")) {
-                allPredicates =
-                    criteriaBuilder.and(allPredicates, getBooleanPredicate(root, criteriaBuilder, searchCriteria));
+            TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
+                predCreators.get(searchCriteria.getType());
+            if (predicateCreator != null) {
+                Predicate predicate = predicateCreator.apply(root, criteriaBuilder, searchCriteria);
+                allPredicates = criteriaBuilder.and(allPredicates, predicate);
             }
         }
         criteriaQuery.orderBy(getOrderList(root, criteriaQuery, criteriaBuilder));

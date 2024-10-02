@@ -72,8 +72,6 @@ class CustomShoppingListItemControllerTest {
     @Test
     void save() throws Exception {
         Long id = 1L;
-        CustomShoppingListItemSaveRequestDto customShoppingListItemSaveRequestDto =
-            new CustomShoppingListItemSaveRequestDto("Texttext");
         BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto = new BulkSaveCustomShoppingListItemDto();
         String content = objectMapper.writeValueAsString(bulkSaveCustomShoppingListItemDto);
         this.mockMvc.perform(post(customLink + "/" + id + "/" + id + "/" + "custom-shopping-list-items")

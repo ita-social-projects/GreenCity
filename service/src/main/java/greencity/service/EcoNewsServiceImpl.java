@@ -694,9 +694,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             predicates.add(criteriaBuilder.equal(users.get(ECO_NEWS_AUTHOR_ID), authorId));
         }
 
-        return predicates.size() == 1
-            ? predicates.getFirst()
-            : predicates.isEmpty() ? null : criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        Predicate result;
+        if (predicates.size() == 1) {
+            result = predicates.getFirst();
+        } else {
+            result = predicates.isEmpty() ? null : criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }
+        return result;
     }
 
     private Predicate predicateForTags(CriteriaBuilder criteriaBuilder, Root<EcoNews> root, List<String> tags) {

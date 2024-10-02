@@ -33,8 +33,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.security.Principal;
 import java.util.Locale;
+
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -85,10 +87,12 @@ class EventCommentControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
-        String content = "{\n"
-            + "  \"text\": \"string\",\n"
-            + "  \"parentCommentId\": \"100\"\n"
-            + "}";
+        String content = """
+                {
+                    "text": "string",
+                    "parentCommentId": "100"
+                }
+            """;
 
         MockMultipartFile jsonFile = new MockMultipartFile(
             "request",
