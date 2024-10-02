@@ -562,6 +562,7 @@ public class CommentServiceImpl implements CommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
+            createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
         }
         commentRepo.save(comment);
     }
