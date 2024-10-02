@@ -32,6 +32,8 @@ import greencity.message.SendReportEmailMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
+
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -71,6 +73,9 @@ class NotificationServiceImplTest {
 
     @Mock
     private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
+
+    @Mock
+    private LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
 
     @Test
     void sendImmediatelyReportTest() {
@@ -398,10 +403,12 @@ class NotificationServiceImplTest {
     void sendCommentScheduledEmail() {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
-        LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
         notification.setTargetUser(targetUser);
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(mockDateTime);
+            when(mockDateTime.getHour()).thenReturn(10);
+            when(mockDateTime.getDayOfWeek()).thenReturn(DayOfWeek.MONDAY);
+            when(mockDateTime.getDayOfMonth()).thenReturn(1);
             when(notificationRepo
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT))
                 .thenReturn(Collections.singletonList(notification));
