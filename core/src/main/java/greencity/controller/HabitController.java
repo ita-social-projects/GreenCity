@@ -118,7 +118,7 @@ public class HabitController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable));
+            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable));
     }
 
     /**
