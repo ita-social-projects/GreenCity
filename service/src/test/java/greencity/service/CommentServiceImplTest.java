@@ -397,8 +397,8 @@ class CommentServiceImplTest {
         CommentVO commentVO = getCommentVO().setText(commentText);
         AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
         AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
-                .text(commentText)
-                .build();
+            .text(commentText)
+            .build();
         ArticleType articleType = ArticleType.EVENT;
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         MultipartFile[] images = getMultipartImageFiles();
@@ -412,9 +412,9 @@ class CommentServiceImplTest {
         when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
-                .id(5L)
-                .email("test@email.com")
-                .build()));
+            .id(5L)
+            .email("test@email.com")
+            .build()));
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(eventRepo.findById(anyLong())).thenReturn(Optional.ofNullable(event));
@@ -423,7 +423,7 @@ class CommentServiceImplTest {
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(notificationService, times(1))
-                .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
+            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
@@ -438,8 +438,8 @@ class CommentServiceImplTest {
         CommentVO commentVO = getCommentVO().setText(commentText);
         AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
         AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
-                .text(commentText)
-                .build();
+            .text(commentText)
+            .build();
         ArticleType articleType = ArticleType.ECO_NEWS;
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         MultipartFile[] images = getMultipartImageFiles();
@@ -453,9 +453,9 @@ class CommentServiceImplTest {
         when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
-                .id(5L)
-                .email("test@email.com")
-                .build()));
+            .id(5L)
+            .email("test@email.com")
+            .build()));
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(econewsRepo.findById(anyLong())).thenReturn(Optional.ofNullable(ecoNews));
@@ -464,7 +464,7 @@ class CommentServiceImplTest {
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(notificationService, times(1))
-                .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
+            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
