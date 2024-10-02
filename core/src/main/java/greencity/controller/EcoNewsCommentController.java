@@ -222,7 +222,7 @@ public class EcoNewsCommentController {
     public void like(
         @RequestParam("commentId") Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        commentService.like(commentId, userVO);
+        commentService.like(commentId, userVO, null);
     }
 
     /**

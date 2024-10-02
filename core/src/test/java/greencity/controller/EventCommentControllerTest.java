@@ -345,7 +345,7 @@ class EventCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).like(commentId, userVO);
+        verify(commentService).like(commentId, userVO, null);
     }
 
     @Test
@@ -370,7 +370,7 @@ class EventCommentControllerTest {
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .like(commentId, userVO);
+            .like(commentId, userVO, null);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/like/" + commentId)
