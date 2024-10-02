@@ -18,6 +18,7 @@ import greencity.entity.EcoNews;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.User;
+import greencity.entity.RatingPoints;
 import greencity.entity.event.Event;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
@@ -33,6 +34,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.RatingPointsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
@@ -116,6 +118,8 @@ class CommentServiceImplTest {
     private UserNotificationService userNotificationService;
     @Mock
     private NotificationService notificationService;
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
 
     @Test
     void save() {
@@ -128,7 +132,9 @@ class CommentServiceImplTest {
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         HabitTranslation habitTranslation = getHabitTranslation();
         MultipartFile[] images = null;
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(commentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
@@ -171,7 +177,9 @@ class CommentServiceImplTest {
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         HabitTranslation habitTranslation = getHabitTranslation();
         MultipartFile[] images = new MultipartFile[] {null};
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(commentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
@@ -212,7 +220,9 @@ class CommentServiceImplTest {
         Comment comment = getComment();
         CommentVO commentVO = getCommentVO();
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(econewsRepo.findById(anyLong())).thenReturn(Optional.ofNullable(ecoNews));
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(commentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
@@ -349,7 +359,9 @@ class CommentServiceImplTest {
         ArticleType articleType = ArticleType.HABIT;
         CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
         MultipartFile[] images = getMultipartImageFiles();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
         when(modelMapper.map(any(UserVO.class), eq(CommentAuthorDto.class))).thenReturn(commentAuthorDto);
@@ -752,6 +764,9 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
         Comment comment = getComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
+
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.ofNullable(comment));
         commentService.delete(commentId, userVO);
@@ -892,6 +907,7 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
         Long articleId = 10L;
         Habit habit = getHabit();
         habit.setUserId(user.getId());
@@ -901,6 +917,7 @@ class CommentServiceImplTest {
         when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
                 .thenReturn(Optional.ofNullable(habitTranslation));
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         doNothing().when(userNotificationService).createNotification(
@@ -923,6 +940,9 @@ class CommentServiceImplTest {
         Comment comment = getComment();
         comment.setCurrentUserLiked(true);
         comment.getUsersLiked().add(user);
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
+
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
         commentService.like(commentId, userVO, null);

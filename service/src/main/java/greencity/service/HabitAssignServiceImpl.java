@@ -41,7 +41,6 @@ import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
@@ -63,6 +62,7 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
+import greencity.repository.RatingPointsRepo;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -108,6 +108,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final RatingCalculation ratingCalculation;
     private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * {@inheritDoc}
@@ -684,7 +685,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.HABIT, AchievementAction.ASSIGN, habitAssign.getHabit().getId());
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("DAYS_OF_HABIT_IN_PROGRESS"), userVO);
 
         return buildHabitAssignDto(habitAssign, language);
     }
@@ -774,7 +775,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         deleteHabitStatusCalendar(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
         UserVO userVO = userService.findById(userId);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_DAYS_OF_HABIT_IN_PROGRESS"),
+            userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.HABIT, AchievementAction.DELETE, habitAssign.getHabit().getId());
         return modelMapper.map(habitAssign, HabitAssignDto.class);
@@ -968,7 +970,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
 
         for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_DAYS_OF_HABIT_IN_PROGRESS"),
                 userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.HABIT, AchievementAction.DELETE, habitAssign.getHabit().getId());
