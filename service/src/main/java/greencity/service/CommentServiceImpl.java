@@ -291,18 +291,21 @@ public class CommentServiceImpl implements CommentService {
         return switch (articleType) {
             case HABIT -> switch (actionType) {
                 case COMMENT -> NotificationType.HABIT_COMMENT;
+                case COMMENT_LIKE -> NotificationType.HABIT_COMMENT_LIKE;
                 case COMMENT_REPLY -> NotificationType.HABIT_COMMENT_REPLY;
                 case COMMENT_USER_TAG -> NotificationType.HABIT_COMMENT_USER_TAG;
                 default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
             };
             case ECO_NEWS -> switch (actionType) {
                 case COMMENT -> NotificationType.ECONEWS_COMMENT;
+                case COMMENT_LIKE -> NotificationType.ECONEWS_COMMENT_LIKE;
                 case COMMENT_REPLY -> NotificationType.ECONEWS_COMMENT_REPLY;
                 case COMMENT_USER_TAG -> NotificationType.ECONEWS_COMMENT_USER_TAG;
                 default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
             };
             case EVENT -> switch (actionType) {
                 case COMMENT -> NotificationType.EVENT_COMMENT;
+                case COMMENT_LIKE -> NotificationType.EVENT_COMMENT_LIKE;
                 case COMMENT_REPLY -> NotificationType.EVENT_COMMENT_REPLY;
                 case COMMENT_USER_TAG -> NotificationType.EVENT_COMMENT_USER_TAG;
                 default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
@@ -326,6 +329,23 @@ public class CommentServiceImpl implements CommentService {
         createNotification(articleType, articleId, comment,
             modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
             userVO, getNotificationType(articleType, CommentActionType.COMMENT), locale);
+    }
+
+    /**
+     * Creates a notification for a comment like on an article.
+     *
+     * @param articleType the type of the article, {@link ArticleType}.
+     * @param articleId   the ID of the article, {@link Long}.
+     * @param comment     the comment that was made, {@link Comment}.
+     * @param userVO      the user who made the comment, {@link UserVO}.
+     * @param locale      the locale used for localization of the notification,
+     *                    {@link Locale}.
+     */
+    private void createCommentLikeNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO,
+        Locale locale) {
+        createNotification(articleType, articleId, comment,
+            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
+            userVO, getNotificationType(articleType, CommentActionType.COMMENT_LIKE), locale);
     }
 
     /**
@@ -525,7 +545,7 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public void like(Long commentId, UserVO userVO) {
+    public void like(Long commentId, UserVO userVO, Locale locale) {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
@@ -538,6 +558,7 @@ public class CommentServiceImpl implements CommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
         }
         commentRepo.save(comment);
     }
