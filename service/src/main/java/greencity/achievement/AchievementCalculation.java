@@ -6,7 +6,6 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
-import greencity.entity.RatingPoints;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementAction;
@@ -117,8 +116,7 @@ public class AchievementCalculation {
                 userAchievement.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NotFoundException(
                     ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
             }
-            RatingPoints reason = ratingPointsRepo.findByNameOrThrow(achievement.getTitle());
-            ratingCalculation.ratingCalculation(reason, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(achievement.getTitle()), userVO);
             userAchievementRepo.save(userAchievement);
 
             if (!ac.getName().equals(SELF_ACHIEVEMENT_CATEGORY)) {
@@ -138,8 +136,9 @@ public class AchievementCalculation {
         }
         if (!achievements.isEmpty()) {
             achievements.forEach(achievement -> {
-                RatingPoints reason = ratingPointsRepo.findByNameOrThrow("UNDO_" + achievement.getTitle());
-                ratingCalculation.ratingCalculation(reason, user);
+                ratingCalculation.ratingCalculation(
+                    ratingPointsRepo.findByNameOrThrow("UNDO_" + achievement.getTitle()),
+                    user);
                 userAchievementRepo.deleteByUserAndAchievementId(user.getId(), achievement.getId());
             });
 
