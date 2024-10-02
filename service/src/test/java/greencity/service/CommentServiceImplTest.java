@@ -892,11 +892,22 @@ class CommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
+        Long articleId = 10L;
+        Habit habit = getHabit();
+        habit.setUserId(user.getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
 
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+                .thenReturn(Optional.ofNullable(habitTranslation));
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        doNothing().when(userNotificationService).createNotification(
+                any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+                anyLong(), anyString(), anyLong(), anyString());
 
-        commentService.like(commentId, userVO);
+        commentService.like(commentId, userVO, Locale.ENGLISH);
 
         assertTrue(comment.getUsersLiked().contains(user));
 
@@ -914,7 +925,7 @@ class CommentServiceImplTest {
         comment.getUsersLiked().add(user);
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
-        commentService.like(commentId, userVO);
+        commentService.like(commentId, userVO, null);
 
         assertFalse(comment.getUsersLiked().contains(user));
 
@@ -929,7 +940,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> commentService.like(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> commentService.like(commentId, userVO, null));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
 

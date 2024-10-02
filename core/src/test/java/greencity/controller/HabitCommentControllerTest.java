@@ -296,7 +296,7 @@ class HabitCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).like(numericCommentId, userVO);
+        verify(commentService).like(numericCommentId, userVO, Locale.ENGLISH);
     }
 
     @Test
@@ -323,7 +323,7 @@ class HabitCommentControllerTest {
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .like(commentId, userVO);
+            .like(commentId, userVO, Locale.ENGLISH);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(post(HABIT_LINK + "/comments/like")
