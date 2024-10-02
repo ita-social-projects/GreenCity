@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 public class EventTupleConstant {
     public static final String eventId = "eventId";
     public static final String title = "title";
+    public static final String description = "description";
     public static final String organizerId = "organizerId";
     public static final String organizerName = "organizerName";
     public static final String creationDate = "creation_date";

@@ -19,6 +19,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -33,6 +34,7 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import greencity.repository.RatingPointsRepo;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import java.lang.reflect.InvocationTargetException;
@@ -128,6 +130,8 @@ class EventServiceImplTest {
     private NotificationService notificationService;
     @Mock
     private UserNotificationService userNotificationService;
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
 
     @Test
     void save() {
@@ -137,7 +141,9 @@ class EventServiceImplTest {
         Event event = ModelUtils.getEvent();
         List<Tag> tags = ModelUtils.getEventTags();
         User user = ModelUtils.getUser();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("CREATE_EVENT").points(40).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT")).thenReturn(ratingPoints);
         when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
@@ -891,6 +897,67 @@ class EventServiceImplTest {
         assertEquals(eventPreviewDtoPage, result);
 
         verify(eventRepo).findEventsIds(pageable, filterEventDto, null);
+        verify(eventRepo).loadEventDataByIds(idsPage.getContent());
+    }
+
+    @Test
+    void getEventsManagementForAuthorizedUserTest() {
+        Pageable pageable = PageRequest.of(0, 6);
+        Long userId = 1L;
+        FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
+        TupleElement<?>[] elements = getTupleElements();
+
+        List<Tuple> tuples = getTuples(elements);
+        List<EventDto> eventPreviewDtoList = getEventPreviewDtos();
+        PageableAdvancedDto<EventDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+            eventPreviewDtoList,
+            idsPage.getTotalElements(),
+            pageable.getPageNumber(),
+            idsPage.getTotalPages(),
+            idsPage.getNumber(),
+            idsPage.hasPrevious(),
+            idsPage.hasNext(),
+            idsPage.isFirst(),
+            idsPage.isLast());
+        when(restClient.findById(userId)).thenReturn(getUserVO());
+        when(eventRepo.findEventsIdsManagement(pageable, filterEventDto, userId)).thenReturn(idsPage);
+        when(eventRepo.loadEventDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
+
+        PageableAdvancedDto<EventDto> result = eventService.getEventsManagement(pageable, filterEventDto, userId);
+        assertEquals(eventPreviewDtoPage, result);
+
+        verify(restClient).findById(userId);
+        verify(eventRepo).findEventsIdsManagement(pageable, filterEventDto, userId);
+        verify(eventRepo).loadEventDataByIds(idsPage.getContent(), userId);
+    }
+
+    @Test
+    void getEventsManagementForUnauthorizedUserTest() {
+        Pageable pageable = PageRequest.of(0, 6);
+        FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
+        TupleElement<?>[] elements = getTupleElements();
+
+        List<Tuple> tuples = getTuples(elements);
+        List<EventDto> eventPreviewDtoList = getEventPreviewDtos();
+        PageableAdvancedDto<EventDto> eventPreviewDtoPage = new PageableAdvancedDto<>(
+            eventPreviewDtoList,
+            idsPage.getTotalElements(),
+            pageable.getPageNumber(),
+            idsPage.getTotalPages(),
+            idsPage.getNumber(),
+            idsPage.hasPrevious(),
+            idsPage.hasNext(),
+            idsPage.isFirst(),
+            idsPage.isLast());
+        when(eventRepo.findEventsIdsManagement(pageable, filterEventDto, null)).thenReturn(idsPage);
+        when(eventRepo.loadEventDataByIds(idsPage.getContent())).thenReturn(tuples);
+
+        PageableAdvancedDto<EventDto> result = eventService.getEventsManagement(pageable, filterEventDto, null);
+        assertEquals(eventPreviewDtoPage, result);
+
+        verify(eventRepo).findEventsIdsManagement(pageable, filterEventDto, null);
         verify(eventRepo).loadEventDataByIds(idsPage.getContent());
     }
 

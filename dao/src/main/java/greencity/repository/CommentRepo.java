@@ -46,6 +46,17 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
     int countNotDeletedCommentsByEcoNews(Long ecoNewsId);
 
     /**
+     * The method returns the count of not deleted comments, specified by.
+     *
+     * @param eventId {@link Long} - id of eco-news
+     * @return count of not deleted commnents, specified by {@link EcoNews}
+     */
+    @Query(value = "SELECT COUNT(c.id) from comments c "
+        + "join events e on e.id = c.article_id "
+        + "where e.id =:eventId and c.status <> 'DELETED'", nativeQuery = true)
+    int countNotDeletedCommentsByEvent(Long eventId);
+
+    /**
      * The method returns not deleted comment {@link Comment}, specified by id.
      *
      * @param id id of {@link Comment} parent comment

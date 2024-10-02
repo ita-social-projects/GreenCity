@@ -22,7 +22,6 @@ import greencity.message.SendReportEmailMessage;
 import greencity.message.UserTaggedInCommentMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.security.jwt.JwtTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -429,21 +428,6 @@ public class RestClient {
         HttpEntity<InterestingEcoNewsDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class);
-    }
-
-    /**
-     * send notification to the event organizer about the EventComment addition.
-     *
-     * @param message with information for sending email about adding new
-     *                EventComment.
-     * @author Inna Yashna
-     */
-    public void sendNewEventComment(EventCommentForSendEmailDto message) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<EventCommentForSendEmailDto> entity = new HttpEntity<>(message, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class);
     }
 
     /**

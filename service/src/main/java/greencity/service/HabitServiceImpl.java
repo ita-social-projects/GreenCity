@@ -20,7 +20,6 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.NotificationType;
@@ -37,6 +36,7 @@ import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.RatingPointsRepo;
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +85,7 @@ public class HabitServiceImpl implements HabitService {
     private final UserNotificationService userNotificationService;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * Method returns Habit by its id.
@@ -500,7 +501,7 @@ public class HabitServiceImpl implements HabitService {
         }
         if (habit.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             habit.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_HABIT, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_HABIT"), userVO);
             achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
                 AchievementAction.DELETE);
             if (habitAuthor != null) {
@@ -509,7 +510,7 @@ public class HabitServiceImpl implements HabitService {
             }
         } else {
             habit.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_HABIT, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_HABIT"), userVO);
             achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
                 AchievementAction.ASSIGN);
             if (habitAuthor != null) {

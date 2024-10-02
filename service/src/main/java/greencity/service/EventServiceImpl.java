@@ -34,7 +34,6 @@ import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.EventType;
 import greencity.enums.NotificationType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -43,8 +42,20 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.Date;
@@ -61,23 +72,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.description;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
@@ -123,6 +124,7 @@ public class EventServiceImpl implements EventService {
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * {@inheritDoc}
@@ -160,7 +162,7 @@ public class EventServiceImpl implements EventService {
         Event savedEvent = eventRepo.save(toSave);
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT"), userVO);
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(organizer.getEmail())
             .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
@@ -227,7 +229,7 @@ public class EventServiceImpl implements EventService {
         }
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_EVENT"), userVO);
     }
 
     /**
@@ -267,6 +269,26 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
+    public PageableAdvancedDto<EventDto> getEventsManagement(Pageable page, FilterEventDto filterEventDto,
+        Long userId) {
+        if (userId != null) {
+            restClient.findById(userId);
+        }
+
+        Page<Long> eventIds = eventRepo.findEventsIdsManagement(page, filterEventDto, userId);
+        List<Tuple> tuples;
+        if (userId != null) {
+            tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
+        } else {
+            tuples = eventRepo.loadEventDataByIds(eventIds.getContent());
+        }
+        return buildPageableAdvancedDto(eventIds, tuples, page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addAttender(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
@@ -276,7 +298,7 @@ public class EventServiceImpl implements EventService {
         event.getAttenders().add(currentUser);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("JOIN_EVENT"), userVO);
         eventRepo.save(event);
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(event.getOrganizer().getEmail())
@@ -310,7 +332,7 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet()));
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.JOIN_EVENT, AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_JOIN_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_JOIN_EVENT"), userVO);
         eventRepo.save(event);
     }
 
@@ -746,6 +768,7 @@ public class EventServiceImpl implements EventService {
                 eventDto = EventDto.builder()
                     .id(id)
                     .title(tuple.get(title, String.class))
+                    .description(tuple.get(description, String.class))
                     .organizer(EventAuthorDto.builder()
                         .id(tuple.get(organizerId, Long.class))
                         .name(tuple.get(organizerName, String.class))

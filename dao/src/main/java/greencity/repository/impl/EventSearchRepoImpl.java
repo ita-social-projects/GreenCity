@@ -36,6 +36,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -62,6 +63,24 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         criteria.select(eventRoot.get(Event_.ID))
             .where(getPredicate(filterEventDto, userId, eventRoot))
             .orderBy(getOrders(userId, eventRoot));
+
+        List<Long> resultList = entityManager.createQuery(criteria).getResultList();
+        List<Long> uniqueEventIds = resultList.stream().distinct().toList();
+
+        return buildPage(uniqueEventIds, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Long> findEventsIdsManagement(Pageable pageable, FilterEventDto filterEventDto, Long userId) {
+        CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+        Root<Event> eventRoot = criteria.from(Event.class);
+
+        criteria.select(eventRoot.get(Event_.ID))
+            .where(getPredicate(filterEventDto, userId, eventRoot))
+            .orderBy(getOrdersManagement(pageable.getSort(), eventRoot));
 
         List<Long> resultList = entityManager.createQuery(criteria).getResultList();
         List<Long> uniqueEventIds = resultList.stream().distinct().toList();
@@ -211,6 +230,22 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         addSortByCurrentDateOrder(orders, datesJoin);
         addSortByOneWeekOrder(orders, datesJoin);
         addSortByDateOrder(orders, datesJoin);
+
+        return orders;
+    }
+
+    private List<Order> getOrdersManagement(Sort sort, Root<Event> eventRoot) {
+        List<Order> orders = new ArrayList<>();
+
+        if (sort != null && !sort.isEmpty()) {
+            for (Sort.Order order : sort) {
+                if (order.isAscending()) {
+                    orders.add(criteriaBuilder.asc(eventRoot.get(order.getProperty())));
+                } else {
+                    orders.add(criteriaBuilder.desc(eventRoot.get(order.getProperty())));
+                }
+            }
+        }
 
         return orders;
     }

@@ -24,7 +24,6 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentActionType;
 import greencity.enums.CommentStatus;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -38,6 +37,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.RatingPointsRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,12 +46,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.HashSet;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
@@ -66,6 +69,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
     private final HabitTranslationRepo habitTranslationRepo;
+    private final RatingPointsRepo ratingPointsRepo;
     private final ModelMapper modelMapper;
     private final FileService fileService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -73,7 +77,6 @@ public class CommentServiceImpl implements CommentService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final NotificationService notificationService;
-    private final EventCommentServiceImpl eventCommentServiceImpl;
     @Value("${client.address}")
     private String clientAddress;
 
@@ -123,7 +126,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setAdditionalImages(commentImages);
         }
 
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
@@ -151,7 +154,7 @@ public class CommentServiceImpl implements CommentService {
     private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, UserVO userVO,
         Locale locale) {
         String commentText = commentVO.getText();
-        Set<Long> usersId = eventCommentServiceImpl.getUserIdFromComment(commentText);
+        Set<Long> usersId = getUserIdFromComment(commentText);
         if (!usersId.isEmpty()) {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
@@ -179,6 +182,10 @@ public class CommentServiceImpl implements CommentService {
     private String getBaseLink(ArticleType articleType, Long articleId, Long userId) {
         if (articleType == ArticleType.HABIT) {
             return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
+        } else if (articleType == ArticleType.EVENT) {
+            return clientAddress + "/#/events/" + articleId;
+        } else if (articleType == ArticleType.ECO_NEWS) {
+            return clientAddress + "/#/news/" + articleId;
         }
         throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
     }
@@ -191,29 +198,24 @@ public class CommentServiceImpl implements CommentService {
      * @return article author {@link User}.
      */
     protected User getArticleAuthor(ArticleType articleType, Long articleId) {
-        Long articleAuthorId;
-        switch (articleType) {
-            case HABIT:
+        Long articleAuthorId = switch (articleType) {
+            case HABIT -> {
                 Habit habit = habitRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
-                articleAuthorId = habit.getUserId();
-                break;
-
-            case EVENT:
+                yield habit.getUserId();
+            }
+            case EVENT -> {
                 Event event = eventRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
-                articleAuthorId = event.getOrganizer().getId();
-                break;
-
-            case ECO_NEWS:
+                yield event.getOrganizer().getId();
+            }
+            case ECO_NEWS -> {
                 EcoNews ecoNews = ecoNewsRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
-                articleAuthorId = ecoNews.getAuthor().getId();
-                break;
-
-            default:
-                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
-        }
+                yield ecoNews.getAuthor().getId();
+            }
+            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+        };
         return userRepo.findById(articleAuthorId)
             .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + articleAuthorId));
     }
@@ -240,6 +242,11 @@ public class CommentServiceImpl implements CommentService {
                 EcoNews ecoNews = ecoNewsRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
                 articleName = ecoNews.getTitle();
+            }
+            case EVENT -> {
+                Event event = eventRepo.findById(articleId)
+                    .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
+                articleName = event.getTitle();
             }
             default -> {
                 throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
@@ -293,6 +300,12 @@ public class CommentServiceImpl implements CommentService {
                 case COMMENT -> NotificationType.ECONEWS_COMMENT;
                 case COMMENT_REPLY -> NotificationType.ECONEWS_COMMENT_REPLY;
                 case COMMENT_USER_TAG -> NotificationType.ECONEWS_COMMENT_USER_TAG;
+                default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
+            };
+            case EVENT -> switch (actionType) {
+                case COMMENT -> NotificationType.EVENT_COMMENT;
+                case COMMENT_REPLY -> NotificationType.EVENT_COMMENT_REPLY;
+                case COMMENT_USER_TAG -> NotificationType.EVENT_COMMENT_USER_TAG;
                 default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ACTION_TYPE);
             };
             default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
@@ -449,6 +462,16 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
+    public int countCommentsForEvent(Long eventId) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + eventId));
+        return commentRepo.countNotDeletedCommentsByEvent(event.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int countAllActiveReplies(Long parentCommentId) {
         if (commentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED).isEmpty()) {
             throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId);
@@ -508,14 +531,15 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
         }
         commentRepo.save(comment);
     }
@@ -574,7 +598,7 @@ public class CommentServiceImpl implements CommentService {
             comment.getComments()
                 .forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
@@ -625,5 +649,26 @@ public class CommentServiceImpl implements CommentService {
             }
             default -> throw new BadRequestException("Unsupported article type");
         }
+    }
+
+    /**
+     * Method to extract user id from comment.
+     *
+     * @param message comment from {@link CommentDtoResponse}.
+     * @return user id if present or null.
+     */
+    public Set<Long> getUserIdFromComment(String message) {
+        String regEx = "data-userid=\"(\\d+)\"";
+        Pattern pattern = Pattern.compile(regEx);
+        Matcher matcher = pattern.matcher(message);
+        Set<Long> userIds = new HashSet<>();
+        if (!matcher.find()) {
+            return userIds;
+        }
+        matcher.reset();
+        while (matcher.find()) {
+            userIds.add(Long.valueOf(matcher.group(1)));
+        }
+        return userIds;
     }
 }

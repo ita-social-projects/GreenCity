@@ -18,7 +18,12 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
-import greencity.dto.comment.*;
+import greencity.dto.comment.AddCommentDtoRequest;
+import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.AmountCommentLikesDto;
+import greencity.dto.comment.CommentAuthorDto;
+import greencity.dto.comment.CommentDto;
+import greencity.dto.comment.CommentVO;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
@@ -29,8 +34,6 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.comment.AmountCommentLikesDto;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -42,11 +45,6 @@ import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentDto;
-import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -133,7 +131,6 @@ import greencity.entity.CommentImages;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
-import greencity.entity.VerifyEmail;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.FavoritePlace;
@@ -157,9 +154,10 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserShoppingListItem;
+import greencity.entity.VerifyEmail;
+import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
-import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -177,6 +175,11 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
+import org.hibernate.sql.results.internal.TupleElementImpl;
+import org.hibernate.sql.results.internal.TupleImpl;
+import org.hibernate.sql.results.internal.TupleMetadata;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -201,11 +204,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.hibernate.sql.results.internal.TupleElementImpl;
-import org.hibernate.sql.results.internal.TupleImpl;
-import org.hibernate.sql.results.internal.TupleMetadata;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
@@ -213,6 +211,7 @@ import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
 import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.description;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
@@ -1263,14 +1262,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
-        return EcoNewsCommentAuthorDto.builder()
-            .id(getUser().getId())
-            .name(getUser().getName().trim())
-            .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
     public static PlaceByBoundsDto getPlaceByBoundsDtoForFindAllTest() {
         return PlaceByBoundsDto.builder()
             .id(1L)
@@ -2313,84 +2304,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddEventCommentDtoResponse getAddEventCommentDtoResponse() {
-        return AddEventCommentDtoResponse.builder()
-            .id(getEventComment().getId())
-            .author(getEventCommentAuthorDto())
-            .text(getEcoNewsComment().getText())
-            .build();
-    }
-
-    public static EventComment getEventComment() {
-        return EventComment.builder()
-            .id(1L)
-            .text("text")
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUser())
-            .event(getEvent())
-            .status(CommentStatus.ORIGINAL)
-            .comments(List.of(getSubEventComment()))
-            .build();
-    }
-
-    public static EventComment getSubEventComment() {
-        return EventComment.builder()
-            .id(4L)
-            .text("SubEventComment")
-            .status(CommentStatus.ORIGINAL)
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUser())
-            .event(getEvent())
-            .build();
-    }
-
-    public static EventComment getEventCommentWithReplies() {
-        User user = getUser();
-        user.setProfilePicturePath("path-to-picture");
-        return EventComment.builder()
-            .id(1L)
-            .text("Some comment")
-            .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
-            .status(CommentStatus.ORIGINAL)
-            .user(user)
-            .event(getEvent())
-            .parentComment(EventComment.builder()
-                .id(12L)
-                .status(CommentStatus.ORIGINAL)
-                .build())
-            .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
-            .currentUserLiked(true)
-            .usersLiked(Set.of(user, new User()))
-            .build();
-    }
-
-    public static EventCommentAuthorDto getEventCommentAuthorDto() {
-        return EventCommentAuthorDto.builder()
-            .id(getUser().getId())
-            .name(getUser().getName().trim())
-            .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
-        return new AddEventCommentDtoRequest("text", 100L);
-    }
-
-    public static EventCommentDto getEventCommentDto() {
-        return EventCommentDto.builder()
-            .id(1L)
-            .status(CommentStatus.ORIGINAL.toString())
-
-            .author(getEventCommentAuthorDto())
-            .text("text")
-            .likes(0)
-            .numberOfReplies(0)
-            .currentUserLiked(false)
-            .build();
-    }
-
     public static EventVO getEventVO() {
         return EventVO.builder()
             .id(1L)
@@ -2404,6 +2317,7 @@ public class ModelUtils {
     public static Comment getComment() {
         return Comment.builder()
             .id(1L)
+            .user(getUser())
             .articleType(ArticleType.HABIT)
             .articleId(10L)
             .text("text")
@@ -2788,29 +2702,31 @@ public class ModelUtils {
 
     public static List<Tuple> getTuples(TupleElement<?>[] elements) {
         TupleMetadata tupleMetadata = new TupleMetadata(
-            elements, new String[] {eventId, title, tagId, languageCode, tagName,
+            elements, new String[] {eventId, title, description, tagId, languageCode, tagName,
                 isOpen, type, organizerId, organizerName, titleImage, creationDate, startDate,
                 finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
                 cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
                 formattedAddressUa, isRelevant, likes, countComments, grade, isOrganizedByFriend, isSubscribed,
                 isFavorite});
 
-        Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, "ONLINE", 1L,
+        Object[] row1 = new Object[] {1L, "test1", "<p>description</p>", 1L, "en", "Social", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row2 = new Object[] {1L, "test1", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
+        Object[] row2 = new Object[] {1L, "test1", "<p>description</p>", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row3 = new Object[] {3L, "test3", 2L, "en", "Social1", true, "ONLINE_OFFLINE", 2L,
+        Object[] row3 = new Object[] {3L, "test3", "<p>description</p>", 2L, "en", "Social1", true, "ONLINE_OFFLINE",
+            2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
             true, true, true};
-        Object[] row4 = new Object[] {3L, "test3", 2L, "ua", "Соціальний1", true, "ONLINE_OFFLINE", 2L,
+        Object[] row4 = new Object[] {3L, "test3", "<p>description</p>", 2L, "ua", "Соціальний1", true,
+            "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
@@ -2823,6 +2739,7 @@ public class ModelUtils {
         return new TupleElement<?>[] {
             new TupleElementImpl<>(Long.class, eventId),
             new TupleElementImpl<>(String.class, title),
+            new TupleElementImpl<>(String.class, description),
             new TupleElementImpl<>(Long.class, tagId),
             new TupleElementImpl<>(String.class, languageCode),
             new TupleElementImpl<>(String.class, tagName),
@@ -2863,6 +2780,7 @@ public class ModelUtils {
             EventDto.builder()
                 .id(3L)
                 .title("test3")
+                .description("<p>description</p>")
                 .organizer(EventAuthorDto.builder().id(2L).name("Test3").build())
                 .creationDate(Date.valueOf("2024-04-14").toLocalDate())
                 .dates(List.of(
@@ -2896,6 +2814,7 @@ public class ModelUtils {
                 .build(),
             EventDto.builder()
                 .id(1L)
+                .description("<p>description</p>")
                 .title("test1")
                 .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
                 .creationDate(Date.valueOf("2024-04-16").toLocalDate())
@@ -3007,38 +2926,19 @@ public class ModelUtils {
             .build();
     }
 
-    public static EventCommentVO getEventCommentVO() {
-        return EventCommentVO.builder()
-            .id(1L)
-            .text("text")
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUserVO())
-            .event(getEventVO())
-            .parentComment(EventCommentVO.builder()
-                .id(5L)
-                .build())
-            .status(String.valueOf(CommentStatus.ORIGINAL))
-            .build();
-    }
-
-    public static EventCommentVO getEventCommentVOWithTaggedUser() {
-        return EventCommentVO.builder()
-            .id(1L)
-            .text("test data-userid=\"5\" test")
-            .usersLiked(new HashSet<>())
-            .createdDate(LocalDateTime.now())
-            .user(getUserVO())
-            .event(getEventVO())
-            .status(String.valueOf(CommentStatus.ORIGINAL))
-            .build();
-    }
-
     public static SubscriberDto getSubscriberDto() {
         return SubscriberDto.builder()
             .language("ua")
             .name("Ilia")
             .email("test@example.com")
             .build();
+    }
+
+    public static RatingPoints getRatingPointsUndoAcquiredHabit14Days() {
+        return RatingPoints.builder().id(1L).name("UNDO_ACQUIRED_HABIT_14_DAYS").points(-20).build();
+    }
+
+    public static RatingPoints getRatingPointsAcquiredHabit14Days() {
+        return RatingPoints.builder().id(1L).name("ACQUIRED_HABIT_14_DAYS").points(20).build();
     }
 }

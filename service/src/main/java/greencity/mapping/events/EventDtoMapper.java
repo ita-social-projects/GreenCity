@@ -11,10 +11,12 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
-import greencity.enums.CommentStatus;
 import java.time.ZonedDateTime;
+import greencity.service.CommentService;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,13 @@ import java.util.stream.Collectors;
  */
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
+    private final CommentService commentService;
+
+    @Autowired
+    public EventDtoMapper(@Lazy CommentService commentService) {
+        this.commentService = commentService;
+    }
+
     /**
      * Method for converting {@link Event} into {@link EventDto}.
      *
@@ -44,9 +53,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setType(event.getType());
         eventDto.setIsRelevant(isRelevant(event.getDates()));
         eventDto.setLikes(event.getUsersLikedEvents().size());
-        eventDto
-            .setCountComments((int) event.getEventsComments().stream()
-                .filter(eventComment -> !eventComment.getStatus().equals(CommentStatus.DELETED)).count());
+        eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
         eventDto.setOrganizer(
             EventAuthorDto.builder()
