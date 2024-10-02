@@ -196,7 +196,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        LocalDateTime now = LocalDateTime.now();
         emailThreadPool.submit(() -> {
             try {
                 List<Notification> notifications =
@@ -204,23 +203,7 @@ public class NotificationServiceImpl implements NotificationService {
                 if (!notifications.isEmpty()) {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notifications.stream()
-                        .filter(n -> {
-                            boolean timeToSend = userNotificationPreferenceRepo
-                                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
-                            if (now.getHour() > 18) {
-                                timeToSend = timeToSend || userNotificationPreferenceRepo
-                                        .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.DAILY);
-                            }
-                            if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
-                                timeToSend = timeToSend || userNotificationPreferenceRepo
-                                        .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.WEEKLY);
-                            }
-                            if (now.getDayOfMonth() == 1) {
-                                timeToSend = timeToSend || userNotificationPreferenceRepo
-                                        .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(n.getTargetUser().getId(), emailPreference, EmailPreferencePeriodicity.MONTHLY);
-                            }
-                            return timeToSend;
-                        })
+                        .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference))
                         .forEach(notification -> {
                             ScheduledEmailMessage message = createScheduledEmailMessage(notification, emailLanguage);
                             restClient.sendScheduledEmailNotification(message);
@@ -232,6 +215,25 @@ public class NotificationServiceImpl implements NotificationService {
                 RequestContextHolder.resetRequestAttributes();
             }
         });
+    }
+
+    private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference) {
+        LocalDateTime now = LocalDateTime.now();
+        boolean timeToSend = userNotificationPreferenceRepo
+                .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+        if (now.getHour() > 18) {
+            timeToSend = timeToSend || userNotificationPreferenceRepo
+                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.DAILY);
+        }
+        if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
+            timeToSend = timeToSend || userNotificationPreferenceRepo
+                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.WEEKLY);
+        }
+        if (now.getDayOfMonth() == 1) {
+            timeToSend = timeToSend || userNotificationPreferenceRepo
+                    .existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(userId, emailPreference, EmailPreferencePeriodicity.MONTHLY);
+        }
+        return timeToSend;
     }
 
     /**

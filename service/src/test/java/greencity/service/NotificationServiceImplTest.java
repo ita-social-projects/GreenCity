@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,8 @@ import greencity.entity.Notification;
 import greencity.entity.Place;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.message.GeneralEmailMessage;
 import greencity.message.HabitAssignNotificationMessage;
@@ -349,13 +352,13 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.FRIEND_REQUEST_RECEIVED))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.FRIEND_REQUEST_ACCEPTED))
             .thenReturn(Collections.singletonList(notification));
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(eq(targetUser.getId()), eq(EmailPreference.INVITES), any())).thenReturn(true);
         notificationService.sendFriendRequestScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -372,13 +375,13 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT_REPLY))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT_REPLY))
             .thenReturn(Collections.singletonList(notification));
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(eq(targetUser.getId()), eq(EmailPreference.COMMENTS), any())).thenReturn(true);
         notificationService.sendCommentReplyScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -395,13 +398,13 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT))
             .thenReturn(Collections.singletonList(notification));
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT))
             .thenReturn(Collections.singletonList(notification));
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(eq(targetUser.getId()), eq(EmailPreference.COMMENTS), any())).thenReturn(true);
         notificationService.sendCommentScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -418,7 +421,6 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT_LIKE))
             .thenReturn(Collections.singletonList(notification));
@@ -428,6 +430,7 @@ class NotificationServiceImplTest {
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT_LIKE))
             .thenReturn(Collections.singletonList(notification));
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(eq(targetUser.getId()), eq(EmailPreference.LIKES), any())).thenReturn(true);
         notificationService.sendLikeScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -444,10 +447,10 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(anyLong(), any())).thenReturn(false);
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT_USER_TAG))
             .thenReturn(Collections.singletonList(notification));
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(eq(targetUser.getId()), eq(EmailPreference.COMMENTS), any())).thenReturn(true);
         notificationService.sendTaggedInCommentScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)

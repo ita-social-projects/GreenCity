@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.annotations.CheckEmailPreference;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.GeneralEmailMessage;
 import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.service.UserServiceImpl;
@@ -57,7 +58,7 @@ class EmailPreferenceAspectTest {
         UserVO user = ModelUtils.getUserVO();
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(user.getId(), emailPreference))
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
             .thenReturn(true);
 
         Object expectedResult = new Object();
@@ -83,7 +84,7 @@ class EmailPreferenceAspectTest {
 
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(user.getId(), emailPreference))
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndEmailPreferencePeriodicity(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
             .thenReturn(false);
 
         Object result = emailPreferenceAspect.checkEmailPreference(proceedingJoinPoint, checkEmailPreference);
