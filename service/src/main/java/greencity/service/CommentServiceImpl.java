@@ -24,7 +24,6 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentActionType;
 import greencity.enums.CommentStatus;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -38,6 +37,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.RatingPointsRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +69,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
     private final HabitTranslationRepo habitTranslationRepo;
+    private final RatingPointsRepo ratingPointsRepo;
     private final ModelMapper modelMapper;
     private final FileService fileService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -125,7 +126,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setAdditionalImages(commentImages);
         }
 
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
@@ -530,14 +531,15 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
         }
         commentRepo.save(comment);
     }
@@ -596,7 +598,7 @@ public class CommentServiceImpl implements CommentService {
             comment.getComments()
                 .forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 

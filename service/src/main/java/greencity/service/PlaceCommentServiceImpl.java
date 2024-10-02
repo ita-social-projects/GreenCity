@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -19,6 +18,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.PlaceCommentRepo;
+import greencity.repository.RatingPointsRepo;
 import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,6 +49,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private AchievementCalculation achievementCalculation;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * {@inheritDoc}
@@ -89,7 +90,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             photo.setComment(comment);
             photo.setPlace(place);
         });
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
@@ -107,7 +108,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserVO userVO = restClient.findByEmail(authentication.getName());
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_COMMENT_OR_REPLY"), userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
