@@ -209,7 +209,8 @@ public class NotificationServiceImpl implements NotificationService {
                     notifications.stream()
                         .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
                         .forEach(notification -> {
-                            ScheduledEmailMessage message = createScheduledEmailMessage(notification, emailLanguage);
+                            ScheduledEmailMessage message = createScheduledEmailMessage(notification,
+                                notification.getTargetUser().getLanguage().getCode());
                             restClient.sendScheduledEmailNotification(message);
                         });
                 }
