@@ -180,14 +180,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private String getBaseLink(ArticleType articleType, Long articleId, Long userId) {
-        if (articleType == ArticleType.HABIT) {
-            return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
-        } else if (articleType == ArticleType.EVENT) {
-            return clientAddress + "/#/events/" + articleId;
-        } else if (articleType == ArticleType.ECO_NEWS) {
-            return clientAddress + "/#/news/" + articleId;
+        switch (articleType) {
+            case HABIT -> {
+                return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
+            }
+            case EVENT -> {
+                return clientAddress + "/#/events/" + articleId;
+            }
+            case ECO_NEWS -> {
+                return clientAddress + "/#/news/" + articleId;
+            }
+            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
-        throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
     }
 
     /**
@@ -214,7 +218,6 @@ public class CommentServiceImpl implements CommentService {
                     .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
                 yield ecoNews.getAuthor().getId();
             }
-            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         };
         return userRepo.findById(articleAuthorId)
             .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_BY_ID + articleAuthorId));
@@ -248,9 +251,8 @@ public class CommentServiceImpl implements CommentService {
                     .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND_BY_ID + articleId));
                 articleName = event.getTitle();
             }
-            default -> {
-                throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
-            }
+            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
+
         }
         return articleName;
     }
