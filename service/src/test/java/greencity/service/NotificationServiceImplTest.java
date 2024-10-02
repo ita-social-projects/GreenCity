@@ -46,6 +46,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -397,23 +398,27 @@ class NotificationServiceImplTest {
     void sendCommentScheduledEmail() {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
+        LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
         notification.setTargetUser(targetUser);
-        when(notificationRepo
-            .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT))
-            .thenReturn(Collections.singletonList(notification));
-        when(notificationRepo
-            .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT))
-            .thenReturn(Collections.singletonList(notification));
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(eq(targetUser.getId()),
-            eq(EmailPreference.COMMENTS), any())).thenReturn(true);
-        notificationService.sendCommentScheduledEmail();
-        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
-        await().atMost(5, SECONDS)
-            .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
-        List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
-        for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
-            assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
+        try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
+            mockedStatic.when(LocalDateTime::now).thenReturn(mockDateTime);
+            when(notificationRepo
+                    .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT))
+                    .thenReturn(Collections.singletonList(notification));
+            when(notificationRepo
+                    .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT))
+                    .thenReturn(Collections.singletonList(notification));
+            when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(eq(targetUser.getId()),
+                    eq(EmailPreference.COMMENTS), any())).thenReturn(true);
+            notificationService.sendCommentScheduledEmail();
+            ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
+            await().atMost(5, SECONDS)
+                    .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
+            List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
+            for (ScheduledEmailMessage capturedMessage : capturedMessages) {
+                assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+                assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
+            }
         }
     }
 

@@ -124,7 +124,7 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * @author Dmytro Dmytruk
      */
-    @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendLikeScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT_LIKE);
@@ -140,7 +140,7 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * @author Dmytro Dmytruk
      */
-    @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendCommentScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT);
@@ -154,7 +154,7 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * @author Dmytro Dmytruk
      */
-    @Scheduled(cron = "0 0 12,21 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendCommentReplyScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
@@ -169,7 +169,7 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * @author Dmytro Dmytruk
      */
-    @Scheduled(cron = "0 0 13,22 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendFriendRequestScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
@@ -185,7 +185,7 @@ public class NotificationServiceImpl implements NotificationService {
      *
      * @author Roman Kasarab
      */
-    @Scheduled(cron = "0 0 13,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendTaggedInCommentScheduledEmail() {
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
