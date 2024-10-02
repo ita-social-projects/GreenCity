@@ -57,6 +57,15 @@ public interface HabitTranslationRepo
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "JOIN ht.habit AS h "
+        + "WHERE ht.language = (SELECT l FROM Language AS l "
+        + "WHERE l.code = :languageCode) "
+        + "AND h.id IN (SELECT ha.habit.id FROM HabitAssign AS ha "
+        + "WHERE ha.user.id = :friendId "
+        + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED'))")
+    Page<HabitTranslation> findAllHabitsOfFriend(Pageable pageable, Long friendId, String languageCode);
+
     /**
      * Method to find all unassigned habit translations by language code and tags.
      *

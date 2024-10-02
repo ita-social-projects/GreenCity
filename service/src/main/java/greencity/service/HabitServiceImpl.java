@@ -25,6 +25,7 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.NotificationType;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomHabitMapper;
@@ -129,7 +130,20 @@ public class HabitServiceImpl implements HabitService {
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
                 requestedCustomHabitIds, userId, languageCode);
-        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO);
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
+    }
+
+    @Override
+    public PageableDto<HabitDto> getAllHabitOfFriend(Long userId, Long friendId, Pageable pageable) {
+        if (!userRepo.isFriend(userId, friendId)) {
+            throw new UserHasNoFriendWithIdException(
+                ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
+        }
+        String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
+        Page<HabitTranslation> habitTranslationPage =
+            habitTranslationRepo.findAllHabitsOfFriend(pageable, friendId, languageCode);
+
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, friendId);
     }
 
     /**
@@ -200,7 +214,7 @@ public class HabitServiceImpl implements HabitService {
         Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
         Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
 
-        return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO);
+        return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO.getId());
     }
 
     /**
@@ -212,7 +226,7 @@ public class HabitServiceImpl implements HabitService {
      * @author Lilia Mokhnatska
      */
     private PageableDto<HabitDto> buildPageableDtoForDifferentParameters(Page<HabitTranslation> habitTranslationsPage,
-        UserVO userVO) {
+        Long userId) {
         List<HabitDto> habits = habitTranslationsPage.stream()
             .map(habitTranslation -> {
                 HabitDto habitDto = modelMapper.map(habitTranslation, HabitDto.class);
@@ -238,7 +252,7 @@ public class HabitServiceImpl implements HabitService {
             Habit habit = habitRepo.findById(habitDto.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitDto.getId()));
             List<HabitAssign> habitAssigns =
-                habitAssignRepo.findHabitsByHabitIdAndUserId(habitDto.getId(), userVO.getId());
+                habitAssignRepo.findHabitsByHabitIdAndUserId(habitDto.getId(), userId);
             if (!habitAssigns.isEmpty()) {
                 habitDto.setHabitAssignStatus(assignHabitStatus(habitAssigns));
             }
