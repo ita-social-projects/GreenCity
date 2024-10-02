@@ -127,12 +127,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendLikeScheduledEmail() {
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE, EmailPreference.LIKES);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES);
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT_LIKE);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE, EmailPreference.LIKES, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_LIKE);
+        sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_LIKE);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES, now);
     }
 
     /**
@@ -143,10 +144,11 @@ public class NotificationServiceImpl implements NotificationService {
     @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendCommentScheduledEmail() {
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.ECONEWS_COMMENT);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS);
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS, now);
     }
 
     /**
@@ -157,11 +159,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendCommentReplyScheduledEmail() {
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
             NotificationType.ECONEWS_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID), NotificationType.EVENT_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_REPLY);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS, now);
     }
 
     /**
@@ -172,12 +175,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendFriendRequestScheduledEmail() {
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
             NotificationType.FRIEND_REQUEST_RECEIVED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
             NotificationType.FRIEND_REQUEST_ACCEPTED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES);
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES, now);
     }
 
     /**
@@ -188,12 +192,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendTaggedInCommentScheduledEmail() {
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(ZONE_ID),
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
             NotificationType.EVENT_COMMENT_USER_TAG);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS, now);
     }
 
-    private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference) {
+    private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference, LocalDateTime now) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
@@ -202,7 +207,7 @@ public class NotificationServiceImpl implements NotificationService {
                 if (!notifications.isEmpty()) {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notifications.stream()
-                        .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference))
+                        .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
                         .forEach(notification -> {
                             ScheduledEmailMessage message = createScheduledEmailMessage(notification, emailLanguage);
                             restClient.sendScheduledEmailNotification(message);
@@ -216,12 +221,11 @@ public class NotificationServiceImpl implements NotificationService {
         });
     }
 
-    private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference) {
-        LocalDateTime now = LocalDateTime.now();
+    private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference, LocalDateTime now) {
         boolean timeToSend = userNotificationPreferenceRepo
             .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
                 EmailPreferencePeriodicity.TWICE_A_DAY);
-        if (now.getHour() > 18) {
+        if (now.getHour() < 12) {
             timeToSend = timeToSend || userNotificationPreferenceRepo
                 .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
                     EmailPreferencePeriodicity.DAILY);

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.constant.AppConstant;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.place.PlaceNotificationDto;
@@ -35,6 +36,7 @@ import greencity.repository.PlaceRepo;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -73,9 +75,6 @@ class NotificationServiceImplTest {
 
     @Mock
     private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
-
-    @Mock
-    private LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
 
     @Test
     void sendImmediatelyReportTest() {
@@ -404,11 +403,9 @@ class NotificationServiceImplTest {
         Notification notification = ModelUtils.getNotification();
         User targetUser = ModelUtils.getUser();
         notification.setTargetUser(targetUser);
+        LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
-            mockedStatic.when(LocalDateTime::now).thenReturn(mockDateTime);
-            when(mockDateTime.getHour()).thenReturn(10);
-            when(mockDateTime.getDayOfWeek()).thenReturn(DayOfWeek.MONDAY);
-            when(mockDateTime.getDayOfMonth()).thenReturn(1);
+            mockedStatic.when(() -> LocalDateTime.now(any(ZoneId.class))).thenReturn(mockDateTime);
             when(notificationRepo
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.ECONEWS_COMMENT))
                 .thenReturn(Collections.singletonList(notification));
