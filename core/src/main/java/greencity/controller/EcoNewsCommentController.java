@@ -221,9 +221,8 @@ public class EcoNewsCommentController {
     @PostMapping("/comments/like")
     public void like(
         @RequestParam("commentId") Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        commentService.like(commentId, userVO, locale);
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        commentService.like(commentId, userVO, null);
     }
 
     /**
