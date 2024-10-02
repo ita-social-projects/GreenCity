@@ -34,7 +34,6 @@ import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.EventType;
 import greencity.enums.NotificationType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -43,6 +42,7 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
@@ -124,6 +124,7 @@ public class EventServiceImpl implements EventService {
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * {@inheritDoc}
@@ -161,7 +162,7 @@ public class EventServiceImpl implements EventService {
         Event savedEvent = eventRepo.save(toSave);
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT"), userVO);
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(organizer.getEmail())
             .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
@@ -228,7 +229,7 @@ public class EventServiceImpl implements EventService {
         }
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_EVENT"), userVO);
     }
 
     /**
@@ -297,7 +298,7 @@ public class EventServiceImpl implements EventService {
         event.getAttenders().add(currentUser);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("JOIN_EVENT"), userVO);
         eventRepo.save(event);
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(event.getOrganizer().getEmail())
@@ -331,7 +332,7 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet()));
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.JOIN_EVENT, AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_JOIN_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_JOIN_EVENT"), userVO);
         eventRepo.save(event);
     }
 

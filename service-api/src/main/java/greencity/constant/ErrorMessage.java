@@ -196,4 +196,6 @@ public class ErrorMessage {
         "JOINED, CREATED and SAVED statuses required user-id parameter";
     public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
     public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
+    public static final String RATING_POINTS_NOT_FOUND_BY_NAME =
+        "The rating points does not exist by this name: ";
 }

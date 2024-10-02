@@ -34,6 +34,7 @@ import greencity.entity.Language;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
+import greencity.entity.RatingPoints;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
@@ -57,6 +58,7 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
+import greencity.repository.RatingPointsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -120,6 +122,8 @@ class HabitAssignServiceImplTest {
     private CustomShoppingListItemRepo customShoppingListItemRepo;
     @Mock
     private HabitStatusCalendarRepo habitStatusCalendarRepo;
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
     @Mock
@@ -652,7 +656,10 @@ class HabitAssignServiceImplTest {
         List<HabitStatusCalendar> list = new ArrayList<>();
         list.add(habitStatusCalendar);
         habitAssign.setHabitStatusCalendars(list);
+        RatingPoints ratingPoints =
+            RatingPoints.builder().id(1L).name("UNDO_DAYS_OF_HABIT_IN_PROGRESS").points(-1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_DAYS_OF_HABIT_IN_PROGRESS")).thenReturn(ratingPoints);
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
         when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign))
@@ -745,7 +752,10 @@ class HabitAssignServiceImplTest {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getUser().setId(userId);
         habitAssign.setWorkingDays(10);
+        RatingPoints ratingPoints =
+            RatingPoints.builder().id(1L).name("UNDO_DAYS_OF_HABIT_IN_PROGRESS").points(-1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_DAYS_OF_HABIT_IN_PROGRESS")).thenReturn(ratingPoints);
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(userService.findById(any())).thenReturn(getUserVO());
 
@@ -1184,7 +1194,9 @@ class HabitAssignServiceImplTest {
         habitAssign.setWorkingDays(0);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("DAYS_OF_HABIT_IN_PROGRESS").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("DAYS_OF_HABIT_IN_PROGRESS")).thenReturn(ratingPoints);
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
