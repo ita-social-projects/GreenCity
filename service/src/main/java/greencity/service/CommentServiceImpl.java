@@ -29,7 +29,6 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
@@ -159,18 +158,6 @@ public class CommentServiceImpl implements CommentService {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-                UserTaggedInCommentMessage message = UserTaggedInCommentMessage.builder()
-                    .commentedElementId(commentVO.getArticleId())
-                    .elementName(commentVO.getText())
-                    .taggerName(userVO.getName())
-                    .language(locale.getLanguage())
-                    .creationDate(commentVO.getCreatedDate())
-                    .receiverName(user.getName())
-                    .receiverEmail(user.getEmail())
-                    .commentText(commentText)
-                    .baseLink(getBaseLink(articleType, commentVO.getArticleId(), userVO.getId()))
-                    .build();
-                notificationService.sendUsersTaggedInCommentEmailNotification(message);
                 createUserTagInCommentsNotification(articleType, commentVO.getArticleId(),
                     modelMapper.map(commentVO, Comment.class),
                     modelMapper.map(user, UserVO.class),

@@ -5,7 +5,7 @@ import greencity.annotations.CheckEmailPreference;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
-import greencity.message.GeneralEmailMessage;
+import greencity.message.ScheduledEmailMessage;
 import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.service.UserServiceImpl;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -52,7 +52,8 @@ class EmailPreferenceAspectTest {
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
 
-        Object[] args = {new GeneralEmailMessage("test@gmail.com", "subject", "message")};
+        Object[] args =
+            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en")};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
@@ -78,7 +79,8 @@ class EmailPreferenceAspectTest {
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
 
-        Object[] args = {new GeneralEmailMessage("test@gmail.com", "subject", "message")};
+        Object[] args =
+            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en")};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();

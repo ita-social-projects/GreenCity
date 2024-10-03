@@ -115,8 +115,6 @@ class EcoNewsServiceImplTest {
     private RatingPointsRepo ratingPointsRepo;
     @Mock
     private CommentService commentService;
-    @Mock
-    private NotificationService notificationService;
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
     @Mock

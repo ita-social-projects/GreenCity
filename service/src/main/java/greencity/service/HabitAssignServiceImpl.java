@@ -52,7 +52,6 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
-import greencity.message.HabitAssignNotificationMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -106,7 +105,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final RatingCalculation ratingCalculation;
-    private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
 
@@ -1441,7 +1439,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         assignShoppingListToUser(habitId, habitAssign);
         String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
         userNotificationService.createOrUpdateHabitInviteNotification(friendVO, userVO, habitId, habitName);
-        sendHabitAssignNotificationToFriend(userVO, friendVO, habitAssign, locale);
     }
 
     private HabitAssign assignHabitToFriend(Habit habit, User friend) {
@@ -1472,19 +1469,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private HabitAssign getHabitAssignById(Long habitId, Long userId) {
         return habitAssignRepo
             .findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, userId);
-    }
-
-    private void sendHabitAssignNotificationToFriend(UserVO sender, UserVO receiver, HabitAssign habitAssign,
-        Locale locale) {
-        notificationService.sendHabitAssignEmailNotification(
-            HabitAssignNotificationMessage.builder()
-                .senderName(sender.getName())
-                .receiverName(receiver.getName())
-                .receiverEmail(receiver.getEmail())
-                .habitAssignId(habitAssign.getId())
-                .habitName(getHabitTranslation(habitAssign, locale.getLanguage()).getName())
-                .language(locale.getLanguage())
-                .build());
     }
 
     private void assignShoppingListToUser(Long habitId, HabitAssign habitAssign) {

@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
-import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -37,7 +36,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
-import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
@@ -80,7 +78,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final AchievementCalculation achievementCalculation;
     private final RatingCalculation ratingCalculation;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
-    private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
     private final CommentService commentService;
@@ -106,11 +103,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"),
             modelMapper.map(toSave, UserVO.class));
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(email)
-            .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
-            .build());
         userNotificationService.createNewNotification(userVO, NotificationType.ECONEWS_CREATED, toSave.getId(),
             toSave.getTitle());
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
@@ -128,11 +120,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_NEWS"), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(toSave.getAuthor().getEmail())
-            .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
-            .build());
+        userNotificationService.createNewNotification(user, NotificationType.ECONEWS_CREATED, toSave.getId(),
+            toSave.getTitle());
         return ecoNewsDto;
     }
 

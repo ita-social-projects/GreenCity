@@ -1,10 +1,10 @@
 package greencity.service;
 
-import greencity.annotations.CheckEmailPreference;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
@@ -16,14 +16,12 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
-import greencity.message.GeneralEmailMessage;
-import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
-import greencity.message.UserTaggedInCommentMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserNotificationPreferenceRepo;
+import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -43,7 +41,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
@@ -59,11 +56,16 @@ public class NotificationServiceImpl implements NotificationService {
     private final ModelMapper modelMapper;
     private final RestClient restClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-    private final String emailLanguage = Locale.ENGLISH.getLanguage();
     private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
+    private final UserRepo userRepo;
     @Value("${client.address}")
     private String clientAddress;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Nazar Vladyka && Bogdan Kuzenko
+     */
     @Override
     public void sendImmediatelyReport(PlaceVO newPlace) {
         log.info(LogMessage.IN_SEND_IMMEDIATELY_REPORT, newPlace.getName());
@@ -134,6 +136,8 @@ public class NotificationServiceImpl implements NotificationService {
         sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_LIKE);
         sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_LIKE);
+        sendScheduledNotifications(NotificationType.HABIT_LIKE, EmailPreference.LIKES, now);
     }
 
     /**
@@ -149,6 +153,8 @@ public class NotificationServiceImpl implements NotificationService {
         sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT);
         sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT, EmailPreference.COMMENTS, now);
     }
 
     /**
@@ -160,11 +166,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendCommentReplyScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
-            NotificationType.ECONEWS_COMMENT_REPLY);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT_REPLY);
         sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_REPLY);
         sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT_REPLY);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT_REPLY, EmailPreference.COMMENTS, now);
     }
 
     /**
@@ -176,12 +183,23 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendFriendRequestScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
-            NotificationType.FRIEND_REQUEST_RECEIVED);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.FRIEND_REQUEST_RECEIVED);
         sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES, now);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
-            NotificationType.FRIEND_REQUEST_ACCEPTED);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.FRIEND_REQUEST_ACCEPTED);
         sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES, now);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Viktoriia Herchanivska
+     */
+    @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Override
+    public void sendHabitInviteScheduledEmail() {
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_INVITE);
+        sendScheduledNotifications(NotificationType.HABIT_INVITE, EmailPreference.INVITES, now);
     }
 
     /**
@@ -193,9 +211,35 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendTaggedInCommentScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
-        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now,
-            NotificationType.EVENT_COMMENT_USER_TAG);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_USER_TAG);
         sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT_USER_TAG);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_USER_TAG, EmailPreference.COMMENTS, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT_USER_TAG);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT_USER_TAG, EmailPreference.COMMENTS, now);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Viktoriia Herchanivska
+     */
+    @Scheduled(cron = "0 0 9,18 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
+    @Override
+    public void sendSystemNotificationsScheduledEmail() {
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_CREATED);
+        sendScheduledNotifications(NotificationType.ECONEWS_CREATED, EmailPreference.SYSTEM, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_CREATED);
+        sendScheduledNotifications(NotificationType.EVENT_CREATED, EmailPreference.SYSTEM, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_CANCELED);
+        sendScheduledNotifications(NotificationType.EVENT_CANCELED, EmailPreference.SYSTEM, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_NAME_UPDATED);
+        sendScheduledNotifications(NotificationType.EVENT_NAME_UPDATED, EmailPreference.SYSTEM, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_UPDATED);
+        sendScheduledNotifications(NotificationType.EVENT_UPDATED, EmailPreference.SYSTEM, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_JOINED);
+        sendScheduledNotifications(NotificationType.EVENT_JOINED, EmailPreference.SYSTEM, now);
     }
 
     private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference, LocalDateTime now) {
@@ -247,94 +291,52 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * {@inheritDoc}
      *
-     * @author Yurii Midianyi
+     * @author Viktoriia Herchanivska
      */
     @Override
-    public void sendEmailNotification(Set<String> usersEmails, String subject, String message) {
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                usersEmails.forEach(attenderEmail -> restClient.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(attenderEmail)
-                        .subject(subject)
-                        .message(message)
-                        .build()));
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
+    public void sendEmailNotification(EmailNotificationDto notificationDto) {
+        Notification notification = modelMapper.map(notificationDto, Notification.class);
+        NotificationType type = notification.getNotificationType();
+        User user = userRepo.findById(notification.getTargetUser().getId()).get();
+        ScheduledEmailMessage message = createScheduledEmailMessage(notification,
+            user.getLanguage() != null ? user.getLanguage().getCode() : Locale.getDefault().getLanguage());
+        List<NotificationType> likes = List.of(NotificationType.ECONEWS_COMMENT_LIKE,
+            NotificationType.ECONEWS_LIKE,
+            NotificationType.EVENT_COMMENT_LIKE,
+            NotificationType.HABIT_LIKE);
+        List<NotificationType> comments = List.of(NotificationType.ECONEWS_COMMENT,
+            NotificationType.EVENT_COMMENT,
+            NotificationType.HABIT_COMMENT,
+            NotificationType.ECONEWS_COMMENT_REPLY,
+            NotificationType.EVENT_COMMENT_REPLY,
+            NotificationType.HABIT_COMMENT_REPLY,
+            NotificationType.ECONEWS_COMMENT_USER_TAG,
+            NotificationType.EVENT_COMMENT_USER_TAG,
+            NotificationType.HABIT_COMMENT_USER_TAG);
+        List<NotificationType> invites = List.of(NotificationType.FRIEND_REQUEST_RECEIVED,
+            NotificationType.FRIEND_REQUEST_ACCEPTED,
+            NotificationType.HABIT_INVITE);
+        List<NotificationType> systems = List.of(NotificationType.ECONEWS_CREATED,
+            NotificationType.EVENT_CREATED,
+            NotificationType.EVENT_CANCELED,
+            NotificationType.EVENT_NAME_UPDATED,
+            NotificationType.EVENT_UPDATED,
+            NotificationType.EVENT_JOINED);
+        try {
+            if (likes.contains(type)) {
+                restClient.sendEmailNotificationLikes(message);
+            } else if (comments.contains(type)) {
+                restClient.sendEmailNotificationComments(message);
+            } else if (invites.contains(type)) {
+                restClient.sendEmailNotificationInvites(message);
+            } else if (systems.contains(type)) {
+                restClient.sendEmailNotificationSystem(message);
             }
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Yurii Midianyi
-     */
-    @Override
-    @CheckEmailPreference(EmailPreference.SYSTEM)
-    public void sendEmailNotification(GeneralEmailMessage generalEmailMessage) {
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                restClient.sendEmailNotification(generalEmailMessage);
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
-    }
-
-    @CheckEmailPreference(EmailPreference.LIKES)
-    public void sendEmailNotificationLikes(GeneralEmailMessage generalEmailMessage) {
-        sendEmailNotification(generalEmailMessage);
-    }
-
-    @CheckEmailPreference(EmailPreference.COMMENTS)
-    public void sendEmailNotificationComments(GeneralEmailMessage generalEmailMessage) {
-        sendEmailNotification(generalEmailMessage);
-    }
-
-    @CheckEmailPreference(EmailPreference.INVITES)
-    public void sendEmailNotificationInvites(GeneralEmailMessage generalEmailMessage) {
-        sendEmailNotification(generalEmailMessage);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @CheckEmailPreference(EmailPreference.SYSTEM)
-    public void sendHabitAssignEmailNotification(HabitAssignNotificationMessage message) {
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                restClient.sendHabitAssignNotification(message);
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Dmytro Dmytruk
-     */
-    @Override
-    @CheckEmailPreference(EmailPreference.COMMENTS)
-    public void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message) {
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                restClient.sendUserTaggedInCommentNotification(message);
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
+            notification.setEmailSent(true);
+            notificationRepo.save(notification);
+        } catch (Exception e) {
+            log.warn(LogMessage.IN_SEND_SCHEDULED_EMAIL, LocalDateTime.now(), type);
+        }
     }
 
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {

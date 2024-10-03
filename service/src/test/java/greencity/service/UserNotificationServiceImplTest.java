@@ -58,6 +58,8 @@ class UserNotificationServiceImplTest {
     @Mock
     private UserService userService;
     @Mock
+    private NotificationService notificationService;
+    @Mock
     private SimpMessagingTemplate messagingTemplate;
 
     @Test

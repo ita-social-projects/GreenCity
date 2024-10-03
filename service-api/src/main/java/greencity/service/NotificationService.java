@@ -1,10 +1,7 @@
 package greencity.service;
 
+import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceVO;
-import greencity.message.GeneralEmailMessage;
-import greencity.message.HabitAssignNotificationMessage;
-import greencity.message.UserTaggedInCommentMessage;
-import java.util.Set;
 
 public interface NotificationService {
     /**
@@ -61,45 +58,27 @@ public interface NotificationService {
 
     /**
      * Method for sending scheduled email to user has unread notifications connected
+     * with habit assign invites. Sending is performed 2 times a day.
+     */
+    void sendHabitInviteScheduledEmail();
+
+    /**
+     * Method for sending scheduled email to user has unread notifications connected
      * with tagging in the comment. Sending is performed 2 times a day.
      */
     void sendTaggedInCommentScheduledEmail();
 
     /**
-     * method sends a general email notification to many Users.
-     *
-     * @param usersEmails {@link Set} to this users email will be sent.
-     * @param subject     subject of email message.
-     * @param message     text of email message.
-     * @author Yurii Midianyi
+     * Method for sending scheduled email to user has unread notifications connected
+     * with system notifications. Sending is performed 2 times a day.
      */
-    void sendEmailNotification(Set<String> usersEmails, String subject, String message);
+    void sendSystemNotificationsScheduledEmail();
 
     /**
-     * method sends a general email notification to one User.
+     * Method for sending an email notification to one User. Method retrieve
+     * notification type and send email to user immediately.
      *
-     * @param generalEmailMessage {@link GeneralEmailMessage}.
-     * @author Yurii Midianyi
+     * @param notification {@link EmailNotificationDto}.
      */
-    void sendEmailNotification(GeneralEmailMessage generalEmailMessage);
-
-    /**
-     * Method send a habit notification message to user.
-     *
-     * @param message {@link HabitAssignNotificationMessage}.
-     */
-    void sendHabitAssignEmailNotification(HabitAssignNotificationMessage message);
-
-    /**
-     * Method send a notification message when user is mentioned in comment.
-     *
-     * @param message {@link UserTaggedInCommentMessage}.
-     */
-    void sendUsersTaggedInCommentEmailNotification(UserTaggedInCommentMessage message);
-
-    public void sendEmailNotificationLikes(GeneralEmailMessage generalEmailMessage);
-
-    public void sendEmailNotificationComments(GeneralEmailMessage generalEmailMessage);
-
-    public void sendEmailNotificationInvites(GeneralEmailMessage generalEmailMessage);
+    void sendEmailNotification(EmailNotificationDto notification);
 }
