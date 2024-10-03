@@ -19,6 +19,7 @@ import java.util.List;
 public class RatingPointsServiceImpl implements RatingPointsService {
     private RatingPointsRepo ratingPointsRepo;
     private final ModelMapper modelMapper;
+    private final String undo = "UNDO_";
 
     @Override
     public PageableAdvancedDto<RatingPointsDto> getAllRatingPointsByPage(Pageable pageable) {
@@ -29,7 +30,7 @@ public class RatingPointsServiceImpl implements RatingPointsService {
     @Override
     public List<RatingPointsDto> createRatingPoints(String ratingPointsName) {
         List<RatingPoints> ratingPoints = List.of(ratingPointsRepo.save(new RatingPoints(ratingPointsName)),
-            ratingPointsRepo.save(new RatingPoints("UNDO_" + ratingPointsName)));
+            ratingPointsRepo.save(new RatingPoints(undo + ratingPointsName)));
         return ratingPoints.stream().map(rating -> modelMapper.map(rating, RatingPointsDto.class)).toList();
     }
 
@@ -65,7 +66,7 @@ public class RatingPointsServiceImpl implements RatingPointsService {
     public void updateRatingPointsName(String oldName, String newName) {
         try {
             ratingPointsRepo.updateRatingPointsName(oldName, newName);
-            ratingPointsRepo.updateRatingPointsName("UNDO_" + oldName, "UNDO_" + newName);
+            ratingPointsRepo.updateRatingPointsName(undo + oldName, undo + newName);
         } catch (Exception e) {
             throw new NotFoundException(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_NAME + oldName, e);
         }
