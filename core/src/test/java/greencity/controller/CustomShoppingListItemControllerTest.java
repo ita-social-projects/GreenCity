@@ -3,7 +3,6 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.service.CustomShoppingListItemService;
 import java.util.*;
