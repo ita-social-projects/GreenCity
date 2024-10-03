@@ -13,6 +13,7 @@ import greencity.repository.NotificationRepo;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -173,6 +174,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
+        notification.setCustomMessage(customMessage);
         notificationService.sendEmailNotification(
             modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
@@ -289,7 +291,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
         dto.setBodyText(bundle.getString(dto.getNotificationType()));
-        int size = notification.getActionUsers().size();
+        int size = new HashSet<>(notification.getActionUsers()).size();
         if (size == 1) {
             User actionUser = notification.getActionUsers().getFirst();
             dto.setActionUserId(actionUser.getId());

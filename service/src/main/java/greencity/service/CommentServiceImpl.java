@@ -34,6 +34,7 @@ import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.NotificationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.RatingPointsRepo;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,6 +69,7 @@ public class CommentServiceImpl implements CommentService {
     private final EcoNewsRepo ecoNewsRepo;
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
+    private final NotificationRepo notificationRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final RatingPointsRepo ratingPointsRepo;
     private final ModelMapper modelMapper;
@@ -298,9 +301,26 @@ public class CommentServiceImpl implements CommentService {
      */
     private void createCommentNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO,
         Locale locale) {
-        createNotification(articleType, articleId, comment,
-            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-            userVO, getNotificationType(articleType, CommentActionType.COMMENT), locale);
+        UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
+        String message = null;
+        ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(locale.getLanguage()),
+            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+        long commentsCount = notificationRepo
+            .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
+                getNotificationType(articleType, CommentActionType.COMMENT), articleId);
+        if (commentsCount >= 1) {
+            message = (commentsCount + 1) + " " + bundle.getString("COMMENTS");
+        } else if (commentsCount == 0) {
+            message = bundle.getString("COMMENT");
+        }
+        userNotificationService.createNotification(
+            receiver,
+            userVO,
+            getNotificationType(articleType, CommentActionType.COMMENT),
+            articleId,
+            message,
+            comment.getId(),
+            getArticleTitle(articleType, articleId, locale));
     }
 
     /**
