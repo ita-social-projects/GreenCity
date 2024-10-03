@@ -79,7 +79,8 @@ public class XSSSafelist {
         Safelist safelistForComments = new Safelist()
             .addTags(A_TAG)
             .addEnforcedAttribute(A_TAG, CONTENTEDITABLE_ATTR, "false")
-            .addAttributes(DATA_USER_ID_ATTR, STYLE_ATTR);
+            .addAttributes(A_TAG, STYLE_ATTR)
+            .addAttributes(A_TAG, DATA_USER_ID_ATTR);
 
         XSSAllowedElements allowedElementsForComments = XSSAllowedElements.builder()
             .safelist(safelistForComments)
