@@ -26,7 +26,6 @@ import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
@@ -381,8 +380,81 @@ class CommentServiceImplTest {
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
-        verify(notificationService, times(1))
-            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
+        verify(commentRepo, times(1)).save(any(Comment.class));
+    }
+
+    @Test
+    void sendNotificationIfUserTaggedInEventComment() {
+        String commentText = "test data-userid=\"5\" test";
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO().setText(commentText);
+        AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
+        AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
+            .text(commentText)
+            .build();
+        ArticleType articleType = ArticleType.EVENT;
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        MultipartFile[] images = getMultipartImageFiles();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
+        when(modelMapper.map(any(UserVO.class), eq(CommentAuthorDto.class))).thenReturn(commentAuthorDto);
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
+            .id(5L)
+            .email("test@email.com")
+            .build()));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
+        when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.ofNullable(event));
+        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+
+        commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
+
+        verify(commentRepo, times(1)).save(any(Comment.class));
+    }
+
+    @Test
+    void sendNotificationIfUserTaggedInEcoNewsComment() {
+        String commentText = "test data-userid=\"5\" test";
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        EcoNews ecoNews = getEcoNews();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO().setText(commentText);
+        AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
+        AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
+            .text(commentText)
+            .build();
+        ArticleType articleType = ArticleType.ECO_NEWS;
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        MultipartFile[] images = getMultipartImageFiles();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
+        when(modelMapper.map(any(UserVO.class), eq(CommentAuthorDto.class))).thenReturn(commentAuthorDto);
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
+            .id(5L)
+            .email("test@email.com")
+            .build()));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
+        when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
+        when(econewsRepo.findById(anyLong())).thenReturn(Optional.ofNullable(ecoNews));
+        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+
+        commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
@@ -633,7 +705,6 @@ class CommentServiceImplTest {
         verify(commentRepo).findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
             pageable, habitId, ArticleType.HABIT, CommentStatus.DELETED);
         verify(modelMapper).map(comment, CommentDto.class);
-
     }
 
     @Test
@@ -908,12 +979,79 @@ class CommentServiceImplTest {
         User user = getUser();
         Comment comment = getComment();
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        Long articleId = 10L;
+        Habit habit = getHabit();
+        habit.setUserId(user.getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
 
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+            .thenReturn(Optional.ofNullable(habitTranslation));
         when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
 
-        commentService.like(commentId, userVO);
+        commentService.like(commentId, userVO, Locale.ENGLISH);
+
+        assertTrue(comment.getUsersLiked().contains(user));
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+        verify(modelMapper).map(userVO, User.class);
+    }
+
+    @Test
+    void likeEcoNewsCommentTest() {
+        Long commentId = 1L;
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Comment comment = getComment();
+        comment.setArticleType(ArticleType.ECO_NEWS);
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        Long articleId = 10L;
+        EcoNews ecoNews = getEcoNews();
+
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(econewsRepo.findById(articleId)).thenReturn(Optional.of(ecoNews));
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.like(commentId, userVO, Locale.ENGLISH);
+
+        assertTrue(comment.getUsersLiked().contains(user));
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+        verify(modelMapper).map(userVO, User.class);
+    }
+
+    @Test
+    void likeEventCommentTest() {
+        Long commentId = 1L;
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Comment comment = getComment();
+        comment.setArticleType(ArticleType.EVENT);
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        Long articleId = 10L;
+        Event event = getEvent();
+
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(eventRepo.findById(articleId)).thenReturn(Optional.of(event));
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.like(commentId, userVO, Locale.ENGLISH);
 
         assertTrue(comment.getUsersLiked().contains(user));
 
@@ -934,7 +1072,7 @@ class CommentServiceImplTest {
         when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
-        commentService.like(commentId, userVO);
+        commentService.like(commentId, userVO, null);
 
         assertFalse(comment.getUsersLiked().contains(user));
 
@@ -949,7 +1087,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> commentService.like(commentId, userVO));
+            assertThrows(NotFoundException.class, () -> commentService.like(commentId, userVO, null));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
 
