@@ -7,17 +7,11 @@ import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
-import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.language.LanguageVO;
-import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
-import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.openhours.OpeningHoursVO;
-import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
@@ -53,7 +47,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -62,13 +55,15 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
@@ -78,7 +73,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
@@ -130,38 +126,11 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-    private final LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
-    private final Location location = Location.builder()
-        .id(1L)
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
     private final LocationVO locationVO = LocationVO.builder()
         .id(1L)
         .address("test")
         .lat(45.456)
         .lng(46.456)
-        .build();
-    private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
-    private Set<OpeningHours> openingHoursListEntity = new HashSet<>();
-    private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
-    private Set<DiscountValue> discountValues = new HashSet<>();
-    private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
-    private Set<DiscountValueVO> discountValuesVO = new HashSet<>();
-    private List<PhotoAddDto> photoDtos = new ArrayList<>();
-    private List<Photo> photos = new ArrayList<>();
-    private PlaceAddDto placeAddDto = PlaceAddDto.builder()
-        .name("Test")
-        .category(categoryDto)
-        .location(locationDto)
-        .openingHoursList(openingHoursList)
-        .discountValues(discountValuesDto)
-        .photos(photoDtos)
         .build();
     @Mock
     private PlaceRepo placeRepo;
@@ -186,7 +155,7 @@ class PlaceServiceImplTest {
 
     @Mock
     private CategoryRepo categoryRepo;
-    private ZoneId zoneId = ZoneId.of("Europe/Kiev");
+    private final ZoneId zoneId = ZoneId.of("Europe/Kiev");
     private PlaceService placeService;
     @Mock
     private GoogleApiService googleApiService;
@@ -199,7 +168,6 @@ class PlaceServiceImplTest {
 
     @BeforeEach
     void init() {
-        MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService);
@@ -509,10 +477,9 @@ class PlaceServiceImplTest {
     void updateTest() {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         Place place = ModelUtils.getPlace();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
         placeUpdateDto.setId(1L);
-        placeUpdateDto.setOpeningHoursList(openingHoursList);
-        placeUpdateDto.setDiscountValues(discountValuesDto);
+        placeUpdateDto.setOpeningHoursList(new HashSet<>());
+        placeUpdateDto.setDiscountValues(new HashSet<>());
         placeUpdateDto.setName("new Name");
         placeUpdateDto.setCategory(categoryDto);
         placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto());
