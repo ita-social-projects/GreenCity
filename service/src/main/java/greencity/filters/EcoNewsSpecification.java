@@ -37,7 +37,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
     private final transient List<SearchCriteria> searchCriteriaList;
 
     // Predicate Creators
-    private final transient Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pC =
+    private final transient Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
             "id", this::getNumericPredicate,
             "title", this::getStringPredicate,
@@ -56,7 +56,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
         Predicate allPredicates = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
-                pC.get(searchCriteria.getType());
+                pred.get(searchCriteria.getType());
             if (predicateCreator != null) {
                 Predicate predicate = predicateCreator.apply(root, criteriaBuilder, searchCriteria);
                 allPredicates = criteriaBuilder.and(allPredicates, predicate);
