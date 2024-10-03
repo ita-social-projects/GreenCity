@@ -4,6 +4,7 @@ import greencity.annotations.CheckEmailPreference;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.EmailMessage;
 import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.service.UserServiceImpl;
@@ -31,7 +32,8 @@ public class EmailPreferenceAspect {
         UserVO user = userServiceImpl.findByEmail(email);
 
         boolean hasPreference =
-            userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(user.getId(), emailPreference);
+            userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(), emailPreference,
+                EmailPreferencePeriodicity.IMMEDIATELY);
 
         if (hasPreference) {
             return proceedingJoinPoint.proceed();

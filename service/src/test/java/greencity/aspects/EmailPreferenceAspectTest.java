@@ -4,7 +4,8 @@ import greencity.ModelUtils;
 import greencity.annotations.CheckEmailPreference;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
-import greencity.message.GeneralEmailMessage;
+import greencity.enums.EmailPreferencePeriodicity;
+import greencity.message.ScheduledEmailMessage;
 import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.service.UserServiceImpl;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -51,13 +52,15 @@ class EmailPreferenceAspectTest {
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
 
-        Object[] args = {new GeneralEmailMessage("test@gmail.com", "subject", "message")};
+        Object[] args =
+            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en")};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(user.getId(), emailPreference))
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(),
+            emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
             .thenReturn(true);
 
         Object expectedResult = new Object();
@@ -76,14 +79,16 @@ class EmailPreferenceAspectTest {
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
 
-        Object[] args = {new GeneralEmailMessage("test@gmail.com", "subject", "message")};
+        Object[] args =
+            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en")};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
 
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreference(user.getId(), emailPreference))
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(),
+            emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
             .thenReturn(false);
 
         Object result = emailPreferenceAspect.checkEmailPreference(proceedingJoinPoint, checkEmailPreference);

@@ -29,7 +29,6 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
@@ -70,8 +69,6 @@ import static greencity.ModelUtils.getFilterEventDto;
 import static greencity.ModelUtils.getTupleElements;
 import static greencity.ModelUtils.getTuples;
 import static greencity.ModelUtils.getUserVO;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -125,9 +122,6 @@ class EventServiceImplTest {
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
-
-    @Mock
-    private NotificationService notificationService;
     @Mock
     private UserNotificationService userNotificationService;
     @Mock
@@ -244,8 +238,6 @@ class EventServiceImplTest {
         verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
         verify(restClient).findByEmail(anyString());
-        await().atMost(5, SECONDS)
-            .untilAsserted(() -> restClient.sendEmailNotification(any(GeneralEmailMessage.class)));
     }
 
     @Test

@@ -259,7 +259,7 @@ public class EventCommentController {
     public void like(
         @PathVariable Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
-        commentService.like(commentId, user);
+        commentService.like(commentId, user, null);
     }
 
     /**
