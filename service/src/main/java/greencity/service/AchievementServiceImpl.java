@@ -156,13 +156,12 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = achievementRepo.findById(achievementManagementDto.getId())
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID
                 + achievementManagementDto.getId()));
-
-        AchievementCategory achievementCategory = findCategoryByName(
-            achievementManagementDto.getAchievementCategory().getName());
-        populateAchievement(achievement, achievementManagementDto, achievementCategory);
         if (!achievement.getTitle().equals(achievementManagementDto.getTitle())) {
             ratingPointsService.updateRatingPointsName(achievement.getTitle(), achievementManagementDto.getTitle());
         }
+        AchievementCategory achievementCategory = findCategoryByName(
+            achievementManagementDto.getAchievementCategory().getName());
+        populateAchievement(achievement, achievementManagementDto, achievementCategory);
         return modelMapper.map(achievementRepo.save(achievement), AchievementPostDto.class);
     }
 
