@@ -133,6 +133,9 @@ public class HabitServiceImpl implements HabitService {
         return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable) {
         if (!userRepo.isFriend(userId, friendId)) {
@@ -146,6 +149,9 @@ public class HabitServiceImpl implements HabitService {
         return buildPageableDtoForDifferentParameters(habitTranslationPage, friendId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable) {
         if (!userRepo.isFriend(userId, friendId)) {

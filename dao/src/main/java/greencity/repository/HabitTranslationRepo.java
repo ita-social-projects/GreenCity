@@ -57,6 +57,18 @@ public interface HabitTranslationRepo
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
+    /**
+     * Method that finds all habit translations of a friend's habits that are not
+     * private and are either in progress or acquired. The query retrieves distinct
+     * habit translations filtered by the friend's ID and the specified language
+     * code.
+     *
+     * @param pageable     instance of {@link Pageable}.
+     * @param friendId     the ID of the friend whose habits are being retrieved.
+     * @param languageCode language code {@link String} to filter habit
+     *                     translations.
+     * @return a {@link Page} of {@link HabitTranslation}.
+     */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "JOIN ht.habit AS h "
         + "WHERE ht.language = (SELECT l FROM Language AS l "
@@ -67,6 +79,20 @@ public interface HabitTranslationRepo
         + "AND NOT ha.isPrivate)")
     Page<HabitTranslation> findAllHabitsOfFriend(Pageable pageable, Long friendId, String languageCode);
 
+    /**
+     * Method that finds all mutual habit translations shared between the current
+     * user and a friend. The query retrieves distinct habit translations where both
+     * users have assigned the habit, the habits are either in progress or acquired,
+     * and they are not private.
+     *
+     * @param pageable     instance of {@link Pageable}.
+     * @param userId       the ID of the current user.
+     * @param friendId     the ID of the friend whose mutual habits are being
+     *                     retrieved.
+     * @param languageCode language code {@link String} to filter habit
+     *                     translations.
+     * @return a {@link Page} of {@link HabitTranslation}.
+     */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "JOIN ht.habit AS h "
         + "WHERE ht.language = (SELECT l FROM Language AS l "

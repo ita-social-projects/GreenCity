@@ -32,8 +32,27 @@ public interface HabitService {
      */
     PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable);
 
+    /**
+     * Method returns all habits of a friend, both default and custom, for the
+     * current user and the specified friend.
+     *
+     * @param userId   - ID of the current user.
+     * @param friendId - ID of the friend whose habits are to be retrieved.
+     * @param pageable - instance of {@link Pageable}.
+     * @return Pageable of {@link HabitDto}.
+     */
     PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable);
 
+    /**
+     * Method returns all mutual habits, both default and custom, that are shared
+     * between the current user and a specified friend.
+     *
+     * @param userId   - ID of the current user.
+     * @param friendId - ID of the friend whose mutual habits with the user are to
+     *                 be retrieved.
+     * @param pageable - instance of {@link Pageable}.
+     * @return Pageable of {@link HabitDto}.
+     */
     PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable);
 
     /**
