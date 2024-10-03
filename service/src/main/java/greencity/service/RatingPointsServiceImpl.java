@@ -19,7 +19,7 @@ import java.util.List;
 public class RatingPointsServiceImpl implements RatingPointsService {
     private RatingPointsRepo ratingPointsRepo;
     private final ModelMapper modelMapper;
-    private final String undo = "UNDO_";
+    private static final String undo = "UNDO_";
 
     @Override
     public PageableAdvancedDto<RatingPointsDto> getAllRatingPointsByPage(Pageable pageable) {
