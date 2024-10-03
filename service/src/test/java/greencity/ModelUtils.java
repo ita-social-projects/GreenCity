@@ -81,6 +81,7 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
@@ -155,6 +156,7 @@ import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.VerifyEmail;
+import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -2916,6 +2918,16 @@ public class ModelUtils {
             false, false, true, true);
     }
 
+    public static EmailNotificationDto getEmailNotificationDto() {
+        return EmailNotificationDto.builder()
+            .targetUser(getUserVO())
+            .actionUsers(new ArrayList<>())
+            .customMessage("custom")
+            .secondMessage("second")
+            .notificationType(EVENT_CREATED)
+            .build();
+    }
+
     public static UserAsFriendDto getUserAsFriendDto() {
         return UserAsFriendDto.builder()
             .id(1L)
@@ -2931,5 +2943,13 @@ public class ModelUtils {
             .name("Ilia")
             .email("test@example.com")
             .build();
+    }
+
+    public static RatingPoints getRatingPointsUndoAcquiredHabit14Days() {
+        return RatingPoints.builder().id(1L).name("UNDO_ACQUIRED_HABIT_14_DAYS").points(-20).build();
+    }
+
+    public static RatingPoints getRatingPointsAcquiredHabit14Days() {
+        return RatingPoints.builder().id(1L).name("ACQUIRED_HABIT_14_DAYS").points(20).build();
     }
 }

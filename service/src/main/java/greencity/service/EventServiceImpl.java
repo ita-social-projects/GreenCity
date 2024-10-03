@@ -4,7 +4,6 @@ import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
-import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -34,15 +33,14 @@ import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.EventType;
 import greencity.enums.NotificationType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
@@ -119,11 +117,11 @@ public class EventServiceImpl implements EventService {
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
     private final UserService userService;
-    private final NotificationService notificationService;
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
+    private final RatingPointsRepo ratingPointsRepo;
 
     /**
      * {@inheritDoc}
@@ -161,12 +159,7 @@ public class EventServiceImpl implements EventService {
         Event savedEvent = eventRepo.save(toSave);
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(organizer.getEmail())
-            .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE, savedEvent.getTitle()))
-            .build());
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT"), userVO);
         userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
             savedEvent.getTitle());
         return buildEventDto(savedEvent, organizer.getId());
@@ -211,12 +204,6 @@ public class EventServiceImpl implements EventService {
 
         if (toDelete.getOrganizer().getId().equals(userVO.getId()) || userVO.getRole() == Role.ROLE_ADMIN) {
             deleteImagesFromServer(eventImages);
-            Set<String> attendersEmails =
-                toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-            notificationService.sendEmailNotification(
-                attendersEmails,
-                EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
-                String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
             List<UserVO> userVOList = toDelete.getAttenders().stream()
                 .map(user -> modelMapper.map(user, UserVO.class))
                 .collect(Collectors.toList());
@@ -228,7 +215,7 @@ public class EventServiceImpl implements EventService {
         }
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_CREATE_EVENT"), userVO);
     }
 
     /**
@@ -297,13 +284,8 @@ public class EventServiceImpl implements EventService {
         event.getAttenders().add(currentUser);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("JOIN_EVENT"), userVO);
         eventRepo.save(event);
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(event.getOrganizer().getEmail())
-            .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()))
-            .build());
         userNotificationService.createNotification(modelMapper.map(event.getOrganizer(), UserVO.class), userVO,
             NotificationType.EVENT_JOINED, eventId, event.getTitle());
     }
@@ -331,7 +313,7 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet()));
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.JOIN_EVENT, AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_JOIN_EVENT, userVO);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_JOIN_EVENT"), userVO);
         eventRepo.save(event);
     }
 
@@ -418,12 +400,6 @@ public class EventServiceImpl implements EventService {
         }
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
-        Set<String> emailsToNotify = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-        emailsToNotify.add(organizer.getEmail());
-        notificationService.sendEmailNotification(
-            emailsToNotify,
-            EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
-            String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
         return buildEventDto(updatedEvent, organizer.getId());
     }
 

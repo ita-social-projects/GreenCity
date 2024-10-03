@@ -9,12 +9,14 @@ import greencity.dto.placecomment.PlaceCommentAdminDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.PlaceComment;
+import greencity.entity.RatingPoints;
 import greencity.enums.UserStatus;
 import greencity.rating.RatingCalculation;
 import greencity.repository.PlaceCommentRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import greencity.repository.RatingPointsRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +55,8 @@ class PlaceCommentServiceImplTest {
     @Mock
     private UserService userService;
     @Mock
+    private RatingPointsRepo ratingPointsRepo;
+    @Mock
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementCalculation achievementCalculation;
@@ -74,6 +78,8 @@ class PlaceCommentServiceImplTest {
         String accessToken = "Token";
         UserVO userVO = ModelUtils.getUserVO();
         PlaceComment comment = ModelUtils.getPlaceComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(placeCommentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
         doNothing().when(placeCommentRepo).delete(comment);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -93,6 +99,8 @@ class PlaceCommentServiceImplTest {
         String token = "token";
         PlaceCommentRequestDto placeCommentRequestDto = ModelUtils.getAddCommentDto();
         PlaceComment comment = ModelUtils.getPlaceComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
         UserVO userVO = ModelUtils.getUserVO();
         userVO.setUserStatus(UserStatus.ACTIVATED);

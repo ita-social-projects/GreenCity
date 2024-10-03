@@ -23,10 +23,10 @@ import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
+import greencity.entity.RatingPoints;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.NotificationType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
@@ -38,6 +38,7 @@ import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
+import greencity.repository.RatingPointsRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -111,7 +112,7 @@ class EcoNewsServiceImplTest {
     @Mock
     private AchievementCalculation achievementCalculation;
     @Mock
-    private NotificationService notificationService;
+    private RatingPointsRepo ratingPointsRepo;
     @Mock
     private CommentService commentService;
     @InjectMocks
@@ -754,7 +755,9 @@ class EcoNewsServiceImplTest {
         ecoNews.setAuthor(User.builder()
             .id(targetUser.getId())
             .build());
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(any(EcoNews.class), eq(EcoNewsVO.class))).thenReturn(ecoNewsVO);
@@ -768,7 +771,7 @@ class EcoNewsServiceImplTest {
         verify(achievementCalculation, times(1)).calculateAchievement(actionUser,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         verify(ratingCalculation, times(1))
-            .ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, actionUser);
+            .ratingCalculation(ratingPoints, actionUser);
     }
 
     @Test
@@ -798,12 +801,12 @@ class EcoNewsServiceImplTest {
             .usersLikedNews(new HashSet<>(Set.of(action)))
             .build();
         EcoNewsVO ecoNewsVO = mapper.map(news, EcoNewsVO.class);
-
+        RatingPoints ratingPoints = RatingPoints.builder().id(2L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
         ecoNewsVO.setUsersLikedNews(new HashSet<>(ecoNewsVO.getUsersLikedNews()));
 
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(news));
         when(modelMapper.map(any(EcoNews.class), eq(EcoNewsVO.class))).thenReturn(ecoNewsVO);
-
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         ecoNewsService.like(userVO, news.getId());
 
         assertFalse(ecoNewsVO.getUsersLikedNews().contains(actionUser));
@@ -813,7 +816,7 @@ class EcoNewsServiceImplTest {
         verify(achievementCalculation, times(1))
             .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))
-            .ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, actionUser);
+            .ratingCalculation(ratingPoints, actionUser);
     }
 
     @Test

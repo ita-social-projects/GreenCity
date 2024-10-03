@@ -19,6 +19,7 @@ import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.HabitAssign;
+import greencity.entity.RatingPoints;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
@@ -32,6 +33,7 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.mapping.CustomHabitMapper;
 import greencity.mapping.CustomShoppingListMapper;
@@ -115,6 +117,8 @@ class HabitServiceImplTest {
 
     @Mock
     private CustomShoppingListItemRepo customShoppingListItemRepo;
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
 
     @Mock
     private HabitAssignService habitAssignService;
@@ -1145,7 +1149,9 @@ class HabitServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         Habit habit = getHabit().setUserId(user.getId());
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
@@ -1165,7 +1171,9 @@ class HabitServiceImplTest {
         User user = getUser();
         Habit habit = getHabit().setUserId(user.getId());
         habit.getUsersLiked().add(user);
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
 
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 

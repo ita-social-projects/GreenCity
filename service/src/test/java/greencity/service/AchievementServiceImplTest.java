@@ -51,6 +51,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -73,6 +74,8 @@ class AchievementServiceImplTest {
     private AchievementCategoryRepo achievementCategoryRepo;
     @Mock
     private UserActionRepo userActionRepo;
+    @Mock
+    private RatingPointsService ratingPointsService;
 
     @Test
     void findAllWithEmptyListTest() {
@@ -267,7 +270,7 @@ class AchievementServiceImplTest {
         when(achievementCategoryRepo.findByName("Test")).thenReturn(Optional.of(achievementCategory));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-
+        when(ratingPointsService.createRatingPoints(achievement.getTitle())).thenReturn(new ArrayList<>());
         AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);
     }

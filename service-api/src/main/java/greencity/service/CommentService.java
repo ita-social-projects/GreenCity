@@ -95,7 +95,7 @@ public interface CommentService {
      * @param commentId id of {@link CommentVO} to like/dislike.
      * @param userVO    current {@link UserVO} that wants to like/dislike.
      */
-    void like(Long commentId, UserVO userVO);
+    void like(Long commentId, UserVO userVO, Locale locale);
 
     /**
      * Method returns count of likes to certain {@link CommentVO} specified by id.
