@@ -1,6 +1,7 @@
 package greencity.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 import greencity.dto.econews.EcoNewsViewDto;
@@ -10,6 +11,7 @@ import greencity.entity.localization.TagTranslation_;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -500,5 +502,44 @@ class EcoNewsSpecificationTest {
         assertEquals(andDateRangePredicate, actual);
         verify(criteriaBuilderMock).conjunction();
         verify(criteriaQueryMock).orderBy(List.of(dislikesOrderDesc));
+    }
+
+    @Test
+    void testPredicateCreatorForUnknownType() {
+        SearchCriteria criteria = new SearchCriteria("unknownType", "=", "value");
+        List<SearchCriteria> searchCriteriaList = List.of(criteria);
+        EcoNewsSpecification specification = new EcoNewsSpecification(searchCriteriaList);
+
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        Root<EcoNews> root = mock(Root.class);
+        CriteriaQuery<?> cq = mock(CriteriaQuery.class);
+        Predicate conjunction = mock(Predicate.class);
+
+        when(cb.conjunction()).thenReturn(conjunction);
+
+        Predicate predicate = specification.toPredicate(root, cq, cb);
+
+        assertNotNull(predicate);
+        assertEquals(conjunction, predicate);
+        verify(cb).conjunction();
+    }
+
+    @Test
+    void testEmptySearchCriteriaList() {
+        List<SearchCriteria> searchCriteriaList = Collections.emptyList();
+        EcoNewsSpecification specification = new EcoNewsSpecification(searchCriteriaList);
+
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        Root<EcoNews> root = mock(Root.class);
+        CriteriaQuery<?> cq = mock(CriteriaQuery.class);
+        Predicate conjunction = mock(Predicate.class);
+
+        when(cb.conjunction()).thenReturn(conjunction);
+
+        Predicate predicate = specification.toPredicate(root, cq, cb);
+
+        assertNotNull(predicate);
+        assertEquals(conjunction, predicate);
+        verify(cb).conjunction();
     }
 }
