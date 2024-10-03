@@ -578,4 +578,84 @@ class RestClientTest {
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
+
+    @Test
+    void sendEmailNotificationSystemTest() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, ACCESS_TOKEN);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ScheduledEmailMessage message = ModelUtils.getScheduledEmailMessage();
+
+        HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
+
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(object));
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
+
+        restClient.sendEmailNotificationSystem(message);
+
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendEmailNotificationLikesTest() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, ACCESS_TOKEN);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ScheduledEmailMessage message = ModelUtils.getScheduledEmailMessage();
+
+        HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
+
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(object));
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
+
+        restClient.sendEmailNotificationLikes(message);
+
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendEmailNotificationCommentsTest() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, ACCESS_TOKEN);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ScheduledEmailMessage message = ModelUtils.getScheduledEmailMessage();
+
+        HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
+
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(object));
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
+
+        restClient.sendEmailNotificationComments(message);
+
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendEmailNotificationInvitesTest() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, ACCESS_TOKEN);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ScheduledEmailMessage message = ModelUtils.getScheduledEmailMessage();
+
+        HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
+
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(object));
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
+
+        restClient.sendEmailNotificationInvites(message);
+
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
 }
