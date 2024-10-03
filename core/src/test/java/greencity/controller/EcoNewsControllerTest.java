@@ -1,15 +1,12 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUserVO;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.EcoNewsService;
-import greencity.service.TagsService;
 import greencity.service.UserService;
 import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,10 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -31,12 +25,22 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUserVO;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class EcoNewsControllerTest {
     private static final String ecoNewsLink = "/eco-news";
     private MockMvc mockMvc;
@@ -45,17 +49,14 @@ class EcoNewsControllerTest {
     @Mock
     private EcoNewsService ecoNewsService;
     @Mock
-    private TagsService tagsService;
-    @Mock
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
     @Mock
     private ObjectMapper objectMapper;
 
-    private Principal principal = getPrincipal();
-
-    private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+    private final Principal principal = getPrincipal();
+    private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
     @BeforeEach
     public void setUp() {
@@ -156,15 +157,6 @@ class EcoNewsControllerTest {
     }
 
     @Test
-    void findAllEcoNewsTagsTest() throws Exception {
-        String language = "en";
-        mockMvc.perform(get(ecoNewsLink + "/tags?lang=" + language))
-            .andExpect(status().isOk());
-
-        verify(tagsService).findAllEcoNewsTags(language);
-    }
-
-    @Test
     void likeTest() throws Exception {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
@@ -206,9 +198,8 @@ class EcoNewsControllerTest {
     @Test
     void checkNewsIsLikedByUserTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/likes/{userId}", 1, 1)
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/likes/{userId}", 1, userVO.getId())
             .principal(principal))
             .andExpect(status().isOk());
 
