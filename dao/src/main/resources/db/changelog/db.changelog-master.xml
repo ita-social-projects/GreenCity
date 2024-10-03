@@ -238,4 +238,5 @@
     <include file="db/changelog/logs/ch-move-data-from-events_comments-to-comments.xml"/>
     <include file="db/changelog/logs/ch-delete-tables-related-to-event-comments.xml"/>
     <include file="db/changelog/logs/ch-add-table-rating_points-Chekhovska.xml"/>
+    <include file="db/changelog/logs/ch-add-column-status-to-rating_points-table-Chekhovska.xml"/>
 </databaseChangeLog>
