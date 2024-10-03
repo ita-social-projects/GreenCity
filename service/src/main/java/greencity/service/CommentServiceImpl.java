@@ -29,7 +29,6 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
@@ -135,7 +134,7 @@ public class CommentServiceImpl implements CommentService {
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
 
         createCommentNotification(articleType, articleId, comment, userVO, locale);
-        sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, userVO, locale);
+        sendNotificationToTaggedUser(modelMapper.map(comment, CommentVO.class), articleType, locale);
 
         return addCommentDtoResponse;
     }
@@ -146,51 +145,22 @@ public class CommentServiceImpl implements CommentService {
      * @param commentVO   the comment containing the tag, {@link CommentVO}.
      * @param articleType the type of the article where the comment is made,
      *                    {@link ArticleType}.
-     * @param userVO      the user who made the comment, {@link UserVO}.
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      * @throws NotFoundException if a tagged user is not found by ID.
      */
-    private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, UserVO userVO,
-        Locale locale) {
+    private void sendNotificationToTaggedUser(CommentVO commentVO, ArticleType articleType, Locale locale) {
         String commentText = commentVO.getText();
         Set<Long> usersId = getUserIdFromComment(commentText);
         if (!usersId.isEmpty()) {
             for (Long userId : usersId) {
                 User user = userRepo.findById(userId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-                UserTaggedInCommentMessage message = UserTaggedInCommentMessage.builder()
-                    .commentedElementId(commentVO.getArticleId())
-                    .elementName(commentVO.getText())
-                    .taggerName(userVO.getName())
-                    .language(locale.getLanguage())
-                    .creationDate(commentVO.getCreatedDate())
-                    .receiverName(user.getName())
-                    .receiverEmail(user.getEmail())
-                    .commentText(commentText)
-                    .baseLink(getBaseLink(articleType, commentVO.getArticleId(), userVO.getId()))
-                    .build();
-                notificationService.sendUsersTaggedInCommentEmailNotification(message);
                 createUserTagInCommentsNotification(articleType, commentVO.getArticleId(),
                     modelMapper.map(commentVO, Comment.class),
                     modelMapper.map(user, UserVO.class),
                     locale);
             }
-        }
-    }
-
-    private String getBaseLink(ArticleType articleType, Long articleId, Long userId) {
-        switch (articleType) {
-            case HABIT -> {
-                return clientAddress + "/#/profile/" + userId + "/allhabits/addhabit/" + articleId;
-            }
-            case EVENT -> {
-                return clientAddress + "/#/events/" + articleId;
-            }
-            case ECO_NEWS -> {
-                return clientAddress + "/#/news/" + articleId;
-            }
-            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         }
     }
 
