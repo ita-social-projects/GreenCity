@@ -48,7 +48,6 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
-import greencity.message.HabitAssignNotificationMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -140,9 +139,6 @@ class HabitAssignServiceImplTest {
     private CustomShoppingListItemService customShoppingListItemService;
     @Mock
     private UserService userService;
-    @Mock
-    private NotificationService notificationService;
-
     @Mock
     UserNotificationService userNotificationService;
 
@@ -2816,9 +2812,7 @@ class HabitAssignServiceImplTest {
             locale);
 
         verify(habitAssignRepo).save(any(HabitAssign.class));
-        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
         verify(habitAssignRepo).save(any(HabitAssign.class));
-        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
     }
 
     @Test
@@ -2844,7 +2838,6 @@ class HabitAssignServiceImplTest {
             locale);
 
         verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
-        verify(notificationService).sendHabitAssignEmailNotification(any(HabitAssignNotificationMessage.class));
         verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
         verify(userNotificationService).createOrUpdateHabitInviteNotification(eq(new UserVO()), eq(userVO),
             eq(habit.getId()), eq(""));

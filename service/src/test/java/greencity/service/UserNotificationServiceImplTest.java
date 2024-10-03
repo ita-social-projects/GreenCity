@@ -56,6 +56,8 @@ class UserNotificationServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
+    private NotificationService notificationService;
+    @Mock
     private UserService userService;
     @Mock
     private SimpMessagingTemplate messagingTemplate;

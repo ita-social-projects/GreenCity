@@ -1,5 +1,6 @@
 package greencity.client;
 
+import greencity.annotations.CheckEmailPreference;
 import greencity.constant.AppConstant;
 import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.user.UserManagementDto;
@@ -8,18 +9,16 @@ import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.EmailPreference;
 import greencity.enums.Role;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import greencity.message.GeneralEmailMessage;
-import greencity.message.HabitAssignNotificationMessage;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-import greencity.message.UserTaggedInCommentMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import greencity.security.jwt.JwtTool;
@@ -552,46 +551,6 @@ public class RestClient {
     }
 
     /**
-     * Method sends general email notification.
-     *
-     * @param notification {@link GeneralEmailMessage}.
-     */
-    public void sendEmailNotification(GeneralEmailMessage notification) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class);
-        log.info("Email notification has been sent to {}", notification.getEmail());
-    }
-
-    /**
-     * Method sends habit assign email notification.
-     *
-     * @param message {@link HabitAssignNotificationMessage}.
-     */
-    public void sendHabitAssignNotification(HabitAssignNotificationMessage message) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<HabitAssignNotificationMessage> entity = new HttpEntity<>(message, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_HABIT_ASSIGN_NOTIFICATION, HttpMethod.POST, entity, Object.class);
-    }
-
-    /**
-     * Method sends email notification when user was mentioned in event comment.
-     *
-     * @param message {@link UserTaggedInCommentMessage}.
-     */
-    public void sendUserTaggedInCommentNotification(UserTaggedInCommentMessage message) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UserTaggedInCommentMessage> entity = new HttpEntity<>(message, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_USERS_MENTION_IN_COMMENT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
-    }
-
-    /**
      * Method sends scheduled email notification.
      *
      * @param message {@link ScheduledEmailMessage}.
@@ -602,5 +561,25 @@ public class RestClient {
         HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    @CheckEmailPreference(EmailPreference.SYSTEM)
+    public void sendEmailNotificationSystem(ScheduledEmailMessage message) {
+        sendScheduledEmailNotification(message);
+    }
+
+    @CheckEmailPreference(EmailPreference.LIKES)
+    public void sendEmailNotificationLikes(ScheduledEmailMessage message) {
+        sendScheduledEmailNotification(message);
+    }
+
+    @CheckEmailPreference(EmailPreference.COMMENTS)
+    public void sendEmailNotificationComments(ScheduledEmailMessage message) {
+        sendScheduledEmailNotification(message);
+    }
+
+    @CheckEmailPreference(EmailPreference.INVITES)
+    public void sendEmailNotificationInvites(ScheduledEmailMessage message) {
+        sendScheduledEmailNotification(message);
     }
 }

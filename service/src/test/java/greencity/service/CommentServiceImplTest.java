@@ -26,7 +26,6 @@ import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
@@ -381,9 +380,6 @@ class CommentServiceImplTest {
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
-        verify(notificationService, times(1))
-            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
-
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
 
@@ -422,9 +418,6 @@ class CommentServiceImplTest {
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
-        verify(notificationService, times(1))
-            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
-
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
 
@@ -462,9 +455,6 @@ class CommentServiceImplTest {
         when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
-
-        verify(notificationService, times(1))
-            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
