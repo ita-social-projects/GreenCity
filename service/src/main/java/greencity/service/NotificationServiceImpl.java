@@ -8,6 +8,7 @@ import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
+import greencity.entity.Language;
 import greencity.entity.Notification;
 import greencity.entity.Place;
 import greencity.entity.User;
@@ -292,9 +293,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
-        User user = userRepo.findById(notification.getTargetUser().getId()).get();
+        User user = userRepo.findById(notification.getTargetUser().getId()).orElse(null);
+        Language language = user != null ? user.getLanguage() : null;
         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-            user.getLanguage() != null ? user.getLanguage().getCode() : Locale.getDefault().getLanguage());
+            language != null ? language.getCode() : Locale.getDefault().getLanguage());
         List<NotificationType> likes = List.of(NotificationType.ECONEWS_COMMENT_LIKE,
             NotificationType.ECONEWS_LIKE,
             NotificationType.EVENT_COMMENT_LIKE,

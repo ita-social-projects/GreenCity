@@ -4,6 +4,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,8 +36,10 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import greencity.repository.UserNotificationPreferenceRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -55,6 +58,9 @@ class NotificationServiceImplTest {
 
     @Mock
     private PlaceRepo placeRepo;
+
+    @Mock
+    private UserRepo userRepo;
 
     @Mock
     private NotificationRepo notificationRepo;
@@ -227,11 +233,12 @@ class NotificationServiceImplTest {
         User user = ModelUtils.getUser();
         user.setLanguage(ModelUtils.getLanguage());
         notification.setTargetUser(user);
-        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         notificationService.sendEmailNotification(notificationDto);
+        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
-            .untilAsserted(() -> verify(restClient).sendScheduledEmailNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient).sendEmailNotificationSystem(captor.capture()));
         ScheduledEmailMessage capturedMessage = captor.getValue();
         assertEquals(notificationDto.getTargetUser().getEmail(), capturedMessage.getEmail());
         assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
