@@ -46,8 +46,7 @@ public interface RatingPointsService {
     void deleteRatingPoints(Long id);
 
     /**
-     * Get deleted {@link RatingPointsDto} entities with pageable
-     * configuration.
+     * Get deleted {@link RatingPointsDto} entities with pageable configuration.
      *
      * @param pageable {@link Pageable} object to configure page size, number, and
      *                 sorting options
