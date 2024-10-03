@@ -69,8 +69,6 @@ import static greencity.ModelUtils.getFilterEventDto;
 import static greencity.ModelUtils.getTupleElements;
 import static greencity.ModelUtils.getTuples;
 import static greencity.ModelUtils.getUserVO;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
