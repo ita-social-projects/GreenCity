@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
@@ -35,6 +36,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final NotificationService notificationService;
     private final SimpMessagingTemplate messagingTemplate;
     private static final String TOPIC = "/topic/";
     private static final String NOTIFICATION = "/notification";
@@ -76,7 +78,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .customMessage(message)
                 .emailSent(false)
                 .build();
-            notificationRepo.save(notification);
+            notificationService.sendEmailNotification(
+                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
             sendNotification(notification.getTargetUser().getId());
         }
     }
@@ -98,7 +101,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .secondMessage(title)
                 .emailSent(false)
                 .build();
-            notificationRepo.save(notification);
+            notificationService.sendEmailNotification(
+                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
             sendNotification(notification.getTargetUser().getId());
         }
     }
@@ -116,7 +120,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
             .emailSent(false)
             .build();
-        notificationRepo.save(notification);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -140,7 +145,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
-        notificationRepo.save(notification);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -167,7 +173,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
-        notificationRepo.save(notification);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -186,7 +193,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .time(LocalDateTime.now())
             .emailSent(false)
             .build();
-        notificationRepo.save(notification);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 

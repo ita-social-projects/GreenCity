@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ScheduledEmailMessage implements Serializable {
+public class ScheduledEmailMessage implements Serializable, EmailMessage {
     @NotEmpty(message = "Username cannot be empty")
     private String username;
     @NotEmpty(message = "Email cannot be empty")
