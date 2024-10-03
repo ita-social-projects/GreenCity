@@ -15,11 +15,11 @@ import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
@@ -62,14 +62,6 @@ public class ModelUtils {
             .build();
     }
 
-    private static PlaceAuthorDto getPlaceAuthorDto() {
-        return PlaceAuthorDto.builder()
-            .id(1L)
-            .email("test@gmail.com")
-            .name("taras")
-            .build();
-    }
-
     public static ChangePlaceStatusDto getSendChangePlaceStatusEmailMessage() {
         return ChangePlaceStatusDto.builder()
             .placeStatus(PlaceStatus.APPROVED)
@@ -102,10 +94,10 @@ public class ModelUtils {
 
     public static SendReportEmailMessage getSendReportEmailMessage() {
         return SendReportEmailMessage.builder()
-            .emailNotification("notification")
+            .emailNotification(EmailNotification.WEEKLY)
             .categoriesDtoWithPlacesDtoMap(Collections.singletonMap(
                 getCategoryDto(), Collections.singletonList(getPlaceNotificationDto())))
-            .subscribers(Collections.singletonList(getPlaceAuthorDto()))
+            .subscribers(getSubscribers())
             .build();
     }
 
