@@ -11,6 +11,7 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
@@ -87,6 +88,14 @@ class PlaceServiceImplTest {
         .name("test")
         .build();
 
+    private final Language language = Language.builder()
+        .id(2L)
+        .code("en")
+        .build();
+    private final LanguageVO languageVO = LanguageVO.builder()
+        .id(2L)
+        .code("en")
+        .build();
     private final User user =
         User.builder()
             .id(1L)
@@ -95,6 +104,7 @@ class PlaceServiceImplTest {
             .role(Role.ROLE_USER)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
+            .language(language)
             .build();
     private final UserVO userVO =
         UserVO.builder()
@@ -104,6 +114,7 @@ class PlaceServiceImplTest {
             .role(Role.ROLE_USER)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
+            .languageVO(languageVO)
             .build();
     private final Place genericEntity1 = Place.builder()
         .id(1L)

@@ -419,6 +419,7 @@ public class ModelUtils {
             .dateOfRegistration(localDateTime)
             .subscribedEvents(new HashSet<>())
             .favoriteEvents(new HashSet<>())
+            .language(getLanguage())
             .build();
     }
 
@@ -508,6 +509,7 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
+            .languageVO(getLanguageVO())
             .build();
     }
 
@@ -1073,6 +1075,7 @@ public class ModelUtils {
         place.setAuthor(getUser());
         place.setModifiedDate(ZonedDateTime.now());
         place.setStatus(PlaceStatus.PROPOSED);
+        place.setAuthor(getUser());
         return place;
     }
 
@@ -1090,6 +1093,7 @@ public class ModelUtils {
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setName("category");
         placeVO.setCategory(categoryVO);
+        placeVO.setAuthor(getAuthorVO());
         return placeVO;
     }
 
