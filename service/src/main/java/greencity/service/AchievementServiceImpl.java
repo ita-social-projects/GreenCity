@@ -43,6 +43,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final SimpMessagingTemplate messagingTemplate;
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final UserActionRepo userActionRepo;
+    private final RatingPointsService ratingPointsService;
 
     /**
      * {@inheritDoc}
@@ -67,6 +68,7 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementCategory achievementCategory =
             findCategoryByName(achievementPostDto.getAchievementCategory().getName());
         populateAchievement(achievement, achievementPostDto, achievementCategory);
+        ratingPointsService.createRatingPoints(achievement.getTitle());
         return mapToVO(achievementRepo.save(achievement));
     }
 
@@ -158,7 +160,9 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementCategory achievementCategory = findCategoryByName(
             achievementManagementDto.getAchievementCategory().getName());
         populateAchievement(achievement, achievementManagementDto, achievementCategory);
-
+        if (!achievement.getTitle().equals(achievementManagementDto.getTitle())) {
+            ratingPointsService.updateRatingPointsName(achievement.getTitle(), achievementManagementDto.getTitle());
+        }
         return modelMapper.map(achievementRepo.save(achievement), AchievementPostDto.class);
     }
 
