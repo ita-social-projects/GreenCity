@@ -64,7 +64,6 @@ public class SecurityConfig {
     private static final String EVENTS_COMMENTS = EVENTS + COMMENTS;
     private static final String FRIENDS = "/friends";
     private static final String HABITS = "/habits";
-    private static final String HABIT = "/habit";
     private static final String FACT_OF_THE_DAY = "/fact-of-the-day";
     private static final String RANDOM = "/random";
     private static final String SUBSCRIPTIONS = "/subscriptions";
@@ -262,8 +261,8 @@ public class SecurityConfig {
                     "/habit/tags/search",
                     "/habit/search",
                     "/habit/all/{friendId}",
-                    HABIT + "/allMutualHabits/{friendId}",
-                    HABIT + "/habit/{habitId}/friends/profile-pictures",
+                    "/habit/allMutualHabits/{friendId}",
+                    "/habit/{habitId}/friends/profile-pictures",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
