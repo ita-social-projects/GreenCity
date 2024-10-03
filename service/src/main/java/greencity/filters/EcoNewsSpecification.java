@@ -36,8 +36,8 @@ import org.springframework.stereotype.Component;
 public class EcoNewsSpecification implements MySpecification<EcoNews> {
     private final transient List<SearchCriteria> searchCriteriaList;
 
-    private final transient Map<String,
-            TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> predCreators =
+    // Predicate Creators
+    private final transient Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pC =
         Map.of(
             "id", this::getNumericPredicate,
             "title", this::getStringPredicate,
@@ -56,7 +56,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
         Predicate allPredicates = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
-                predCreators.get(searchCriteria.getType());
+                pC.get(searchCriteria.getType());
             if (predicateCreator != null) {
                 Predicate predicate = predicateCreator.apply(root, criteriaBuilder, searchCriteria);
                 allPredicates = criteriaBuilder.and(allPredicates, predicate);
