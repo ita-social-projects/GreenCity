@@ -4,10 +4,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.econews.ShortEcoNewsDto;
-import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
@@ -130,33 +127,6 @@ public class ModelUtils {
             .text("Text")
             .title("Title")
             .build());
-    }
-
-    public static EventCommentForSendEmailDto getEventCommentForSendEmailDto() {
-        return EventCommentForSendEmailDto.builder()
-            .id(1L)
-            .organizer(ModelUtils.getEventAuthorDto())
-            .createdDate(LocalDateTime.now())
-            .author(ModelUtils.getEventCommentAuthorDto())
-            .text("text")
-            .eventId(1L)
-            .build();
-    }
-
-    public static EventAuthorDto getEventAuthorDto() {
-        return EventAuthorDto.builder()
-            .id(1L)
-            .name("Inna")
-            .organizerRating(1.0)
-            .build();
-    }
-
-    public static EventCommentAuthorDto getEventCommentAuthorDto() {
-        return EventCommentAuthorDto.builder()
-            .id(ModelUtils.getUserVO().getId())
-            .name(ModelUtils.getUserVO().getName().trim())
-            .userProfilePicturePath(ModelUtils.getUserVO().getProfilePicturePath())
-            .build();
     }
 
     public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();

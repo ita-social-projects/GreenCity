@@ -30,7 +30,7 @@ public class AchievementController {
 
     /**
      * Method returns all achievements, available for achieving with optional
-     * filters by category or achievement status(ACHIEVED, UNACHIEVED) for user.
+     * filters by category or achievement status (ACHIEVED, UNACHIEVED) for user.
      *
      * @return list of {@link AchievementVO}
      */
