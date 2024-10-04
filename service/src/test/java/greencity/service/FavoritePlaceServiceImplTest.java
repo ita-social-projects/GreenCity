@@ -40,12 +40,12 @@ class FavoritePlaceServiceImplTest {
     @InjectMocks
     private FavoritePlaceServiceImpl favoritePlaceService;
 
-    private FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
-    private FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
-    private FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
-    private String userEmail = favoritePlace.getUser().getEmail();
-    private Long favoritePlaceId = favoritePlace.getId();
-    private PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
+    private final FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
+    private final FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
+    private final FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
+    private final String userEmail = favoritePlace.getUser().getEmail();
+    private final Long favoritePlaceId = favoritePlace.getId();
+    private final PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
 
     @Test
     void saveFavoritePlaceAlreadyExistTest() {
@@ -67,13 +67,13 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void saveBadUserEmailTest() {
-        String userEmail = "email";
+        String badUserEmail = "email";
 
         when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
 
         Exception exception = assertThrows(
             WrongIdException.class,
-            () -> favoritePlaceService.save(dto, userEmail));
+            () -> favoritePlaceService.save(dto, badUserEmail));
 
         String expectedMessage = ErrorMessage.PLACE_NOT_FOUND_BY_ID;
         String actualMessage = exception.getMessage();
