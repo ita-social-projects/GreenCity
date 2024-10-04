@@ -19,7 +19,10 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.filter.FilterDiscountDto;
+import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -28,9 +31,12 @@ import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.MapBoundsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
@@ -62,6 +68,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.springframework.data.domain.Pageable;
+
+import static greencity.enums.PlaceStatus.PROPOSED;
 
 public class ModelUtils {
     public static List<TagTranslationVO> getTagTranslationsVO() {
@@ -475,4 +483,47 @@ public class ModelUtils {
             AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
             AddressDto.builder().cityUa("Львів").cityEn("Lviv").build());
     }
+
+    public static FilterPlaceDto getFilterPlaceDto() {
+        return FilterPlaceDto.builder()
+            .distanceFromUserDto(getFilterDistanceDto())
+            .mapBoundsDto(getMapBoundsDto())
+            .time("10/10/2010 20:00:00")
+            .status(PROPOSED)
+            .searchReg("test")
+            .discountDto(getFilterDiscountDto())
+            .build();
+    }
+
+    public static FilterDistanceDto getFilterDistanceDto() {
+        return FilterDistanceDto.builder()
+            .lat(1.0)
+            .lng(1.0)
+            .distance(1.0)
+            .build();
+    }
+
+    public static MapBoundsDto getMapBoundsDto() {
+        return MapBoundsDto.builder()
+            .northEastLat(1.0)
+            .northEastLng(1.0)
+            .southWestLat(1.0)
+            .southWestLng(1.0)
+            .build();
+    }
+
+    public static SpecificationNameDto getSpecificationNameDto() {
+        return SpecificationNameDto.builder()
+            .name("test")
+            .build();
+    }
+
+    public static FilterDiscountDto getFilterDiscountDto() {
+        return FilterDiscountDto.builder()
+            .discountMax(1)
+            .discountMin(1)
+            .specification(getSpecificationNameDto())
+            .build();
+    }
+
 }
