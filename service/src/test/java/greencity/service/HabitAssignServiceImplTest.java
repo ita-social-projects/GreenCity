@@ -197,7 +197,7 @@ class HabitAssignServiceImplTest {
             .customShoppingListItemList(List.of(ModelUtils.getCustomShoppingListItemSaveRequestDto()))
             .build();
 
-    private final String language = AppConstant.DEFAULT_LANGUAGE_CODE;;
+    private final String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
     @Test
     void getByHabitAssignIdAndUserIdThrowsNotFoundExceptionWhenHabitAssignNotExists() {
@@ -1596,17 +1596,17 @@ class HabitAssignServiceImplTest {
         Long userId = 2L;
         Long habitAssignId = 3L;
         Habit habitWithHabitAssignStatus = ModelUtils.getHabit(habitId, "image123");
-        HabitAssign habitAssign =
+        HabitAssign habitAssignInProgress =
             ModelUtils.getHabitAssign(habitAssignId, habitWithHabitAssignStatus, HabitAssignStatus.INPROGRESS);
-        habitAssign.getUser().setId(userId);
+        habitAssignInProgress.getUser().setId(userId);
         HabitAssignDto habitAssignDto =
-            ModelUtils.getHabitAssignDto(habitAssignId, habitAssign.getStatus(), habitWithHabitAssignStatus.getImage());
-        HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
+            ModelUtils.getHabitAssignDto(habitAssignId, habitAssignInProgress.getStatus(), habitWithHabitAssignStatus.getImage());
+        HabitTranslation habitTranslation = habitAssignInProgress.getHabit().getHabitTranslations().stream().findFirst().get();
 
-        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssignInProgress));
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(new ArrayList<>());
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(habitAssignInProgress, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDto.getHabit());
         when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId)).thenReturn(new ArrayList<>());
 
@@ -1615,7 +1615,7 @@ class HabitAssignServiceImplTest {
         assertNotNull(dto);
         assertEquals(habitWithHabitAssignStatus.getId(), dto.getId());
         assertEquals(habitWithHabitAssignStatus.getImage(), dto.getImage());
-        assertEquals(habitAssign.getStatus(), dto.getHabitAssignStatus());
+        assertEquals(habitAssignInProgress.getStatus(), dto.getHabitAssignStatus());
         verify(habitAssignRepo).findById(anyLong());
         verify(shoppingListItemTranslationRepo).findShoppingListByHabitIdAndByLanguageCode(anyString(), anyLong());
         verify(userShoppingListItemRepo).getAllAssignedShoppingListItemsFull(anyLong());
