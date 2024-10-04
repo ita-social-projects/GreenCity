@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
@@ -12,6 +13,7 @@ import greencity.repository.NotificationRepo;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +37,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
     private final UserService userService;
+    private final NotificationService notificationService;
     private final SimpMessagingTemplate messagingTemplate;
     private static final String TOPIC = "/topic/";
     private static final String NOTIFICATION = "/notification";
@@ -76,7 +79,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .customMessage(message)
                 .emailSent(false)
                 .build();
-            notificationRepo.save(notification);
+            notificationService.sendEmailNotification(
+                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
             sendNotification(notification.getTargetUser().getId());
         }
     }
@@ -98,7 +102,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .secondMessage(title)
                 .emailSent(false)
                 .build();
-            notificationRepo.save(notification);
+            notificationService.sendEmailNotification(
+                modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
             sendNotification(notification.getTargetUser().getId());
         }
     }
@@ -116,7 +121,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
             .emailSent(false)
             .build();
-        notificationRepo.save(notification);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -140,7 +146,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
-        notificationRepo.save(notification);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -167,7 +174,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
-        notificationRepo.save(notification);
+        notification.setCustomMessage(customMessage);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -186,7 +195,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .time(LocalDateTime.now())
             .emailSent(false)
             .build();
-        notificationRepo.save(notification);
+        notificationService.sendEmailNotification(
+            modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
     }
 
@@ -281,7 +291,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
         dto.setBodyText(bundle.getString(dto.getNotificationType()));
-        int size = notification.getActionUsers().size();
+        int size = new HashSet<>(notification.getActionUsers()).size();
         if (size == 1) {
             User actionUser = notification.getActionUsers().getFirst();
             dto.setActionUserId(actionUser.getId());

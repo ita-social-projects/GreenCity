@@ -1,8 +1,10 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
+
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
@@ -11,14 +13,18 @@ import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
+
 import java.security.Principal;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
 import static org.mockito.Mockito.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -31,8 +37,10 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +61,7 @@ class EcoNewsControllerTest {
     @Mock
     private ObjectMapper objectMapper;
 
-    private Principal principal = getPrincipal();
+    private final Principal principal = getPrincipal();
 
     private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
@@ -69,14 +77,14 @@ class EcoNewsControllerTest {
 
     @Test
     void saveTest() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("Olivia.Johnson@gmail.com");
-        String json = "{\n" +
-            "\"title\": \"title\",\n" +
-            " \"tags\": [\"news\"],\n" +
-            " \"text\": \"content content content\", \n" +
-            "\"source\": \"\"\n" +
-            "}";
+        String json = """
+                {
+                    "title": "title",
+                    "tags": ["news"],
+                    "text": "content content content",
+                    "source": ""
+                }
+            """;
         MockMultipartFile jsonFile =
             new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
 
@@ -91,7 +99,7 @@ class EcoNewsControllerTest {
         AddEcoNewsDtoRequest addEcoNewsDtoRequest = mapper.readValue(json, AddEcoNewsDtoRequest.class);
 
         verify(ecoNewsService)
-            .saveEcoNews(eq(addEcoNewsDtoRequest), isNull(), eq("Olivia.Johnson@gmail.com"));
+            .saveEcoNews(eq(addEcoNewsDtoRequest), isNull(), eq("test@gmail.com"));
     }
 
     @Test

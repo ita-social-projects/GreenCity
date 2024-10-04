@@ -80,6 +80,7 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
@@ -2863,6 +2864,16 @@ public class ModelUtils {
         return new PageableAdvancedDto<>(Collections.singletonList(getNotificationDto()),
             1, 0, 1, 0,
             false, false, true, true);
+    }
+
+    public static EmailNotificationDto getEmailNotificationDto() {
+        return EmailNotificationDto.builder()
+            .targetUser(getUserVO())
+            .actionUsers(new ArrayList<>())
+            .customMessage("custom")
+            .secondMessage("second")
+            .notificationType(EVENT_CREATED)
+            .build();
     }
 
     public static UserAsFriendDto getUserAsFriendDto() {

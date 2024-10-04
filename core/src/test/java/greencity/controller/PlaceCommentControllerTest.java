@@ -43,29 +43,19 @@ class PlaceCommentControllerTest {
     private static final String placeCommentLinkFirstPart = "/place";
     private static final String placeCommentLinkSecondPart = "/comments";
 
-    private static final String content = "{\n" +
-        "  \"estimate\": {\n" +
-        "    \"rate\": 1\n" +
-        "  },\n" +
-        "  \"photos\": [\n" +
-        "    {\n" +
-        "      \"name\": \"string\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"text\": \"string\"\n" +
-        "}";
-
-    private static final String getContent = "{\n" +
-        "  \"estimate\": {\n" +
-        "    \"rate\": 1\n" +
-        "  },\n" +
-        "  \"photos\": [\n" +
-        "    {\n" +
-        "      \"name\": \"test\"\n" +
-        "    }\n" +
-        "  ],\n" +
-        "  \"text\": \"test\"\n" +
-        "}";
+    private static final String content = """
+            {
+                "estimate": {
+                    "rate": 1
+                },
+                "photos": [
+                    {
+                        "name": "string"
+                    }
+                ],
+                "text": "string"
+            }
+        """;
 
     @BeforeEach
     void setup() {

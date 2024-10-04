@@ -26,13 +26,13 @@ import greencity.enums.NotificationType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.UserTaggedInCommentMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.NotificationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.RatingPointsRepo;
 import org.junit.jupiter.api.Test;
@@ -108,6 +108,8 @@ class CommentServiceImplTest {
     private CommentServiceImpl commentService;
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private NotificationRepo notificationRepo;
     @Mock
     private SimpMessagingTemplate messagingTemplate;
     @Mock
@@ -381,9 +383,6 @@ class CommentServiceImplTest {
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
-        verify(notificationService, times(1))
-            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
-
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
 
@@ -422,9 +421,6 @@ class CommentServiceImplTest {
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
-        verify(notificationService, times(1))
-            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
-
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
 
@@ -462,9 +458,6 @@ class CommentServiceImplTest {
         when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
-
-        verify(notificationService, times(1))
-            .sendUsersTaggedInCommentEmailNotification(any(UserTaggedInCommentMessage.class));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
     }

@@ -198,4 +198,6 @@ public class ErrorMessage {
     public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
     public static final String RATING_POINTS_NOT_FOUND_BY_NAME =
         "The rating points does not exist by this name: ";
+    public static final String RATING_POINTS_NOT_FOUND_BY_ID =
+        "The rating points does not exist by this id: ";
 }

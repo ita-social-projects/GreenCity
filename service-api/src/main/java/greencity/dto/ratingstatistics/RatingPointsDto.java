@@ -1,5 +1,6 @@
 package greencity.dto.ratingstatistics;
 
+import greencity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,4 +14,5 @@ public class RatingPointsDto {
     private Long id;
     private String name;
     private Integer points;
+    private Status status;
 }
