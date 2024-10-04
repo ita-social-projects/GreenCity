@@ -104,6 +104,46 @@ public class HabitController {
     }
 
     /**
+     * Endpoint to get all habits (default and custom) of a specified friend for the
+     * current user. This method retrieves all habits that are either default or
+     * created by the friend.
+     *
+     * @param friendId the ID of the friend whose habits are to be retrieved.
+     * @param userVO   the current user obtained from the authentication context.
+     * @param pageable the pagination information.
+     * @return {@link ResponseEntity} containing a pageable list of
+     *         {@link HabitDto}.
+     */
+    @GetMapping("/all/{friendId}")
+    public ResponseEntity<PageableDto<HabitDto>> getAllHabitsOfFriend(
+        @PathVariable Long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable));
+    }
+
+    /**
+     * Endpoint to get all mutual habits shared between the current user and a
+     * specified friend. This method retrieves habits that both users have in common
+     * and are either in progress or acquired.
+     *
+     * @param friendId the ID of the friend with whom to find mutual habits.
+     * @param userVO   the current user obtained from the authentication context.
+     * @param pageable the pagination information.
+     * @return {@link ResponseEntity} containing a pageable list of
+     *         {@link HabitDto}.
+     */
+    @GetMapping("/allMutualHabits/{friendId}")
+    public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
+        @PathVariable Long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable));
+    }
+
+    /**
      * Method finds shoppingList for habit in specific language.
      *
      * @param locale {@link Locale} with needed language code.
