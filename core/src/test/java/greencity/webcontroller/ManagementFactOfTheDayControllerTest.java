@@ -122,11 +122,11 @@ class ManagementFactOfTheDayControllerTest {
     void saveFactOfTheDayTest() throws Exception {
         FactOfTheDayPostDTO factOfTheDayPostDTO = getFactOfTheDayPostDTO();
         String json = """
-    {
-        "id": "1",
-        "name": "New Fact"
-    }
-    """;
+            {
+                "id": "1",
+                "name": "New Fact"
+            }
+            """;
 
         mockMvc.perform(post(managementFactOfTheDayLink + "/")
             .content(json)
@@ -159,11 +159,11 @@ class ManagementFactOfTheDayControllerTest {
     void updateFactOfTheDayTest() throws Exception {
         FactOfTheDayPostDTO factOfTheDayPostDTO = getFactOfTheDayPostDTO();
         String json = """
-    {
-        "id": "1",
-        "name": "New Fact"
-    }
-    """;
+            {
+                "id": "1",
+                "name": "New Fact"
+            }
+            """;
 
         mockMvc.perform(put(managementFactOfTheDayLink + "/")
             .content(json)

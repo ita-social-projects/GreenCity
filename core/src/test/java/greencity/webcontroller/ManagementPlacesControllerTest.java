@@ -97,22 +97,22 @@ class ManagementPlacesControllerTest {
     void savePlace() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
         String json = """
-    {
-        "placeName": "Тестове місце",
-        "locationName": "смиків, південна 7",
-        "status": "APPROVED",
-        "categoryName": "Recycling points",
-        "discountValues": null,
-        "openingHoursList": [
             {
-                "weekDay": "MONDAY",
-                "openTime": "17:34",
-                "closeTime": "19:34",
-                "breakTime": null
+                "placeName": "Тестове місце",
+                "locationName": "смиків, південна 7",
+                "status": "APPROVED",
+                "categoryName": "Recycling points",
+                "discountValues": null,
+                "openingHoursList": [
+                    {
+                        "weekDay": "MONDAY",
+                        "openTime": "17:34",
+                        "closeTime": "19:34",
+                        "breakTime": null
+                    }
+                ]
             }
-        ]
-    }
-    """;
+            """;
 
         MockMultipartFile addPlaceDto = new MockMultipartFile(
             "addPlaceDto",
