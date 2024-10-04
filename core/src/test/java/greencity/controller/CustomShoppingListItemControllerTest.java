@@ -3,7 +3,6 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.service.CustomShoppingListItemService;
 import java.util.*;
@@ -72,8 +71,6 @@ class CustomShoppingListItemControllerTest {
     @Test
     void save() throws Exception {
         Long id = 1L;
-        CustomShoppingListItemSaveRequestDto customShoppingListItemSaveRequestDto =
-            new CustomShoppingListItemSaveRequestDto("Texttext");
         BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto = new BulkSaveCustomShoppingListItemDto();
         String content = objectMapper.writeValueAsString(bulkSaveCustomShoppingListItemDto);
         this.mockMvc.perform(post(customLink + "/" + id + "/" + id + "/" + "custom-shopping-list-items")
