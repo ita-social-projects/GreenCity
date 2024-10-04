@@ -152,7 +152,6 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void saveEcoNews() throws Exception {
-        Principal principal = Mockito.mock(Principal.class);
         AddEcoNewsDtoRequest addEcoNewsDtoRequest = new AddEcoNewsDtoRequest();
         addEcoNewsDtoRequest.setText("TextTextTextTextTextText");
         addEcoNewsDtoRequest.setTitle("Title");
