@@ -67,13 +67,13 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void saveBadUserEmailTest() {
-        String badUserEmail = "email";
+        String userEmail = "email";
 
         when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
 
         Exception exception = assertThrows(
             WrongIdException.class,
-            () -> favoritePlaceService.save(dto, badUserEmail));
+            () -> favoritePlaceService.save(dto, userEmail));
 
         String expectedMessage = ErrorMessage.PLACE_NOT_FOUND_BY_ID;
         String actualMessage = exception.getMessage();
