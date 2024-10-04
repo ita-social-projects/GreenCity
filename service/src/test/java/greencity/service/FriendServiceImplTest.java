@@ -1200,7 +1200,7 @@ class FriendServiceImplTest {
     @Test
     void getUserAsFriendIfUsersAreNotFriendsAndDoNotHaveChatTest() {
         UserAsFriendDto expected = new UserAsFriendDto(1L, null);
-        ;
+
         Long userId = 2L;
         Long friendId = expected.getId();
 

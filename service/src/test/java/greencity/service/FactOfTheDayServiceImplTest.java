@@ -6,7 +6,6 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
-import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;

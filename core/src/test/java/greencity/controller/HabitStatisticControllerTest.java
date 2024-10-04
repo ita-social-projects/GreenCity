@@ -44,16 +44,20 @@ class HabitStatisticControllerTest {
 
     @Test
     void save() throws Exception {
+        String json = """
+            {
+              "amountOfItems": 1,
+              "createDate": "2020-10-09T16:49:01.020Z",
+              "habitRate": "GOOD"
+            }
+            """;
+
         AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
         addHabitStatisticDto.setAmountOfItems(1);
         addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z"));
         addHabitStatisticDto.setHabitRate(GOOD);
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
-            .content("{\n" +
-                "  \"amountOfItems\": 1,\n" +
-                "  \"createDate\": \"2020-10-09T16:49:01.020Z\",\n" +
-                "  \"habitRate\": \"GOOD\"\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
         verify(habitStatisticService).saveByHabitIdAndUserId(1L, null, addHabitStatisticDto);
