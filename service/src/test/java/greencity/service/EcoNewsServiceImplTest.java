@@ -132,7 +132,7 @@ class EcoNewsServiceImplTest {
     private static final String ECO_NEWS_TAG_TRANSLATION_NAME = "name";
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         ecoNews = ModelUtils.getEcoNews();
     }
 
