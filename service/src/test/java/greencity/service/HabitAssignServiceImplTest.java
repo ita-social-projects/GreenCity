@@ -1600,8 +1600,10 @@ class HabitAssignServiceImplTest {
             ModelUtils.getHabitAssign(habitAssignId, habitWithHabitAssignStatus, HabitAssignStatus.INPROGRESS);
         habitAssignInProgress.getUser().setId(userId);
         HabitAssignDto habitAssignDto =
-            ModelUtils.getHabitAssignDto(habitAssignId, habitAssignInProgress.getStatus(), habitWithHabitAssignStatus.getImage());
-        HabitTranslation habitTranslation = habitAssignInProgress.getHabit().getHabitTranslations().stream().findFirst().get();
+            ModelUtils.getHabitAssignDto(habitAssignId, habitAssignInProgress.getStatus(),
+                habitWithHabitAssignStatus.getImage());
+        HabitTranslation habitTranslation =
+            habitAssignInProgress.getHabit().getHabitTranslations().stream().findFirst().get();
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssignInProgress));
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
