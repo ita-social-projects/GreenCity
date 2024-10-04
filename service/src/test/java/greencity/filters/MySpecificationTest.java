@@ -50,7 +50,7 @@ class MySpecificationTest {
 
     @BeforeEach
     void init() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
         tagViewDto = ModelUtils.getTagViewDto();
         searchCriteriaList = new ArrayList<>();

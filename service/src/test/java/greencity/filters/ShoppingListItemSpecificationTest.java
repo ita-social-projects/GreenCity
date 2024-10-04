@@ -56,7 +56,7 @@ class ShoppingListItemSpecificationTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         ShoppingListItemDto shoppingListItemDto = new ShoppingListItemDto();
         shoppingListItemDto.setId(1L);
