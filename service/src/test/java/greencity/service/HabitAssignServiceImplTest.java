@@ -1470,8 +1470,8 @@ class HabitAssignServiceImplTest {
     @Test
     void updateStatusAndDurationOfHabitAssignTest() {
         HabitAssign habitAssignRequested = getHabitAssign()
-                .setStatus(HabitAssignStatus.REQUESTED)
-                .setDuration(20);
+            .setStatus(HabitAssignStatus.REQUESTED)
+            .setDuration(20);
         when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssignRequested));
         when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
             .thenReturn(Optional.of(habitAssignRequested));
@@ -1497,7 +1497,7 @@ class HabitAssignServiceImplTest {
     @Test
     void updateStatusAndDurationOfHabitAssignThrowInvalidStatusExceptionTest() {
         HabitAssign habitAssignInProgress = ModelUtils.getHabitAssign()
-                .setStatus(HabitAssignStatus.INPROGRESS);
+            .setStatus(HabitAssignStatus.INPROGRESS);
         when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssignInProgress));
         when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
             .thenReturn(Optional.empty());
@@ -1596,7 +1596,8 @@ class HabitAssignServiceImplTest {
         Long userId = 2L;
         Long habitAssignId = 3L;
         Habit habitWithHabitAssignStatus = ModelUtils.getHabit(habitId, "image123");
-        HabitAssign habitAssign = ModelUtils.getHabitAssign(habitAssignId, habitWithHabitAssignStatus, HabitAssignStatus.INPROGRESS);
+        HabitAssign habitAssign =
+            ModelUtils.getHabitAssign(habitAssignId, habitWithHabitAssignStatus, HabitAssignStatus.INPROGRESS);
         habitAssign.getUser().setId(userId);
         HabitAssignDto habitAssignDto =
             ModelUtils.getHabitAssignDto(habitAssignId, habitAssign.getStatus(), habitWithHabitAssignStatus.getImage());
@@ -2824,7 +2825,7 @@ class HabitAssignServiceImplTest {
         verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
         verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
         verify(userNotificationService).createOrUpdateHabitInviteNotification(new UserVO(), userVO,
-                habit.getId(), "");
+            habit.getId(), "");
 
     }
 
