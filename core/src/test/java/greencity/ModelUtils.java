@@ -31,7 +31,6 @@ import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
