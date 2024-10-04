@@ -32,12 +32,9 @@ import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.filter.FilterDiscountDto;
-import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
-import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.PlaceAddDto;
@@ -52,8 +49,8 @@ import greencity.dto.user.UserVO;
 import greencity.enums.UserStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
+import static greencity.ModelUtils.getFilterPlaceDto;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -100,8 +97,46 @@ class PlaceControllerTest {
 
     @Test
     void proposePlace() throws Exception {
-        Principal principal = mock(Principal.class);
         CategoryDto categoryDto = CategoryDto.builder().name("test").build();
+        String json = """
+            {
+              "category": {
+                "name": "test"
+              },
+              "discountValues": [
+                {
+                  "specification": {
+                    "name": "test"
+                  },
+                  "value": 1
+                }
+              ],
+              "id": 1,
+              "location": {
+                "address": "test",
+                "lat": 1,
+                "lng": 1
+              },
+              "name": "string",
+              "openingHoursList": [
+                {
+                  "breakTime": {
+                    "endTime": "14:00",
+                    "startTime": "13:00"
+                  },
+                  "closeTime": "20:00",
+                  "openTime": "08:00",
+                  "weekDay": "MONDAY"
+                }
+              ],
+              "photos": [
+                {
+                  "name": "test"
+                }
+              ],
+              "status": "PROPOSED"
+            }
+            """;
 
         LocationAddressAndGeoDto locationAddressAndGeoDto = LocationAddressAndGeoDto.builder()
             .address("Lviv")
@@ -160,43 +195,7 @@ class PlaceControllerTest {
             .thenReturn(new PlaceWithUserDto());
 
         mockMvc.perform(post(placeLink + "/propose")
-            .content("{\n" +
-                "  \"category\": {\n" +
-                "    \"name\": \"test\"\n" +
-                "  },\n" +
-                "  \"discountValues\": [\n" +
-                "    {\n" +
-                "      \"specification\": {\n" +
-                "        \"name\": \"test\"\n" +
-                "      },\n" +
-                "      \"value\": 1\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"id\": 1,\n" +
-                "  \"location\": {\n" +
-                "    \"address\": \"test\",\n" +
-                "    \"lat\": 1,\n" +
-                "    \"lng\": 1\n" +
-                "  },\n" +
-                "  \"name\": \"string\",\n" +
-                "  \"openingHoursList\": [\n" +
-                "    {\n" +
-                "      \"breakTime\": {\n" +
-                "        \"endTime\": \"14:00\",\n" +
-                "        \"startTime\": \"13:00\"\n" +
-                "      },\n" +
-                "      \"closeTime\": \"20:00\",\n" +
-                "      \"openTime\": \"08:00\",\n" +
-                "      \"weekDay\": \"MONDAY\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"photos\": [\n" +
-                "    {\n" +
-                "      \"name\": \"test\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"status\": \"PROPOSED\"\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .principal(principal))
@@ -214,6 +213,40 @@ class PlaceControllerTest {
             .lat(1.0)
             .lng(1.0)
             .build();
+
+        String json = """
+            {
+              "category": {
+                "name": "test"
+              },
+              "discountValues": [
+                {
+                  "specification": {
+                    "name": "test"
+                  },
+                  "value": 1
+                }
+              ],
+              "id": 1,
+              "location": {
+                "address": "Lviv",
+                "lat": 1.0,
+                "lng": 1.0
+              },
+              "name": "test",
+              "openingHoursList": [
+                {
+                  "breakTime": {
+                    "endTime": "14:00",
+                    "startTime": "13:00"
+                  },
+                  "closeTime": "20:00",
+                  "openTime": "08:00",
+                  "weekDay": "MONDAY"
+                }
+              ]
+            }
+            """;
 
         CategoryDto categoryDto = CategoryDto.builder().name("test").build();
 
@@ -249,37 +282,7 @@ class PlaceControllerTest {
         when(modelMapper.map(placeService.update(any()), PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
 
         this.mockMvc.perform(put(placeLink + "/update")
-            .content("{\n" +
-                "  \"category\": {\n" +
-                "    \"name\": \"test\"\n" +
-                "  },\n" +
-                "  \"discountValues\": [\n" +
-                "    {\n" +
-                "      \"specification\": {\n" +
-                "        \"name\": \"test\"\n" +
-                "      },\n" +
-                "      \"value\": 1\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"id\": 1,\n" +
-                "  \"location\": {\n" +
-                "    \"address\": \"Lviv\",\n" +
-                "    \"lat\": 1.0,\n" +
-                "    \"lng\": 1.0\n" +
-                "  },\n" +
-                "  \"name\": \"test\",\n" +
-                "  \"openingHoursList\": [\n" +
-                "    {\n" +
-                "      \"breakTime\": {\n" +
-                "        \"endTime\": \"14:00\",\n" +
-                "        \"startTime\": \"13:00\"\n" +
-                "      },\n" +
-                "      \"closeTime\": \"20:00\",\n" +
-                "      \"openTime\": \"08:00\",\n" +
-                "      \"weekDay\": \"MONDAY\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -307,13 +310,16 @@ class PlaceControllerTest {
 
     @Test
     void saveAsFavoritePlace() throws Exception {
-        Principal principal = mock(Principal.class);
+        String json = """
+            {
+              "name": "test",
+              "placeId": 1
+            }
+            """;
+
         FavoritePlaceDto favoritePlaceDto = FavoritePlaceDto.builder().name("test").placeId(1L).build();
         this.mockMvc.perform(post(placeLink + "/save/favorite/")
-            .content("{\n" +
-                "  \"name\": \"test\",\n" +
-                "  \"placeId\": 1\n" +
-                "}")
+            .content(json)
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -324,47 +330,35 @@ class PlaceControllerTest {
     @Test
     void getListPlaceLocationByMapsBounds() throws Exception {
 
-        FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
-        filterPlaceDto.setDistanceFromUserDto(new FilterDistanceDto(1.0, 1.0, 1.0));
-        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0, 1.0, 1.0, 1.0));
-        filterPlaceDto.setTime("10/10/2010 20:00:00");
-        filterPlaceDto.setStatus(PROPOSED);
-        filterPlaceDto.setSearchReg("test");
-
-        SpecificationNameDto specificationNameDto = new SpecificationNameDto();
-        specificationNameDto.setName("test");
-
-        FilterDiscountDto filterDistanceDto = new FilterDiscountDto();
-        filterDistanceDto.setDiscountMax(1);
-        filterDistanceDto.setDiscountMin(1);
-        filterDistanceDto.setSpecification(specificationNameDto);
-
-        filterPlaceDto.setDiscountDto(filterDistanceDto);
+        FilterPlaceDto filterPlaceDto = getFilterPlaceDto();
+        String json = """
+            {
+              "discountDto": {
+                "discountMax": 1,
+                "discountMin": 1,
+                "specification": {
+                  "name": "test"
+                }
+              },
+              "distanceFromUserDto": {
+                "distance": 1,
+                "lat": 1,
+                "lng": 1
+              },
+              "mapBoundsDto": {
+                "northEastLat": 1,
+                "northEastLng": 1,
+                "southWestLat": 1,
+                "southWestLng": 1
+              },
+              "searchReg": "test",
+              "status": "PROPOSED",
+              "time": "10/10/2010 20:00:00"
+            }
+            """;
 
         this.mockMvc.perform(post(placeLink + "/getListPlaceLocationByMapsBounds")
-            .content("{\n" +
-                "  \"discountDto\": {\n" +
-                "    \"discountMax\": 1,\n" +
-                "    \"discountMin\": 1,\n" +
-                "    \"specification\": {\n" +
-                "      \"name\": \"test\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"distanceFromUserDto\": {\n" +
-                "    \"distance\": 1,\n" +
-                "    \"lat\": 1,\n" +
-                "    \"lng\": 1\n" +
-                "  },\n" +
-                "  \"mapBoundsDto\": {\n" +
-                "    \"northEastLat\": 1,\n" +
-                "    \"northEastLng\": 1,\n" +
-                "    \"southWestLat\": 1,\n" +
-                "    \"southWestLng\": 1\n" +
-                "  },\n" +
-                "  \"searchReg\": \"test\",\n" +
-                "  \"status\": \"PROPOSED\",\n" +
-                "  \"time\": \"10/10/2010 20:00:00\"\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -387,47 +381,35 @@ class PlaceControllerTest {
 
     @Test
     void getFilteredPlaces() throws Exception {
-        FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
-        filterPlaceDto.setDistanceFromUserDto(new FilterDistanceDto(1.0, 1.0, 1.0));
-        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0, 1.0, 1.0, 1.0));
-        filterPlaceDto.setTime("10/10/2010 20:00:00");
-        filterPlaceDto.setStatus(PROPOSED);
-        filterPlaceDto.setSearchReg("test");
-
-        SpecificationNameDto specificationNameDto = new SpecificationNameDto();
-        specificationNameDto.setName("test");
-
-        FilterDiscountDto filterDistanceDto = new FilterDiscountDto();
-        filterDistanceDto.setDiscountMax(1);
-        filterDistanceDto.setDiscountMin(1);
-        filterDistanceDto.setSpecification(specificationNameDto);
-
-        filterPlaceDto.setDiscountDto(filterDistanceDto);
+        FilterPlaceDto filterPlaceDto = getFilterPlaceDto();
+        String json = """
+            {
+              "discountDto": {
+                "discountMax": 1,
+                "discountMin": 1,
+                "specification": {
+                  "name": "test"
+                }
+              },
+              "distanceFromUserDto": {
+                "distance": 1,
+                "lat": 1,
+                "lng": 1
+              },
+              "mapBoundsDto": {
+                "northEastLat": 1,
+                "northEastLng": 1,
+                "southWestLat": 1,
+                "southWestLng": 1
+              },
+              "searchReg": "test",
+              "status": "PROPOSED",
+              "time": "10/10/2010 20:00:00"
+            }
+            """;
 
         this.mockMvc.perform(post(placeLink + "/filter")
-            .content("{\n" +
-                "  \"discountDto\": {\n" +
-                "    \"discountMax\": 1,\n" +
-                "    \"discountMin\": 1,\n" +
-                "    \"specification\": {\n" +
-                "      \"name\": \"test\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"distanceFromUserDto\": {\n" +
-                "    \"distance\": 1,\n" +
-                "    \"lat\": 1,\n" +
-                "    \"lng\": 1\n" +
-                "  },\n" +
-                "  \"mapBoundsDto\": {\n" +
-                "    \"northEastLat\": 1,\n" +
-                "    \"northEastLng\": 1,\n" +
-                "    \"southWestLat\": 1,\n" +
-                "    \"southWestLng\": 1\n" +
-                "  },\n" +
-                "  \"searchReg\": \"test\",\n" +
-                "  \"status\": \"PROPOSED\",\n" +
-                "  \"time\": \"10/10/2010 20:00:00\"\n" +
-                "}")
+            .content(json)
 
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -440,11 +422,15 @@ class PlaceControllerTest {
         UpdatePlaceStatusDto updatePlaceStatusDto = new UpdatePlaceStatusDto();
         updatePlaceStatusDto.setId(1L);
         updatePlaceStatusDto.setStatus(PROPOSED);
+        String json = """
+            {
+              "id": 1,
+              "status": "PROPOSED"
+            }
+            """;
+
         this.mockMvc.perform(patch(placeLink + "/status")
-            .content("{\n" +
-                "  \"id\": 1,\n" +
-                "  \"status\": \"PROPOSED\"\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -458,48 +444,36 @@ class PlaceControllerTest {
         int pageNumber = 5;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        String json = """
+            {
+              "discountDto": {
+                "discountMax": 1,
+                "discountMin": 1,
+                "specification": {
+                  "name": "test"
+                }
+              },
+              "distanceFromUserDto": {
+                "distance": 1,
+                "lat": 1,
+                "lng": 1
+              },
+              "mapBoundsDto": {
+                "northEastLat": 1,
+                "northEastLng": 1,
+                "southWestLat": 1,
+                "southWestLng": 1
+              },
+              "searchReg": "test",
+              "status": "PROPOSED",
+              "time": "10/10/2010 20:00:00"
+            }
+            """;
 
-        FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
-        filterPlaceDto.setDistanceFromUserDto(new FilterDistanceDto(1.0, 1.0, 1.0));
-        filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0, 1.0, 1.0, 1.0));
-        filterPlaceDto.setTime("10/10/2010 20:00:00");
-        filterPlaceDto.setStatus(PROPOSED);
-        filterPlaceDto.setSearchReg("test");
-
-        SpecificationNameDto specificationNameDto = new SpecificationNameDto();
-        specificationNameDto.setName("test");
-
-        FilterDiscountDto filterDistanceDto = new FilterDiscountDto();
-        filterDistanceDto.setDiscountMax(1);
-        filterDistanceDto.setDiscountMin(1);
-        filterDistanceDto.setSpecification(specificationNameDto);
-
-        filterPlaceDto.setDiscountDto(filterDistanceDto);
+        FilterPlaceDto filterPlaceDto = getFilterPlaceDto();
 
         this.mockMvc.perform(post(placeLink + "/filter/predicate?page=5")
-            .content("{\n" +
-                "  \"discountDto\": {\n" +
-                "    \"discountMax\": 1,\n" +
-                "    \"discountMin\": 1,\n" +
-                "    \"specification\": {\n" +
-                "      \"name\": \"test\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"distanceFromUserDto\": {\n" +
-                "    \"distance\": 1,\n" +
-                "    \"lat\": 1,\n" +
-                "    \"lng\": 1\n" +
-                "  },\n" +
-                "  \"mapBoundsDto\": {\n" +
-                "    \"northEastLat\": 1,\n" +
-                "    \"northEastLng\": 1,\n" +
-                "    \"southWestLat\": 1,\n" +
-                "    \"southWestLng\": 1\n" +
-                "  },\n" +
-                "  \"searchReg\": \"test\",\n" +
-                "  \"status\": \"PROPOSED\",\n" +
-                "  \"time\": \"10/10/2010 20:00:00\"\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -519,19 +493,22 @@ class PlaceControllerTest {
     @Test
     void bulkUpdateStatuses() throws Exception {
         List<Long> longList = Arrays.asList(1L, 2L);
+        String json = """
+            {
+              "ids": [
+                1,
+                2
+              ],
+              "status": "PROPOSED"
+            }
+            """;
 
         BulkUpdatePlaceStatusDto bulkUpdatePlaceStatusDto = new BulkUpdatePlaceStatusDto();
         bulkUpdatePlaceStatusDto.setIds(longList);
         bulkUpdatePlaceStatusDto.setStatus(PROPOSED);
 
         this.mockMvc.perform(patch(placeLink + "/statuses")
-            .content("{\n" +
-                "  \"ids\": [\n" +
-                "    1,\n" +
-                "    2\n" +
-                "  ],\n" +
-                "  \"status\": \"PROPOSED\"\n" +
-                "}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -574,19 +551,21 @@ class PlaceControllerTest {
 
     @Test
     @SneakyThrows
-    void saveEcoPlaceFromUi() throws Exception {
-        String json = "{\n" +
-            "  \"categoryName\": \"test\",\n" +
-            "  \"locationName\": \"вулиця Під Дубом, 7Б, Львів, Львівська область, 79000\",\n" +
-            "  \"openingHoursList\": [\n" +
-            "    {\n" +
-            "      \"closeTime\": \"20:00\",\n" +
-            "      \"openTime\": \"08:00\",\n" +
-            "      \"weekDay\": \"MONDAY\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"placeName\": \"Форум Львів\"\n" +
-            "}";
+    void saveEcoPlaceFromUi() {
+        String json = """
+            {
+              "categoryName": "test",
+              "locationName": "вулиця Під Дубом, 7Б, Львів, Львівська область, 79000",
+              "openingHoursList": [
+                {
+                  "closeTime": "20:00",
+                  "openTime": "08:00",
+                  "weekDay": "MONDAY"
+                }
+              ],
+              "placeName": "Форум Львів"
+            }
+            """;
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();

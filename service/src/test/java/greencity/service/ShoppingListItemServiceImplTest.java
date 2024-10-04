@@ -367,8 +367,6 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void findShoppingListItemByIdTestFailed() {
-        Optional<ShoppingListItem> object = null;
-
         assertThrows(ShoppingListItemNotFoundException.class,
             () -> shoppingListItemService.findShoppingListItemById(30L));
     }
