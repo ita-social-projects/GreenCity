@@ -28,6 +28,7 @@ class CommentVOMapperTest {
     void convertTest() {
         Comment parentComment = ModelUtils.getComment().setId(2L);
         Comment comment = ModelUtils.getComment().setParentComment(parentComment);
+        comment.setArticleId(1L);
         CommentVO actual = commentVOMapper.convert(comment);
         Set<UserVO> usersLiked = comment.getUsersLiked().stream()
             .map(user -> UserVO.builder()
@@ -37,6 +38,7 @@ class CommentVOMapperTest {
 
         assertEquals(comment.getId(), actual.getId());
         assertEquals(comment.getText(), actual.getText());
+        assertEquals(comment.getArticleId(), actual.getArticleId());
         assertEquals(comment.getCreatedDate(), actual.getCreatedDate());
         assertEquals(comment.getArticleType().toString(), actual.getArticleType());
         assertEquals(comment.getParentComment().getId(), actual.getParentComment().getId());
@@ -53,7 +55,8 @@ class CommentVOMapperTest {
     void convertTestWithNullValues() {
         Comment comment = ModelUtils.getComment()
             .setParentComment(null)
-            .setStatus(null);
+            .setStatus(null)
+            .setArticleId(null);
 
         CommentVO actual = commentVOMapper.convert(comment);
 
