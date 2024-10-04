@@ -79,7 +79,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
+import static greencity.ModelUtils.habitAssignInProgress;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitAssign;
@@ -313,7 +313,7 @@ class HabitAssignServiceImplTest {
     void assignDefaultHabitForUserAlreadyHasTheHabit() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(HABIT_ASSIGN_IN_PROGRESS));
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssignInProgress));
 
         assertThrows(UserAlreadyHasHabitAssignedException.class,
                 () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
