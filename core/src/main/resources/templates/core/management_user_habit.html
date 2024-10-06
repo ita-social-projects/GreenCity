@@ -40,8 +40,8 @@
     </script>
 </head>
 <body>
-<div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
+<div id="header" th:include="~{core/header}"></div>
+<div id="sidebar" th:include="~{core/sidepanel}"></div>
 <div class="main-content">
     <div class="container-xl">
         <div class="wrapper">
@@ -189,7 +189,8 @@
             <!-- Habit`s Facts table-->
             <div class="table-header">
                 <h3>[[#{greenCity.personal.page.habitsFacts}]]
-                    <td th:text="${hfacts.getTotalElements()}"/>
+                    <!--                    <td th:text="${hfacts.getTotalElements()}"/>-->
+                    <td th:text="${ hfacts != null ? hfacts.getTotalElements() : 0 }"/>
                 </h3>
                 <div class="hide-button">
                     <button id="button1" value="hide" onclick="hideTable(this.id)">
