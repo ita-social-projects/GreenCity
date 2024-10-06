@@ -28,7 +28,6 @@
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
-    <script th:src="@{/management/habit/buttonsAJAX.js}"></script>
     <script>
         $(function () {
             $('.pr').liTextLength({
@@ -99,19 +98,6 @@
                             </td>
                         </tr>
                         <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'en']}">
-                            <td>&nbsp [[${translation.name}]]</td>
-                        </tr>
-                    </table>
-                    <br>
-                    <table class="light-text">
-                        <tr>
-                            <td>&nbsp ru
-                                <i id="habit_translation3" class="table-edit-translation-icon"
-                                   th:href="@{|/management/habits/${habit.getId()}/find|}"
-                                   style="padding: 5px"></i>
-                            </td>
-                        </tr>
-                        <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'ru']}">
                             <td>&nbsp [[${translation.name}]]</td>
                         </tr>
                     </table>
@@ -186,136 +172,6 @@
 
             </div>
 
-            <!-- Habit`s Facts table-->
-            <div class="table-header">
-                <h3>[[#{greenCity.personal.page.habitsFacts}]]
-                    <!--                    <td th:text="${hfacts.getTotalElements()}"/>-->
-                    <td th:text="${ hfacts != null ? hfacts.getTotalElements() : 0 }"/>
-                </h3>
-                <div class="hide-button">
-                    <button id="button1" value="hide" onclick="hideTable(this.id)">
-                        <span>hide</span>
-                        <img src="/img/arrow-up.svg" alt="arrow-icon">
-                    </button>
-                </div>
-                <div class="complexity-line">
-                    <a id="unlinktable1" class="btn btn-secondary disabled"
-                       th:onclick="'unlinkFacts('+${habit.id}+')'">
-                        <div>Unlink</div>
-                    </a>
-
-                    <a id="linknewtable1" class="btn btn-secondary"
-                       th:onclick="'linknew()'">
-                        <div>Link new</div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="table-responsive userpage">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="table-primary light-text">
-                        <th style="width: 20px">
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll1">
-                                    <label for="selectAll1"></label>
-                                </span>
-                        </th>
-                        <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
-                        <th style="width: 52px">[[#{greenCity.pages.table.link}]]</th>
-                    </tr>
-                    </thead>
-
-                    <tbody id="table1">
-                    <th:block class="list-of" th:each="habitFacts, iterStatus :${hfacts.getPage()}">
-                        <tr class="light-text">
-                            <td style="width: 20px;">
-                                    <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="'factscheckbox'+${iterStatus.count}"
-                                                   id="checkbox1"
-                                                   name="options[]" th:value="${habitFacts.getId()}"
-                                                   th:onclick="'updateCheckBoxCountFacts('+${iterStatus.count}+','+${habitFacts.getId()}+')'">
-                                            <label th:for="'factscheckbox'+${iterStatus.count}" for="checkbox1"></label>
-                                    </span>
-                            </td>
-
-                            <td id="translations" style="width: 300px">
-                                <div th:each="translation : ${habitFacts.getTranslations()}">
-                                    <h5 th:text="${translation.getContent()}"></h5>
-                                </div>
-                            </td>
-
-                            <td style="width: 52px">Link</td>
-
-                        </tr>
-                    </th:block>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Habit`s Advices table-->
-            <div class="table-header">
-                <h3>[[#{greenCity.sidebar.habits.advice}]]:
-                    <td th:text="${hadvices.size()}"/>
-                </h3>
-                <div class="hide-button">
-                    <button id="button2" value="hide" onclick="hideTable(this.id)">
-                        <span>hide</span>
-                        <img src="/img/arrow-up.svg" alt="arrow-icon">
-                    </button>
-                </div>
-                <div class="complexity-line">
-                    <a id="unlinktable2" class="btn btn-secondary disabled"
-                       th:onclick="'unlinkAdvices('+${habit.id}+')'">
-                        <div>Unlink</div>
-                    </a>
-
-                    <a id="linknewtable2" class="btn btn-secondary"
-                       th:onclick="'linknew()'">
-                        <div>Link new</div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="table-primary light-text">
-                        <th style="width: 20px">
-                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll2">
-                                    <label for="selectAll2"></label>
-                                </span>
-                        </th>
-                        <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
-                        <th style="width: 52px">[[#{greenCity.pages.table.link}]]</th>
-                    </tr>
-                    </thead>
-
-                    <tbody id="table2">
-                    <th:block class="list-of" th:each="advice, iterStatus :${hadvices}">
-                        <tr class="light-text">
-                            <td style="width: 20px">
-                                    <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="'advicescheckbox'+${iterStatus.count}"
-                                                   id="checkbox2"
-                                                   name="options[]" th:value="${iterStatus.count}"
-                                                   th:onclick="'updateCheckBoxCountAdvices('+${iterStatus.count}+')'">
-                                            <label th:for="'advicescheckbox'+${iterStatus.count}"
-                                                   for="checkbox2"></label>
-                                    </span>
-                            </td>
-
-                            <td id="translations2" style="width: 300px">
-                                <h5 th:text="${advice.getContent()}"></h5>
-                            </td>
-
-                            <td style="width: 52px">Link</td>
-                        </tr>
-                    </th:block>
-                    </tbody>
-                </table>
-            </div>
 
             <!-- Shopping List table-->
             <div class="table-header">
