@@ -6,6 +6,7 @@ import greencity.dto.specification.SpecificationVO;
 import greencity.entity.Specification;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,9 +53,9 @@ class SpecificationServiceImplTest {
 
         when(specificationRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
 
-        SpecificationVO specificationVO = specificationService.findById(anyLong());
+        SpecificationVO expectedVO = specificationService.findById(anyLong());
 
-        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
+        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), expectedVO);
     }
 
     @Test
@@ -93,9 +94,9 @@ class SpecificationServiceImplTest {
 
         when(specificationRepo.findByName(anyString())).thenReturn(Optional.of(genericEntity));
 
-        SpecificationVO specificationVO = specificationService.findByName(anyString());
+        SpecificationVO expected = specificationService.findByName(anyString());
 
-        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
+        assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), expected);
     }
 
     @Test
