@@ -471,7 +471,6 @@ class PlaceServiceImplTest {
     void updateTest() {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         Place place = ModelUtils.getPlace();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
         placeUpdateDto.setId(1L);
         placeUpdateDto.setOpeningHoursList(openingHoursList);
         placeUpdateDto.setDiscountValues(discountValuesDto);
@@ -697,17 +696,17 @@ class PlaceServiceImplTest {
     void addPlaceFromUiThrowsException() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        User user = ModelUtils.getUser();
-        user.setUserStatus(UserStatus.BLOCKED);
-        String email = user.getEmail();
+        User blockedUser = ModelUtils.getUser();
+        blockedUser.setUserStatus(UserStatus.BLOCKED);
+        String email = blockedUser.getEmail();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(blockedUser));
 
         assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findByEmail(blockedUser.getEmail());
     }
 
     @Test
