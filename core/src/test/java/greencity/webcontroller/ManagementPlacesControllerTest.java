@@ -146,19 +146,19 @@ class ManagementPlacesControllerTest {
     @Test
     void updatePlaceWithoutIdTest() throws Exception {
         String json = """
-    {
-        "name": "test",
-        "category": {
-            "name": "Food"
-        },
-        "discountValues": null,
-        "location": {
-            "address": "address",
-            "lat": 111.1,
-            "lng": 111.1
-        }
-    }
-""";
+                {
+                    "name": "test",
+                    "category": {
+                        "name": "Food"
+                    },
+                    "discountValues": null,
+                    "location": {
+                        "address": "address",
+                        "lat": 111.1,
+                        "lng": 111.1
+                    }
+                }
+            """;
 
         mockMvc.perform(put("/management/places/")
             .content(json)

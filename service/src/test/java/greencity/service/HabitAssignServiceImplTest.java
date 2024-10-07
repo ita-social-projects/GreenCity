@@ -2154,7 +2154,8 @@ class HabitAssignServiceImplTest {
         UserShoppingListItem secondUserShoppingListItem = ModelUtils.getUserShoppingListItem();
         secondUserShoppingListItem.setId(firstUserShoppingListItem.getId() + 1);
 
-        habitAssignWithShoppingList.setUserShoppingListItems(List.of(firstUserShoppingListItem, secondUserShoppingListItem));
+        habitAssignWithShoppingList
+            .setUserShoppingListItems(List.of(firstUserShoppingListItem, secondUserShoppingListItem));
 
         when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
             .thenReturn(Optional.of(habitAssignWithShoppingList));

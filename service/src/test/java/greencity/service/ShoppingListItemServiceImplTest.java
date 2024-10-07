@@ -132,7 +132,7 @@ class ShoppingListItemServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        habitAssign =  ModelUtils.getHabitAssign();
+        habitAssign = ModelUtils.getHabitAssign();
     }
 
     @Test
@@ -624,7 +624,8 @@ class ShoppingListItemServiceImplTest {
             userShoppingListItem));
         when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
             .thenReturn(userShoppingListItemResponseDto);
-        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(languageDefault, userShoppingListItemId))
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(languageDefault,
+            userShoppingListItemId))
             .thenReturn(shoppingListItemTranslation);
 
         List<UserShoppingListItemResponseDto> actualDtoList = shoppingListItemService
@@ -637,7 +638,8 @@ class ShoppingListItemServiceImplTest {
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);
         verify(modelMapper).map(userShoppingListItem, UserShoppingListItemResponseDto.class);
-        verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId(languageDefault, userShoppingListItemId);
+        verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId(languageDefault,
+            userShoppingListItemId);
     }
 
     @Test
