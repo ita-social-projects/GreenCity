@@ -696,17 +696,17 @@ class PlaceServiceImplTest {
     void addPlaceFromUiThrowsException() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        User blockedUser = ModelUtils.getUser();
-        blockedUser.setUserStatus(UserStatus.BLOCKED);
-        String email = blockedUser.getEmail();
+        User user = ModelUtils.getUser();
+        user.setUserStatus(UserStatus.BLOCKED);
+        String email = user.getEmail();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(blockedUser));
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
         assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findByEmail(blockedUser.getEmail());
+        verify(userRepo).findByEmail(user.getEmail());
     }
 
     @Test
