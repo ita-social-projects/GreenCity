@@ -37,13 +37,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static greencity.ModelUtils.TEST_EMAIL;
-import static greencity.ModelUtils.TEST_EMAIL_2;
-import static greencity.ModelUtils.TEST_USER;
-import static greencity.ModelUtils.TEST_USER_ROLE_USER;
-import static greencity.ModelUtils.TEST_USER_STATUS_DTO;
-import static greencity.ModelUtils.TEST_USER_VO;
-import static greencity.ModelUtils.TEST_USER_VO_ROLE_USER;
+import static greencity.ModelUtils.testEmail;
+import static greencity.ModelUtils.testEmail2;
+import static greencity.ModelUtils.testUser;
+import static greencity.ModelUtils.testUserRoleUser;
+import static greencity.ModelUtils.testUserStatusDto;
+import static greencity.ModelUtils.testUserVo;
+import static greencity.ModelUtils.userVORoleUser;
 import static greencity.ModelUtils.getUser;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.CREATED;
@@ -172,53 +172,53 @@ class UserServiceImplTest {
 
     @Test
     void testFindByEmail() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
-        UserVO actual = userService.findByEmail(TEST_EMAIL);
+        UserVO actual = userService.findByEmail(testEmail);
 
-        assertEquals(TEST_USER_VO, actual);
+        assertEquals(testUserVo, actual);
 
-        verify(userRepo).findByEmail(TEST_EMAIL);
-        verify(modelMapper).map(TEST_USER, UserVO.class);
+        verify(userRepo).findByEmail(testEmail);
+        verify(modelMapper).map(testUser, UserVO.class);
     }
 
     @Test
     void testFindByEmailThrowException() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.empty());
 
-        assertThrows(WrongIdException.class, () -> userService.findByEmail(TEST_EMAIL));
+        assertThrows(WrongIdException.class, () -> userService.findByEmail(testEmail));
 
-        verify(userRepo).findByEmail(TEST_EMAIL);
+        verify(userRepo).findByEmail(testEmail);
     }
 
     @Test
     void testFindNotDeactivatedByEmail() {
-        when(userRepo.findNotDeactivatedByEmail(TEST_EMAIL))
-            .thenReturn(Optional.of(TEST_USER));
-        when(modelMapper.map(Optional.of(TEST_USER), UserVO.class))
-            .thenReturn(TEST_USER_VO);
+        when(userRepo.findNotDeactivatedByEmail(testEmail))
+            .thenReturn(Optional.of(testUser));
+        when(modelMapper.map(Optional.of(testUser), UserVO.class))
+            .thenReturn(testUserVo);
 
-        Optional<UserVO> actual = userService.findNotDeactivatedByEmail(TEST_EMAIL);
+        Optional<UserVO> actual = userService.findNotDeactivatedByEmail(testEmail);
 
-        assertEquals(Optional.of(TEST_USER_VO), actual);
+        assertEquals(Optional.of(testUserVo), actual);
     }
 
     @Test
     void testFindIdByEmail() {
-        when(userRepo.findIdByEmail(TEST_EMAIL)).thenReturn(Optional.of(1L));
+        when(userRepo.findIdByEmail(testEmail)).thenReturn(Optional.of(1L));
 
-        Long actual = userService.findIdByEmail(TEST_EMAIL);
+        Long actual = userService.findIdByEmail(testEmail);
 
         assertEquals(1L, actual);
     }
 
     @Test
     void testFindIdByEmailThrowsException() {
-        when(userRepo.findIdByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.findIdByEmail(testEmail)).thenReturn(Optional.empty());
 
         assertThrows(WrongEmailException.class,
-            () -> userService.findIdByEmail(TEST_EMAIL));
+            () -> userService.findIdByEmail(testEmail));
     }
 
     @Test
@@ -234,42 +234,42 @@ class UserServiceImplTest {
 
     @Test
     void testUpdateStatus() {
-        when(userRepo.findByEmail(TEST_EMAIL_2)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(TEST_USER_ROLE_USER));
-        when(modelMapper.map(TEST_USER_ROLE_USER, UserVO.class)).thenReturn(TEST_USER_VO_ROLE_USER);
+        when(userRepo.findByEmail(testEmail2)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
+        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUserRoleUser));
+        when(modelMapper.map(testUserRoleUser, UserVO.class)).thenReturn(userVORoleUser);
         doNothing().when(userRepo).updateUserStatus(2L, String.valueOf(UserStatus.CREATED));
-        when(modelMapper.map(TEST_USER_VO_ROLE_USER, UserStatusDto.class)).thenReturn(TEST_USER_STATUS_DTO);
+        when(modelMapper.map(userVORoleUser, UserStatusDto.class)).thenReturn(testUserStatusDto);
 
-        UserStatusDto actual = userService.updateStatus(2L, CREATED, TEST_EMAIL_2);
+        UserStatusDto actual = userService.updateStatus(2L, CREATED, testEmail2);
 
-        assertEquals(TEST_USER_STATUS_DTO, actual);
+        assertEquals(testUserStatusDto, actual);
 
         verify(userRepo, times(2)).findByEmail(anyString());
         verify(modelMapper, times(4)).map(any(User.class), eq(UserVO.class));
         verify(userRepo, times(2)).findById(anyLong());
         verify(userRepo).updateUserStatus(2L, String.valueOf(CREATED));
-        verify(modelMapper).map(TEST_USER_VO_ROLE_USER, UserStatusDto.class);
+        verify(modelMapper).map(userVORoleUser, UserStatusDto.class);
     }
 
     @Test
     void testUpdateStatusThrowsBadUpdateRequestException() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
         assertThrows(BadUpdateRequestException.class,
-            () -> userService.updateStatus(1L, CREATED, TEST_EMAIL));
+            () -> userService.updateStatus(1L, CREATED, testEmail));
     }
 
     @Test
     void testUpdateStatusThrowsLowRoleLevelException() {
-        when(userRepo.findByEmail(TEST_EMAIL)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(TEST_USER));
-        when(modelMapper.map(TEST_USER, UserVO.class)).thenReturn(TEST_USER_VO);
+        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
+        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUser));
+        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
         assertThrows(LowRoleLevelException.class,
-            () -> userService.updateStatus(2L, CREATED, TEST_EMAIL));
+            () -> userService.updateStatus(2L, CREATED, testEmail));
     }
 
     @Test

@@ -30,9 +30,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -89,18 +96,29 @@ class ManagementPlacesControllerTest {
     @Test
     void savePlace() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
+        String json = """
+            {
+                "placeName": "Тестове місце",
+                "locationName": "смиків, південна 7",
+                "status": "APPROVED",
+                "categoryName": "Recycling points",
+                "discountValues": null,
+                "openingHoursList": [
+                    {
+                        "weekDay": "MONDAY",
+                        "openTime": "17:34",
+                        "closeTime": "19:34",
+                        "breakTime": null
+                    }
+                ]
+            }
+            """;
+
         MockMultipartFile addPlaceDto = new MockMultipartFile(
             "addPlaceDto",
             "",
             "application/json",
-            ("{\"placeName\":\"Тестове місце\"," +
-                "\"locationName\":\"смиків, південна 7\"," +
-                "\"status\":\"APPROVED\"," +
-                "\"categoryName\":\"Recycling points\"," +
-                "\"discountValues\":null," +
-                "\"openingHoursList\":[{\"weekDay\":\"MONDAY\"," +
-                "\"openTime\":\"17:34\",\"closeTime\":\"19:34\"," +
-                "\"breakTime\":null}]}")
+            (json)
                 .getBytes());
 
         this.mockMvc.perform(multipart("/management/places/")
