@@ -21,6 +21,7 @@ public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
             .id(comment.getId())
             .text(comment.getText())
             .articleType(comment.getArticleType().toString())
+            .articleId(comment.getArticleId() != null ? comment.getArticleId() : null)
             .createdDate(comment.getCreatedDate())
             .modifiedDate(comment.getModifiedDate())
             .parentComment(comment.getParentComment() != null ? CommentVO.builder()

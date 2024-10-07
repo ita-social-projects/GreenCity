@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Locale;
 
 @Controller
 @AllArgsConstructor
@@ -106,7 +105,7 @@ public class ManagementHabitController {
     })
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
-        @Parameter(hidden = true) Locale locale, Model model) {
+        @Parameter(hidden = true) Model model) {
         model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
         model.addAttribute("acquired",

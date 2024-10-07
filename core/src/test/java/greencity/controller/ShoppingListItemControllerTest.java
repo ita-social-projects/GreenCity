@@ -90,11 +90,13 @@ class ShoppingListItemControllerTest {
 
     @Test
     void saveUserShoppingListItemWithoutLanguageParamTest() throws Exception {
-        String content = "[\n"
-            + " {\n"
-            + "    \"id\": 1\n"
-            + " }\n"
-            + "]\n";
+        String content = """
+            [
+                {
+                    "id": 1
+                }
+            ]
+            """;
 
         mockMvc.perform(post(shoppingListItemLink + "?habitId=1&lang=en", 1)
             .contentType(MediaType.APPLICATION_JSON)

@@ -79,11 +79,9 @@ class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
         .name("test").build();
-
     private final CategoryDto categoryDto = CategoryDto.builder()
         .name("test")
         .build();
-
     private final Language language = Language.builder()
         .id(2L)
         .code("en")
@@ -152,7 +150,6 @@ class PlaceServiceImplTest {
     private DiscountService discountService;
     @Mock
     private NotificationService notificationService;
-
     @Mock
     private CategoryRepo categoryRepo;
     private final ZoneId zoneId = ZoneId.of("Europe/Kiev");

@@ -247,21 +247,21 @@ import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
-    public static User TEST_USER = createUser();
-    public static User TEST_USER_ROLE_USER = createUserRoleUser();
-    public static UserVO TEST_USER_VO = createUserVO();
-    public static UserVO TEST_USER_VO_ROLE_USER = createUserVORoleUser();
-    public static UserStatusDto TEST_USER_STATUS_DTO = createUserStatusDto();
-    public static String TEST_EMAIL = "test@mail.com";
-    public static String TEST_EMAIL_2 = "test2@mail.com";
-    public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
+    public static User testUser = createUser();
+    public static User testUserRoleUser = createUserRoleUser();
+    public static UserVO testUserVo = createUserVO();
+    public static UserVO userVORoleUser = createUserVORoleUser();
+    public static UserStatusDto testUserStatusDto = createUserStatusDto();
+    public static String testEmail = "test@mail.com";
+    public static String testEmail2 = "test2@mail.com";
+    public static HabitAssign habitAssignInProgress = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
-    public static String HABIT_TRANSLATION_NAME = "use shopper";
-    public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
-    public static String SHOPPING_LIST_TEXT = "buy a shopper";
-    public static String HABIT_ITEM = "Item";
-    public static String HABIT_DEFAULT_IMAGE = "img/habit-default.png";
+    public static String habitTranslationName = "use shopper";
+    public static String habitTranslationDescription = "Description";
+    public static String shoppingListText = "buy a shopper";
+    public static String habitItem = "Item";
+    public static String habitDefaultImage = "img/habit-default.png";
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
             .id(1L)
@@ -2380,18 +2380,18 @@ public class ModelUtils {
 
     public static HabitTranslationDto getHabitTranslationDto() {
         return HabitTranslationDto.builder()
-            .description(HABIT_TRANSLATION_DESCRIPTION)
-            .habitItem(HABIT_ITEM)
-            .name(HABIT_TRANSLATION_NAME)
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
             .build();
     }
 
     public static HabitTranslation getHabitTranslationForServiceTest() {
         return HabitTranslation.builder()
             .id(1L)
-            .description(HABIT_TRANSLATION_DESCRIPTION)
-            .habitItem(HABIT_ITEM)
-            .name(HABIT_TRANSLATION_NAME)
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
             .habit(getCustomHabitForServiceTest())
             .build();
     }
@@ -2403,15 +2403,15 @@ public class ModelUtils {
                 CustomShoppingListItemResponseDto.builder()
                     .id(1L)
                     .status(ShoppingListItemStatus.ACTIVE)
-                    .text(SHOPPING_LIST_TEXT)
+                    .text(shoppingListText)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description(HABIT_TRANSLATION_DESCRIPTION)
-                    .habitItem(HABIT_ITEM)
+                    .description(habitTranslationDescription)
+                    .habitItem(habitItem)
                     .languageCode("ua")
-                    .name(HABIT_TRANSLATION_NAME)
+                    .name(habitTranslationName)
                     .build()))
             .tagIds(Set.of(20L))
             .build();
@@ -2423,7 +2423,7 @@ public class ModelUtils {
                 CustomShoppingListItemResponseDto.builder()
                     .id(null)
                     .status(ShoppingListItemStatus.ACTIVE)
-                    .text(SHOPPING_LIST_TEXT)
+                    .text(shoppingListText)
                     .build()))
             .tagIds(Set.of(20L))
             .build();
@@ -2433,7 +2433,7 @@ public class ModelUtils {
         return CustomShoppingListItem.builder()
             .id(1L)
             .status(ShoppingListItemStatus.ACTIVE)
-            .text(SHOPPING_LIST_TEXT)
+            .text(shoppingListText)
             .build();
     }
 
@@ -2451,16 +2451,16 @@ public class ModelUtils {
                 CustomShoppingListItemResponseDto.builder()
                     .id(1L)
                     .status(ShoppingListItemStatus.ACTIVE)
-                    .text(SHOPPING_LIST_TEXT)
+                    .text(shoppingListText)
                     .build()))
             .defaultDuration(7)
-            .image(HABIT_DEFAULT_IMAGE)
+            .image(habitDefaultImage)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description(HABIT_TRANSLATION_DESCRIPTION)
-                    .habitItem(HABIT_ITEM)
+                    .description(habitTranslationDescription)
+                    .habitItem(habitItem)
                     .languageCode("ua")
-                    .name(HABIT_TRANSLATION_NAME)
+                    .name(habitTranslationName)
                     .build()))
             .tagIds(Set.of(20L))
             .build();
@@ -2474,22 +2474,22 @@ public class ModelUtils {
                 CustomShoppingListItemResponseDto.builder()
                     .id(1L)
                     .status(ShoppingListItemStatus.ACTIVE)
-                    .text(SHOPPING_LIST_TEXT)
+                    .text(shoppingListText)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description(HABIT_TRANSLATION_DESCRIPTION)
-                    .habitItem(HABIT_ITEM)
+                    .description(habitTranslationDescription)
+                    .habitItem(habitItem)
                     .languageCode("ua")
-                    .name(HABIT_TRANSLATION_NAME)
+                    .name(habitTranslationName)
                     .build(),
 
                     HabitTranslationDto.builder()
-                        .description(HABIT_TRANSLATION_DESCRIPTION)
-                        .habitItem(HABIT_ITEM)
+                        .description(habitTranslationDescription)
+                        .habitItem(habitItem)
                         .languageCode("en")
-                        .name(HABIT_TRANSLATION_NAME)
+                        .name(habitTranslationName)
                         .build()))
             .tagIds(Set.of(20L))
             .build();
@@ -2499,7 +2499,7 @@ public class ModelUtils {
         return CustomShoppingListItemResponseDto.builder()
             .id(1L)
             .status(ShoppingListItemStatus.ACTIVE)
-            .text(SHOPPING_LIST_TEXT)
+            .text(shoppingListText)
             .build();
     }
 
@@ -2508,7 +2508,7 @@ public class ModelUtils {
             .id(1L)
             .habit(getCustomHabitForServiceTest())
             .status(ShoppingListItemStatus.ACTIVE)
-            .text(SHOPPING_LIST_TEXT)
+            .text(shoppingListText)
             .user(getUser())
             .build();
     }

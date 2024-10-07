@@ -294,7 +294,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
-        + "WHERE (upper(ha.status) = :status) AND (ha.habit.id = :habitId)")
+        + "WHERE ha.status = :status AND ha.habit.id = :habitId")
     List<HabitAssign> findAllHabitAssignsByStatusAndHabitId(@Param("status") HabitAssignStatus status,
         @Param("habitId") Long habitId);
 

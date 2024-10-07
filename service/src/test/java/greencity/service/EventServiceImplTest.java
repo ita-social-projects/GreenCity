@@ -63,7 +63,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-import static greencity.ModelUtils.TEST_USER_VO;
+import static greencity.ModelUtils.testUserVo;
 import static greencity.ModelUtils.getEventPreviewDtos;
 import static greencity.ModelUtils.getFilterEventDto;
 import static greencity.ModelUtils.getTupleElements;
@@ -139,8 +139,8 @@ class EventServiceImplTest {
 
         when(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT")).thenReturn(ratingPoints);
         when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
-        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -183,8 +183,8 @@ class EventServiceImplTest {
         List<Tag> tags = ModelUtils.getEventTags();
 
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
-        when(restClient.findByEmail(user.getEmail())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(restClient.findByEmail(user.getEmail())).thenReturn(testUserVo);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
         when(eventRepo.save(eventWithoutCoordinates)).thenReturn(eventWithoutCoordinates);
         when(modelMapper.map(eventWithoutCoordinates, EventDto.class)).thenReturn(eventDtoWithoutCoordinatesDto);
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -220,8 +220,8 @@ class EventServiceImplTest {
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
-        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
@@ -273,8 +273,8 @@ class EventServiceImplTest {
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
         when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
-        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
 
         assertThrows(BadRequestException.class,
             () -> eventService.update(eventToUpdateDto, userEmail, null));
@@ -401,8 +401,8 @@ class EventServiceImplTest {
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
@@ -518,8 +518,8 @@ class EventServiceImplTest {
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
 
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(restClient.findByEmail(principal.getName())).thenReturn(testUserVo);
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
