@@ -33,6 +33,7 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserShoppingListItemRepo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -90,7 +91,7 @@ class ShoppingListItemServiceImplTest {
     private final ShoppingListItemPostDto shoppingListItemPostDto =
         new ShoppingListItemPostDto(languageTranslationDTOS, new ShoppingListItemRequestDto(1L));
 
-    private final HabitAssign habitAssign = ModelUtils.getHabitAssign();
+    private HabitAssign habitAssign;
     private User user = User.builder()
         .id(1L)
         .name("Test Testing")
@@ -128,6 +129,11 @@ class ShoppingListItemServiceImplTest {
             new ShoppingListItemRequestDto(3L));
 
     private Long userId = user.getId();
+
+    @BeforeEach
+    void setUp() {
+        habitAssign =  ModelUtils.getHabitAssign();
+    }
 
     @Test
     void saveUserShoppingListItemTest() {
@@ -189,10 +195,8 @@ class ShoppingListItemServiceImplTest {
     @Test
     void saveUserShoppingListItemWithEmptyList() {
         List<ShoppingListItemRequestDto> dtoList = null;
-        Long userId = 1L;
         Long habitId = 1L;
-        String language = "en";
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        String languageEn = "en";
         UserShoppingListItem userShoppingListItem =
             UserShoppingListItem.builder().id(1L).status(ShoppingListItemStatus.ACTIVE).build();
 
@@ -204,18 +208,17 @@ class ShoppingListItemServiceImplTest {
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
             userShoppingListItem));
         when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class)).thenReturn(expected.get(0));
-        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language, 1L))
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(languageEn, 1L))
             .thenReturn(ShoppingListItemTranslation.builder().id(1L).build());
 
         List<UserShoppingListItemResponseDto> actual = shoppingListItemService
-            .saveUserShoppingListItems(userId, habitId, dtoList, language);
+            .saveUserShoppingListItems(userId, habitId, dtoList, languageEn);
 
         assertEquals(expected, actual);
     }
 
     @Test
     void findAllTest() {
-        List<ShoppingListItemTranslation> shoppingListItemTranslations = ModelUtils.getShoppingListItemTranslations();
         List<ShoppingListItemDto> shoppingListItemDto = shoppingListItemTranslations
             .stream()
             .map(translation -> new ShoppingListItemDto(translation.getShoppingListItem().getId(),
@@ -288,7 +291,6 @@ class ShoppingListItemServiceImplTest {
         UserShoppingListItem userShoppingListItem =
             new UserShoppingListItem(1L, null, null, ShoppingListItemStatus.DONE, null);
         when(userShoppingListItemRepo.getReferenceById(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
-        Long userId = user.getId();
         Long userShoppingListItemId = userShoppingListItem.getId();
         assertThrows(UserShoppingListItemStatusNotUpdatedException.class,
             () -> shoppingListItemService.updateUserShopingListItemStatus(userId, userShoppingListItemId, "en"));
@@ -455,7 +457,6 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void getUserShoppingListItemTest() {
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         UserShoppingListItem userShoppingListItem =
             UserShoppingListItem.builder().id(1L).status(ShoppingListItemStatus.ACTIVE).build();
         when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
@@ -480,16 +481,15 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void getUserShoppingListItemWithNullTest() {
-        Long userId = 1L;
         Long habitId = 1L;
-        String language = "en";
+        String languageEn = "en";
         List<UserShoppingListItemResponseDto> expected = Collections.emptyList();
 
         when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
             .thenReturn(Optional.empty());
 
         List<UserShoppingListItemResponseDto> actual = shoppingListItemService
-            .getUserShoppingList(userId, habitId, language);
+            .getUserShoppingList(userId, habitId, languageEn);
         assertEquals(expected, actual);
     }
 
@@ -533,7 +533,6 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void getUserShoppingListItemIfThereAreNoItems() {
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
@@ -545,7 +544,6 @@ class ShoppingListItemServiceImplTest {
     @Test
     void getShoppingListItemByHabitIdTest() {
         List<Long> listID = Collections.singletonList(1L);
-        ShoppingListItem shoppingListItem = ModelUtils.getUserShoppingListItem().getShoppingListItem();
         List<ShoppingListItem> shoppingListItemList = Collections.singletonList(shoppingListItem);
         ShoppingListItemManagementDto shoppingListItemManagementDto = ShoppingListItemManagementDto.builder()
             .id(1L)
@@ -566,7 +564,6 @@ class ShoppingListItemServiceImplTest {
         int pageNumber = 0;
         int pageSize = 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        ShoppingListItem shoppingListItem = ModelUtils.getUserShoppingListItem().getShoppingListItem();
         List<ShoppingListItem> shoppingListItemList = Collections.singletonList(shoppingListItem);
         List<Long> listID = Collections.singletonList(1L);
         Page<ShoppingListItem> page = new PageImpl<>(shoppingListItemList, pageable, shoppingListItemList.size());
@@ -596,15 +593,14 @@ class ShoppingListItemServiceImplTest {
     @Test
     void getUserShoppingListByHabitAssignIdTest() {
         Long habitAssignId = 2L;
-        Long userId = 3L;
+        Long userId3 = 3L;
         Long userShoppingListItemId = 4L;
         Long shoppingListItemTranslationId = 5L;
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
         String text = "text";
 
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.setId(habitAssignId);
-        habitAssign.getUser().setId(userId);
+        habitAssign.getUser().setId(userId3);
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setId(userShoppingListItemId);
@@ -628,11 +624,11 @@ class ShoppingListItemServiceImplTest {
             userShoppingListItem));
         when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
             .thenReturn(userShoppingListItemResponseDto);
-        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language, userShoppingListItemId))
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(languageDefault, userShoppingListItemId))
             .thenReturn(shoppingListItemTranslation);
 
         List<UserShoppingListItemResponseDto> actualDtoList = shoppingListItemService
-            .getUserShoppingListByHabitAssignId(userId, habitAssignId, language);
+            .getUserShoppingListByHabitAssignId(userId3, habitAssignId, languageDefault);
 
         assertNotNull(actualDtoList);
         assertEquals(1, actualDtoList.size());
@@ -641,25 +637,24 @@ class ShoppingListItemServiceImplTest {
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);
         verify(modelMapper).map(userShoppingListItem, UserShoppingListItemResponseDto.class);
-        verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId(language, userShoppingListItemId);
+        verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId(languageDefault, userShoppingListItemId);
     }
 
     @Test
     void getUserShoppingListByHabitAssignIdReturnEmptyListTest() {
         Long habitAssignId = 2L;
-        Long userId = 3L;
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+        Long userId3 = 3L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
 
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.setId(habitAssignId);
-        habitAssign.getUser().setId(userId);
+        habitAssign.getUser().setId(userId3);
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.emptyList());
 
         assertEquals(Collections.emptyList(),
-            shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, language));
+            shoppingListItemService.getUserShoppingListByHabitAssignId(userId3, habitAssignId, languageDefault));
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);
@@ -670,14 +665,14 @@ class ShoppingListItemServiceImplTest {
     @Test
     void getUserShoppingListByHabitAssignIdThrowsExceptionWhenHabitAssignNotExists() {
         Long habitAssignId = 2L;
-        Long userId = 3L;
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+        Long userId3 = 3L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> shoppingListItemService
-            .getUserShoppingListByHabitAssignId(userId, habitAssignId, language));
+            .getUserShoppingListByHabitAssignId(userId3, habitAssignId, languageDefault));
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
@@ -690,18 +685,18 @@ class ShoppingListItemServiceImplTest {
     @Test
     void getUserShoppingListByHabitAssignIdThrowsExceptionWhenHabitAssignNotBelongsToUser() {
         long habitAssignId = 2L;
-        long userId = 3L;
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+        long userId3 = 3L;
+        String languageDefault = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         habitAssign.setId(habitAssignId);
-        habitAssign.getUser().setId(userId + 1);
+        habitAssign.getUser().setId(userId3 + 1);
 
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
 
         UserHasNoPermissionToAccessException exception =
             assertThrows(UserHasNoPermissionToAccessException.class, () -> shoppingListItemService
-                .getUserShoppingListByHabitAssignId(userId, habitAssignId, language));
+                .getUserShoppingListByHabitAssignId(userId3, habitAssignId, languageDefault));
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
