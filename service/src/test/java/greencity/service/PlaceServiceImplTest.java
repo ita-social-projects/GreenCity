@@ -8,15 +8,11 @@ import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.openhours.OpeningHoursVO;
-import greencity.dto.photo.PhotoAddDto;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
@@ -119,17 +115,7 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-    private final LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
-    private final Location location = Location.builder()
-        .id(1L)
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
+
     private final LocationVO locationVO = LocationVO.builder()
         .id(1L)
         .address("test")
@@ -137,21 +123,8 @@ class PlaceServiceImplTest {
         .lng(46.456)
         .build();
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
-    private Set<OpeningHours> openingHoursListEntity = new HashSet<>();
-    private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
-    private Set<DiscountValue> discountValues = new HashSet<>();
     private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
-    private Set<DiscountValueVO> discountValuesVO = new HashSet<>();
-    private List<PhotoAddDto> photoDtos = new ArrayList<>();
-    private List<Photo> photos = new ArrayList<>();
-    private PlaceAddDto placeAddDto = PlaceAddDto.builder()
-        .name("Test")
-        .category(categoryDto)
-        .location(locationDto)
-        .openingHoursList(openingHoursList)
-        .discountValues(discountValuesDto)
-        .photos(photoDtos)
-        .build();
+
     @Mock
     private PlaceRepo placeRepo;
     @Mock
@@ -188,7 +161,7 @@ class PlaceServiceImplTest {
 
     @BeforeEach
     void init() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService);

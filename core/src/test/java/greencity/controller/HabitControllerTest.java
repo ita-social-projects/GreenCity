@@ -319,7 +319,7 @@ class HabitControllerTest {
     @Test
     void postCustomHabit() throws Exception {
         CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
-        ObjectMapper objectMapper = new ObjectMapper();
+
         objectMapper.findAndRegisterModules();
 
         String requestedJson = objectMapper.writeValueAsString(dto);
@@ -353,7 +353,6 @@ class HabitControllerTest {
         MockMultipartFile imageFile = new MockMultipartFile("image", imageContent);
         CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 
         String requestedJson = objectMapper.writeValueAsString(dto);
@@ -379,7 +378,6 @@ class HabitControllerTest {
     @Test
     void deleteHabitAssignTest() throws Exception {
         Long customHabitId = 1L;
-        Principal principal = () -> "email@ukr.net";
         mockMvc.perform(delete("/habit/delete/{customHabitId}", customHabitId)
             .principal(principal)).andExpect(status().isOk());
 

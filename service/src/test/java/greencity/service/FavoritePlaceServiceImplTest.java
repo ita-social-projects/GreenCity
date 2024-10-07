@@ -40,12 +40,12 @@ class FavoritePlaceServiceImplTest {
     @InjectMocks
     private FavoritePlaceServiceImpl favoritePlaceService;
 
-    private FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
-    private FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
-    private FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
-    private String userEmail = favoritePlace.getUser().getEmail();
-    private Long favoritePlaceId = favoritePlace.getId();
-    private PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
+    private final FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
+    private final FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
+    private final FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
+    private final String userEmail = favoritePlace.getUser().getEmail();
+    private final Long favoritePlaceId = favoritePlace.getId();
+    private final PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
 
     @Test
     void saveFavoritePlaceAlreadyExistTest() {

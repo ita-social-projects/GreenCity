@@ -25,8 +25,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import static greencity.ModelUtils.TEST_USER;
-import static greencity.ModelUtils.TEST_USER_VO;
+import static greencity.ModelUtils.testUser;
+import static greencity.ModelUtils.testUserVo;
 import static greencity.ModelUtils.getActionDto;
 import static greencity.ModelUtils.getNotification;
 import static greencity.ModelUtils.getNotificationDto;
@@ -72,9 +72,9 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = getPageableAdvancedDtoForNotificationDto();
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(TEST_USER_VO);
+        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
 
-        when(notificationRepo.findNotificationsByFilter(TEST_USER.getId(), ProjectName.GREENCITY, null, true, page))
+        when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page))
             .thenReturn(notificationPage);
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
@@ -84,7 +84,7 @@ class UserNotificationServiceImplTest {
         assertEquals(expected, actual);
 
         verify(userService).findByEmail("danylo@gmail.com");
-        verify(notificationRepo).findNotificationsByFilter(TEST_USER.getId(), ProjectName.GREENCITY, null, true, page);
+        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page);
         verify(modelMapper).map(notification, NotificationDto.class);
     }
 
@@ -102,31 +102,31 @@ class UserNotificationServiceImplTest {
 
     @Test
     void createNotificationForAttendersTest() {
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
-        userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
+        userNotificationService.createNotificationForAttenders(List.of(testUserVo), "",
             NotificationType.EVENT_CREATED, 1L);
-        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(testUserVo, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
+            .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
     }
 
     @Test
     void createNotificationForAttendersWithTitleTest() {
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
-        userNotificationService.createNotificationForAttenders(List.of(TEST_USER_VO), "",
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
+        userNotificationService.createNotificationForAttenders(List.of(testUserVo), "",
             NotificationType.EVENT_CREATED, 1L, "Title");
-        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(testUserVo, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
+            .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
     }
 
     @Test
     void createNotificationTest() {
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
-        userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO, NotificationType.EVENT_CREATED);
-        verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
+        userNotificationService.createNotification(testUserVo, testUserVo, NotificationType.EVENT_CREATED);
+        verify(modelMapper, times(2)).map(testUserVo, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
+            .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
     }
 
     @Test
@@ -134,16 +134,16 @@ class UserNotificationServiceImplTest {
         when(notificationRepo
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L)).thenReturn(Optional.empty());
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
-        userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO,
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
+        userNotificationService.createNotification(testUserVo, testUserVo,
             NotificationType.EVENT_CREATED, 1L, "Message");
 
         verify(notificationRepo)
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L);
-        verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
+        verify(modelMapper, times(2)).map(testUserVo, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
+            .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
     }
 
     @Test
@@ -151,71 +151,71 @@ class UserNotificationServiceImplTest {
         when(notificationRepo
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L)).thenReturn(Optional.empty());
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
-        userNotificationService.createNotification(TEST_USER_VO, TEST_USER_VO,
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
+        userNotificationService.createNotification(testUserVo, testUserVo,
             NotificationType.EVENT_CREATED, 1L, "Message", 1L,
             "Second Message");
 
         verify(notificationRepo)
             .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(1L,
                 NotificationType.EVENT_CREATED, 1L);
-        verify(modelMapper, times(2)).map(TEST_USER_VO, User.class);
+        verify(modelMapper, times(2)).map(testUserVo, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
+            .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
     }
 
     @Test
     void createNewNotificationTest() {
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
-        userNotificationService.createNewNotification(TEST_USER_VO, NotificationType.EVENT_CREATED,
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
+        userNotificationService.createNewNotification(testUserVo, NotificationType.EVENT_CREATED,
             1L, "Custom Message");
-        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(testUserVo, User.class);
         verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + TEST_USER.getId() + NOTIFICATION, true);
+            .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
     }
 
     @Test
     void removeActionUserFromNotificationTest() {
         var notification = getNotification();
         when(notificationRepo
-            .findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
+            .findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
                 NotificationType.EVENT_CREATED, 1L))
             .thenReturn(notification);
         userNotificationService
-            .removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L, NotificationType.EVENT_CREATED);
-        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
+            .removeActionUserFromNotification(testUserVo, testUserVo, 1L, NotificationType.EVENT_CREATED);
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L);
     }
 
     @Test
     void removeActionUserFromNotificationWithSeveralActionUsersTest() {
         var notification = getNotificationWithSeveralActionUsers(3);
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L))
             .thenReturn(notification);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
         userNotificationService
-            .removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L, NotificationType.EVENT_CREATED);
+            .removeActionUserFromNotification(testUserVo, testUserVo, 1L, NotificationType.EVENT_CREATED);
 
-        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L);
-        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(testUserVo, User.class);
     }
 
     @Test
     void removeActionUserFromNotificationIfNotificationIsNullTest() {
-        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
+        when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L)).thenReturn(null);
-        userNotificationService.removeActionUserFromNotification(TEST_USER_VO, TEST_USER_VO, 1L,
+        userNotificationService.removeActionUserFromNotification(testUserVo, testUserVo, 1L,
             NotificationType.EVENT_CREATED);
 
-        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(TEST_USER.getId(),
+        verify(notificationRepo).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
             NotificationType.EVENT_CREATED, 1L);
     }
 
     @Test
     void deleteNotificationTest() {
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(TEST_USER_VO);
+        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
 
         userNotificationService.deleteNotification(getPrincipal(), 1L);
 

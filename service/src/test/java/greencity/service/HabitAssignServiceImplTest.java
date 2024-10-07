@@ -79,7 +79,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
+import static greencity.ModelUtils.habitAssignInProgress;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitAssign;
@@ -148,7 +148,7 @@ class HabitAssignServiceImplTest {
     @Mock
     private AchievementCalculation achievementCalculation;
 
-    private final static ZonedDateTime zonedDateTime = ZonedDateTime.now();
+    private static final ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
     private HabitDto habitDto = HabitDto.builder().id(1L).build();
 
@@ -164,9 +164,6 @@ class HabitAssignServiceImplTest {
         .id(1L)
         .createDateTime(zonedDateTime).habitId(habit.getId()).build();
 
-    private HabitVO habitVO =
-        HabitVO.builder().id(1L).image("src/main/resources/static/css/background-image-footer.svg").build();
-
     private UserVO userVO = UserVO.builder().id(1L).build();
 
     private User user = User.builder().id(1L).build();
@@ -174,9 +171,6 @@ class HabitAssignServiceImplTest {
     private final HabitAssign habitAssign = getHabitAssign();
 
     private HabitAssign fullHabitAssign = getFullHabitAssign();
-
-    private HabitAssign habitAssignNew = HabitAssign.builder()
-        .user(user).habit(habit).build();
 
     private HabitAssignStatDto habitAssignStatDto = HabitAssignStatDto.builder()
         .status(HabitAssignStatus.ACQUIRED).build();
@@ -203,7 +197,7 @@ class HabitAssignServiceImplTest {
             .customShoppingListItemList(List.of(ModelUtils.getCustomShoppingListItemSaveRequestDto()))
             .build();
 
-    private String language = "en";
+    private final String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
     @Test
     void getByHabitAssignIdAndUserIdThrowsNotFoundExceptionWhenHabitAssignNotExists() {
@@ -313,7 +307,7 @@ class HabitAssignServiceImplTest {
     void assignDefaultHabitForUserAlreadyHasTheHabit() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(HABIT_ASSIGN_IN_PROGRESS));
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssignInProgress));
 
         assertThrows(UserAlreadyHasHabitAssignedException.class,
                 () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
@@ -618,7 +612,6 @@ class HabitAssignServiceImplTest {
         Long userId = 2L;
         LocalDate from = LocalDate.now();
         LocalDate to = from.minusDays(1);
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         BadRequestException exception = assertThrows(BadRequestException.class,
             () -> habitAssignService.findHabitAssignsBetweenDates(userId, from, to, language));
@@ -1037,8 +1030,6 @@ class HabitAssignServiceImplTest {
         Long habitAssignId = 2L;
         Long userId = 3L;
 
-        String language = "en";
-
         List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
             List.of(ModelUtils.getCustomShoppingListItemResponseDto());
         List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
@@ -1177,7 +1168,6 @@ class HabitAssignServiceImplTest {
         Long userId = 3L;
         Long habitTranslationId = 4L;
         LocalDate localDate = LocalDate.now();
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
         translation.setId(habitTranslationId);
@@ -1221,7 +1211,6 @@ class HabitAssignServiceImplTest {
         Long habitAssignId = 2L;
         Long userId = 3L;
         LocalDate localDate = LocalDate.now();
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.empty());
 
@@ -1246,7 +1235,6 @@ class HabitAssignServiceImplTest {
         long habitAssignId = 2L;
         long userId = 3L;
         LocalDate localDate = LocalDate.now();
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         habitAssign.setId(habitAssignId);
         habitAssign.getUser().setId(userId + 1L);
@@ -1273,7 +1261,6 @@ class HabitAssignServiceImplTest {
         Long userId = 3L;
         Long habitTranslationId = 4L;
         LocalDate localDate = LocalDate.now();
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
         translation.setId(habitTranslationId);
@@ -1364,7 +1351,6 @@ class HabitAssignServiceImplTest {
         Long userId = 3L;
         Long habitTranslationId = 4L;
         LocalDate localDate = LocalDate.now().plusDays(1);
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
         translation.setId(habitTranslationId);
@@ -1403,7 +1389,6 @@ class HabitAssignServiceImplTest {
         Long userId = 3L;
         Long habitTranslationId = 4L;
         LocalDate localDate = LocalDate.now().minusDays(AppConstant.MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL);
-        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
         translation.setId(habitTranslationId);
@@ -1484,12 +1469,12 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateStatusAndDurationOfHabitAssignTest() {
-        HabitAssign habitAssign = getHabitAssign();
-        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
-        habitAssign.setDuration(20);
-        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
+        HabitAssign habitAssignRequested = getHabitAssign()
+            .setStatus(HabitAssignStatus.REQUESTED)
+            .setDuration(20);
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssignRequested));
         when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignRequested));
         when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserDurationDto());
 
         var result = habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 20);
@@ -1511,9 +1496,9 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateStatusAndDurationOfHabitAssignThrowInvalidStatusExceptionTest() {
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
-        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
+        HabitAssign habitAssignInProgress = ModelUtils.getHabitAssign()
+            .setStatus(HabitAssignStatus.INPROGRESS);
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssignInProgress));
         when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
             .thenReturn(Optional.empty());
         var exception = assertThrows(InvalidStatusException.class,
@@ -1526,11 +1511,10 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateUserHabitInfoDurationTest() {
-        HabitAssign habitAssign = getHabitAssign();
-        habitAssign.setDuration(20);
+        HabitAssign habitAssignDuration20 = getHabitAssign().setDuration(20);
         when(habitAssignRepo.existsById(anyLong())).thenReturn(true);
         when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong()))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignDuration20));
         when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserDurationDto());
         var result = habitAssignService.updateUserHabitInfoDuration(1L, 21L, 20);
         assertEquals(20, result.getDuration());
@@ -1563,12 +1547,12 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateUserHabitInfoDurationThrowBadRequestExceptionTest() {
-        HabitAssign habitAssign = getHabitAssign();
-        habitAssign.setDuration(20);
-        habitAssign.setWorkingDays(20);
+        HabitAssign habitAssignBadRequest = getHabitAssign();
+        habitAssignBadRequest.setDuration(20);
+        habitAssignBadRequest.setWorkingDays(20);
         when(habitAssignRepo.existsById(anyLong())).thenReturn(true);
         when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong()))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignBadRequest));
         var exception = assertThrows(BadRequestException.class,
             () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 19));
         assertEquals(ErrorMessage.INVALID_DURATION, exception.getMessage());
@@ -1611,26 +1595,29 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
         Long userId = 2L;
         Long habitAssignId = 3L;
-        Habit habit = ModelUtils.getHabit(habitId, "image123");
-        HabitAssign habitAssign = ModelUtils.getHabitAssign(habitAssignId, habit, HabitAssignStatus.INPROGRESS);
-        habitAssign.getUser().setId(userId);
+        Habit habitWithHabitAssignStatus = ModelUtils.getHabit(habitId, "image123");
+        HabitAssign habitAssignInProgress =
+            ModelUtils.getHabitAssign(habitAssignId, habitWithHabitAssignStatus, HabitAssignStatus.INPROGRESS);
+        habitAssignInProgress.getUser().setId(userId);
         HabitAssignDto habitAssignDto =
-            ModelUtils.getHabitAssignDto(habitAssignId, habitAssign.getStatus(), habit.getImage());
-        HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
+            ModelUtils.getHabitAssignDto(habitAssignId, habitAssignInProgress.getStatus(),
+                habitWithHabitAssignStatus.getImage());
+        HabitTranslation habitTranslation =
+            habitAssignInProgress.getHabit().getHabitTranslations().stream().findFirst().get();
 
-        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssignInProgress));
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(new ArrayList<>());
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(habitAssignInProgress, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDto.getHabit());
         when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId)).thenReturn(new ArrayList<>());
 
         var dto = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
 
         assertNotNull(dto);
-        assertEquals(habit.getId(), dto.getId());
-        assertEquals(habit.getImage(), dto.getImage());
-        assertEquals(habitAssign.getStatus(), dto.getHabitAssignStatus());
+        assertEquals(habitWithHabitAssignStatus.getId(), dto.getId());
+        assertEquals(habitWithHabitAssignStatus.getImage(), dto.getImage());
+        assertEquals(habitAssignInProgress.getStatus(), dto.getHabitAssignStatus());
         verify(habitAssignRepo).findById(anyLong());
         verify(shoppingListItemTranslationRepo).findShoppingListByHabitIdAndByLanguageCode(anyString(), anyLong());
         verify(userShoppingListItemRepo).getAllAssignedShoppingListItemsFull(anyLong());
@@ -2839,8 +2826,9 @@ class HabitAssignServiceImplTest {
 
         verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
         verify(shoppingListItemRepo).getAllShoppingListItemIdByHabitIdISContained(habit.getId());
-        verify(userNotificationService).createOrUpdateHabitInviteNotification(eq(new UserVO()), eq(userVO),
-            eq(habit.getId()), eq(""));
+        verify(userNotificationService).createOrUpdateHabitInviteNotification(new UserVO(), userVO,
+            habit.getId(), "");
+
     }
 
     @Test
