@@ -1622,7 +1622,6 @@ class HabitAssignServiceImplTest {
         Long userId = 2L;
         Long habitAssignId = 3L;
         Long amountOfUsersAcquired = 4L;
-        HabitAssign fullHabitAssign = getFullHabitAssign();
         fullHabitAssign.setId(habitAssignId);
         fullHabitAssign.getUser().setId(userId);
 

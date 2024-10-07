@@ -60,6 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doThrow;
@@ -476,7 +477,7 @@ class ShoppingListItemServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
 
-        assertEquals(Collections.emptyList(), shoppingListItemService.getUserShoppingList(userId, 1L, "en"));
+        assertTrue(shoppingListItemService.getUserShoppingList(userId, 1L, "en").isEmpty());
     }
 
     @Test
