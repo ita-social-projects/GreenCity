@@ -8,13 +8,18 @@ import greencity.dto.econews.ShortEcoNewsDto;
 import greencity.dto.subscription.SubscriptionRequestDto;
 import greencity.dto.subscription.SubscriptionResponseDto;
 import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Subscription;
 import greencity.enums.SubscriptionType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SubscriptionRepo;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -75,7 +80,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         int page = 0;
         Page<Subscription> subscriptions;
         do {
-            subscriptions = subscriptionRepo.findAll(PageRequest.of(page, 20));
+            subscriptions = subscriptionRepo.findAll(PageRequest.of(page, 50));
             if (!subscriptions.isEmpty()) {
                 List<SubscriberDto> subscribers = getSubscribers(subscriptions);
                 restClient.sendInterestingEcoNews(new InterestingEcoNewsDto(interestingEcoNews, subscribers));
@@ -114,17 +119,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             .map(Subscription::getEmail)
             .toList();
 
-        return userService.findByEmails(emails).stream()
-            .map(u -> modelMapper.map(u, SubscriberDto.class))
-            .map(s -> s.setUnsubscribeToken(findUnsubscribeToken(s.getEmail(), subscriptions)))
+        Map<String, UserVO> registeredUsers = userService.findByEmails(emails).stream()
+            .collect(Collectors.toMap(UserVO::getEmail, Function.identity()));
+
+        return subscriptions.stream()
+            .map(s -> modelMapper.map(s, SubscriberDto.class))
+            .map(s -> addSubscriberInfo(s, registeredUsers))
             .toList();
     }
 
-    private UUID findUnsubscribeToken(String email, Page<Subscription> subscriptions) {
-        return subscriptions.stream()
-            .filter(s -> s.getEmail().equals(email))
-            .map(Subscription::getUnsubscribeToken)
-            .findFirst()
-            .orElseThrow();
+    private SubscriberDto addSubscriberInfo(SubscriberDto subscriber, Map<String, UserVO> registeredUsers) {
+        Optional.ofNullable(registeredUsers.get(subscriber.getEmail()))
+            .ifPresent(user -> {
+                subscriber.setName(user.getName());
+                subscriber.setLanguage(user.getLanguageVO().getCode());
+            });
+        return subscriber;
     }
 }

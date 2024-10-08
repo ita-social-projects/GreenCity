@@ -4,33 +4,27 @@ import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@Getter
-@Setter
+@Data
 @Builder
-@EqualsAndHashCode
 public class UserVO {
     private Long id;
 

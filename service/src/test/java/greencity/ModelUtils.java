@@ -2939,8 +2939,6 @@ public class ModelUtils {
 
     public static SubscriberDto getSubscriberDto() {
         return SubscriberDto.builder()
-            .language("ua")
-            .name("Ilia")
             .email("test@example.com")
             .build();
     }
