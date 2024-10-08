@@ -665,7 +665,7 @@ public class CommentServiceImpl implements CommentService {
     /**
      * Method to extract user id from comment.
      *
-     * @param message comment from {@link CommentDtoResponse}.
+     * @param message comment from {@link AddCommentDtoResponse}.
      * @return user id if present or null.
      */
     public Set<Long> getUserIdFromComment(String message) {
