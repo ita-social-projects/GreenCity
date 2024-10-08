@@ -368,7 +368,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                     notificationRepo.delete(notification);
                 } else {
                     notification.setCustomMessage(createLikeNotificationMessage(actionUsers, newsTitle,
-                            notificationType));
+                        notificationType));
                     notification.setTime(LocalDateTime.now());
                     notificationRepo.save(notification);
                 }
@@ -382,7 +382,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     }
 
     private String createLikeNotificationMessage(List<User> actionUsers, String newsTitle,
-            NotificationType notificationType) {
+        NotificationType notificationType) {
         int userCount = actionUsers.size();
 
         return switch (userCount) {
@@ -390,10 +390,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 actionUsers.get(0).getName(), getNotificationLikeMessage(notificationType), newsTitle);
             case 2 -> String.format("%s and %s like your %s %s.",
                 actionUsers.get(0).getName(), actionUsers.get(1).getName(),
-                    getNotificationLikeMessage(notificationType), newsTitle);
+                getNotificationLikeMessage(notificationType), newsTitle);
             default -> String.format("%s, %s and other users like your %s %s.",
                 actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(),
-                    getNotificationLikeMessage(notificationType), newsTitle);
+                getNotificationLikeMessage(notificationType), newsTitle);
         };
     }
 

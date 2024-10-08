@@ -327,7 +327,8 @@ class UserNotificationServiceImplTest {
             .thenReturn(Optional.of(existingNotification));
         when(modelMapper.map(actionUserVO, User.class)).thenReturn(actionUser);
 
-        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle, NotificationType.ECONEWS_COMMENT_LIKE, true);
+        userNotificationService.createOrUpdateLikeNotification(targetUserVO, actionUserVO, newsId, newsTitle,
+            NotificationType.ECONEWS_COMMENT_LIKE, true);
 
         assertTrue(actionUsers.contains(actionUser), "Action users should contain the actionUser.");
 
@@ -398,7 +399,8 @@ class UserNotificationServiceImplTest {
         Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
             String.class, NotificationType.class);
         method.setAccessible(true);
-        String result = (String) method.invoke(userNotificationService, actionUsers, newsTitle, NotificationType.ECONEWS_LIKE);
+        String result =
+            (String) method.invoke(userNotificationService, actionUsers, newsTitle, NotificationType.ECONEWS_LIKE);
 
         assertEquals("Taras and Petro like your news Test News.", result);
     }
@@ -416,7 +418,8 @@ class UserNotificationServiceImplTest {
         Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
             String.class, NotificationType.class);
         method.setAccessible(true);
-        String result = (String) method.invoke(userNotificationService, actionUsers, habitTitle, NotificationType.HABIT_LIKE);
+        String result =
+            (String) method.invoke(userNotificationService, actionUsers, habitTitle, NotificationType.HABIT_LIKE);
 
         assertEquals("Petro, Vasyl and other users like your habit Test Habit.", result);
     }

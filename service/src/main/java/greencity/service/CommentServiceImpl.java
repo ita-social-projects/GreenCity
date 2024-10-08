@@ -328,13 +328,13 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param articleType the type of the article, {@link ArticleType}.
      * @param comment     the comment that was made, {@link Comment}.
-     * @param actionUser      the user who made the comment, {@link UserVO}.
+     * @param actionUser  the user who made the comment, {@link UserVO}.
      */
     private void createCommentLikeNotification(ArticleType articleType, Comment comment, UserVO actionUser) {
         UserVO targetUser = modelMapper.map(comment.getUser(), UserVO.class);
         userNotificationService.createOrUpdateLikeNotification(
-                targetUser, actionUser, comment.getId(), comment.getText(),
-                getNotificationType(articleType, CommentActionType.COMMENT_LIKE), true);
+            targetUser, actionUser, comment.getId(), comment.getText(),
+            getNotificationType(articleType, CommentActionType.COMMENT_LIKE), true);
     }
 
     /**

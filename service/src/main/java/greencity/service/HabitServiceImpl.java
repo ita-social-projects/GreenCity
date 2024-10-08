@@ -4,7 +4,6 @@ import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.filter.HabitTranslationFilterDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
@@ -13,15 +12,12 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Comment;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.enums.ArticleType;
-import greencity.enums.CommentActionType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
@@ -551,12 +547,12 @@ public class HabitServiceImpl implements HabitService {
             achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
                 AchievementAction.ASSIGN);
             if (habitAuthor != null) {
-//                userNotificationService.createNotification(modelMapper.map(habitAuthor, UserVO.class), userVO,
-//                    NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
+                userNotificationService.createNotification(modelMapper.map(habitAuthor, UserVO.class), userVO,
+                    NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
 
-//                userNotificationService.createOrUpdateLikeNotification(modelMapper.map(habitAuthor, UserVO.class),
-//                        userVO, habitId, habit.getHabitTranslations().getFirst().getName(),
-//                        NotificationType.HABIT_LIKE, true);
+                userNotificationService.createOrUpdateLikeNotification(modelMapper.map(habitAuthor, UserVO.class),
+                        userVO, habitId, habit.getHabitTranslations().getFirst().getName(),
+                        NotificationType.HABIT_LIKE, true);
 
                 sendHabitLikeNotification(habitAuthor, userVO, habitId, habit);
             }
@@ -566,8 +562,8 @@ public class HabitServiceImpl implements HabitService {
 
     private void sendHabitLikeNotification(User targetUser, UserVO actionUser, Long habitId, Habit habit) {
         userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
-                actionUser, habitId, habit.getHabitTranslations().getFirst().getName(),
-                NotificationType.HABIT_LIKE, true);
+            actionUser, habitId, habit.getHabitTranslations().getFirst().getName(),
+            NotificationType.HABIT_LIKE, true);
     }
 
     private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {
