@@ -425,6 +425,12 @@ class NotificationServiceImplTest {
             when(notificationRepo
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT_LIKE))
                 .thenReturn(Collections.singletonList(notification));
+            when(notificationRepo
+                    .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.HABIT_LIKE))
+                    .thenReturn(Collections.singletonList(notification));
+            when(notificationRepo
+                    .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.HABIT_COMMENT_LIKE))
+                    .thenReturn(Collections.singletonList(notification));
             when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),
                 EmailPreference.LIKES, EmailPreferencePeriodicity.TWICE_A_DAY)).thenReturn(false);
             when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(targetUser.getId(),

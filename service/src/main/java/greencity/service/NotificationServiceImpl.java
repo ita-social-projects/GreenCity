@@ -131,6 +131,8 @@ public class NotificationServiceImpl implements NotificationService {
         sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_LIKE);
         sendScheduledNotifications(NotificationType.HABIT_LIKE, EmailPreference.LIKES, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT_LIKE);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT_LIKE, EmailPreference.LIKES, now);
     }
 
     /**
@@ -295,7 +297,8 @@ public class NotificationServiceImpl implements NotificationService {
         List<NotificationType> likes = List.of(NotificationType.ECONEWS_COMMENT_LIKE,
             NotificationType.ECONEWS_LIKE,
             NotificationType.EVENT_COMMENT_LIKE,
-            NotificationType.HABIT_LIKE);
+            NotificationType.HABIT_LIKE,
+            NotificationType.HABIT_COMMENT_LIKE);
         List<NotificationType> comments = List.of(NotificationType.ECONEWS_COMMENT,
             NotificationType.EVENT_COMMENT,
             NotificationType.HABIT_COMMENT,
