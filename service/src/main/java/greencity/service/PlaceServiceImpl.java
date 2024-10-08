@@ -62,7 +62,7 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
-import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.ChangePlaceStatusDto;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
@@ -313,8 +313,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Override
     public UpdatePlaceStatusDto updateStatus(Long id, PlaceStatus status) {
@@ -328,8 +326,11 @@ public class PlaceServiceImpl implements PlaceService {
             notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
-            restClient.changePlaceStatus(new SendChangePlaceStatusEmailMessage(updatable.getAuthor().getName(),
-                updatable.getName(), updatable.getStatus().toString().toLowerCase(),
+            restClient.changePlaceStatus(new ChangePlaceStatusDto(
+                updatable.getAuthor().getName(),
+                updatable.getAuthor().getLanguage().getCode(),
+                updatable.getName(),
+                updatable.getStatus(),
                 updatable.getAuthor().getEmail()));
         }
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
@@ -608,10 +609,9 @@ public class PlaceServiceImpl implements PlaceService {
     private void mapMultipartFilesToPhotos(MultipartFile[] images, Place place, User user) {
         if (images != null && images.length > 0 && images[0] != null) {
             List<Photo> placePhotos = new ArrayList<>();
-            for (int i = 0; i < images.length; i++) {
-                if (images[i] != null) {
-                    placePhotos
-                        .add(Photo.builder().place(place).name(fileService.upload(images[i])).user(user).build());
+            for (MultipartFile image : images) {
+                if (image != null) {
+                    placePhotos.add(Photo.builder().place(place).name(fileService.upload(image)).user(user).build());
                 }
             }
             place.setPhotos(placePhotos);

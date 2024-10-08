@@ -7,7 +7,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.SubscriberDto;
 import greencity.entity.Language;
 import greencity.entity.Notification;
 import greencity.entity.Place;
@@ -23,6 +23,17 @@ import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.repository.UserRepo;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -32,19 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -66,16 +64,15 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendImmediatelyReport(PlaceVO newPlace) {
         log.info(LogMessage.IN_SEND_IMMEDIATELY_REPORT, newPlace.getName());
         EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
-        List<PlaceAuthorDto> subscribers = getSubscribers(emailNotification);
+        List<SubscriberDto> subscribers = getSubscribers(emailNotification);
 
         Map<CategoryDto, List<PlaceNotificationDto>> categoriesDtoWithPlacesDtoMap = new HashMap<>();
         CategoryDto map = modelMapper.map(newPlace.getCategory(), CategoryDto.class);
-        List<PlaceNotificationDto> placeDtoList =
-            Collections.singletonList(modelMapper.map(newPlace, PlaceNotificationDto.class));
+        List<PlaceNotificationDto> placeDtoList = List.of(modelMapper.map(newPlace, PlaceNotificationDto.class));
         categoriesDtoWithPlacesDtoMap.put(map, placeDtoList);
 
-        restClient.sendReport(new SendReportEmailMessage(subscribers,
-            categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
+        restClient.sendReport(new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap,
+            emailNotification));
     }
 
     /**
@@ -286,8 +283,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Viktoriia Herchanivska
      */
     @Override
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
@@ -338,7 +333,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
         log.info(LogMessage.IN_SEND_REPORT, emailNotification);
-        List<PlaceAuthorDto> subscribers = getSubscribers(emailNotification);
+        List<SubscriberDto> subscribers = getSubscribers(emailNotification);
         Map<CategoryDto, List<PlaceNotificationDto>> categoriesDtoWithPlacesDtoMap = new HashMap<>();
         LocalDateTime endDate = LocalDateTime.now(ZONE_ID);
         if (!subscribers.isEmpty()) {
@@ -347,16 +342,16 @@ public class NotificationServiceImpl implements NotificationService {
             categoriesDtoWithPlacesDtoMap = getCategoriesDtoWithPlacesDtoMap(places);
         }
         if (!categoriesDtoWithPlacesDtoMap.isEmpty()) {
-            restClient.sendReport(
-                new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
+            restClient.sendReport(new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap,
+                emailNotification));
         }
     }
 
-    private List<PlaceAuthorDto> getSubscribers(EmailNotification emailNotification) {
+    private List<SubscriberDto> getSubscribers(EmailNotification emailNotification) {
         log.info(LogMessage.IN_GET_SUBSCRIBERS, emailNotification);
         return restClient.findAllByEmailNotification(emailNotification).stream()
-            .map(o -> modelMapper.map(o, PlaceAuthorDto.class))
-            .collect(Collectors.toList());
+            .map(o -> modelMapper.map(o, SubscriberDto.class))
+            .toList();
     }
 
     private Map<CategoryDto, List<PlaceNotificationDto>> getCategoriesDtoWithPlacesDtoMap(List<Place> places) {

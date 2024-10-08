@@ -20,7 +20,6 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
-import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
@@ -420,6 +419,7 @@ public class ModelUtils {
             .dateOfRegistration(localDateTime)
             .subscribedEvents(new HashSet<>())
             .favoriteEvents(new HashSet<>())
+            .language(getLanguage())
             .build();
     }
 
@@ -509,6 +509,7 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
+            .languageVO(getLanguageVO())
             .build();
     }
 
@@ -638,14 +639,6 @@ public class ModelUtils {
             .text("text")
             .hidden(false)
             .tags(Collections.singletonList(tag))
-            .build();
-    }
-
-    public static Comment getEcoNewsComment(CommentStatus commentStatus) {
-        return Comment.builder()
-            .status(commentStatus)
-            .text("sdfs")
-            .articleType(ArticleType.ECO_NEWS)
             .build();
     }
 
@@ -1074,6 +1067,7 @@ public class ModelUtils {
         place.setAuthor(getUser());
         place.setModifiedDate(ZonedDateTime.now());
         place.setStatus(PlaceStatus.PROPOSED);
+        place.setAuthor(getUser());
         return place;
     }
 
@@ -1091,6 +1085,7 @@ public class ModelUtils {
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setName("category");
         placeVO.setCategory(categoryVO);
+        placeVO.setAuthor(getAuthorVO());
         return placeVO;
     }
 
@@ -1249,18 +1244,6 @@ public class ModelUtils {
         List<SocialNetworkVO> socialNetworkVO = new ArrayList<>();
         socialNetworkVO.add(SocialNetworkVO.builder().id(1L).url("url").build());
         return socialNetworkVO;
-    }
-
-    public static Comment getEcoNewsComment() {
-        return Comment.builder()
-            .id(1L)
-            .status(CommentStatus.ORIGINAL)
-            .text("text")
-            .createdDate(LocalDateTime.now())
-            .modifiedDate(LocalDateTime.now())
-            .user(getUser())
-            .articleType(ArticleType.ECO_NEWS)
-            .build();
     }
 
     public static PlaceByBoundsDto getPlaceByBoundsDtoForFindAllTest() {
@@ -1422,10 +1405,6 @@ public class ModelUtils {
         return new AchievementManagementDto(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
             "Acquired habit 14 days", getAchievementCategoryDto(),
             1);
-    }
-
-    public static UserAchievementVO getUserAchievementVO() {
-        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), true);
     }
 
     public static UserAchievement getUserAchievement() {
@@ -1745,14 +1724,6 @@ public class ModelUtils {
             new MockMultipartFile("secondFile.tmp", "Hello World".getBytes())};
     }
 
-    public static MultipartFile getMultipartImageFile() {
-        return new MockMultipartFile(
-            "images",
-            "image.jpg",
-            "image/jpeg",
-            "image data".getBytes());
-    }
-
     public static MultipartFile[] getMultipartImageFiles() {
         return new MockMultipartFile[] {
             new MockMultipartFile(
@@ -1802,22 +1773,6 @@ public class ModelUtils {
             .houseNumber("1B")
             .cityUa("Київ")
             .cityEn("Kyiv")
-            .regionUa("Область")
-            .regionEn("Oblast")
-            .countryUa("Країна")
-            .countryEn("Country")
-            .build();
-    }
-
-    public static AddressDto getSecondAddressDtoCorrect() {
-        return AddressDto.builder()
-            .latitude(46.4567236)
-            .longitude(28.2354469)
-            .streetUa("Вулиця")
-            .streetEn("Street")
-            .houseNumber("1B")
-            .cityUa("Одеса")
-            .cityEn("Odessa")
             .regionUa("Область")
             .regionEn("Oblast")
             .countryUa("Країна")
@@ -2669,13 +2624,6 @@ public class ModelUtils {
 
     public static SearchEventsDto getSearchEvents() {
         return SearchEventsDto.builder().id(1L).title("Title").tags(new ArrayList<>()).build();
-    }
-
-    public static AmountCommentLikesDto getAmountCommentLikesDto() {
-        return AmountCommentLikesDto.builder()
-            .id(1L)
-            .amountLikes(2)
-            .build();
     }
 
     public static User getTagUser() {
