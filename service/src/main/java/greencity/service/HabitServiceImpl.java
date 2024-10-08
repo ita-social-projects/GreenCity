@@ -551,8 +551,8 @@ public class HabitServiceImpl implements HabitService {
                     NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
 
                 userNotificationService.createOrUpdateLikeNotification(modelMapper.map(habitAuthor, UserVO.class),
-                        userVO, habitId, habit.getHabitTranslations().getFirst().getName(),
-                        NotificationType.HABIT_LIKE, true);
+                    userVO, habitId, habit.getHabitTranslations().getFirst().getName(),
+                    NotificationType.HABIT_LIKE, true);
 
                 sendHabitLikeNotification(habitAuthor, userVO, habitId, habit);
             }
