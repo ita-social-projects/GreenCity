@@ -264,13 +264,4 @@ public class EventCommentController {
         commentService.like(commentId, user, null);
     }
 
-    /**
-     * Method to like/dislike comment and count likes.
-     *
-     * @param amountCommentLikesDto dto with id and count likes for comments.
-     */
-    @MessageMapping("/likeAndCount")
-    public void getCountOfLike(@Payload AmountCommentLikesDto amountCommentLikesDto) {
-        commentService.countLikes(amountCommentLikesDto);
-    }
 }

@@ -226,16 +226,6 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to like/dislike comment and count likes.
-     *
-     * @param amountCommentLikesDto dto with id and count likes for comments.
-     */
-    @MessageMapping("/likeAndCount")
-    public void getCountOfLike(@Payload AmountCommentLikesDto amountCommentLikesDto) {
-        commentService.countLikes(amountCommentLikesDto);
-    }
-
-    /**
      * Method to get all active comments to {@link HabitVO} specified by habitId.
      *
      * @param ecoNewsId id of {@link EcoNewsVO}
