@@ -136,7 +136,7 @@ class SubscriptionServiceImplTest {
 
         List<UserVO> users = List.of(userVO);
         when(userService.findByEmails(anyList())).thenReturn(users);
-        when(modelMapper.map(userVO, SubscriberDto.class)).thenReturn(subscriberDto);
+        when(modelMapper.map(subscription, SubscriberDto.class)).thenReturn(subscriberDto);
 
         subscriptionService.sendContentToSubscribers();
 
