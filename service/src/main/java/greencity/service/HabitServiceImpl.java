@@ -547,11 +547,16 @@ public class HabitServiceImpl implements HabitService {
             achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_HABIT,
                 AchievementAction.ASSIGN);
             if (habitAuthor != null) {
-                userNotificationService.createNotification(modelMapper.map(habitAuthor, UserVO.class), userVO,
-                    NotificationType.HABIT_LIKE, habitId, habit.getHabitTranslations().getFirst().getName());
+                sendHabitLikeNotification(habitAuthor, userVO, habitId, habit);
             }
         }
         habitRepo.save(habit);
+    }
+
+    private void sendHabitLikeNotification(User targetUser, UserVO actionUser, Long habitId, Habit habit) {
+        userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
+            actionUser, habitId, habit.getHabitTranslations().getFirst().getName(),
+            NotificationType.HABIT_LIKE, true);
     }
 
     private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {

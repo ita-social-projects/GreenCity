@@ -327,17 +327,14 @@ public class CommentServiceImpl implements CommentService {
      * Creates a notification for a comment like on an article.
      *
      * @param articleType the type of the article, {@link ArticleType}.
-     * @param articleId   the ID of the article, {@link Long}.
      * @param comment     the comment that was made, {@link Comment}.
-     * @param userVO      the user who made the comment, {@link UserVO}.
-     * @param locale      the locale used for localization of the notification,
-     *                    {@link Locale}.
+     * @param actionUser  the user who made the comment, {@link UserVO}.
      */
-    private void createCommentLikeNotification(ArticleType articleType, Long articleId, Comment comment, UserVO userVO,
-        Locale locale) {
-        createNotification(articleType, articleId, comment,
-            modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class),
-            userVO, getNotificationType(articleType, CommentActionType.COMMENT_LIKE), locale);
+    private void createCommentLikeNotification(ArticleType articleType, Comment comment, UserVO actionUser) {
+        UserVO targetUser = modelMapper.map(comment.getUser(), UserVO.class);
+        userNotificationService.createOrUpdateLikeNotification(
+            targetUser, actionUser, comment.getId(), comment.getText(),
+            getNotificationType(articleType, CommentActionType.COMMENT_LIKE), true);
     }
 
     /**
@@ -553,7 +550,7 @@ public class CommentServiceImpl implements CommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
-            createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
+            createCommentLikeNotification(comment.getArticleType(), comment, userVO);
         }
         commentRepo.save(comment);
     }
@@ -668,7 +665,7 @@ public class CommentServiceImpl implements CommentService {
     /**
      * Method to extract user id from comment.
      *
-     * @param message comment from {@link CommentDtoResponse}.
+     * @param message comment from {@link AddCommentDtoResponse}.
      * @return user id if present or null.
      */
     public Set<Long> getUserIdFromComment(String message) {
