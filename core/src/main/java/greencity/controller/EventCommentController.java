@@ -263,5 +263,4 @@ public class EventCommentController {
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         commentService.like(commentId, user, null);
     }
-
 }

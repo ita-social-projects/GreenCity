@@ -210,16 +210,6 @@ public class HabitCommentController {
     }
 
     /**
-     * Method to like/dislike comment and count likes.
-     *
-     * @param amountCommentLikesDto dto with id and count likes for comments.
-     */
-    @MessageMapping("/likeAndCount")
-    public void getCountOfLike(@Payload AmountCommentLikesDto amountCommentLikesDto) {
-        commentService.countLikes(amountCommentLikesDto);
-    }
-
-    /**
      * Method to update certain {@link CommentVO} specified by id.
      *
      * @param id          of {@link CommentVO} to update
