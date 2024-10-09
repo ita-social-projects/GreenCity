@@ -562,15 +562,15 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void countLikes(AmountCommentLikesDto amountCommentLikesDto) {
         Comment comment = commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED)
-                .orElseThrow(
-                        () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + amountCommentLikesDto.getId()));
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + amountCommentLikesDto.getId()));
         boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
-                .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
+            .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
         int size = comment.getUsersLiked().size();
         amountCommentLikesDto.setLiked(isLiked);
         amountCommentLikesDto.setAmountLikes(size);
         messagingTemplate
-                .convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
+            .convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
     }
 
     /**
