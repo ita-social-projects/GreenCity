@@ -11,7 +11,6 @@ import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
-import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
@@ -31,8 +30,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -207,16 +204,6 @@ public class HabitCommentController {
         @Parameter(hidden = true) @CurrentUser UserVO user,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         commentService.like(commentId, user, locale);
-    }
-
-    /**
-     * Method to get count of likes for a specific comment.
-     *
-     * @param amountCommentLikesDto dto with id and count likes for comments.
-     */
-    @MessageMapping("/likeAndCount")
-    public void getCountOfLike(@Payload AmountCommentLikesDto amountCommentLikesDto) {
-        commentService.countLikes(amountCommentLikesDto);
     }
 
     /**
