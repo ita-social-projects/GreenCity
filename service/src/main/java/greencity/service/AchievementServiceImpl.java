@@ -112,7 +112,7 @@ public class AchievementServiceImpl implements AchievementService {
                 for (UserAction action : allActions) {
                     if ((action.getHabit() == null && action.getAchievementCategory().getId()
                         .equals(achievementVO.getAchievementCategory().getId()))
-                            || (action.getHabit() != null && achievementVO.getHabit() != null
+                        || (action.getHabit() != null && achievementVO.getHabit() != null
                             && action.getHabit().getId().equals(achievementVO.getHabit().getId()))) {
                         achievementCategoryProgress = action.getCount();
                         break;
