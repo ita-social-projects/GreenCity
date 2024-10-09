@@ -5,7 +5,6 @@ import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
-import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
