@@ -31,6 +31,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -208,27 +210,13 @@ public class HabitCommentController {
     }
 
     /**
-     * Method to count likes for comment.
+     * Method to like/dislike comment and count likes.
      *
-     * @param commentId id of {@link CommentDto} comment whose likes must be counted
-     * @param user      {@link UserVO} user who want to get amount of likes for
-     *                  comment.
-     * @return amountCommentLikesDto dto with id and count likes for comments.
+     * @param amountCommentLikesDto dto with id and count likes for comments.
      */
-    @Operation(summary = "Count likes for comment.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("/comments/{commentId}/likes/count")
-    public ResponseEntity<AmountCommentLikesDto> countLikes(@PathVariable("commentId") Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(commentService.countLikes(commentId, user));
+    @MessageMapping("/likeAndCount")
+    public void getCountOfLike(@Payload AmountCommentLikesDto amountCommentLikesDto) {
+        commentService.countLikes(amountCommentLikesDto);
     }
 
     /**
