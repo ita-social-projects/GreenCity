@@ -20,6 +20,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
+import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
@@ -2897,5 +2898,12 @@ public class ModelUtils {
 
     public static RatingPoints getRatingPointsAcquiredHabit14Days() {
         return RatingPoints.builder().id(1L).name("ACQUIRED_HABIT_14_DAYS").points(20).build();
+    }
+
+    public static AmountCommentLikesDto getAmountCommentLikesDto() {
+        return AmountCommentLikesDto.builder()
+                .id(1L)
+                .amountLikes(2)
+                .build();
     }
 }
