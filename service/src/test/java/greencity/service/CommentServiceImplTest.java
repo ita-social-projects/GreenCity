@@ -58,6 +58,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import static greencity.ModelUtils.getAddCommentDtoResponse;
+import static greencity.ModelUtils.getAmountCommentLikesDto;
 import static greencity.ModelUtils.getComment;
 import static greencity.ModelUtils.getCommentDto;
 import static greencity.ModelUtils.getCommentVO;
@@ -1098,76 +1099,35 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void countLikesTest() {
-        Long commentId = 1L;
-        UserVO userVO = getUserVO();
+    void eventCommentLikeAndCountTest() {
+        AmountCommentLikesDto amountCommentLikesDto = getAmountCommentLikesDto();
         Comment comment = getComment();
-        Integer usersLikedAmount = 5;
 
-        for (long i = 0; i < usersLikedAmount; i++) {
-            User user = getUser();
-            user.setId(i);
-            comment.getUsersLiked().add(user);
-        }
+        when(commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED))
+            .thenReturn(Optional.of(comment));
+        doNothing().when(messagingTemplate).convertAndSend("/topic/" + amountCommentLikesDto.getId()
+            + "/comment", amountCommentLikesDto);
 
-        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        commentService.countLikes(amountCommentLikesDto);
 
-        AmountCommentLikesDto result = commentService.countLikes(commentId, userVO);
-
-        assertEquals(commentId, result.getId());
-        assertEquals(comment.getUser().getId(), result.getUserId());
-        assertEquals(usersLikedAmount, result.getAmountLikes());
-        assertTrue(result.isLiked());
-
-        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+        verify(commentRepo).findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED);
+        verify(messagingTemplate).convertAndSend("/topic/" + amountCommentLikesDto.getId()
+            + "/comment", amountCommentLikesDto);
     }
 
     @Test
-    void testCountLikesHandlesNullUserVO() {
-        Long commentId = 1L;
-        Comment comment = new Comment();
-        comment.setUsersLiked(Set.of());
+    void eventCommentLikeAndCountThatDoesntExistThrowNotFoundExceptionTest() {
+        AmountCommentLikesDto amountCommentLikesDto = getAmountCommentLikesDto();
 
-        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED))
+            .thenReturn(Optional.empty());
 
-        AmountCommentLikesDto result = commentService.countLikes(commentId, null);
+        NotFoundException notFoundException = assertThrows(NotFoundException.class,
+            () -> commentService.countLikes(amountCommentLikesDto));
 
-        assertEquals(0, result.getUserId());
-        assertFalse(result.isLiked());
-        assertEquals(0, result.getAmountLikes());
-    }
-
-    @Test
-    void testCountLikesHandlesNonNullUserVO() {
-        Long commentId = 1L;
-        UserVO userVO = new UserVO();
-        userVO.setId(1L);
-
-        Comment comment = new Comment();
-        comment.setUsersLiked(Set.of(new User().setId(1L)));
-
-        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
-
-        AmountCommentLikesDto result = commentService.countLikes(commentId, userVO);
-
-        assertEquals(1L, result.getUserId());
-        assertTrue(result.isLiked());
-        assertEquals(1, result.getAmountLikes());
-    }
-
-    @Test
-    void countLikesNotFoundCommentTest() {
-        Long commentId = 1L;
-        UserVO userVO = getUserVO();
-
-        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
-
-        NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> commentService.countLikes(commentId, userVO));
-
-        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
-
-        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + amountCommentLikesDto.getId(),
+            notFoundException.getMessage());
+        verify(commentRepo).findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED);
     }
 
     @Test
