@@ -2902,8 +2902,8 @@ public class ModelUtils {
 
     public static AmountCommentLikesDto getAmountCommentLikesDto() {
         return AmountCommentLikesDto.builder()
-                .id(1L)
-                .amountLikes(2)
-                .build();
+            .id(1L)
+            .amountLikes(2)
+            .build();
     }
 }

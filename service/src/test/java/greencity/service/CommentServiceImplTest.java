@@ -1103,7 +1103,8 @@ class CommentServiceImplTest {
         AmountCommentLikesDto amountCommentLikesDto = getAmountCommentLikesDto();
         Comment comment = getComment();
 
-        when(commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED))
+            .thenReturn(Optional.of(comment));
         doNothing().when(messagingTemplate).convertAndSend("/topic/" + amountCommentLikesDto.getId()
             + "/comment", amountCommentLikesDto);
 
@@ -1111,7 +1112,7 @@ class CommentServiceImplTest {
 
         verify(commentRepo).findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED);
         verify(messagingTemplate).convertAndSend("/topic/" + amountCommentLikesDto.getId()
-                + "/comment", amountCommentLikesDto);
+            + "/comment", amountCommentLikesDto);
     }
 
     @Test
@@ -1119,13 +1120,13 @@ class CommentServiceImplTest {
         AmountCommentLikesDto amountCommentLikesDto = getAmountCommentLikesDto();
 
         when(commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         NotFoundException notFoundException = assertThrows(NotFoundException.class,
-                () -> commentService.countLikes(amountCommentLikesDto));
+            () -> commentService.countLikes(amountCommentLikesDto));
 
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + amountCommentLikesDto.getId(),
-                notFoundException.getMessage());
+            notFoundException.getMessage());
         verify(commentRepo).findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED);
     }
 
