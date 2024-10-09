@@ -98,17 +98,6 @@ public interface CommentService {
     void like(Long commentId, UserVO userVO, Locale locale);
 
     /**
-     * Method returns count of likes to certain {@link CommentVO} specified by id.
-     *
-     * @param commentId id of {@link CommentVO} must be counted.
-     * @param userVO    {@link UserVO} user who want to get amount of likes for
-     *                  comment.
-     *
-     * @return amountCommentLikesDto dto with id and count likes for comments.
-     */
-    AmountCommentLikesDto countLikes(Long commentId, UserVO userVO);
-
-    /**
      * Method to change the existing {@link CommentVO}.
      *
      * @param commentText new text of {@link CommentVO}.
@@ -133,4 +122,11 @@ public interface CommentService {
      * @author Anton Bondar
      */
     void searchUsers(UserSearchDto searchUsers);
+
+    /**
+     * Method returns count of likes to certain {@link CommentVO} specified by id.
+     *
+     * @param amountCommentLikesDto dto with id and count likes for comments.
+     */
+    void countLikes(AmountCommentLikesDto amountCommentLikesDto);
 }
