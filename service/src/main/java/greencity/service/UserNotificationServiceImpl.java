@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.notification.EmailNotificationDto;
@@ -9,6 +10,7 @@ import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.NotificationRepo;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -351,9 +353,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     @Override
     public void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        boolean isLike) {
+        NotificationType notificationType, boolean isLike) {
         notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
-            targetUserVO.getId(), NotificationType.ECONEWS_LIKE, newsId)
+            targetUserVO.getId(), notificationType, newsId)
             .ifPresentOrElse(notification -> {
                 List<User> actionUsers = notification.getActionUsers();
 
@@ -365,30 +367,42 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 if (actionUsers.isEmpty()) {
                     notificationRepo.delete(notification);
                 } else {
-                    notification.setCustomMessage(createLikeNotificationMessage(actionUsers, newsTitle));
+                    notification.setCustomMessage(createLikeNotificationMessage(actionUsers, newsTitle,
+                        notificationType));
                     notification.setTime(LocalDateTime.now());
                     notificationRepo.save(notification);
                 }
             }, () -> {
                 if (isLike) {
-                    String customMessage = String.format("%s likes your news %s.",
-                        actionUserVO.getName(), newsTitle);
-                    createNotification(targetUserVO, actionUserVO, NotificationType.ECONEWS_LIKE, newsId,
-                        customMessage);
+                    String customMessage = String.format("%s likes your %s %s.",
+                        actionUserVO.getName(), getNotificationLikeMessage(notificationType), newsTitle);
+                    createNotification(targetUserVO, actionUserVO, notificationType, newsId, customMessage);
                 }
             });
     }
 
-    private String createLikeNotificationMessage(List<User> actionUsers, String newsTitle) {
+    private String createLikeNotificationMessage(List<User> actionUsers, String newsTitle,
+        NotificationType notificationType) {
         int userCount = actionUsers.size();
 
         return switch (userCount) {
-            case 1 -> String.format("%s likes your news %s.",
-                actionUsers.get(0).getName(), newsTitle);
-            case 2 -> String.format("%s and %s like your news %s.",
-                actionUsers.get(0).getName(), actionUsers.get(1).getName(), newsTitle);
-            default -> String.format("%s, %s and other users like your news %s.",
-                actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(), newsTitle);
+            case 1 -> String.format("%s likes your %s %s.",
+                actionUsers.get(0).getName(), getNotificationLikeMessage(notificationType), newsTitle);
+            case 2 -> String.format("%s and %s like your %s %s.",
+                actionUsers.get(0).getName(), actionUsers.get(1).getName(),
+                getNotificationLikeMessage(notificationType), newsTitle);
+            default -> String.format("%s, %s and other users like your %s %s.",
+                actionUsers.get(userCount - 2).getName(), actionUsers.get(userCount - 1).getName(),
+                getNotificationLikeMessage(notificationType), newsTitle);
+        };
+    }
+
+    private String getNotificationLikeMessage(NotificationType notificationType) {
+        return switch (notificationType) {
+            case HABIT_COMMENT_LIKE, EVENT_COMMENT_LIKE, ECONEWS_COMMENT_LIKE -> "comment";
+            case ECONEWS_LIKE -> "news";
+            case HABIT_LIKE -> "habit";
+            default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         };
     }
 }

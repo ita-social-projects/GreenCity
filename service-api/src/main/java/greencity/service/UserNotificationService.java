@@ -183,5 +183,5 @@ public interface UserNotificationService {
      *                     (true) or an unlike (false).
      */
     void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
-        boolean isLike);
+        NotificationType notificationType, boolean isLike);
 }
