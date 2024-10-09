@@ -226,17 +226,13 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to count likes for comment.
+     * Method to get count of likes for a specific comment.
      *
-     * @param commentId id of {@link CommentDto} comment whose likes must be counted
-     * @param userVO    {@link UserVO} user who want to get amount of likes for
-     *                  comment.
-     * @return amountCommentLikesDto dto with id and count likes for comments.
+     * @param amountCommentLikesDto dto with id and count likes for comments.
      */
-    @GetMapping("/comments/{commentId}/likes/count")
-    public ResponseEntity<AmountCommentLikesDto> countLikes(@PathVariable("commentId") Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.countLikes(commentId, userVO));
+    @MessageMapping("/likeAndCount")
+    public void getCountOfLike(@Payload AmountCommentLikesDto amountCommentLikesDto) {
+        commentService.countLikes(amountCommentLikesDto);
     }
 
     /**
