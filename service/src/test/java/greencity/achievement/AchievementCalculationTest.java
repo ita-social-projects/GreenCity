@@ -69,7 +69,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
                 0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
@@ -102,7 +103,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
                 0);
         RatingPoints ratingPoints = ModelUtils.getRatingPointsAcquiredHabit14Days();
         when(ratingPointsRepo.findByNameOrThrow("ACQUIRED_HABIT_14_DAYS")).thenReturn(ratingPoints);
@@ -140,7 +142,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
                 0);
         RatingPoints ratingPoints = ModelUtils.getRatingPointsAcquiredHabit14Days();
         when(ratingPointsRepo.findByNameOrThrow("ACQUIRED_HABIT_14_DAYS")).thenReturn(ratingPoints);
@@ -249,7 +252,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
                 0);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
@@ -278,7 +282,8 @@ class AchievementCalculationTest {
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
         AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1,
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+                null, 1,
                 0);
         RatingPoints ratingPoints = ModelUtils.getRatingPointsAcquiredHabit14Days();
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
