@@ -105,46 +105,8 @@ public class AchievementServiceImpl implements AchievementService {
             case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
             case null, default -> findAllAchievementsWithAnyStatus(userId, searchAchievementCategoryId);
         };
-        if (achievementCategoryId == null) {
-            List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
-            return achievements.stream().map(achievementVO -> {
-                int achievementCategoryProgress = 0;
-                for (UserAction action : allActions) {
-                    if ((action.getHabit() == null && action.getAchievementCategory().getId()
-                        .equals(achievementVO.getAchievementCategory().getId()))
-                        || (action.getHabit() != null && achievementVO.getHabit() != null
-                            && action.getHabit().getId().equals(achievementVO.getHabit().getId()))) {
-                        achievementCategoryProgress = action.getCount();
-                        break;
-                    }
-                }
-                return achievementVO.setProgress(achievementCategoryProgress);
-            })
-                .toList();
-        } else {
-            Long habitAchievementCategory = findCategoryByName("HABIT").getId();
-            if (achievementCategoryId.equals(habitAchievementCategory)) {
-                return achievements.stream()
-                    .map(achievementVO -> {
-                        int achievementCategoryProgress = 0;
-                        if (achievementVO.getHabit() != null) {
-                            UserAction achievementAction =
-                                userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(userId,
-                                    achievementCategoryId, achievementVO.getHabit().getId());
-                            achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
-                        }
-                        return achievementVO.setProgress(achievementCategoryProgress);
-                    })
-                    .toList();
-            } else {
-                UserAction achievementAction =
-                    userActionRepo.findByUserIdAndAchievementCategoryId(userId, achievementCategoryId);
-                int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
-                return achievements.stream()
-                    .map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
-                    .toList();
-            }
-        }
+        setAchievementsProgress(userId, achievementCategoryId, achievements);
+        return achievements;
     }
 
     /**
@@ -208,7 +170,15 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
         Long achievementCategoryId) {
-        return findAllByTypeAndCategory(principalEmail, achievementStatus, achievementCategoryId).size();
+        Long userId = userService.findByEmail(principalEmail).getId();
+        Long searchAchievementCategoryId =
+            achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
+        List<AchievementVO> achievements = switch (achievementStatus) {
+            case ACHIEVED -> findAllAchieved(userId, searchAchievementCategoryId);
+            case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
+            case null, default -> findAllAchievementsWithAnyStatus(userId, searchAchievementCategoryId);
+        };
+        return achievements.size();
     }
 
     private AchievementCategory findCategoryByName(String name) {
@@ -345,5 +315,57 @@ public class AchievementServiceImpl implements AchievementService {
 
     private HabitVO mapHabitToVO(Habit habit) {
         return modelMapper.map(habit, HabitVO.class);
+    }
+
+    private void setAchievementsProgress(Long userId, Long achievementCategoryId, List<AchievementVO> achievements) {
+        if (achievementCategoryId == null) {
+            achievements = setAchievementsProgressForAllCategories(userId, achievements);
+        } else {
+            achievements = setAchievementsProgressForOneCategory(userId, achievementCategoryId, achievements);
+        }
+    }
+
+    private List<AchievementVO> setAchievementsProgressForAllCategories(Long userId, List<AchievementVO> achievements) {
+        List<UserAction> allActions = userActionRepo.findAllByUserId(userId);
+        return achievements.stream().map(achievementVO -> {
+            int achievementCategoryProgress = 0;
+            for (UserAction action : allActions) {
+                if ((action.getHabit() == null && action.getAchievementCategory().getId()
+                    .equals(achievementVO.getAchievementCategory().getId()))
+                    || (action.getHabit() != null && achievementVO.getHabit() != null
+                        && action.getHabit().getId().equals(achievementVO.getHabit().getId()))) {
+                    achievementCategoryProgress = action.getCount();
+                    break;
+                }
+            }
+            return achievementVO.setProgress(achievementCategoryProgress);
+        })
+            .toList();
+    }
+
+    private List<AchievementVO> setAchievementsProgressForOneCategory(Long userId, Long categoryId,
+        List<AchievementVO> achievements) {
+        Long habitAchievementCategory = findCategoryByName("HABIT").getId();
+        if (categoryId.equals(habitAchievementCategory)) {
+            return achievements.stream()
+                .map(achievementVO -> {
+                    int achievementCategoryProgress = 0;
+                    if (achievementVO.getHabit() != null) {
+                        UserAction achievementAction =
+                            userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(userId,
+                                categoryId, achievementVO.getHabit().getId());
+                        achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
+                    }
+                    return achievementVO.setProgress(achievementCategoryProgress);
+                })
+                .toList();
+        } else {
+            UserAction achievementAction =
+                userActionRepo.findByUserIdAndAchievementCategoryId(userId, categoryId);
+            int achievementCategoryProgress = achievementAction != null ? achievementAction.getCount() : 0;
+            return achievements.stream()
+                .map(achievementVO -> achievementVO.setProgress(achievementCategoryProgress))
+                .toList();
+        }
     }
 }
