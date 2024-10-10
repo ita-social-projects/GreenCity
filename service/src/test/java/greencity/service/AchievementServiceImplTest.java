@@ -23,6 +23,8 @@ import greencity.entity.AchievementCategory;
 import static greencity.enums.AchievementStatus.ACHIEVED;
 import static greencity.enums.AchievementStatus.UNACHIEVED;
 
+import greencity.entity.HabitAssign;
+import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -274,6 +276,45 @@ class AchievementServiceImplTest {
     }
 
     @Test
+    void findAllUNACHIEVEDWithHabitCategoryTest() {
+        AchievementCategory achievementCategory = getAchievementCategory();
+        Achievement achievement = ModelUtils.getAchievement();
+        achievement.setCondition(2);
+        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setDuration(achievement.getCondition());
+        HabitAssign habitAssign2 = ModelUtils.getHabitAssign();
+        habitAssign2.setDuration(achievement.getCondition() - 1);
+        when(userService.findByEmail("email@gmail.com")).thenReturn(getUserVO());
+        when(achievementCategoryRepo.findById(anyLong())).thenReturn(Optional.of(achievementCategory));
+        when(achievementRepo.searchAchievementsUnAchievedByCategory(anyLong(), anyLong()))
+                .thenReturn(List.of(achievement));
+        when(modelMapper.map(achievement, AchievementVO.class))
+                .thenReturn(achievementVO);
+        when(achievementCategoryRepo.findByName("HABIT")).thenReturn(Optional.of(achievementCategory));
+        when(habitAssignRepo.findAllInProgressHabitAssignsRelatedToUser(anyLong())).thenReturn(List.of(habitAssign, habitAssign2));
+        when(achievementRepo.findAllByAchievementCategoryId(anyLong())).thenReturn(List.of(achievement));
+        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), anyInt()))
+                .thenReturn(Optional.of(achievement));
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(anyLong())).thenReturn(getHabitTranslationUa());
+        when(habitTranslationRepo.getHabitTranslationByEnLanguage(anyLong())).thenReturn(getHabitTranslation());
+        List<AchievementVO> findAllResult =
+                achievementService.findAllByTypeAndCategory("email@gmail.com", UNACHIEVED, achievementCategory.getId());
+        assertEquals(1, findAllResult.size());
+        assertEquals(1L, (long) findAllResult.getFirst().getId());
+        verify(userService).findByEmail("email@gmail.com");
+        verify(achievementCategoryRepo).findById(anyLong());
+        verify(achievementRepo).searchAchievementsUnAchievedByCategory(anyLong(), anyLong());
+        verify(modelMapper, times(2)).map(achievement, AchievementVO.class);
+        verify(achievementCategoryRepo, times(2)).findByName("HABIT");
+        verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
+        verify(achievementRepo).findAllByAchievementCategoryId(anyLong());
+        verify(achievementRepo).findByAchievementCategoryIdAndCondition(anyLong(), anyInt());
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
+        verify(habitTranslationRepo).getHabitTranslationByEnLanguage(anyLong());
+    }
+
+    @Test
     void findAllAnyStatusWithCategoryIdTest() {
         AchievementCategory achievementCategory = getAchievementCategory();
         when(userService.findByEmail("email@gmail.com")).thenReturn(getUserVO());
@@ -338,6 +379,48 @@ class AchievementServiceImplTest {
         verify(habitAssignRepo).findAllInProgressHabitAssignsRelatedToUser(anyLong());
         verify(achievementRepo).findAllByAchievementCategoryId(anyLong());
         verify(modelMapper).map(achievement, AchievementVO.class);
+    }
+
+    @Test
+    void countAchievedAchievementsWithCategoryIdTest() {
+        Achievement achievement = ModelUtils.getAchievement();
+        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        UserAchievement userAchievement = ModelUtils.getUserAchievement();
+        userAchievement.setHabit(null);
+        when(userService.findByEmail("email@gmail.com")).thenReturn(getUserVO());
+        when(achievementCategoryRepo.findById(anyLong())).thenReturn(Optional.of(getAchievementCategory()));
+        when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(anyLong(),anyLong())).thenReturn(List.of(userAchievement));
+        when(achievementRepo.findById(anyLong())).thenReturn(Optional.of(achievement));
+        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
+        Integer result = achievementService.findAchievementCountByTypeAndCategory("email@gmail.com", ACHIEVED, 1L);
+        assertEquals(1, result);
+        verify(userService).findByEmail("email@gmail.com");
+        verify(achievementCategoryRepo).findById(anyLong());
+        verify(userAchievementRepo).findAllByUserIdAndAchievement_AchievementCategoryId(anyLong(), anyLong());
+        verify(achievementRepo).findById(anyLong());
+        verify(modelMapper).map(achievement, AchievementVO.class);
+    }
+
+    @Test
+    void countUnachievedAchievementsWithCategoryIdTest() {
+        Achievement achievement = ModelUtils.getAchievement();
+        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        UserAchievement userAchievement = ModelUtils.getUserAchievement();
+        userAchievement.setHabit(null);
+        AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
+        AchievementCategory habitCategory = ModelUtils.getAchievementCategory().setId(0L);
+        when(userService.findByEmail("email@gmail.com")).thenReturn(getUserVO());
+        when(achievementCategoryRepo.findById(anyLong())).thenReturn(Optional.of(achievementCategory));
+        when(achievementRepo.searchAchievementsUnAchievedByCategory(anyLong(), anyLong())).thenReturn(List.of(achievement));
+        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
+        when(achievementCategoryRepo.findByName("HABIT")).thenReturn(Optional.of(habitCategory));
+        Integer result = achievementService.findAchievementCountByTypeAndCategory("email@gmail.com", UNACHIEVED, 1L);
+        assertEquals(1, result);
+        verify(userService).findByEmail("email@gmail.com");
+        verify(achievementCategoryRepo).findById(anyLong());
+        verify(achievementRepo).searchAchievementsUnAchievedByCategory(anyLong(), anyLong());
+        verify(modelMapper).map(achievement, AchievementVO.class);
+        verify(achievementCategoryRepo).findByName("HABIT");
     }
 
     @Test
