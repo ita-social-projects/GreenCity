@@ -559,18 +559,18 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public AmountCommentLikesDto countLikes(Long commentId, UserVO userVO) {
-        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-
-        boolean isLiked =
-            userVO != null && comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
-        return AmountCommentLikesDto.builder()
-            .id(comment.getId())
-            .userId(userVO == null ? 0 : userVO.getId())
-            .isLiked(isLiked)
-            .amountLikes(comment.getUsersLiked().size())
-            .build();
+    @Transactional
+    public void countLikes(AmountCommentLikesDto amountCommentLikesDto) {
+        Comment comment = commentRepo.findByIdAndStatusNot(amountCommentLikesDto.getId(), CommentStatus.DELETED)
+            .orElseThrow(
+                () -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + amountCommentLikesDto.getId()));
+        boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
+            .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
+        int size = comment.getUsersLiked().size();
+        amountCommentLikesDto.setLiked(isLiked);
+        amountCommentLikesDto.setAmountLikes(size);
+        messagingTemplate
+            .convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
     }
 
     /**

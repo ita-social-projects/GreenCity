@@ -9,7 +9,6 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.AddCommentDtoResponse;
-import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
@@ -260,28 +259,5 @@ public class EventCommentController {
         @PathVariable Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         commentService.like(commentId, user, null);
-    }
-
-    /**
-     * Method to count likes for comment.
-     *
-     * @param commentId id of {@link CommentDto} comment whose likes must be counted
-     * @param user      {@link UserVO} user who want to get amount of likes for
-     *                  comment.
-     * @return amountCommentLikesDto dto with id and count likes for comments.
-     */
-    @Operation(summary = "Count likes for comment.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("comments/{commentId}/likes/count")
-    public ResponseEntity<AmountCommentLikesDto> countLikes(
-        @PathVariable Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        return ResponseEntity.ok().body(commentService.countLikes(commentId, user));
     }
 }
