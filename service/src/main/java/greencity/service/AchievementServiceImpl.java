@@ -264,7 +264,8 @@ public class AchievementServiceImpl implements AchievementService {
         for (Integer duration : habitAchievementsDurations) {
             achievementConditionUserHabitMap.put(duration, habitInProgress
                 .stream()
-                .filter(habitAssign -> habitAssign.getDuration().equals(duration) || habitAssign.getDuration().compareTo(duration) > 0)
+                .filter(habitAssign -> habitAssign.getDuration().equals(duration)
+                    || habitAssign.getDuration().compareTo(duration) > 0)
                 .toList());
         }
         for (Integer duration : habitAchievementsDurations) {
