@@ -120,7 +120,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .projectName(ProjectName.GREENCITY)
             .targetUser(modelMapper.map(targetUser, User.class))
             .time(LocalDateTime.now())
-            .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
+            .actionUsers(new ArrayList<>(List.of(modelMapper.map(actionUser, User.class))))
             .emailSent(false)
             .build();
         notificationService.sendEmailNotification(
