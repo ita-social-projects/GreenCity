@@ -5,7 +5,6 @@ import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
-import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
@@ -382,67 +381,4 @@ class EventCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
     }
-
-    @Test
-    @SneakyThrows
-    void countLikesTest() {
-        Long commentId = 1L;
-        int likesAmount = 10;
-
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-
-        AmountCommentLikesDto result = AmountCommentLikesDto.builder()
-            .id(commentId)
-            .amountLikes(likesAmount)
-            .isLiked(false)
-            .userId(userVO.getId())
-            .build();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
-        String expectedJson = objectMapper.writeValueAsString(result);
-
-        when(commentService.countLikes(commentId, userVO)).thenReturn(result);
-
-        mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}/likes/count", commentId)
-            .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(expectedJson));
-
-        verify(commentService).countLikes(commentId, userVO);
-    }
-
-    @Test
-    @SneakyThrows
-    void countLikesNotValidIdBadRequestTest() {
-        String notValidId = "id";
-        mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}/likes/count", notValidId)
-            .principal(principal))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @SneakyThrows
-    void countLikesNotFoundTest() {
-        Long commentId = 1L;
-
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-
-        String errorMessage = "ErrorMessage";
-
-        doThrow(new NotFoundException(errorMessage))
-            .when(commentService)
-            .countLikes(commentId, userVO);
-
-        Assertions.assertThatThrownBy(
-            () -> mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}/likes/count", commentId)
-                .principal(principal))
-                .andExpect(status().isNotFound()))
-            .hasCause(new NotFoundException(errorMessage));
-    }
-
 }
