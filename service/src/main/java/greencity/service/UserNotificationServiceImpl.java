@@ -402,6 +402,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             case HABIT_COMMENT_LIKE, EVENT_COMMENT_LIKE, ECONEWS_COMMENT_LIKE -> "comment";
             case ECONEWS_LIKE -> "news";
             case HABIT_LIKE -> "habit";
+            case EVENT_LIKE -> "event";
             default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         };
     }

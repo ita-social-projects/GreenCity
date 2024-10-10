@@ -23,6 +23,7 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
+import greencity.entity.Habit;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -730,6 +731,38 @@ public class EventServiceImpl implements EventService {
     @Override
     public Long getCountOfOrganizedEventsByUserId(Long userId) {
         return eventRepo.countDistinctByOrganizerId(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void like(Long eventId, UserVO userVO) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        User eventAuthor = null;
+        if (event.getOrganizer() != null) {
+            eventAuthor = userRepo.findById(event.getOrganizer().getId()).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+        }
+        if (event.getUsersLikedEvents().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
+            // TODO: add rating and achievements calculation
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(eventAuthor, UserVO.class),
+                userVO, eventId, NotificationType.EVENT_LIKE);
+        } else {
+            event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
+            // TODO: add rating and achievements calculation
+            if (eventAuthor != null) {
+                sendEventLikeNotification(eventAuthor, userVO, eventId, event);
+            }
+        }
+        eventRepo.save(event);
+    }
+
+    private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
+        userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
+            actionUser, eventId, event.getTitle(), NotificationType.EVENT_LIKE, true);
     }
 
     private List<EventDto> mapTupleListToEventDtoList(List<Tuple> page, List<Long> sortedIds) {

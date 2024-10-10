@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
+import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
@@ -12,6 +13,7 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.user.UserVO;
 import greencity.enums.EventStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.WrongIdException;
@@ -272,6 +274,26 @@ public class EventController {
         @Parameter(hidden = true) Principal principal) {
         eventService.removeFromFavorites(eventId, principal.getName());
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method to like Event.
+     *
+     * @author Roman Kasarab
+     */
+    @Operation(summary = "Like Event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/{eventId}like")
+    public void like(@PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO user) {
+        eventService.like(eventId, user);
     }
 
     /**
