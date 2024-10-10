@@ -506,10 +506,10 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getEndDate() {
-        HabitAssignDto habitAssign = ModelUtils.getHabitAssignDto();
-        habitAssign.setDuration(2);
-        ZonedDateTime expected = habitAssign.getCreateDateTime().plusDays(habitAssign.getDuration());
-        assertEquals(expected, habitAssignService.getEndDate(habitAssign));
+        HabitAssignDto habitAssignDuration2 = ModelUtils.getHabitAssignDto();
+        habitAssignDuration2.setDuration(2);
+        ZonedDateTime expected = habitAssignDuration2.getCreateDateTime().plusDays(habitAssignDuration2.getDuration());
+        assertEquals(expected, habitAssignService.getEndDate(habitAssignDuration2));
     }
 
     @Test
@@ -738,21 +738,21 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
         Long habitAssignId = 1L;
         Long userId = 2L;
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        habitAssign.getUser().setId(userId);
-        habitAssign.setWorkingDays(10);
+        HabitAssign habitAssignForDelete = ModelUtils.getHabitAssign();
+        habitAssignForDelete.getUser().setId(userId);
+        habitAssignForDelete.setWorkingDays(10);
         RatingPoints ratingPoints =
             RatingPoints.builder().id(1L).name("UNDO_DAYS_OF_HABIT_IN_PROGRESS").points(-1).build();
 
         when(ratingPointsRepo.findByNameOrThrow("UNDO_DAYS_OF_HABIT_IN_PROGRESS")).thenReturn(ratingPoints);
-        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssignForDelete));
         when(userService.findById(any())).thenReturn(getUserVO());
 
         habitAssignService.deleteHabitAssign(habitAssignId, userId);
 
         verify(userShoppingListItemRepo).deleteShoppingListItemsByHabitAssignId(habitAssignId);
         verify(customShoppingListItemRepo).deleteCustomShoppingListItemsByHabitId(habitId);
-        verify(habitAssignRepo).delete(habitAssign);
+        verify(habitAssignRepo).delete(habitAssignForDelete);
     }
 
     @Test
@@ -796,25 +796,22 @@ class HabitAssignServiceImplTest {
     void getAllHabitAssignsByHabitIdAndStatusNotCancelled() {
         Long habitId = 1L;
 
-        Language language = ModelUtils.getLanguage();
-        language.setCode("en");
+        Language languageEn = ModelUtils.getLanguage();
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
-        translation.setLanguage(language);
+        translation.setLanguage(languageEn);
 
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        HabitAssignDto habitAssignDto = ModelUtils.getHabitAssignDto();
+        HabitAssign habitAssignNotCancelled = ModelUtils.getHabitAssign();
 
-        HabitDto habitDto = ModelUtils.getHabitDto();
-        habitAssign.setHabit(habit);
+        habitAssignNotCancelled.setHabit(habit);
 
         habit.setHabitTranslations(Collections.singletonList(translation));
 
-        when(habitAssignRepo.findAllByHabitId(habitId)).thenReturn(Collections.singletonList(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(habitAssignRepo.findAllByHabitId(habitId)).thenReturn(Collections.singletonList(habitAssignNotCancelled));
+        when(modelMapper.map(habitAssignNotCancelled, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
         HabitAssignDto actual =
-            habitAssignService.getAllHabitAssignsByHabitIdAndStatusNotCancelled(habitId, language.getCode()).get(0);
+            habitAssignService.getAllHabitAssignsByHabitIdAndStatusNotCancelled(habitId, languageEn.getCode()).get(0);
 
         assertEquals(habitAssignDto, actual);
 
@@ -824,11 +821,10 @@ class HabitAssignServiceImplTest {
     void getNumberHabitAssignsByHabitIdAndStatusTest() {
         Long habitId = 1L;
 
-        Language language = ModelUtils.getLanguage();
-        language.setCode("en");
+        Language languageEn = ModelUtils.getLanguage();
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
-        translation.setLanguage(language);
+        translation.setLanguage(languageEn);
 
         List<HabitAssign> habitAssignList = Collections.singletonList(ModelUtils.getHabitAssign());
 
@@ -843,13 +839,12 @@ class HabitAssignServiceImplTest {
 
     @Test
     void deleteAllHabitAssignsByHabit() {
-        HabitVO habit = ModelUtils.getHabitVO();
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitVO habitVO = ModelUtils.getHabitVO();
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
         when(habitAssignRepo.findAllByHabitId(any())).thenReturn(Collections.singletonList(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        habitAssignService.deleteAllHabitAssignsByHabit(habit);
+        habitAssignService.deleteAllHabitAssignsByHabit(habitVO);
 
         verify(habitStatisticService).deleteAllStatsByHabitAssign(habitAssignVO);
         verify(habitAssignRepo, times(1)).delete(habitAssign);
@@ -1426,8 +1421,7 @@ class HabitAssignServiceImplTest {
 
         Long id = 3L;
         LocalDate date = LocalDate.now();
-        Language language = ModelUtils.getLanguage();
-        language.setCode("en");
+        Language languageEn = ModelUtils.getLanguage();
 
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(habitTranslation));
@@ -1439,7 +1433,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
 
         List<HabitAssignDto> dtoList =
-            habitAssignService.findInprogressHabitAssignsOnDate(id, date, language.getCode());
+            habitAssignService.findInprogressHabitAssignsOnDate(id, date, languageEn.getCode());
         assertEquals(dtoList.getFirst(), habitAssignDto);
 
     }
@@ -1449,8 +1443,7 @@ class HabitAssignServiceImplTest {
 
         Long id = 3L;
         LocalDate date = LocalDate.now();
-        Language language = ModelUtils.getLanguage();
-        language.setCode("en");
+        Language languageEn = ModelUtils.getLanguage();
 
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(habitTranslation));
@@ -1462,7 +1455,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
 
         List<HabitAssignDto> dtoList =
-            habitAssignService.findInprogressHabitAssignsOnDateContent(id, date, language.getCode());
+            habitAssignService.findInprogressHabitAssignsOnDateContent(id, date, languageEn.getCode());
         assertEquals(dtoList.getFirst(), habitAssignDto);
 
     }
@@ -1599,7 +1592,7 @@ class HabitAssignServiceImplTest {
         HabitAssign habitAssignInProgress =
             ModelUtils.getHabitAssign(habitAssignId, habitWithHabitAssignStatus, HabitAssignStatus.INPROGRESS);
         habitAssignInProgress.getUser().setId(userId);
-        HabitAssignDto habitAssignDto =
+        HabitAssignDto habitAssignDtoInProgress =
             ModelUtils.getHabitAssignDto(habitAssignId, habitAssignInProgress.getStatus(),
                 habitWithHabitAssignStatus.getImage());
         HabitTranslation habitTranslation =
@@ -1608,8 +1601,8 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssignInProgress));
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(new ArrayList<>());
-        when(modelMapper.map(habitAssignInProgress, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDto.getHabit());
+        when(modelMapper.map(habitAssignInProgress, HabitAssignDto.class)).thenReturn(habitAssignDtoInProgress);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDtoInProgress.getHabit());
         when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId)).thenReturn(new ArrayList<>());
 
         var dto = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
@@ -1629,16 +1622,15 @@ class HabitAssignServiceImplTest {
         Long userId = 2L;
         Long habitAssignId = 3L;
         Long amountOfUsersAcquired = 4L;
-        HabitAssign habitAssign = getFullHabitAssign();
-        habitAssign.setId(habitAssignId);
-        habitAssign.getUser().setId(userId);
+        fullHabitAssign.setId(habitAssignId);
+        fullHabitAssign.getUser().setId(userId);
 
-        HabitAssignDto habitAssignDto = getFullHabitAssignDto();
-        habitAssignDto.setId(habitAssignId);
-        habitAssignDto.setUserId(userId);
+        HabitAssignDto fullHabitAssignDto = getFullHabitAssignDto();
+        fullHabitAssignDto.setId(habitAssignId);
+        fullHabitAssignDto.setUserId(userId);
 
-        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(fullHabitAssign));
+        when(modelMapper.map(fullHabitAssign, HabitAssignDto.class)).thenReturn(fullHabitAssignDto);
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(getShoppingListItemTranslationList());
@@ -1899,19 +1891,19 @@ class HabitAssignServiceImplTest {
             .customShoppingListItemDto(List.of())
             .build();
 
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssign habitAssignWithShoppingList = ModelUtils.getHabitAssign();
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setStatus(ShoppingListItemStatus.ACTIVE);
         userShoppingListItem.setHabitAssign(null);
 
-        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+        habitAssignWithShoppingList.setUserShoppingListItems(List.of(userShoppingListItem));
 
         when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
             .thenReturn(List.of());
@@ -1957,19 +1949,19 @@ class HabitAssignServiceImplTest {
             .customShoppingListItemDto(List.of())
             .build();
 
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssign habitAssignWithShoppingList = ModelUtils.getHabitAssign();
 
         when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
         userShoppingListItem.setHabitAssign(null);
 
-        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+        habitAssignWithShoppingList.setUserShoppingListItems(List.of(userShoppingListItem));
 
         habitAssignService
             .fullUpdateUserAndCustomShoppingLists(userId, habitAssignId, dto, language);
@@ -2010,14 +2002,14 @@ class HabitAssignServiceImplTest {
             .customShoppingListItemDto(List.of())
             .build();
 
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssign habitAssignWithShoppingList = ModelUtils.getHabitAssign();
 
         when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setId(responseDto.getId() + 1);
-        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+        habitAssignWithShoppingList.setUserShoppingListItems(List.of(userShoppingListItem));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
             .fullUpdateUserAndCustomShoppingLists(userId, habitAssignId, dto, language));
@@ -2045,11 +2037,11 @@ class HabitAssignServiceImplTest {
     void updateAndDeleteUserShoppingListWithStatusesDeleteItem() {
         Long userId = 1L;
         Long habitAssignId = 1L;
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssign habitAssignWithShoppingList = ModelUtils.getHabitAssign();
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
 
-        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+        habitAssignWithShoppingList.setUserShoppingListItems(List.of(userShoppingListItem));
 
         UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
             .userShoppingListItemDto(List.of())
@@ -2057,10 +2049,10 @@ class HabitAssignServiceImplTest {
             .build();
 
         when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
             .thenReturn(List.of());
@@ -2093,12 +2085,12 @@ class HabitAssignServiceImplTest {
     void updateAndDeleteUserShoppingListWithStatusesDeleteItemWithDisabledStatus() {
         Long userId = 1L;
         Long habitAssignId = 1L;
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssign habitAssignWithShoppingList = ModelUtils.getHabitAssign();
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
 
-        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+        habitAssignWithShoppingList.setUserShoppingListItems(List.of(userShoppingListItem));
 
         UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
             .userShoppingListItemDto(List.of())
@@ -2106,10 +2098,10 @@ class HabitAssignServiceImplTest {
             .build();
 
         when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
             .thenReturn(List.of());
@@ -2152,7 +2144,7 @@ class HabitAssignServiceImplTest {
             .customShoppingListItemDto(List.of())
             .build();
 
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssign habitAssignWithShoppingList = ModelUtils.getHabitAssign();
 
         UserShoppingListItem firstUserShoppingListItem = ModelUtils.getUserShoppingListItem();
         firstUserShoppingListItem.setStatus(oldStatus);
@@ -2161,13 +2153,14 @@ class HabitAssignServiceImplTest {
         UserShoppingListItem secondUserShoppingListItem = ModelUtils.getUserShoppingListItem();
         secondUserShoppingListItem.setId(firstUserShoppingListItem.getId() + 1);
 
-        habitAssign.setUserShoppingListItems(List.of(firstUserShoppingListItem, secondUserShoppingListItem));
+        habitAssignWithShoppingList
+            .setUserShoppingListItems(List.of(firstUserShoppingListItem, secondUserShoppingListItem));
 
         when(habitAssignRepo.findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(habitAssignRepo.findById(habitAssignId))
-            .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssignWithShoppingList));
 
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, getFullHabitAssign().getHabit().getId()))
             .thenReturn(List.of());
@@ -2783,17 +2776,17 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(friend, UserVO.class)).thenReturn(new UserVO());
 
-        HabitAssign habitAssign = new HabitAssign();
-        habitAssign.setId(1L);
-        habitAssign.setStatus(HabitAssignStatus.CANCELLED);
-        habitAssign.setHabit(Habit.builder()
+        HabitAssign habitAssignCancelled = new HabitAssign();
+        habitAssignCancelled.setId(1L);
+        habitAssignCancelled.setStatus(HabitAssignStatus.CANCELLED);
+        habitAssignCancelled.setHabit(Habit.builder()
             .id(1L)
             .habitTranslations(List.of(getHabitTranslation()))
             .build());
 
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelledOrRequested(habitId, friendId)).thenReturn(
-            habitAssign);
-        when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
+            habitAssignCancelled);
+        when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssignCancelled);
 
         habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, List.of(friendId), habitId,
             locale);
@@ -2807,10 +2800,6 @@ class HabitAssignServiceImplTest {
         Locale locale = Locale.of("en");
         User friend = getUser();
         Long habitId = 1L;
-        Habit habit = Habit.builder()
-            .id(1L)
-            .habitTranslations(List.of(getHabitTranslation()))
-            .build();
         Long friendId = friend.getId();
         when(userRepo.isFriend(userVO.getId(), friendId)).thenReturn(true);
         when(userRepo.findById(friendId)).thenReturn(Optional.of(friend));
