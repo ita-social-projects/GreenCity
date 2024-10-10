@@ -105,8 +105,7 @@ public class AchievementServiceImpl implements AchievementService {
             case UNACHIEVED -> findUnachieved(userId, searchAchievementCategoryId);
             case null, default -> findAllAchievementsWithAnyStatus(userId, searchAchievementCategoryId);
         };
-        setAchievementsProgress(userId, achievementCategoryId, achievements);
-        return achievements;
+        return setAchievementsProgress(userId, achievementCategoryId, achievements);
     }
 
     /**
@@ -318,11 +317,12 @@ public class AchievementServiceImpl implements AchievementService {
         return modelMapper.map(habit, HabitVO.class);
     }
 
-    private void setAchievementsProgress(Long userId, Long achievementCategoryId, List<AchievementVO> achievements) {
+    private List<AchievementVO> setAchievementsProgress(Long userId, Long achievementCategoryId,
+        List<AchievementVO> achievements) {
         if (achievementCategoryId == null) {
-            achievements = setAchievementsProgressForAllCategories(userId, achievements);
+            return setAchievementsProgressForAllCategories(userId, achievements);
         } else {
-            achievements = setAchievementsProgressForOneCategory(userId, achievementCategoryId, achievements);
+            return setAchievementsProgressForOneCategory(userId, achievementCategoryId, achievements);
         }
     }
 
