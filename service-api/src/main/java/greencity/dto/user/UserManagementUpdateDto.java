@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ServiceValidationConstants;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -27,7 +28,7 @@ public class UserManagementUpdateDto {
         max = ServiceValidationConstants.USERNAME_MAX_LENGTH)
     private String name;
 
-    @Email(message = ServiceValidationConstants.INVALID_EMAIL)
+    @Email(regexp = AppConstant.VALIDATION_EMAIL, message = ServiceValidationConstants.INVALID_EMAIL)
     @NotBlank
     private String email;
 
