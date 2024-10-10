@@ -159,15 +159,20 @@ class PlaceServiceImplTest {
     @Mock
     UserRepo userRepo;
     @Mock
+    UserService userService;
+    @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
     private FileService fileService;
+    @Mock
+    private UserNotificationService userNotificationService;
 
     @BeforeEach
     void init() {
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
-            specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
-            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService);
+            specificationService, openingHoursService, userService, discountService, notificationService, zoneId,
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
+            userNotificationService);
     }
 
     @Test

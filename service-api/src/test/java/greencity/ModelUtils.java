@@ -17,10 +17,8 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
-import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.message.ChangePlaceStatusDto;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -53,15 +51,6 @@ public class ModelUtils {
         return PlaceNotificationDto.builder()
             .category(getCategoryDto())
             .name("name")
-            .build();
-    }
-
-    public static ChangePlaceStatusDto getSendChangePlaceStatusEmailMessage() {
-        return ChangePlaceStatusDto.builder()
-            .placeStatus(PlaceStatus.APPROVED)
-            .authorEmail("test@gmail.com")
-            .placeName("placeName")
-            .authorFirstName("taras")
             .build();
     }
 

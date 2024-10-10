@@ -317,6 +317,7 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationType.EVENT_NAME_UPDATED,
             NotificationType.EVENT_UPDATED,
             NotificationType.EVENT_JOINED);
+        List<NotificationType> places = List.of(NotificationType.PLACE_STATUS);
         try {
             if (likes.contains(type)) {
                 restClient.sendEmailNotificationLikes(message);
@@ -326,6 +327,8 @@ public class NotificationServiceImpl implements NotificationService {
                 restClient.sendEmailNotificationInvites(message);
             } else if (systems.contains(type)) {
                 restClient.sendEmailNotificationSystem(message);
+            } else if (places.contains(type)) {
+                restClient.sendEmailNotificationPlaces(message);
             }
             notification.setEmailSent(true);
             notificationRepo.save(notification);

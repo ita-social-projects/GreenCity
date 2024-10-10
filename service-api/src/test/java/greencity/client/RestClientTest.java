@@ -16,7 +16,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
-import greencity.message.ChangePlaceStatusDto;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -409,25 +408,6 @@ class RestClientTest {
         verify(jwtTool).createAccessToken(SYSTEM_EMAIL, Role.ROLE_ADMIN);
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class);
-    }
-
-    @Test
-    void changePlaceStatus() {
-        ChangePlaceStatusDto message = ModelUtils.getSendChangePlaceStatusEmailMessage();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<ChangePlaceStatusDto> entity = new HttpEntity<>(message, httpHeaders);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(object));
-
-        restClient.changePlaceStatus(message);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class);
     }
 
     @Test

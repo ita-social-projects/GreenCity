@@ -11,7 +11,6 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.Role;
-import greencity.message.ChangePlaceStatusDto;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import com.google.gson.Gson;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
-import greencity.dto.place.PlaceVO;
 import greencity.enums.EmailNotification;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
@@ -86,7 +84,6 @@ public class RestClient {
      *
      * @param emailNotification enum with {@link EmailNotification} value.
      * @return {@link List} of {@link UserVO}.
-     * @author Taras Kavkalo
      */
     public List<UserVO> findAllByEmailNotification(EmailNotification emailNotification) {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
@@ -102,7 +99,6 @@ public class RestClient {
      * Method that find all users cities.
      *
      * @return {@link List} of cities.
-     * @author Taras Kavkalo
      */
     public List<String> findAllUsersCities() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -117,7 +113,6 @@ public class RestClient {
      * Method that find all registration months.
      *
      * @return {@link Map} with months.
-     * @author Taras Kavkalo
      */
     public Map<Integer, Long> findAllRegistrationMonthsMap() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -132,7 +127,6 @@ public class RestClient {
      * Method find user by principal.
      *
      * @param email of {@link UserVO}
-     * @author Orest Mamchuk
      */
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -147,7 +141,6 @@ public class RestClient {
      *
      * @param id a value of {@link Long}
      * @return {@link UserVO}
-     * @author Orest Mamchuk
      */
     public UserVO findById(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -161,7 +154,6 @@ public class RestClient {
      *
      * @param id a value of {@link Long}
      * @return {@link UserVO}
-     * @author Orest Mamchuk
      */
     public UserVOAchievement findUserForAchievement(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -175,7 +167,6 @@ public class RestClient {
      *
      * @param pageable a value with pageable configuration.
      * @return a dto of {@link PageableAdvancedDto}.
-     * @author Orest Mamchuk
      */
     public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         Sort sort = pageable.getSort();
@@ -203,7 +194,6 @@ public class RestClient {
      * @param pageable {@link Pageable}.
      * @param query    query to search
      * @return {@link PageableAdvancedDto} of {@link UserManagementDto} instances.
-     * @author Orest Mamchuk
      */
     public PageableAdvancedDto<UserManagementDto> searchBy(Pageable pageable, String query) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -221,7 +211,6 @@ public class RestClient {
      * Method for getting UserVO by search query.
      *
      * @param userDto dto with updated fields.
-     * @author Orest Mamchuk
      */
     public void updateUser(UserManagementDto userDto) {
         UserManagementUpdateDto updateDto = managementDtoToUpdateDto(userDto);
@@ -263,7 +252,6 @@ public class RestClient {
      * Method for getting all Users.
      *
      * @return {@link List} of {@link UserVO} instances.
-     * @author Orest Mamchuk
      */
     public List<UserVO> findAll() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -278,7 +266,6 @@ public class RestClient {
      * Method for getting all Users.
      *
      * @return {@link List} of {@link UserVO} instances.
-     * @author Orest Mamchuk
      */
     public List<UserManagementDto> findUserFriendsByUserId(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -295,7 +282,6 @@ public class RestClient {
      *
      * @param email - {@link UserVO}'s email
      * @return {@link UserVO}
-     * @author Orest Mamchuk
      */
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -311,7 +297,6 @@ public class RestClient {
      * Method find user id by email.
      *
      * @param email of {@link UserVO}
-     * @author Orest Mamchuk
      */
     public Long findIdByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -326,7 +311,6 @@ public class RestClient {
      *
      * @param userId      - {@link UserVO}'s id
      * @param userReasons {@link List} of {@link String}.
-     * @author Orest Mamchuk
      */
     public void deactivateUser(Long userId, List<String> userReasons) {
         HttpHeaders headers = setHeader();
@@ -342,7 +326,6 @@ public class RestClient {
      *
      * @param userId of the searched {@link UserVO}.
      * @return current user language {@link String}.
-     * @author Vlad Pikhotskyi
      */
     public String getUserLang(Long userId) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -356,7 +339,6 @@ public class RestClient {
      * Method for setting {@link UserVO}'s status to ACTIVATED.
      *
      * @param userId - {@link UserVO}'s id
-     * @author Orest Mamchuk
      */
     public void setActivatedStatus(Long userId) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -372,7 +354,6 @@ public class RestClient {
      * @param adminLang {@link String} - current administrator language.
      * @return {@link List} of {@link String} - reasons for deactivation of the
      *         current user.
-     * @author Vlad Pikhotskyi
      */
     public List<String> getDeactivationReason(Long userId, String adminLang) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -389,7 +370,6 @@ public class RestClient {
      *
      * @param listId {@link List} populated with ids of {@link UserVO} to be
      *               deleted.
-     * @author Orest Mamchuk
      */
     public void deactivateAllUsers(List<Long> listId) {
         Gson gson = new Gson();
@@ -406,7 +386,6 @@ public class RestClient {
      * Register new user from admin panel.
      *
      * @param userDto dto with updated fields.
-     * @author Orest Mamchuk
      */
     public void managementRegisterUser(UserManagementDto userDto) {
         HttpHeaders headers = setHeader();
@@ -434,7 +413,6 @@ public class RestClient {
      *
      * @param reportEmailMessage with information for sending email report about new
      *                           places.
-     * @author Taras Kavkalo
      */
     public void sendReport(SendReportEmailMessage reportEmailMessage) {
         HttpHeaders headers = setHeader();
@@ -447,8 +425,6 @@ public class RestClient {
     /**
      * Delete from the database users that have status 'DEACTIVATED' and last
      * visited the site 2 years ago.
-     *
-     * @author Taras Kavkalo
      */
     public void scheduleDeleteDeactivatedUsers() {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
@@ -457,26 +433,10 @@ public class RestClient {
     }
 
     /**
-     * Send ChangePlaceStatusDto to GreenCityUser.
-     *
-     * @param changePlaceStatusEmailMessage with information for sending email
-     *                                      during status update for {@link PlaceVO}
-     *                                      when PlaceStatus.PROPOSED.
-     */
-    public void changePlaceStatus(ChangePlaceStatusDto changePlaceStatusEmailMessage) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<ChangePlaceStatusDto> entity = new HttpEntity<>(changePlaceStatusEmailMessage, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class);
-    }
-
-    /**
      * send SendHabitNotification to GreenCityUser.
      *
      * @param sendHabitNotification with information for sending email to each user
      *                              that hasn't marked any habit during some period.
-     * @author Taras Kavkalo
      */
     public void sendHabitNotification(SendHabitNotification sendHabitNotification) {
         HttpHeaders headers = setHeader();
@@ -578,6 +538,11 @@ public class RestClient {
 
     @CheckEmailPreference(EmailPreference.INVITES)
     public void sendEmailNotificationInvites(ScheduledEmailMessage message) {
+        sendScheduledEmailNotification(message);
+    }
+
+    @CheckEmailPreference(EmailPreference.PLACES)
+    public void sendEmailNotificationPlaces(ScheduledEmailMessage message) {
         sendScheduledEmailNotification(message);
     }
 }

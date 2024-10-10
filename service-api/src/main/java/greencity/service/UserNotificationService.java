@@ -106,10 +106,21 @@ public interface UserNotificationService {
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
      * @param customMessage    text to be inserted into Notification {message}
-     * @author Volodymyr Mladonov
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
         String customMessage);
+
+    /**
+     * Method to create Notification without actionUser.
+     *
+     * @param targetUser       user, that should receive Notification
+     * @param notificationType type of Notification
+     * @param targetId         represent the corresponding object's ID
+     * @param customMessage    text to be inserted into Notification {message}
+     * @param secondMessage    text to be inserted into Notification {secondMessage}
+     */
+    void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
+        String customMessage, String secondMessage);
 
     /**
      * Method to remove ActionUser from Notification or delete Notification if that
