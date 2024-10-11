@@ -16,7 +16,7 @@ import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.enums.EmailNotification;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.message.ScheduledEmailMessage;
@@ -77,7 +77,7 @@ public class ModelUtils {
 
     public static SendReportEmailMessage getSendReportEmailMessage() {
         return SendReportEmailMessage.builder()
-            .emailNotification(EmailNotification.WEEKLY)
+            .periodicity(EmailPreferencePeriodicity.WEEKLY)
             .categoriesDtoWithPlacesDtoMap(Collections.singletonMap(
                 getCategoryDto(), Collections.singletonList(getPlaceNotificationDto())))
             .subscribers(getSubscribers())

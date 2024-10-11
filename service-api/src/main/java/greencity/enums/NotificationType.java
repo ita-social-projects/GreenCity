@@ -24,5 +24,6 @@ public enum NotificationType {
     HABIT_COMMENT_LIKE,
     HABIT_COMMENT_REPLY,
     HABIT_COMMENT_USER_TAG,
-    PLACE_STATUS
+    PLACE_STATUS,
+    PLACE_ADDED
 }

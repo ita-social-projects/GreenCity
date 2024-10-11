@@ -508,7 +508,6 @@ class PlaceServiceImplTest {
         placeService.deleteById(place.getId());
 
         assertEquals(PlaceStatus.DELETED, place.getStatus());
-        verify(notificationService, never()).sendImmediatelyReport(any());
     }
 
     @Test

@@ -12,10 +12,8 @@ import static org.mockito.Mockito.when;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.category.CategoryVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
-import greencity.dto.place.PlaceVO;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
@@ -32,7 +30,6 @@ import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -73,41 +70,6 @@ class NotificationServiceImplTest {
 
     @Mock
     private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
-
-    @Test
-    void sendImmediatelyReportTest() {
-        EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
-        CategoryVO category = CategoryVO.builder()
-            .id(12L)
-            .name("category")
-            .build();
-
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setEmailNotification(emailNotification);
-
-        PlaceVO place = new PlaceVO();
-        place.setId(1L);
-        place.setName("Forum");
-        place.setDescription("Shopping center");
-        place.setPhone("0322 489 850");
-        place.setEmail("forum_lviv@gmail.com");
-        place.setModifiedDate(ZonedDateTime.now());
-        place.setCategory(category);
-
-        when(restClient.findAllByEmailNotification(emailNotification))
-            .thenReturn(Collections.singletonList(userVO));
-        when(modelMapper.map(userVO, PlaceAuthorDto.class))
-            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(modelMapper.map(place.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category", "test", null));
-        when(modelMapper.map(place, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
-
-        notificationService.sendImmediatelyReport(place);
-
-        verify(restClient, Mockito.times(1))
-            .sendReport(any(SendReportEmailMessage.class));
-    }
 
     @Test
     void sendDailyReportTest() {

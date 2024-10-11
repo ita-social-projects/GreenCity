@@ -34,6 +34,8 @@ import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.Specification;
 import greencity.entity.User;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
@@ -160,7 +162,10 @@ public class PlaceServiceImpl implements PlaceService {
         placeVO.setAuthor(userVO);
         if (userVO.getRole() == Role.ROLE_ADMIN || userVO.getRole() == Role.ROLE_MODERATOR) {
             placeVO.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(placeVO);
+            List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+                EmailPreferencePeriodicity.IMMEDIATELY);
+            userNotificationService.createNewNotificationForPlaceAdded(usersId, placeVO.getId(),
+                placeVO.getCategory().getName(), placeVO.getName());
         }
     }
 
@@ -304,7 +309,10 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setStatus(status);
         updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
-            notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
+            List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+                EmailPreferencePeriodicity.IMMEDIATELY);
+            userNotificationService.createNewNotificationForPlaceAdded(usersId, updatable.getId(),
+                updatable.getCategory().getName(), updatable.getName());
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             userNotificationService.createNewNotification(modelMapper.map(updatable.getAuthor(), UserVO.class),

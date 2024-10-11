@@ -201,6 +201,28 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     /**
      * {@inheritDoc}
      */
+    public void createNewNotificationForPlaceAdded(List<UserVO> targetUsers, Long targetId, String customMessage,
+        String secondMessage) {
+        for (UserVO targetUser : targetUsers) {
+            Notification notification = Notification.builder()
+                .notificationType(NotificationType.PLACE_ADDED)
+                .projectName(ProjectName.GREENCITY)
+                .targetUser(modelMapper.map(targetUser, User.class))
+                .time(LocalDateTime.now())
+                .targetId(targetId)
+                .customMessage(customMessage)
+                .secondMessage(secondMessage)
+                .emailSent(false)
+                .build();
+            notificationService.sendEmailNotification(modelMapper.map(notificationRepo.save(notification),
+                EmailNotificationDto.class));
+            sendNotification(notification.getTargetUser().getId());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeActionUserFromNotification(UserVO targetUserVO, UserVO actionUserVO, Long targetId,
         NotificationType notificationType) {

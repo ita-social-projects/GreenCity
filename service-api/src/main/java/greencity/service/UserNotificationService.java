@@ -123,6 +123,17 @@ public interface UserNotificationService {
         String customMessage, String secondMessage);
 
     /**
+     * Method to create Notification without actionUser.
+     *
+     * @param targetUsers   users, that should receive place added notification
+     * @param targetId      represent the corresponding object's ID
+     * @param customMessage text to be inserted into Notification {message}
+     * @param secondMessage text to be inserted into Notification {secondMessage}
+     */
+    void createNewNotificationForPlaceAdded(List<UserVO> targetUsers, Long targetId, String customMessage,
+        String secondMessage);
+
+    /**
      * Method to remove ActionUser from Notification or delete Notification if that
      * was the only ActionUser. Called when user canceled the action.
      *
