@@ -425,6 +425,26 @@ class UserNotificationServiceImplTest {
     }
 
     @Test
+    @DisplayName("createLikeNotificationMessage with more than two users")
+    void testCreateLikeNotificationMessage_FourUsers() throws Exception {
+        User user1 = User.builder().name("Taras").build();
+        User user2 = User.builder().name("Petro").build();
+        User user3 = User.builder().name("Vasyl").build();
+        User user4 = User.builder().name("Ivan").build();
+
+        List<User> actionUsers = List.of(user1, user2, user3, user4);
+        String eventTitle = "Test Event";
+
+        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
+            String.class, NotificationType.class);
+        method.setAccessible(true);
+        String result =
+            (String) method.invoke(userNotificationService, actionUsers, eventTitle, NotificationType.EVENT_LIKE);
+
+        assertEquals("Vasyl, Ivan and other users like your event Test Event.", result);
+    }
+
+    @Test
     @DisplayName("createInvitationNotificationMessage with two users")
     void testCreateInvitationNotificationMessage_TwoUsers() throws Exception {
         User user1 = User.builder().name("Taras").build();
