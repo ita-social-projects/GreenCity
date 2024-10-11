@@ -204,14 +204,14 @@ public class NotificationServiceImpl implements NotificationService {
             if (!notifications.isEmpty()) {
                 notifications.stream()
                     .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
+                    .map(notification -> notification.setEmailSent(true))
                     .forEach(notification -> {
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
                             notification.getTargetUser().getLanguage().getCode());
                         restClient.sendScheduledEmailNotification(message);
                     });
+                notificationRepo.saveAll(notifications);
             }
-            notifications = notifications.stream().map(notification -> notification.setEmailSent(true)).toList();
-            notificationRepo.saveAll(notifications);
         });
     }
 
