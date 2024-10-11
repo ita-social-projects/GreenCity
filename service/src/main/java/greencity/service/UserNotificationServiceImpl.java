@@ -61,8 +61,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void notificationSocket(ActionDto user) {
-        boolean isExist = notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
-        messagingTemplate.convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, isExist);
+        Long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(user.getUserId());
+        messagingTemplate.convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, count);
     }
 
     /**
@@ -256,11 +256,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     public void unreadNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
             .orElseThrow().getTargetUser().getId();
-        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
-        if (count == 0) {
-            messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, true);
-        }
         notificationRepo.markNotificationAsNotViewed(notificationId);
+        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
     }
 
     /**
@@ -270,11 +268,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     public void viewNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
             .orElseThrow().getTargetUser().getId();
-        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
-        if (count == 1) {
-            messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, false);
-        }
         notificationRepo.markNotificationAsViewed(notificationId);
+        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
     }
 
     private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications,
@@ -326,7 +322,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * @param userId the ID of the user to whom the notification will be sent
      */
     private void sendNotification(Long userId) {
-        messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, true);
+        long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
+        messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
     }
 
     @Override
