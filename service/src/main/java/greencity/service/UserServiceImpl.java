@@ -9,6 +9,8 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadUpdateRequestException;
@@ -35,9 +37,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
@@ -92,11 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Updates last activity time for a given user.
-     *
-     * @param userId               - {@link UserVO}'s id
-     * @param userLastActivityTime - new {@link UserVO}'s last activity time
-     * @author Yurii Zhurakovskyi
+     * {@inheritDoc}
      */
     @Override
     public void updateUserLastActivityTime(Long userId, Date userLastActivityTime) {
@@ -127,7 +126,6 @@ public class UserServiceImpl implements UserService {
      */
     @Deprecated
     @Override
-    @Transactional
     public UserRoleDto updateRole(Long id, Role role, String email) {
         checkUpdatableUser(id, email);
         User user = userRepo.findById(id)
@@ -222,8 +220,10 @@ public class UserServiceImpl implements UserService {
         userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional(readOnly = true)
     public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
         Pageable pageable) {
         UserFilterDto filterUserDto = createUserFilterDto(criteria, role, status);
@@ -236,8 +236,10 @@ public class UserServiceImpl implements UserService {
             listOfUsers.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Transactional
     public void updateUserRating(Long userId, Double rating) {
         if (userRepo.findById(userId).isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
@@ -261,6 +263,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserVO> findByEmails(List<String> emails) {
         return userRepo.findAllByEmailIn(emails).stream()
+            .map(u -> modelMapper.map(u, UserVO.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserVO> getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference emailPreference,
+        EmailPreferencePeriodicity periodicity) {
+        return userRepo.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference.name(), periodicity.name()).stream()
             .map(u -> modelMapper.map(u, UserVO.class))
             .toList();
     }
