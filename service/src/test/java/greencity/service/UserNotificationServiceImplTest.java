@@ -1,5 +1,6 @@
 package greencity.service;
 
+import static greencity.ModelUtils.getUserVO;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.notification.NotificationDto;
@@ -116,8 +117,16 @@ class UserNotificationServiceImplTest {
         userNotificationService.createNotificationForAttenders(List.of(testUserVo), "",
             NotificationType.EVENT_CREATED, 1L, "Title");
         verify(modelMapper).map(testUserVo, User.class);
-        verify(messagingTemplate, times(1))
-            .convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
+        verify(messagingTemplate).convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
+    }
+
+    @Test
+    void createNewNotificationForPlaceAddedTest() {
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(testUser);
+        userNotificationService.createNewNotificationForPlaceAdded(List.of(testUserVo, testUserVo), 1L,
+            "Category", "Name");
+        verify(modelMapper, times(2)).map(testUserVo, User.class);
+        verify(messagingTemplate, times(2)).convertAndSend(TOPIC + testUser.getId() + NOTIFICATION, true);
     }
 
     @Test

@@ -28,6 +28,8 @@ import greencity.entity.Location;
 import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -123,6 +125,18 @@ class PlaceServiceImplTest {
             .role(Role.ROLE_USER)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .languageVO(languageVO)
+            .build();
+    private final UserVO userVOAdmin =
+        UserVO.builder()
+            .id(1L)
+            .email("Nazar.stasyuk@gmail.com")
+            .name("Nazar Stasyuk")
+            .role(Role.ROLE_ADMIN)
+            .lastActivityTime(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
             .languageVO(languageVO)
             .build();
     private final Place genericEntity1 = Place.builder()
@@ -193,27 +207,37 @@ class PlaceServiceImplTest {
         Place place = ModelUtils.getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
-        when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
-        userVO.setUserStatus(UserStatus.ACTIVATED);
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVOAdmin);
+        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
+        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
         when(categoryRepo.findByName(anyString())).thenReturn(new Category());
         when(placeRepo.save(any())).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
 
         PlaceVO saved = placeService.save(placeAddDto, user.getEmail());
         assertEquals(placeVO, saved);
+
+        verify(userService).getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY);
+        verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), placeVO.getId(),
+            placeVO.getCategory().getName(), placeVO.getName());
     }
 
     @Test
     void updateStatusTest() {
         Place genericEntity = ModelUtils.getPlace();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
-        when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
-        when(modelMapper.map(placeVO, Place.class)).thenReturn(genericEntity);
+        genericEntity.setCategory(ModelUtils.getCategory());
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
         when(placeRepo.save(any())).thenReturn(genericEntity);
-        placeService.updateStatus(1L, PlaceStatus.DECLINED);
-        assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
+        placeService.updateStatus(1L, PlaceStatus.APPROVED);
+        assertEquals(PlaceStatus.APPROVED, genericEntity.getStatus());
+
+        verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), genericEntity.getId(),
+            genericEntity.getCategory().getName(), genericEntity.getName());
     }
 
     @Test
