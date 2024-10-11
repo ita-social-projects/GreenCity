@@ -482,4 +482,16 @@ public interface HabitTranslationRepo
         + "AND ht.habit.id = :id "
         + "AND ht.habit.isDeleted = false")
     HabitTranslation getHabitTranslationByUaLanguage(Long id);
+
+    /**
+     * Method that returns all habit translations in English language by habit id.
+     *
+     * @param id {@link Long} habit id.
+     * @return {@link HabitTranslation}.
+     */
+    @Query("SELECT ht FROM HabitTranslation ht "
+        + "WHERE ht.language.id = 2 "
+        + "AND ht.habit.id = :id "
+        + "AND ht.habit.isDeleted = false")
+    HabitTranslation getHabitTranslationByEnLanguage(Long id);
 }

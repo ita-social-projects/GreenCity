@@ -5,6 +5,8 @@ import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +30,6 @@ public interface UserService {
      *
      * @param email - {@link UserVO}'s email
      * @return {@link Optional} of found {@link UserVO}.
-     * @author Vasyl Zhovnir
      */
     Optional<UserVO> findNotDeactivatedByEmail(String email);
 
@@ -37,7 +38,6 @@ public interface UserService {
      *
      * @param email - {@link UserVO} email
      * @return {@link UserVO} id
-     * @author Zakhar Skaletskyi
      */
     Long findIdByEmail(String email);
 
@@ -46,7 +46,6 @@ public interface UserService {
      *
      * @param userId               - {@link UserVO}'s id
      * @param userLastActivityTime - new {@link UserVO}'s last activity time
-     * @author Yurii Zhurakovskyi
      */
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 
@@ -133,8 +132,6 @@ public interface UserService {
      *
      * @param userId current user's id.
      * @param rating rating.
-     *
-     * @author Anton Bondar.
      */
     void updateUserRating(Long userId, Double rating);
 
@@ -145,4 +142,14 @@ public interface UserService {
      * @return list of {@link UserVO}.
      */
     List<UserVO> findByEmails(List<String> emails);
+
+    /**
+     * Find list of user ids by emailPreference and periodicity.
+     *
+     * @param emailPreference of user.
+     * @param periodicity     of notification.
+     * @return list of {@link UserVO}.
+     */
+    List<UserVO> getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference emailPreference,
+        EmailPreferencePeriodicity periodicity);
 }

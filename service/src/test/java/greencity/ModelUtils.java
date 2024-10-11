@@ -498,6 +498,7 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
+            .languageVO(getLanguageVO())
             .build();
     }
 
@@ -1380,7 +1381,7 @@ public class ModelUtils {
 
     public static AchievementVO getAchievementVO() {
         return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
-            "Acquired habit 14 days", new AchievementCategoryVO(),
+            "Acquired habit 14 days", new AchievementCategoryVO(), null,
             1, 0);
     }
 

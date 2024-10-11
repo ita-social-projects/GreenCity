@@ -4,5 +4,6 @@ public enum EmailPreference {
     SYSTEM,
     LIKES,
     COMMENTS,
-    INVITES
+    INVITES,
+    PLACES
 }

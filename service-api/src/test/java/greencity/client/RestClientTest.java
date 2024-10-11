@@ -16,7 +16,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
-import greencity.message.ChangePlaceStatusDto;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -412,25 +411,6 @@ class RestClientTest {
     }
 
     @Test
-    void changePlaceStatus() {
-        ChangePlaceStatusDto message = ModelUtils.getSendChangePlaceStatusEmailMessage();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<ChangePlaceStatusDto> entity = new HttpEntity<>(message, httpHeaders);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(object));
-
-        restClient.changePlaceStatus(message);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class);
-    }
-
-    @Test
     void sendHabitNotification() {
         SendHabitNotification notification = ModelUtils.getSendHabitNotification();
         HttpEntity<SendHabitNotification> entity = new HttpEntity<>(notification, ModelUtils.getHeaders());
@@ -654,6 +634,26 @@ class RestClientTest {
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
 
         restClient.sendEmailNotificationInvites(message);
+
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendEmailNotificationPlacesTest() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, ACCESS_TOKEN);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ScheduledEmailMessage message = ModelUtils.getScheduledEmailMessage();
+
+        HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
+
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            .thenReturn(ResponseEntity.ok(object));
+        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
+
+        restClient.sendEmailNotificationPlaces(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
