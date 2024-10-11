@@ -277,7 +277,7 @@ public class EventController {
     }
 
     /**
-     * Method to like Event.
+     * Method to like/dislike Event.
      *
      * @author Roman Kasarab
      */
