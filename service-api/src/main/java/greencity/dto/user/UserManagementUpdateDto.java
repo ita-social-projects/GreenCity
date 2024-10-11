@@ -1,6 +1,5 @@
 package greencity.dto.user;
 
-import greencity.constant.AppConstant;
 import greencity.constant.ServiceValidationConstants;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -8,11 +7,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor
@@ -28,7 +27,7 @@ public class UserManagementUpdateDto {
         max = ServiceValidationConstants.USERNAME_MAX_LENGTH)
     private String name;
 
-    @Email(regexp = AppConstant.VALIDATION_EMAIL, message = ServiceValidationConstants.INVALID_EMAIL)
+    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP, message = ServiceValidationConstants.INVALID_EMAIL)
     @NotBlank
     private String email;
 

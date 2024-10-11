@@ -13,7 +13,6 @@ public class AppConstant {
     public static final String USER = "USER";
     public static final String AUTHORIZATION = "Authorization";
     public static final String ROLE = "role";
-    public static final String VALIDATION_EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH = "img/default_social_network_icon.png";
     public static final Integer MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER = 6;
