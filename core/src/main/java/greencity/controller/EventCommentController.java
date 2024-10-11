@@ -210,10 +210,9 @@ public class EventCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiPageable
-    @GetMapping("{eventId}/comments/{parentCommentId}/replies/active")
+    @GetMapping("/comments/{parentCommentId}/replies/active")
     public ResponseEntity<PageableDto<CommentDto>> findAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
-        @PathVariable Long eventId,
         @PathVariable Long parentCommentId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.ok()
