@@ -1,9 +1,6 @@
 package greencity.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import greencity.ModelUtils;
-import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
@@ -25,7 +22,12 @@ import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -37,6 +39,12 @@ import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,18 +56,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -141,8 +156,6 @@ class PlaceServiceImplTest {
     @Spy
     private ModelMapper modelMapper;
     @Mock
-    private RestClient restClient;
-    @Mock
     private ProposePlaceServiceImpl proposePlaceMapper;
     @Mock
     private SpecificationService specificationService;
@@ -182,7 +195,7 @@ class PlaceServiceImplTest {
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
         when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
         userVO.setUserStatus(UserStatus.ACTIVATED);
-        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(categoryRepo.findByName(anyString())).thenReturn(new Category());
         when(placeRepo.save(any())).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);

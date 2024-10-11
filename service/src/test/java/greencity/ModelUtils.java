@@ -498,6 +498,7 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
+            .languageVO(getLanguageVO())
             .build();
     }
 
