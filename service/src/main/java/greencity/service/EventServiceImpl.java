@@ -746,14 +746,19 @@ public class EventServiceImpl implements EventService {
         }
         if (event.getUsersLikedEvents().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
-            // TODO: add rating calculation !!! and achievements calculation ???
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                userVO);
             if (eventAuthor != null) {
                 userNotificationService.removeActionUserFromNotification(modelMapper.map(eventAuthor, UserVO.class),
                     userVO, eventId, NotificationType.EVENT_LIKE);
             }
         } else {
             event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
-            // TODO: add rating calculation !!! and achievements calculation ???
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
             if (eventAuthor != null) {
                 sendEventLikeNotification(eventAuthor, userVO, eventId, event);
             }
