@@ -1,5 +1,6 @@
 package greencity.service;
 
+import java.time.ZonedDateTime;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -92,7 +93,7 @@ class NotificationServiceImplTest {
             .thenReturn(Collections.singletonList(userVO));
         when(modelMapper.map(userVO, PlaceAuthorDto.class))
             .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
             .thenReturn(testPlaces);
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
             .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
@@ -131,7 +132,7 @@ class NotificationServiceImplTest {
             .thenReturn(Collections.singletonList(userVO));
         when(modelMapper.map(userVO, PlaceAuthorDto.class))
             .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
             .thenReturn(testPlaces);
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
             .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
@@ -170,7 +171,7 @@ class NotificationServiceImplTest {
             .thenReturn(Collections.singletonList(userVO));
         when(modelMapper.map(userVO, PlaceAuthorDto.class))
             .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
             .thenReturn(testPlaces);
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
             .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));

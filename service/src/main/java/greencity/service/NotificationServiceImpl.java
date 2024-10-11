@@ -217,9 +217,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference, LocalDateTime now) {
-        boolean timeToSend = userNotificationPreferenceRepo
-            .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                EmailPreferencePeriodicity.TWICE_A_DAY);
+        boolean timeToSend = userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(userId,
+            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
         if (now.getHour() < 12) {
             timeToSend = timeToSend || userNotificationPreferenceRepo
                 .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
@@ -298,22 +297,22 @@ public class NotificationServiceImpl implements NotificationService {
 
     private void sendReport(EmailPreferencePeriodicity periodicity, LocalDateTime startDate) {
         log.info(LogMessage.IN_SEND_REPORT, periodicity);
-        List<SubscriberDto> subscribers = getSubscribers(periodicity);
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        List<SubscriberDto> subscribers = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(
+            EmailPreference.PLACES, periodicity).stream()
+            .filter(u -> isTimeToSendScheduleNotification(u.getId(), EmailPreference.PLACES, now))
+            .map(o -> modelMapper.map(o, SubscriberDto.class))
+            .toList();
+
         Map<CategoryDto, List<PlaceNotificationDto>> categoriesDtoWithPlacesDtoMap = new HashMap<>();
-        LocalDateTime endDate = LocalDateTime.now(ZONE_ID);
         if (!subscribers.isEmpty()) {
-            List<Place> places = placeRepo.findAllByModifiedDateBetweenAndStatus(startDate, endDate,
-                PlaceStatus.APPROVED);
+            List<Place> places = placeRepo.findAllByModifiedDateBetweenAndStatus(startDate.atZone(ZONE_ID),
+                now.atZone(ZONE_ID), PlaceStatus.APPROVED);
             categoriesDtoWithPlacesDtoMap = getCategoriesDtoWithPlacesDtoMap(places);
         }
         if (!categoriesDtoWithPlacesDtoMap.isEmpty()) {
             restClient.sendReport(new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap, periodicity));
         }
-    }
-
-    private List<SubscriberDto> getSubscribers(EmailPreferencePeriodicity periodicity) {
-        log.info(LogMessage.IN_GET_SUBSCRIBERS, periodicity);
-        return List.of();
     }
 
     private Map<CategoryDto, List<PlaceNotificationDto>> getCategoriesDtoWithPlacesDtoMap(List<Place> places) {
