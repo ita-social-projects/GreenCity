@@ -238,7 +238,7 @@ class UserNotificationServiceImplTest {
 
         verify(notificationRepo).findById(notificationId);
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
-        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, true);
+        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, 0L);
         verify(notificationRepo).markNotificationAsNotViewed(notificationId);
     }
 
@@ -258,7 +258,7 @@ class UserNotificationServiceImplTest {
 
         verify(notificationRepo).findById(notificationId);
         verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(userId);
-        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, false);
+        verify(messagingTemplate).convertAndSend(TOPIC + userId + NOTIFICATION, 1L);
         verify(notificationRepo).markNotificationAsViewed(notificationId);
     }
 
