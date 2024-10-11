@@ -30,7 +30,7 @@ public class UserManagementDto {
         max = ServiceValidationConstants.USERNAME_MAX_LENGTH)
     private String name;
 
-    @Email(message = ServiceValidationConstants.INVALID_EMAIL)
+    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP, message = ServiceValidationConstants.INVALID_EMAIL)
     @NotBlank
     private String email;
 
