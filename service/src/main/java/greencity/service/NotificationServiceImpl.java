@@ -38,8 +38,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @Service
@@ -98,15 +96,15 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendLikeScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE, EmailPreference.LIKES, now);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_LIKE, EmailPreference.LIKES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_LIKE);
-        sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES, now);
+        sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES, now);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_LIKE);
-        sendScheduledNotifications(NotificationType.HABIT_LIKE, EmailPreference.LIKES, now);
+        sendScheduledNotifications(NotificationType.HABIT_LIKE, EmailPreference.LIKES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT_LIKE);
-        sendScheduledNotifications(NotificationType.HABIT_COMMENT_LIKE, EmailPreference.LIKES, now);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT_LIKE, EmailPreference.LIKES);
     }
 
     /**
@@ -117,11 +115,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendCommentScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT);
-        sendScheduledNotifications(NotificationType.HABIT_COMMENT, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT, EmailPreference.COMMENTS);
     }
 
     /**
@@ -132,11 +130,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendCommentReplyScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_REPLY, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_REPLY, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT_REPLY);
-        sendScheduledNotifications(NotificationType.HABIT_COMMENT_REPLY, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT_REPLY, EmailPreference.COMMENTS);
     }
 
     /**
@@ -147,9 +145,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendFriendRequestScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.FRIEND_REQUEST_RECEIVED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES, now);
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_RECEIVED, EmailPreference.INVITES);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.FRIEND_REQUEST_ACCEPTED);
-        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES, now);
+        sendScheduledNotifications(NotificationType.FRIEND_REQUEST_ACCEPTED, EmailPreference.INVITES);
     }
 
     /**
@@ -160,11 +158,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendTaggedInCommentScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_USER_TAG);
-        sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.EVENT_COMMENT_USER_TAG, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_COMMENT_USER_TAG);
-        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_USER_TAG, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.ECONEWS_COMMENT_USER_TAG, EmailPreference.COMMENTS);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT_USER_TAG);
-        sendScheduledNotifications(NotificationType.HABIT_COMMENT_USER_TAG, EmailPreference.COMMENTS, now);
+        sendScheduledNotifications(NotificationType.HABIT_COMMENT_USER_TAG, EmailPreference.COMMENTS);
     }
 
     /**
@@ -175,7 +173,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendHabitInviteScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_INVITE);
-        sendScheduledNotifications(NotificationType.HABIT_INVITE, EmailPreference.INVITES, now);
+        sendScheduledNotifications(NotificationType.HABIT_INVITE, EmailPreference.INVITES);
     }
 
     /**
@@ -186,40 +184,35 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendSystemNotificationsScheduledEmail() {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.ECONEWS_CREATED);
-        sendScheduledNotifications(NotificationType.ECONEWS_CREATED, EmailPreference.SYSTEM, now);
+        sendScheduledNotifications(NotificationType.ECONEWS_CREATED, EmailPreference.SYSTEM);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_CREATED);
-        sendScheduledNotifications(NotificationType.EVENT_CREATED, EmailPreference.SYSTEM, now);
+        sendScheduledNotifications(NotificationType.EVENT_CREATED, EmailPreference.SYSTEM);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_CANCELED);
-        sendScheduledNotifications(NotificationType.EVENT_CANCELED, EmailPreference.SYSTEM, now);
+        sendScheduledNotifications(NotificationType.EVENT_CANCELED, EmailPreference.SYSTEM);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_NAME_UPDATED);
-        sendScheduledNotifications(NotificationType.EVENT_NAME_UPDATED, EmailPreference.SYSTEM, now);
+        sendScheduledNotifications(NotificationType.EVENT_NAME_UPDATED, EmailPreference.SYSTEM);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_UPDATED);
-        sendScheduledNotifications(NotificationType.EVENT_UPDATED, EmailPreference.SYSTEM, now);
+        sendScheduledNotifications(NotificationType.EVENT_UPDATED, EmailPreference.SYSTEM);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_JOINED);
-        sendScheduledNotifications(NotificationType.EVENT_JOINED, EmailPreference.SYSTEM, now);
+        sendScheduledNotifications(NotificationType.EVENT_JOINED, EmailPreference.SYSTEM);
     }
 
-    private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference, LocalDateTime now) {
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+    private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference) {
         emailThreadPool.submit(() -> {
-            try {
-                List<Notification> notifications =
-                    notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
-                if (!notifications.isEmpty()) {
-                    RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                    notifications.stream()
-                        .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
-                        .forEach(notification -> {
-                            ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-                                notification.getTargetUser().getLanguage().getCode());
-                            restClient.sendScheduledEmailNotification(message);
-                        });
-                }
-                notifications = notifications.stream().map(notification -> notification.setEmailSent(true)).toList();
-                notificationRepo.saveAll(notifications);
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
+            List<Notification> notifications =
+                notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
+            if (!notifications.isEmpty()) {
+                LocalDateTime now = LocalDateTime.now(ZONE_ID);
+                notifications.stream()
+                    .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
+                    .forEach(notification -> {
+                        ScheduledEmailMessage message = createScheduledEmailMessage(notification,
+                            notification.getTargetUser().getLanguage().getCode());
+                        restClient.sendScheduledEmailNotification(message);
+                    });
             }
+            notifications = notifications.stream().map(notification -> notification.setEmailSent(true)).toList();
+            notificationRepo.saveAll(notifications);
         });
     }
 
