@@ -281,7 +281,7 @@ public class EventController {
      *
      * @author Roman Kasarab
      */
-    @Operation(summary = "Like Event")
+    @Operation(summary = "Like/dislike Event")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
