@@ -1,29 +1,6 @@
 package greencity.service;
 
-import java.security.Principal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import greencity.dto.openhours.OpenHoursDto;
-import greencity.dto.place.FilterAdminPlaceDto;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.validation.Valid;
-import org.apache.commons.lang3.ArrayUtils;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.google.maps.model.GeocodingResult;
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -33,11 +10,13 @@ import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationVO;
+import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterAdminPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
@@ -51,24 +30,46 @@ import greencity.entity.Category;
 import greencity.entity.DiscountValue;
 import greencity.entity.Location;
 import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.Specification;
 import greencity.entity.User;
-import greencity.entity.Photo;
-import greencity.repository.FavoritePlaceRepo;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
+import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
-import greencity.message.ChangePlaceStatusDto;
 import greencity.repository.CategoryRepo;
+import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.Valid;
+import java.security.Principal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
@@ -78,15 +79,16 @@ import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
  */
 @Slf4j
 @Service
-@AllArgsConstructor
+@Transactional
+@RequiredArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
     private final CategoryService categoryService;
     private final LocationService locationService;
     private final SpecificationService specificationService;
-    private final RestClient restClient;
     private final OpenHoursService openingHoursService;
+    private final UserService userService;
     private final DiscountService discountService;
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
@@ -96,11 +98,10 @@ public class PlaceServiceImpl implements PlaceService {
     private final UserRepo userRepo;
     private final FavoritePlaceRepo favoritePlaceRepo;
     private final FileService fileService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
-     *
-     * @author Roman Zahorui
      */
     @Override
     public PageableDto<AdminPlaceDto> getPlacesByStatus(PlaceStatus placeStatus, Pageable pageable) {
@@ -112,13 +113,11 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Marian Datsko
      */
     @Transactional
     @Override
     public PlaceVO save(PlaceAddDto dto, String email) {
-        UserVO user = restClient.findByEmail(email);
+        UserVO user = userService.findByEmail(email);
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
@@ -129,7 +128,7 @@ public class PlaceServiceImpl implements PlaceService {
             proposePlaceService.checkInputTime(dto.getOpeningHoursList());
         }
         PlaceVO placeVO = modelMapper.map(dto, PlaceVO.class);
-        setUserToPlaceByEmail(email, placeVO);
+        setUserToPlace(user, placeVO);
         if (placeVO.getDiscountValues() != null) {
             proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
         }
@@ -156,23 +155,22 @@ public class PlaceServiceImpl implements PlaceService {
     /**
      * Method for setting this {@link User} to place.
      *
-     * @param email   - String, user's email.
+     * @param userVO  - {@link User} entity.
      * @param placeVO - {@link Place} entity.
-     * @author Kateryna Horokh
      */
-    private void setUserToPlaceByEmail(String email, PlaceVO placeVO) {
-        UserVO userVO = restClient.findByEmail(email);
+    private void setUserToPlace(UserVO userVO, PlaceVO placeVO) {
         placeVO.setAuthor(userVO);
         if (userVO.getRole() == Role.ROLE_ADMIN || userVO.getRole() == Role.ROLE_MODERATOR) {
             placeVO.setStatus(PlaceStatus.APPROVED);
-            notificationService.sendImmediatelyReport(placeVO);
+            List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+                EmailPreferencePeriodicity.IMMEDIATELY);
+            userNotificationService.createNewNotificationForPlaceAdded(usersId, placeVO.getId(),
+                placeVO.getCategory().getName(), placeVO.getName());
         }
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Kateryna Horokh
      */
     @Transactional
     @Override
@@ -200,7 +198,6 @@ public class PlaceServiceImpl implements PlaceService {
      *
      * @param discounts    - set of {@link DiscountValue}.
      * @param updatedPlace - {@link Place} entity.
-     * @author Kateryna Horokh
      */
     private void updateDiscount(Set<DiscountValueDto> discounts, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_DISCOUNT_FOR_PLACE);
@@ -230,7 +227,6 @@ public class PlaceServiceImpl implements PlaceService {
      *
      * @param hoursUpdateDtoSet - set of {@code Discount}.
      * @param updatedPlace      - {@link Place} entity.
-     * @author Kateryna Horokh
      */
     private void updateOpening(Set<OpeningHoursDto> hoursUpdateDtoSet, Place updatedPlace) {
         log.info(LogMessage.IN_UPDATE_OPENING_HOURS_FOR_PLACE);
@@ -254,8 +250,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Override
     public void deleteById(Long id) {
@@ -266,8 +260,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Transactional
     @Override
@@ -282,8 +274,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka.
      */
     @Override
     public List<PlaceVO> findAll() {
@@ -295,10 +285,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Olena Petryshak.
-     * @author Olena Sotnik.
-     *
      */
     @Override
     public PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal) {
@@ -323,23 +309,21 @@ public class PlaceServiceImpl implements PlaceService {
         updatable.setStatus(status);
         updatable.setModifiedDate(ZonedDateTime.now(datasourceTimezone));
         if (status.equals(PlaceStatus.APPROVED)) {
-            notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
+            List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+                EmailPreferencePeriodicity.IMMEDIATELY);
+            userNotificationService.createNewNotificationForPlaceAdded(usersId, updatable.getId(),
+                updatable.getCategory().getName(), updatable.getName());
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
-            restClient.changePlaceStatus(new ChangePlaceStatusDto(
-                updatable.getAuthor().getName(),
-                updatable.getAuthor().getLanguage().getCode(),
-                updatable.getName(),
-                updatable.getStatus(),
-                updatable.getAuthor().getEmail()));
+            userNotificationService.createNewNotification(modelMapper.map(updatable.getAuthor(), UserVO.class),
+                NotificationType.PLACE_STATUS, updatable.getId(), updatable.getName(),
+                updatable.getStatus().name().toLowerCase());
         }
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Transactional
     @Override
@@ -356,8 +340,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka.
      */
     @Override
     public PlaceVO findById(Long id) {
@@ -378,18 +360,15 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Marian Milian
      */
     @Override
     public Optional<PlaceVO> findByIdOptional(Long id) {
-        return placeRepo.findById(id).map(place -> modelMapper.map(place, PlaceVO.class));
+        return placeRepo.findById(id)
+            .map(place -> modelMapper.map(place, PlaceVO.class));
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dovhal
      */
     @Override
     public PlaceInfoDto getInfoById(Long id) {
@@ -402,21 +381,16 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Kateryna Horokh
      */
     @Override
     public PlaceUpdateDto getInfoForUpdatingById(Long id) {
-        Place place = placeRepo
-            .findById(id)
+        Place place = placeRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
         return modelMapper.map(place, PlaceUpdateDto.class);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Olena Petryshak
      */
     @Override
     public PageableDto<AdminPlaceDto> searchBy(Pageable pageable, String searchQuery) {
@@ -431,8 +405,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Marian Milian
      */
     @Override
     public List<PlaceByBoundsDto> findPlacesByMapsBounds(@Valid FilterPlaceDto filterPlaceDto) {
@@ -444,8 +416,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
      */
     @Override
     public boolean existsById(Long id) {
@@ -455,8 +425,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Zakhar Skaletskyi
      */
     @Override
     public Double averageRate(Long id) {
@@ -466,8 +434,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Roman Zahorui
      */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
@@ -486,7 +452,6 @@ public class PlaceServiceImpl implements PlaceService {
      * @param filterDto - {@link FilterPlaceDto} DTO.
      * @param placeList - {@link List} of {@link Place} that will be filtered.
      * @return {@link List} of {@link Place} - list of filtered {@link Place}s.
-     * @author Nazar Stasyuk
      */
     private List<Place> getPlacesByDistanceFromUser(FilterPlaceDto filterDto, List<Place> placeList) {
         FilterDistanceDto distanceFromUserDto = filterDto.getDistanceFromUserDto();
@@ -521,8 +486,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Rostyslav Khasanov
      */
     @Override
     public PageableDto<AdminPlaceDto> filterPlaceBySearchPredicate(FilterPlaceDto filterDto, Pageable pageable) {
@@ -537,8 +500,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dmytruk
      */
     @Override
     public PageableDto<AdminPlaceDto> getFilteredPlacesForAdmin(FilterAdminPlaceDto filterDto, Pageable pageable) {
@@ -572,8 +533,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Override
     public List<PlaceStatus> getStatuses() {
