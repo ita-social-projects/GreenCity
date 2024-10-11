@@ -747,12 +747,14 @@ public class EventServiceImpl implements EventService {
         }
         if (event.getUsersLikedEvents().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
-            // TODO: add rating and achievements calculation
-            userNotificationService.removeActionUserFromNotification(modelMapper.map(eventAuthor, UserVO.class),
-                userVO, eventId, NotificationType.EVENT_LIKE);
+            // TODO: add rating calculation !!! and achievements calculation ???
+            if (eventAuthor != null) {
+                userNotificationService.removeActionUserFromNotification(modelMapper.map(eventAuthor, UserVO.class),
+                    userVO, eventId, NotificationType.EVENT_LIKE);
+            }
         } else {
             event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
-            // TODO: add rating and achievements calculation
+            // TODO: add rating calculation !!! and achievements calculation ???
             if (eventAuthor != null) {
                 sendEventLikeNotification(eventAuthor, userVO, eventId, event);
             }

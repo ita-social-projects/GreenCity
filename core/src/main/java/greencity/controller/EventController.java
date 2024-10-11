@@ -291,7 +291,7 @@ public class EventController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PostMapping("/{eventId}like")
+    @PostMapping("/{eventId}/like")
     public void like(@PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventService.like(eventId, user);
     }
