@@ -1,6 +1,6 @@
 package greencity.dto.subscription;
 
-import greencity.constant.AppConstant;
+import greencity.constant.ServiceValidationConstants;
 import greencity.enums.SubscriptionType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubscriptionRequestDto {
     @NotBlank
-    @Email(regexp = AppConstant.VALIDATION_EMAIL)
+    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP)
     private String email;
 
     @NotNull
