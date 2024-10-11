@@ -61,8 +61,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public void notificationSocket(ActionDto user) {
-        boolean isExist = notificationRepo.existsByTargetUserIdAndViewedIsFalse(user.getUserId());
-        messagingTemplate.convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, isExist);
+        Long notViewedNotifications = notificationRepo.countByTargetUserIdAndViewedIsFalse(user.getUserId());
+        messagingTemplate.convertAndSend(TOPIC + user.getUserId() + NOTIFICATION, notViewedNotifications);
     }
 
     /**

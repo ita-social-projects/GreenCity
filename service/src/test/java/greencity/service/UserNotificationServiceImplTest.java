@@ -92,12 +92,12 @@ class UserNotificationServiceImplTest {
     void notificationSocketTest() {
         ActionDto dto = getActionDto();
 
-        when(notificationRepo.existsByTargetUserIdAndViewedIsFalse(dto.getUserId()))
-            .thenReturn(true);
+        when(notificationRepo.countByTargetUserIdAndViewedIsFalse(dto.getUserId()))
+            .thenReturn(1L);
         userNotificationService.notificationSocket(dto);
 
-        verify(messagingTemplate).convertAndSend(TOPIC + dto.getUserId() + NOTIFICATION, true);
-        verify(notificationRepo).existsByTargetUserIdAndViewedIsFalse(dto.getUserId());
+        verify(messagingTemplate).convertAndSend(TOPIC + dto.getUserId() + NOTIFICATION, 1L);
+        verify(notificationRepo).countByTargetUserIdAndViewedIsFalse(dto.getUserId());
     }
 
     @Test
