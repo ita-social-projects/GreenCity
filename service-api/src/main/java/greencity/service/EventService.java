@@ -179,7 +179,7 @@ public interface EventService {
      * Method to like or dislike {@link EventVO} specified by id.
      *
      * @param eventId id of {@link EventVO} to like/dislike.
-     * @param userVO current {@link UserVO} who wants to like/dislike.
+     * @param userVO  current {@link UserVO} who wants to like/dislike.
      *
      * @author Roman Kasarab
      */

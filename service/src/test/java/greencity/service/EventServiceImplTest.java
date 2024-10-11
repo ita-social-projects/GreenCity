@@ -1150,8 +1150,8 @@ class EventServiceImplTest {
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-            eventService.like(event.getId(), userVO));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.like(event.getId(), userVO));
         assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
 
         verify(eventRepo).findById(event.getId());
@@ -1166,8 +1166,8 @@ class EventServiceImplTest {
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
         when(userRepo.findById(user.getId())).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-            eventService.like(event.getId(), userVO));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.like(event.getId(), userVO));
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId(), exception.getMessage());
 
         verify(eventRepo).findById(event.getId());

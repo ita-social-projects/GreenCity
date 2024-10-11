@@ -23,7 +23,6 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.event.Event;
