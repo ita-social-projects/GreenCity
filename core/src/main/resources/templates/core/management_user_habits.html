@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    <script th:src="@{/management/events/imageUpload.js}"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -27,7 +28,7 @@
     <link rel="stylesheet" th:href="@{/css/sidebar.css}">
 
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
-<!--    <script th:src="@{/management/habits/jquery.liTextLength.js}"></script>-->
+
     <script>
         $(function () {
             $('.pr').liTextLength({
@@ -297,7 +298,8 @@
             <div id="addHabitModal" class="modal fade">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form th:action="@{management/habits/save}" method="post" id="addHabitForm">
+<!--                        <form th:action="@{management/habits/save}" method="post" id="addHabitForm">-->
+                        <form id="addHabitForm" method="post" th:action="@{habits/save}" enctype="multipart/form-data">
                             <div class="modal-header">
                                 <h4 class="modal-title">[[#{greenCity.habit.page.add.habit}]]</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
@@ -305,11 +307,11 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class="form-control" name="id" value="0" readonly required>
-                                <div class="form-group">
-                                    <label>[[#{greenCity.pages.table.image.path}]]</label>
-                                    <input type="text" class="form-control" name="image" required>
-                                    <span th:id="errorModalAddHabitImage" class="errorSpan"></span>
-                                </div>
+<!--                                <div class="form-group">-->
+<!--                                    <label>[[#{greenCity.pages.table.image.path}]]</label>-->
+<!--                                    <input type="text" class="form-control" name="image" required>-->
+<!--                                    <span th:id="errorModalAddHabitImage" class="errorSpan"></span>-->
+<!--                                </div>-->
                                 <div class="form-group">
                                     <label for="fileCreate">[[#{greenCity.pages.table.image.upload}]]</label>
                                     <input type="file" class="form-control" id="fileCreate" name="file">
@@ -325,11 +327,12 @@
                                     <input type="text" class="form-control" name="defaultDuration" required>
                                     <span th:id="'errorModalSavedefaultDuration'" class="errorSpan"></span>
                                 </div>
+                                <!-- Language fields -->
                                 <th:block th:each="language, iterInfo : ${languages}">
                                     <div class="row">
                                         <div class="col">
                                             <div class="form-group">
-                                                <label>[[#{greenCity.pages.table.lang}]]</label>
+                                                <label>[[#{greenCity.pages.table.language.code}]]</label>
                                                 <input type="text" class="form-control" th:name="${language.getCode()}"
                                                        th:value="${language.getCode()}" readonly required>
                                             </div>
@@ -408,6 +411,7 @@
                     </div>
                 </div>
             </div>
+
             <!--Edit Image Modal-->
             <div id="editHabitImgModal" class="modal fade" type="modal">
                 <div class="modal-dialog">
