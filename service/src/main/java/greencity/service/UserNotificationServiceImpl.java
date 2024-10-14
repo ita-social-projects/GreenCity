@@ -11,6 +11,7 @@ import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -255,7 +256,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void unreadNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
-            .orElseThrow().getTargetUser().getId();
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId))
+            .getTargetUser().getId();
         notificationRepo.markNotificationAsNotViewed(notificationId);
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
@@ -267,7 +269,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void viewNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
-            .orElseThrow().getTargetUser().getId();
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId))
+            .getTargetUser().getId();
         notificationRepo.markNotificationAsViewed(notificationId);
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
