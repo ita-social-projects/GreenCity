@@ -1,17 +1,8 @@
 package greencity.service;
 
 import greencity.dto.notification.EmailNotificationDto;
-import greencity.dto.place.PlaceVO;
 
 public interface NotificationService {
-    /**
-     * Method for sending report about new places immediately to {@code User}'s who
-     * subscribed and has {@code EmailNotification} type - IMMEDIATELY.
-     *
-     * @param newPlace - new {@code Place} which was added on the map
-     */
-    void sendImmediatelyReport(PlaceVO newPlace);
-
     /**
      * Method for sending report about new places at 12:00:00pm every day to
      * {@code User}'s who subscribed and has {@code EmailNotification} type - DAILY.

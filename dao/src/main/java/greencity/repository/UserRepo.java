@@ -53,7 +53,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param email - {@link User}'s email
      * @return found {@link User}
-     * @author Vasyl Zhovnir
      */
     @Query("FROM User WHERE email=:email AND userStatus <> 1")
     Optional<User> findNotDeactivatedByEmail(String email);
@@ -63,7 +62,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param email - User email
      * @return User id
-     * @author Zakhar Skaletskyi
      */
     @Query("SELECT id FROM User WHERE email=:email")
     Optional<Long> findIdByEmail(String email);
@@ -73,7 +71,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId               - {@link User}'s id
      * @param userLastActivityTime - new {@link User}'s last activity time
-     * @author Yurii Zhurakovskyi
      */
     @Modifying
     @Transactional
@@ -121,7 +118,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId {@link User}'s id
      * @param rate   new {@link User}'s rating as event organizer
-     * @author Danylo Hlynskyi
      */
     @Modifying
     @Transactional
@@ -134,7 +130,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId   {@link Long} user id
      * @param friendId {@link Long} friend id
      * @return {@link Optional} of {@link User}
-     * @author Julia Seti
      */
     @Query(nativeQuery = true, value = "SELECT DISTINCT * FROM users AS u "
         + "WHERE u.id = "
@@ -408,7 +403,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId current user's id.
      * @param rating rating.
-     * @author Anton Bondar.
      */
     @Modifying
     @Query(nativeQuery = true, value = "UPDATE users SET rating = :rating WHERE id = :userId")
@@ -431,7 +425,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param searchQuery username you want to search {@link String}.
      * @return list of {@link User} users.
-     * @author Anton Bondar
      */
     @Query(nativeQuery = true,
         value = "SELECT * FROM users u WHERE (:searchQuery = '' OR LOWER(u.name) "
@@ -456,7 +449,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId {@link Long} current user's id.
      * @return {@link String}.
-     * @author Olena Sotnik.
      */
     @Query(value = "SELECT l.code FROM users AS u "
         + "JOIN languages AS l "
@@ -470,7 +462,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId   {@link Long} current user's id.
      * @param friendId {@link Long} friend`s id.
      * @return {@link Tuple}.
-     * @author Denys Ryhal.
      */
     @Query(nativeQuery = true, value = "SELECT uf.status as status, uf.user_id as requesterId "
         + "FROM users_friends uf "
@@ -484,7 +475,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId   {@link Long} current user's id.
      * @param friendId {@link Long} friend`s id.
      * @return {@link Long}.
-     * @author Denys Ryhal.
      */
     @Query(nativeQuery = true, value = "SELECT crp.room_id FROM chat_rooms r "
         + "INNER JOIN chat_rooms_participants crp on r.id = crp.room_id "
@@ -492,4 +482,19 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "GROUP BY crp.room_id "
         + "HAVING COUNT(crp) = 2 LIMIT 1;")
     Long findIdOfPrivateChatOfUsers(Long userId, Long friendId);
+
+    /**
+     * Method that finds user ids by emailPreference and periodicity.
+     *
+     * @param emailPreference of user.
+     * @param periodicity     of notification.
+     * @return list of user ids.
+     */
+    @Query(nativeQuery = true, value = """
+            SELECT u.*
+            FROM users u
+            LEFT JOIN user_email_preferences uep ON u.id = uep.user_id
+            WHERE uep.email_preference = :emailPreference AND uep.periodicity = :periodicity
+        """)
+    List<User> findAllByEmailPreferenceAndEmailPeriodicity(String emailPreference, String periodicity);
 }

@@ -1,28 +1,22 @@
 package greencity.service;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import greencity.ModelUtils;
+import static greencity.ModelUtils.getCategory;
+import static greencity.ModelUtils.getEmailNotificationDto;
+import static greencity.ModelUtils.getNotification;
+import static greencity.ModelUtils.getPlace;
+import static greencity.ModelUtils.getSubscriberDto;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserVO;
 import greencity.client.RestClient;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.category.CategoryVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Category;
 import greencity.entity.Notification;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.enums.EmailNotification;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
@@ -30,23 +24,28 @@ import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
+import greencity.repository.UserNotificationPreferenceRepo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-
-import greencity.repository.UserNotificationPreferenceRepo;
-import greencity.repository.UserRepo;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -60,7 +59,7 @@ class NotificationServiceImplTest {
     private PlaceRepo placeRepo;
 
     @Mock
-    private UserRepo userRepo;
+    private UserService userService;
 
     @Mock
     private NotificationRepo notificationRepo;
@@ -75,63 +74,28 @@ class NotificationServiceImplTest {
     private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
 
     @Test
-    void sendImmediatelyReportTest() {
-        EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
-        CategoryVO category = CategoryVO.builder()
-            .id(12L)
-            .name("category")
-            .build();
-
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setEmailNotification(emailNotification);
-
-        PlaceVO place = new PlaceVO();
-        place.setId(1L);
-        place.setName("Forum");
-        place.setDescription("Shopping center");
-        place.setPhone("0322 489 850");
-        place.setEmail("forum_lviv@gmail.com");
-        place.setModifiedDate(ZonedDateTime.now());
-        place.setCategory(category);
-
-        when(restClient.findAllByEmailNotification(emailNotification))
-            .thenReturn(Collections.singletonList(userVO));
-        when(modelMapper.map(userVO, PlaceAuthorDto.class))
-            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(modelMapper.map(place.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category", "test", null));
-        when(modelMapper.map(place, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
-
-        notificationService.sendImmediatelyReport(place);
-
-        verify(restClient, Mockito.times(1))
-            .sendReport(any(SendReportEmailMessage.class));
-    }
-
-    @Test
     void sendDailyReportTest() {
-        EmailNotification emailNotification = EmailNotification.DAILY;
-        Category category = ModelUtils.getCategory();
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setEmailNotification(emailNotification);
+        EmailPreferencePeriodicity periodicity = EmailPreferencePeriodicity.DAILY;
+        EmailPreference emailPreference = EmailPreference.PLACES;
+        UserVO userVO = getUserVO();
 
-        Place testPlace1 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
+        Place testPlace1 = getPlace();
+        testPlace1.setCategory(getCategory());
         testPlace1.setId(1L);
 
-        Place testPlace2 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
+        Place testPlace2 = getPlace();
+        testPlace1.setCategory(getCategory());
         testPlace1.setId(2L);
 
-        List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
-
-        when(restClient.findAllByEmailNotification(emailNotification))
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity))
             .thenReturn(Collections.singletonList(userVO));
-        when(modelMapper.map(userVO, PlaceAuthorDto.class))
-            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
-            .thenReturn(testPlaces);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(1L, emailPreference,
+            EmailPreferencePeriodicity.TWICE_A_DAY))
+            .thenReturn(true);
+        when(modelMapper.map(userVO, SubscriberDto.class))
+            .thenReturn(getSubscriberDto());
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
+            .thenReturn(List.of(testPlace1, testPlace2));
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
             .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
@@ -143,34 +107,32 @@ class NotificationServiceImplTest {
 
         notificationService.sendDailyReport();
 
-        verify(restClient, Mockito.times(1))
-            .sendReport(any(SendReportEmailMessage.class));
-
+        verify(restClient).sendReport(any(SendReportEmailMessage.class));
     }
 
     @Test
     void sendWeeklyReportTest() {
-        EmailNotification emailNotification = EmailNotification.WEEKLY;
-        Category category = ModelUtils.getCategory();
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setEmailNotification(emailNotification);
+        EmailPreferencePeriodicity periodicity = EmailPreferencePeriodicity.WEEKLY;
+        EmailPreference emailPreference = EmailPreference.PLACES;
+        UserVO userVO = getUserVO();
 
-        Place testPlace1 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
+        Place testPlace1 = getPlace();
+        testPlace1.setCategory(getCategory());
         testPlace1.setId(1L);
 
-        Place testPlace2 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
+        Place testPlace2 = getPlace();
+        testPlace1.setCategory(getCategory());
         testPlace1.setId(2L);
 
-        List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
-
-        when(restClient.findAllByEmailNotification(emailNotification))
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity))
             .thenReturn(Collections.singletonList(userVO));
-        when(modelMapper.map(userVO, PlaceAuthorDto.class))
-            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
-            .thenReturn(testPlaces);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(1L, emailPreference,
+            EmailPreferencePeriodicity.TWICE_A_DAY))
+            .thenReturn(true);
+        when(modelMapper.map(userVO, SubscriberDto.class))
+            .thenReturn(getSubscriberDto());
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
+            .thenReturn(List.of(testPlace1, testPlace2));
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
             .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
@@ -182,34 +144,32 @@ class NotificationServiceImplTest {
 
         notificationService.sendWeeklyReport();
 
-        verify(restClient, Mockito.times(1))
-            .sendReport(any(SendReportEmailMessage.class));
-
+        verify(restClient).sendReport(any(SendReportEmailMessage.class));
     }
 
     @Test
     void sendMonthlyReportTest() {
-        EmailNotification emailNotification = EmailNotification.MONTHLY;
-        Category category = ModelUtils.getCategory();
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setEmailNotification(emailNotification);
+        EmailPreferencePeriodicity periodicity = EmailPreferencePeriodicity.MONTHLY;
+        EmailPreference emailPreference = EmailPreference.PLACES;
+        UserVO userVO = getUserVO();
 
-        Place testPlace1 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
+        Place testPlace1 = getPlace();
+        testPlace1.setCategory(getCategory());
         testPlace1.setId(1L);
 
-        Place testPlace2 = ModelUtils.getPlace();
-        testPlace1.setCategory(category);
+        Place testPlace2 = getPlace();
+        testPlace1.setCategory(getCategory());
         testPlace1.setId(2L);
 
-        List<Place> testPlaces = Arrays.asList(testPlace1, testPlace2);
-
-        when(restClient.findAllByEmailNotification(emailNotification))
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity))
             .thenReturn(Collections.singletonList(userVO));
-        when(modelMapper.map(userVO, PlaceAuthorDto.class))
-            .thenReturn(new PlaceAuthorDto(1L, "dto", "email"));
-        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(LocalDateTime.class), any(LocalDateTime.class), any()))
-            .thenReturn(testPlaces);
+        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(1L, emailPreference,
+            EmailPreferencePeriodicity.TWICE_A_DAY))
+            .thenReturn(true);
+        when(modelMapper.map(userVO, SubscriberDto.class))
+            .thenReturn(getSubscriberDto());
+        when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
+            .thenReturn(List.of(testPlace1, testPlace2));
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
             .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
@@ -221,19 +181,16 @@ class NotificationServiceImplTest {
 
         notificationService.sendMonthlyReport();
 
-        verify(restClient, Mockito.times(1))
-            .sendReport(any(SendReportEmailMessage.class));
+        verify(restClient).sendReport(any(SendReportEmailMessage.class));
     }
 
     @Test
     void sendEmailNotificationSystemToOneUserTest() {
-        EmailNotificationDto notificationDto = ModelUtils.getEmailNotificationDto();
-        Notification notification = ModelUtils.getNotification();
-        User user = ModelUtils.getUser();
-        user.setLanguage(ModelUtils.getLanguage());
-        notification.setTargetUser(user);
+        EmailNotificationDto notificationDto = getEmailNotificationDto();
+        Notification notification = getNotification();
+        notification.setTargetUser(getUser());
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userService.findById(anyLong())).thenReturn(getUserVO());
         notificationService.sendEmailNotification(notificationDto);
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -245,13 +202,14 @@ class NotificationServiceImplTest {
 
     @Test
     void sendEmailNotificationInvitesToOneUserTest() {
-        EmailNotificationDto notificationDto = ModelUtils.getEmailNotificationDto();
-        Notification notification = ModelUtils.getNotification();
-        User user = ModelUtils.getUser();
+        EmailNotificationDto notificationDto = getEmailNotificationDto();
+        Notification notification = getNotification();
+        User user = getUser();
+        UserVO userVO = getUserVO();
         notification.setTargetUser(user);
         notification.setNotificationType(NotificationType.HABIT_INVITE);
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userService.findById(anyLong())).thenReturn(userVO);
         notificationService.sendEmailNotification(notificationDto);
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -263,13 +221,13 @@ class NotificationServiceImplTest {
 
     @Test
     void sendEmailNotificationCommentsToOneUserTest() {
-        EmailNotificationDto notificationDto = ModelUtils.getEmailNotificationDto();
-        Notification notification = ModelUtils.getNotification();
-        User user = ModelUtils.getUser();
+        EmailNotificationDto notificationDto = getEmailNotificationDto();
+        Notification notification = getNotification();
+        User user = getUser();
         notification.setTargetUser(user);
         notification.setNotificationType(NotificationType.ECONEWS_COMMENT);
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
-        when(userRepo.findById(anyLong())).thenReturn(Optional.empty());
+        when(userService.findById(anyLong())).thenReturn(getUserVO());
         notificationService.sendEmailNotification(notificationDto);
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -281,13 +239,12 @@ class NotificationServiceImplTest {
 
     @Test
     void sendEmailNotificationLikesToOneUserTest() {
-        EmailNotificationDto notificationDto = ModelUtils.getEmailNotificationDto();
-        Notification notification = ModelUtils.getNotification();
-        User user = ModelUtils.getUser();
-        notification.setTargetUser(user);
+        EmailNotificationDto notificationDto = getEmailNotificationDto();
+        Notification notification = getNotification();
+        notification.setTargetUser(getUser());
         notification.setNotificationType(NotificationType.ECONEWS_LIKE);
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userService.findById(anyLong())).thenReturn(getUserVO());
         notificationService.sendEmailNotification(notificationDto);
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
@@ -299,8 +256,8 @@ class NotificationServiceImplTest {
 
     @Test
     void sendFriendRequestScheduledEmail() {
-        Notification notification = ModelUtils.getNotification();
-        User targetUser = ModelUtils.getUser();
+        Notification notification = getNotification();
+        User targetUser = getUser();
         targetUser.setLanguage(ModelUtils.getLanguage());
         notification.setTargetUser(targetUser);
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
@@ -337,8 +294,8 @@ class NotificationServiceImplTest {
 
     @Test
     void sendCommentReplyScheduledEmail() {
-        Notification notification = ModelUtils.getNotification();
-        User targetUser = ModelUtils.getUser();
+        Notification notification = getNotification();
+        User targetUser = getUser();
         targetUser.setLanguage(ModelUtils.getLanguage());
         notification.setTargetUser(targetUser);
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
@@ -373,9 +330,8 @@ class NotificationServiceImplTest {
 
     @Test
     void sendCommentScheduledEmail() {
-        Notification notification = ModelUtils.getNotification();
-        User targetUser = ModelUtils.getUser();
-        targetUser.setLanguage(ModelUtils.getLanguage());
+        Notification notification = getNotification();
+        User targetUser = getUser();
         notification.setTargetUser(targetUser);
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 12, 10, 0);
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
@@ -409,8 +365,8 @@ class NotificationServiceImplTest {
 
     @Test
     void sendLikeScheduledEmail() {
-        Notification notification = ModelUtils.getNotification();
-        User targetUser = ModelUtils.getUser();
+        Notification notification = getNotification();
+        User targetUser = getUser();
         targetUser.setLanguage(ModelUtils.getLanguage());
         notification.setTargetUser(targetUser);
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 8, 1, 18, 0);
@@ -454,8 +410,8 @@ class NotificationServiceImplTest {
 
     @Test
     void sendTaggedInCommentScheduledEmail() {
-        Notification notification = ModelUtils.getNotification();
-        User targetUser = ModelUtils.getUser();
+        Notification notification = getNotification();
+        User targetUser = getUser();
         targetUser.setLanguage(ModelUtils.getLanguage());
         notification.setTargetUser(targetUser);
         when(notificationRepo
@@ -476,8 +432,8 @@ class NotificationServiceImplTest {
 
     @Test
     void sendHabitInviteScheduledEmail() {
-        Notification notification = ModelUtils.getNotification();
-        User targetUser = ModelUtils.getUser();
+        Notification notification = getNotification();
+        User targetUser = getUser();
         targetUser.setLanguage(ModelUtils.getLanguage());
         notification.setTargetUser(targetUser);
         when(notificationRepo
@@ -498,8 +454,8 @@ class NotificationServiceImplTest {
 
     @Test
     void sendSystemNotificationsScheduledEmail() {
-        Notification notification = ModelUtils.getNotification();
-        User targetUser = ModelUtils.getUser();
+        Notification notification = getNotification();
+        User targetUser = getUser();
         targetUser.setLanguage(ModelUtils.getLanguage());
         notification.setTargetUser(targetUser);
         when(notificationRepo

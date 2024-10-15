@@ -733,15 +733,15 @@ class EcoNewsServiceImplTest {
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         ecoNewsVO.setAuthor(targetUser);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
-        EcoNews ecoNews = ModelUtils.getEcoNews();
-        ecoNews.setAuthor(User.builder()
+        EcoNews ecoNewsWithAuthor = ModelUtils.getEcoNews();
+        ecoNewsWithAuthor.setAuthor(User.builder()
             .id(targetUser.getId())
             .build());
         RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_NEWS").points(1).build();
 
         when(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS")).thenReturn(ratingPoints);
-        when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
-        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
+        when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNewsWithAuthor);
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNewsWithAuthor));
         when(modelMapper.map(any(EcoNews.class), eq(EcoNewsVO.class))).thenReturn(ecoNewsVO);
         when(userService.findById(anyLong())).thenReturn(targetUser);
 
@@ -783,12 +783,12 @@ class EcoNewsServiceImplTest {
             .usersLikedNews(new HashSet<>(Set.of(action)))
             .build();
         EcoNewsVO ecoNewsVO = mapper.map(news, EcoNewsVO.class);
-        RatingPoints ratingPoints = RatingPoints.builder().id(2L).name("UNDO_LIKE_NEWS").points(-1).build();
+        RatingPoints ratingPoints = RatingPoints.builder().id(2L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
         ecoNewsVO.setUsersLikedNews(new HashSet<>(ecoNewsVO.getUsersLikedNews()));
 
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(news));
         when(modelMapper.map(any(EcoNews.class), eq(EcoNewsVO.class))).thenReturn(ecoNewsVO);
-        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_NEWS")).thenReturn(ratingPoints);
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         ecoNewsService.like(userVO, news.getId());
 
         assertFalse(ecoNewsVO.getUsersLikedNews().contains(actionUser));
@@ -797,7 +797,7 @@ class EcoNewsServiceImplTest {
             null, actionUser, ecoNewsVO.getId(), "test title",
             NotificationType.ECONEWS_LIKE, false);
         verify(achievementCalculation, times(1))
-            .calculateAchievement(actionUser, AchievementCategoryType.LIKE_NEWS, AchievementAction.DELETE);
+            .calculateAchievement(actionUser, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         verify(ratingCalculation, times(1))
             .ratingCalculation(ratingPoints, actionUser);
     }

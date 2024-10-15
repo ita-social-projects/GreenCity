@@ -1,6 +1,8 @@
 package greencity.repository;
 
-import java.time.LocalDateTime;
+import greencity.entity.Place;
+import greencity.enums.PlaceStatus;
+import java.time.ZonedDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +11,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import greencity.entity.Place;
-import greencity.enums.PlaceStatus;
 
 /**
  * Provides an interface to manage {@link Place} entity.
@@ -54,8 +54,8 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @param status    - {@link PlaceStatus} of places
      * @return list of {@link Place}'s
      */
-    List<Place> findAllByModifiedDateBetweenAndStatus(
-        LocalDateTime startDate, LocalDateTime endDate, PlaceStatus status);
+    List<Place> findAllByModifiedDateBetweenAndStatus(ZonedDateTime startDate, ZonedDateTime endDate,
+        PlaceStatus status);
 
     /**
      * Method returns {@link Place} by search query and page.

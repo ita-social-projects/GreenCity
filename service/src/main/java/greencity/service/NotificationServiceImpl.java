@@ -4,15 +4,13 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
-import greencity.dto.place.PlaceVO;
 import greencity.dto.user.SubscriberDto;
-import greencity.entity.Language;
 import greencity.entity.Notification;
 import greencity.entity.Place;
 import greencity.entity.User;
-import greencity.enums.EmailNotification;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
@@ -22,7 +20,6 @@ import greencity.message.SendReportEmailMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserNotificationPreferenceRepo;
-import greencity.repository.UserRepo;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -41,8 +38,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @Service
@@ -56,68 +51,45 @@ public class NotificationServiceImpl implements NotificationService {
     private final RestClient restClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
-    private final UserRepo userRepo;
+    private final UserService userService;
     @Value("${client.address}")
     private String clientAddress;
 
-    @Override
-    public void sendImmediatelyReport(PlaceVO newPlace) {
-        log.info(LogMessage.IN_SEND_IMMEDIATELY_REPORT, newPlace.getName());
-        EmailNotification emailNotification = EmailNotification.IMMEDIATELY;
-        List<SubscriberDto> subscribers = getSubscribers(emailNotification);
-
-        Map<CategoryDto, List<PlaceNotificationDto>> categoriesDtoWithPlacesDtoMap = new HashMap<>();
-        CategoryDto map = modelMapper.map(newPlace.getCategory(), CategoryDto.class);
-        List<PlaceNotificationDto> placeDtoList = List.of(modelMapper.map(newPlace, PlaceNotificationDto.class));
-        categoriesDtoWithPlacesDtoMap.put(map, placeDtoList);
-
-        restClient.sendReport(new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap,
-            emailNotification));
-    }
-
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka && Bogdan Kuzenko
      */
     @Scheduled(cron = "0 0 12 ? * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendDailyReport() {
         log.info(LogMessage.IN_SEND_DAILY_REPORT, LocalDateTime.now(ZONE_ID));
         LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusDays(1);
-        sendReport(EmailNotification.DAILY, startDate);
+        sendReport(EmailPreferencePeriodicity.DAILY, startDate);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Scheduled(cron = "0 0 12 ? * MON", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendWeeklyReport() {
         log.info(LogMessage.IN_SEND_WEEKLY_REPORT, LocalDateTime.now(ZONE_ID));
         LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusWeeks(1);
-        sendReport(EmailNotification.WEEKLY, startDate);
+        sendReport(EmailPreferencePeriodicity.WEEKLY, startDate);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Nazar Vladyka
      */
     @Scheduled(cron = "0 0 12 1 * ?", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
     public void sendMonthlyReport() {
         log.info(LogMessage.IN_SEND_MONTHLY_REPORT, LocalDateTime.now(ZONE_ID));
         LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusMonths(1);
-        sendReport(EmailNotification.MONTHLY, startDate);
+        sendReport(EmailPreferencePeriodicity.MONTHLY, startDate);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dmytruk
      */
     @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
@@ -137,8 +109,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dmytruk
      */
     @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
@@ -154,8 +124,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dmytruk
      */
     @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
@@ -171,8 +139,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Dmytro Dmytruk
      */
     @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
@@ -186,8 +152,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Roman Kasarab
      */
     @Scheduled(cron = "0 0 10,19 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
@@ -203,8 +167,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Viktoriia Herchanivska
      */
     @Scheduled(cron = "0 0 11,20 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
@@ -216,8 +178,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     /**
      * {@inheritDoc}
-     *
-     * @author Viktoriia Herchanivska
      */
     @Scheduled(cron = "0 0 9,18 * * *", zone = AppConstant.UKRAINE_TIMEZONE)
     @Override
@@ -238,33 +198,26 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference, LocalDateTime now) {
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
-            try {
-                List<Notification> notifications =
-                    notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
-                if (!notifications.isEmpty()) {
-                    RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                    notifications.stream()
-                        .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
-                        .forEach(notification -> {
-                            ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-                                notification.getTargetUser().getLanguage().getCode());
-                            restClient.sendScheduledEmailNotification(message);
-                        });
-                }
-                notifications = notifications.stream().map(notification -> notification.setEmailSent(true)).toList();
+            List<Notification> notifications =
+                notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
+            if (!notifications.isEmpty()) {
+                notifications.stream()
+                    .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
+                    .map(notification -> notification.setEmailSent(true))
+                    .forEach(notification -> {
+                        ScheduledEmailMessage message = createScheduledEmailMessage(notification,
+                            notification.getTargetUser().getLanguage().getCode());
+                        restClient.sendScheduledEmailNotification(message);
+                    });
                 notificationRepo.saveAll(notifications);
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
             }
         });
     }
 
     private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference, LocalDateTime now) {
-        boolean timeToSend = userNotificationPreferenceRepo
-            .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                EmailPreferencePeriodicity.TWICE_A_DAY);
+        boolean timeToSend = userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(userId,
+            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
         if (now.getHour() < 12) {
             timeToSend = timeToSend || userNotificationPreferenceRepo
                 .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
@@ -290,16 +243,16 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
-        User user = userRepo.findById(notification.getTargetUser().getId()).orElse(null);
-        Language language = user != null ? user.getLanguage() : null;
-        ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-            language != null ? language.getCode() : Locale.getDefault().getLanguage());
-        List<NotificationType> likes = List.of(NotificationType.ECONEWS_COMMENT_LIKE,
+        LanguageVO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguageVO();
+        ScheduledEmailMessage message = createScheduledEmailMessage(notification, userLanguage.getCode());
+        List<NotificationType> likes = List.of(
+            NotificationType.ECONEWS_COMMENT_LIKE,
             NotificationType.ECONEWS_LIKE,
             NotificationType.EVENT_COMMENT_LIKE,
             NotificationType.HABIT_LIKE,
             NotificationType.HABIT_COMMENT_LIKE);
-        List<NotificationType> comments = List.of(NotificationType.ECONEWS_COMMENT,
+        List<NotificationType> comments = List.of(
+            NotificationType.ECONEWS_COMMENT,
             NotificationType.EVENT_COMMENT,
             NotificationType.HABIT_COMMENT,
             NotificationType.ECONEWS_COMMENT_REPLY,
@@ -308,15 +261,20 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationType.ECONEWS_COMMENT_USER_TAG,
             NotificationType.EVENT_COMMENT_USER_TAG,
             NotificationType.HABIT_COMMENT_USER_TAG);
-        List<NotificationType> invites = List.of(NotificationType.FRIEND_REQUEST_RECEIVED,
+        List<NotificationType> invites = List.of(
+            NotificationType.FRIEND_REQUEST_RECEIVED,
             NotificationType.FRIEND_REQUEST_ACCEPTED,
             NotificationType.HABIT_INVITE);
-        List<NotificationType> systems = List.of(NotificationType.ECONEWS_CREATED,
+        List<NotificationType> systems = List.of(
+            NotificationType.ECONEWS_CREATED,
             NotificationType.EVENT_CREATED,
             NotificationType.EVENT_CANCELED,
             NotificationType.EVENT_NAME_UPDATED,
             NotificationType.EVENT_UPDATED,
             NotificationType.EVENT_JOINED);
+        List<NotificationType> places = List.of(
+            NotificationType.PLACE_STATUS,
+            NotificationType.PLACE_ADDED);
         try {
             if (likes.contains(type)) {
                 restClient.sendEmailNotificationLikes(message);
@@ -326,6 +284,8 @@ public class NotificationServiceImpl implements NotificationService {
                 restClient.sendEmailNotificationInvites(message);
             } else if (systems.contains(type)) {
                 restClient.sendEmailNotificationSystem(message);
+            } else if (places.contains(type)) {
+                restClient.sendEmailNotificationPlaces(message);
             }
             notification.setEmailSent(true);
             notificationRepo.save(notification);
@@ -334,27 +294,24 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
-        log.info(LogMessage.IN_SEND_REPORT, emailNotification);
-        List<SubscriberDto> subscribers = getSubscribers(emailNotification);
+    private void sendReport(EmailPreferencePeriodicity periodicity, LocalDateTime startDate) {
+        log.info(LogMessage.IN_SEND_REPORT, periodicity);
+        LocalDateTime now = LocalDateTime.now(ZONE_ID);
+        List<SubscriberDto> subscribers = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(
+            EmailPreference.PLACES, periodicity).stream()
+            .filter(u -> isTimeToSendScheduleNotification(u.getId(), EmailPreference.PLACES, now))
+            .map(o -> modelMapper.map(o, SubscriberDto.class))
+            .toList();
+
         Map<CategoryDto, List<PlaceNotificationDto>> categoriesDtoWithPlacesDtoMap = new HashMap<>();
-        LocalDateTime endDate = LocalDateTime.now(ZONE_ID);
         if (!subscribers.isEmpty()) {
-            List<Place> places = placeRepo.findAllByModifiedDateBetweenAndStatus(
-                startDate, endDate, PlaceStatus.APPROVED);
+            List<Place> places = placeRepo.findAllByModifiedDateBetweenAndStatus(startDate.atZone(ZONE_ID),
+                now.atZone(ZONE_ID), PlaceStatus.APPROVED);
             categoriesDtoWithPlacesDtoMap = getCategoriesDtoWithPlacesDtoMap(places);
         }
         if (!categoriesDtoWithPlacesDtoMap.isEmpty()) {
-            restClient.sendReport(new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap,
-                emailNotification));
+            restClient.sendReport(new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap, periodicity));
         }
-    }
-
-    private List<SubscriberDto> getSubscribers(EmailNotification emailNotification) {
-        log.info(LogMessage.IN_GET_SUBSCRIBERS, emailNotification);
-        return restClient.findAllByEmailNotification(emailNotification).stream()
-            .map(o -> modelMapper.map(o, SubscriberDto.class))
-            .toList();
     }
 
     private Map<CategoryDto, List<PlaceNotificationDto>> getCategoriesDtoWithPlacesDtoMap(List<Place> places) {

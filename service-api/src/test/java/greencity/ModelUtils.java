@@ -16,11 +16,9 @@ import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.enums.EmailNotification;
-import greencity.enums.PlaceStatus;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.message.ChangePlaceStatusDto;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -56,15 +54,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static ChangePlaceStatusDto getSendChangePlaceStatusEmailMessage() {
-        return ChangePlaceStatusDto.builder()
-            .placeStatus(PlaceStatus.APPROVED)
-            .authorEmail("test@gmail.com")
-            .placeName("placeName")
-            .authorFirstName("taras")
-            .build();
-    }
-
     public static SendHabitNotification getSendHabitNotification() {
         return SendHabitNotification.builder()
             .email("test@gmail.com")
@@ -88,7 +77,7 @@ public class ModelUtils {
 
     public static SendReportEmailMessage getSendReportEmailMessage() {
         return SendReportEmailMessage.builder()
-            .emailNotification(EmailNotification.WEEKLY)
+            .periodicity(EmailPreferencePeriodicity.WEEKLY)
             .categoriesDtoWithPlacesDtoMap(Collections.singletonMap(
                 getCategoryDto(), Collections.singletonList(getPlaceNotificationDto())))
             .subscribers(getSubscribers())

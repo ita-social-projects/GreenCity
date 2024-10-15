@@ -1,9 +1,6 @@
 package greencity.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import greencity.ModelUtils;
-import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
@@ -25,7 +22,14 @@ import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.User;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -37,6 +41,12 @@ import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,18 +58,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -108,6 +125,18 @@ class PlaceServiceImplTest {
             .role(Role.ROLE_USER)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .languageVO(languageVO)
+            .build();
+    private final UserVO userVOAdmin =
+        UserVO.builder()
+            .id(1L)
+            .email("Nazar.stasyuk@gmail.com")
+            .name("Nazar Stasyuk")
+            .role(Role.ROLE_ADMIN)
+            .lastActivityTime(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
             .languageVO(languageVO)
             .build();
     private final Place genericEntity1 = Place.builder()
@@ -141,8 +170,6 @@ class PlaceServiceImplTest {
     @Spy
     private ModelMapper modelMapper;
     @Mock
-    private RestClient restClient;
-    @Mock
     private ProposePlaceServiceImpl proposePlaceMapper;
     @Mock
     private SpecificationService specificationService;
@@ -159,15 +186,20 @@ class PlaceServiceImplTest {
     @Mock
     UserRepo userRepo;
     @Mock
+    UserService userService;
+    @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
     private FileService fileService;
+    @Mock
+    private UserNotificationService userNotificationService;
 
     @BeforeEach
     void init() {
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
-            specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
-            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService);
+            specificationService, openingHoursService, userService, discountService, notificationService, zoneId,
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
+            userNotificationService);
     }
 
     @Test
@@ -175,27 +207,37 @@ class PlaceServiceImplTest {
         Place place = ModelUtils.getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
-        when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
-        userVO.setUserStatus(UserStatus.ACTIVATED);
-        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVOAdmin);
+        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
+        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
         when(categoryRepo.findByName(anyString())).thenReturn(new Category());
         when(placeRepo.save(any())).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
 
         PlaceVO saved = placeService.save(placeAddDto, user.getEmail());
         assertEquals(placeVO, saved);
+
+        verify(userService).getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY);
+        verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), placeVO.getId(),
+            placeVO.getCategory().getName(), placeVO.getName());
     }
 
     @Test
     void updateStatusTest() {
         Place genericEntity = ModelUtils.getPlace();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
-        when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
-        when(modelMapper.map(placeVO, Place.class)).thenReturn(genericEntity);
+        genericEntity.setCategory(ModelUtils.getCategory());
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
         when(placeRepo.save(any())).thenReturn(genericEntity);
-        placeService.updateStatus(1L, PlaceStatus.DECLINED);
-        assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
+        placeService.updateStatus(1L, PlaceStatus.APPROVED);
+        assertEquals(PlaceStatus.APPROVED, genericEntity.getStatus());
+
+        verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), genericEntity.getId(),
+            genericEntity.getCategory().getName(), genericEntity.getName());
     }
 
     @Test
@@ -503,7 +545,6 @@ class PlaceServiceImplTest {
         placeService.deleteById(place.getId());
 
         assertEquals(PlaceStatus.DELETED, place.getStatus());
-        verify(notificationService, never()).sendImmediatelyReport(any());
     }
 
     @Test
