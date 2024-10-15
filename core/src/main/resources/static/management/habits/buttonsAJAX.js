@@ -113,88 +113,88 @@ $(document).ready(function () {
         clearAllErrorsSpan();
     });
     //submit button in modal add
-    $('#submitAddBtn').on('click', function (event) {
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#addHabitForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            console.log(obj);
-            return obj;
-        }, {});
-        var returnData = {
-            "id": formData.id,
-            "image": formData.image,
-            "defaultDuration": formData.defaultDuration,
-            "complexity": formData.complexity,
-            "habitTranslations": []
+    // $('#submitAddBtn').on('click', function (event) {
+    //     event.preventDefault();
+    //     clearAllErrorsSpan();
+    //     var formData = $('#addHabitForm').serializeArray().reduce(function (obj, item) {
+    //         obj[item.name] = item.value;
+    //         console.log(obj);
+    //         return obj;
+    //     }, {});
+    //     var returnData = {
+    //         "id": formData.id,
+    //         "image": formData.image,
+    //         "defaultDuration": formData.defaultDuration,
+    //         "complexity": formData.complexity,
+    //         "habitTranslations": []
+    //
+    //     }
+    //     console.log(returnData);
+    //     for (var key in formData) {
+    //         if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem") | key.startsWith("complexity")| key.startsWith("defaultDuration")) {
+    //             var lang, name, description, habitItem, complexity, defaultDuration;
+    //
+    //             lang = key.slice(key.length - 2);
+    //             if (key.startsWith("contentName")) {
+    //                 name = formData["contentName" + lang]
+    //             }
+    //             if (key.startsWith("contentDescr")) {
+    //                 description = formData["contentDescr" + lang]
+    //             }
+    //             if (key.startsWith("contentHabItem")) {
+    //                 habitItem = formData["contentHabItem" + lang]
+    //             }
+    //             if (key.startsWith("complexity")) {
+    //                 complexity = formData["complexity"]
+    //             }
+    //             if (key.startsWith("defaultDuration")) {
+    //                 defaultDuration = formData["defaultDuration"]
+    //             }
+    //             if (name != null && description != null && habitItem != null && complexity != null && defaultDuration != null) {
+    //                 returnData.habitTranslations.push(
+    //                     {
+    //                         "name": name,
+    //                         "description": description,
+    //                         "habitItem": habitItem,
+    //                         "languageCode": lang
+    //
+    //                     }
+    //                 );
+    //                 name = null;
+    //                 description = null;
+    //                 habitItem = null;
+    //
+    //             }
+    //             console.log(returnData);
+    //         }
+    //     }
+    //     var result = new FormData();
+    //
+    //     result.append("habitManagementDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
+    //     var file = document.getElementById("fileCreate").files[0];
+    //     result.append("file", file);
+    //     //request save in modal add
+    //     $.ajax({
+    //         url: '/management/habits/save',
+    //         type: 'post',
+    //         contentType: false,
+    //         processData: false,
+    //         dataType: "json",
+    //         cache: false,
+    //         success: function (data) {
+    //             if (Array.isArray(data.errors) && data.errors.length) {
+    //                 data.errors.forEach(function (el) {
+    //                     $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
+    //                 })
+    //             } else {
+    //                 location.reload();
+    //             }
+    //         },
+    //         data: result
+    //     });
+    // });
 
-        }
-        console.log(returnData);
-        for (var key in formData) {
-            if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem") | key.startsWith("complexity")| key.startsWith("defaultDuration")) {
-                var lang, name, description, habitItem, complexity, defaultDuration;
-
-                lang = key.slice(key.length - 2);
-                if (key.startsWith("contentName")) {
-                    name = formData["contentName" + lang]
-                }
-                if (key.startsWith("contentDescr")) {
-                    description = formData["contentDescr" + lang]
-                }
-                if (key.startsWith("contentHabItem")) {
-                    habitItem = formData["contentHabItem" + lang]
-                }
-                if (key.startsWith("complexity")) {
-                    complexity = formData["complexity"]
-                }
-                if (key.startsWith("defaultDuration")) {
-                    defaultDuration = formData["defaultDuration"]
-                }
-                if (name != null && description != null && habitItem != null && complexity != null && defaultDuration != null) {
-                    returnData.habitTranslations.push(
-                        {
-                            "name": name,
-                            "description": description,
-                            "habitItem": habitItem,
-                            "languageCode": lang
-
-                        }
-                    );
-                    name = null;
-                    description = null;
-                    habitItem = null;
-
-                }
-                console.log(returnData);
-            }
-        }
-        var result = new FormData();
-
-        result.append("habitManagementDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
-        var file = document.getElementById("fileCreate").files[0];
-        result.append("file", file);
-        //request save in modal add
-        $.ajax({
-            url: '/management/habits/save',
-            type: 'post',
-            contentType: false,
-            processData: false,
-            dataType: "json",
-            cache: false,
-            success: function (data) {
-                if (Array.isArray(data.errors) && data.errors.length) {
-                    data.errors.forEach(function (el) {
-                        $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
-                    })
-                } else {
-                    location.reload();
-                }
-            },
-            data: result
-        });
-    });
     //edit button
-
     $('.table-edit-translation-icon').on('click', function (event) {
         event.preventDefault();
 
