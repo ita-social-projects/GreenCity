@@ -277,7 +277,7 @@ body {
 
 .buttons {
     display: flex;
-    margin-right: 20px;
+    margin-right: 0px;
 }
 
 .username {
@@ -1094,7 +1094,6 @@ table.table .avatar {
 }
 
 .filter-list-grid {
-    position: relative;
     right: 50px;
     display: flex;
 }

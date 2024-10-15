@@ -371,14 +371,14 @@ public class RestClient {
      * @param listId {@link List} populated with ids of {@link UserVO} to be
      *               deleted.
      */
-    public void deactivateAllUsers(List<Long> listId) {
+    public ResponseEntity<Long[]> deactivateAllUsers(List<Long> listId) {
         Gson gson = new Gson();
         String json = gson.toJson(listId);
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_DEACTIVATE
+        return restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER_DEACTIVATE_ALL
             + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
     }
 
