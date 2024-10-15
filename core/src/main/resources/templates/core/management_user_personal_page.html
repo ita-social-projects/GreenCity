@@ -104,11 +104,11 @@
                 </div>
 
                 <div class="user-info-text" style="text-align: center"
-                     th:text="${user.city} + ', Ukraine'">
+                     th:text="${user.userLocationDto != null ? user.userLocationDto.getCityEn() + ', Ukraine' : 'Location is not specified.'}">
                 </div>
 
                 <div class="block-green"
-                     th:text="'Rate: ' + ${T(Math).round(user.rating)}">
+                     th:text="'Rate: ' + ${T(java.lang.Math).round(user.rating)}">
                 </div>
 
                 <div class="social-networks"

@@ -2,8 +2,6 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
-import greencity.dto.PageableDto;
-import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -22,10 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -37,6 +31,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static greencity.ModelUtils.getListUserManagementVO;
+import static greencity.ModelUtils.getPage;
+import static greencity.ModelUtils.getSortedPageable;
 import static greencity.ModelUtils.testEmail;
 import static greencity.ModelUtils.testEmail2;
 import static greencity.ModelUtils.testUser;
@@ -274,21 +271,17 @@ class UserServiceImplTest {
 
     @Test
     void getAllUsersByCriteriaTest() {
-        // given
-        Pageable pageable = PageRequest.of(0, 10);
-        List<UserManagementVO> managementVOsList = new ArrayList<>();
-        UserManagementVO userManagementVO = ModelUtils.getUserManagementVO();
-        managementVOsList.add(userManagementVO);
-        Page<UserManagementVO> page = new PageImpl<>(managementVOsList, pageable, 1);
+        var pageable = getSortedPageable();
+        var listUserManagementVO = getListUserManagementVO();
+        var page = getPage();
+
         when(userRepo.findAllManagementVo(any(UserFilter.class), eq(pageable))).thenReturn(page);
 
-        // when
-        PageableDto<UserManagementVO> allUsersByCriteria =
+        var allUsersByCriteria =
             userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable);
 
-        // then
-        assertTrue(allUsersByCriteria.getPage().contains(userManagementVO));
-        verify(userRepo, times(1)).findAllManagementVo(any(UserFilter.class), eq(pageable));
+        assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
+        verify(userRepo).findAllManagementVo(any(UserFilter.class), eq(pageable));
     }
 
     @Test

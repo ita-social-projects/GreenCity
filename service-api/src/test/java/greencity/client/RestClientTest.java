@@ -352,8 +352,10 @@ class RestClientTest {
         restClient.deactivateAllUsers(listId);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER_DEACTIVATE
+            + RestTemplateLinks.USER_DEACTIVATE_ALL
             + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
+
+        verify(jwtTool).createAccessToken(anyString(), any(Role.class));
 
     }
 
