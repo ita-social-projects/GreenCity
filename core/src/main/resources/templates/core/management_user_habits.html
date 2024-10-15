@@ -312,6 +312,7 @@
 <!--                                    <input type="text" class="form-control" name="image" required>-->
 <!--                                    <span th:id="errorModalAddHabitImage" class="errorSpan"></span>-->
 <!--                                </div>-->
+                                <!-- File Upload for Image -->
                                 <div class="form-group">
                                     <label for="fileCreate">[[#{greenCity.pages.table.image.upload}]]</label>
                                     <input type="file" class="form-control" id="fileCreate" name="file">
@@ -594,6 +595,47 @@
     });
 
 </script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function () {
+        $('#submitAddBtn').click(function (event) {
+            event.preventDefault();
+
+            // Get the CSRF token from the page (Thymeleaf automatically includes it)
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            // Get the form element
+            var form = $('#addHabitForm')[0];
+            var formData = new FormData(form);
+
+            // Perform the AJAX request with CSRF token
+            $.ajax({
+                type: 'POST',
+                url: /*[[ @{/habits/save} ]]*/,
+                data: formData,
+                contentType: false,
+                processData: false,
+                cache: false,
+                enctype: 'multipart/form-data',
+                beforeSend: function(xhr) {
+                    // Include the CSRF token in the header
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function (response) {
+                    alert('Habit added successfully!');
+                    window.location.href = '/habits';
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error: " + error);
+                    alert('Error: Unable to save the habit. Please try again.');
+                }
+            });
+        });
+    });
+    /*]]>*/
+</script>
+
 </body>
 
 </html>
