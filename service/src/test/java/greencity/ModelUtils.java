@@ -85,6 +85,7 @@ import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
+import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
@@ -1178,8 +1179,11 @@ public class ModelUtils {
     }
 
     public static Photo getPhoto() {
-        return Photo.builder()
+        return greencity.entity.Photo.builder()
             .id(1L)
+            .user(getUser()).id(1L)
+            .place(getPlace()).id(1L)
+            .comment(getPlaceComment()).id(1L)
             .name("photo")
             .build();
     }
@@ -2906,5 +2910,9 @@ public class ModelUtils {
             .id(1L)
             .amountLikes(2)
             .build();
+    }
+
+    public static PhotoVO getPhotoVO() {
+        return PhotoVO.builder().id(1L).name("photo").commentId(1L).placeId(1L).userId(1L).build();
     }
 }
