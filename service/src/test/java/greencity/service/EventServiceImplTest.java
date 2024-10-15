@@ -1113,13 +1113,13 @@ class EventServiceImplTest {
         User user = getUser();
         User eventAuthor = getUser();
         Event event = getEvent();
-        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_EVENT").points(1).build();
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
         when(userRepo.findById(eventAuthor.getId())).thenReturn(Optional.of(eventAuthor));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(eventAuthor, UserVO.class)).thenReturn(eventAuthorVO);
-        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT")).thenReturn(ratingPoints);
 
         eventService.like(event.getId(), userVO);
 
@@ -1139,12 +1139,12 @@ class EventServiceImplTest {
         User user = getUser();
         Event event = getEvent();
         event.getUsersLikedEvents().add(user);
-        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_COMMENT_OR_REPLY").points(-1).build();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_EVENT").points(-1).build();
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(modelMapper.map(userVO, User.class)).thenReturn(event.getOrganizer());
-        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT")).thenReturn(ratingPoints);
 
         eventService.like(event.getId(), userVO);
         assertFalse(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
