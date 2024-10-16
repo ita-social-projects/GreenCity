@@ -85,6 +85,7 @@ import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
+import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
@@ -179,6 +180,11 @@ import jakarta.persistence.TupleElement;
 import org.hibernate.sql.results.internal.TupleElementImpl;
 import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -1178,8 +1184,11 @@ public class ModelUtils {
     }
 
     public static Photo getPhoto() {
-        return Photo.builder()
+        return greencity.entity.Photo.builder()
             .id(1L)
+            .user(getUser()).id(1L)
+            .place(getPlace()).id(1L)
+            .comment(getPlaceComment()).id(1L)
             .name("photo")
             .build();
     }
@@ -2906,5 +2915,25 @@ public class ModelUtils {
             .id(1L)
             .amountLikes(2)
             .build();
+    }
+
+    public static PhotoVO getPhotoVO() {
+        return PhotoVO.builder().id(1L).name("photo").commentId(1L).placeId(1L).userId(1L).build();
+    }
+
+    public static Pageable getSortedPageable() {
+        return PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+    }
+
+    public static List<UserManagementVO> getListUserManagementVO() {
+        return List.of(UserManagementVO.builder()
+            .id(1L)
+            .userStatus(ACTIVATED)
+            .email("Test@gmail.com")
+            .role(Role.ROLE_ADMIN).build());
+    }
+
+    public static Page<UserManagementVO> getPage() {
+        return new PageImpl<>(getListUserManagementVO(), getSortedPageable(), 1);
     }
 }
