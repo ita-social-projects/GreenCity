@@ -69,30 +69,27 @@ public interface FactOfTheDayService {
      * Returns a random {@link FactOfTheDayTranslationDTO} based on the provided
      * language code and habit tags.
      *
-     * @param languageCode the code of the desired language (e.g., "en")
-     * @param tagsId       a set of tag IDs associated with habits
-     * @return a random fact of the day translation
+     * @param tagsId a set of tag IDs associated with habits
+     * @return a random fact of the day
      */
-    FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguageAndTags(String languageCode, Set<Long> tagsId);
+    FactOfTheDayTranslationDTO getRandomFactOfTheDayByTags(Set<Long> tagsId);
 
     /**
      * Returns a random general {@link FactOfTheDayTranslationDTO} for the specified
      * language.
      *
-     * @param languageCode the code of the desired language (e.g., "en")
-     * @return a random general fact of the day translation
+     * @return a random general fact of the day
      */
-    FactOfTheDayTranslationDTO getRandomGeneralFactOfTheDay(String languageCode);
+    FactOfTheDayTranslationDTO getRandomGeneralFactOfTheDay();
 
     /**
      * Returns a random {@link FactOfTheDayTranslationDTO} for a user based on the
      * provided language code and the user's habit tags.
      *
-     * @param languageCode the code of the desired language (e.g., "en")
-     * @param email        the email of the user for whom the tags are retrieved
-     * @return a random fact of the day translation based on the user's habits
+     * @param email the email of the user for whom the tags are retrieved
+     * @return a random fact of the day based on the user's habits
      */
-    FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String languageCode, String email);
+    FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String email);
 
     /**
      * Retrieves all tags associated with Facts of the Day.

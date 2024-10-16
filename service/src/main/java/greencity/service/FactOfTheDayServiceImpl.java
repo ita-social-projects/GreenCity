@@ -183,37 +183,29 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     @Cacheable(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME)
-    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByLanguageAndTags(String languageCode, Set<Long> tagIds) {
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayByTags(Set<Long> tagIds) {
         FactOfTheDay factOfTheDay = factOfTheDayRepo.getRandomFactOfTheDay(tagIds)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
-
-        FactOfTheDayTranslation factTranslation = factOfTheDay.getFactOfTheDayTranslations()
-            .stream()
-            .filter(translation -> translation.getLanguage().getCode().equals(languageCode))
-            .findAny()
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_NOT_FOUND));
-
-        return modelMapper.map(factTranslation, FactOfTheDayTranslationDTO.class);
+        return modelMapper.map(factOfTheDay, FactOfTheDayTranslationDTO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayTranslationDTO getRandomGeneralFactOfTheDay(String languageCode) {
+    public FactOfTheDayTranslationDTO getRandomGeneralFactOfTheDay() {
         List<Tag> tags = tagsRepo.findTagsByType(FACT_OF_THE_DAY);
-        return getRandomFactOfTheDayByLanguageAndTags(languageCode,
-            tags.stream().map(Tag::getId).collect(Collectors.toSet()));
+        return getRandomFactOfTheDayByTags(tags.stream().map(Tag::getId).collect(Collectors.toSet()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String languageCode, String userEmail) {
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String userEmail) {
         Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userEmail);
         try {
-            return getRandomFactOfTheDayByLanguageAndTags(languageCode, userTagIds);
+            return getRandomFactOfTheDayByTags(userTagIds);
         } catch (NotFoundException e) {
             return null;
         }
