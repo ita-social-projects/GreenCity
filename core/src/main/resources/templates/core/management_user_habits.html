@@ -9,7 +9,6 @@
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <!--    <script th:src="@{/management/events/imageUpload.js}"></script>-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -296,7 +295,6 @@
             <div id="addHabitModal" class="modal fade">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <!--                        <form th:action="@{management/habits/save}" method="post" id="addHabitForm">-->
                         <form id="addHabitForm" method="post" th:action="@{habits/save}" enctype="multipart/form-data">
                             <div class="modal-header">
                                 <h4 class="modal-title">[[#{greenCity.habit.page.add.habit}]]</h4>
@@ -305,12 +303,6 @@
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" class="form-control" name="id" value="0" readonly required>
-                                <!--                                <div class="form-group">-->
-                                <!--                                    <label>[[#{greenCity.pages.table.image.path}]]</label>-->
-                                <!--                                    <input type="text" class="form-control" name="image" required>-->
-                                <!--                                    <span th:id="errorModalAddHabitImage" class="errorSpan"></span>-->
-                                <!--                                </div>-->
-                                <!-- File Upload for Image -->
                                 <div class="form-group">
                                     <label for="fileCreate">[[#{greenCity.pages.table.image.upload}]]</label>
                                     <input type="file" class="form-control" id="fileCreate" name="file">
@@ -419,7 +411,6 @@
                     </div>
                 </div>
             </div>
-
             <!--Edit Image Modal-->
             <div id="editHabitImgModal" class="modal fade" type="modal">
                 <div class="modal-dialog">
@@ -607,7 +598,6 @@
     $(document).ready(function () {
         $('#addHabitForm').on('submit', function (event) {
             event.preventDefault();
-            // Get the form element
             var formData = new FormData();
             var habitManagementDto = {
                 complexity: $("#addComplexity").val(),
@@ -642,7 +632,6 @@
                 formData.append('file', fileInput.files[0]);
             }
 
-            // Perform the AJAX request with CSRF token
             $.ajax({
                 type: 'POST',
                 url: "http://localhost:8080/management/habits/save",
@@ -662,7 +651,6 @@
     });
     /*]]>*/
 </script>
-
 </body>
 
 </html>
