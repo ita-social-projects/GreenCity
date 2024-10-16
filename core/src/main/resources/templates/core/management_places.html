@@ -33,8 +33,12 @@
             flex-direction: column;
             justify-content: center;
         }
-        .table-container .table {
-            flex-grow: 1;
+        .displayNone {
+            display: none;
+        }
+
+        table {
+            table-layout: auto;
         }
     </style>
 </head>
@@ -360,7 +364,7 @@
                             <div th:each="day: ${#strings.arraySplit('MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY',',')}">
                                 <div class="form-row">
                                     <div class="form-group col-md-3 week-day">
-                                        <input class="form-check-input" name="day" th:id="${day}" type="checkbox">
+                                        <input class="form-check-input" th:id="${day}" type="checkbox" name="day">
                                         <label class="form-check-label">
                                             <span th:text="${day}"></span>
                                         </label>
@@ -369,28 +373,28 @@
                                         <div class="form-row">
                                             <div class="form-group col-6">
                                                 <label>[[#{greenCity.pages.table.start.time}]]</label>
-                                                <input class="form-control-sm" name="openTime" type="time">
+                                                <input type="time" class="form-control-sm" name="openTime">
                                             </div>
                                             <div class="form-group col-6">
                                                 <label>[[#{greenCity.pages.table.end.time}]]</label>
-                                                <input class="form-control-sm" name="closeTime" type="time">
+                                                <input type="time" class="form-control-sm" name="closeTime">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group col-md-5 break-time">
                                         <button class="btn btn-success btn-sm add-break">
-                                            [[#{greenCity.pages.table.add.break.hourse}]]
+                                            [[#{greenCity.pages.table.add.break.hours}]]
                                         </button>
                                         <div class="form-row break-hours displayNone">
                                             <div class="form-group">
                                                 <div class="form-row">
                                                     <div class="form-group col-5">
                                                         <label>[[#{greenCity.pages.table.break.start.p}]]</label>
-                                                        <input class="form-control-sm" name="startTime" type="time">
+                                                        <input type="time" class="form-control-sm" name="startTime">
                                                     </div>
                                                     <div class="form-group col-5">
                                                         <label>[[#{greenCity.pages.table.break.end.p}]]</label>
-                                                        <input class="form-control-sm" name="endTime" type="time">
+                                                        <input type="time" class="form-control-sm" name="endTime">
                                                     </div>
                                                     <div class="=col-2">
                                                         <i class="material-icons removeBreak" data-toggle="tooltip"
@@ -398,11 +402,12 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <span class="errorSpan" th:id="errorModalSaveopeningHoursList"></span>
+                            <span th:id="errorModalSaveopeningHoursList" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
                             <div id="discounts"></div>
