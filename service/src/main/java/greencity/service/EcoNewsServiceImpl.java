@@ -404,8 +404,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         if (isLiked) {
             achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_COMMENT_OR_REPLY"),
+                AchievementCategoryType.LIKE_NEWS, AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_NEWS"),
                 userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
@@ -413,8 +413,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
             }
             achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
+                AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
 

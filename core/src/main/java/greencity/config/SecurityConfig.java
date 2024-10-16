@@ -287,6 +287,7 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + ATTENDERS,
                     EVENTS + EVENT_ID + FAVORITES,
                     EVENTS + EVENT_ID + RATINGS,
+                    EVENTS + EVENT_ID + LIKE,
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_SHOPPING_LIST_ITEMS,
