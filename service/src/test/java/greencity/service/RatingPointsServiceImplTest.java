@@ -2,13 +2,23 @@ package greencity.service;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingPointsDto;
 import greencity.entity.RatingPoints;
 import greencity.enums.Status;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.RatingPointsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +27,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -96,12 +107,37 @@ class RatingPointsServiceImplTest {
     }
 
     @Test
+    void updateRatingPoints_ShouldThrowNotFoundException_WhenRatingPointsNotFound() {
+        when(ratingPointsRepo.findById(anyLong())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> ratingPointsService.updateRatingPoints(ratingPointsDto)
+        );
+
+        assertEquals(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + ratingPointsDto.getId(), exception.getMessage());
+        verify(ratingPointsRepo, times(1)).findById(anyLong());
+        verify(ratingPointsRepo, never()).save(any(RatingPoints.class));
+    }
+
+    @Test
     void deleteRatingPoints_ShouldCallUpdateStatusById() {
-        doNothing().when(ratingPointsRepo).updateStatusById(anyLong(), eq(Status.DELETE));
+        doNothing().when(ratingPointsRepo).updateStatusById(1L, Status.DELETE);
 
         ratingPointsService.deleteRatingPoints(1L);
 
-        verify(ratingPointsRepo, times(1)).updateStatusById(anyLong(), eq(Status.DELETE));
+        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.DELETE);
+    }
+
+    @Test
+    void deleteRatingPoints_ShouldThrowNotFoundException_WhenEmptyResultDataAccessExceptionThrown() {
+        doThrow(new EmptyResultDataAccessException(1))
+            .when(ratingPointsRepo).updateStatusById(1L, Status.DELETE);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> ratingPointsService.deleteRatingPoints(1L));
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + 1));
+        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.DELETE);
     }
 
     @Test
@@ -123,11 +159,23 @@ class RatingPointsServiceImplTest {
 
     @Test
     void restoreDeletedRatingPoints_ShouldCallUpdateStatusById() {
-        doNothing().when(ratingPointsRepo).updateStatusById(anyLong(), eq(Status.ACTIVE));
+        doNothing().when(ratingPointsRepo).updateStatusById(1L, Status.ACTIVE);
 
         ratingPointsService.restoreDeletedRatingPoints(1L);
 
-        verify(ratingPointsRepo, times(1)).updateStatusById(anyLong(), eq(Status.ACTIVE));
+        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.ACTIVE);
+    }
+
+    @Test
+    void restoreDeletedRatingPoints_ShouldThrowNotFoundException_WhenExceptionThrown() {
+        doThrow(new RuntimeException("DB error"))
+            .when(ratingPointsRepo).updateStatusById(1L, Status.ACTIVE);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> ratingPointsService.restoreDeletedRatingPoints(1L));
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + 1));
+        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.ACTIVE);
     }
 
     @Test
@@ -138,5 +186,18 @@ class RatingPointsServiceImplTest {
 
         verify(ratingPointsRepo, times(1)).updateRatingPointsName("Old Name", "New Name");
         verify(ratingPointsRepo, times(1)).updateRatingPointsName("UNDO_Old Name", "UNDO_New Name");
+    }
+
+    @Test
+    void updateRatingPointsName_ShouldThrowNotFoundException_WhenExceptionThrown() {
+        doThrow(new RuntimeException("DB error"))
+            .when(ratingPointsRepo).updateRatingPointsName("Old Name", "New Name");
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> ratingPointsService.updateRatingPointsName("Old Name", "New Name"));
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_NAME + "Old Name"));
+        verify(ratingPointsRepo, times(1))
+            .updateRatingPointsName("Old Name", "New Name");
     }
 }
