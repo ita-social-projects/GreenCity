@@ -61,8 +61,7 @@ public class HabitCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @PostMapping(path = "/{habitId}/comments",
-        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/{habitId}/comments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long habitId,
         @Valid @RequestPart AddCommentDtoRequest request,
         @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,

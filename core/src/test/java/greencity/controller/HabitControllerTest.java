@@ -330,7 +330,7 @@ class HabitControllerTest {
         mockMvc.perform(multipart(habitLink + "/custom")
             .file(jsonFile)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isCreated());
         verify(habitService).addCustomHabit(dto, null, principal.getName());
     }
@@ -369,7 +369,7 @@ class HabitControllerTest {
             .file(jsonFile)
             .file(imageFile)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
         verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), imageFile);
