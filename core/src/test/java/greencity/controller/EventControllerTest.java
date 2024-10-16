@@ -201,7 +201,7 @@ class EventControllerTest {
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isCreated());
 
         verify(eventService).save(eq(addEventDtoRequest), eq(principal.getName()), isNull());
@@ -217,7 +217,7 @@ class EventControllerTest {
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
     }
 
@@ -292,7 +292,7 @@ class EventControllerTest {
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
         verify(eventService).update(updateEventDto, principal.getName(), null);
@@ -321,7 +321,7 @@ class EventControllerTest {
                 .file(jsonFile)
                 .principal(principal)
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest()))
             .hasCause(new WrongIdException(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL));
     }
@@ -424,7 +424,7 @@ class EventControllerTest {
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
     }
 

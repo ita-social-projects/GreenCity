@@ -92,7 +92,7 @@ class EcoNewsControllerTest {
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -107,7 +107,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(post(ecoNewsLink)
             .content("{}")
             .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
     }
 
