@@ -77,8 +77,7 @@ public class EcoNewsCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @PostMapping(path = "/{ecoNewsId}/comments",
-        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/{ecoNewsId}/comments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long ecoNewsId,
         @Valid @RequestPart AddCommentDtoRequest request,
         @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,
