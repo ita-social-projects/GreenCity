@@ -120,25 +120,6 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         return habit;
     }
 
-//    /**
-//     * Method sets new image path for {@link Habit}.
-//     *
-//     * @param habitManagementDto {@link HabitManagementDto} instance.
-//     * @param image              {@link MultipartFile} image.
-//     * @param habit              {@link Habit} instance.
-//     */
-//    private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-//        if (image == null) {
-//            if (habitManagementDto.getImage() == null) {
-//                habit.setImage(AppConstant.DEFAULT_HABIT_IMAGE);
-//            } else {
-//                habit.setImage(habitManagementDto.getImage());
-//            }
-//        } else {
-//            fileService.upload(image);
-//        }
-//    }
-
     /**
      * Handles image assignment or uploading for the {@link Habit}.
      *
@@ -150,8 +131,8 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         if (image != null && !image.isEmpty()) {
             habit.setImage(fileService.upload(image));
         } else {
-            habit.setImage(habitManagementDto.getImage() != null ?
-                    habitManagementDto.getImage() : AppConstant.DEFAULT_HABIT_IMAGE);
+            habit.setImage(habitManagementDto.getImage() != null ? habitManagementDto.getImage()
+                : AppConstant.DEFAULT_HABIT_IMAGE);
         }
     }
 

@@ -135,7 +135,7 @@ public class ManagementHabitController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
-    @PostMapping(path="/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public GenericResponseDto save(@Valid @RequestPart HabitManagementDto habitManagementDto,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
