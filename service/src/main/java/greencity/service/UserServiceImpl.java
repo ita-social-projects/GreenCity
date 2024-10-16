@@ -32,8 +32,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -227,7 +228,10 @@ public class UserServiceImpl implements UserService {
     public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
         Pageable pageable) {
         UserFilterDto filterUserDto = createUserFilterDto(criteria, role, status);
-        Page<UserManagementVO> listOfUsers = userRepo.findAllManagementVo(new UserFilter(filterUserDto), pageable);
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        var listOfUsers = userRepo.findAllManagementVo(new UserFilter(filterUserDto), sortedPageable);
 
         return new PageableDto<>(
             listOfUsers.getContent(),
