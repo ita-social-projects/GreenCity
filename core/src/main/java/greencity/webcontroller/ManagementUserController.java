@@ -3,15 +3,21 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-import greencity.dto.user.*;
+import greencity.dto.user.UserFilterDtoRequest;
+import greencity.dto.user.UserFilterDtoResponse;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserManagementViewDto;
+import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -55,7 +61,7 @@ public class ManagementUserController {
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
-     * @author Vasyl Zhovnir
+     * @author Vasyl Zhovnir, Anton Bondar
      */
     @GetMapping
     public String getAllUsers(
@@ -63,12 +69,29 @@ public class ManagementUserController {
         @RequestParam(required = false, name = "role") String role,
         @RequestParam(required = false, name = "query") String query,
         @CurrentUser UserVO currentUser,
-        Model model, @Parameter(hidden = true) Pageable pageable) {
-        PageableDto<UserManagementVO> found = userService.getAllUsersByCriteria(query, role, status, pageable);
+        Model model,
+        @Parameter(hidden = true) Pageable pageable) {
+        var found = userService.getAllUsersByCriteria(query, role, status, pageable);
+
+        int currentPage = pageable.getPageNumber();
+        int totalPages = found.getTotalPages();
+
+        int startPage = Math.max(0, currentPage - 3);
+        int endPage = Math.min(currentPage + 3, totalPages - 1);
+        var pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
+
         model.addAttribute("users", found);
         model.addAttribute("paging", pageable);
         model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isFirst", currentPage == 0);
+        model.addAttribute("isLast", currentPage == totalPages - 1);
+        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("pageSize", pageable.getPageSize());
+        model.addAttribute("pageNumber", currentPage);
+        model.addAttribute("sortModel", pageable.getSort());
+        model.addAttribute("previousPage", Math.max(0, currentPage - 1));
+        model.addAttribute("nextPage", Math.min(totalPages - 1, currentPage + 1));
 
         return "core/management_user";
     }
@@ -93,7 +116,7 @@ public class ManagementUserController {
      * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
-    @PutMapping
+    @PutMapping("/")
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
@@ -174,7 +197,7 @@ public class ManagementUserController {
     }
 
     /**
-     * Method for setting {@link UserVO}'s status to ACTIVATED.
+     * Method for setting {@link UserVO}'s status to ACTIVATE.
      *
      * @param id of the searched {@link UserVO}.
      * @author Vasyl Zhovnir
@@ -208,11 +231,13 @@ public class ManagementUserController {
      *
      * @param listId {@link List} populated with ids of {@link UserVO} to be
      *               deleted.
-     * @author Vasyl Zhovnir
+     * @return {@link ResponseEntity} containing an array of deactivated user IDs
+     *         {@link Long}.
+     * @author Vasyl Zhovnir, Anton Bondar
      */
     @PostMapping("/deactivateAll")
-    public void deactivateAll(@RequestBody List<Long> listId) {
-        restClient.deactivateAllUsers(listId);
+    public ResponseEntity<Long[]> deactivateAll(@RequestBody List<Long> listId) {
+        return restClient.deactivateAllUsers(listId);
     }
 
     /**
