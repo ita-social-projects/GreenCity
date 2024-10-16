@@ -200,6 +200,7 @@ public class ErrorMessage {
         "The rating points does not exist by this name: ";
     public static final String RATING_POINTS_NOT_FOUND_BY_ID =
         "The rating points does not exist by this id: ";
+    public static final String NOTIFICATION_NOT_FOUND_BY_ID = "Notification doesn't exist by this id: ";
     public static final String DELETING_RATING_POINTS_NOT_ALLOWED =
         "Deleting this RatingPoints is not possible because an Achievement with such name still exists.";
 }
