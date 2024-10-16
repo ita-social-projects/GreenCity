@@ -9,6 +9,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.RatingPointsRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.List;
 public class RatingPointsServiceImpl implements RatingPointsService {
     private RatingPointsRepo ratingPointsRepo;
     private final ModelMapper modelMapper;
-    private static final String undo = "UNDO_";
+    private static final String UNDO = "UNDO_";
 
     @Override
     public PageableAdvancedDto<RatingPointsDto> getAllRatingPointsByPage(Pageable pageable) {
@@ -30,7 +31,7 @@ public class RatingPointsServiceImpl implements RatingPointsService {
     @Override
     public List<RatingPointsDto> createRatingPoints(String ratingPointsName) {
         List<RatingPoints> ratingPoints = List.of(ratingPointsRepo.save(new RatingPoints(ratingPointsName)),
-            ratingPointsRepo.save(new RatingPoints(undo + ratingPointsName)));
+            ratingPointsRepo.save(new RatingPoints(UNDO + ratingPointsName)));
         return ratingPoints.stream().map(rating -> modelMapper.map(rating, RatingPointsDto.class)).toList();
     }
 
@@ -48,7 +49,12 @@ public class RatingPointsServiceImpl implements RatingPointsService {
 
     @Override
     public void deleteRatingPoints(Long id) {
-        ratingPointsRepo.updateStatusById(id, Status.DELETE);
+        try {
+            checkByIdForExistenceOfAchievement(id);
+            ratingPointsRepo.updateStatusById(id, Status.DELETE);
+        } catch (EmptyResultDataAccessException | IllegalArgumentException e) {
+            throw new NotFoundException(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + id, e);
+        }
     }
 
     @Override
@@ -59,14 +65,18 @@ public class RatingPointsServiceImpl implements RatingPointsService {
 
     @Override
     public void restoreDeletedRatingPoints(Long id) {
-        ratingPointsRepo.updateStatusById(id, Status.ACTIVE);
+        try {
+            ratingPointsRepo.updateStatusById(id, Status.ACTIVE);
+        } catch (Exception e) {
+            throw new NotFoundException(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + id, e);
+        }
     }
 
     @Override
     public void updateRatingPointsName(String oldName, String newName) {
         try {
             ratingPointsRepo.updateRatingPointsName(oldName, newName);
-            ratingPointsRepo.updateRatingPointsName(undo + oldName, undo + newName);
+            ratingPointsRepo.updateRatingPointsName(UNDO + oldName, UNDO + newName);
         } catch (Exception e) {
             throw new NotFoundException(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_NAME + oldName, e);
         }
@@ -85,5 +95,11 @@ public class RatingPointsServiceImpl implements RatingPointsService {
             ratingPoints.hasNext(),
             ratingPoints.isFirst(),
             ratingPoints.isLast());
+    }
+
+    private void checkByIdForExistenceOfAchievement(Long id) {
+        if (ratingPointsRepo.checkByIdForExistenceOfAchievement(id)) {
+            throw new IllegalStateException(ErrorMessage.DELETING_RATING_POINTS_NOT_ALLOWED);
+        }
     }
 }

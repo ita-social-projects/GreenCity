@@ -70,4 +70,11 @@ public interface RatingPointsRepo extends JpaRepository<RatingPoints, Long> {
     @Transactional
     @Query("UPDATE RatingPoints rp SET rp.name = :newName WHERE rp.name = :oldName")
     void updateRatingPointsName(String oldName, String newName);
+
+    @Transactional
+    @Query(nativeQuery = true,
+        value = "SELECT COUNT(a) > 0 FROM rating_points rp INNER JOIN achievements a  "
+            + "ON a.title = CASE WHEN rp.name LIKE 'UNDO_%' THEN SUBSTRING(rp.name, 6) ELSE rp.name END "
+            + "WHERE rp.id = :id")
+    boolean checkByIdForExistenceOfAchievement(@Param("id") Long id);
 }
