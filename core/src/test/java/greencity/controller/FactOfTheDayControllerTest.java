@@ -41,7 +41,7 @@ class FactOfTheDayControllerTest {
     void getRandomFactOfTheDayTest() throws Exception {
         mockMvc.perform(get(factOfTheDayLink + "/random"))
             .andExpect(status().isOk());
-        verify(factOfTheDayService).getRandomGeneralFactOfTheDay("en");
+        verify(factOfTheDayService).getRandomGeneralFactOfTheDay();
     }
 
     @Test
@@ -55,6 +55,6 @@ class FactOfTheDayControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(factOfTheDayService).getRandomFactOfTheDayForUser("en", "testUser@example.com");
+        verify(factOfTheDayService).getRandomFactOfTheDayForUser("testUser@example.com");
     }
 }
