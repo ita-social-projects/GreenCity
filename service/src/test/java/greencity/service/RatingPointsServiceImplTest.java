@@ -51,14 +51,15 @@ class RatingPointsServiceImplTest {
     private RatingPointsDto ratingPointsDto;
     private final Pageable pageable = PageRequest.of(3, 5);
     private final Page<RatingPoints> ratingPointsPage = Page.empty(pageable);
+    private final Long id = 1L;
 
     @BeforeEach
     void setUp() {
         ratingPoints = new RatingPoints("Test Points");
-        ratingPoints.setId(1L);
+        ratingPoints.setId(id);
 
         ratingPointsDto = new RatingPointsDto();
-        ratingPointsDto.setId(1L);
+        ratingPointsDto.setId(id);
         ratingPointsDto.setName("Test Points");
         ratingPointsDto.setPoints(10);
     }
@@ -121,23 +122,25 @@ class RatingPointsServiceImplTest {
 
     @Test
     void deleteRatingPoints_ShouldCallUpdateStatusById() {
-        doNothing().when(ratingPointsRepo).updateStatusById(1L, Status.DELETE);
+        when(ratingPointsRepo.checkByIdForExistenceOfAchievement(id)).thenReturn(false);
+        doNothing().when(ratingPointsRepo).updateStatusById(id, Status.DELETE);
 
-        ratingPointsService.deleteRatingPoints(1L);
+        ratingPointsService.deleteRatingPoints(id);
 
-        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.DELETE);
+        verify(ratingPointsRepo, times(1)).updateStatusById(id, Status.DELETE);
+        verify(ratingPointsRepo, times(1)).checkByIdForExistenceOfAchievement(id);
     }
 
     @Test
     void deleteRatingPoints_ShouldThrowNotFoundException_WhenEmptyResultDataAccessExceptionThrown() {
         doThrow(new EmptyResultDataAccessException(1))
-            .when(ratingPointsRepo).updateStatusById(1L, Status.DELETE);
+            .when(ratingPointsRepo).updateStatusById(id, Status.DELETE);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> ratingPointsService.deleteRatingPoints(1L));
+            () -> ratingPointsService.deleteRatingPoints(id));
 
-        assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + 1));
-        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.DELETE);
+        assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + id));
+        verify(ratingPointsRepo, times(1)).updateStatusById(id, Status.DELETE);
     }
 
     @Test
@@ -159,23 +162,23 @@ class RatingPointsServiceImplTest {
 
     @Test
     void restoreDeletedRatingPoints_ShouldCallUpdateStatusById() {
-        doNothing().when(ratingPointsRepo).updateStatusById(1L, Status.ACTIVE);
+        doNothing().when(ratingPointsRepo).updateStatusById(id, Status.ACTIVE);
 
-        ratingPointsService.restoreDeletedRatingPoints(1L);
+        ratingPointsService.restoreDeletedRatingPoints(id);
 
-        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.ACTIVE);
+        verify(ratingPointsRepo, times(1)).updateStatusById(id, Status.ACTIVE);
     }
 
     @Test
     void restoreDeletedRatingPoints_ShouldThrowNotFoundException_WhenExceptionThrown() {
         doThrow(new RuntimeException("DB error"))
-            .when(ratingPointsRepo).updateStatusById(1L, Status.ACTIVE);
+            .when(ratingPointsRepo).updateStatusById(id, Status.ACTIVE);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> ratingPointsService.restoreDeletedRatingPoints(1L));
+            () -> ratingPointsService.restoreDeletedRatingPoints(id));
 
-        assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + 1));
-        verify(ratingPointsRepo, times(1)).updateStatusById(1L, Status.ACTIVE);
+        assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + id));
+        verify(ratingPointsRepo, times(1)).updateStatusById(id, Status.ACTIVE);
     }
 
     @Test
@@ -199,5 +202,15 @@ class RatingPointsServiceImplTest {
         assertTrue(exception.getMessage().contains(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_NAME + "Old Name"));
         verify(ratingPointsRepo, times(1))
             .updateRatingPointsName("Old Name", "New Name");
+    }
+
+    @Test
+    void checkByIdForExistenceOfAchievement_ShouldThrowException_WhenAchievementExists() {
+        when(ratingPointsRepo.checkByIdForExistenceOfAchievement(id)).thenReturn(true);
+
+        assertThrows(IllegalStateException.class,
+                () -> ratingPointsService.deleteRatingPoints(id), ErrorMessage.DELETING_RATING_POINTS_NOT_ALLOWED);
+
+        verify(ratingPointsRepo, times(1)).checkByIdForExistenceOfAchievement(id);
     }
 }
