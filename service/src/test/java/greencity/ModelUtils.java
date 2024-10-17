@@ -150,6 +150,7 @@ import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.PlaceComment;
 import greencity.entity.ShoppingListItem;
+import greencity.entity.SocialNetworkImage;
 import greencity.entity.Specification;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -2948,5 +2949,13 @@ public class ModelUtils {
 
     public static Page<UserManagementVO> getPage() {
         return new PageImpl<>(getListUserManagementVO(), getSortedPageable(), 1);
+    }
+
+    public static SocialNetworkImage getSocialNetworkImage() {
+        return SocialNetworkImage.builder()
+                .id(1L)
+                .hostPath("hostPath")
+                .imagePath("imagePath")
+                .build();
     }
 }

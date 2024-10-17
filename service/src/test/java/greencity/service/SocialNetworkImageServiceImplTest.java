@@ -1,10 +1,12 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.entity.SocialNetworkImage;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SocialNetworkImageRepo;
 
 import java.net.MalformedURLException;
@@ -114,9 +116,19 @@ class SocialNetworkImageServiceImplTest {
     @Test
     void testDelete() {
         Long idToDelete = 1L;
+        SocialNetworkImage image = ModelUtils.getSocialNetworkImage();
+        when(socialNetworkImageRepo.findById(idToDelete)).thenReturn(Optional.of(image));
         socialNetworkImageService.delete(idToDelete);
 
         verify(socialNetworkImageRepo).deleteById(idToDelete);
+        verify(fileService).delete(image.getImagePath());
+    }
+
+    @Test
+    void testDeleteImageNotFound() {
+        Long idToDelete = 1L;
+        when(socialNetworkImageRepo.findById(idToDelete)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> socialNetworkImageService.delete(idToDelete));
     }
 
     @Test
