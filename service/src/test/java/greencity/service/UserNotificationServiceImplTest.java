@@ -249,7 +249,8 @@ class UserNotificationServiceImplTest {
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> userNotificationService.deleteNotification(getPrincipal(), notificationId));
+        assertThrows(NotFoundException.class,
+            () -> userNotificationService.deleteNotification(getPrincipal(), notificationId));
     }
 
     @Test
