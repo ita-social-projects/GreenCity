@@ -21,12 +21,20 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static greencity.ModelUtils.getHabitManagementDtoWithDefaultImage;
+import static greencity.ModelUtils.getHabitManagementDtoWithoutImage;
+import static greencity.ModelUtils.getHabitWithDefaultImage;
+import static greencity.ModelUtils.getLanguage;
+import static greencity.ModelUtils.getLanguageDTO;
+import static greencity.TestConst.LANGUAGE_CODE_EN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -45,6 +53,8 @@ class ManagementHabitServiceImplTest {
     private ModelMapper modelMapper;
     @InjectMocks
     private ManagementHabitServiceImpl managementHabitService;
+    @Mock
+    private FileService fileService;
 
     @Test
     void getByIdTest() {
@@ -96,7 +106,7 @@ class ManagementHabitServiceImplTest {
                             languageService.findByCode(habitTranslationDto.getLanguageCode()),
                             Language.class))
                         .build())
-                    .collect(Collectors.toList()))
+                    .toList())
             .build();
         habit.getHabitTranslations().forEach(habitTranslation -> habitTranslation.setHabit(habit));
 
@@ -169,4 +179,67 @@ class ManagementHabitServiceImplTest {
 
     }
 
+    @Test
+    void successfulUploadImageForHabitTest() {
+        HabitManagementDto habitManagementDto = ModelUtils.getHabitManagementDtoWithTranslation();
+        MultipartFile imageFile = new MockMultipartFile("image.jpg", "some-image-content".getBytes());
+        when(fileService.upload(imageFile)).thenReturn("image-url");
+
+        managementHabitService.saveHabitAndTranslations(habitManagementDto, imageFile);
+        assertEquals("https://example.com/sample-image.jpg", habitManagementDto.getImage());
+
+        verify(fileService, times(1)).upload(imageFile);
+    }
+
+    @Test
+    void saveHabitAndTranslationsWhenImageNullTest() {
+        var languageDTO = getLanguageDTO();
+        var language = getLanguage();
+        var habitManagementDtoWithoutImage = getHabitManagementDtoWithoutImage();
+        var habitManagementDtoWithDefaultImage = getHabitManagementDtoWithDefaultImage();
+        var habit = getHabitWithDefaultImage();
+
+        when(languageService.findByCode(LANGUAGE_CODE_EN)).thenReturn(languageDTO);
+        when(modelMapper.map(languageDTO, Language.class)).thenReturn(language);
+
+        when(habitRepo.save(habit)).thenReturn(habit);
+        when(modelMapper.map(habit, HabitManagementDto.class)).thenReturn(habitManagementDtoWithDefaultImage);
+
+        var result = managementHabitService.saveHabitAndTranslations(habitManagementDtoWithoutImage, null);
+
+        assertEquals(AppConstant.DEFAULT_HABIT_IMAGE, result.getImage());
+
+        verify(languageService).findByCode(LANGUAGE_CODE_EN);
+        verify(modelMapper).map(languageDTO, Language.class);
+        verify(habitRepo).save(habit);
+        verify(modelMapper).map(habit, HabitManagementDto.class);
+    }
+
+    @Test
+    void saveHabitAndTranslationsWhenImageEmptyTest() {
+        var languageDTO = getLanguageDTO();
+        var language = getLanguage();
+        var habitManagementDtoWithoutImage = getHabitManagementDtoWithoutImage();
+        var habitManagementDtoWithDefaultImage = getHabitManagementDtoWithDefaultImage();
+        var habit = getHabitWithDefaultImage();
+
+        MultipartFile emptyImage = mock(MultipartFile.class);
+
+        when(emptyImage.isEmpty()).thenReturn(true);
+        when(languageService.findByCode(LANGUAGE_CODE_EN)).thenReturn(languageDTO);
+        when(modelMapper.map(languageDTO, Language.class)).thenReturn(language);
+
+        when(habitRepo.save(habit)).thenReturn(habit);
+        when(modelMapper.map(habit, HabitManagementDto.class)).thenReturn(habitManagementDtoWithDefaultImage);
+
+        var result = managementHabitService.saveHabitAndTranslations(habitManagementDtoWithoutImage, emptyImage);
+
+        assertEquals(AppConstant.DEFAULT_HABIT_IMAGE, result.getImage());
+
+        verify(languageService).findByCode(LANGUAGE_CODE_EN);
+        verify(modelMapper).map(languageDTO, Language.class);
+        verify(habitRepo).save(habit);
+        verify(modelMapper).map(habit, HabitManagementDto.class);
+        verify(emptyImage).isEmpty();
+    }
 }

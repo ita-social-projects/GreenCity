@@ -73,6 +73,7 @@ import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
@@ -1388,6 +1389,76 @@ public class ModelUtils {
             .id(1L)
             .image("image")
             .habitTranslations(null)
+            .build();
+    }
+
+    public static HabitManagementDto getHabitManagementDtoWithTranslation() {
+        return HabitManagementDto.builder()
+            .id(1L)
+            .image("https://example.com/sample-image.jpg")
+            .complexity(2)
+            .habitTranslations(getHabitTranslationManagementDtoList())
+            .defaultDuration(21)
+            .build();
+    }
+
+    public static List<HabitTranslationManagementDto> getHabitTranslationManagementDtoList() {
+        return List.of(
+            HabitTranslationManagementDto.builder()
+                .id(1L)
+                .name("Пийте воду")
+                .habitItem("Вода бутильована")
+                .description("Пийте не менше 8 склянок води щодня.")
+                .languageCode("ua")
+                .build(),
+            HabitTranslationManagementDto.builder()
+                .id(2L)
+                .name("Drink Water")
+                .habitItem("Water Bottle")
+                .description("Drink at least 8 glasses of water daily.")
+                .languageCode("en")
+                .build());
+    }
+
+    public static List<HabitTranslation> getHabitTranslationList() {
+        return List.of(
+            HabitTranslation.builder()
+                .id(1L)
+                .name("Пийте воду")
+                .habitItem("Вода бутильована")
+                .description("Пийте не менше 8 склянок води щодня.")
+                .language(getLanguage())
+                .build(),
+            HabitTranslation.builder()
+                .id(2L)
+                .name("Drink Water")
+                .habitItem("Water Bottle")
+                .description("Drink at least 8 glasses of water daily.")
+                .language(getLanguage())
+                .build());
+    }
+
+    public static HabitManagementDto getHabitManagementDtoWithoutImage() {
+        return HabitManagementDto.builder().id(1L)
+            .image(null)
+            .habitTranslations(List.of(
+                HabitTranslationManagementDto.builder().habitItem("Item").description("Description").languageCode("en")
+                    .name("Name").build()))
+            .build();
+    }
+
+    public static HabitManagementDto getHabitManagementDtoWithDefaultImage() {
+        return HabitManagementDto.builder().id(1L)
+            .image(AppConstant.DEFAULT_HABIT_IMAGE)
+            .habitTranslations(List.of(
+                HabitTranslationManagementDto.builder().habitItem("Item").description("Description").languageCode("en")
+                    .name("Name").build()))
+            .build();
+    }
+
+    public static Habit getHabitWithDefaultImage() {
+        return Habit.builder()
+            .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .build();
     }
 
