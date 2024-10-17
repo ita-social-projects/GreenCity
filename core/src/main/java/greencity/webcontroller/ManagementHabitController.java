@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -134,7 +135,7 @@ public class ManagementHabitController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
-    @PostMapping("/save")
+    @PostMapping(path = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public GenericResponseDto save(@Valid @RequestPart HabitManagementDto habitManagementDto,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
