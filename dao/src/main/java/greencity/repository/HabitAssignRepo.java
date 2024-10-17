@@ -4,10 +4,6 @@ import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +12,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
@@ -287,7 +287,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * Method to find all habit assigns by status.
      *
      * @param status {@link HabitAssignStatus} status of habit assign.
-     *
      * @return list of {@link HabitAssign} instances.
      * @author Vira Maksymets
      */
@@ -302,7 +301,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * Method to find amount of users that acquired habit.
      *
      * @param habitId {@link Habit} id.
-     *
      * @return Long.
      * @author Oleh Kulbaba
      */
@@ -425,4 +423,22 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
             AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')
         """)
     List<HabitAssign> findByUserIdsAndHabitId(List<Long> userIds, Long habitId);
+
+    /**
+     * Returns a list of HabitAssign objects that have last day of primary duration
+     * to send notification to user.
+     *
+     * @return list of HabitAssign objects that meet the specified conditions
+     */
+    @Query(value = """
+            SELECT ha
+            FROM HabitAssign ha
+            LEFT JOIN Notification n ON n.targetId = ha.id AND n.notificationType = 'HABIT_LAST_DAY_OF_PRIMARY_DURATION'
+            WHERE ha.status = 'INPROGRESS'
+            AND (CAST(ha.workingDays AS float) / ha.duration) >= 0.2
+            AND (CAST(ha.workingDays AS float) / ha.duration) < 0.8
+            AND (CAST(ha.workingDays + 1 AS float) / ha.duration) >= 0.8
+            AND n.id IS NULL
+        """)
+    List<HabitAssign> getHabitAssignsWithLastDayOfPrimaryDurationToMessage();
 }

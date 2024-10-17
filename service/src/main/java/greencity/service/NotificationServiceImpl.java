@@ -195,6 +195,8 @@ public class NotificationServiceImpl implements NotificationService {
         sendScheduledNotifications(NotificationType.EVENT_UPDATED, EmailPreference.SYSTEM, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_JOINED);
         sendScheduledNotifications(NotificationType.EVENT_JOINED, EmailPreference.SYSTEM, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_LAST_DAY_OF_PRIMARY_DURATION);
+        sendScheduledNotifications(NotificationType.HABIT_LAST_DAY_OF_PRIMARY_DURATION, EmailPreference.SYSTEM, now);
     }
 
     private void sendScheduledNotifications(NotificationType type, EmailPreference emailPreference, LocalDateTime now) {
@@ -271,7 +273,8 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationType.EVENT_CANCELED,
             NotificationType.EVENT_NAME_UPDATED,
             NotificationType.EVENT_UPDATED,
-            NotificationType.EVENT_JOINED);
+            NotificationType.EVENT_JOINED,
+            NotificationType.HABIT_LAST_DAY_OF_PRIMARY_DURATION);
         List<NotificationType> places = List.of(
             NotificationType.PLACE_STATUS,
             NotificationType.PLACE_ADDED);

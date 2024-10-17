@@ -476,12 +476,16 @@ class NotificationServiceImplTest {
         when(notificationRepo
             .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_JOINED))
             .thenReturn(Collections.singletonList(notification));
+        when(notificationRepo
+            .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(
+                NotificationType.HABIT_LAST_DAY_OF_PRIMARY_DURATION))
+            .thenReturn(Collections.singletonList(notification));
         when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(eq(targetUser.getId()),
             eq(EmailPreference.SYSTEM), any())).thenReturn(true);
         notificationService.sendSystemNotificationsScheduledEmail();
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
-            .untilAsserted(() -> verify(restClient, times(6)).sendScheduledEmailNotification(captor.capture()));
+            .untilAsserted(() -> verify(restClient, times(7)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
             assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
