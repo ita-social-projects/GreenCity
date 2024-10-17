@@ -16,13 +16,16 @@ import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -231,11 +234,25 @@ class UserNotificationServiceImplTest {
 
     @Test
     void deleteNotificationTest() {
+        Long notificationId = 1L;
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(true);
 
-        userNotificationService.deleteNotification(getPrincipal(), 1L);
+        userNotificationService.deleteNotification(getPrincipal(), notificationId);
 
         verify(userService).findByEmail("danylo@gmail.com");
+        verify(notificationRepo).existsByIdAndTargetUserId(notificationId, testUserVo.getId());
+    }
+
+    @Test
+    void deleteNonExistentNotificationAndGetNotFoundExceptionTest() {
+        Long notificationId = 1L;
+        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(false);
+
+        Principal principal = getPrincipal();
+        assertThrows(NotFoundException.class,
+            () -> userNotificationService.deleteNotification(principal, notificationId));
     }
 
     @Test
