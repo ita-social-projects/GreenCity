@@ -282,7 +282,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     /**
      * {@inheritDoc}
      */
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 8 * * *")
     @Override
     public void checkLastDayOfHabitPrimaryDurationToMessage() {
         habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage()
