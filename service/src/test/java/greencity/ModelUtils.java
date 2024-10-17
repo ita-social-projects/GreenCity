@@ -2953,9 +2953,9 @@ public class ModelUtils {
 
     public static SocialNetworkImage getSocialNetworkImage() {
         return SocialNetworkImage.builder()
-                .id(1L)
-                .hostPath("hostPath")
-                .imagePath("imagePath")
-                .build();
+            .id(1L)
+            .hostPath("hostPath")
+            .imagePath("imagePath")
+            .build();
     }
 }
