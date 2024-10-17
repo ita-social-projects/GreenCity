@@ -118,4 +118,14 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
         Long targetUserId,
         NotificationType notificationType,
         Long targetId);
+
+    /**
+     * Checks if a notification with the specified ID exists for the specified user.
+     *
+     * @param notificationId the ID of the notification to check
+     * @param targetUserId   the ID of the user for whom the notification belongs
+     * @return true if the notification with the specified ID exists for the user,
+     *         false otherwise
+     */
+    boolean existsByIdAndTargetUserId(Long notificationId, Long targetUserId);
 }
