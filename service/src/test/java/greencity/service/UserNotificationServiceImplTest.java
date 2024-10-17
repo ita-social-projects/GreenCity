@@ -19,6 +19,7 @@ import greencity.enums.ProjectName;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -249,8 +250,9 @@ class UserNotificationServiceImplTest {
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(false);
 
+        Principal principal = getPrincipal();
         assertThrows(NotFoundException.class,
-            () -> userNotificationService.deleteNotification(getPrincipal(), notificationId));
+            () -> userNotificationService.deleteNotification(principal, notificationId));
     }
 
     @Test
