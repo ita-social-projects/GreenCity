@@ -134,11 +134,32 @@ class SocialNetworkImageServiceImplTest {
     @Test
     void testDeleteAll() {
         List<Long> listIds = Arrays.asList(1L, 2L, 3L);
+        SocialNetworkImage image1 = SocialNetworkImage.builder()
+                .id(1L)
+                .hostPath("hostPath")
+                .imagePath("imagePath")
+                .build();
+        SocialNetworkImage image2 = SocialNetworkImage.builder()
+                .id(2L)
+                .hostPath("hostPath2")
+                .imagePath("imagePath2")
+                .build();
+        SocialNetworkImage image3 = SocialNetworkImage.builder()
+                .id(3L)
+                .hostPath("hostPath3")
+                .imagePath("imagePath3")
+                .build();
+        List<SocialNetworkImage> images = List.of(image1, image2, image3);
+        when(socialNetworkImageRepo.findAllById(listIds)).thenReturn(images);
         socialNetworkImageService.deleteAll(listIds);
 
         verify(socialNetworkImageRepo).deleteById(listIds.get(0));
         verify(socialNetworkImageRepo).deleteById(listIds.get(1));
         verify(socialNetworkImageRepo).deleteById(listIds.get(2));
+
+        verify(fileService).delete(image1.getImagePath());
+        verify(fileService).delete(image2.getImagePath());
+        verify(fileService).delete(image3.getImagePath());
     }
 
     @Test

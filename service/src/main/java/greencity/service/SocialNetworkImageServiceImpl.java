@@ -128,7 +128,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     @Override
     public void deleteAll(List<Long> listId) {
+        List<SocialNetworkImage> images = socialNetworkImageRepo.findAllById(listId);
+        List<String> paths = images.stream().map(image -> image.getImagePath()).toList();
         listId.forEach(socialNetworkImageRepo::deleteById);
+        paths.forEach(fileService::delete);
     }
 
     @Override
