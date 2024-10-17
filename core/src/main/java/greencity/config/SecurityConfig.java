@@ -46,7 +46,8 @@ public class SecurityConfig {
     private static final String CATEGORIES = "/categories";
     private static final String ECO_NEWS = "/eco-news";
     private static final String ECO_NEWS_ID = "/{ecoNewsId}";
-    private static final String ECO_NEWS_COMMENTS = ECO_NEWS + ECO_NEWS_ID + COMMENTS;
+    private static final String ECO_NEWS_ID_COMMENTS = ECO_NEWS + ECO_NEWS_ID + COMMENTS;
+    private static final String ECO_NEWS_COMMENTS = ECO_NEWS + COMMENTS;
     private static final String REPLIES = "/replies";
     private static final String LIKE = "/like";
     private static final String LIKES = "/likes";
@@ -165,8 +166,8 @@ public class SecurityConfig {
                     ECO_NEWS + ECO_NEWS_ID,
                     ECO_NEWS + ECO_NEWS_ID + LIKES + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES + COUNT,
-                    ECO_NEWS_COMMENTS,
-                    ECO_NEWS_COMMENTS + ACTIVE,
+                    ECO_NEWS_ID_COMMENTS,
+                    ECO_NEWS_ID_COMMENTS + ACTIVE,
                     ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
                     ECO_NEWS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE + COUNT,
                     ECO_NEWS + COMMENTS,
@@ -174,12 +175,12 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS + COMMENTS + COMMENT_ID + LIKES + COUNT,
                     ECO_NEWS + COMMENTS + ACTIVE,
-                    ECO_NEWS_COMMENTS + COUNT,
+                    ECO_NEWS_ID_COMMENTS + COUNT,
                     EVENTS_ID_COMMENTS,
                     EVENTS_ID_COMMENTS + COMMENT_ID,
                     EVENTS_COMMENTS + COMMENT_ID,
                     EVENTS_ID_COMMENTS + COMMENT_ID + COUNT,
-                    EVENTS_ID_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
+                    EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES + ACTIVE,
                     EVENTS_COMMENTS + PARENT_COMMENT_ID + REPLIES + COUNT,
                     EVENTS_COMMENTS + LIKE,
                     EVENTS_COMMENTS + COMMENT_ID + LIKES + COUNT,
@@ -279,8 +280,8 @@ public class SecurityConfig {
                     ECO_NEWS + ECO_NEWS_ID + LIKES,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES,
                     ECO_NEWS + COMMENTS + LIKE,
-                    ECO_NEWS_COMMENTS,
-                    ECO_NEWS_COMMENTS + COMMENT_ID + LIKES,
+                    ECO_NEWS_ID_COMMENTS,
+                    ECO_NEWS_ID_COMMENTS + COMMENT_ID + LIKES,
                     EVENTS_ID_COMMENTS,
                     EVENTS_COMMENTS + LIKE + COMMENT_ID,
                     EVENTS,
@@ -318,7 +319,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
                     ECO_NEWS + ECO_NEWS_ID,
-                    ECO_NEWS_COMMENTS + COMMENT_ID,
+                    ECO_NEWS_ID_COMMENTS + COMMENT_ID,
                     "/favorite_place/",
                     "/user/profile",
                     EVENTS_COMMENTS + COMMENT_ID,
@@ -350,7 +351,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
                     ECO_NEWS + COMMENTS + ECO_NEWS_ID,
-                    ECO_NEWS_COMMENTS + COMMENT_ID,
+                    ECO_NEWS_ID_COMMENTS + COMMENT_ID,
                     HABITS + "/comments/{id}",
                     CUSTOM_SHOPPING_LIST_ITEMS,
                     CUSTOM_SHOPPING_LIST_URL,
