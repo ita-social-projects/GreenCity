@@ -92,11 +92,11 @@
                                    th:text="${socialnetworkimage.hostPath}"></a></td>
                             <td><img th:src="${socialnetworkimage.imagePath}" th:width="100" th:height="100"></td>
                             <td>
-                                <a th:href="@{/management/socialnetworkimages/find/(id=${socialnetworkimage.getId()})}"
+                                <a th:href="@{/management/socialnetworkimages/find(id=${socialnetworkimage.getId()})}"
                                    class="edit eBtn">
                                     <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
                                 </a>
-                                <a th:href="@{/management/socialnetworkimages/delete/(id=${socialnetworkimage.getId()})}"
+                                <a th:href="@{/management/socialnetworkimages/delete(id=${socialnetworkimage.getId()})}"
                                    class="delete eDelBtn" data-toggle="modal">
                                     <i class="material-icons" data-toggle="tooltip"
                                        th:title="#{greenCity.pages.delete}">&#xE872;</i>
