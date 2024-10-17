@@ -13,6 +13,13 @@ import greencity.enums.ProjectName;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,13 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link UserNotificationService}.
@@ -247,6 +247,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void deleteNotification(Principal principal, Long notificationId) {
         Long userId = userService.findByEmail(principal.getName()).getId();
+        if (!notificationRepo.existsByIdAndTargetUserId(notificationId, userId)) {
+            throw new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId);
+        }
         notificationRepo.deleteNotificationByIdAndTargetUserId(notificationId, userId);
     }
 
@@ -418,6 +421,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             case HABIT_COMMENT_LIKE, EVENT_COMMENT_LIKE, ECONEWS_COMMENT_LIKE -> "comment";
             case ECONEWS_LIKE -> "news";
             case HABIT_LIKE -> "habit";
+            case EVENT_LIKE -> "event";
             default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         };
     }

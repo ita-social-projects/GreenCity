@@ -420,23 +420,8 @@ function removeFilter(filterName) {
 
 function orderByNameField(sortOrder, fieldName) {
     const urlSearch = getUrlSearchParams();
-    const sortParams = urlSearch.getAll("sort").filter(Boolean);
-    const fieldIndex = sortParams.findIndex(param => param.startsWith(fieldName + ','));
-
-    if (fieldIndex !== -1) {
-        let [field, order] = sortParams[fieldIndex].split(',');
-        if (order === sortOrder) {
-            sortParams.splice(fieldIndex, 1);
-        } else {
-            sortParams[fieldIndex] = `${fieldName},${sortOrder}`;
-        }
-    } else {
-        sortParams.push(`${fieldName},${sortOrder}`);
-    }
-
     urlSearch.delete("sort");
-    sortParams.forEach(param => urlSearch.append("sort", param));
-
+    urlSearch.append("sort", `${fieldName},${sortOrder}`);
     const url = "/management/places?";
     $.ajax({
         url: url + urlSearch.toString(),

@@ -16,13 +16,16 @@ import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -231,11 +234,25 @@ class UserNotificationServiceImplTest {
 
     @Test
     void deleteNotificationTest() {
+        Long notificationId = 1L;
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(true);
 
-        userNotificationService.deleteNotification(getPrincipal(), 1L);
+        userNotificationService.deleteNotification(getPrincipal(), notificationId);
 
         verify(userService).findByEmail("danylo@gmail.com");
+        verify(notificationRepo).existsByIdAndTargetUserId(notificationId, testUserVo.getId());
+    }
+
+    @Test
+    void deleteNonExistentNotificationAndGetNotFoundExceptionTest() {
+        Long notificationId = 1L;
+        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(false);
+
+        Principal principal = getPrincipal();
+        assertThrows(NotFoundException.class,
+            () -> userNotificationService.deleteNotification(principal, notificationId));
     }
 
     @Test
@@ -438,6 +455,26 @@ class UserNotificationServiceImplTest {
             (String) method.invoke(userNotificationService, actionUsers, habitTitle, NotificationType.HABIT_LIKE);
 
         assertEquals("Petro, Vasyl and other users like your habit Test Habit.", result);
+    }
+
+    @Test
+    @DisplayName("createLikeNotificationMessage with more than two users")
+    void testCreateLikeNotificationMessage_FourUsers() throws Exception {
+        User user1 = User.builder().name("Taras").build();
+        User user2 = User.builder().name("Petro").build();
+        User user3 = User.builder().name("Vasyl").build();
+        User user4 = User.builder().name("Ivan").build();
+
+        List<User> actionUsers = List.of(user1, user2, user3, user4);
+        String eventTitle = "Test Event";
+
+        Method method = UserNotificationServiceImpl.class.getDeclaredMethod("createLikeNotificationMessage", List.class,
+            String.class, NotificationType.class);
+        method.setAccessible(true);
+        String result =
+            (String) method.invoke(userNotificationService, actionUsers, eventTitle, NotificationType.EVENT_LIKE);
+
+        assertEquals("Vasyl, Ivan and other users like your event Test Event.", result);
     }
 
     @Test

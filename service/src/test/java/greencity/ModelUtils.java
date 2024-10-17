@@ -150,6 +150,7 @@ import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.PlaceComment;
 import greencity.entity.ShoppingListItem;
+import greencity.entity.SocialNetworkImage;
 import greencity.entity.Specification;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -1017,7 +1018,14 @@ public class ModelUtils {
 
     public static FactOfTheDay getFactOfTheDay() {
         return new FactOfTheDay(1L, "Fact of the day",
-            Collections.singletonList(ModelUtils.getFactOfTheDayTranslation()), ZonedDateTime.now(),
+            List.of(ModelUtils.getFactOfTheDayTranslation(), FactOfTheDayTranslation.builder()
+                .id(2L)
+                .content("Контент")
+                .language(new Language(2L, "ua", Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList()))
+                .factOfTheDay(null)
+                .build()),
+            ZonedDateTime.now(),
             Collections.emptySet());
     }
 
@@ -1027,8 +1035,7 @@ public class ModelUtils {
 
     public static FactOfTheDayPostDTO getFactOfTheDayPostDto() {
         return new FactOfTheDayPostDTO(1L, "name",
-            Collections.singletonList(
-                new FactOfTheDayTranslationEmbeddedPostDTO("content", AppConstant.DEFAULT_LANGUAGE_CODE)),
+            Collections.singletonList(getFactOfTheDayTranslationEmbeddedPostDTO()),
             Collections.singletonList(25L));
     }
 
@@ -1156,7 +1163,14 @@ public class ModelUtils {
     }
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
-        return new FactOfTheDayTranslationDTO(1L, "content");
+        return new FactOfTheDayTranslationDTO(1L, List.of(getFactOfTheDayTranslationEmbeddedPostDTO()));
+    }
+
+    public static FactOfTheDayTranslationEmbeddedPostDTO getFactOfTheDayTranslationEmbeddedPostDTO() {
+        return FactOfTheDayTranslationEmbeddedPostDTO.builder()
+            .content("content")
+            .languageCode(AppConstant.DEFAULT_LANGUAGE_CODE)
+            .build();
     }
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
@@ -2935,5 +2949,29 @@ public class ModelUtils {
 
     public static Page<UserManagementVO> getPage() {
         return new PageImpl<>(getListUserManagementVO(), getSortedPageable(), 1);
+    }
+
+    public static SocialNetworkImage getSocialNetworkImage() {
+        return SocialNetworkImage.builder()
+            .id(1L)
+            .hostPath("hostPath")
+            .imagePath("imagePath")
+            .build();
+    }
+
+    public static SocialNetworkImage getSocialNetworkImageId2() {
+        return SocialNetworkImage.builder()
+            .id(2L)
+            .hostPath("hostPath2")
+            .imagePath("imagePath2")
+            .build();
+    }
+
+    public static SocialNetworkImage getSocialNetworkImageId3() {
+        return SocialNetworkImage.builder()
+            .id(3L)
+            .hostPath("hostPath3")
+            .imagePath("imagePath3")
+            .build();
     }
 }

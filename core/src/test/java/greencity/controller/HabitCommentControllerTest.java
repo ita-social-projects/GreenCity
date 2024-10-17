@@ -130,7 +130,7 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void saveBadRequestTest() {
         mockMvc.perform(post(HABIT_LINK + "/{habitId}/comments", 1)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
             .content("{}"))
             .andExpect(status().isBadRequest());
     }
