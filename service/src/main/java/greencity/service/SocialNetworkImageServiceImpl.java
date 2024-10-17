@@ -115,7 +115,11 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     @Override
     public void delete(Long id) {
+        SocialNetworkImage image = socialNetworkImageRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.SOCIAL_NETWORK_IMAGE_FOUND_BY_ID + id));
+        String path = image.getImagePath();
         socialNetworkImageRepo.deleteById(id);
+        fileService.delete(path);
     }
 
     /**
@@ -125,7 +129,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     @Override
     public void deleteAll(List<Long> listId) {
+        List<SocialNetworkImage> images = socialNetworkImageRepo.findAllById(listId);
+        List<String> paths = images.stream().map(image -> image.getImagePath()).toList();
         listId.forEach(socialNetworkImageRepo::deleteById);
+        paths.forEach(fileService::delete);
     }
 
     @Override
