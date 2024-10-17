@@ -24,6 +24,7 @@ import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -63,6 +64,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+import static greencity.ModelUtils.getAuthorVO;
+import static greencity.ModelUtils.getEvent;
+import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.testUserVo;
 import static greencity.ModelUtils.getEventPreviewDtos;
 import static greencity.ModelUtils.getFilterEventDto;
@@ -1100,5 +1104,127 @@ class EventServiceImplTest {
 
         assertEquals(5L, countOfOrganizedEventsByUserId);
         verify(eventRepo).countDistinctByOrganizerId(userId);
+    }
+
+    @Test
+    void likeTest() {
+        UserVO userVO = getUserVO();
+        UserVO eventAuthorVO = getAuthorVO();
+        User user = getUser();
+        User eventAuthor = getUser();
+        Event event = getEvent();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_EVENT").points(1).build();
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+        when(userRepo.findById(eventAuthor.getId())).thenReturn(Optional.of(eventAuthor));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventAuthor, UserVO.class)).thenReturn(eventAuthorVO);
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT")).thenReturn(ratingPoints);
+
+        eventService.like(event.getId(), userVO);
+
+        assertTrue(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(userNotificationService, times(1)).createOrUpdateLikeNotification(
+            eventAuthorVO, userVO, event.getId(), event.getTitle(), NotificationType.EVENT_LIKE, true);
+        verify(eventRepo).findById(event.getId());
+        verify(userRepo).findById(eventAuthor.getId());
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(eventAuthor, UserVO.class);
+    }
+
+    @Test
+    void removeLikeTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        event.getUsersLikedEvents().add(user);
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("UNDO_LIKE_EVENT").points(-1).build();
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(modelMapper.map(userVO, User.class)).thenReturn(event.getOrganizer());
+        when(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT")).thenReturn(ratingPoints);
+
+        eventService.like(event.getId(), userVO);
+        assertFalse(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(userNotificationService, times(1)).removeActionUserFromNotification(
+            modelMapper.map(user, UserVO.class), userVO, event.getId(), NotificationType.EVENT_LIKE);
+        verify(eventRepo).findById(event.getId());
+        verify(userRepo).findById(user.getId());
+    }
+
+    @Test
+    void likeEventNotFoundTest() {
+        UserVO userVO = getUserVO();
+        Event event = getEvent();
+        Long eventId = event.getId();
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.like(eventId, userVO));
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
+
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void likeEventUserNotFoundTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+        Long eventId = event.getId();
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.like(eventId, userVO));
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId(), exception.getMessage());
+
+        verify(eventRepo).findById(event.getId());
+        verify(userRepo).findById(user.getId());
+    }
+
+    @Test
+    void likeWithNullEventOrganizerTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+
+        event.setOrganizer(null);
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        eventService.like(event.getId(), userVO);
+
+        assertTrue(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(eventRepo).findById(event.getId());
+        verify(userRepo, never()).findById(anyLong());
+        verify(userNotificationService, never()).removeActionUserFromNotification(any(), any(), anyLong(), any());
+    }
+
+    @Test
+    void removeLikeWithNullEventOrganizerTest() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Event event = getEvent();
+
+        event.setOrganizer(null);
+        event.getUsersLikedEvents().add(user);
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+
+        eventService.like(event.getId(), userVO);
+
+        assertFalse(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+
+        verify(eventRepo).findById(event.getId());
+        verify(userRepo, never()).findById(anyLong());
+        verify(userNotificationService, never()).removeActionUserFromNotification(any(), any(), anyLong(), any());
     }
 }

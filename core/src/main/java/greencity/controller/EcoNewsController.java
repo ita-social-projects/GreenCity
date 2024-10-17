@@ -76,7 +76,7 @@ public class EcoNewsController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EcoNewsGenericDto> save(
         @Parameter(description = SwaggerExampleModel.ADD_ECO_NEWS_REQUEST,
             required = true) @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
@@ -102,8 +102,7 @@ public class EcoNewsController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @PutMapping(path = "/{ecoNewsId}", consumes = {MediaType.APPLICATION_JSON_VALUE,
-        MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/{ecoNewsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EcoNewsGenericDto> update(
         @Parameter(description = SwaggerExampleModel.UPDATE_ECO_NEWS,
             required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,

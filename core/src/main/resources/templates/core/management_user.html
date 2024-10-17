@@ -427,7 +427,7 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="userStatus">Status</label>
-                                                            <input th:value="${user.getUserStatus().name()}" type="text" class="form-control" id="userStatus" name="userStatus" required readonly>
+                                                            <input th:value="${user.getUserStatus().name()}" type="text" class="form-control" id="userStatus" name="userStatus" required>
                                                         </div>
                                                         <div class="form-group">
                                                             <span th:id="serverErrorEditModal+${user.getId()}" class="errorSpan"></span>
@@ -446,37 +446,41 @@
                             </tr>
                         </th:block>
                     </table>
-                    <!-- Start of Paging -->
-<!--                    <div class="clearfix" th:if="${users.getPage().size() ne 0}">-->
-<!--                        <ul class="pagination">-->
-<!--                            <li class="page-item"-->
-<!--                                th:classappend="${!users.isFirst()} ? '' : 'disabled'">-->
-<!--                                <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}"-->
-<!--                                   th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${0}, sort=${sortModel}, pageSize=${pageSize})}"><i-->
-<!--                                        class="arrow fas fa-chevron-left"></i></a>-->
-<!--                                <a class="page-link" rel="tooltip" th:if="${users.isFirst()}">-->
-<!--                                    <i-->
-<!--                                        class="arrow fas fa-chevron-left"></i></a>-->
-<!--                            </li>-->
+                    <div class="clearfix" th:if="${users.getPage().size() > 0}">
+                        <ul class="pagination">
+                            <!-- Previous page button -->
+                            <li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
+                                <a class="page-link" th:if="${!isFirst}"
+                                   th:href="@{/management/users(page=${previousPage}, size=${pageSize}, sort=${sortModel})}">
+                                    <i class="arrow fas fa-chevron-left"></i>
+                                </a>
+                                <a class="page-link" th:if="${isFirst}">
+                                    <i class="arrow fas fa-chevron-left"></i>
+                                </a>
+                            </li>
 
-<!--                            <li class="page-item"-->
-<!--                                th:if="${pageNumber > -1 && pageNumber < users.getTotalPages()}"-->
-<!--                                th:classappend="${pageNumber == users.getNumber()} ? 'active' : ''"-->
-<!--                                th:each="pageNumber : ${#numbers.sequence(users.getNumber()-3, users.getNumber()+3)}">-->
-<!--                                <a class="page-link"-->
-<!--                           th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize})}">[[${pageNumber}+1]]</a>-->
-<!--                            </li>-->
+                            <!-- Page numbers -->
+                            <li class="page-item" th:each="pageNum : ${pageNumbers}"
+                                th:if="${pageNum >= 0 && pageNum < users.getTotalPages()}"
+                                th:classappend="${pageNum == pageNumber} ? 'active' : ''">
+                                <a class="page-link"
+                                   th:href="@{/management/users(page=${pageNum}, size=${pageSize}, sort=${sortModel})}">
+                                    [[${pageNum + 1}]]
+                                </a>
+                            </li>
 
-<!--                            <li class="page-item"-->
-<!--                                th:classappend="${!users.isLast()} ? '' : 'disabled'">-->
-<!--                                <a class="page-link" rel="tooltip" th:if="${!users.isLast()}"-->
-<!--                                   th:href="@{/management/users?page={id}(id=${users.getTotalPages()-1})}"><i-->
-<!--                                        class="arrow fas fa-chevron-right"></i></a>-->
-<!--                                <a class="page-link" rel="tooltip" th:if="${users.isLast()}"><i-->
-<!--                                        class="arrow fas fa-chevron-right"></i></a>-->
-<!--                            </li>-->
-<!--                        </ul>-->
-<!--                    </div>-->
+                            <!-- Next page button -->
+                            <li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
+                                <a class="page-link" th:if="${!isLast}"
+                                   th:href="@{/management/users(page=${nextPage}, size=${pageSize}, sort=${sortModel})}">
+                                    <i class="arrow fas fa-chevron-right"></i>
+                                </a>
+                                <a class="page-link" th:if="${isLast}">
+                                    <i class="arrow fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <!-- End of Paging -->
                     <!-- Deactivate user Modal HTML -->
                     <div id="deactivateUserModal" class="modal fade">
@@ -557,7 +561,7 @@
                                     <div class="modal-footer">
                                         <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
                                                th:value="#{greenCity.pages.popup.cancel.}">
-                                        <a href="" id="deactivateAllSubmit" class="btn btn-remove" style="margin-top: 25px;">
+                                        <a href="" id="deactivateAllSubmit" class="btn btn-remove">
                                             <div>[[#{greenCity.user.page.deactivated}]]</div>
                                         </a>
                                     </div>

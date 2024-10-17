@@ -12,10 +12,10 @@ import greencity.entity.User;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.NotificationRepo;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +36,6 @@ import java.util.ResourceBundle;
 /**
  * Implementation of {@link UserNotificationService}.
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -252,6 +251,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void deleteNotification(Principal principal, Long notificationId) {
         Long userId = userService.findByEmail(principal.getName()).getId();
+        if (!notificationRepo.existsByIdAndTargetUserId(notificationId, userId)) {
+            throw new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId);
+        }
         notificationRepo.deleteNotificationByIdAndTargetUserId(notificationId, userId);
     }
 
@@ -261,7 +263,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void unreadNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
-            .orElseThrow().getTargetUser().getId();
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId))
+            .getTargetUser().getId();
         notificationRepo.markNotificationAsNotViewed(notificationId);
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
@@ -273,7 +276,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void viewNotification(Long notificationId) {
         Long userId = notificationRepo.findById(notificationId)
-            .orElseThrow().getTargetUser().getId();
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId))
+            .getTargetUser().getId();
         notificationRepo.markNotificationAsViewed(notificationId);
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
@@ -444,6 +448,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             case HABIT_COMMENT_LIKE, EVENT_COMMENT_LIKE, ECONEWS_COMMENT_LIKE -> "comment";
             case ECONEWS_LIKE -> "news";
             case HABIT_LIKE -> "habit";
+            case EVENT_LIKE -> "event";
             default -> throw new BadRequestException(ErrorMessage.UNSUPPORTED_ARTICLE_TYPE);
         };
     }

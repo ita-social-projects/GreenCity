@@ -283,8 +283,7 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
-    @PostMapping(value = "/custom",
-        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/custom", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomHabitDtoResponse> addCustomHabit(
         @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
             required = true) @RequestPart @Valid CustomHabitDtoRequest request,
@@ -341,7 +340,7 @@ public class HabitController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PutMapping(value = "/update/{habitId}")
+    @PutMapping(value = "/update/{habitId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
         @RequestPart @Valid CustomHabitDtoRequest request, @Parameter(hidden = true) Principal principal,
         @Parameter(description = "Image of habit") @ImageValidation @RequestPart(

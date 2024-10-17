@@ -732,6 +732,45 @@ public class EventServiceImpl implements EventService {
         return eventRepo.countDistinctByOrganizerId(userId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void like(Long eventId, UserVO userVO) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        User eventAuthor = null;
+        if (event.getOrganizer() != null) {
+            eventAuthor = userRepo.findById(event.getOrganizer().getId()).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + event.getOrganizer().getId()));
+        }
+        if (event.getUsersLikedEvents().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            event.getUsersLikedEvents().removeIf(user -> user.getId().equals(userVO.getId()));
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_EVENT, AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("UNDO_LIKE_EVENT"),
+                userVO);
+            if (eventAuthor != null) {
+                userNotificationService.removeActionUserFromNotification(modelMapper.map(eventAuthor, UserVO.class),
+                    userVO, eventId, NotificationType.EVENT_LIKE);
+            }
+        } else {
+            event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_EVENT, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT"), userVO);
+            if (eventAuthor != null) {
+                sendEventLikeNotification(eventAuthor, userVO, eventId, event);
+            }
+        }
+        eventRepo.save(event);
+    }
+
+    private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
+        userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
+            actionUser, eventId, event.getTitle(), NotificationType.EVENT_LIKE, true);
+    }
+
     private List<EventDto> mapTupleListToEventDtoList(List<Tuple> page, List<Long> sortedIds) {
         Map<Long, EventDto> eventsMap = new HashMap<>();
         Map<Long, Set<TagDto>> tagsMap = new HashMap<>();
