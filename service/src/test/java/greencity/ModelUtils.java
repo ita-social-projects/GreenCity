@@ -2958,4 +2958,20 @@ public class ModelUtils {
             .imagePath("imagePath")
             .build();
     }
+
+    public static SocialNetworkImage getSocialNetworkImageId2() {
+        return SocialNetworkImage.builder()
+            .id(2L)
+            .hostPath("hostPath2")
+            .imagePath("imagePath2")
+            .build();
+    }
+
+    public static SocialNetworkImage getSocialNetworkImageId3() {
+        return SocialNetworkImage.builder()
+            .id(3L)
+            .hostPath("hostPath3")
+            .imagePath("imagePath3")
+            .build();
+    }
 }

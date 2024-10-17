@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
@@ -26,6 +25,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
+import static greencity.ModelUtils.getSocialNetworkImage;
+import static greencity.ModelUtils.getSocialNetworkImageId2;
+import static greencity.ModelUtils.getSocialNetworkImageId3;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -116,10 +119,11 @@ class SocialNetworkImageServiceImplTest {
     @Test
     void testDelete() {
         Long idToDelete = 1L;
-        SocialNetworkImage image = ModelUtils.getSocialNetworkImage();
+        SocialNetworkImage image = getSocialNetworkImage();
         when(socialNetworkImageRepo.findById(idToDelete)).thenReturn(Optional.of(image));
         socialNetworkImageService.delete(idToDelete);
 
+        verify(socialNetworkImageRepo).findById(idToDelete);
         verify(socialNetworkImageRepo).deleteById(idToDelete);
         verify(fileService).delete(image.getImagePath());
     }
@@ -129,30 +133,20 @@ class SocialNetworkImageServiceImplTest {
         Long idToDelete = 1L;
         when(socialNetworkImageRepo.findById(idToDelete)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> socialNetworkImageService.delete(idToDelete));
+        verify(socialNetworkImageRepo).findById(idToDelete);
     }
 
     @Test
     void testDeleteAll() {
         List<Long> listIds = Arrays.asList(1L, 2L, 3L);
-        SocialNetworkImage image1 = SocialNetworkImage.builder()
-            .id(1L)
-            .hostPath("hostPath")
-            .imagePath("imagePath")
-            .build();
-        SocialNetworkImage image2 = SocialNetworkImage.builder()
-            .id(2L)
-            .hostPath("hostPath2")
-            .imagePath("imagePath2")
-            .build();
-        SocialNetworkImage image3 = SocialNetworkImage.builder()
-            .id(3L)
-            .hostPath("hostPath3")
-            .imagePath("imagePath3")
-            .build();
+        SocialNetworkImage image1 = getSocialNetworkImage();
+        SocialNetworkImage image2 = getSocialNetworkImageId2();
+        SocialNetworkImage image3 = getSocialNetworkImageId3();
         List<SocialNetworkImage> images = List.of(image1, image2, image3);
         when(socialNetworkImageRepo.findAllById(listIds)).thenReturn(images);
         socialNetworkImageService.deleteAll(listIds);
 
+        verify(socialNetworkImageRepo).findAllById(listIds);
         verify(socialNetworkImageRepo).deleteById(listIds.get(0));
         verify(socialNetworkImageRepo).deleteById(listIds.get(1));
         verify(socialNetworkImageRepo).deleteById(listIds.get(2));
