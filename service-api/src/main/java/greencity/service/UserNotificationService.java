@@ -206,4 +206,10 @@ public interface UserNotificationService {
      */
     void createOrUpdateLikeNotification(UserVO targetUserVO, UserVO actionUserVO, Long newsId, String newsTitle,
         NotificationType notificationType, boolean isLike);
+
+    /**
+     * Method to send notification on last day of primary duration habit has 20%-79%
+     * successful progress.
+     */
+    void checkLastDayOfHabitPrimaryDurationToMessage();
 }
