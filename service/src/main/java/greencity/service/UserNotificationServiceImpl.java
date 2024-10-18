@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
@@ -12,12 +13,14 @@ import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.NotificationRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
@@ -44,6 +47,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final SimpMessagingTemplate messagingTemplate;
     private static final String TOPIC = "/topic/";
     private static final String NOTIFICATION = "/notification";
+    private final HabitAssignRepo habitAssignRepo;
 
     /**
      * {@inheritDoc}
@@ -277,6 +281,29 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         notificationRepo.markNotificationAsViewed(notificationId);
         long count = notificationRepo.countByTargetUserIdAndViewedIsFalse(userId);
         messagingTemplate.convertAndSend(TOPIC + userId + NOTIFICATION, count);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Scheduled(cron = "0 0 8 * * *")
+    @Override
+    public void checkLastDayOfHabitPrimaryDurationToMessage() {
+        habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage()
+            .forEach(habitAssign -> {
+                UserVO targetUser = modelMapper.map(habitAssign.getUser(), UserVO.class);
+                String habitTitle = habitAssign.getHabit()
+                    .getHabitTranslations()
+                    .stream()
+                    .filter(ht -> modelMapper.map(ht.getLanguage(), LanguageVO.class).getCode()
+                        .equals(targetUser.getLanguageVO().getCode()))
+                    .toList()
+                    .getFirst()
+                    .getName();
+
+                createNewNotification(targetUser, NotificationType.HABIT_LAST_DAY_OF_PRIMARY_DURATION,
+                    habitAssign.getId(), habitTitle);
+            });
     }
 
     private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications,
