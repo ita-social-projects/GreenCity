@@ -74,8 +74,8 @@ public class EventCommentController {
         @PathVariable Long eventId,
         @Valid @RequestPart AddCommentDtoRequest request,
         @Parameter(hidden = true) @CurrentUser UserVO user,
-        @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,
-            message = "Download up to 5 images") MultipartFile[] images,
+        @RequestPart(value = "images", required = false) @Nullable @Size(max = 5,
+            message = "Download up to 5 images") @ImageArrayValidation MultipartFile[] images,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -211,10 +211,9 @@ public class EventCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiPageable
-    @GetMapping("{eventId}/comments/{parentCommentId}/replies/active")
+    @GetMapping("/comments/{parentCommentId}/replies/active")
     public ResponseEntity<PageableDto<CommentDto>> findAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
-        @PathVariable Long eventId,
         @PathVariable Long parentCommentId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.ok()
