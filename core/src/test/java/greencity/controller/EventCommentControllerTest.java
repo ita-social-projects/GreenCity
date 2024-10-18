@@ -225,7 +225,6 @@ class EventCommentControllerTest {
     @SneakyThrows
     void findAllReplies() {
         Long parentCommentId = 1L;
-        Long eventId = 1L;
         int pageNumber = 0;
         int pageSize = 20;
         UserVO userVO = getUserVO();
@@ -243,8 +242,7 @@ class EventCommentControllerTest {
 
         mockMvc
             .perform(
-                get(EVENT_ID_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies/active?statuses=EDITED,ORIGINAL",
-                    eventId,
+                get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/active?statuses=EDITED,ORIGINAL",
                     parentCommentId)
                     .principal(principal)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -259,9 +257,8 @@ class EventCommentControllerTest {
     @SneakyThrows
     void findAllRepliesWithNotValidIdBadRequestTest() {
         String notValidId = "id";
-        Long eventId = 1L;
         mockMvc
-            .perform(get(EVENT_ID_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies/active", eventId, notValidId))
+            .perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/active", notValidId))
             .andExpect(status().isBadRequest());
     }
 
@@ -269,7 +266,6 @@ class EventCommentControllerTest {
     @SneakyThrows
     void findAllActiveRepliesWithNonexistentIdNotFoundTest() {
         Long parentCommentId = 1L;
-        Long eventId = 1L;
 
         int pageNumber = 0;
         int pageSize = 20;
@@ -287,8 +283,8 @@ class EventCommentControllerTest {
         Assertions.assertThatThrownBy(
             () -> mockMvc
                 .perform(get(
-                    EVENT_ID_COMMENT_CONTROLLER_LINK + "/{parentCommentId}/replies/active/?statuses=ORIGINAL,EDITED",
-                    eventId, parentCommentId)
+                    EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/active/?statuses=ORIGINAL,EDITED",
+                    parentCommentId)
                     .principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));

@@ -80,8 +80,8 @@ public class EcoNewsCommentController {
     @PostMapping(path = "/{ecoNewsId}/comments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AddCommentDtoResponse> save(@PathVariable Long ecoNewsId,
         @Valid @RequestPart AddCommentDtoRequest request,
-        @RequestPart(value = "images", required = false) @Nullable @ImageArrayValidation @Size(max = 5,
-            message = "Download up to 5 images") MultipartFile[] images,
+        @RequestPart(value = "images", required = false) @Nullable @Size(max = 5,
+            message = "Download up to 5 images") @ImageArrayValidation MultipartFile[] images,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity
@@ -123,10 +123,9 @@ public class EcoNewsCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @ApiPageable
-    @GetMapping("{ecoNewsId}/comments/{parentCommentId}/replies/active")
+    @GetMapping("/comments/{parentCommentId}/replies/active")
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
-        @PathVariable Long ecoNewsId,
         @PathVariable Long parentCommentId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
@@ -148,8 +147,8 @@ public class EcoNewsCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
-    @GetMapping("{ecoNewsId}/comments/{parentCommentId}/replies/active/count")
-    public int getCountOfActiveReplies(@PathVariable Long ecoNewsId, @PathVariable Long parentCommentId) {
+    @GetMapping("/comments/{parentCommentId}/replies/active/count")
+    public int getCountOfActiveReplies(@PathVariable Long parentCommentId) {
         return commentService.countAllActiveReplies(parentCommentId);
     }
 
