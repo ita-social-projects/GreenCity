@@ -122,7 +122,7 @@
                     <div class="row-box-and-sort">
                         <div class="main-search">
                             <form class="form-inline searching" method="get" th:action="@{/management/users}">
-                                <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}" name="query">
+                                <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search.detailed}" name="query">
                             </form>
                             <div>
                             <button class="filter-button" id="filter-button" onclick="openForm()">
@@ -561,7 +561,7 @@
                                     <div class="modal-footer">
                                         <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
                                                th:value="#{greenCity.pages.popup.cancel.}">
-                                        <a href="" id="deactivateAllSubmit" class="btn btn-remove">
+                                        <a href="" id="deactivateAllSubmit" class="btn-remove" style="display: flex; align-items: center;">
                                             <div>[[#{greenCity.user.page.deactivated}]]</div>
                                         </a>
                                     </div>
