@@ -98,9 +98,10 @@ public class HabitController {
     @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
     }
 
     /**
@@ -118,9 +119,10 @@ public class HabitController {
     public ResponseEntity<PageableDto<HabitDto>> getAllHabitsOfFriend(
         @PathVariable Long friendId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable));
+            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -138,9 +140,10 @@ public class HabitController {
     public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
         @PathVariable Long friendId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable));
+            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
     }
 
     /**

@@ -122,11 +122,10 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable) {
+    public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode) {
         long userId = userVO.getId();
         List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
-        String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
 
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
@@ -138,12 +137,12 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable) {
+    public PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable,
+        String languageCode) {
         if (!userRepo.isFriend(userId, friendId)) {
             throw new UserHasNoFriendWithIdException(
                 ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
         }
-        String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllHabitsOfFriend(pageable, friendId, languageCode);
 
@@ -154,12 +153,12 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable) {
+    public PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable,
+        String languageCode) {
         if (!userRepo.isFriend(userId, friendId)) {
             throw new UserHasNoFriendWithIdException(
                 ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + friendId);
         }
-        String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllMutualHabitsWithFriend(pageable, userId, friendId, languageCode);
 
