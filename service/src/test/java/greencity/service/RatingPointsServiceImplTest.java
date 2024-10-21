@@ -29,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.util.Collections;
@@ -212,5 +213,33 @@ class RatingPointsServiceImplTest {
                 () -> ratingPointsService.deleteRatingPoints(id), ErrorMessage.DELETING_RATING_POINTS_NOT_ALLOWED);
 
         verify(ratingPointsRepo, times(1)).checkByIdForExistenceOfAchievement(id);
+    }
+
+    @Test
+    void searchBy_ShouldReturnPageableAdvancedDto_WhenQueryIsProvided() {
+        List<RatingPoints> ratingPointsList = Collections.singletonList(ratingPoints);
+        Page<RatingPoints> page = new PageImpl<>(ratingPointsList, pageable, ratingPointsList.size());
+
+        when(ratingPointsRepo.searchBy(pageable, "Test", Status.ACTIVE)).thenReturn(page);
+        when(modelMapper.map(ratingPoints, RatingPointsDto.class)).thenReturn(ratingPointsDto);
+
+        PageableAdvancedDto<RatingPointsDto> result = ratingPointsService.searchBy(pageable, "Test", Status.ACTIVE);
+
+        assertNotNull(result);
+        assertEquals(page.getTotalElements(), result.getTotalElements());
+        assertEquals(page.getTotalPages(), result.getTotalPages());
+        verify(ratingPointsRepo, times(1)).searchBy(pageable, "Test", Status.ACTIVE);
+    }
+
+    @Test
+    void searchBy_ShouldReturnEmptyPageableAdvancedDto_WhenNoResultsFound() {
+        when(ratingPointsRepo.searchBy(pageable, "Non-existent", Status.ACTIVE))
+                .thenReturn(new PageImpl<>(Collections.emptyList(), pageable, 0));
+
+        PageableAdvancedDto<RatingPointsDto> result = ratingPointsService.searchBy(pageable, "Non-existent", Status.ACTIVE);
+
+        assertNotNull(result);
+        assertEquals(0, result.getTotalElements());
+        verify(ratingPointsRepo, times(1)).searchBy(pageable, "Non-existent", Status.ACTIVE);
     }
 }
