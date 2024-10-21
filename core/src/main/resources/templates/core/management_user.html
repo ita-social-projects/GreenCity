@@ -451,7 +451,7 @@
                             <!-- Previous page button -->
                             <li class="page-item" th:classappend="${isFirst} ? 'disabled' : ''">
                                 <a class="page-link" th:if="${!isFirst}"
-                                   th:href="@{/management/users(page=${previousPage}, size=${pageSize}, sort=${sortModel})}">
+                                   th:href="@{/management/users(page=${previousPage}, size=${pageSize}, sort=${sortModel}, query=${request.query})}">
                                     <i class="arrow fas fa-chevron-left"></i>
                                 </a>
                                 <a class="page-link" th:if="${isFirst}">
@@ -464,7 +464,7 @@
                                 th:if="${pageNum >= 0 && pageNum < users.getTotalPages()}"
                                 th:classappend="${pageNum == pageNumber} ? 'active' : ''">
                                 <a class="page-link"
-                                   th:href="@{/management/users(page=${pageNum}, size=${pageSize}, sort=${sortModel})}">
+                                   th:href="@{/management/users(page=${pageNum}, size=${pageSize}, sort=${sortModel}, query=${request.query})}">
                                     [[${pageNum + 1}]]
                                 </a>
                             </li>
@@ -472,7 +472,7 @@
                             <!-- Next page button -->
                             <li class="page-item" th:classappend="${isLast} ? 'disabled' : ''">
                                 <a class="page-link" th:if="${!isLast}"
-                                   th:href="@{/management/users(page=${nextPage}, size=${pageSize}, sort=${sortModel})}">
+                                   th:href="@{/management/users(page=${nextPage}, size=${pageSize}, sort=${sortModel}, query=${request.query})}">
                                     <i class="arrow fas fa-chevron-right"></i>
                                 </a>
                                 <a class="page-link" th:if="${isLast}">
