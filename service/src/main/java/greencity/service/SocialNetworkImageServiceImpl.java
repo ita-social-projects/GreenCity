@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,24 +87,6 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
-     */
-    @Override
-    public PageableDto<SocialNetworkImageResponseDTO> searchBy(Pageable paging, String query) {
-        Page<SocialNetworkImage> page = socialNetworkImageRepo.searchBy(paging, query);
-        List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = page.stream()
-            .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
-            .collect(Collectors.toList());
-        return new PageableDto<>(
-            socialNetworkImageResponseDTOS,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages());
     }
 
     /**

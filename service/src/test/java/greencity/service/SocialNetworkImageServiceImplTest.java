@@ -173,28 +173,4 @@ class SocialNetworkImageServiceImplTest {
         verify(modelMapper, times(mockImages.size()))
             .map(any(SocialNetworkImage.class), eq(SocialNetworkImageResponseDTO.class));
     }
-
-    @Test
-    void testSearchBy() {
-        Pageable pageable = mock(Pageable.class);
-        String query = "test";
-        List<SocialNetworkImage> mockImages = Collections.singletonList(new SocialNetworkImage());
-        List<SocialNetworkImageResponseDTO> expectedDTOs =
-            Collections.singletonList(new SocialNetworkImageResponseDTO());
-        Page<SocialNetworkImage> mockPage = new PageImpl<>(mockImages, pageable, 1);
-
-        when(socialNetworkImageRepo.searchBy(pageable, query)).thenReturn(mockPage);
-        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageResponseDTO.class)))
-            .thenReturn(expectedDTOs.get(0));
-
-        PageableDto<SocialNetworkImageResponseDTO> result = socialNetworkImageService.searchBy(pageable, query);
-
-        assertEquals(expectedDTOs.get(0), result.getPage().get(0));
-        assertEquals(mockPage.getTotalElements(), result.getTotalElements());
-        assertEquals(mockPage.getTotalPages(), result.getTotalPages());
-
-        verify(socialNetworkImageRepo).searchBy(pageable, query);
-        verify(modelMapper, times(mockImages.size()))
-            .map(any(SocialNetworkImage.class), eq(SocialNetworkImageResponseDTO.class));
-    }
 }
