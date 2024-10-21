@@ -80,6 +80,7 @@ public class ManagementUserController {
         int endPage = Math.min(currentPage + 3, totalPages - 1);
         List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
 
+        model.addAttribute("request", request);
         model.addAttribute("users", found);
         model.addAttribute("paging", pageable);
         model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
