@@ -374,6 +374,7 @@ public class NotificationServiceImpl implements NotificationService {
             .subject(subject)
             .body(body)
             .language(language)
+            .isUbs(false)
             .build();
     }
 
