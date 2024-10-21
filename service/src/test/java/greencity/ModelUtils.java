@@ -113,6 +113,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -214,6 +215,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static greencity.TestConst.ROLE_ADMIN;
+import static greencity.TestConst.STATUS_ACTIVATED;
+import static greencity.TestConst.TEST_QUERY;
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
@@ -3056,6 +3060,14 @@ public class ModelUtils {
             .id(3L)
             .hostPath("hostPath3")
             .imagePath("imagePath3")
+            .build();
+    }
+
+    public static UserFilterDto getUserFilterDto() {
+        return UserFilterDto.builder()
+            .query(TEST_QUERY)
+            .role(ROLE_ADMIN)
+            .status(STATUS_ACTIVATED)
             .build();
     }
 }

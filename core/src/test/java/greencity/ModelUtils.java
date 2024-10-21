@@ -42,7 +42,9 @@ import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
@@ -67,8 +69,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.springframework.data.domain.Pageable;
-
 import static greencity.enums.PlaceStatus.PROPOSED;
+import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
     public static List<TagTranslationVO> getTagTranslationsVO() {
@@ -525,4 +527,20 @@ public class ModelUtils {
             .build();
     }
 
+    public static List<UserManagementVO> getListUserManagementVO() {
+        return List.of(UserManagementVO.builder()
+            .id(1L)
+            .name(TestConst.NAME)
+            .email(TestConst.EMAIL)
+            .userStatus(ACTIVATED)
+            .role(Role.ROLE_USER).build());
+    }
+
+    public static UserFilterDtoResponse getUserFilterDtoResponse() {
+        return UserFilterDtoResponse.builder().build();
+    }
+
+    public static PageableDto<UserManagementVO> getUserAdvancedDto() {
+        return new PageableDto<>(getListUserManagementVO(), 20, 0, 1);
+    }
 }
