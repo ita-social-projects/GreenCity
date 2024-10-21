@@ -8,7 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
-import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +21,9 @@ import java.util.List;
 @Slf4j
 public class AchievementCategoryServiceImpl implements AchievementCategoryService {
     private final AchievementCategoryRepo achievementCategoryRepo;
-    private final AchievementRepo achievementRepo;
     private final UserAchievementRepo userAchievementRepo;
     private final UserService userService;
+    private final AchievementService achievementService;
     private final ModelMapper modelMapper;
 
     /**
@@ -52,7 +51,8 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
             .map(achievementCategory -> {
                 Long achievementCategoryId = achievementCategory.getId();
                 achievementCategory
-                    .setTotalQuantity(achievementRepo.findAllByAchievementCategoryId(achievementCategoryId).size());
+                    .setTotalQuantity(
+                        achievementService.findAchievementCountByTypeAndCategory(email, null, achievementCategoryId));
                 achievementCategory.setAchieved(userAchievementRepo
                     .findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
                 return achievementCategory;
