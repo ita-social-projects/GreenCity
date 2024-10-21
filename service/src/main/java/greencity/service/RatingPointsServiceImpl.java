@@ -82,6 +82,11 @@ public class RatingPointsServiceImpl implements RatingPointsService {
         }
     }
 
+    @Override
+    public PageableAdvancedDto<RatingPointsDto> searchBy(Pageable pageable, String searchQuery, Status status) {
+        return mapToPageableAdvancedDto(ratingPointsRepo.searchBy(pageable, searchQuery, status));
+    }
+
     private PageableAdvancedDto<RatingPointsDto> mapToPageableAdvancedDto(Page<RatingPoints> ratingPoints) {
         List<RatingPointsDto> ratingPointsDtos = ratingPoints.stream()
             .map(rating -> modelMapper.map(rating, RatingPointsDto.class)).toList();
