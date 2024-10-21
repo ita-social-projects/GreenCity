@@ -3,7 +3,7 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -227,9 +228,8 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
-        Pageable pageable) {
-        var filterUserDto = createUserFilterDto(criteria, role, status);
+    public PageableDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable) {
+        var userFilterDto = createUserFilterDto(request.getQuery(), request.getRole(), request.getStatus());
 
         if (pageable.getSort().isUnsorted()) {
             pageable = PageRequest.of(
@@ -238,8 +238,8 @@ public class UserServiceImpl implements UserService {
                 Sort.by(Sort.Direction.DESC, "id"));
         }
 
-        var users = userRepo.findAll(new UserFilter(filterUserDto), pageable);
-        var userManagementVOs = userManagementVOMapper.mapAllToPage(users);
+        Page<User> users = userRepo.findAll(new UserFilter(userFilterDto), pageable);
+        Page<UserManagementVO> userManagementVOs = userManagementVOMapper.mapAllToPage(users);
 
         return new PageableDto<>(
             userManagementVOs.getContent(),

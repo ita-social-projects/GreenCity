@@ -1,9 +1,13 @@
 package greencity.mapping;
 
+import greencity.dto.user.UserManagementVO;
+import greencity.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserManagementVO;
 import static greencity.ModelUtils.getUserManagementVOPage;
@@ -19,15 +23,15 @@ class UserManagementVOMapperTest {
     void convertTest() {
         var user = getUser();
         var userManagementVO = getUserManagementVO();
-        var result = userManagementVOMapper.convert(user);
+        UserManagementVO result = userManagementVOMapper.convert(user);
         assertEquals(userManagementVO, result);
     }
 
     @Test
     void mapAllToPageTest() {
-        var userPage = getUserPage();
-        var expected = getUserManagementVOPage();
-        var result = userManagementVOMapper.mapAllToPage(userPage);
+        Page<User> userPage = getUserPage();
+        Page<UserManagementVO> expected = getUserManagementVOPage();
+        Page<UserManagementVO> result = userManagementVOMapper.mapAllToPage(userPage);
         assertEquals(expected.getContent(), result.getContent());
         assertEquals(expected.getTotalElements(), result.getTotalElements());
         assertEquals(expected.getPageable(), result.getPageable());

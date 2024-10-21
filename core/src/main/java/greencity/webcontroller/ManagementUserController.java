@@ -3,6 +3,8 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
@@ -32,6 +34,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,28 +60,25 @@ public class ManagementUserController {
     /**
      * Method that returns management page with all {@link UserVO}.
      *
-     * @param query    Query for searching related data
+     * @param request  request for searching related data
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
+     *
      * @return View template path {@link String}.
+     *
      * @author Vasyl Zhovnir, Anton Bondar
      */
     @GetMapping
-    public String getAllUsers(
-        @RequestParam(required = false, name = "status") String status,
-        @RequestParam(required = false, name = "role") String role,
-        @RequestParam(required = false, name = "query") String query,
-        @CurrentUser UserVO currentUser,
-        Model model,
+    public String getAllUsers(@ModelAttribute UserFilterDto request, @CurrentUser UserVO currentUser, Model model,
         @Parameter(hidden = true) Pageable pageable) {
-        var found = userService.getAllUsersByCriteria(query, role, status, pageable);
+        PageableDto<UserManagementVO> found = userService.getAllUsersByCriteria(request, pageable);
 
         int currentPage = pageable.getPageNumber();
         int totalPages = found.getTotalPages();
 
         int startPage = Math.max(0, currentPage - 3);
         int endPage = Math.min(currentPage + 3, totalPages - 1);
-        var pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
+        List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
 
         model.addAttribute("users", found);
         model.addAttribute("paging", pageable);

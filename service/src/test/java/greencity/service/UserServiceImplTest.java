@@ -2,6 +2,9 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.user.UserFilterDto;
+import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -21,6 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.sql.Timestamp;
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
 import static greencity.ModelUtils.getListUserManagementVO;
 import static greencity.ModelUtils.getSortedPageable;
 import static greencity.ModelUtils.getUnSortedPageable;
+import static greencity.ModelUtils.getUserFilterDto;
 import static greencity.ModelUtils.getUserManagementVOPage;
 import static greencity.ModelUtils.getUserPage;
 import static greencity.ModelUtils.testEmail;
@@ -274,17 +280,18 @@ class UserServiceImplTest {
 
     @Test
     void getAllUsersByCriteriaSortedPageableTest() {
-        var userPage = getUserPage();
-        var sortedPageable = getSortedPageable();
+        Page<User> userPage = getUserPage();
+        Pageable sortedPageable = getSortedPageable();
+        UserFilterDto request = getUserFilterDto();
 
-        var listUserManagementVO = getListUserManagementVO();
-        var userManagementVOPage = getUserManagementVOPage();
+        List<UserManagementVO> listUserManagementVO = getListUserManagementVO();
+        Page<UserManagementVO> userManagementVOPage = getUserManagementVOPage();
 
         when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
         when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
 
-        var allUsersByCriteria =
-            userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", sortedPageable);
+        PageableDto<UserManagementVO> allUsersByCriteria =
+            userService.getAllUsersByCriteria(request, sortedPageable);
 
         assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
 
@@ -294,18 +301,19 @@ class UserServiceImplTest {
 
     @Test
     void getAllUsersByCriteriaUnsortedPageableTest() {
-        var userPage = getUserPage();
-        var unsortedPageable = getUnSortedPageable();
-        var sortedPageable = getSortedPageable();
+        Page<User> userPage = getUserPage();
+        Pageable unsortedPageable = getUnSortedPageable();
+        Pageable sortedPageable = getSortedPageable();
+        UserFilterDto request = getUserFilterDto();
 
-        var listUserManagementVO = getListUserManagementVO();
-        var userManagementVOPage = getUserManagementVOPage();
+        List<UserManagementVO> listUserManagementVO = getListUserManagementVO();
+        Page<UserManagementVO> userManagementVOPage = getUserManagementVOPage();
 
         when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
         when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
 
-        var allUsersByCriteria =
-            userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", unsortedPageable);
+        PageableDto<UserManagementVO> allUsersByCriteria =
+            userService.getAllUsersByCriteria(request, unsortedPageable);
 
         assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
 
