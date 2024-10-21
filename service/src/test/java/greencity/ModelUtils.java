@@ -526,9 +526,10 @@ public class ModelUtils {
     public static UserManagementVO getUserManagementVO() {
         return UserManagementVO.builder()
             .id(1L)
+            .name(TestConst.NAME)
+            .email(TestConst.EMAIL)
             .userStatus(ACTIVATED)
-            .email("Test@gmail.com")
-            .role(Role.ROLE_ADMIN).build();
+            .role(Role.ROLE_USER).build();
     }
 
     public static UserVO getUserVOWithData() {
@@ -3010,16 +3011,25 @@ public class ModelUtils {
         return PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
     }
 
+    public static Pageable getUnSortedPageable() {
+        return PageRequest.of(0, 10);
+    }
+
     public static List<UserManagementVO> getListUserManagementVO() {
         return List.of(UserManagementVO.builder()
             .id(1L)
+            .name(TestConst.NAME)
+            .email(TestConst.EMAIL)
             .userStatus(ACTIVATED)
-            .email("Test@gmail.com")
-            .role(Role.ROLE_ADMIN).build());
+            .role(Role.ROLE_USER).build());
     }
 
-    public static Page<UserManagementVO> getPage() {
+    public static Page<UserManagementVO> getUserManagementVOPage() {
         return new PageImpl<>(getListUserManagementVO(), getSortedPageable(), 1);
+    }
+
+    public static Page<User> getUserPage() {
+        return new PageImpl<>(List.of(getUser()), getSortedPageable(), 1);
     }
 
     public static SocialNetworkImage getSocialNetworkImage() {

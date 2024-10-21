@@ -18,6 +18,7 @@ import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserRepo;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -45,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
+    private final UserManagementVOMapper userManagementVOMapper;
     @Value("300000")
     private long timeAfterLastActivity;
 
@@ -227,17 +229,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
         Pageable pageable) {
-        UserFilterDto filterUserDto = createUserFilterDto(criteria, role, status);
-        Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        var filterUserDto = createUserFilterDto(criteria, role, status);
 
-        var listOfUsers = userRepo.findAllManagementVo(new UserFilter(filterUserDto), sortedPageable);
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id"));
+        }
+
+        var users = userRepo.findAll(new UserFilter(filterUserDto), pageable);
+        var userManagementVOs = userManagementVOMapper.mapAllToPage(users);
 
         return new PageableDto<>(
-            listOfUsers.getContent(),
-            listOfUsers.getTotalElements(),
-            listOfUsers.getPageable().getPageNumber(),
-            listOfUsers.getTotalPages());
+            userManagementVOs.getContent(),
+            userManagementVOs.getTotalElements(),
+            userManagementVOs.getPageable().getPageNumber(),
+            userManagementVOs.getTotalPages());
     }
 
     /**
