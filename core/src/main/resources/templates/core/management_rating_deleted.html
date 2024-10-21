@@ -38,10 +38,17 @@
                             <h2>[[#{greenCity.sidebar.ratings.calculation.setup}]]</h2>
                         </div>
                         <div class="col-sm-6">
-                            <div class="col-sm-6 text-right">
+                            <div class="text-right">
                                 <a href="/management/rating/calculation" class="btn btn-success">
                                     [[#{greenCity.pages.showActive}]]
                                 </a>
+                                <span class="search-box-right fixed-i-position">
+                                    <form class="form-inline searching" action="/management/rating/calculation/deleted"
+                                          method="get">
+                                        <i class="material-icons"></i>
+                                        <input type="text" name="query" class="form-control" th:value="${query}" th:placeholder="#{greenCity.pages.search}">
+                                    </form>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -82,34 +89,30 @@
                         [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
-                        <li class="page-item"
-                            th:classappend="${!ratings.isFirst()} ? '' : 'disabled'">
+                        <li class="page-item" th:classappend="${!ratings.isFirst()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!ratings.isFirst()}"
-                               th:href="@{/management/rating/calculation/deleted?page={id}(id=${0})}">&#060;&#060;</a>
+                               th:href="@{/management/rating/calculation/deleted(page=${0}, query=${query})}">&#060;&#060;</a>
                             <a class="page-link" rel="tooltip" th:if="${ratings.isFirst()}">&#060;&#060;</a>
                         </li>
-                        <li class="page-item"
-                            th:classappend="${ratings.isHasPrevious()} ? '' : 'disabled'">
+                        <li class="page-item" th:classappend="${ratings.isHasPrevious()} ? '' : 'disabled'">
                             <a class="page-link" th:if="${ratings.isHasPrevious()}"
-                               th:href="@{/management/rating/calculation/deleted?page={id}(id=${ratings.getNumber()-1})}">[[#{greenCity.page.paging.previous}]]</a>
+                               th:href="@{/management/rating/calculation/deleted(page=${ratings.getNumber()-1}, query=${query})}">[[#{greenCity.page.paging.previous}]]</a>
                             <a th:if="${!ratings.isHasPrevious()}">[[#{greenCity.page.paging.previous}]]</a>
                         </li>
                         <li class="page-item"
                             th:if="${pageNumber > -1 && pageNumber < ratings.getTotalPages()}"
                             th:classappend="${pageNumber == ratings.getNumber()} ? 'active' : ''"
                             th:each="pageNumber : ${#numbers.sequence(ratings.getNumber()-3, ratings.getNumber()+3)}">
-                            <a class="page-link" th:href="@{/management/rating/calculation/deleted?page={id}(id=${pageNumber})}">[[${pageNumber}+1]]</a>
+                            <a class="page-link" th:href="@{/management/rating/calculation/deleted(page=${pageNumber}, query=${query})}">[[${pageNumber}+1]]</a>
                         </li>
-                        <li class="page-item"
-                            th:classappend="${ratings.isHasNext()} ? '' : 'disabled'">
+                        <li class="page-item" th:classappend="${ratings.isHasNext()} ? '' : 'disabled'">
                             <a class="page-link" th:if="${ratings.isHasNext()}"
-                               th:href="@{/management/rating/calculation/deleted?page={id}(id=${ratings.getNumber()+1})}">[[#{greenCity.page.paging.next}]]</a>
+                               th:href="@{/management/rating/calculation/deleted(page=${ratings.getNumber()+1}, query=${query})}">[[#{greenCity.page.paging.next}]]</a>
                             <a th:if="${!ratings.isHasNext()}">[[#{greenCity.page.paging.next}]]</a>
                         </li>
-                        <li class="page-item"
-                            th:classappend="${!ratings.isLast()} ? '' : 'disabled'">
+                        <li class="page-item" th:classappend="${!ratings.isLast()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!ratings.isLast()}"
-                               th:href="@{/management/rating/calculation/deleted?page={id}(id=${ratings.getTotalPages()-1})}">&#062;&#062;</a>
+                               th:href="@{/management/rating/calculation/deleted(page=${ratings.getTotalPages()-1}, query=${query})}">&#062;&#062;</a>
                             <a class="page-link" rel="tooltip" th:if="${ratings.isLast()}">&#062;&#062;</a>
                         </li>
                     </ul>

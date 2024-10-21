@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingPointsDto;
+import greencity.enums.Status;
 import greencity.service.RatingPointsService;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -42,7 +43,7 @@ class ManagementRatingCalculationControllerTest {
     }
 
     @Test
-    void getRatingPoints_ShouldReturnManagementPage() throws Exception {
+    void getRatingPoints_ShouldReturnManagementPage_WhenQueryIsNull() throws Exception {
         Pageable pageable = PageRequest.of(0, 3);
         PageableAdvancedDto<RatingPointsDto> ratingPointsDtoPageableDto =
             new PageableAdvancedDto<>(Collections.singletonList(new RatingPointsDto()),
@@ -57,6 +58,27 @@ class ManagementRatingCalculationControllerTest {
             .andExpect(status().isOk());
 
         verify(ratingPointsService, times(1)).getAllRatingPointsByPage(pageable);
+    }
+
+    @Test
+    void getRatingPoints_ShouldReturnManagementPage_WhenQueryIsProvided() throws Exception {
+        Pageable pageable = PageRequest.of(0, 3);
+        String query = "test";
+        PageableAdvancedDto<RatingPointsDto> ratingPointsDtoPageableDto =
+            new PageableAdvancedDto<>(Collections.singletonList(new RatingPointsDto()),
+                3, 0, 3, 1, false, true, true, false);
+        when(ratingPointsService.searchBy(pageable, query, Status.ACTIVE)).thenReturn(ratingPointsDtoPageableDto);
+
+        this.mockMvc.perform(get("/management/rating/calculation")
+            .param("page", "0")
+            .param("size", "3")
+            .param("query", query))
+            .andExpect(view().name("core/management_rating_calculation"))
+            .andExpect(model().attribute("ratings", ratingPointsDtoPageableDto))
+            .andExpect(status().isOk());
+
+        verify(ratingPointsService, times(1)).searchBy(pageable, query, Status.ACTIVE);
+        verify(ratingPointsService, never()).getAllRatingPointsByPage(any(Pageable.class));
     }
 
     @Test
@@ -83,7 +105,7 @@ class ManagementRatingCalculationControllerTest {
     }
 
     @Test
-    void getDeletedRatingPoints_ShouldReturnDeletedRatingsPage() throws Exception {
+    void getDeletedRatingPoints_ShouldReturnDeletedRatingsPage_WhenQueryIsNull() throws Exception {
         Pageable pageable = PageRequest.of(0, 3);
         PageableAdvancedDto<RatingPointsDto> ratingPointsDtoPageableDto =
             new PageableAdvancedDto<>(Collections.singletonList(new RatingPointsDto()),
@@ -98,6 +120,27 @@ class ManagementRatingCalculationControllerTest {
             .andExpect(status().isOk());
 
         verify(ratingPointsService, times(1)).getDeletedRatingPoints(pageable);
+    }
+
+    @Test
+    void getDeletedRatingPoints_ShouldReturnDeletedRatingsPage_WhenQueryIsProvided() throws Exception {
+        Pageable pageable = PageRequest.of(0, 3);
+        String query = "test";
+        PageableAdvancedDto<RatingPointsDto> ratingPointsDtoPageableDto =
+            new PageableAdvancedDto<>(Collections.singletonList(new RatingPointsDto()),
+                3, 0, 3, 1, false, true, true, false);
+        when(ratingPointsService.searchBy(pageable, query, Status.DELETE)).thenReturn(ratingPointsDtoPageableDto);
+
+        this.mockMvc.perform(get("/management/rating/calculation/deleted")
+            .param("page", "0")
+            .param("size", "3")
+            .param("query", query))
+            .andExpect(view().name("core/management_rating_deleted"))
+            .andExpect(model().attribute("ratings", ratingPointsDtoPageableDto))
+            .andExpect(status().isOk());
+
+        verify(ratingPointsService, times(1)).searchBy(pageable, query, Status.DELETE);
+        verify(ratingPointsService, never()).getDeletedRatingPoints(any(Pageable.class));
     }
 
     @Test
