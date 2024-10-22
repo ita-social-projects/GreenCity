@@ -250,4 +250,76 @@ class EcoNewsControllerTest {
 
         verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);
     }
+
+    @Test
+    void addToFavoritesTest() throws Exception {
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void addToFavoritesNotFoundTest() throws Exception {
+        doThrow(new NotFoundException("Resource not found")).when(ecoNewsService).addToFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+
+        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void addToFavoritesBadRequestTest() throws Exception {
+        doThrow(new IllegalArgumentException("Bad request")).when(ecoNewsService).addToFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+
+        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void removeFromFavoritesNotFoundTest() throws Exception {
+        doThrow(new NotFoundException("Resource not found")).when(ecoNewsService).removeFromFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+
+        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void removeFromFavoritesBadRequestTest() throws Exception {
+        doThrow(new IllegalArgumentException("Bad request")).when(ecoNewsService).removeFromFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+
+        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void removeFromFavoritesTest() throws Exception {
+        mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+    }
 }

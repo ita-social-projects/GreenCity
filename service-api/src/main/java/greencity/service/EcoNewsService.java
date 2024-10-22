@@ -132,6 +132,22 @@ public interface EcoNewsService {
     void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile multipartFile);
 
     /**
+     * Method for adding an eco new to favorites by ecoNewsId.
+     *
+     * @param ecoNewsId - eco-news id.
+     * @param email     - user email.
+     */
+    void addToFavorites(Long ecoNewsId, String email);
+
+    /**
+     * Method for removing an eco new from favorites by ecoNewsId.
+     *
+     * @param ecoNewsId - eco-News id.
+     * @param email     - user email.
+     */
+    void removeFromFavorites(Long ecoNewsId, String email);
+
+    /**
      * Method for updating {@link EcoNewsVO} instance.
      *
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.

@@ -249,6 +249,9 @@ public class User {
     private List<Filter> filters = new ArrayList<>();
 
     @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
+    private Set<EcoNews> favoriteEcoNews;
+
+    @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
     private Set<Event> favoriteEvents;
 
     @ManyToMany(mappedBy = "attenders", fetch = FetchType.LAZY)

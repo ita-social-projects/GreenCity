@@ -39,6 +39,7 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
 import greencity.repository.RatingPointsRepo;
+import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -109,6 +110,8 @@ class EcoNewsServiceImplTest {
     EcoNewsSearchRepo ecoNewsSearchRepo;
     @Mock
     private UserService userService;
+    @Mock
+    private UserRepo userRepo;
     @Mock
     private RatingCalculation ratingCalculation;
     @Mock
@@ -833,4 +836,99 @@ class EcoNewsServiceImplTest {
         assertThrows(NotFoundException.class, () -> ecoNewsService.setHiddenValue(1L, adminVO, true));
     }
 
+    @Test
+    void addToFavorites_ShouldAddUserToFavorites() {
+        User user = ModelUtils.getUser();
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        ecoNewsService.addToFavorites(1L, TestConst.EMAIL);
+
+        assertTrue(ecoNews.getFollowers().contains(user));
+        verify(ecoNewsRepo).save(ecoNews);
+    }
+
+    @Test
+    void addToFavorites_ShouldThrowExceptionIfEcoNewsNotFound() {
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+                ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+
+        assertEquals("Eco new doesn't exist by this id: 1", exception.getMessage());
+    }
+
+    @Test
+    void addToFavorites_ShouldThrowExceptionIfUserNotFound() {
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+                ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+
+        assertEquals("The user does not exist by this email: taras@gmail.com", exception.getMessage());
+    }
+
+    @Test
+    void addToFavorites_ShouldThrowExceptionIfUserAlreadyInFavorites() {
+        User user = ModelUtils.getUser();
+
+        ecoNews.setFollowers(Collections.singleton(user));
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        BadRequestException exception =
+            assertThrows(BadRequestException.class, () -> ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+
+        assertEquals("User has already added this eco new to favorites.", exception.getMessage());
+    }
+
+    @Test
+    void removeFromFavorites_ShouldRemoveUserFromFavorites() {
+        User user = ModelUtils.getUser();
+
+        ecoNews.setFollowers(Collections.singleton(user));
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL);
+
+        assertFalse(ecoNews.getFollowers().contains(user));
+        verify(ecoNewsRepo).save(ecoNews);
+    }
+
+    @Test
+    void removeFromFavorites_ShouldThrowExceptionIfEcoNewsNotFound() {
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+                ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+
+        assertEquals("Eco new doesn't exist by this id: 1", exception.getMessage());
+    }
+
+    @Test
+    void removeFromFavorites_ShouldThrowExceptionIfUserNotFound() {
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () ->
+                ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+
+        assertEquals("The user does not exist by this email: taras@gmail.com", exception.getMessage());
+    }
+
+    @Test
+    void removeFromFavorites_ShouldThrowExceptionIfUserNotInFavorites() {
+        User user = ModelUtils.getUser();
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        BadRequestException exception =
+            assertThrows(BadRequestException.class, () -> ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+
+        assertEquals("This eco new is not in favorites.", exception.getMessage());
+    }
 }
