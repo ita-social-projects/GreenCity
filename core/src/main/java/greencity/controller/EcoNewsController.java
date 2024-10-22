@@ -88,6 +88,46 @@ public class EcoNewsController {
     }
 
     /**
+     * Method for adding an eco new to favorites by ecoNewsId.
+     */
+    @Operation(summary = "Add an eco new to favorites")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/{ecoNewsId}/favorites")
+    public ResponseEntity<Object> addToFavorites(@PathVariable Long ecoNewsId,
+        @Parameter(hidden = true) Principal principal) {
+        ecoNewsService.addToFavorites(ecoNewsId, principal.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method for removing an eco new from favorites by ecoNewsId.
+     */
+    @Operation(summary = "Remove an eco news from favorites")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @DeleteMapping("/{ecoNewsId}/favorites")
+    public ResponseEntity<Object> removeFromFavorites(@PathVariable Long ecoNewsId,
+        @Parameter(hidden = true) Principal principal) {
+        ecoNewsService.removeFromFavorites(ecoNewsId, principal.getName());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * Method for updating {@link EcoNewsVO}.
      *
      * @param updateEcoNewsDto - dto for {@link EcoNewsVO} entity.

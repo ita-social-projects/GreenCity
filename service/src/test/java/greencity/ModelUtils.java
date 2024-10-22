@@ -427,6 +427,7 @@ public class ModelUtils {
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(localDateTime)
             .subscribedEvents(new HashSet<>())
+            .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
             .language(getLanguage())
             .build();
@@ -648,6 +649,7 @@ public class ModelUtils {
             .title("title")
             .text("text")
             .hidden(false)
+            .followers(new HashSet<>())
             .tags(Collections.singletonList(tag))
             .build();
     }
@@ -658,13 +660,14 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false, Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
+            "title", "text", false, Collections.singletonList(tag), Collections.emptySet(),
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", false, Collections.singletonList(getTag()), Collections.emptySet(),
-            Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {

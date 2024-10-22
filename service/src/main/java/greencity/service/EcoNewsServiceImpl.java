@@ -39,6 +39,7 @@ import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
+import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -80,6 +81,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
+    private final UserRepo userRepo;
     private final CommentService commentService;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
@@ -321,6 +323,41 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             fileService.delete(toUpdate.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
+    }
+
+    @Override
+    public void addToFavorites(Long ecoNewsId, String email) {
+        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (ecoNews.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES);
+        }
+
+        ecoNews.getFollowers().add(currentUser);
+        ecoNewsRepo.save(ecoNews);
+    }
+
+    @Override
+    public void removeFromFavorites(Long ecoNewsId, String email) {
+        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (!ecoNews.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.ECO_NEWS_NOT_IN_FAVORITES);
+        }
+
+        ecoNews.setFollowers(ecoNews.getFollowers()
+            .stream()
+            .filter(user -> !user.getId().equals(currentUser.getId()))
+            .collect(Collectors.toSet()));
+        ecoNewsRepo.save(ecoNews);
     }
 
     /**
