@@ -770,7 +770,7 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public Integer countLikes(Long eventId) {
+    public int countLikes(Long eventId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
         return event.getUsersLikedEvents().size();
@@ -780,7 +780,7 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public Boolean isEventLikedByUser(Long eventId, UserVO userVO) {
+    public boolean isEventLikedByUser(Long eventId, UserVO userVO) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
         return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));

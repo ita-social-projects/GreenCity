@@ -5,4 +5,5 @@ public final class TestConst {
     public static final String NAME = "Taras";
     public static final String EMAIL = "taras@gmail.com";
     public static final String IMG_NAME = "Screenshot.png";
+    public static final Long EVENT_ID = 1L;
 }

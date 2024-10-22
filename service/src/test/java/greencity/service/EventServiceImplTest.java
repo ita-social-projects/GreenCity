@@ -67,6 +67,7 @@ import org.springframework.web.multipart.MultipartFile;
 import static greencity.ModelUtils.getAuthorVO;
 import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
 import static greencity.ModelUtils.getEventPreviewDtos;
 import static greencity.ModelUtils.getFilterEventDto;
@@ -1231,14 +1232,11 @@ class EventServiceImplTest {
     @Test
     void countLikesForEventTest() {
         Event event = getEvent();
-        Set<User> usersLiked = new HashSet<>();
-        usersLiked.add(User.builder().id(1L).build());
-        usersLiked.add(User.builder().id(2L).build());
-        event.setUsersLikedEvents(usersLiked);
+        event.setUsersLikedEvents(getUsersHashSet());
 
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
 
-        Integer actualAmountOfLikes = eventService.countLikes(event.getId());
+        int actualAmountOfLikes = eventService.countLikes(event.getId());
 
         assertEquals(2, actualAmountOfLikes);
         verify(eventRepo).findById(event.getId());
@@ -1254,7 +1252,7 @@ class EventServiceImplTest {
         assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
 
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
-        verify(eventRepo, times(1)).findById(event.getId());
+        verify(eventRepo).findById(event.getId());
     }
 
     @Test
@@ -1266,12 +1264,11 @@ class EventServiceImplTest {
         usersLiked.add(user);
         event.setUsersLikedEvents(usersLiked);
         when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
 
-        Boolean isLikedByUser = eventService.isEventLikedByUser(event.getId(), userVO);
+        boolean isLikedByUser = eventService.isEventLikedByUser(event.getId(), userVO);
 
         assertTrue(isLikedByUser);
+        verify(eventRepo).findById(event.getId());
     }
 
     @Test

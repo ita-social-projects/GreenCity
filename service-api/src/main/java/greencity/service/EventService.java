@@ -191,7 +191,7 @@ public interface EventService {
      * @param eventId - {@link Integer} event id.
      * @return amount of likes by event id.
      */
-    Integer countLikes(Long eventId);
+    int countLikes(Long eventId);
 
     /**
      * Method to check if user liked an event.
@@ -200,5 +200,5 @@ public interface EventService {
      * @param userVO  - instance of {@link UserVO}.
      * @return user liked event or not.
      */
-    Boolean isEventLikedByUser(Long eventId, UserVO userVO);
+    boolean isEventLikedByUser(Long eventId, UserVO userVO);
 }

@@ -209,6 +209,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -1750,6 +1751,12 @@ public class ModelUtils {
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
+    }
+
+    public static HashSet<User> getUsersHashSet() {
+        return new HashSet<>(Arrays.asList(
+            User.builder().id(1L).build(),
+            User.builder().id(2L).build()));
     }
 
     public static Event getCloseEvent() {
