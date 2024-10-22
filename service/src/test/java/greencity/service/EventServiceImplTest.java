@@ -1227,4 +1227,61 @@ class EventServiceImplTest {
         verify(userRepo, never()).findById(anyLong());
         verify(userNotificationService, never()).removeActionUserFromNotification(any(), any(), anyLong(), any());
     }
+
+    @Test
+    void countLikesForEventTest() {
+        Event event = getEvent();
+        Set<User> usersLiked = new HashSet<>();
+        usersLiked.add(User.builder().id(1L).build());
+        usersLiked.add(User.builder().id(2L).build());
+        event.setUsersLikedEvents(usersLiked);
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+
+        Integer actualAmountOfLikes = eventService.countLikes(event.getId());
+
+        assertEquals(2, actualAmountOfLikes);
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void countLikesForEvent_ThrowNotFoundException_Test() {
+        Event event = getEvent();
+
+        NotFoundException exception =
+                assertThrows(NotFoundException.class, () -> eventService.countLikes(event.getId()));
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
+        verify(eventRepo, times(1)).findById(event.getId());
+    }
+
+    @Test
+    void checkIsEventLikedByUserTest() {
+        User user = getUser();
+        UserVO userVO = getUserVO();
+        Event event = getEvent();
+        Set<User> usersLiked = new HashSet<>();
+        usersLiked.add(user);
+        event.setUsersLikedEvents(usersLiked);
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+
+        Boolean isLikedByUser = eventService.isEventLikedByUser(event.getId(), userVO);
+
+        assertTrue(isLikedByUser);
+    }
+
+    @Test
+    void checkIsEventLikedByUserTest_ThrowNotFoundException_Test() {
+        Event event = getEvent();
+
+        NotFoundException exception =
+                assertThrows(NotFoundException.class, () -> eventService.countLikes(event.getId()));
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
+        verify(eventRepo, times(1)).findById(event.getId());
+    }
 }
