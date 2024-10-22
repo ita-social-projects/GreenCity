@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -184,4 +185,21 @@ public interface EventService {
      * @author Roman Kasarab
      */
     void like(Long eventId, UserVO userVO);
+
+    /**
+     * Method to get amount of likes by event id.
+     *
+     * @param eventId - {@link Integer} event id.
+     * @return amount of likes by event id.
+     */
+    Integer countLikes(Long eventId);
+
+    /**
+     * Method to check if user liked an event.
+     *
+     * @param eventId  - id of {@link EventDto} to check liked or not.
+     * @param userVO - instance of {@link UserVO}.
+     * @return user liked event or not.
+     */
+    Boolean isEventLikedByUser(Long eventId, UserVO userVO);
 }
