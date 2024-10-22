@@ -8,7 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
-import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +35,7 @@ class AchievementCategoryServiceImplTest {
     private UserService userService;
 
     @Mock
-    private AchievementRepo achievementRepo;
+    private AchievementService achievementService;
 
     @Mock
     private UserAchievementRepo userAchievementRepo;
@@ -114,7 +113,8 @@ class AchievementCategoryServiceImplTest {
         when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryTranslationDto.class))
             .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
         when(userService.findByEmail("email@gmail.com")).thenReturn(userVO);
-        when(achievementRepo.findAllByAchievementCategoryId(expectedDto.getId())).thenReturn(Collections.emptyList());
+        when(achievementService.findAchievementCountByTypeAndCategory("email@gmail.com", null, list.getFirst().getId()))
+            .thenReturn(0);
         when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userVO.getId(),
             expectedDto.getId())).thenReturn(Collections.emptyList());
 

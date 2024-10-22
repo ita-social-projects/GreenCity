@@ -6,6 +6,7 @@ import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
@@ -39,6 +40,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserAdvancedDto;
+import static greencity.ModelUtils.getUserFilterDtoResponse;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.TestConst.ROLE_ADMIN;
+import static greencity.TestConst.STATUS_ACTIVATED;
+import static greencity.TestConst.TEST_QUERY;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -86,24 +95,27 @@ class ManagementUserControllerTest {
     }
 
     @Test
-    void getAllUsers() throws Exception {
-        Pageable pageable = PageRequest.of(0, 20, Sort.by("id").descending());
-        List<UserManagementVO> userManagementVO = Collections.singletonList(new UserManagementVO());
-        List<UserFilterDtoResponse> filterDtoResponses = Collections.singletonList(new UserFilterDtoResponse());
-        PageableDto<UserManagementVO> userAdvancedDto = new PageableDto<>(userManagementVO, 20, 0, 0);
-        UserVO userVO = ModelUtils.getUserVO();
-        User user = ModelUtils.getUser();
+    void getAllUsersTest() throws Exception {
+        var userVO = getUserVO();
+        List<UserFilterDtoResponse> response = List.of(getUserFilterDtoResponse());
+
+        PageableDto<UserManagementVO> userAdvancedDto = getUserAdvancedDto();
 
         when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable))
+        when(userService.getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class)))
             .thenReturn(userAdvancedDto);
-        when(filterService.getAllFilters(1L)).thenReturn(filterDtoResponses);
+        when(filterService.getAllFilters(1L)).thenReturn(response);
 
-        mockMvc
-            .perform(get(managementUserLink + "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC").principal(principal)
-                .param("status", "ACTIVATED").param("role", "ROLE_ADMIN").param("query", "Test"))
+        mockMvc.perform(get(managementUserLink + "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")
+            .principal(principal)
+            .param("status", STATUS_ACTIVATED)
+            .param("role", ROLE_ADMIN)
+            .param("query", TEST_QUERY))
             .andExpect(model().attribute("users", userAdvancedDto));
+
+        verify(userService).findByEmail(anyString());
+        verify(userService).getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class));
+        verify(filterService).getAllFilters(1L);
     }
 
     @Test
@@ -222,8 +234,8 @@ class ManagementUserControllerTest {
     void saveUserFilterTest() throws Exception {
         UserFilterDtoRequest dto = UserFilterDtoRequest.builder().name("Test").userRole("ADMIN").userStatus("ACTIVATED")
             .searchCriteria("Test").build();
-        UserVO userVO = ModelUtils.getUserVO();
-        User user = ModelUtils.getUser();
+        UserVO userVO = getUserVO();
+        User user = getUser();
 
         String content = objectMapper.writeValueAsString(dto);
         when(userService.findByEmail(anyString())).thenReturn(userVO);

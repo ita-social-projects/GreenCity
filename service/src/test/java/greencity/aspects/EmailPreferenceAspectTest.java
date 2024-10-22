@@ -9,51 +9,38 @@ import greencity.message.ScheduledEmailMessage;
 import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.service.UserServiceImpl;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class EmailPreferenceAspectTest {
     @Mock
     private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
-
     @Mock
     private UserServiceImpl userServiceImpl;
-
     @Mock
     private CheckEmailPreference checkEmailPreference;
-
-    @Mock
-    ModelUtils modelUtils;
-    @Mock
-    UserVO userVO;
     @Mock
     ProceedingJoinPoint proceedingJoinPoint;
 
     @InjectMocks
     EmailPreferenceAspect emailPreferenceAspect;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void testProceedWhenUserHasEmailPreference() throws Throwable {
-
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
 
         Object[] args =
-            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en")};
+            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en", false)};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
@@ -75,12 +62,11 @@ class EmailPreferenceAspectTest {
 
     @Test
     void testProceedWhenUserDoesNotHaveEmailPreference() throws Throwable {
-
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
 
         Object[] args =
-            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en")};
+            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en", false)};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();

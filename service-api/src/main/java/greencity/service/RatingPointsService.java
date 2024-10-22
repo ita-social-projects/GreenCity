@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingPointsDto;
+import greencity.enums.Status;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 
@@ -70,4 +71,17 @@ public interface RatingPointsService {
      * @param newName the new name to assign to the Rating Points
      */
     void updateRatingPointsName(String oldName, String newName);
+
+    /**
+     * Retrieves a paginated list of {@link RatingPointsDto} that match the provided
+     * search query.
+     *
+     * @param pageable    The pagination information, including page number and
+     *                    size.
+     * @param searchQuery The query string used to filter the RatingPoints.
+     * @param status      The status of the RatingPoints to filter (e.g., ACTIVE,
+     *                    DELETE).
+     * @return A {@link PageableAdvancedDto} containing the filtered results.
+     */
+    PageableAdvancedDto<RatingPointsDto> searchBy(Pageable pageable, String searchQuery, Status status);
 }
