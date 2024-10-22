@@ -67,6 +67,7 @@ import org.springframework.web.multipart.MultipartFile;
 import static greencity.ModelUtils.getAuthorVO;
 import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
 import static greencity.ModelUtils.getEventPreviewDtos;
 import static greencity.ModelUtils.getFilterEventDto;
@@ -1226,5 +1227,61 @@ class EventServiceImplTest {
         verify(eventRepo).findById(event.getId());
         verify(userRepo, never()).findById(anyLong());
         verify(userNotificationService, never()).removeActionUserFromNotification(any(), any(), anyLong(), any());
+    }
+
+    @Test
+    void countLikesForEventTest() {
+        Event event = getEvent();
+        event.setUsersLikedEvents(getUsersHashSet());
+
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+
+        int actualAmountOfLikes = eventService.countLikes(event.getId());
+
+        assertEquals(2, actualAmountOfLikes);
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void countLikesForEvent_ThrowNotFoundException_Test() {
+        Event event = getEvent();
+        Long eventId = event.getId();
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.countLikes(eventId));
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void checkIsEventLikedByUserTest() {
+        User user = getUser();
+        UserVO userVO = getUserVO();
+        Event event = getEvent();
+        Set<User> usersLiked = new HashSet<>();
+        usersLiked.add(user);
+        event.setUsersLikedEvents(usersLiked);
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+
+        boolean isLikedByUser = eventService.isEventLikedByUser(event.getId(), userVO);
+
+        assertTrue(isLikedByUser);
+        verify(eventRepo).findById(event.getId());
+    }
+
+    @Test
+    void checkIsEventLikedByUserTest_ThrowNotFoundException_Test() {
+        Event event = getEvent();
+        UserVO userVO = getUserVO();
+        Long eventId = event.getId();
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.isEventLikedByUser(eventId, userVO));
+        assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
+
+        assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
+        verify(eventRepo, times(1)).findById(event.getId());
     }
 }

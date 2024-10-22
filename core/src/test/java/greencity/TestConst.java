@@ -8,4 +8,5 @@ public final class TestConst {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String STATUS_ACTIVATED = "ACTIVATED";
     public static final String TEST_QUERY = "Test";
+    public static final Long EVENT_ID = 1L;
 }
