@@ -325,6 +325,26 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
+    @Override
+    public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserVO user) {
+        EcoNews toUpdate = modelMapper.map(findById(updateEcoNewsDto.getId()), EcoNews.class);
+        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
+        try {
+            ecoNewsRepo.save(toUpdate);
+        } catch (Exception e) {
+            fileService.delete(toUpdate.getImagePath());
+            throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
+        }
+        return getEcoNewsGenericDtoWithAllTags(toUpdate);
+    }
+
     @Override
     public void addToFavorites(Long ecoNewsId, String email) {
         EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
@@ -358,26 +378,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .filter(user -> !user.getId().equals(currentUser.getId()))
             .collect(Collectors.toSet()));
         ecoNewsRepo.save(ecoNews);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
-    @Override
-    public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserVO user) {
-        EcoNews toUpdate = modelMapper.map(findById(updateEcoNewsDto.getId()), EcoNews.class);
-        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-        enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
-        try {
-            ecoNewsRepo.save(toUpdate);
-        } catch (Exception e) {
-            fileService.delete(toUpdate.getImagePath());
-            throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
-        }
-        return getEcoNewsGenericDtoWithAllTags(toUpdate);
     }
 
     @Override
