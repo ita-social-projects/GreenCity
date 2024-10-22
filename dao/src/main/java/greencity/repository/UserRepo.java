@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -47,6 +48,18 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(" SELECT new greencity.dto.user.UserManagementVO(u.id, u.name, u.email, u.userCredo, u.role, u.userStatus) "
         + " FROM User u ")
     Page<UserManagementVO> findAllManagementVo(Specification<User> filter, Pageable pageable);
+
+    /**
+     * Find all {@link User}.
+     *
+     * @param filter   filter parameters
+     * @param pageable pagination
+     * @return list of all {@link User}
+     *
+     * @author Anton Bondar
+     */
+    @NonNull
+    Page<User> findAll(@NonNull Specification<User> filter, @NonNull Pageable pageable);
 
     /**
      * Find not 'DEACTIVATED' {@link User} by email.
