@@ -132,6 +132,14 @@ public interface EcoNewsService {
     void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile multipartFile);
 
     /**
+     * Method for updating {@link EcoNewsVO} instance.
+     *
+     * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
+     * @return instance of {@link EcoNewsGenericDto}.
+     */
+    EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
+
+    /**
      * Method for adding an eco new to favorites by ecoNewsId.
      *
      * @param ecoNewsId - eco-news id.
@@ -146,14 +154,6 @@ public interface EcoNewsService {
      * @param email     - user email.
      */
     void removeFromFavorites(Long ecoNewsId, String email);
-
-    /**
-     * Method for updating {@link EcoNewsVO} instance.
-     *
-     * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
-     * @return instance of {@link EcoNewsGenericDto}.
-     */
-    EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
 
     /**
      * Find {@link EcoNewsVO} for management.
