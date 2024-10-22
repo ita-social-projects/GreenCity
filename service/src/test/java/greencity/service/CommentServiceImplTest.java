@@ -70,7 +70,7 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserSearchDto;
 import static greencity.ModelUtils.getUserTagDto;
 import static greencity.ModelUtils.getUserVO;
-import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -773,7 +773,7 @@ class CommentServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class,
             () -> commentService.getAllActiveComments(pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS));
 
-        assertEquals(ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId, exception.getMessage());
+        assertEquals(ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId, exception.getMessage());
 
         verify(econewsRepo).findById(ecoNewsId);
     }
