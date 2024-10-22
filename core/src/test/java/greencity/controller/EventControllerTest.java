@@ -45,7 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -351,8 +350,8 @@ class EventControllerTest {
         Long eventId = 1L;
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes/count", eventId)
-                .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(eventService).countLikes(eventId);
     }
@@ -366,8 +365,8 @@ class EventControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes", eventId)
-                .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(eventService).isEventLikedByUser(eventId, userVO);
     }

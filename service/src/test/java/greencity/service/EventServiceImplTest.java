@@ -1249,7 +1249,7 @@ class EventServiceImplTest {
         Event event = getEvent();
 
         NotFoundException exception =
-                assertThrows(NotFoundException.class, () -> eventService.countLikes(event.getId()));
+            assertThrows(NotFoundException.class, () -> eventService.countLikes(event.getId()));
         assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
 
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
@@ -1278,7 +1278,7 @@ class EventServiceImplTest {
         Event event = getEvent();
 
         NotFoundException exception =
-                assertThrows(NotFoundException.class, () -> eventService.countLikes(event.getId()));
+            assertThrows(NotFoundException.class, () -> eventService.countLikes(event.getId()));
         assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
 
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));

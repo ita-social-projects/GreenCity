@@ -304,12 +304,12 @@ public class EventController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{eventId}/likes/count")
-    public ResponseEntity<Integer> countLikesForEvent(@PathVariable Long eventId) {
+    public ResponseEntity<Integer> countLikes(@PathVariable Long eventId) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.countLikes(eventId));
     }
 
@@ -322,15 +322,15 @@ public class EventController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{eventId}/likes")
     public ResponseEntity<Boolean> isEventLikedByUser(
-            @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userVO));
     }
 

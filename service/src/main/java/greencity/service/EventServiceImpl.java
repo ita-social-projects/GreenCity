@@ -7,7 +7,6 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -773,7 +772,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Integer countLikes(Long eventId) {
         Event event = eventRepo.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
         return event.getUsersLikedEvents().size();
     }
 
@@ -783,7 +782,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Boolean isEventLikedByUser(Long eventId, UserVO userVO) {
         Event event = eventRepo.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
         return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
     }
 
