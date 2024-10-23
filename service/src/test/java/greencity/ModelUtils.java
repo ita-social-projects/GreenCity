@@ -554,7 +554,6 @@ public class ModelUtils {
                     .id(13L)
                     .name("user")
                     .build())
-                .expiryDate(LocalDateTime.of(2021, 7, 7, 7, 7))
                 .token("toooookkkeeeeen42324532542")
                 .build())
             .userFriends(Collections.singletonList(

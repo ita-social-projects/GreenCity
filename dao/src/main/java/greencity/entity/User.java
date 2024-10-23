@@ -136,13 +136,11 @@ import java.util.Set;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "refreshTokenKey", "estimates", "restorePasswordEmail", "customShoppingListItems",
-        "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
+    exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
+        "customShoppingListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
 @ToString(
-    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "estimates", "restorePasswordEmail", "customShoppingListItems", "eventOrganizerRating",
-        "favoriteEvents", "subscribedEvents"})
+    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
+        "customShoppingListItems", "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -168,7 +166,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private OwnSecurity ownSecurity;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private VerifyEmail verifyEmail;
 
     @OneToOne(mappedBy = "user")
