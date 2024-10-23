@@ -10,9 +10,11 @@ import lombok.Setter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class TagTranslationDto extends LanguageTranslationDTO {
     @Valid
