@@ -1507,13 +1507,13 @@ public class ModelUtils {
 
     public static AchievementManagementDto getAchievementManagementDto() {
         return AchievementManagementDto.builder()
-                .id(1L)
-                .title("ACQUIRED_HABIT_14_DAYS")
-                .name("Набуття звички протягом 14 днів")
-                .nameEng("Acquired habit 14 days")
-                .achievementCategory(getAchievementCategoryDto())
-                .condition(1)
-                .build();
+            .id(1L)
+            .title("ACQUIRED_HABIT_14_DAYS")
+            .name("Набуття звички протягом 14 днів")
+            .nameEng("Acquired habit 14 days")
+            .achievementCategory(getAchievementCategoryDto())
+            .condition(1)
+            .build();
     }
 
     public static UserAchievement getUserAchievement() {
