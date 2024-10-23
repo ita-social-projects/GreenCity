@@ -37,7 +37,6 @@ class UserVOMapperTest {
                     .id(expected.getVerifyEmail().getUser().getId())
                     .name(expected.getVerifyEmail().getUser().getName())
                     .build())
-                .expiryDate(expected.getVerifyEmail().getExpiryDate())
                 .token(expected.getVerifyEmail().getToken())
                 .build() : null)
             .userFriends(expected.getUserFriends() != null ? expected.getUserFriends()
