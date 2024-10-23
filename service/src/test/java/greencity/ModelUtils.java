@@ -1245,9 +1245,9 @@ public class ModelUtils {
 
     public static List<TagTranslationDto> getTagTranslationDtos() {
         return Arrays.asList(
-            TagTranslationDto.TagTranslationDtoBuilder().name("Новини")
+            TagTranslationDto.builder().name("Новини")
                 .language(LanguageDTO.builder().id(2L).code("ua").build()).build(),
-            TagTranslationDto.TagTranslationDtoBuilder().name("News")
+                TagTranslationDto.builder().name("News")
                 .language(LanguageDTO.builder().id(1L).code("en").build()).build());
     }
 
