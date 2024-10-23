@@ -1765,6 +1765,12 @@ public class ModelUtils {
         return event;
     }
 
+    public static HashSet<User> getUsersHashSet() {
+        return new HashSet<>(Arrays.asList(
+            User.builder().id(1L).build(),
+            User.builder().id(2L).build()));
+    }
+
     public static Event getCloseEvent() {
         Event event = new Event();
         event.setOpen(false);

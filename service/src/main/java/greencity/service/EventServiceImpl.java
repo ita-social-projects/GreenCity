@@ -766,6 +766,26 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int countLikes(Long eventId) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersLikedEvents().size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEventLikedByUser(Long eventId, UserVO userVO) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+    }
+
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
         userNotificationService.createOrUpdateLikeNotification(modelMapper.map(targetUser, UserVO.class),
             actionUser, eventId, event.getTitle(), NotificationType.EVENT_LIKE, true);
