@@ -40,7 +40,7 @@
                             <form class="form-inline searching" action="/management/factoftheday/findAll"
                                   method="get">
                                 <i class="material-icons"></i>
-                                <input type="text" name="query" class="form-control" placeholder="Search…">
+                                <input type="text" name="query" th:value="${query}" class="form-control" th:placeholder="#{greenCity.pages.search}">
                             </form>
                         </span>
                         <a href="#addFactOfTheDayModal" id="addFactOfTheDayModalBtn" class="btn btn-success"
@@ -130,14 +130,14 @@
                 </div>
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                            th:href="@{factoftheday(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                            th:href="@{findAll(page=${pageable.getCurrentPage()-1}, query=${query})}" class="page-link">Previous</a>
                     </li>
                     <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
                         th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                            th:href="@{factoftheday(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                            th:href="@{findAll(page=${i}, query=${query})}" class="page-link" th:text="${i+1}">1</a></li>
                     <li class="page-item"
                         th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
-                            th:href="@{factoftheday(page=${pageable.getCurrentPage()+1})}"
+                            th:href="@{findAll(page=${pageable.getCurrentPage()+1}, query=${query})}"
                             class="page-link">Next</a></li>
                 </ul>
             </div>
