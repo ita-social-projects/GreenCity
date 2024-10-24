@@ -16,4 +16,9 @@ import lombok.ToString;
 public class SendHabitNotification implements Serializable, EmailMessage {
     private String name;
     private String email;
+
+    @Override
+    public String getEmail() {
+        return email;
+    }
 }

@@ -106,11 +106,14 @@ public class ErrorMessage {
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND =
         "The user doesn't have any custom shopping list item.";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
-    public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
+    public static final String ECO_NEW_NOT_FOUND_BY_ID = "Eco new doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved";
     public static final String DUPLICATE_TAGS = "Duplicate tags in eco news";
     public static final String ECO_NEWS_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL =
         "Eco news id in path param and eco news id in entity not equal";
+    public static final String ECO_NEW_NOT_IN_FAVORITES = "This eco new is not in favorites.";
+    public static final String USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES =
+        "User has already added this eco new to favorites.";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
         "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
