@@ -112,6 +112,7 @@ class ManagementFactOfTheDayControllerTest {
             .andExpect(view().name("core/management_fact_of_the_day"))
             .andExpect(model().attribute("pageable", allFactsOfTheDay))
             .andExpect(model().attribute("languages", languageDTOS))
+            .andExpect(model().attribute("query", query))
             .andExpect(status().isOk());
 
         verify(factOfTheDayService).searchBy(pageable, query);
