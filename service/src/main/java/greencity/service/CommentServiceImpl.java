@@ -56,7 +56,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static greencity.constant.ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
@@ -188,7 +188,7 @@ public class CommentServiceImpl implements CommentService {
             }
             case ECO_NEWS -> {
                 EcoNews ecoNews = ecoNewsRepo.findById(articleId)
-                    .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
+                    .orElseThrow(() -> new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID + articleId));
                 yield ecoNews.getAuthor().getId();
             }
         };
@@ -216,7 +216,7 @@ public class CommentServiceImpl implements CommentService {
             }
             case ECO_NEWS -> {
                 EcoNews ecoNews = ecoNewsRepo.findById(articleId)
-                    .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId));
+                    .orElseThrow(() -> new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID + articleId));
                 articleName = ecoNews.getTitle();
             }
             case EVENT -> {
@@ -462,7 +462,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public int countCommentsForEcoNews(Long ecoNewsId) {
         EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
-            .orElseThrow(() -> new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId));
+            .orElseThrow(() -> new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId));
         return commentRepo.countNotDeletedCommentsByEcoNews(ecoNews.getId());
     }
 
@@ -649,7 +649,7 @@ public class CommentServiceImpl implements CommentService {
             case ECO_NEWS -> {
                 Optional<EcoNews> ecoNews = ecoNewsRepo.findById(articleId);
                 if (ecoNews.isEmpty()) {
-                    throw new NotFoundException(ECO_NEWS_NOT_FOUND_BY_ID + articleId);
+                    throw new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID + articleId);
                 }
             }
             case EVENT -> {

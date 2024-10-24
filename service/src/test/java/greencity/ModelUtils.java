@@ -431,6 +431,7 @@ public class ModelUtils {
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(localDateTime)
             .subscribedEvents(new HashSet<>())
+            .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
             .language(getLanguage())
             .build();
@@ -652,6 +653,7 @@ public class ModelUtils {
             .title("title")
             .text("text")
             .hidden(false)
+            .followers(new HashSet<>())
             .tags(Collections.singletonList(tag))
             .build();
     }
@@ -662,13 +664,14 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", false, Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
+            "title", "text", false, Collections.singletonList(tag), Collections.emptySet(),
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", false, Collections.singletonList(getTag()), Collections.emptySet(),
-            Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {
@@ -1241,9 +1244,9 @@ public class ModelUtils {
 
     public static List<TagTranslationDto> getTagTranslationDtos() {
         return Arrays.asList(
-            TagTranslationDto.TagTranslationDtoBuilder().name("Новини")
+            TagTranslationDto.builder().name("Новини")
                 .language(LanguageDTO.builder().id(2L).code("ua").build()).build(),
-            TagTranslationDto.TagTranslationDtoBuilder().name("News")
+            TagTranslationDto.builder().name("News")
                 .language(LanguageDTO.builder().id(1L).code("en").build()).build());
     }
 
@@ -1502,9 +1505,14 @@ public class ModelUtils {
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
-        return new AchievementManagementDto(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
-            "Acquired habit 14 days", getAchievementCategoryDto(),
-            1);
+        return AchievementManagementDto.builder()
+            .id(1L)
+            .title("ACQUIRED_HABIT_14_DAYS")
+            .name("Набуття звички протягом 14 днів")
+            .nameEng("Acquired habit 14 days")
+            .achievementCategory(getAchievementCategoryDto())
+            .condition(1)
+            .build();
     }
 
     public static UserAchievement getUserAchievement() {

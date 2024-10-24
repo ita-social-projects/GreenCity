@@ -76,6 +76,7 @@ public class ManagementFactOfTheDayController {
             : factOfTheDayService.searchBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("query", query);
         return "core/management_fact_of_the_day";
     }
 

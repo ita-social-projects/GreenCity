@@ -148,6 +148,30 @@ public interface EcoNewsService {
     EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
 
     /**
+     * Method for adding an eco new to favorites by ecoNewsId.
+     *
+     * @param ecoNewsId - eco-news id.
+     * @param email     - user email.
+     */
+    void addToFavorites(Long ecoNewsId, String email);
+
+    /**
+     * Method for removing an eco new from favorites by ecoNewsId.
+     *
+     * @param ecoNewsId - eco-News id.
+     * @param email     - user email.
+     */
+    void removeFromFavorites(Long ecoNewsId, String email);
+
+    /**
+     * Method for getting a list of user's favorite eco news.
+     *
+     * @param email - user email.
+     * @return list of {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> getFavorites(String email);
+
+    /**
      * Find {@link EcoNewsVO} for management.
      *
      * @return a dto of {@link PageableDto}.

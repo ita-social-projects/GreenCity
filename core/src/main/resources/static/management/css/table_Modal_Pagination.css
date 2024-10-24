@@ -362,11 +362,6 @@ table.table tr th:last-child {
     width: 100px;
 }
 
-table.table-striped tbody tr {
-    background-color: #e5ebef;
-}
-
-
 table.table th i {
     font-size: 14px;
     margin: 0 5px;

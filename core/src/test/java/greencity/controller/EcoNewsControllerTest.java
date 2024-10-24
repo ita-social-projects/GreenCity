@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 
+import greencity.ModelUtils;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
@@ -41,6 +42,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -267,5 +269,107 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk());
 
         verify(ecoNewsService).findByTitle("Test Title");
+
+      void addToFavoritesTest() throws Exception {
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void addToFavoritesNotFoundTest() throws Exception {
+        doThrow(new NotFoundException("Resource not found")).when(ecoNewsService).addToFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+
+        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void addToFavoritesBadRequestTest() throws Exception {
+        doThrow(new IllegalArgumentException("Bad request")).when(ecoNewsService).addToFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+
+        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void removeFromFavoritesNotFoundTest() throws Exception {
+        doThrow(new NotFoundException("Resource not found")).when(ecoNewsService).removeFromFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+
+        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void removeFromFavoritesBadRequestTest() throws Exception {
+        doThrow(new IllegalArgumentException("Bad request")).when(ecoNewsService).removeFromFavorites(anyLong(),
+            anyString());
+
+        mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+
+        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void removeFromFavoritesTest() throws Exception {
+        mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+    }
+
+    @Test
+    void getFavoritesTest() throws Exception {
+        List<EcoNewsDto> ecoNewsDtoList = List.of(ModelUtils.getEcoNewsDto(), ModelUtils.getEcoNewsDto());
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(ecoNewsService.getFavorites(anyString())).thenReturn(ecoNewsDtoList);
+
+        mockMvc.perform(get(ecoNewsLink + "/favorites")
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
+
+        verify(ecoNewsService).getFavorites(principal.getName());
+    }
+
+    @Test
+    void getFavorites_NotFoundTest() throws Exception {
+        UserVO userVO = getUserVO();
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(ecoNewsService.getFavorites(anyString())).thenThrow(new NotFoundException("User not found"));
+
+        mockMvc.perform(get(ecoNewsLink + "/favorites")
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+
+        verify(ecoNewsService).getFavorites(principal.getName());
     }
 }
