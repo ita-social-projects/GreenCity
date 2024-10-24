@@ -58,14 +58,12 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.ArrayList;
 
 import static greencity.ModelUtils.*;
-import static greencity.constant.EventTupleConstant.languageCode;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
