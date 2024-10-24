@@ -2,7 +2,10 @@ package greencity.dto.achievement;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
