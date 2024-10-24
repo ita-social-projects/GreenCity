@@ -176,7 +176,6 @@ public class EventController {
         @Parameter(hidden = true) Pageable pageable,
         @RequestParam(required = false, name = "user-id") Long userId,
         FilterEventDto filterEventDto) {
-
         if (filterEventDto != null && filterEventDto.getStatuses() != null) {
             validateStatusesRequireUserId(filterEventDto.getStatuses(), userId);
         }
