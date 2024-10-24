@@ -137,6 +137,17 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
+    public PageableDto<HabitDto> getMyHabits(UserVO userVO, Pageable pageable, String languageCode) {
+        long userId = userVO.getId();
+        Page<HabitTranslation> habitTranslationPage = habitTranslationRepo.findMyHabits(pageable, userId, languageCode);
+
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable,
         String languageCode) {
         if (!userRepo.isFriend(userId, friendId)) {

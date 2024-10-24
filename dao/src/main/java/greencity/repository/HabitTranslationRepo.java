@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
+import greencity.enums.HabitAssignStatus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,16 @@ public interface HabitTranslationRepo
         + "AND h.isDeleted = false) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation ht "
+        + "JOIN ht.habit h "
+        + "WHERE ht.language = (SELECT l FROM Language l WHERE l.code = :languageCode) "
+        + "AND h.id IN (SELECT ha.habit.id FROM HabitAssign ha "
+        + "WHERE ha.user.id = :userId "
+        + "AND (ha.status = 'INPROGRESS' "
+        + "OR ha.status = 'ACQUIRED' "
+        + "OR ha.status = 'REQUESTED'))")
+    Page<HabitTranslation> findMyHabits(Pageable pageable, Long userId, String languageCode);
 
     /**
      * Method that finds all habit translations of a friend's habits that are not

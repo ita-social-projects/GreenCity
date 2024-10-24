@@ -33,6 +33,14 @@ public interface HabitService {
     PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
 
     /**
+     * Method returns all habits of the current user.
+     *
+     * @param pageable - instance of {@link Pageable}.
+     * @return Pageable of {@link HabitDto}.
+     */
+    PageableDto<HabitDto> getMyHabits(UserVO userVO, Pageable pageable, String languageCode);
+
+    /**
      * Method returns all habits of a friend, both default and custom, for the
      * current user and the specified friend.
      *
