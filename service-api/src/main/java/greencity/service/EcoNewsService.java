@@ -156,6 +156,14 @@ public interface EcoNewsService {
     void removeFromFavorites(Long ecoNewsId, String email);
 
     /**
+     * Method for getting a list of user's favorite eco news.
+     *
+     * @param email - user email.
+     * @return list of {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> getFavorites(String email);
+
+    /**
      * Find {@link EcoNewsVO} for management.
      *
      * @return a dto of {@link PageableDto}.

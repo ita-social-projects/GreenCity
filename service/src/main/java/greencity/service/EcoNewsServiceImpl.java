@@ -346,6 +346,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
+    public List<EcoNewsDto> getFavorites(String email) {
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        List<EcoNews> favoriteEcoNews = new ArrayList<>(currentUser.getFavoriteEcoNews());
+
+        return mapEcoNewsListToEcoNewsDtoList(favoriteEcoNews);
+    }
+
+    @Override
     public void addToFavorites(Long ecoNewsId, String email) {
         EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId));

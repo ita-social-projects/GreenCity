@@ -128,6 +128,23 @@ public class EcoNewsController {
     }
 
     /**
+     * Method for getting a list of user's favorite eco news.
+     */
+    @Operation(summary = "Get a list of user's favorite eco news")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/favorites")
+    public ResponseEntity<List<EcoNewsDto>> getFavorites(@Parameter(hidden = true) Principal principal) {
+        List<EcoNewsDto> favorites = ecoNewsService.getFavorites(principal.getName());
+        return ResponseEntity.ok(favorites);
+    }
+
+    /**
      * Method for updating {@link EcoNewsVO}.
      *
      * @param updateEcoNewsDto - dto for {@link EcoNewsVO} entity.
