@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.enums.HabitAssignStatus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
