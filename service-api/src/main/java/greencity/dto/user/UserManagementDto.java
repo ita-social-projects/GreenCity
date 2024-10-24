@@ -3,23 +3,19 @@ package greencity.dto.user;
 import greencity.constant.ServiceValidationConstants;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Data;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@Builder
-@EqualsAndHashCode
 public class UserManagementDto {
     @NotNull
     private Long id;

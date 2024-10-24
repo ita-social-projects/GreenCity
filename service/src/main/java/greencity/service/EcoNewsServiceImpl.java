@@ -39,6 +39,7 @@ import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
+import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -80,6 +81,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
+    private final UserRepo userRepo;
     private final CommentService commentService;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
@@ -199,7 +201,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public EcoNewsVO findById(Long id) {
         return ecoNewsRepo.findById(id)
             .map(n -> modelMapper.map(n, EcoNewsVO.class))
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -208,7 +210,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsDto findDtoByIdAndLanguage(Long id, String language) {
         EcoNews ecoNews = ecoNewsRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
         List<String> tags = new ArrayList<>();
         for (String lang : languageCode) {
             tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
@@ -341,6 +343,51 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return getEcoNewsGenericDtoWithAllTags(toUpdate);
+    }
+
+    @Override
+    public List<EcoNewsDto> getFavorites(String email) {
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        List<EcoNews> favoriteEcoNews = new ArrayList<>(currentUser.getFavoriteEcoNews());
+
+        return mapEcoNewsListToEcoNewsDtoList(favoriteEcoNews);
+    }
+
+    @Override
+    public void addToFavorites(Long ecoNewsId, String email) {
+        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (ecoNews.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES);
+        }
+
+        ecoNews.getFollowers().add(currentUser);
+        ecoNewsRepo.save(ecoNews);
+    }
+
+    @Override
+    public void removeFromFavorites(Long ecoNewsId, String email) {
+        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (!ecoNews.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES);
+        }
+
+        ecoNews.setFollowers(ecoNews.getFollowers()
+            .stream()
+            .filter(user -> !user.getId().equals(currentUser.getId()))
+            .collect(Collectors.toSet()));
+        ecoNewsRepo.save(ecoNews);
     }
 
     @Override
@@ -610,7 +657,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id) {
         EcoNews ecoNews = ecoNewsRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
         return getContentSourceEcoNewsDto(ecoNews);
     }
 
@@ -656,7 +703,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public Set<UserVO> findUsersWhoLikedPost(Long id) {
         EcoNews ecoNews = ecoNewsRepo
             .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
         Set<User> usersLikedNews = ecoNews.getUsersLikedNews();
         return usersLikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
     }
@@ -665,7 +712,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public Set<UserVO> findUsersWhoDislikedPost(Long id) {
         EcoNews ecoNews = ecoNewsRepo
             .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
         Set<User> usersDislikedNews = ecoNews.getUsersDislikedNews();
         return usersDislikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
     }
@@ -719,7 +766,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         EcoNews ecoNews = ecoNewsRepo
             .findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + id));
         ecoNews.setHidden(value);
 
         ecoNewsRepo.save(ecoNews);
