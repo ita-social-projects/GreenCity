@@ -25,7 +25,7 @@
     <script th:src="@{/management/rating/ratingPoints.js}"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
 </head>
-<body>
+<body th:with="baseUrl='/management/rating/calculation/deleted'" th:data-base-url="${baseUrl}">
 <div id="header" th:insert="~{core/header}"></div>
 <div id="sidebar" th:insert="~{core/sidepanel}"></div>
 <div class="main-content">
@@ -43,7 +43,7 @@
                                     [[#{greenCity.pages.showActive}]]
                                 </a>
                                 <span class="search-box-right fixed-i-position">
-                                    <form class="form-inline searching" action="/management/rating/calculation/deleted"
+                                    <form class="form-inline searching" th:action="@{${baseUrl}(page=${0})}"
                                           method="get">
                                         <i class="material-icons"></i>
                                         <input type="text" name="query" class="form-control" th:value="${query}" th:placeholder="#{greenCity.pages.search}">
@@ -56,9 +56,36 @@
                 <table id="datatable" class="table table-striped table-hover">
                     <thead>
                     <tr class="table-primary">
-                        <th>[[#{greenCity.pages.table.id}]]</th>
-                        <th>[[#{greenCity.pages.table.event.name}]]</th>
-                        <th>[[#{greenCity.pages.table.points.changed}]]</th>
+                        <th><span class="header-text">[[#{greenCity.pages.table.id}]]</span>
+                            <span onclick="orderByField('id','asc')">
+                                <i id="id-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('id','desc')">
+                                <i id="id-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th><span class="header-text">[[#{greenCity.pages.table.event.name}]]</span>
+                            <span onclick="orderByField('name','asc')">
+                                <i id="name-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('name','desc')">
+                                <i id="name-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
+                        <th><span class="header-text">[[#{greenCity.pages.table.points.changed}]]</span>
+                            <span onclick="orderByField('points','asc')">
+                                <i id="points-icon-asc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.ascending}">&#xE5D8;</i>
+                            </span>
+                            <span onclick="orderByField('points','desc')">
+                                <i id="points-icon-desc" class="material-icons" data-toggle="tooltip"
+                                   th:title="#{greenCity.pages.table.descending}">&#xE5DB;</i>
+                            </span>
+                        </th>
                         <th>[[#{greenCity.pages.table.status}]]</th>
                         <th>[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
@@ -71,8 +98,10 @@
                             <td th:text="${rating.points}"></td>
                             <td th:text="${rating.status}"></td>
                             <td>
-                                <a href="" class="restore edit eBtn"><i
-                                        class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
+                                <a href="" class="restore edit eBtn">
+                                    <i class="material-icons" data-toggle="tooltip"
+                                       th:title="#{greenCity.pages.edit}">&#xE254;</i>
+                                </a>
                             </td>
                         </tr>
                     </th:block>
@@ -91,28 +120,28 @@
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${!ratings.isFirst()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!ratings.isFirst()}"
-                               th:href="@{/management/rating/calculation/deleted(page=${0}, query=${query})}">&#060;&#060;</a>
+                               th:href="@{${baseUrl}(page=${0}, query=${query})}">&#060;&#060;</a>
                             <a class="page-link" rel="tooltip" th:if="${ratings.isFirst()}">&#060;&#060;</a>
                         </li>
                         <li class="page-item" th:classappend="${ratings.isHasPrevious()} ? '' : 'disabled'">
                             <a class="page-link" th:if="${ratings.isHasPrevious()}"
-                               th:href="@{/management/rating/calculation/deleted(page=${ratings.getNumber()-1}, query=${query})}">[[#{greenCity.page.paging.previous}]]</a>
+                               th:href="@{${baseUrl}(page=${ratings.getNumber()-1}, query=${query})}">[[#{greenCity.page.paging.previous}]]</a>
                             <a th:if="${!ratings.isHasPrevious()}">[[#{greenCity.page.paging.previous}]]</a>
                         </li>
                         <li class="page-item"
                             th:if="${pageNumber > -1 && pageNumber < ratings.getTotalPages()}"
                             th:classappend="${pageNumber == ratings.getNumber()} ? 'active' : ''"
                             th:each="pageNumber : ${#numbers.sequence(ratings.getNumber()-3, ratings.getNumber()+3)}">
-                            <a class="page-link" th:href="@{/management/rating/calculation/deleted(page=${pageNumber}, query=${query})}">[[${pageNumber}+1]]</a>
+                            <a class="page-link" th:href="@{${baseUrl}(page=${pageNumber}, query=${query})}">[[${pageNumber}+1]]</a>
                         </li>
                         <li class="page-item" th:classappend="${ratings.isHasNext()} ? '' : 'disabled'">
                             <a class="page-link" th:if="${ratings.isHasNext()}"
-                               th:href="@{/management/rating/calculation/deleted(page=${ratings.getNumber()+1}, query=${query})}">[[#{greenCity.page.paging.next}]]</a>
+                               th:href="@{${baseUrl}(page=${ratings.getNumber()+1}, query=${query})}">[[#{greenCity.page.paging.next}]]</a>
                             <a th:if="${!ratings.isHasNext()}">[[#{greenCity.page.paging.next}]]</a>
                         </li>
                         <li class="page-item" th:classappend="${!ratings.isLast()} ? '' : 'disabled'">
                             <a class="page-link" rel="tooltip" th:if="${!ratings.isLast()}"
-                               th:href="@{/management/rating/calculation/deleted(page=${ratings.getTotalPages()-1}, query=${query})}">&#062;&#062;</a>
+                               th:href="@{${baseUrl}(page=${ratings.getTotalPages()-1}, query=${query})}">&#062;&#062;</a>
                             <a class="page-link" rel="tooltip" th:if="${ratings.isLast()}">&#062;&#062;</a>
                         </li>
                     </ul>
