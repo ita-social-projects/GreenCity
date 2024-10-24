@@ -226,6 +226,48 @@ class HabitServiceImplTest {
     }
 
     @Test
+    void getMyHabits() {
+        Pageable pageable = PageRequest.of(0, 2);
+        Long userId = 0L;
+        String languageCode = "en";
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
+        HabitDto habitDto = ModelUtils.getHabitDto();
+        habitDto.setIsCustomHabit(true);
+        List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
+        Page<HabitTranslation> habitTranslationPage =
+            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        PageableDto<HabitDto> pageableDto = new PageableDto<>(habitDtoList, habitTranslationPage.getTotalElements(),
+            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+        Habit habit = ModelUtils.getHabit();
+        habit.setIsCustomHabit(true);
+        habit.setUserId(1L);
+        UserVO userVO = ModelUtils.getUserVO();
+        List<Long> requestedCustomHabitIds = List.of(1L);
+
+        when(habitTranslationRepo.findMyHabits(pageable, userId, languageCode))
+            .thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
+            requestedCustomHabitIds, userVO.getId(), languageCode)).thenReturn(habitTranslationPage);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
+        when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
+            .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
+        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn(languageCode);
+
+        assertEquals(pageableDto, habitService.getMyHabits(userId, pageable, languageCode));
+
+        verify(habitTranslationRepo).findMyHabits(pageable, userId, languageCode);
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
+        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+        verify(habitAssignRepo).findHabitsByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitRepo).findById(1L);
+    }
+
+    @Test
     void getAllHabitsOfFriend() {
         Pageable pageable = PageRequest.of(0, 2);
         Long userId = 0L;

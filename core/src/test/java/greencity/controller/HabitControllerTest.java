@@ -93,6 +93,24 @@ class HabitControllerTest {
     }
 
     @Test
+    void getMyHabits() throws Exception {
+        int pageNumber = 1;
+        int pageSize = 20;
+        Locale locale = Locale.of("en");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = new UserVO();
+
+        mockMvc.perform(get(habitLink + "/my")
+            .param("page", String.valueOf(pageNumber))
+            .param("size", String.valueOf(pageSize))
+            .param("lang", String.valueOf(locale))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(habitService).getMyHabits(userVO.getId(), pageable, locale.getLanguage());
+    }
+
+    @Test
     void getAllHabitsOfFriend() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;

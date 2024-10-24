@@ -123,7 +123,7 @@ public class HabitController {
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getMyHabits(userVO, pageable, locale.getLanguage()));
+            habitService.getMyHabits(userVO.getId(), pageable, locale.getLanguage()));
     }
 
     /**

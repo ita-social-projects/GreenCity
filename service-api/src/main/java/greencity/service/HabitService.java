@@ -38,7 +38,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getMyHabits(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getMyHabits(Long userId, Pageable pageable, String languageCode);
 
     /**
      * Method returns all habits of a friend, both default and custom, for the
