@@ -264,9 +264,9 @@ class EcoNewsControllerTest {
         when(ecoNewsService.findByTitle("Test Title")).thenReturn(ecoNewsDtos);
 
         mockMvc.perform(get(ecoNewsLink + "/by-title")
-                        .param("title", "Test Title")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .param("title", "Test Title")
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService).findByTitle("Test Title");
     }
