@@ -132,11 +132,11 @@ public class EcoNewsController {
      */
     @Operation(summary = "Get a list of user's favorite eco news")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/favorites")
     public ResponseEntity<List<EcoNewsDto>> getFavorites(@Parameter(hidden = true) Principal principal) {

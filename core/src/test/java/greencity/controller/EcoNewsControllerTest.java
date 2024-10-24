@@ -331,16 +331,15 @@ class EcoNewsControllerTest {
     void getFavoritesTest() throws Exception {
         List<EcoNewsDto> ecoNewsDtoList = List.of(ModelUtils.getEcoNewsDto(), ModelUtils.getEcoNewsDto());
 
-        UserVO userVO = getUserVO()
-                ;
+        UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(ecoNewsService.getFavorites(anyString())).thenReturn(ecoNewsDtoList);
 
         mockMvc.perform(get(ecoNewsLink + "/favorites")
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2));
 
         verify(ecoNewsService).getFavorites(principal.getName());
     }
@@ -353,9 +352,9 @@ class EcoNewsControllerTest {
         when(ecoNewsService.getFavorites(anyString())).thenThrow(new NotFoundException("User not found"));
 
         mockMvc.perform(get(ecoNewsLink + "/favorites")
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
 
         verify(ecoNewsService).getFavorites(principal.getName());
     }
