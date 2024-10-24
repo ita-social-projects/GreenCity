@@ -5,6 +5,7 @@ import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -847,6 +848,8 @@ class EcoNewsServiceImplTest {
 
         assertTrue(ecoNews.getFollowers().contains(user));
         verify(ecoNewsRepo).save(ecoNews);
+        verify(ecoNewsRepo).findById(1L);
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 
     @Test
@@ -856,7 +859,8 @@ class EcoNewsServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
 
-        assertEquals("Eco new doesn't exist by this id: 1", exception.getMessage());
+        assertEquals(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L, exception.getMessage());
+        verify(ecoNewsRepo).findById(1L);
     }
 
     @Test
@@ -867,7 +871,9 @@ class EcoNewsServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
 
-        assertEquals("The user does not exist by this email: taras@gmail.com", exception.getMessage());
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + TestConst.EMAIL, exception.getMessage());
+        verify(ecoNewsRepo).findById(1L);
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 
     @Test
@@ -879,9 +885,11 @@ class EcoNewsServiceImplTest {
         when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
 
         BadRequestException exception =
-            assertThrows(BadRequestException.class, () -> ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+                assertThrows(BadRequestException.class, () -> ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
 
-        assertEquals("User has already added this eco new to favorites.", exception.getMessage());
+        assertEquals(ErrorMessage.USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES, exception.getMessage());
+        verify(ecoNewsRepo).findById(1L);
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 
     @Test
@@ -896,6 +904,8 @@ class EcoNewsServiceImplTest {
 
         assertFalse(ecoNews.getFollowers().contains(user));
         verify(ecoNewsRepo).save(ecoNews);
+        verify(ecoNewsRepo).findById(1L);
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 
     @Test
@@ -905,7 +915,8 @@ class EcoNewsServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
 
-        assertEquals("Eco new doesn't exist by this id: 1", exception.getMessage());
+        assertEquals(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L, exception.getMessage());
+        verify(ecoNewsRepo).findById(1L);
     }
 
     @Test
@@ -916,7 +927,9 @@ class EcoNewsServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
 
-        assertEquals("The user does not exist by this email: taras@gmail.com", exception.getMessage());
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + TestConst.EMAIL, exception.getMessage());
+        verify(ecoNewsRepo).findById(1L);
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 
     @Test
@@ -927,8 +940,10 @@ class EcoNewsServiceImplTest {
         when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
 
         BadRequestException exception =
-            assertThrows(BadRequestException.class, () -> ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+                assertThrows(BadRequestException.class, () -> ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
 
-        assertEquals("This eco new is not in favorites.", exception.getMessage());
+        assertEquals(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES, exception.getMessage());
+        verify(ecoNewsRepo).findById(1L);
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 }
