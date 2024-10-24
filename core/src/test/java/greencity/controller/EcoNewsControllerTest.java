@@ -7,6 +7,7 @@ import static greencity.ModelUtils.getUserVO;
 
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
@@ -15,6 +16,7 @@ import greencity.service.TagsService;
 import greencity.service.UserService;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -249,5 +251,21 @@ class EcoNewsControllerTest {
             .andExpect(status().isNotFound());
 
         verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);
+    }
+
+    @Test
+    void getEcoNewsByTitleTest() throws Exception {
+        EcoNewsDto ecoNewsDto = new EcoNewsDto();
+        ecoNewsDto.setTitle("Test Title");
+        List<EcoNewsDto> ecoNewsDtos = List.of(ecoNewsDto);
+
+        when(ecoNewsService.findByTitle("Test Title")).thenReturn(ecoNewsDtos);
+
+        mockMvc.perform(get(ecoNewsLink + "/by-title")
+            .param("title", "Test Title")
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).findByTitle("Test Title");
     }
 }

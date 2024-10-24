@@ -75,6 +75,14 @@ public interface EcoNewsService {
     EcoNewsDto findDtoByIdAndLanguage(Long id, String language);
 
     /**
+     * Method for getting eco news by title.
+     *
+     * @param title {@link String} title of the eco news.
+     * @return List of {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> findByTitle(String title);
+
+    /**
      * Method for deleting the {@link EcoNewsVO} instance by its id.
      *
      * @param id   - {@link EcoNewsVO} instance id which will be deleted.

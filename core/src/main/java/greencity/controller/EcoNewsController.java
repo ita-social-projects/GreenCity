@@ -163,6 +163,25 @@ public class EcoNewsController {
     }
 
     /**
+     * Method for getting eco news by title.
+     *
+     * @return List of {@link EcoNewsDto} instances.
+     */
+    @Operation(summary = "Get eco news by title.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = EcoNewsDto.class))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/by-title")
+    public ResponseEntity<List<EcoNewsDto>> getEcoNewsByTitle(
+        @RequestParam String title) {
+        List<EcoNewsDto> ecoNewsList = ecoNewsService.findByTitle(title);
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsList);
+    }
+
+    /**
      * Method for deleting {@link EcoNewsVO} by its id.
      *
      * @param ecoNewsId {@link EcoNewsVO} id which will be deleted.

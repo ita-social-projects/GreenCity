@@ -219,6 +219,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return getEcoNewsDto(ecoNews, tags);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<EcoNewsDto> findByTitle(String title) {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.findByTitleContaining(title);
+        return mapEcoNewsListToEcoNewsDtoList(ecoNewsList);
+    }
+
     /**
      * {@inheritDoc}
      */
