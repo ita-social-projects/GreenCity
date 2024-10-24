@@ -885,7 +885,7 @@ class EcoNewsServiceImplTest {
         when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
 
         BadRequestException exception =
-                assertThrows(BadRequestException.class, () -> ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+            assertThrows(BadRequestException.class, () -> ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
 
         assertEquals(ErrorMessage.USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
@@ -940,7 +940,7 @@ class EcoNewsServiceImplTest {
         when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
 
         BadRequestException exception =
-                assertThrows(BadRequestException.class, () -> ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+            assertThrows(BadRequestException.class, () -> ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
 
         assertEquals(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
