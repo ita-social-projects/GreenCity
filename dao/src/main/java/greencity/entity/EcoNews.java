@@ -71,6 +71,7 @@ public class EcoNews {
     private Set<User> usersDislikedNews = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @Builder.Default
     @JoinTable(name = "eco_news_followers",
         joinColumns = @JoinColumn(name = "eco_news_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
