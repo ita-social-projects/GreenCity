@@ -129,4 +129,12 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
             LIMIT 3;
             """)
     List<EcoNews> findThreeInterestingEcoNews();
+
+    /**
+     * Method for finding eco news by title containing the given keyword.
+     *
+     * @param title the keyword to search in the title
+     * @return list of {@link EcoNews} instances.
+     */
+    List<EcoNews> findByTitleContaining(String title);
 }
