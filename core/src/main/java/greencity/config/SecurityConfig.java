@@ -255,6 +255,8 @@ public class SecurityConfig {
                     "/chat",
                     EVENTS + ATTENDERS + COUNT,
                     EVENTS + ORGANIZERS + COUNT,
+                    EVENTS + EVENT_ID + LIKES,
+                    EVENTS + EVENT_ID + LIKES + COUNT,
                     "/user/shopping-list-items/{userId}/get-all-inprogress",
                     "/habit/assign/{habitAssignId}/allUserAndCustomList",
                     "/habit/assign/allUserAndCustomShoppingListsInprogress",

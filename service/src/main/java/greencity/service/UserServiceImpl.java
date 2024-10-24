@@ -3,7 +3,7 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.filter.UserFilterDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
@@ -18,6 +18,7 @@ import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserRepo;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
+    private final UserManagementVOMapper userManagementVOMapper;
     @Value("300000")
     private long timeAfterLastActivity;
 
@@ -225,19 +228,24 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
-        Pageable pageable) {
-        UserFilterDto filterUserDto = createUserFilterDto(criteria, role, status);
-        Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    public PageableDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable) {
+        var userFilterDto = createUserFilterDto(request.getQuery(), request.getRole(), request.getStatus());
 
-        var listOfUsers = userRepo.findAllManagementVo(new UserFilter(filterUserDto), sortedPageable);
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id"));
+        }
+
+        Page<User> users = userRepo.findAll(new UserFilter(userFilterDto), pageable);
+        Page<UserManagementVO> userManagementVOs = userManagementVOMapper.mapAllToPage(users);
 
         return new PageableDto<>(
-            listOfUsers.getContent(),
-            listOfUsers.getTotalElements(),
-            listOfUsers.getPageable().getPageNumber(),
-            listOfUsers.getTotalPages());
+            userManagementVOs.getContent(),
+            userManagementVOs.getTotalElements(),
+            userManagementVOs.getPageable().getPageNumber(),
+            userManagementVOs.getTotalPages());
     }
 
     /**

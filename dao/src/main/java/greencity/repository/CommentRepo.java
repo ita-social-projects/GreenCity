@@ -29,31 +29,34 @@ public interface CommentRepo extends JpaRepository<Comment, Long> {
      * @param habitId {@link Long} - id of habit.
      * @return count of not deleted comments, specified by {@link Habit}
      */
-    @Query(value = "select count(c.id) from comments c"
-        + " join habits h on h.id = c.article_id"
-        + " where h.id = :habitId and c.status <>'DELETED'", nativeQuery = true)
+    @Query(value = "select count(c.id) from comments c "
+        + "join habits h on h.id = c.article_id "
+        + "where h.id = :habitId and c.status <>'DELETED' "
+        + "and c.article_type = 'HABIT'", nativeQuery = true)
     int countNotDeletedCommentsByHabit(Long habitId);
 
     /**
      * The method returns the count of not deleted comments, specified by.
      *
      * @param ecoNewsId {@link Long} - id of eco-news
-     * @return count of not deleted commnents, specified by {@link EcoNews}
+     * @return count of not deleted comments, specified by {@link EcoNews}
      */
     @Query(value = "SELECT COUNT(c.id) from comments c "
         + "join eco_news e on e.id = c.article_id "
-        + "where e.id =:ecoNewsId and c.status <> 'DELETED'", nativeQuery = true)
+        + "where e.id =:ecoNewsId and c.status <> 'DELETED' "
+        + "and c.article_type = 'ECO_NEWS'", nativeQuery = true)
     int countNotDeletedCommentsByEcoNews(Long ecoNewsId);
 
     /**
      * The method returns the count of not deleted comments, specified by.
      *
      * @param eventId {@link Long} - id of eco-news
-     * @return count of not deleted commnents, specified by {@link EcoNews}
+     * @return count of not deleted comments, specified by {@link EcoNews}
      */
     @Query(value = "SELECT COUNT(c.id) from comments c "
         + "join events e on e.id = c.article_id "
-        + "where e.id =:eventId and c.status <> 'DELETED'", nativeQuery = true)
+        + "where e.id =:eventId and c.status <> 'DELETED' "
+        + "and c.article_type = 'EVENT'", nativeQuery = true)
     int countNotDeletedCommentsByEvent(Long eventId);
 
     /**

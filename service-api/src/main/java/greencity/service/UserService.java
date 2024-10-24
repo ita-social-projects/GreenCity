@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
@@ -121,11 +122,19 @@ public interface UserService {
     void updateEventOrganizerRating(Long userId, Double rate);
 
     /**
-     * Method that returns list of users filtered by criteria.
+     * Method that returns a paginated list of users filtered by specified criteria.
      *
-     * @param criteria value which we used to filter users.
+     * @param request  request for searching related data
+     * @param pageable pagination information including page number, size, and
+     *                 sorting options.
+     *
+     * @return a {@link PageableDto} containing a list of {@link UserManagementVO}
+     *         filtered by the given criteria, role, and status, along with
+     *         pagination details.
+     *
+     * @author Anton Bondar
      */
-    PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
+    PageableDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable);
 
     /**
      * Method that update user's rating.

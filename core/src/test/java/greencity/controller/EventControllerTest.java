@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
+import static greencity.TestConst.EVENT_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -342,6 +343,29 @@ class EventControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).like(eventId, userVO);
+    }
+
+    @Test
+    @SneakyThrows
+    void countLikesTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes/count", EVENT_ID)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(eventService).countLikes(EVENT_ID);
+    }
+
+    @Test
+    @SneakyThrows
+    void checkIsEventLikedByUserTest() {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes", EVENT_ID)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(eventService).isEventLikedByUser(EVENT_ID, userVO);
     }
 
     @Test

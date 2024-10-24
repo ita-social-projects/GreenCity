@@ -39,7 +39,6 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                     .id(user.getVerifyEmail().getUser().getId())
                     .name(user.getVerifyEmail().getUser().getName())
                     .build())
-                .expiryDate(user.getVerifyEmail().getExpiryDate())
                 .token(user.getVerifyEmail().getToken())
                 .build() : null)
             .userFriends(user.getUserFriends() != null ? user.getUserFriends()

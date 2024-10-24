@@ -71,10 +71,41 @@ public interface RatingPointsRepo extends JpaRepository<RatingPoints, Long> {
     @Query("UPDATE RatingPoints rp SET rp.name = :newName WHERE rp.name = :oldName")
     void updateRatingPointsName(String oldName, String newName);
 
+    /**
+     * Checks whether an achievement exists for the specified RatingPoints ID. This
+     * method performs a native SQL query to determine if there is an associated
+     * achievement whose title matches the name of the RatingPoints entity. If the
+     * name starts with 'UNDO_', the prefix is removed for the comparison. The
+     * method returns true if at least one matching achievement exists, otherwise
+     * false.
+     *
+     * @param id The ID of the RatingPoints entity to check for associated
+     *           achievements.
+     * @return true if an associated achievement exists; false otherwise.
+     */
     @Transactional
     @Query(nativeQuery = true,
         value = "SELECT COUNT(a) > 0 FROM rating_points rp INNER JOIN achievements a  "
             + "ON a.title = CASE WHEN rp.name LIKE 'UNDO_%' THEN SUBSTRING(rp.name, 6) ELSE rp.name END "
             + "WHERE rp.id = :id")
     boolean checkByIdForExistenceOfAchievement(@Param("id") Long id);
+
+    /**
+     * Method finds and retrieves a page of RatingPoints that satisfy the search
+     * query while considering the specified status.
+     *
+     * @param pageable    Pageable configuration for pagination.
+     * @param searchQuery The query string to search for in the RatingPoints
+     *                    entities. It checks against the ID, name, and points
+     *                    fields, allowing for partial matches.
+     * @param status      The status to filter the RatingPoints by (e.g., ACTIVE,
+     *                    DELETE).
+     * @return a Page containing the filtered RatingPoints entities.
+     */
+    @Query(value = "SELECT rp FROM RatingPoints rp "
+        + "WHERE rp.status = :status "
+        + "AND (CAST(rp.id AS string) LIKE CONCAT('%', :query, '%') "
+        + "OR LOWER(rp.name) LIKE LOWER(CONCAT('%', :query, '%')) "
+        + "OR CAST(rp.points AS string) LIKE CONCAT('%', :query, '%'))")
+    Page<RatingPoints> searchBy(Pageable pageable, @Param("query") String searchQuery, @Param("status") Status status);
 }
