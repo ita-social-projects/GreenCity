@@ -847,7 +847,9 @@ class EcoNewsServiceImplTest {
         assertEquals(ecoNewsDtoList, actualEcoNewsDtoList);
         verify(ecoNewsRepo).findByTitleContaining(title);
         verify(modelMapper).map(ecoNews, EcoNewsDto.class);
-      
+    }
+
+    @Test
     void addToFavorites_ShouldAddUserToFavorites() {
         User user = ModelUtils.getUser();
 
