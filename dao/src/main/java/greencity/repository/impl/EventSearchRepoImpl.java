@@ -148,7 +148,8 @@ public class EventSearchRepoImpl implements EventSearchRepo {
             if (eventTime == EventTime.UPCOMING) {
                 predicates.add(
                     criteriaBuilder.greaterThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
-            } else if (eventTime == EventTime.PAST) {
+            }
+            if (eventTime == EventTime.PAST) {
                 predicates.add(
                     criteriaBuilder.lessThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
             }
