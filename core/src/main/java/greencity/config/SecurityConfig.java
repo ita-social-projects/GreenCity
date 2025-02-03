@@ -207,7 +207,9 @@ public class SecurityConfig {
                     "/habit/assign/confirm/{habitAssignId}",
                     "/database/backup",
                     "/database/backupFiles",
-                    COMMIT_INFO)
+                    COMMIT_INFO,
+                    "/logs",
+                    "/logs/**")//TODO: change it to be authorized
                 .permitAll()
                 .requestMatchers(HttpMethod.DELETE,
                     "/place/{id}",
