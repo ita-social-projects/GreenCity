@@ -12,4 +12,6 @@ public class HttpStatuses {
     public static final String NOT_FOUND = "Not Found";
     public static final String SEE_OTHER = "See Other";
     public static final String FOUND = "Found";
+    public static final String SERVICE_UNAVAILABLE = "Service Unavailable";
+    public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
 }

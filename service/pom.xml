@@ -29,6 +29,12 @@
     <dependencies>
         <dependency>
             <groupId>greencity</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>greencity</groupId>
             <artifactId>dao</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

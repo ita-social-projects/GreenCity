@@ -84,6 +84,7 @@ public class SecurityConfig {
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
+    public static final String LOGS = "/logs/**";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -207,9 +208,7 @@ public class SecurityConfig {
                     "/habit/assign/confirm/{habitAssignId}",
                     "/database/backup",
                     "/database/backupFiles",
-                    COMMIT_INFO,
-                    "/logs",
-                    "/logs/**")//TODO: change it to be authorized
+                    COMMIT_INFO)
                 .permitAll()
                 .requestMatchers(HttpMethod.DELETE,
                     "/place/{id}",
@@ -346,7 +345,8 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}",
                     ECO_NEWS + "/{ecoNewsId}/favorites",
                     "/habit/assign/{habitId}/invite",
-                    "place/v2/save")
+                    "place/v2/save",
+                    LOGS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
