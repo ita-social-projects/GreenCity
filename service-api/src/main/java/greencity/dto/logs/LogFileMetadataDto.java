@@ -2,7 +2,6 @@ package greencity.dto.logs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.util.Date;
 
 @Getter
@@ -13,7 +12,7 @@ public class LogFileMetadataDto {
     private Date lastModified;
 
     public static final String defaultJson =
-            """
+        """
                 {
                     "page": [
                         {

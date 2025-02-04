@@ -586,7 +586,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(BadSecretKeyException.class)
     public final ResponseEntity<Object> handleBadSecretKeyException(BadSecretKeyException ex,
-                                                                WebRequest request) {
+        WebRequest request) {
         log.error(ex.getMessage(), ex);
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
@@ -597,7 +597,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(FunctionalityNotAvailableException.class)
     public final ResponseEntity<Object> handleFunctionalityNotAvailableException(FunctionalityNotAvailableException ex,
-                                                                                 WebRequest request) {
+        WebRequest request) {
         log.error(ex.getMessage(), ex);
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
