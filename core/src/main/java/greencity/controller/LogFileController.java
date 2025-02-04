@@ -33,8 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/logs")
 public class LogFileController {
     // TODO: write tests
-    // TODO: refactor exceptions and all new code
-    // TODO: format and checkstyle the code
+    // TODO: refactor exceptions and responses
 
     private final LogFileService logFileService;
     private final DotenvService dotenvService;
