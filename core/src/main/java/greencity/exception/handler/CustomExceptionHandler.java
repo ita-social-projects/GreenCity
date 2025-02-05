@@ -573,7 +573,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(exceptionResponse);
     }
 
     /**
@@ -603,6 +603,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 }

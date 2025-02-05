@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/logs")
 public class LogFileController {
     // TODO: write tests
-    // TODO: refactor exceptions and responses
-
     private final LogFileService logFileService;
     private final DotenvService dotenvService;
 
@@ -47,9 +45,7 @@ public class LogFileController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
-        @ApiResponse(responseCode = "503", description = HttpStatuses.SERVICE_UNAVAILABLE,
-            content = @Content(examples = @ExampleObject(HttpStatuses.SERVICE_UNAVAILABLE)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiPageable
     @PostMapping
@@ -77,9 +73,7 @@ public class LogFileController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
-        @ApiResponse(responseCode = "500", description = HttpStatuses.INTERNAL_SERVER_ERROR,
-            content = @Content(examples = @ExampleObject(HttpStatuses.INTERNAL_SERVER_ERROR))),
-        @ApiResponse(responseCode = "503", description = HttpStatuses.SERVICE_UNAVAILABLE,
+        @ApiResponse(responseCode = "500", description = HttpStatuses.SERVICE_UNAVAILABLE,
             content = @Content(examples = @ExampleObject(HttpStatuses.SERVICE_UNAVAILABLE)))
     })
     @PostMapping("/view/{filename}")
@@ -102,9 +96,7 @@ public class LogFileController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
-        @ApiResponse(responseCode = "503", description = HttpStatuses.SERVICE_UNAVAILABLE,
-            content = @Content(examples = @ExampleObject(HttpStatuses.SERVICE_UNAVAILABLE)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PostMapping("/download/{filename}")
     public ResponseEntity<Resource> downloadLogFile(
@@ -126,11 +118,9 @@ public class LogFileController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
-        @ApiResponse(responseCode = "503", description = HttpStatuses.SERVICE_UNAVAILABLE,
-            content = @Content(examples = @ExampleObject(HttpStatuses.SERVICE_UNAVAILABLE)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
-    @PostMapping("/delete-env")
+    @PostMapping("/delete-dotenv")
     public ResponseEntity<Object> deleteDotenvFile(
         @RequestBody String secretKey) {
         dotenvService.deleteDotenvFile(secretKey);

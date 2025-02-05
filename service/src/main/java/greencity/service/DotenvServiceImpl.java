@@ -6,6 +6,7 @@ import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,13 @@ import java.io.File;
 
 @Service
 @Lazy // TODO: check if it is necessary
-@RequiredArgsConstructor
 public class DotenvServiceImpl implements DotenvService {
     private Dotenv dotenv;
     private final PasswordEncoder passwordEncoder;
+
+    public DotenvServiceImpl(@Qualifier("DotenvPasswordEncoder") PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * {@inheritDoc}
