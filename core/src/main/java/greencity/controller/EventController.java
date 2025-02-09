@@ -92,6 +92,31 @@ public class EventController {
     }
 
     /**
+     * Method for creating an event.
+     *
+     * @return {@link EventResponseDto} instance.
+     * @author Yurii Osovskyi.
+     */
+    @Operation(summary = "Create new event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+    })
+    @PostMapping(value = "/createV2", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventResponseDto> saveV2(
+        @Parameter(description = SwaggerExampleModel.ADD_EVENT,
+            required = true) @ValidEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable @ImageArrayValidation(
+            allowedTypes = {"image/jpeg", "image/png", "image/jpg"}) MultipartFile[] images) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(eventService.saveV2(addEventDtoRequest, principal.getName(), images));
+    }
+
+    /**
      * Method for deleting an event.
      *
      * @author Max Bohonko.

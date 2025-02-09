@@ -31,6 +31,14 @@ public interface EventService {
     EventDto save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
 
     /**
+     * Method for saving Event instance.
+     *
+     * @param addEventDtoRequest - dto.
+     * @return {@link EventDto} instance.
+     */
+    EventResponseDto saveV2(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
+
+    /**
      * Method for deleting Event instance.
      *
      * @param eventId - event id.

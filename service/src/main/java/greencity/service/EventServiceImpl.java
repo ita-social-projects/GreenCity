@@ -175,6 +175,47 @@ public class EventServiceImpl implements EventService {
         return buildEventDto(savedEvent, organizer.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EventResponseDto saveV2(AddEventDtoRequest addEventDtoRequest, String email,
+        MultipartFile[] images) {
+        validateEventRequest(addEventDtoRequest);
+        Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
+        UserVO userVO = restClient.findByEmail(email);
+        User organizer = modelMapper.map(userVO, User.class);
+        toSave.setOrganizer(organizer);
+        toSave.setType(getEventType(toSave.getDates()));
+        if (images != null && images.length > 0 && images[0] != null) {
+            toSave.setTitleImage(fileService.upload(images[0]));
+            List<EventImages> eventImages = new ArrayList<>();
+            for (int i = 1; i < images.length; i++) {
+                if (images[i] != null) {
+                    eventImages.add(EventImages.builder().event(toSave).link(fileService.upload(images[i])).build());
+                }
+            }
+            toSave.setAdditionalImages(eventImages);
+        } else {
+            toSave.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+        }
+
+        List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(
+            addEventDtoRequest.getTags(), TagType.EVENT);
+
+        toSave.setTags(modelMapper.map(tagVOs,
+            new TypeToken<List<Tag>>() {
+            }.getType()));
+
+        Event savedEvent = eventRepo.save(toSave);
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
+            AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT"), userVO);
+        userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
+            savedEvent.getTitle());
+        return buildEventResponseDto(savedEvent, organizer.getId());
+    }
+
     private EventType getEventType(List<EventDateLocation> dates) {
         boolean hasOnlineEvent = false;
         boolean hasOfflineEvent = false;
