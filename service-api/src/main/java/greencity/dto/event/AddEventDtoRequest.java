@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.annotations.DecodedSize;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -26,7 +27,11 @@ public class AddEventDtoRequest {
     private String title;
 
     @NotBlank
-    @Size(min = 20, max = 63206)
+    @Size(min = 10, max = 63206)
+    @Pattern(
+        regexp = "^(?!\\s)(?!.*\\s{2,})(?=.{10,}.*\\S)[\\s\\S]+(?<!\\s)$",
+        message = "Description must be at least 10 characters long (excluding leading/trailing spaces)"
+            + "and must not contain consecutive spaces.")
     private String description;
 
     @NotEmpty

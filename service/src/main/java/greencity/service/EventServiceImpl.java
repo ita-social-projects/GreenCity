@@ -774,9 +774,64 @@ public class EventServiceImpl implements EventService {
         eventDtos.forEach(eventDto -> eventDto.setFavorite(followedEventIds.contains(eventDto.getId())));
     }
 
+    private void setSubscribersV2(Collection<EventResponseDto> eventResponses, Long userId) {
+        List<Long> eventIds = eventResponses.stream().map(EventResponseDto::id).collect(Collectors.toList());
+        List<Event> subscribedEvents = eventRepo.findSubscribedAmongEventIds(eventIds, userId);
+        List<Long> subscribedEventIds = subscribedEvents.stream().map(Event::getId).toList();
+
+        eventResponses.stream()
+            .map(eventDto -> new EventResponseDto(
+                eventDto.id(),
+                eventDto.eventInformation(),
+                eventDto.organizer(),
+                eventDto.creationDate(),
+                eventDto.isOpen(),
+                eventDto.dates(),
+                eventDto.titleImage(),
+                eventDto.additionalImages(),
+                eventDto.type(),
+                subscribedEventIds.contains(eventDto.id()),
+                eventDto.isFavorite(),
+                eventDto.isRelevant(),
+                eventDto.likes(),
+                eventDto.dislikes(),
+                eventDto.countComments(),
+                eventDto.isOrganizedByFriend(),
+                eventDto.eventRate(),
+                eventDto.currentUserGrade()))
+            .toList();
+    }
+
+    private void setFollowersV2(Collection<EventResponseDto> eventResponses, Long userId) {
+        List<Long> eventIds = eventResponses.stream().map(EventResponseDto::id).collect(Collectors.toList());
+        List<Event> followedEvents = eventRepo.findFavoritesAmongEventIds(eventIds, userId);
+        List<Long> followedEventIds = followedEvents.stream().map(Event::getId).toList();
+
+        eventResponses.stream()
+            .map(eventDto -> new EventResponseDto(
+                eventDto.id(),
+                eventDto.eventInformation(),
+                eventDto.organizer(),
+                eventDto.creationDate(),
+                eventDto.isOpen(),
+                eventDto.dates(),
+                eventDto.titleImage(),
+                eventDto.additionalImages(),
+                eventDto.type(),
+                eventDto.isSubscribed(),
+                followedEventIds.contains(eventDto.id()),
+                eventDto.isRelevant(),
+                eventDto.likes(),
+                eventDto.dislikes(),
+                eventDto.countComments(),
+                eventDto.isOrganizedByFriend(),
+                eventDto.eventRate(),
+                eventDto.currentUserGrade()))
+            .toList();
+    }
+
     private EventResponseDto buildEventResponseDto(Event event, Long userId) {
         EventResponseDto eventResponseDto = modelMapper.map(event, EventResponseDto.class);
-
         Integer currentUserGrade = event.getEventGrades()
             .stream()
             .filter(g -> g.getUser() != null && g.getUser().getId().equals(userId))
@@ -784,8 +839,8 @@ public class EventServiceImpl implements EventService {
             .findFirst()
             .orElse(null);
 
-        setFollowers(List.of(), userId);
-        setSubscribes(List.of(), userId);
+        setFollowersV2(List.of(eventResponseDto), userId);
+        setSubscribersV2(List.of(eventResponseDto), userId);
 
         return new EventResponseDto(
             eventResponseDto.id(),

@@ -34,7 +34,7 @@ public interface EventService {
      * Method for saving Event instance.
      *
      * @param addEventDtoRequest - dto.
-     * @return {@link EventDto} instance.
+     * @return {@link EventResponseDto} instance.
      */
     EventResponseDto saveV2(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
 

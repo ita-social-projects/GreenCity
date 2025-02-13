@@ -228,6 +228,42 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
+    void saveV2Test() {
+        AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        String json = objectMapper.writeValueAsString(addEventDtoRequest);
+
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+
+        mockMvc.perform(multipart("/events/createV2")
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isCreated());
+
+        verify(eventService).saveV2(eq(addEventDtoRequest), eq(principal.getName()), isNull());
+    }
+
+    @Test
+    @SneakyThrows
+    void saveV2BadRequestTest() {
+        String json = "{}";
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+        mockMvc.perform(multipart("/events/createV2")
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
     void removeAttenderTest() {
         Long eventId = 1L;
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/{eventId}/attenders", eventId).principal(principal))
