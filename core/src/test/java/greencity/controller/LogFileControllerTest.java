@@ -58,10 +58,10 @@ public class LogFileControllerTest {
     @BeforeEach
     public void setUp() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
-                .build();
+            .standaloneSetup(controller)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
+            .build();
     }
 
     @Test
@@ -70,24 +70,24 @@ public class LogFileControllerTest {
         int pageSize = 20;
         Pageable page = PageRequest.of(pageNumber, pageSize);
         LogFileFilterDto filterDto = ModelUtils.getLogFileFilterDto();
-        String secretKey  = "validSecret";
-         String REQUEST_BODY = """
-         {
-           "secretKey": "validSecret",
-           "filterDto": {
-             "fileNameQuery": "filename",
-             "fileContentQuery": "fileContent",
-             "logLevel": "INFO"
-           }
-         }
-         """;
+        String secretKey = "validSecret";
+        String REQUEST_BODY = """
+            {
+              "secretKey": "validSecret",
+              "filterDto": {
+                "fileNameQuery": "filename",
+                "fileContentQuery": "fileContent",
+                "logLevel": "INFO"
+              }
+            }
+            """;
 
-         mockMvc.perform(post(GET_LOG_FILES_LIST_LINK + "?page=5&size=20")
-                .content(REQUEST_BODY)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-         verify(logFileService).getLogFilesList(page, filterDto, secretKey);
+        mockMvc.perform(post(GET_LOG_FILES_LIST_LINK + "?page=5&size=20")
+            .content(REQUEST_BODY)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(logFileService).getLogFilesList(page, filterDto, secretKey);
     }
 
     @Test
@@ -99,10 +99,10 @@ public class LogFileControllerTest {
         when(logFileService.getLogFileContent(filename, secretKey)).thenReturn(fileContent);
 
         mockMvc.perform(post(VIEW_LOG_FILE_LINK, filename)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content(secretKey))
-                .andExpect(status().isOk())
-                .andExpect(content().string(fileContent));
+            .contentType(MediaType.TEXT_PLAIN)
+            .content(secretKey))
+            .andExpect(status().isOk())
+            .andExpect(content().string(fileContent));
     }
 
     @Test
@@ -113,14 +113,14 @@ public class LogFileControllerTest {
         ByteArrayResource resource = new ByteArrayResource(fileContent);
 
         when(logFileService.getDownloadLogFileUrl(filename, secretKey))
-                .thenReturn(resource);
+            .thenReturn(resource);
 
         mockMvc.perform(post(DOWNLOAD_LOG_FILE_LINK, filename)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content(secretKey))
-                .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\""))
-                .andExpect(content().bytes(fileContent));
+            .contentType(MediaType.TEXT_PLAIN)
+            .content(secretKey))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\""))
+            .andExpect(content().bytes(fileContent));
     }
 
     @Test
@@ -130,8 +130,8 @@ public class LogFileControllerTest {
         doNothing().when(dotenvService).deleteDotenvFile(secretKey);
 
         mockMvc.perform(post(DELETE_DOTENV_FILE_LINK)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content(secretKey))
-                .andExpect(status().isOk());
+            .contentType(MediaType.TEXT_PLAIN)
+            .content(secretKey))
+            .andExpect(status().isOk());
     }
 }

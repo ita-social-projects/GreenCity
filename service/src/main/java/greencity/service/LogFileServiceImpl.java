@@ -36,7 +36,7 @@ public class LogFileServiceImpl implements LogFileService {
      */
     @Override
     public PageableDto<LogFileMetadataDto> getLogFilesList(Pageable pageable, LogFileFilterDto filterDto,
-                                                           String secretKey) {
+        String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
         File[] logFiles = listLogFilesFromFolder();
 
@@ -45,9 +45,9 @@ public class LogFileServiceImpl implements LogFileService {
         }
 
         List<LogFileMetadataDto> dtos = Arrays.stream(logFiles)
-                .map(file -> new LogFileMetadataDto(file.getName(), file.length(), new Date(file.lastModified())))
-                .filter(fileDto -> filterFileDto(fileDto, filterDto, secretKey))
-                .toList();
+            .map(file -> new LogFileMetadataDto(file.getName(), file.length(), new Date(file.lastModified())))
+            .filter(fileDto -> filterFileDto(fileDto, filterDto, secretKey))
+            .toList();
 
         return applyPagination(dtos, pageable);
     }

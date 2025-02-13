@@ -22,7 +22,7 @@ public class DotenvServiceImpl implements DotenvService {
     private static final String DOTENV_FILENAME = "secretKeys.env";
 
     public DotenvServiceImpl(@Qualifier("DotenvPasswordEncoder") PasswordEncoder passwordEncoder,
-                             Dotenv dotenv) {
+        Dotenv dotenv) {
         this.passwordEncoder = passwordEncoder;
         this.dotenv = dotenv;
     }
@@ -63,11 +63,11 @@ public class DotenvServiceImpl implements DotenvService {
         }
     }
 
-   /**
-     * Reloads the environment variables from `*.env` file to make sure it is not deleted. If the `*.env` file is
-     * missing or cannot be loaded, this method throws a
-     * {@link FunctionalityNotAvailableException} to indicate that the required
-     * functionality is unavailable.
+    /**
+     * Reloads the environment variables from `*.env` file to make sure it is not
+     * deleted. If the `*.env` file is missing or cannot be loaded, this method
+     * throws a {@link FunctionalityNotAvailableException} to indicate that the
+     * required functionality is unavailable.
      *
      *
      * @throws FunctionalityNotAvailableException if the `*.env` file cannot be
@@ -77,8 +77,8 @@ public class DotenvServiceImpl implements DotenvService {
     void reloadEnvFile() {
         try {
             dotenv = Dotenv.configure()
-                    .filename(DOTENV_FILENAME)
-                    .load();
+                .filename(DOTENV_FILENAME)
+                .load();
         } catch (DotenvException ex) {
             throw new FunctionalityNotAvailableException(ErrorMessage.FUNCTIONALITY_NOT_AVAILABLE);
         }

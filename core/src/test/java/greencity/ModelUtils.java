@@ -602,14 +602,13 @@ public class ModelUtils {
 
     public static LogFileFilterDto getLogFileFilterDto() {
         return new LogFileFilterDto(
-                "filename",
-                "fileContent",
-                null,
-                null,
-                LogLevel.INFO
-        );
+            "filename",
+            "fileContent",
+            null,
+            null,
+            LogLevel.INFO);
     }
-  
+
     public static EventResponseDto getEventResponseDto() {
         return new EventResponseDto(
             1L,

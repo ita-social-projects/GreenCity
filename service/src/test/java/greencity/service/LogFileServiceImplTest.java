@@ -30,7 +30,7 @@ class LogFileServiceImplTest {
 
     @Mock
     private DotenvService dotEnvService;
-    
+
     @BeforeEach
     void ignoreSecretKeyValidation() {
         doNothing().when(dotEnvService).validateSecretKey(anyString());
@@ -41,7 +41,7 @@ class LogFileServiceImplTest {
         String secretKey = "secret";
         File logFile1 = new File("test1.log");
         File logFile2 = new File("test2.log");
-        File[] mockFiles = { logFile1, logFile2 };
+        File[] mockFiles = {logFile1, logFile2};
 
         LogFileServiceImpl spyService = spy(logFileService);
         doReturn(mockFiles).when(spyService).listLogFilesFromFolder();
@@ -57,7 +57,7 @@ class LogFileServiceImplTest {
     void getLogFilesListShouldThrowNotFoundExceptionWhenNoLogFilesExist() {
         String secretKey = "secret";
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> logFileService.getLogFilesList(PAGEABLE, null, secretKey));
+            () -> logFileService.getLogFilesList(PAGEABLE, null, secretKey));
 
         assertEquals(ErrorMessage.LOG_FILES_NOT_FOUND, exception.getMessage());
     }
@@ -123,7 +123,7 @@ class LogFileServiceImplTest {
         String secretKey = "secret";
         File mockFile = mock(File.class);
         FileSystemResource expectedResource = new FileSystemResource(mockFile);
-        
+
         LogFileServiceImpl spyService = spy(logFileService);
         doReturn(mockFile).when(spyService).getLogFile(filename);
 
