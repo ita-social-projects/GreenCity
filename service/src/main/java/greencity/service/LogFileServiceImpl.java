@@ -10,6 +10,7 @@ import greencity.exception.exceptions.FileReadException;
 import greencity.exception.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Profile({"dev", "test"})
 public class LogFileServiceImpl implements LogFileService {
     private static final String LOGS_DIRECTORY =
         System.getProperty("user.dir") + File.separator + "logs" + File.separator;
@@ -34,19 +36,18 @@ public class LogFileServiceImpl implements LogFileService {
      */
     @Override
     public PageableDto<LogFileMetadataDto> getLogFilesList(Pageable pageable, LogFileFilterDto filterDto,
-        String secretKey) {
+                                                           String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
-        File folder = new File(LOGS_DIRECTORY);
-        File[] logFiles = folder.listFiles((dir, name) -> name.endsWith(".log"));
+        File[] logFiles = listLogFilesFromFolder();
 
         if (logFiles == null || logFiles.length == 0) {
             throw new NotFoundException(ErrorMessage.LOG_FILES_NOT_FOUND);
         }
 
         List<LogFileMetadataDto> dtos = Arrays.stream(logFiles)
-            .map(file -> new LogFileMetadataDto(file.getName(), file.length(), new Date(file.lastModified())))
-            .filter(fileDto -> filterFileDto(fileDto, filterDto, secretKey))
-            .toList();
+                .map(file -> new LogFileMetadataDto(file.getName(), file.length(), new Date(file.lastModified())))
+                .filter(fileDto -> filterFileDto(fileDto, filterDto, secretKey))
+                .toList();
 
         return applyPagination(dtos, pageable);
     }
@@ -57,7 +58,7 @@ public class LogFileServiceImpl implements LogFileService {
     @Override
     public String getLogFileContent(String filename, String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
-        File file = new File(LOGS_DIRECTORY + filename);
+        File file = getLogFile(filename);
 
         if (!file.exists()) {
             throw new NotFoundException(String.format(ErrorMessage.LOG_FILE_NOT_FOUND, filename));
@@ -77,13 +78,26 @@ public class LogFileServiceImpl implements LogFileService {
     @Override
     public Resource getDownloadLogFileUrl(String filename, String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
-        File file = new File(LOGS_DIRECTORY + filename);
+        File file = getLogFile(filename);
 
         if (!file.exists() || !file.isFile()) {
             throw new NotFoundException(String.format(ErrorMessage.LOG_FILE_NOT_FOUND, filename));
         }
 
         return new FileSystemResource(file);
+    }
+
+    File[] listLogFilesFromFolder() {
+        File folder = getLogFile();
+        return folder.listFiles((dir, name) -> name.endsWith(".log"));
+    }
+
+    File getLogFile() {
+        return new File(LOGS_DIRECTORY);
+    }
+
+    File getLogFile(String filename) {
+        return new File(LOGS_DIRECTORY + filename);
     }
 
     /**
@@ -123,10 +137,10 @@ public class LogFileServiceImpl implements LogFileService {
         }
         String fileContent = getLogFileContent(fileDto.getFilename(), secretKey);
         return matchesFileNameQuery(fileDto.getFilename(), filterDto.fileNameQuery())
-                && matchesFileContentQuery(fileContent, filterDto.fileContentQuery())
-                && matchesByteSize(fileDto.getByteSize(), filterDto.byteSizeRange())
-                && matchesDateRange(fileDto.getLastModified(), filterDto.dateRange())
-                && matchesLogLevel(fileContent, filterDto.logLevel());
+            && matchesFileContentQuery(fileContent, filterDto.fileContentQuery())
+            && matchesByteSize(fileDto.getByteSize(), filterDto.byteSizeRange())
+            && matchesDateRange(fileDto.getLastModified(), filterDto.dateRange())
+            && matchesLogLevel(fileContent, filterDto.logLevel());
     }
 
     /**
@@ -139,7 +153,7 @@ public class LogFileServiceImpl implements LogFileService {
      */
     private boolean matchesFileNameQuery(String filename, String fileNameFilter) {
         return fileNameFilter == null
-                || filename.toLowerCase().contains(fileNameFilter.toLowerCase());
+            || filename.toLowerCase().contains(fileNameFilter.toLowerCase());
     }
 
     /**
@@ -152,7 +166,7 @@ public class LogFileServiceImpl implements LogFileService {
      */
     private boolean matchesFileContentQuery(String fileContent, String fileContentFilter) {
         return fileContentFilter == null
-                || fileContent.toLowerCase().contains(fileContentFilter.toLowerCase());
+            || fileContent.toLowerCase().contains(fileContentFilter.toLowerCase());
     }
 
     /**
@@ -165,7 +179,7 @@ public class LogFileServiceImpl implements LogFileService {
      */
     private boolean matchesByteSize(long fileSize, ByteSizeRange byteSizeRange) {
         return byteSizeRange == null
-                || (fileSize >= byteSizeRange.from() && fileSize <= byteSizeRange.to());
+            || (fileSize >= byteSizeRange.from() && fileSize <= byteSizeRange.to());
     }
 
     /**
@@ -180,7 +194,7 @@ public class LogFileServiceImpl implements LogFileService {
      */
     private boolean matchesDateRange(Date fileDate, DateRange dateRange) {
         return dateRange == null
-                || (fileDate.compareTo(dateRange.from()) >= 0 && fileDate.compareTo(dateRange.to()) <= 0);
+            || (fileDate.compareTo(dateRange.from()) >= 0 && fileDate.compareTo(dateRange.to()) <= 0);
     }
 
     /**
@@ -194,6 +208,6 @@ public class LogFileServiceImpl implements LogFileService {
      */
     private boolean matchesLogLevel(String fileContent, LogLevel logLevel) {
         return logLevel == null
-                || fileContent.contains(logLevel.toString());
+            || fileContent.contains(logLevel.toString());
     }
 }

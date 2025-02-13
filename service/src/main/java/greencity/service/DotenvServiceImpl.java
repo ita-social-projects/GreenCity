@@ -5,18 +5,20 @@ import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.io.File;
 
 @Service
-@Lazy // TODO: check if it is necessary
+@Profile({"dev", "test"})
 public class DotenvServiceImpl implements DotenvService {
+    //TODO: create a bean of Dotenv to mock it in tests
     private Dotenv dotenv;
     private final PasswordEncoder passwordEncoder;
+
+    private static final String DOTENV_FILENAME = "secretKeys.env";
 
     public DotenvServiceImpl(@Qualifier("DotenvPasswordEncoder") PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -42,7 +44,7 @@ public class DotenvServiceImpl implements DotenvService {
     public void deleteDotenvFile(String secretKey) {
         validateSecretKey(secretKey);
 
-        String dotenvFilePath = System.getProperty("user.dir") + File.separator + ".env";
+        String dotenvFilePath = System.getProperty("user.dir") + File.separator + DOTENV_FILENAME;
         File dotenvFile = new File(dotenvFilePath);
 
         if (!dotenvFile.exists()) {
@@ -55,8 +57,8 @@ public class DotenvServiceImpl implements DotenvService {
     }
 
     /**
-     * Loads the environment variables from the `.env` file.
-     * If the `.env` file is missing or cannot be loaded, this method throws a
+     * Loads the environment variables from the `.env` file. If the `.env` file is
+     * missing or cannot be loaded, this method throws a
      * {@link FunctionalityNotAvailableException} to indicate that the required
      * functionality is unavailable.
      *
@@ -67,7 +69,9 @@ public class DotenvServiceImpl implements DotenvService {
      */
     private void loadEnvFile() {
         try {
-            dotenv = Dotenv.load();
+            dotenv = Dotenv.configure()
+                    .filename(DOTENV_FILENAME)
+                    .load();
         } catch (DotenvException ex) {
             throw new FunctionalityNotAvailableException(ErrorMessage.FUNCTIONALITY_NOT_AVAILABLE);
         }

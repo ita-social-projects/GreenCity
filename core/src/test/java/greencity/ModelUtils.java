@@ -38,6 +38,9 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
+import greencity.dto.logs.filter.ByteSizeRange;
+import greencity.dto.logs.filter.DateRange;
+import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
@@ -77,6 +80,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.data.domain.Pageable;
 
 import static greencity.TestConst.ROLE_ADMIN;
@@ -587,5 +592,15 @@ public class ModelUtils {
             .name("testx")
             .location(new LocationDto())
             .build());
+    }
+
+    public static LogFileFilterDto getLogFileFilterDto() {
+        return new LogFileFilterDto(
+                "filename",
+                "fileContent",
+                null,
+                null,
+                LogLevel.INFO
+        );
     }
 }

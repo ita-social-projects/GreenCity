@@ -10,7 +10,8 @@ public interface DotenvService {
     void validateSecretKey(String secretKey);
 
     /**
-     * deletes '.env' file to make functionality that is dependent on it unavailable.
+     * deletes '.env' file to make functionality that is dependent on it
+     * unavailable.
      *
      * @author Hrenevych Ivan
      */

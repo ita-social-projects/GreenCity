@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/logs")
+@Profile({"dev", "test"})
 public class LogFileController {
     // TODO: write tests
     private final LogFileService logFileService;
@@ -73,7 +75,7 @@ public class LogFileController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
-        @ApiResponse(responseCode = "500", description = HttpStatuses.SERVICE_UNAVAILABLE,
+        @ApiResponse(responseCode = "503", description = HttpStatuses.SERVICE_UNAVAILABLE,
             content = @Content(examples = @ExampleObject(HttpStatuses.SERVICE_UNAVAILABLE)))
     })
     @PostMapping("/view/{filename}")
