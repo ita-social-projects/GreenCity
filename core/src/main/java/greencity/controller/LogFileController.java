@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/logs")
 @Profile({"dev", "test"})
 public class LogFileController {
-    // TODO: write tests
     private final LogFileService logFileService;
     private final DotenvService dotenvService;
 

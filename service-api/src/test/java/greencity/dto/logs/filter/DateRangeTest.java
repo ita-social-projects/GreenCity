@@ -3,8 +3,7 @@ package greencity.dto.logs.filter;
 import greencity.exception.exceptions.BadRequestException;
 import org.junit.jupiter.api.Test;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,8 +11,8 @@ class DateRangeTest {
 
     @Test
     void shouldCreateDateRangeWhenFromDateIsBeforeOrEqualToToDate() {
-        Date from = new Date(2025, Calendar.JANUARY, 1);
-        Date to = new Date(2025, Calendar.DECEMBER, 31);
+        LocalDateTime from = LocalDateTime.of(2025, 1, 1, 0, 0, 0);
+        LocalDateTime to = LocalDateTime.of(2025, 12, 31, 23, 59, 59);
 
         DateRange dateRange = new DateRange(from, to);
 
@@ -24,26 +23,24 @@ class DateRangeTest {
 
     @Test
     void shouldThrowBadRequestExceptionWhenFromDateIsAfterToDate() {
-        Date from = new Date(2025, Calendar.DECEMBER, 31);
-        Date to = new Date(2025, Calendar.JANUARY, 1);
+        LocalDateTime from = LocalDateTime.of(2025, 12, 31, 23, 59, 59);
+        LocalDateTime to = LocalDateTime.of(2025, 1, 1, 0, 0, 0);
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            new DateRange(from, to);
-        });
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> new DateRange(from, to));
 
         assertEquals("'from' date must be earlier or equal to 'to' date", exception.getMessage());
     }
 
     @Test
-    void shouldThrowBadRequestExceptionWhenFromDateIsNull() {
-        Date to = new Date(2025, Calendar.DECEMBER, 31);
+    void shouldThrowNullPointerExceptionWhenFromDateIsNull() {
+        LocalDateTime to = LocalDateTime.of(2025, 12, 31, 23, 59, 59);
 
         assertThrows(NullPointerException.class, () -> new DateRange(null, to));
     }
 
     @Test
-    void shouldThrowBadRequestExceptionWhenToDateIsNull() {
-        Date from = new Date(2025, Calendar.JANUARY, 1);
+    void shouldThrowNullPointerExceptionWhenToDateIsNull() {
+        LocalDateTime from = LocalDateTime.of(2025, 1, 1, 0, 0, 0);
 
         assertThrows(NullPointerException.class, () -> new DateRange(from, null));
     }

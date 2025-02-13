@@ -41,8 +41,6 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.logs.filter.ByteSizeRange;
-import greencity.dto.logs.filter.DateRange;
 import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;

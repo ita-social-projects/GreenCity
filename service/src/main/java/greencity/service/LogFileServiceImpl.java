@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -65,8 +67,7 @@ public class LogFileServiceImpl implements LogFileService {
         }
 
         try {
-            String content = Files.readString(file.toPath());
-            return content;
+            return Files.readString(file.toPath());
         } catch (IOException e) {
             throw new FileReadException(String.format(ErrorMessage.CANNOT_READ_LOG_FILE, filename), e);
         }
@@ -139,7 +140,12 @@ public class LogFileServiceImpl implements LogFileService {
         return matchesFileNameQuery(fileDto.getFilename(), filterDto.fileNameQuery())
             && matchesFileContentQuery(fileContent, filterDto.fileContentQuery())
             && matchesByteSize(fileDto.getByteSize(), filterDto.byteSizeRange())
-            && matchesDateRange(fileDto.getLastModified(), filterDto.dateRange())
+            && matchesDateRange(
+                fileDto.getLastModified()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime(),
+                filterDto.dateRange())
             && matchesLogLevel(fileContent, filterDto.logLevel());
     }
 
@@ -192,9 +198,9 @@ public class LogFileServiceImpl implements LogFileService {
      *         otherwise.
      * @author Hrenevych Ivan
      */
-    private boolean matchesDateRange(Date fileDate, DateRange dateRange) {
+    private boolean matchesDateRange(LocalDateTime fileDate, DateRange dateRange) {
         return dateRange == null
-            || (fileDate.compareTo(dateRange.from()) >= 0 && fileDate.compareTo(dateRange.to()) <= 0);
+            || (!fileDate.isBefore(dateRange.from()) && !fileDate.isAfter(dateRange.to()));
     }
 
     /**

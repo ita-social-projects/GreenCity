@@ -22,7 +22,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.security.Principal;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -30,14 +29,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class LogFileControllerTest {
+class LogFileControllerTest {
 
     private static final String GET_LOG_FILES_LIST_LINK = "/logs";
     private static final String VIEW_LOG_FILE_LINK = "/logs/view/{filename}";
     private static final String DOWNLOAD_LOG_FILE_LINK = "/logs/download/{filename}";
     private static final String DELETE_DOTENV_FILE_LINK = "/logs/delete-dotenv";
-
-    private static final Principal principal = ModelUtils.getPrincipal();
 
     private MockMvc mockMvc;
 
@@ -71,7 +68,7 @@ public class LogFileControllerTest {
         Pageable page = PageRequest.of(pageNumber, pageSize);
         LogFileFilterDto filterDto = ModelUtils.getLogFileFilterDto();
         String secretKey = "validSecret";
-        String REQUEST_BODY = """
+        String requestBody = """
             {
               "secretKey": "validSecret",
               "filterDto": {
@@ -83,7 +80,7 @@ public class LogFileControllerTest {
             """;
 
         mockMvc.perform(post(GET_LOG_FILES_LIST_LINK + "?page=5&size=20")
-            .content(REQUEST_BODY)
+            .content(requestBody)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());

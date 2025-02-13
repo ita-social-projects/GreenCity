@@ -121,7 +121,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFileContentShouldThrowFileReadExceptionWhenIOExceptionOccurs() throws IOException {
+    void getLogFileContentShouldThrowFileReadExceptionWhenIOExceptionOccurs() {
         String filename = "test.log";
         String secretKey = "secret";
 

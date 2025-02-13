@@ -17,8 +17,8 @@ public record LogFileRequestDto(
                 "to": 0
               },
               "dateRange": {
-                "from": "2025-01-01T00:00:00.000Z",
-                "to": "2025-01-01T00:00:00.000Z"
+                "from": "2025-01-01T00:00:00",
+                "to": "2025-01-01T00:00:00"
               },
               "logLevel": "INFO"
             }
