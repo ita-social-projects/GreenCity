@@ -1,8 +1,10 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.logs.LogFileMetadataDto;
+import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.exception.exceptions.FileReadException;
 import greencity.exception.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +48,26 @@ class LogFileServiceImplTest {
         LogFileServiceImpl spyService = spy(logFileService);
         doReturn(mockFiles).when(spyService).listLogFilesFromFolder();
         PageableDto<LogFileMetadataDto> result = spyService.getLogFilesList(PAGEABLE, null, secretKey);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals("test1.log", result.getPage().get(0).getFilename());
+        assertEquals("test2.log", result.getPage().get(1).getFilename());
+    }
+
+    @Test
+    void getLogFilesListShouldReturnFilteredLogFiles() {
+        String secretKey = "secret";
+        LogFileFilterDto filterDto = ModelUtils.getLogFileFilterDto();
+        File logFile1 = new File("test1.log");
+        File logFile2 = new File("test2.log");
+        File logFile3 = new File("smth.log");
+        File[] mockFiles = {logFile1, logFile2, logFile3};
+
+        LogFileServiceImpl spyService = spy(logFileService);
+        doReturn(mockFiles).when(spyService).listLogFilesFromFolder();
+        doReturn("someFileContent").when(spyService).getLogFileContent(any(), any());
+        PageableDto<LogFileMetadataDto> result = spyService.getLogFilesList(PAGEABLE, filterDto, secretKey);
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());

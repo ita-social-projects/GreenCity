@@ -91,6 +91,9 @@ import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.logs.filter.ByteSizeRange;
+import greencity.dto.logs.filter.DateRange;
+import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
@@ -198,6 +201,7 @@ import jakarta.persistence.TupleElement;
 import org.hibernate.sql.results.internal.TupleElementImpl;
 import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -3512,5 +3516,13 @@ public class ModelUtils {
             .startDate(start)
             .finishDate(finish)
             .build();
+    }
+
+    public static LogFileFilterDto getLogFileFilterDto() {
+        return new LogFileFilterDto("test",
+                null,
+                new ByteSizeRange(0, 1000),
+                null,
+                null);
     }
 }

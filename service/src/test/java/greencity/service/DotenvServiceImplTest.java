@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,6 +98,36 @@ class DotenvServiceImplTest {
 
         try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.exists(any())).thenReturn(false);
+            assertThrows(FunctionalityNotAvailableException.class, () -> spyService.deleteDotenvFile(secretKey));
+        }
+    }
+
+    @Test
+    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionIfCannotDelete() {
+        String secretKey = "validSecret";
+
+        DotenvServiceImpl spyService = spy(dotenvService);
+
+        doNothing().when(spyService).validateSecretKey(secretKey);
+
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.exists(any())).thenReturn(true);
+            mockedFiles.when(() -> Files.deleteIfExists(any())).thenReturn(false);
+            assertThrows(FunctionalityNotAvailableException.class, () -> spyService.deleteDotenvFile(secretKey));
+        }
+    }
+
+    @Test
+    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionIfDeletingThrowsIOException() {
+        String secretKey = "validSecret";
+
+        DotenvServiceImpl spyService = spy(dotenvService);
+
+        doNothing().when(spyService).validateSecretKey(secretKey);
+
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.exists(any())).thenReturn(true);
+            mockedFiles.when(() -> Files.deleteIfExists(any())).thenThrow(IOException.class);
             assertThrows(FunctionalityNotAvailableException.class, () -> spyService.deleteDotenvFile(secretKey));
         }
     }
