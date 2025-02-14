@@ -29,7 +29,7 @@ public class AddEventDtoRequest {
     @NotBlank
     @Size(min = 10, max = 63206)
     @Pattern(
-        regexp = "^\\S(\\s?\\S)*$",
+        regexp = "^\\S(?:\\s?\\S)*$",
         message = "Description must be at least 10 characters long (excluding leading/trailing spaces)"
             + "and must not contain consecutive spaces.")
     private String description;
