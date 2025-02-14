@@ -762,28 +762,6 @@ public class EventServiceImpl implements EventService {
             .map(Event::getId)
             .toList();
 
-        eventResponses.stream()
-            .map(eventDto -> new EventResponseDto(
-                eventDto.id(),
-                eventDto.eventInformation(),
-                eventDto.organizer(),
-                eventDto.creationDate(),
-                eventDto.isOpen(),
-                eventDto.dates(),
-                eventDto.titleImage(),
-                eventDto.additionalImages(),
-                eventDto.type(),
-                subscribedEventIds.contains(eventDto.id()),
-                eventDto.isFavorite(),
-                eventDto.isRelevant(),
-                eventDto.likes(),
-                eventDto.dislikes(),
-                eventDto.countComments(),
-                eventDto.isOrganizedByFriend(),
-                eventDto.eventRate(),
-                eventDto.currentUserGrade()))
-            .toList();
-
         eventResponses.forEach(eventDto -> {
             boolean isSubscribed = subscribedEventIds.contains(eventDto.id());
             updateSubscriptionStatus(eventDto, isSubscribed);
@@ -797,31 +775,9 @@ public class EventServiceImpl implements EventService {
             .map(Event::getId)
             .toList();
 
-        eventResponses.stream()
-            .map(eventDto -> new EventResponseDto(
-                eventDto.id(),
-                eventDto.eventInformation(),
-                eventDto.organizer(),
-                eventDto.creationDate(),
-                eventDto.isOpen(),
-                eventDto.dates(),
-                eventDto.titleImage(),
-                eventDto.additionalImages(),
-                eventDto.type(),
-                eventDto.isSubscribed(),
-                followedEventIds.contains(eventDto.id()),
-                eventDto.isRelevant(),
-                eventDto.likes(),
-                eventDto.dislikes(),
-                eventDto.countComments(),
-                eventDto.isOrganizedByFriend(),
-                eventDto.eventRate(),
-                eventDto.currentUserGrade()))
-            .toList();
-
         eventResponses.forEach(eventDto -> {
-            boolean isFavorite = followedEventIds.contains(eventDto.id());
-            updateSubscriptionStatus(eventDto, isFavorite);
+            boolean isSubscribed = followedEventIds.contains(eventDto.id());
+            updateFavoriteStatus(eventDto, isSubscribed);
         });
     }
 
