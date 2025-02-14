@@ -29,8 +29,8 @@ public class AddEventDtoRequest {
     @NotBlank
     @Size(min = 10, max = 63206)
     @Pattern(
-        regexp = "^(?!.*\\s{2,})\\S.{8,}\\S$",
-        message = "Description must be at least 10 characters long (excluding leading/trailing spaces)"
+        regexp = "^(?!\\S*\\s{2,})\\S.{8,}\\S$",
+        message = "Description must be at least 10 characters long (excluding leading / trailing spaces) "
             + "and must not contain consecutive spaces.")
     private String description;
 
