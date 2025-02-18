@@ -137,42 +137,64 @@ public class EventServiceImpl implements EventService {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
-        MultipartFile[] images) {
+    public EventDto save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images) {
+        Event savedEvent = processEventSaving(addEventDtoRequest, email, images);
+        return buildEventDto(savedEvent, savedEvent.getOrganizer().getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public EventResponseDto saveV2(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images) {
+        Event savedEvent = processEventSaving(addEventDtoRequest, email, images);
+        return buildEventResponseDto(savedEvent, savedEvent.getOrganizer().getId());
+    }
+
+    private Event processEventSaving(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images) {
         validateEventRequest(addEventDtoRequest);
+
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         UserVO userVO = restClient.findByEmail(email);
         User organizer = modelMapper.map(userVO, User.class);
         toSave.setOrganizer(organizer);
         toSave.setType(getEventType(toSave.getDates()));
+
+        setEventImages(toSave, images);
+        setEventTags(toSave, addEventDtoRequest.getTags());
+
+        Event savedEvent = eventRepo.save(toSave);
+        postEventSaveActions(savedEvent, userVO);
+
+        return savedEvent;
+    }
+
+    private void setEventImages(Event event, MultipartFile[] images) {
         if (images != null && images.length > 0 && images[0] != null) {
-            toSave.setTitleImage(fileService.upload(images[0]));
+            event.setTitleImage(fileService.upload(images[0]));
             List<EventImages> eventImages = new ArrayList<>();
             for (int i = 1; i < images.length; i++) {
                 if (images[i] != null) {
-                    eventImages.add(EventImages.builder().event(toSave).link(fileService.upload(images[i])).build());
+                    eventImages.add(EventImages.builder().event(event).link(fileService.upload(images[i])).build());
                 }
             }
-            toSave.setAdditionalImages(eventImages);
+            event.setAdditionalImages(eventImages);
         } else {
-            toSave.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+            event.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
+    }
 
-        List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(
-            addEventDtoRequest.getTags(), TagType.EVENT);
+    private void setEventTags(Event event, List<String> tagNames) {
+        List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(tagNames, TagType.EVENT);
+        event.setTags(modelMapper.map(tagVOs, new TypeToken<List<Tag>>() {
+        }.getType()));
+    }
 
-        toSave.setTags(modelMapper.map(tagVOs,
-            new TypeToken<List<Tag>>() {
-            }.getType()));
-
-        Event savedEvent = eventRepo.save(toSave);
+    private void postEventSaveActions(Event savedEvent, UserVO userVO) {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT"), userVO);
         userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
             savedEvent.getTitle());
-        return buildEventDto(savedEvent, organizer.getId());
     }
 
     private EventType getEventType(List<EventDateLocation> dates) {
@@ -733,9 +755,42 @@ public class EventServiceImpl implements EventService {
         eventDtos.forEach(eventDto -> eventDto.setFavorite(followedEventIds.contains(eventDto.getId())));
     }
 
+    private void setSubscribersV2(Collection<EventResponseDto> eventResponses, Long userId) {
+        List<Long> eventIds = eventResponses.stream().map(EventResponseDto::id).toList();
+        List<Long> subscribedEventIds = eventRepo.findSubscribedAmongEventIds(eventIds, userId)
+            .stream()
+            .map(Event::getId)
+            .toList();
+
+        eventResponses.forEach(eventDto -> {
+            boolean isSubscribed = subscribedEventIds.contains(eventDto.id());
+            updateSubscriptionStatus(eventDto, isSubscribed);
+        });
+    }
+
+    private void setFollowersV2(Collection<EventResponseDto> eventResponses, Long userId) {
+        List<Long> eventIds = eventResponses.stream().map(EventResponseDto::id).toList();
+        List<Long> followedEventIds = eventRepo.findFavoritesAmongEventIds(eventIds, userId)
+            .stream()
+            .map(Event::getId)
+            .toList();
+
+        eventResponses.forEach(eventDto -> {
+            boolean isSubscribed = followedEventIds.contains(eventDto.id());
+            updateFavoriteStatus(eventDto, isSubscribed);
+        });
+    }
+
+    private void updateSubscriptionStatus(EventResponseDto eventDto, boolean isSubscribed) {
+        eventDto.withIsSubscribed(isSubscribed);
+    }
+
+    private void updateFavoriteStatus(EventResponseDto eventDto, boolean isFavorite) {
+        eventDto.withIsFavorite(isFavorite);
+    }
+
     private EventResponseDto buildEventResponseDto(Event event, Long userId) {
         EventResponseDto eventResponseDto = modelMapper.map(event, EventResponseDto.class);
-
         Integer currentUserGrade = event.getEventGrades()
             .stream()
             .filter(g -> g.getUser() != null && g.getUser().getId().equals(userId))
@@ -743,8 +798,8 @@ public class EventServiceImpl implements EventService {
             .findFirst()
             .orElse(null);
 
-        setFollowers(List.of(), userId);
-        setSubscribes(List.of(), userId);
+        setFollowersV2(List.of(eventResponseDto), userId);
+        setSubscribersV2(List.of(eventResponseDto), userId);
 
         return new EventResponseDto(
             eventResponseDto.id(),

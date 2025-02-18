@@ -308,6 +308,7 @@ public class SecurityConfig {
                     EVENTS_ID_COMMENTS,
                     EVENTS_COMMENTS + LIKE + COMMENT_ID,
                     EVENTS,
+                    EVENTS + "/createV2",
                     EVENTS + EVENT_ID + ATTENDERS,
                     "/events/{eventId}/requested-users/{userId}/decline",
                     "/events/{eventId}/requested-users/{userId}/approve",
