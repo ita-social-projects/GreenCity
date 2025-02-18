@@ -26,4 +26,17 @@ public record EventResponseDto(
     @JsonProperty("isOrganizedByFriend") boolean isOrganizedByFriend,
     Double eventRate,
     Integer currentUserGrade) {
+    public void withIsSubscribed(boolean isSubscribed) {
+        new EventResponseDto(
+            id, eventInformation, organizer, creationDate, isOpen, dates, titleImage, additionalImages, type,
+            isSubscribed, isFavorite, isRelevant, likes, dislikes, countComments, isOrganizedByFriend, eventRate,
+            currentUserGrade);
+    }
+
+    public void withIsFavorite(boolean isFavorite) {
+        new EventResponseDto(
+            id, eventInformation, organizer, creationDate, isOpen, dates, titleImage, additionalImages, type,
+            isSubscribed, isFavorite, isRelevant, likes, dislikes, countComments, isOrganizedByFriend, eventRate,
+            currentUserGrade);
+    }
 }

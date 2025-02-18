@@ -242,6 +242,56 @@ class EventServiceImplTest {
     }
 
     @Test
+    void saveV2Test() {
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+        List<Long> eventIds = List.of(eventResponseDto.id());
+        AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoRequest;
+        Event event = ModelUtils.getEvent();
+        List<Tag> tags = ModelUtils.getEventTags();
+        User user = ModelUtils.getUser();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("CREATE_EVENT").points(40).build();
+
+        when(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT")).thenReturn(ratingPoints);
+        when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(eventRepo.save(event)).thenReturn(event);
+        when(modelMapper.map(event, EventResponseDto.class)).thenReturn(eventResponseDto);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(tags);
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
+        AddressDto build = ModelUtils.getLongitudeAndLatitude();
+        when(modelMapper.map(ModelUtils.getAddressLatLngResponse(), AddressDto.class)).thenReturn(build);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
+        when(eventDateLocationDtoMapper.mapAllToList(addEventDtoRequest.getDatesLocations()))
+            .thenReturn(event.getDates());
+
+        EventResponseDto resultEventDto = eventService.saveV2(addEventDtoRequest, user.getEmail(), null);
+        assertEquals(eventResponseDto, resultEventDto);
+        assertFalse(resultEventDto.isSubscribed());
+        assertFalse(resultEventDto.isFavorite());
+
+        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
+        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+
+        MultipartFile multipartFile = ModelUtils.getMultipartFile();
+        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        assertEquals(eventResponseDto,
+            eventService.saveV2(addEventDtoRequest, user.getEmail(),
+                new MultipartFile[] {multipartFile}));
+
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        assertEquals(eventResponseDto,
+            eventService.saveV2(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
+    }
+
+    @Test
     void update() {
         EventDto eventDto = ModelUtils.getEventDto();
         Event expectedEvent = ModelUtils.getEvent();

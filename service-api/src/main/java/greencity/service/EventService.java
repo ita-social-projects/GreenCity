@@ -31,6 +31,16 @@ public interface EventService {
     EventDto save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
 
     /**
+     * Method for creating an event. This V2 endpoint enhances the response by
+     * returning EventResponseDto which includes additional information such as
+     * subscription and favorite status.
+     *
+     * @return {@link EventResponseDto} instance.
+     * @author Yurii Osovskyi.
+     */
+    EventResponseDto saveV2(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
+
+    /**
      * Method for deleting Event instance.
      *
      * @param eventId - event id.
