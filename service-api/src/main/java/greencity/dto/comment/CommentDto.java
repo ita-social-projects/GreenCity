@@ -1,5 +1,7 @@
 package greencity.dto.comment;
 
+import greencity.annotations.SortableField;
+import greencity.dto.SortableDTO;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,27 +17,34 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
-public class CommentDto {
+public class CommentDto implements SortableDTO {
     @NotNull
     @Min(1)
+    @SortableField
     private Long id;
 
     @NotNull
+    @SortableField
     private LocalDateTime createdDate;
 
     @NotNull
+    @SortableField
     private LocalDateTime modifiedDate;
 
     private CommentAuthorDto author;
 
+    @SortableField
     private Long parentCommentId;
 
     private String text;
 
+    @SortableField
     private int replies;
 
+    @SortableField
     private int likes;
 
+    @SortableField
     private int dislikes;
 
     @Builder.Default

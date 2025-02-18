@@ -1,6 +1,8 @@
 package greencity.dto.user;
 
+import greencity.annotations.SortableField;
 import greencity.constant.ServiceValidationConstants;
+import greencity.dto.SortableDTO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import lombok.Data;
@@ -16,11 +18,13 @@ import jakarta.validation.constraints.Size;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserManagementDto {
+public class UserManagementDto implements SortableDTO {
     @NotNull
+    @SortableField
     private Long id;
 
     @NotBlank
+    @SortableField
     @Size(
         min = ServiceValidationConstants.USERNAME_MIN_LENGTH,
         max = ServiceValidationConstants.USERNAME_MAX_LENGTH)
@@ -28,6 +32,7 @@ public class UserManagementDto {
 
     @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP, message = ServiceValidationConstants.INVALID_EMAIL)
     @NotBlank
+    @SortableField
     private String email;
 
     private String userCredo;

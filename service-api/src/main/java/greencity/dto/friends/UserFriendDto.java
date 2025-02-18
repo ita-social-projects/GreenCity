@@ -1,5 +1,7 @@
 package greencity.dto.friends;
 
+import greencity.annotations.SortableField;
+import greencity.dto.SortableDTO;
 import greencity.dto.location.UserLocationDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,12 +13,22 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Data
 @SuppressWarnings("java:S107")
-public class UserFriendDto {
+public class UserFriendDto implements SortableDTO {
+    @SortableField
     private Long id;
+
+    @SortableField
     private String name;
+
+    @SortableField
     private String email;
+
+    @SortableField
     private Double rating;
+
+    @SortableField
     private Long mutualFriends;
+
     private String profilePicturePath;
     private Long chatId;
     private String friendStatus;

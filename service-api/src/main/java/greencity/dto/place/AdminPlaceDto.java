@@ -1,5 +1,7 @@
 package greencity.dto.place;
 
+import greencity.annotations.SortableField;
+import greencity.dto.SortableDTO;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
@@ -20,8 +22,10 @@ import lombok.Builder;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class AdminPlaceDto {
+public class AdminPlaceDto implements SortableDTO {
+    @SortableField
     private Long id;
+    @SortableField
     private String name;
     private LocationDto location;
     private CategoryDto category;

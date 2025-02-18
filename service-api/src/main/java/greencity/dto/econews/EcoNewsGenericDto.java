@@ -1,5 +1,7 @@
 package greencity.dto.econews;
 
+import greencity.annotations.SortableField;
+import greencity.dto.SortableDTO;
 import greencity.dto.user.EcoNewsAuthorDto;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -19,11 +21,13 @@ import java.util.List;
 @ToString(exclude = "author")
 @Builder
 @EqualsAndHashCode
-public class EcoNewsGenericDto {
+public class EcoNewsGenericDto implements SortableDTO {
     @Min(1)
+    @SortableField
     private Long id;
 
     @NotEmpty
+    @SortableField
     private String title;
 
     @NotEmpty
@@ -35,6 +39,7 @@ public class EcoNewsGenericDto {
     private EcoNewsAuthorDto author;
 
     @NotEmpty
+    @SortableField
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime creationDate;
 
@@ -49,8 +54,10 @@ public class EcoNewsGenericDto {
     @NotEmpty
     private List<String> tagsEn;
 
+    @SortableField
     private int likes;
 
+    @SortableField
     private int countComments;
 
     private int countOfEcoNews;
