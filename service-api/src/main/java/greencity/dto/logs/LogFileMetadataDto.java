@@ -1,16 +1,11 @@
 package greencity.dto.logs;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@Getter
-@AllArgsConstructor
-public class LogFileMetadataDto {
-    private String filename;
-    private long byteSize;
-    private Date lastModified;
-
+public record LogFileMetadataDto(
+    String filename,
+    long byteSize,
+    LocalDateTime lastModified) {
     public static final String defaultJson =
         """
                 {

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DateRangeTest {
 
     @Test
-    void shouldCreateDateRangeWhenFromDateIsBeforeOrEqualToToDate() {
+    void shouldCreateDateRangeWhenFromDateIsBeforeOrEqualToToDateTest() {
         LocalDateTime from = LocalDateTime.of(2025, 1, 1, 0, 0, 0);
         LocalDateTime to = LocalDateTime.of(2025, 12, 31, 23, 59, 59);
 
@@ -22,7 +22,7 @@ class DateRangeTest {
     }
 
     @Test
-    void shouldThrowBadRequestExceptionWhenFromDateIsAfterToDate() {
+    void shouldThrowBadRequestExceptionWhenFromDateIsAfterToDateTest() {
         LocalDateTime from = LocalDateTime.of(2025, 12, 31, 23, 59, 59);
         LocalDateTime to = LocalDateTime.of(2025, 1, 1, 0, 0, 0);
 
@@ -32,14 +32,14 @@ class DateRangeTest {
     }
 
     @Test
-    void shouldThrowNullPointerExceptionWhenFromDateIsNull() {
+    void shouldThrowNullPointerExceptionWhenFromDateIsNullTest() {
         LocalDateTime to = LocalDateTime.of(2025, 12, 31, 23, 59, 59);
 
         assertThrows(NullPointerException.class, () -> new DateRange(null, to));
     }
 
     @Test
-    void shouldThrowNullPointerExceptionWhenToDateIsNull() {
+    void shouldThrowNullPointerExceptionWhenToDateIsNullTest() {
         LocalDateTime from = LocalDateTime.of(2025, 1, 1, 0, 0, 0);
 
         assertThrows(NullPointerException.class, () -> new DateRange(from, null));

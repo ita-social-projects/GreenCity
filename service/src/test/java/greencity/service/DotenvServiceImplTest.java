@@ -32,7 +32,7 @@ class DotenvServiceImplTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void validateSecretKeyShouldThrowExceptionWhenKeyDoesNotMatch() {
+    void validateSecretKeyShouldThrowExceptionWhenKeyDoesNotMatchTest() {
         String secretKey = "validSecret";
 
         DotenvServiceImpl spyService = spy(dotenvService);
@@ -47,7 +47,7 @@ class DotenvServiceImplTest {
     }
 
     @Test
-    void validateSecretKeyShouldSucceedWhenKeyMatches() {
+    void validateSecretKeyShouldSucceedWhenKeyMatchesTest() {
         String secretKey = "validSecret";
 
         DotenvServiceImpl spyService = spy(dotenvService);
@@ -62,14 +62,14 @@ class DotenvServiceImplTest {
     }
 
     @Test
-    void validateSecretKeyShouldThrowFunctionalityNotAvailableExceptionWhenDotenvLoadFails() {
+    void validateSecretKeyShouldThrowFunctionalityNotAvailableExceptionWhenDotenvLoadFailsTest() {
         String secretKey = "secret";
 
         assertThrows(FunctionalityNotAvailableException.class, () -> dotenvService.validateSecretKey(secretKey));
     }
 
     @Test
-    void deleteDotenvFileShouldDeleteIfSecretKeyIsValid() {
+    void deleteDotenvFileShouldDeleteIfSecretKeyIsValidTest() {
         String secretKey = "validSecret";
 
         DotenvServiceImpl spyService = spy(dotenvService);
@@ -84,7 +84,7 @@ class DotenvServiceImplTest {
     }
 
     @Test
-    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionWhenDotenvFileDoesNotExist() {
+    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionWhenDotenvFileDoesNotExistTest() {
         String secretKey = "validSecret";
 
         DotenvServiceImpl spyService = spy(dotenvService);
@@ -98,7 +98,7 @@ class DotenvServiceImplTest {
     }
 
     @Test
-    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionIfCannotDelete() {
+    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionIfCannotDeleteTest() {
         String secretKey = "validSecret";
 
         DotenvServiceImpl spyService = spy(dotenvService);
@@ -113,7 +113,7 @@ class DotenvServiceImplTest {
     }
 
     @Test
-    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionIfDeletingThrowsIOException() {
+    void deleteDotenvFileShouldThrowFunctionalityNotAvailableExceptionIfDeletingThrowsIOExceptionTest() {
         String secretKey = "validSecret";
 
         DotenvServiceImpl spyService = spy(dotenvService);

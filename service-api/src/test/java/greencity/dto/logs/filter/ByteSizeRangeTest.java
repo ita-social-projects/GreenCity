@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ByteSizeRangeTest {
 
     @Test
-    void shouldCreateByteSizeRangeWhenFromSizeIsLessThanOrEqualToToSize() {
+    void shouldCreateByteSizeRangeWhenFromSizeIsLessThanOrEqualToToSizeTest() {
         long from = 10L;
         long to = 100L;
 
@@ -20,7 +20,7 @@ class ByteSizeRangeTest {
     }
 
     @Test
-    void shouldThrowBadRequestExceptionWhenFromSizeIsGreaterThanToSize() {
+    void shouldThrowBadRequestExceptionWhenFromSizeIsGreaterThanToSizeTest() {
         long from = 100L;
         long to = 10L;
 

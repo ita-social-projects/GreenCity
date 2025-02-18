@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -47,7 +47,12 @@ public class LogFileServiceImpl implements LogFileService {
         }
 
         List<LogFileMetadataDto> dtos = Arrays.stream(logFiles)
-            .map(file -> new LogFileMetadataDto(file.getName(), file.length(), new Date(file.lastModified())))
+            .map(file -> new LogFileMetadataDto(
+                file.getName(),
+                file.length(),
+                LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(file.lastModified()),
+                    ZoneId.systemDefault())))
             .filter(fileDto -> filterFileDto(fileDto, filterDto, secretKey))
             .toList();
 
@@ -136,16 +141,11 @@ public class LogFileServiceImpl implements LogFileService {
         if (filterDto == null) {
             return true;
         }
-        String fileContent = getLogFileContent(fileDto.getFilename(), secretKey);
-        return matchesFileNameQuery(fileDto.getFilename(), filterDto.fileNameQuery())
+        String fileContent = getLogFileContent(fileDto.filename(), secretKey);
+        return matchesFileNameQuery(fileDto.filename(), filterDto.fileNameQuery())
             && matchesFileContentQuery(fileContent, filterDto.fileContentQuery())
-            && matchesByteSize(fileDto.getByteSize(), filterDto.byteSizeRange())
-            && matchesDateRange(
-                fileDto.getLastModified()
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime(),
-                filterDto.dateRange())
+            && matchesByteSize(fileDto.byteSize(), filterDto.byteSizeRange())
+            && matchesDateRange(fileDto.lastModified(), filterDto.dateRange())
             && matchesLogLevel(fileContent, filterDto.logLevel());
     }
 

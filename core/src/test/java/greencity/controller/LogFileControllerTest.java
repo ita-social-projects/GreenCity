@@ -53,7 +53,7 @@ class LogFileControllerTest {
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(controller)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -62,7 +62,7 @@ class LogFileControllerTest {
     }
 
     @Test
-    void getLogFilesListShouldReturnOkWhenRequestIsValid() throws Exception {
+    void getLogFilesListShouldReturnOkWhenRequestIsValidTest() throws Exception {
         int pageNumber = 5;
         int pageSize = 20;
         Pageable page = PageRequest.of(pageNumber, pageSize);
@@ -88,7 +88,7 @@ class LogFileControllerTest {
     }
 
     @Test
-    void getLogFileShouldReturnOkWhenRequestIsValid() throws Exception {
+    void getLogFileShouldReturnOkWhenRequestIsValidTest() throws Exception {
         String filename = "logfile.log";
         String secretKey = "validSecret";
         String fileContent = "Log file content";
@@ -103,7 +103,7 @@ class LogFileControllerTest {
     }
 
     @Test
-    void shouldReturnOkWhenFileExists() throws Exception {
+    void shouldReturnOkWhenFileExistsTest() throws Exception {
         String filename = "logfile.log";
         String secretKey = "validSecret";
         byte[] fileContent = "Log file content".getBytes();
@@ -121,7 +121,7 @@ class LogFileControllerTest {
     }
 
     @Test
-    void shouldReturnOkWhenFileIsDeleted() throws Exception {
+    void shouldReturnOkWhenFileIsDeletedTest() throws Exception {
         String secretKey = "validSecret";
 
         doNothing().when(dotenvService).deleteDotenvFile(secretKey);

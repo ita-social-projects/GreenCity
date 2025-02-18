@@ -39,7 +39,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFilesListShouldReturnLogFilesWhenTheyExist() {
+    void getLogFilesListShouldReturnLogFilesWhenTheyExistTest() {
         String secretKey = "secret";
         File logFile1 = new File("test1.log");
         File logFile2 = new File("test2.log");
@@ -51,12 +51,12 @@ class LogFileServiceImplTest {
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
-        assertEquals("test1.log", result.getPage().get(0).getFilename());
-        assertEquals("test2.log", result.getPage().get(1).getFilename());
+        assertEquals("test1.log", result.getPage().get(0).filename());
+        assertEquals("test2.log", result.getPage().get(1).filename());
     }
 
     @Test
-    void getLogFilesListShouldReturnFilteredLogFiles() {
+    void getLogFilesListShouldReturnFilteredLogFilesTest() {
         String secretKey = "secret";
         LogFileFilterDto filterDto = ModelUtils.getLogFileFilterDto();
         File logFile1 = new File("test1.log");
@@ -71,12 +71,12 @@ class LogFileServiceImplTest {
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
-        assertEquals("test1.log", result.getPage().get(0).getFilename());
-        assertEquals("test2.log", result.getPage().get(1).getFilename());
+        assertEquals("test1.log", result.getPage().get(0).filename());
+        assertEquals("test2.log", result.getPage().get(1).filename());
     }
 
     @Test
-    void getLogFilesListShouldThrowNotFoundExceptionWhenNoLogFilesExist() {
+    void getLogFilesListShouldThrowNotFoundExceptionWhenNoLogFilesExistTest() {
         String secretKey = "secret";
         NotFoundException exception = assertThrows(NotFoundException.class,
             () -> logFileService.getLogFilesList(PAGEABLE, null, secretKey));
@@ -85,7 +85,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFileContentShouldReturnFileContentWhenFileExists() {
+    void getLogFileContentShouldReturnFileContentWhenFileExistsTest() {
         String filename = "test.log";
         String secretKey = "secret";
         String expectedContent = "testContent";
@@ -107,7 +107,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFileContentShouldThrowNotFoundExceptionWhenFileDoesNotExist() {
+    void getLogFileContentShouldThrowNotFoundExceptionWhenFileDoesNotExistTest() {
         String filename = "nonexistent.log";
         String secretKey = "secret";
 
@@ -121,7 +121,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFileContentShouldThrowFileReadExceptionWhenIOExceptionOccurs() {
+    void getLogFileContentShouldThrowFileReadExceptionWhenIOExceptionOccursTest() {
         String filename = "test.log";
         String secretKey = "secret";
 
@@ -140,7 +140,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getDownloadLogFileUrlShouldReturnLogFileUrlWhenFileExists() {
+    void getDownloadLogFileUrlShouldReturnLogFileUrlWhenFileExistsTest() {
         String filename = "testFile.log";
         String secretKey = "secret";
         File mockFile = mock(File.class);
