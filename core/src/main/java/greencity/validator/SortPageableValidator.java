@@ -12,6 +12,14 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+/**
+ * Validator that checks whether sorting parameters provided in API requests
+ * are valid for a given DTO class.
+ * <p>
+ * Uses a {@link ClassValue} cache to store sortable field names, improving performance
+ * by avoiding repeated reflection calls.
+ * </p>
+ */
 @Component
 public class SortPageableValidator {
     private static final ClassValue<Set<String>> sortableFieldsCache = new ClassValue<>() {
@@ -25,6 +33,13 @@ public class SortPageableValidator {
         }
     };
 
+    /**
+     * Validates whether the provided sorting parameters are allowed for the given DTO class.
+     *
+     * @param dtoClass The DTO class that defines the valid sortable fields.
+     * @param sort The sort object containing sorting parameters.
+     * @throws UnsupportedSortException If any sorting field is not allowed.
+     */
     public void validateSortParameter(Class<? extends SortableDTO> dtoClass, Sort sort) {
         Set<String> allowedFields = getSortableFields(dtoClass);
 
