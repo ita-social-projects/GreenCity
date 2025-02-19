@@ -2,6 +2,7 @@ package greencity.config;
 
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.handler.CustomPageableHandlerMethodArgumentResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
