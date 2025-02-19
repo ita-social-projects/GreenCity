@@ -26,7 +26,6 @@ public class SortPageableValidator {
         @Override
         protected Set<String> computeValue(Class<?> type) {
             return Arrays.stream(type.getDeclaredFields())
-                .peek(field -> field.setAccessible(true))
                 .filter(field -> field.isAnnotationPresent(SortableField.class))
                 .map(Field::getName)
                 .collect(Collectors.toSet());
