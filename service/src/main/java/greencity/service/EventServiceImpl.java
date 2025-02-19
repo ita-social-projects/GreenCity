@@ -460,6 +460,42 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
+    public EventResponseDto updateV2(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
+        UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
+        checkingEqualityDateTimeInEventDateLocationDto(eventDto.getDatesLocations());
+
+        Event toUpdate = eventRepo.findById(eventDto.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
+
+        if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
+                && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
+            throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
+        }
+        List<UserVO> userVOList = toUpdate.getAttenders().stream()
+                .map(user -> modelMapper.map(user, UserVO.class))
+                .collect(Collectors.toList());
+        if (toUpdate.getTitle().equals(eventDto.getTitle())) {
+            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
+                    NotificationType.EVENT_UPDATED, toUpdate.getId());
+        } else {
+            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
+                    NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
+        }
+        enhanceWithNewData(toUpdate, eventDto, images);
+        Event updatedEvent = eventRepo.save(toUpdate);
+        return buildEventResponseDto(updatedEvent, organizer.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void rateEvent(Long eventId, String email, int grade) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
