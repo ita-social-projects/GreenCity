@@ -120,9 +120,8 @@ class CustomSortHandlerMethodArgumentResolverTest {
         doThrow(new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE))
             .when(sortPageableValidator).validateSortParameter(UserFriendDto.class, invalidSort);
 
-        assertThrows(UnsupportedSortException.class, () ->
-            resolver.resolveArgument(methodParameter, null, webRequest, null)
-        );
+        assertThrows(UnsupportedSortException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
 
         verify(sortPageableValidator).validateSortParameter(UserFriendDto.class, invalidSort);
     }

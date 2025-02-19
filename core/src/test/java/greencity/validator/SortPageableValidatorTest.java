@@ -34,9 +34,8 @@ class SortPageableValidatorTest {
     void validateSortParameterInvalidFieldThrowsExceptionTest() {
         Sort sort = Sort.by(Sort.Order.asc(TestConst.INVALID_FIELD));
 
-        UnsupportedSortException exception = assertThrows(UnsupportedSortException.class, () ->
-            validator.validateSortParameter(UserFriendDto.class, sort)
-        );
+        UnsupportedSortException exception = assertThrows(UnsupportedSortException.class,
+            () -> validator.validateSortParameter(UserFriendDto.class, sort));
 
         assertTrue(exception.getMessage().contains(TestConst.INVALID_FIELD));
     }

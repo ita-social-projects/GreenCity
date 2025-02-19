@@ -8,11 +8,13 @@ import java.lang.annotation.Target;
 /**
  * Annotation to mark a field as sortable in a DTO.
  * <p>
- * Fields annotated with {@code @SortableField} can be used in sorting
- * when handling pageable API requests.
+ * Fields annotated with {@code @SortableField} can be used in sorting when
+ * handling pageable API requests.
  * </p>
- * <p> The validation mechanism ensures that only fields with this annotation
- * are allowed in sorting parameters.</p>
+ * <p>
+ * The validation mechanism ensures that only fields with this annotation are
+ * allowed in sorting parameters.
+ * </p>
  **/
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

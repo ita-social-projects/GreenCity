@@ -150,7 +150,7 @@ public class FriendServiceImpl implements FriendService {
         name = name != null ? name : "";
 
         Page<User> users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
-                filterByFriendsOfFriends, filterByCity, pageable);
+            filterByFriendsOfFriends, filterByCity, pageable);
 
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());

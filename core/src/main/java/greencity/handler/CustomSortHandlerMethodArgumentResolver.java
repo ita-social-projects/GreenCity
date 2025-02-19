@@ -24,7 +24,7 @@ public class CustomSortHandlerMethodArgumentResolver implements SortArgumentReso
     private final SortHandlerMethodArgumentResolver delegate;
 
     public CustomSortHandlerMethodArgumentResolver(SortPageableValidator sortPageableValidator,
-                                                   SortHandlerMethodArgumentResolver delegate) {
+        SortHandlerMethodArgumentResolver delegate) {
         this.sortPageableValidator = sortPageableValidator;
         this.delegate = delegate;
     }
@@ -37,7 +37,7 @@ public class CustomSortHandlerMethodArgumentResolver implements SortArgumentReso
     @NonNull
     @Override
     public Sort resolveArgument(@NonNull MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                @NonNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        @NonNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Sort sort = delegate.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
         ApiPageable apiPageable = parameter.getMethodAnnotation(ApiPageable.class);
 

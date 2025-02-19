@@ -111,7 +111,8 @@ public class PlaceCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("comments")
-    public ResponseEntity<PageableDto<PlaceCommentAdminDto>> getAllComments(@Parameter(hidden = true) Pageable pageable) {
+    public ResponseEntity<PageableDto<PlaceCommentAdminDto>> getAllComments(
+        @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.getAllComments(pageable));
     }
