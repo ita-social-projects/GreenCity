@@ -64,10 +64,13 @@ import java.util.stream.Collectors;
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
     private final ObjectMapper objectMapper;
+    private final EndpointValidationHelper endpointValidationHelper;
 
-    public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper) {
+    public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper,
+        EndpointValidationHelper endpointValidationHelper) {
         this.errorAttributes = errorAttributes;
         this.objectMapper = objectMapper;
+        this.endpointValidationHelper = endpointValidationHelper;
     }
 
     /**
@@ -566,10 +569,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
         HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ResponseEntity<Object> response = EndpointValidationHelper.response(ex, headers, request);
+        ResponseEntity<Object> response = endpointValidationHelper.response(ex, headers, request);
         if (response == null) {
             return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
         }
-        return EndpointValidationHelper.response(ex, headers, request);
+        return response;
     }
 }

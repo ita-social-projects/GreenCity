@@ -17,11 +17,13 @@ public class EndpointValidationHelper {
     private static final String METHOD_NOT_ALLOWED = "methodNotAllowed";
     private static final String EXTRA_CHARACTERS = "extraCharacters";
     private static final String DEFAULT_CONDITION = "default";
+    private final EndpointValidator endpointValidator;
 
-    private EndpointValidationHelper() {
+    private EndpointValidationHelper(EndpointValidator endpointValidator) {
+        this.endpointValidator = endpointValidator;
     }
 
-    public static ResponseEntity<Object> response(HttpRequestMethodNotSupportedException ex, HttpHeaders headers,
+    public ResponseEntity<Object> response(HttpRequestMethodNotSupportedException ex, HttpHeaders headers,
         WebRequest request) {
         String url = getUrlFromRequest(request);
         String method;
@@ -50,12 +52,12 @@ public class EndpointValidationHelper {
         };
     }
 
-    public static String getUrlFromRequest(WebRequest request) {
+    public String getUrlFromRequest(WebRequest request) {
         return request.getDescription(false).replace("uri=", "");
     }
 
-    public static String evaluateCondition(String url, String method, List<String> allowedMethod) {
-        if (!EndpointValidator.checkUrl(url)) {
+    public String evaluateCondition(String url, String method, List<String> allowedMethod) {
+        if (!endpointValidator.checkUrl(url)) {
             return EXTRA_CHARACTERS;
         }
         if (!allowedMethod.contains(method)) {
@@ -64,7 +66,7 @@ public class EndpointValidationHelper {
         return DEFAULT_CONDITION;
     }
 
-    public static String getErrorMessage(HttpRequestMethodNotSupportedException ex, String url,
+    public String getErrorMessage(HttpRequestMethodNotSupportedException ex, String url,
         String supportedMethods) {
         return String.format(
             ErrorMessage.METHOD_NOT_ALLOWED_FOR_URL,
