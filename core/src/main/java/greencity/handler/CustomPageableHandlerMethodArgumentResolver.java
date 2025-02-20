@@ -2,6 +2,7 @@ package greencity.handler;
 
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +17,9 @@ import static greencity.constant.PageableConstants.MAX_PAGE_SIZE;
 import static greencity.constant.PageableConstants.PAGE;
 import static greencity.constant.PageableConstants.SIZE;
 
+@RequiredArgsConstructor
 public class CustomPageableHandlerMethodArgumentResolver extends PageableHandlerMethodArgumentResolver {
     private final CustomSortHandlerMethodArgumentResolver customSortResolver;
-
-    public CustomPageableHandlerMethodArgumentResolver(CustomSortHandlerMethodArgumentResolver customSortResolver) {
-        this.customSortResolver = customSortResolver;
-    }
 
     @Override
     public Pageable resolveArgument(MethodParameter methodParameter,

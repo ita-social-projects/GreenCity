@@ -4,6 +4,7 @@ import greencity.handler.CustomPageableHandlerMethodArgumentResolver;
 import greencity.handler.CustomSortHandlerMethodArgumentResolver;
 import greencity.validator.SortPageableValidator;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
@@ -11,12 +12,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@RequiredArgsConstructor
 public class PageableConfig implements WebMvcConfigurer {
     private final SortPageableValidator sortPageableValidator;
-
-    public PageableConfig(SortPageableValidator sortPageableValidator) {
-        this.sortPageableValidator = sortPageableValidator;
-    }
 
     @Bean
     public SortHandlerMethodArgumentResolver sortHandlerMethodArgumentResolver() {
