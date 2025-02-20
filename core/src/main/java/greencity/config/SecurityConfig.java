@@ -356,6 +356,7 @@ public class SecurityConfig {
                     "/user/profile",
                     EVENTS_COMMENTS + COMMENT_ID,
                     EVENTS + EVENT_ID,
+                    EVENTS + "/updateV2" + EVENT_ID,
                     "/habit/update/{habitId}",
                     HABIT_ASSIGN_ID + "/update-habit-duration",
                     "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",

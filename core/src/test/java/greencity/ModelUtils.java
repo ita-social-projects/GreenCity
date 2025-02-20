@@ -1,5 +1,6 @@
 package greencity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PriceLevel;
 import com.google.maps.model.RankBy;
@@ -84,6 +85,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
@@ -648,4 +650,15 @@ public class ModelUtils {
             .countryEn("Country")
             .build();
     }
+
+    public static MockMultipartFile getCreateJsonFile(Object dto, String fieldName) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        return new MockMultipartFile(
+                fieldName,
+                "",
+                "application/json",
+                objectMapper.writeValueAsBytes(dto)
+        );
+    }
+
 }
