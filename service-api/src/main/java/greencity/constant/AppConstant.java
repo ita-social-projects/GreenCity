@@ -28,4 +28,5 @@ public class AppConstant {
     public static final String USER_PLACEHOLDER = "{user}";
     public static final String TWO_USERS = "TWO_USERS";
     public static final String THREE_OR_MORE_USERS = "THREE_OR_MORE_USERS";
+    public static final String DOTENV_FILENAME = "secretKeys.env";
 }

@@ -1,10 +1,13 @@
 package greencity.service;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,38 +20,19 @@ class LogFileServiceImplSanitizeFilenameTest {
     @Mock
     private DotenvService dotenvService;
 
-    @Test
-    public void sanitizeFilenameListShouldReturnUnchangedFilenameWhenFilenameContainsOnlyValidCharactersTest() {
-        String filename = "valid_filename123.txt";
-        String result = logFileService.sanitizeFilename(filename);
-        assertEquals("valid_filename123.txt", result);
+    private static Stream<Arguments> filenameProvider() {
+        return Stream.of(
+            Arguments.of("valid_filename123.txt", "valid_filename123.txt"),
+            Arguments.of("invalid@filename#.txt", "invalid_filename_.txt"),
+            Arguments.of("", ""),
+            Arguments.of("@#$.txt", "___.txt"),
+            Arguments.of("file name with spaces.txt", "file_name_with_spaces.txt"));
     }
 
-    @Test
-    public void sanitizeFilenameListShouldReturnSanitizedFilenameWhenFilenameContainsForbiddenCharactersTest() {
-        String filename = "invalid@filename#.txt";
-        String result = logFileService.sanitizeFilename(filename);
-        assertEquals("invalid_filename_.txt", result);
-    }
-
-    @Test
-    public void sanitizeFilenameListShouldReturnEmptyStringWhenFilenameIsEmptyTest() {
-        String filename = "";
-        String result = logFileService.sanitizeFilename(filename);
-        assertEquals("", result);
-    }
-
-    @Test
-    public void sanitizeFilenameListShouldReturnSanitizedFilenameWhenFilenameContainsOnlyForbiddenCharactersTest() {
-        String filename = "@#$.txt";
-        String result = logFileService.sanitizeFilename(filename);
-        assertEquals("___.txt", result);
-    }
-
-    @Test
-    public void sanitizeFilenameListShouldReturnSanitizedFilenameWhenFilenameContainsSpacesTest() {
-        String filename = "file name with spaces.txt";
-        String result = logFileService.sanitizeFilename(filename);
-        assertEquals("file_name_with_spaces.txt", result);
+    @ParameterizedTest
+    @MethodSource("filenameProvider")
+    void sanitizeFilenameShouldReturnSanitizedFilenameTest(String input, String expected) {
+        String result = logFileService.sanitizeFilename(input);
+        assertEquals(expected, result);
     }
 }

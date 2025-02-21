@@ -2,9 +2,10 @@ package greencity.dto.logs;
 
 import greencity.dto.logs.filter.LogFileFilterDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 public record LogFileRequestDto(
-    String secretKey,
+    @NotNull String secretKey,
     @Valid LogFileFilterDto filterDto) {
     public static final String defaultJson = """
         {

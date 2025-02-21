@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.FunctionalityNotAvailableException;
@@ -16,10 +17,7 @@ import java.nio.file.Files;
 @Profile({"dev", "test"})
 public class DotenvServiceImpl implements DotenvService {
     private Dotenv dotenv;
-
     private final PasswordEncoder passwordEncoder;
-
-    private static final String DOTENV_FILENAME = "secretKeys.env";
 
     public DotenvServiceImpl(PasswordEncoder passwordEncoder,
         Dotenv dotenv) {
@@ -47,12 +45,8 @@ public class DotenvServiceImpl implements DotenvService {
     public void deleteDotenvFile(String secretKey) {
         validateSecretKey(secretKey);
 
-        String dotenvFilePath = System.getProperty("user.dir") + File.separator + DOTENV_FILENAME;
+        String dotenvFilePath = System.getProperty("user.dir") + File.separator + AppConstant.DOTENV_FILENAME;
         File dotenvFile = new File(dotenvFilePath);
-
-        if (!Files.exists(dotenvFile.toPath())) {
-            throw new FunctionalityNotAvailableException(ErrorMessage.DOTENV_DELETED_OR_NOT_FOUND);
-        }
 
         try {
             if (!Files.deleteIfExists(dotenvFile.toPath())) {
@@ -77,7 +71,7 @@ public class DotenvServiceImpl implements DotenvService {
     void reloadEnvFile() {
         try {
             dotenv = Dotenv.configure()
-                .filename(DOTENV_FILENAME)
+                .filename(AppConstant.DOTENV_FILENAME)
                 .load();
         } catch (DotenvException ex) {
             throw new FunctionalityNotAvailableException(ErrorMessage.FUNCTIONALITY_NOT_AVAILABLE);

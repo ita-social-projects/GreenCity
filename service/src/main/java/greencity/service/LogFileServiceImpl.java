@@ -157,7 +157,7 @@ public class LogFileServiceImpl implements LogFileService {
                 try {
                     return Files.lines(getLogFile(fileDto.filename()).toPath());
                 } catch (IOException e) {
-                    throw new RuntimeException("Error reading file: " + fileDto.filename(), e);
+                    throw new FileReadException("Error reading file: " + fileDto.filename(), e);
                 }
             };
 
@@ -176,7 +176,7 @@ public class LogFileServiceImpl implements LogFileService {
                 && matchesByteSize(fileDto.byteSize(), filterDto.byteSizeRange())
                 && matchesDateRange(fileDto.lastModified(), filterDto.dateRange())
                 && matchesLogLevel;
-        } catch (RuntimeException e) {
+        } catch (FileReadException e) {
             return false;
         }
     }
