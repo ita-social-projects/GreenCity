@@ -842,11 +842,11 @@ class EventControllerTest {
         });
 
         mockMvc.perform(builder
-                        .file(jsonFile)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isOk());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isOk());
 
         verify(eventService).updateV2(updateEventDto, principal.getName(), null);
     }
@@ -858,20 +858,18 @@ class EventControllerTest {
         MockMultipartFile jsonFile = getCreateJsonFile(updateEventDto, "eventDto");
 
         MockHttpServletRequestBuilder builder = multipart(UPDATE_EVENT_V2_URL, 999L)
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE);
 
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
         });
 
-        Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(builder)
-                        .andExpect(status().isBadRequest())
-        );
+        Exception exception = assertThrows(Exception.class, () -> mockMvc.perform(builder)
+            .andExpect(status().isBadRequest()));
 
         assertInstanceOf(WrongIdException.class, exception.getCause());
         assertEquals(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL, exception.getCause().getMessage());

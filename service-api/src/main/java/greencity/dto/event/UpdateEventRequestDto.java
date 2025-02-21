@@ -33,8 +33,8 @@ public class UpdateEventRequestDto {
 
     @NotEmpty
     @NotBlank
-    @Size(min = 20, max = 63206)
-    @Schema(example = "string7string4string")
+    @Size(min = 10, max = 63206)
+    @Schema(example = "Description")
     private String description;
 
     @Size(min = 1, max = 7)

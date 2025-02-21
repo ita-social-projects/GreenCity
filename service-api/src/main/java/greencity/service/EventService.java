@@ -133,7 +133,8 @@ public interface EventService {
      * @param eventDto - the updated event information.
      * @param email    - the email of the user performing the update.
      * @param images   - the new images for the event.
-     * @return an {@link EventResponseDto} instance containing the updated event details.
+     * @return an {@link EventResponseDto} instance containing the updated event
+     *         details.
      * @author Yurii Osovskyi.
      */
     EventResponseDto updateV2(UpdateEventRequestDto eventDto, String email, MultipartFile[] images);

@@ -654,11 +654,9 @@ public class ModelUtils {
     public static MockMultipartFile getCreateJsonFile(Object dto, String fieldName) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         return new MockMultipartFile(
-                fieldName,
-                "",
-                "application/json",
-                objectMapper.writeValueAsBytes(dto)
-        );
+            fieldName,
+            "",
+            "application/json",
+            objectMapper.writeValueAsBytes(dto));
     }
-
 }

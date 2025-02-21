@@ -466,11 +466,11 @@ public class EventServiceImpl implements EventService {
         checkingEqualityDateTimeInEventDateLocationDto(eventDto.getDatesLocations());
 
         Event toUpdate = eventRepo.findById(eventDto.getId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
-                && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+            && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
@@ -478,14 +478,14 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
         List<UserVO> userVOList = toUpdate.getAttenders().stream()
-                .map(user -> modelMapper.map(user, UserVO.class))
-                .collect(Collectors.toList());
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .collect(Collectors.toList());
         if (toUpdate.getTitle().equals(eventDto.getTitle())) {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
-                    NotificationType.EVENT_UPDATED, toUpdate.getId());
+                NotificationType.EVENT_UPDATED, toUpdate.getId());
         } else {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
-                    NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
+                NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
         }
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
