@@ -50,7 +50,7 @@ public class LogFileController {
     })
     @ApiPageable
     @PostMapping
-    public ResponseEntity<PageableDto<LogFileMetadataDto>> getLogFilesList(
+    public ResponseEntity<PageableDto<LogFileMetadataDto>> listLogFiles(
         @Schema(
             description = "Filters for logs",
             name = "LogFileFilterDto",
@@ -58,7 +58,7 @@ public class LogFileController {
             example = LogFileRequestDto.defaultJson) @RequestBody(required = false) @Valid LogFileRequestDto requestDto,
         @Parameter(hidden = true) Pageable page) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(logFileService.getLogFilesList(page, requestDto.filterDto(), requestDto.secretKey()));
+            .body(logFileService.listLogFiles(page, requestDto.filterDto(), requestDto.secretKey()));
     }
 
     @Operation(summary = "Returns content of a file with given filename",
@@ -78,11 +78,11 @@ public class LogFileController {
             content = @Content(examples = @ExampleObject(HttpStatuses.SERVICE_UNAVAILABLE)))
     })
     @PostMapping("/view/{filename}")
-    public ResponseEntity<String> getLogFile(
+    public ResponseEntity<String> viewLogFileContent(
         @RequestBody String secretKey,
         @PathVariable String filename) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(logFileService.getLogFileContent(filename, secretKey));
+            .body(logFileService.viewLogFileContent(filename, secretKey));
     }
 
     @Operation(summary = "Returns a url that triggers file download in a browser",
@@ -106,7 +106,7 @@ public class LogFileController {
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-            .body(logFileService.getDownloadLogFileUrl(filename, secretKey));
+            .body(logFileService.generateDownloadLogFileUrl(filename, secretKey));
     }
 
     @Operation(summary = "deletes '.env' file to make functionality that is dependent on it unavailable",

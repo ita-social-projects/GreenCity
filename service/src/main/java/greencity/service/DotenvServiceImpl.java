@@ -17,6 +17,8 @@ import java.nio.file.Files;
 @Profile({"dev", "test"})
 public class DotenvServiceImpl implements DotenvService {
     private Dotenv dotenv;
+
+    //TODO: remove password encoder from service module and use the existing one in core
     private final PasswordEncoder passwordEncoder;
 
     private static final String DOTENV_FILENAME = "secretKeys.env";

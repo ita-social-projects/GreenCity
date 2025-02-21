@@ -84,7 +84,7 @@ class LogFileControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(logFileService).getLogFilesList(page, filterDto, secretKey);
+        verify(logFileService).listLogFiles(page, filterDto, secretKey);
     }
 
     @Test
@@ -93,7 +93,7 @@ class LogFileControllerTest {
         String secretKey = "validSecret";
         String fileContent = "Log file content";
 
-        when(logFileService.getLogFileContent(filename, secretKey)).thenReturn(fileContent);
+        when(logFileService.viewLogFileContent(filename, secretKey)).thenReturn(fileContent);
 
         mockMvc.perform(post(VIEW_LOG_FILE_LINK, filename)
             .contentType(MediaType.TEXT_PLAIN)
@@ -109,7 +109,7 @@ class LogFileControllerTest {
         byte[] fileContent = "Log file content".getBytes();
         ByteArrayResource resource = new ByteArrayResource(fileContent);
 
-        when(logFileService.getDownloadLogFileUrl(filename, secretKey))
+        when(logFileService.generateDownloadLogFileUrl(filename, secretKey))
             .thenReturn(resource);
 
         mockMvc.perform(post(DOWNLOAD_LOG_FILE_LINK, filename)

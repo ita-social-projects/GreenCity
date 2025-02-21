@@ -37,8 +37,8 @@ public class LogFileServiceImpl implements LogFileService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<LogFileMetadataDto> getLogFilesList(Pageable pageable, LogFileFilterDto filterDto,
-        String secretKey) {
+    public PageableDto<LogFileMetadataDto> listLogFiles(Pageable pageable, LogFileFilterDto filterDto,
+                                                        String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
         File[] logFiles = listLogFilesFromFolder();
 
@@ -62,8 +62,9 @@ public class LogFileServiceImpl implements LogFileService {
     /**
      * {@inheritDoc}
      */
+    //TODO: investigate how to manage many files without JVM crashing after too many files loaded into memory
     @Override
-    public String getLogFileContent(String filename, String secretKey) {
+    public String viewLogFileContent(String filename, String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
         File file = getLogFile(filename);
 
@@ -82,7 +83,7 @@ public class LogFileServiceImpl implements LogFileService {
      * {@inheritDoc}
      */
     @Override
-    public Resource getDownloadLogFileUrl(String filename, String secretKey) {
+    public Resource generateDownloadLogFileUrl(String filename, String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
         File file = getLogFile(filename);
 
@@ -141,7 +142,7 @@ public class LogFileServiceImpl implements LogFileService {
         if (filterDto == null) {
             return true;
         }
-        String fileContent = getLogFileContent(fileDto.filename(), secretKey);
+        String fileContent = viewLogFileContent(fileDto.filename(), secretKey);
         return matchesFileNameQuery(fileDto.filename(), filterDto.fileNameQuery())
             && matchesFileContentQuery(fileContent, filterDto.fileContentQuery())
             && matchesByteSize(fileDto.byteSize(), filterDto.byteSizeRange())

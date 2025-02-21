@@ -15,7 +15,7 @@ public interface LogFileService {
      * @return a list of maps where each map contains details about a log file.
      * @author Hrenevych Ivan
      */
-    PageableDto<LogFileMetadataDto> getLogFilesList(Pageable page, LogFileFilterDto filterDto, String secretKey);
+    PageableDto<LogFileMetadataDto> listLogFiles(Pageable page, LogFileFilterDto filterDto, String secretKey);
 
     /**
      * Reads and returns the content of a log file as a string for viewing in the
@@ -25,7 +25,7 @@ public interface LogFileService {
      * @return the content of the log file as a string.
      * @author Hrenevych Ivan
      */
-    String getLogFileContent(String filename, String secretKey);
+    String viewLogFileContent(String filename, String secretKey);
 
     /**
      * Provides a downloadable resource for a given log file.
@@ -34,5 +34,5 @@ public interface LogFileService {
      * @return a {@link Resource} representing the log file.
      * @author Hrenevych Ivan
      */
-    Resource getDownloadLogFileUrl(String filename, String secretKey);
+    Resource generateDownloadLogFileUrl(String filename, String secretKey);
 }

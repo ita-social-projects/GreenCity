@@ -39,7 +39,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFilesListShouldReturnLogFilesWhenTheyExistTest() {
+    void listLogFilesListShouldReturnLogFilesWhenTheyExistTest() {
         String secretKey = "secret";
         File logFile1 = new File("test1.log");
         File logFile2 = new File("test2.log");
@@ -47,7 +47,7 @@ class LogFileServiceImplTest {
 
         LogFileServiceImpl spyService = spy(logFileService);
         doReturn(mockFiles).when(spyService).listLogFilesFromFolder();
-        PageableDto<LogFileMetadataDto> result = spyService.getLogFilesList(PAGEABLE, null, secretKey);
+        PageableDto<LogFileMetadataDto> result = spyService.listLogFiles(PAGEABLE, null, secretKey);
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
@@ -56,7 +56,7 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFilesListShouldReturnFilteredLogFilesTest() {
+    void listLogFilesListShouldReturnFilteredLogFilesTest() {
         String secretKey = "secret";
         LogFileFilterDto filterDto = ModelUtils.getLogFileFilterDto();
         File logFile1 = new File("test1.log");
@@ -66,8 +66,8 @@ class LogFileServiceImplTest {
 
         LogFileServiceImpl spyService = spy(logFileService);
         doReturn(mockFiles).when(spyService).listLogFilesFromFolder();
-        doReturn("someFileContent").when(spyService).getLogFileContent(any(), any());
-        PageableDto<LogFileMetadataDto> result = spyService.getLogFilesList(PAGEABLE, filterDto, secretKey);
+        doReturn("someFileContent").when(spyService).viewLogFileContent(any(), any());
+        PageableDto<LogFileMetadataDto> result = spyService.listLogFiles(PAGEABLE, filterDto, secretKey);
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
@@ -76,16 +76,16 @@ class LogFileServiceImplTest {
     }
 
     @Test
-    void getLogFilesListShouldThrowNotFoundExceptionWhenNoLogFilesExistTest() {
+    void listLogFilesListShouldThrowNotFoundExceptionWhenNoLogFilesExistTest() {
         String secretKey = "secret";
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> logFileService.getLogFilesList(PAGEABLE, null, secretKey));
+            () -> logFileService.listLogFiles(PAGEABLE, null, secretKey));
 
         assertEquals(ErrorMessage.LOG_FILES_NOT_FOUND, exception.getMessage());
     }
 
     @Test
-    void getLogFileContentShouldReturnFileContentWhenFileExistsTest() {
+    void viewLogFileContentShouldReturnFileContentWhenFileExistsTest() {
         String filename = "test.log";
         String secretKey = "secret";
         String expectedContent = "testContent";
@@ -100,14 +100,14 @@ class LogFileServiceImplTest {
         try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readString(any())).thenReturn(expectedContent);
 
-            String result = spyService.getLogFileContent(filename, secretKey);
+            String result = spyService.viewLogFileContent(filename, secretKey);
 
             assertEquals(expectedContent, result);
         }
     }
 
     @Test
-    void getLogFileContentShouldThrowNotFoundExceptionWhenFileDoesNotExistTest() {
+    void viewLogFileContentShouldThrowNotFoundExceptionWhenFileDoesNotExistTest() {
         String filename = "nonexistent.log";
         String secretKey = "secret";
 
@@ -117,11 +117,11 @@ class LogFileServiceImplTest {
         LogFileServiceImpl spyService = spy(logFileService);
         doReturn(mockFile).when(spyService).getLogFile(filename);
 
-        assertThrows(NotFoundException.class, () -> spyService.getLogFileContent(filename, secretKey));
+        assertThrows(NotFoundException.class, () -> spyService.viewLogFileContent(filename, secretKey));
     }
 
     @Test
-    void getLogFileContentShouldThrowFileReadExceptionWhenIOExceptionOccursTest() {
+    void viewLogFileContentShouldThrowFileReadExceptionWhenIOExceptionOccursTest() {
         String filename = "test.log";
         String secretKey = "secret";
 
@@ -135,12 +135,12 @@ class LogFileServiceImplTest {
             LogFileServiceImpl spyService = spy(logFileService);
             doReturn(mockFile).when(spyService).getLogFile(filename);
 
-            assertThrows(FileReadException.class, () -> spyService.getLogFileContent(filename, secretKey));
+            assertThrows(FileReadException.class, () -> spyService.viewLogFileContent(filename, secretKey));
         }
     }
 
     @Test
-    void getDownloadLogFileUrlShouldReturnLogFileUrlWhenFileExistsTest() {
+    void generateDownloadLogFileUrlShouldReturnLogFileUrlWhenFileExistsTest() {
         String filename = "testFile.log";
         String secretKey = "secret";
         File mockFile = mock(File.class);
@@ -152,7 +152,7 @@ class LogFileServiceImplTest {
         when(mockFile.exists()).thenReturn(true);
         when(mockFile.isFile()).thenReturn(true);
 
-        Resource result = spyService.getDownloadLogFileUrl(filename, secretKey);
+        Resource result = spyService.generateDownloadLogFileUrl(filename, secretKey);
 
         assertNotNull(result);
         assertEquals(expectedResource.getFilename(), result.getFilename());
