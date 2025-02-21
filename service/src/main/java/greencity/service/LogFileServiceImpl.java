@@ -38,7 +38,7 @@ public class LogFileServiceImpl implements LogFileService {
      */
     @Override
     public PageableDto<LogFileMetadataDto> listLogFiles(Pageable pageable, LogFileFilterDto filterDto,
-                                                        String secretKey) {
+        String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
         File[] logFiles = listLogFilesFromFolder();
 
@@ -62,7 +62,8 @@ public class LogFileServiceImpl implements LogFileService {
     /**
      * {@inheritDoc}
      */
-    //TODO: investigate how to manage many files without JVM crashing after too many files loaded into memory
+    // TODO: investigate how to manage many files without JVM crashing after too
+    // many files loaded into memory
     @Override
     public String viewLogFileContent(String filename, String secretKey) {
         dotEnvService.validateSecretKey(secretKey);

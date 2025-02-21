@@ -5,7 +5,6 @@ import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,12 +17,11 @@ import java.nio.file.Files;
 public class DotenvServiceImpl implements DotenvService {
     private Dotenv dotenv;
 
-    //TODO: remove password encoder from service module and use the existing one in core
     private final PasswordEncoder passwordEncoder;
 
     private static final String DOTENV_FILENAME = "secretKeys.env";
 
-    public DotenvServiceImpl(@Qualifier("DotenvPasswordEncoder") PasswordEncoder passwordEncoder,
+    public DotenvServiceImpl(PasswordEncoder passwordEncoder,
         Dotenv dotenv) {
         this.passwordEncoder = passwordEncoder;
         this.dotenv = dotenv;
