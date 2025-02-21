@@ -35,4 +35,22 @@ public interface LogFileService {
      * @author Hrenevych Ivan
      */
     Resource generateDownloadLogFileUrl(String filename, String secretKey);
+
+    /**
+     * Sanitizes a given filename by replacing all characters that are not
+     * alphanumeric (a-z, A-Z, 0-9), dot (.), underscore (_), or hyphen (-) with
+     * underscores (_).
+     *
+     * <p>
+     * This method ensures that the filename is safe for use in various file systems
+     * by removing potentially problematic characters.
+     * </p>
+     *
+     * @param filename The original filename to be sanitized.
+     * @return A sanitized version of the input filename with unwanted characters
+     *         replaced by underscores.
+     *
+     * @author Hrenevych Ivan
+     */
+    String sanitizeFilename(String filename);
 }

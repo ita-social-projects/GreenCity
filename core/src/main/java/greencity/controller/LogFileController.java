@@ -82,7 +82,7 @@ public class LogFileController {
         @RequestBody String secretKey,
         @PathVariable String filename) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(logFileService.viewLogFileContent(filename, secretKey));
+            .body(logFileService.viewLogFileContent(logFileService.sanitizeFilename(filename), secretKey));
     }
 
     @Operation(summary = "Returns a url that triggers file download in a browser",
@@ -105,8 +105,10 @@ public class LogFileController {
         @PathVariable String filename) {
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-            .body(logFileService.generateDownloadLogFileUrl(filename, secretKey));
+            .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + logFileService.sanitizeFilename(filename) + "\"")
+            .body(logFileService.generateDownloadLogFileUrl(logFileService.sanitizeFilename(filename), secretKey));
     }
 
     @Operation(summary = "deletes '.env' file to make functionality that is dependent on it unavailable",

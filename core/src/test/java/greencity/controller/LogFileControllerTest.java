@@ -22,7 +22,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -62,7 +65,7 @@ class LogFileControllerTest {
     }
 
     @Test
-    void getLogFilesListShouldReturnOkWhenRequestIsValidTest() throws Exception {
+    void listLogFilesShouldReturnOkWhenRequestIsValidTest() throws Exception {
         int pageNumber = 5;
         int pageSize = 20;
         Pageable page = PageRequest.of(pageNumber, pageSize);
@@ -93,7 +96,8 @@ class LogFileControllerTest {
         String secretKey = "validSecret";
         String fileContent = "Log file content";
 
-        when(logFileService.viewLogFileContent(filename, secretKey)).thenReturn(fileContent);
+        when(logFileService.viewLogFileContent(logFileService.sanitizeFilename(filename), secretKey))
+            .thenReturn(fileContent);
 
         mockMvc.perform(post(VIEW_LOG_FILE_LINK, filename)
             .contentType(MediaType.TEXT_PLAIN)
@@ -103,25 +107,26 @@ class LogFileControllerTest {
     }
 
     @Test
-    void shouldReturnOkWhenFileExistsTest() throws Exception {
+    void downloadLogFileShouldReturnOkWhenFileExistsTest() throws Exception {
         String filename = "logfile.log";
         String secretKey = "validSecret";
         byte[] fileContent = "Log file content".getBytes();
         ByteArrayResource resource = new ByteArrayResource(fileContent);
 
-        when(logFileService.generateDownloadLogFileUrl(filename, secretKey))
+        when(logFileService.generateDownloadLogFileUrl(logFileService.sanitizeFilename(filename), secretKey))
             .thenReturn(resource);
 
         mockMvc.perform(post(DOWNLOAD_LOG_FILE_LINK, filename)
             .contentType(MediaType.TEXT_PLAIN)
             .content(secretKey))
             .andExpect(status().isOk())
-            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\""))
+            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + logFileService.sanitizeFilename(filename) + "\""))
             .andExpect(content().bytes(fileContent));
     }
 
     @Test
-    void shouldReturnOkWhenFileIsDeletedTest() throws Exception {
+    void deleteDotenvFileShouldReturnOkWhenFileIsDeletedTest() throws Exception {
         String secretKey = "validSecret";
 
         doNothing().when(dotenvService).deleteDotenvFile(secretKey);

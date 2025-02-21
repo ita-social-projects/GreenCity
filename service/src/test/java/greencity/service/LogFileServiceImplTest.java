@@ -20,6 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -66,13 +68,16 @@ class LogFileServiceImplTest {
 
         LogFileServiceImpl spyService = spy(logFileService);
         doReturn(mockFiles).when(spyService).listLogFilesFromFolder();
-        doReturn("someFileContent").when(spyService).viewLogFileContent(any(), any());
-        PageableDto<LogFileMetadataDto> result = spyService.listLogFiles(PAGEABLE, filterDto, secretKey);
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.lines(any())).thenReturn(Stream.of("lines"));
 
-        assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals("test1.log", result.getPage().get(0).filename());
-        assertEquals("test2.log", result.getPage().get(1).filename());
+            PageableDto<LogFileMetadataDto> result = spyService.listLogFiles(PAGEABLE, filterDto, secretKey);
+
+            assertNotNull(result);
+            assertEquals(2, result.getTotalElements());
+            assertEquals("test1.log", result.getPage().get(0).filename());
+            assertEquals("test2.log", result.getPage().get(1).filename());
+        }
     }
 
     @Test

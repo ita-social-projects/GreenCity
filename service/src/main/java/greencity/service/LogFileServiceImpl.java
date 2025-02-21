@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +55,7 @@ public class LogFileServiceImpl implements LogFileService {
                 LocalDateTime.ofInstant(
                     Instant.ofEpochMilli(file.lastModified()),
                     ZoneId.systemDefault())))
-            .filter(fileDto -> filterFileDto(fileDto, filterDto, secretKey))
+            .filter(fileDto -> filterFileDto(fileDto, filterDto))
             .toList();
 
         return applyPagination(dtos, pageable);
@@ -62,8 +64,6 @@ public class LogFileServiceImpl implements LogFileService {
     /**
      * {@inheritDoc}
      */
-    // TODO: investigate how to manage many files without JVM crashing after too
-    // many files loaded into memory
     @Override
     public String viewLogFileContent(String filename, String secretKey) {
         dotEnvService.validateSecretKey(secretKey);
@@ -93,6 +93,14 @@ public class LogFileServiceImpl implements LogFileService {
         }
 
         return new FileSystemResource(file);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String sanitizeFilename(String filename) {
+        return filename.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 
     File[] listLogFilesFromFolder() {
@@ -139,16 +147,38 @@ public class LogFileServiceImpl implements LogFileService {
      *         otherwise.
      * @author Hrenevych Ivan
      */
-    private boolean filterFileDto(LogFileMetadataDto fileDto, LogFileFilterDto filterDto, String secretKey) {
+    private boolean filterFileDto(LogFileMetadataDto fileDto, LogFileFilterDto filterDto) {
         if (filterDto == null) {
             return true;
         }
-        String fileContent = viewLogFileContent(fileDto.filename(), secretKey);
-        return matchesFileNameQuery(fileDto.filename(), filterDto.fileNameQuery())
-            && matchesFileContentQuery(fileContent, filterDto.fileContentQuery())
-            && matchesByteSize(fileDto.byteSize(), filterDto.byteSizeRange())
-            && matchesDateRange(fileDto.lastModified(), filterDto.dateRange())
-            && matchesLogLevel(fileContent, filterDto.logLevel());
+
+        try {
+            Supplier<Stream<String>> linesStreamSupplier = () -> {
+                try {
+                    return Files.lines(getLogFile(fileDto.filename()).toPath());
+                } catch (IOException e) {
+                    throw new RuntimeException("Error reading file: " + fileDto.filename(), e);
+                }
+            };
+
+            boolean matchesFileContentQuery;
+            try (Stream<String> linesStream = linesStreamSupplier.get()) {
+                matchesFileContentQuery = matchesFileContentQuery(linesStream, filterDto.fileContentQuery());
+            }
+
+            boolean matchesLogLevel;
+            try (Stream<String> linesStream = linesStreamSupplier.get()) {
+                matchesLogLevel = matchesLogLevel(linesStream, filterDto.logLevel());
+            }
+
+            return matchesFileNameQuery(fileDto.filename(), filterDto.fileNameQuery())
+                && matchesFileContentQuery
+                && matchesByteSize(fileDto.byteSize(), filterDto.byteSizeRange())
+                && matchesDateRange(fileDto.lastModified(), filterDto.dateRange())
+                && matchesLogLevel;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     /**
@@ -167,14 +197,16 @@ public class LogFileServiceImpl implements LogFileService {
     /**
      * Checks if the log file's content contains the given query filter.
      *
-     * @param fileContent The name of the log file.
-     * @param nameFilter  The filter to match against the file content. Can be null.
+     * @param fileContentStream The name of the log file.
+     * @param nameFilter        The filter to match against the file content. Can be
+     *                          null.
      * @return true if the file content contains the given text, false otherwise.
      * @author Hrenevych Ivan
      */
-    private boolean matchesFileContentQuery(String fileContent, String fileContentFilter) {
+    private boolean matchesFileContentQuery(Stream<String> fileContentStream, String fileContentFilter) {
         return fileContentFilter == null
-            || fileContent.toLowerCase().contains(fileContentFilter.toLowerCase());
+            || fileContentStream.map(String::toLowerCase)
+                .anyMatch(line -> line.contains(fileContentFilter.toLowerCase()));
     }
 
     /**
@@ -214,8 +246,8 @@ public class LogFileServiceImpl implements LogFileService {
      *         otherwise.
      * @author Hrenevych Ivan
      */
-    private boolean matchesLogLevel(String fileContent, LogLevel logLevel) {
+    private boolean matchesLogLevel(Stream<String> fileContentStream, LogLevel logLevel) {
         return logLevel == null
-            || fileContent.contains(logLevel.toString());
+            || fileContentStream.anyMatch(line -> line.contains(logLevel.toString()));
     }
 }
