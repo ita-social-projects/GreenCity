@@ -6,6 +6,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
@@ -13,8 +14,10 @@ import greencity.dto.search.SearchEventsDto;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +29,16 @@ public interface EventService {
      * @return {@link EventDto} instance.
      */
     EventDto save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
+
+    /**
+     * Method for creating an event. This V2 endpoint enhances the response by
+     * returning EventResponseDto which includes additional information such as
+     * subscription and favorite status.
+     *
+     * @return {@link EventResponseDto} instance.
+     * @author Yurii Osovskyi.
+     */
+    EventResponseDto saveV2(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
 
     /**
      * Method for deleting Event instance.
@@ -42,6 +55,14 @@ public interface EventService {
      * @return {@link EventDto} instance.
      */
     EventDto getEvent(Long eventId, Principal principal);
+
+    /**
+     * Method for getting Event instance.
+     *
+     * @param eventId - event id.
+     * @return {@link EventResponseDto} instance.
+     */
+    EventResponseDto getEventV2(Long eventId, Principal principal);
 
     /**
      * Method for getting all Event instances filtered.
@@ -212,6 +233,24 @@ public interface EventService {
     boolean isEventDislikedByUser(Long eventId, UserVO userVO);
 
     /**
+     * Retrieves a set of user profile pictures for all users who have liked the
+     * event with the given ID.
+     *
+     * @param eventId the ID of the event
+     * @return a set of user profile picture DTOs
+     */
+    Set<UserProfilePictureDto> getUsersLikedByEvent(Long eventId);
+
+    /**
+     * Retrieves a set of user profile pictures for all users who have disliked the
+     * event with the given ID.
+     *
+     * @param eventId the ID of the event
+     * @return a set of user profile picture DTOs
+     */
+    Set<UserProfilePictureDto> getUsersDislikedByEvent(Long eventId);
+
+    /**
      * Method for adding an event to requested by event id.
      *
      * @param eventId - event id.
@@ -249,4 +288,35 @@ public interface EventService {
      * @author Olha Pitsyk.
      */
     void declineRequest(Long eventId, String email, Long userId);
+
+    /**
+     * Retrieves a paginated list of attendees for a specific event.
+     *
+     * @param eventId  the ID of the event for which attendees are to be retrieved
+     * @param pageable the pagination information, including page number and size
+     * @return a page of {@link EventAttenderDto} containing the details of event
+     *         attendees
+     */
+    Page<EventAttenderDto> getAttendersPage(Long eventId, Pageable pageable);
+
+    /**
+     * Retrieves a paginated list of users who liked a specific event.
+     *
+     * @param eventId  the ID of the event for which liked users are to be retrieved
+     * @param pageable the pagination information, including page number and size
+     * @return a page of {@link UserProfilePictureDto} containing the details of
+     *         users who liked the event
+     */
+    Page<UserProfilePictureDto> getUsersLikedEventPage(Long eventId, Pageable pageable);
+
+    /**
+     * Retrieves a paginated list of users who disliked a specific event.
+     *
+     * @param eventId  the ID of the event for which disliked users are to be
+     *                 retrieved
+     * @param pageable the pagination information, including page number and size
+     * @return a page of {@link UserProfilePictureDto} containing the details of
+     *         users who disliked the event
+     */
+    Page<UserProfilePictureDto> getUsersDislikedEventPage(Long eventId, Pageable pageable);
 }

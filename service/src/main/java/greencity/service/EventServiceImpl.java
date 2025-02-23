@@ -13,6 +13,7 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
@@ -23,6 +24,7 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
@@ -135,42 +137,64 @@ public class EventServiceImpl implements EventService {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
-        MultipartFile[] images) {
+    public EventDto save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images) {
+        Event savedEvent = processEventSaving(addEventDtoRequest, email, images);
+        return buildEventDto(savedEvent, savedEvent.getOrganizer().getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public EventResponseDto saveV2(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images) {
+        Event savedEvent = processEventSaving(addEventDtoRequest, email, images);
+        return buildEventResponseDto(savedEvent, savedEvent.getOrganizer().getId());
+    }
+
+    private Event processEventSaving(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images) {
         validateEventRequest(addEventDtoRequest);
+
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         UserVO userVO = restClient.findByEmail(email);
         User organizer = modelMapper.map(userVO, User.class);
         toSave.setOrganizer(organizer);
         toSave.setType(getEventType(toSave.getDates()));
+
+        setEventImages(toSave, images);
+        setEventTags(toSave, addEventDtoRequest.getTags());
+
+        Event savedEvent = eventRepo.save(toSave);
+        postEventSaveActions(savedEvent, userVO);
+
+        return savedEvent;
+    }
+
+    private void setEventImages(Event event, MultipartFile[] images) {
         if (images != null && images.length > 0 && images[0] != null) {
-            toSave.setTitleImage(fileService.upload(images[0]));
+            event.setTitleImage(fileService.upload(images[0]));
             List<EventImages> eventImages = new ArrayList<>();
             for (int i = 1; i < images.length; i++) {
                 if (images[i] != null) {
-                    eventImages.add(EventImages.builder().event(toSave).link(fileService.upload(images[i])).build());
+                    eventImages.add(EventImages.builder().event(event).link(fileService.upload(images[i])).build());
                 }
             }
-            toSave.setAdditionalImages(eventImages);
+            event.setAdditionalImages(eventImages);
         } else {
-            toSave.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+            event.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
+    }
 
-        List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(
-            addEventDtoRequest.getTags(), TagType.EVENT);
+    private void setEventTags(Event event, List<String> tagNames) {
+        List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(tagNames, TagType.EVENT);
+        event.setTags(modelMapper.map(tagVOs, new TypeToken<List<Tag>>() {
+        }.getType()));
+    }
 
-        toSave.setTags(modelMapper.map(tagVOs,
-            new TypeToken<List<Tag>>() {
-            }.getType()));
-
-        Event savedEvent = eventRepo.save(toSave);
+    private void postEventSaveActions(Event savedEvent, UserVO userVO) {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("CREATE_EVENT"), userVO);
         userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
             savedEvent.getTitle());
-        return buildEventDto(savedEvent, organizer.getId());
     }
 
     private EventType getEventType(List<EventDateLocation> dates) {
@@ -234,10 +258,25 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         if (principal != null) {
-            User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            User currentUser =
+                modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildEventDto(event, currentUser.getId());
         }
         return buildEventDto(event);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EventResponseDto getEventV2(Long eventId, Principal principal) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        if (principal != null) {
+            User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            return buildEventResponseDto(event, currentUser.getId());
+        }
+        return modelMapper.map(event, EventResponseDto.class);
     }
 
     /**
@@ -716,6 +755,73 @@ public class EventServiceImpl implements EventService {
         eventDtos.forEach(eventDto -> eventDto.setFavorite(followedEventIds.contains(eventDto.getId())));
     }
 
+    private void setSubscribersV2(Collection<EventResponseDto> eventResponses, Long userId) {
+        List<Long> eventIds = eventResponses.stream().map(EventResponseDto::id).toList();
+        List<Long> subscribedEventIds = eventRepo.findSubscribedAmongEventIds(eventIds, userId)
+            .stream()
+            .map(Event::getId)
+            .toList();
+
+        eventResponses.forEach(eventDto -> {
+            boolean isSubscribed = subscribedEventIds.contains(eventDto.id());
+            updateSubscriptionStatus(eventDto, isSubscribed);
+        });
+    }
+
+    private void setFollowersV2(Collection<EventResponseDto> eventResponses, Long userId) {
+        List<Long> eventIds = eventResponses.stream().map(EventResponseDto::id).toList();
+        List<Long> followedEventIds = eventRepo.findFavoritesAmongEventIds(eventIds, userId)
+            .stream()
+            .map(Event::getId)
+            .toList();
+
+        eventResponses.forEach(eventDto -> {
+            boolean isSubscribed = followedEventIds.contains(eventDto.id());
+            updateFavoriteStatus(eventDto, isSubscribed);
+        });
+    }
+
+    private void updateSubscriptionStatus(EventResponseDto eventDto, boolean isSubscribed) {
+        eventDto.withIsSubscribed(isSubscribed);
+    }
+
+    private void updateFavoriteStatus(EventResponseDto eventDto, boolean isFavorite) {
+        eventDto.withIsFavorite(isFavorite);
+    }
+
+    private EventResponseDto buildEventResponseDto(Event event, Long userId) {
+        EventResponseDto eventResponseDto = modelMapper.map(event, EventResponseDto.class);
+        Integer currentUserGrade = event.getEventGrades()
+            .stream()
+            .filter(g -> g.getUser() != null && g.getUser().getId().equals(userId))
+            .map(EventGrade::getGrade)
+            .findFirst()
+            .orElse(null);
+
+        setFollowersV2(List.of(eventResponseDto), userId);
+        setSubscribersV2(List.of(eventResponseDto), userId);
+
+        return new EventResponseDto(
+            eventResponseDto.id(),
+            eventResponseDto.eventInformation(),
+            eventResponseDto.organizer(),
+            eventResponseDto.creationDate(),
+            eventResponseDto.isOpen(),
+            eventResponseDto.dates(),
+            eventResponseDto.titleImage(),
+            eventResponseDto.additionalImages(),
+            eventResponseDto.type(),
+            eventResponseDto.isSubscribed(),
+            eventResponseDto.isFavorite(),
+            eventResponseDto.isRelevant(),
+            eventResponseDto.likes(),
+            eventResponseDto.dislikes(),
+            eventResponseDto.countComments(),
+            eventResponseDto.isOrganizedByFriend(),
+            eventResponseDto.eventRate(),
+            currentUserGrade);
+    }
+
     private EventDto buildEventDto(Event event, Long userId) {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
         Integer currentUserGrade = event.getEventGrades()
@@ -867,6 +973,28 @@ public class EventServiceImpl implements EventService {
         return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<UserProfilePictureDto> getUsersLikedByEvent(Long eventId) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersLikedEvents().stream().map(u -> modelMapper.map(u, UserProfilePictureDto.class))
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<UserProfilePictureDto> getUsersDislikedByEvent(Long eventId) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return event.getUsersDislikedEvents().stream().map(u -> modelMapper.map(u, UserProfilePictureDto.class))
+            .collect(Collectors.toSet());
+    }
+
     @Override
     public void addToRequested(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
@@ -974,6 +1102,30 @@ public class EventServiceImpl implements EventService {
 
         userNotificationService.createNotification(modelMapper.map(userToJoin, UserVO.class), userVO,
             NotificationType.EVENT_REQUEST_DECLINED, eventId, event.getTitle());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<EventAttenderDto> getAttendersPage(Long eventId, Pageable pageable) {
+        return eventRepo.getAttendersPageByEventId(eventId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<UserProfilePictureDto> getUsersLikedEventPage(Long eventId, Pageable pageable) {
+        return eventRepo.getUsersLikedEventProfilePicturesPage(eventId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<UserProfilePictureDto> getUsersDislikedEventPage(Long eventId, Pageable pageable) {
+        return eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable);
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {

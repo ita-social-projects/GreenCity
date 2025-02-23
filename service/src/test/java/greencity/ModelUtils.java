@@ -1,10 +1,14 @@
 package greencity;
 
-import com.google.maps.model.AddressComponent;
-import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.PlacesSearchResult;
+import com.google.maps.model.PlacesSearchResponse;
+import com.google.maps.model.RankBy;
+import com.google.maps.model.PriceLevel;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
@@ -38,8 +42,11 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventInformationDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
@@ -54,6 +61,7 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
@@ -85,6 +93,7 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
@@ -144,6 +153,7 @@ import greencity.entity.FavoritePlace;
 import greencity.entity.Filter;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
+import greencity.entity.HabitInvitation;
 import greencity.entity.HabitStatistic;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
@@ -154,16 +164,16 @@ import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.PlaceComment;
-import greencity.entity.ToDoListItem;
+import greencity.entity.RatingPoints;
 import greencity.entity.SocialNetworkImage;
 import greencity.entity.Specification;
 import greencity.entity.Tag;
+import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.VerifyEmail;
-import greencity.entity.RatingPoints;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -176,11 +186,12 @@ import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
+import greencity.enums.InvitationStatus;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
-import greencity.enums.ToDoListItemStatus;
 import greencity.enums.TagType;
+import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
@@ -540,6 +551,11 @@ public class ModelUtils {
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
             .languageVO(getLanguageVO())
+            .userLocationDto(
+                UserLocationDto.builder()
+                    .latitude(1d)
+                    .longitude(1d)
+                    .build())
             .build();
     }
 
@@ -1729,6 +1745,13 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitInvitation getHabitInvitation() {
+        return HabitInvitation.builder()
+            .id(1L)
+            .status(InvitationStatus.ACCEPTED)
+            .build();
+    }
+
     private static UserStatusDto createUserStatusDto() {
         return UserStatusDto.builder()
             .id(2L)
@@ -2624,6 +2647,7 @@ public class ModelUtils {
                     .name(habitTranslationName)
                     .build()))
             .tagIds(Set.of(20L))
+            .friendsToInvite(new HashSet<>())
             .build();
     }
 
@@ -3055,6 +3079,24 @@ public class ModelUtils {
             .build();
     }
 
+    public static NotificationInviteDto getNotificationInviteDto() {
+        return NotificationInviteDto.builder()
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(String.valueOf(EVENT_CREATED))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .titleText("You have created event")
+            .bodyText("You successfully created event {message}.")
+            .actionUserId(Collections.singletonList(1L))
+            .actionUserText(Collections.singletonList("Taras"))
+            .targetId(1L)
+            .message("Message")
+            .secondMessage("Second message")
+            .secondMessageId(2L)
+            .build();
+    }
+
     public static NotificationDto getBaseOfNotificationDtoForEventCommentUserTag(
         String titleText, String bodyText, List<Long> actionUserId, List<String> actionUserText) {
         return NotificationDto.builder()
@@ -3133,6 +3175,13 @@ public class ModelUtils {
     public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationDto() {
         return new PageableAdvancedDto<>(Collections.singletonList(getNotificationDto()),
             1, 0, 1, 0,
+            false, false, true, true);
+    }
+
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvancedDtoForNotificationInviteDto(
+        List<NotificationDto> notificationDtos) {
+        return new PageableAdvancedDto<>(notificationDtos,
+            2, 0, 1, 0,
             false, false, true, true);
     }
 
@@ -3327,6 +3376,77 @@ public class ModelUtils {
         return List.of(tuple1, tuple2);
     }
 
+    public static FilterPlacesApiDto getFilterPlacesApiDto() {
+        return FilterPlacesApiDto.builder()
+            .location(new LatLng(0d, 0d))
+            .radius(10000)
+            .keyword("test")
+            .rankBy(RankBy.PROMINENCE)
+            .openNow(true)
+            .minPrice(PriceLevel.FREE)
+            .maxPrice(PriceLevel.VERY_EXPENSIVE)
+            .build();
+    }
+
+    public static List<PlaceByBoundsDto> getPlaceByBoundsDto() {
+        return List.of(PlaceByBoundsDto.builder()
+            .id(1L)
+            .name("testx")
+            .location(new LocationDto())
+            .build());
+    }
+
+    public static List<PlaceByBoundsDto> getPlaceByBoundsDtoFromApi() {
+        return List.of(PlaceByBoundsDto.builder()
+            .id(1L)
+            .name("testName")
+            .location(new LocationDto(1L, 1d, 1d, "testVicinity"))
+            .build());
+    }
+
+    public static List<PlacesSearchResult> getPlacesSearchResultUk() {
+        PlacesSearchResult placesSearchResult = new PlacesSearchResult();
+        placesSearchResult.name = "тестІмя";
+        placesSearchResult.vicinity = "тестАдреса";
+        placesSearchResult.geometry = new Geometry();
+        placesSearchResult.geometry.location = new LatLng(1d, 1d);
+        return List.of(placesSearchResult);
+    }
+
+    public static List<PlacesSearchResult> getPlacesSearchResultEn() {
+        PlacesSearchResult placesSearchResult = new PlacesSearchResult();
+        placesSearchResult.name = "testName";
+        placesSearchResult.vicinity = "testVicinity";
+        placesSearchResult.geometry = new Geometry();
+        placesSearchResult.geometry.location = new LatLng(1d, 1d);
+        return List.of(placesSearchResult);
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponse() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultEn().toArray(new PlacesSearchResult[0]));
+        Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponseEn() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultEn().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
+    }
+
+    public static PlacesSearchResponse getPlacesSearchResponseUk() {
+        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
+        List<PlacesSearchResult> results = new ArrayList<>();
+        Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
+        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
+        return placesSearchResponse;
+    }
+
     public static PlaceUpdateDto getPlaceUpdateDto() {
         return PlaceUpdateDto.builder()
             .id(1L)
@@ -3349,5 +3469,49 @@ public class ModelUtils {
             "Category",
             "Category Ua",
             1L);
+    }
+
+    public static EventResponseDto getEventResponseDto() {
+        return new EventResponseDto(
+            1L,
+            new EventInformationDto(
+                "Title",
+                "New Test Event",
+                List.of(TagUaEnDto.builder()
+                    .id(2L)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build())),
+            EventAuthorDto.builder()
+                .id(1L)
+                .name("Test")
+                .build(),
+            LocalDate.of(2025, 1, 10),
+            true,
+            List.of(new EventDateInformationDto(
+                null,
+                getAddressDtoCorrect(),
+                ZonedDateTime.of(2025, 12, 26, 12, 30, 0, 0, ZoneOffset.UTC),
+                ZonedDateTime.of(2025, 12, 26, 21, 59, 0, 0, ZoneOffset.UTC),
+                "www.link.com")),
+            null,
+            List.of("image1.jpg", "image2.jpg"),
+            EventType.OFFLINE,
+            false,
+            false,
+            true,
+            10,
+            2,
+            1,
+            false,
+            4.5,
+            null);
+    }
+
+    public static EventDateLocation createEventDateLocation(ZonedDateTime start, ZonedDateTime finish) {
+        return EventDateLocation.builder()
+            .startDate(start)
+            .finishDate(finish)
+            .build();
     }
 }
