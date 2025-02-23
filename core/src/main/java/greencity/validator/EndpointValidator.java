@@ -2,7 +2,6 @@ package greencity.validator;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 @Component
@@ -11,7 +10,7 @@ public class EndpointValidator {
     private final List<String> validStatuses;
 
     private EndpointValidator(@Value("${valid.endpoints}") List<String> validEndpointList,
-                              @Value("${valid.statuses}")List<String> validStatuses) {
+        @Value("${valid.statuses}") List<String> validStatuses) {
         validEndpoints = validEndpointList;
         this.validStatuses = validStatuses;
     }
@@ -27,8 +26,9 @@ public class EndpointValidator {
             String urlPart = urlParts[i];
 
             if (templatePart.startsWith("{") && templatePart.endsWith("}")) {
-                if (!urlPart.matches("\\d+")) {
-                    return urlPart.matches("\\d{4}-\\d{2}-\\d{2}");
+                if (!validStatuses.contains(urlPart) && !urlPart.matches("\\d+")
+                    && !urlPart.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    return false;
                 }
             } else {
                 if (!templatePart.equals(urlPart)) {
@@ -38,7 +38,6 @@ public class EndpointValidator {
         }
         return true;
     }
-
 
     private boolean hasExtraCharacters(String url) {
         return !validEndpoints.contains(url);

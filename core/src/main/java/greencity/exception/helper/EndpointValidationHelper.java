@@ -19,7 +19,7 @@ public class EndpointValidationHelper {
     private static final String DEFAULT_CONDITION = "default";
     private final EndpointValidator endpointValidator;
 
-    private EndpointValidationHelper(EndpointValidator endpointValidator) {
+    public EndpointValidationHelper(EndpointValidator endpointValidator) {
         this.endpointValidator = endpointValidator;
     }
 
@@ -43,7 +43,9 @@ public class EndpointValidationHelper {
                     notFoundErrorMessage, url);
             }
             case METHOD_NOT_ALLOWED -> {
-                String methodNotAllowedErrorMessage = getErrorMessage(ex, url, allowedMethod.toString());
+                String methodNotAllowedErrorMessage = String.format(
+                    ErrorMessage.METHOD_NOT_ALLOWED_FOR_URL,
+                    ex.getMethod(), url, allowedMethod.toString());
                 yield ExceptionResponseBuilder.buildResponse(HttpStatus.METHOD_NOT_ALLOWED,
                     ErrorMessage.METHOD_NOT_ALLOWED,
                     methodNotAllowedErrorMessage, url);
@@ -64,12 +66,5 @@ public class EndpointValidationHelper {
             return METHOD_NOT_ALLOWED;
         }
         return DEFAULT_CONDITION;
-    }
-
-    public String getErrorMessage(HttpRequestMethodNotSupportedException ex, String url,
-        String supportedMethods) {
-        return String.format(
-            ErrorMessage.METHOD_NOT_ALLOWED_FOR_URL,
-            ex.getMethod(), url, supportedMethods);
     }
 }
