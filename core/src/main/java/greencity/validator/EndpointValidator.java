@@ -9,7 +9,7 @@ public class EndpointValidator {
     private final List<String> validEndpoints;
     private final List<String> validStatuses;
 
-    private EndpointValidator(@Value("${valid.endpoints}") List<String> validEndpointList,
+    public EndpointValidator(@Value("${valid.endpoints}") List<String> validEndpointList,
         @Value("${valid.statuses}") List<String> validStatuses) {
         validEndpoints = validEndpointList;
         this.validStatuses = validStatuses;
