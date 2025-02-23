@@ -7,6 +7,7 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.user.UserVO;
@@ -218,6 +219,42 @@ class EventControllerTest {
         MockMultipartFile jsonFile =
             new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
         mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK)
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void saveV2Test() {
+        AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        String json = objectMapper.writeValueAsString(addEventDtoRequest);
+
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+
+        mockMvc.perform(multipart("/events/createV2")
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isCreated());
+
+        verify(eventService).saveV2(eq(addEventDtoRequest), eq(principal.getName()), isNull());
+    }
+
+    @Test
+    @SneakyThrows
+    void saveV2BadRequestTest() {
+        String json = "{}";
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+        mockMvc.perform(multipart("/events/createV2")
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
@@ -755,5 +792,35 @@ class EventControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
         verify(eventService).declineRequest(eventId, principal.getName(), userId);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventV2Test() {
+        Long eventId = 1L;
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+
+        when(eventService.getEventV2(eventId, principal)).thenReturn(eventResponseDto);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        String expectedJson = objectMapper.writeValueAsString(eventResponseDto);
+
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/v2/{eventId}", eventId)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
+
+        verify(eventService, times(1)).getEventV2(eventId, principal);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEventV2FailedTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/v2/{eventId}", "not_number").principal(principal))
+            .andExpect(status().isBadRequest());
+
+        verify(eventService, times(0)).getEventV2(1L, principal);
     }
 }

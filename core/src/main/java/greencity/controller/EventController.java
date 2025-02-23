@@ -13,6 +13,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.user.UserForListDto;
@@ -91,6 +92,31 @@ public class EventController {
     }
 
     /**
+     * Method for creating an event.
+     *
+     * @return {@link EventResponseDto} instance.
+     * @author Yurii Osovskyi.
+     */
+    @Operation(summary = "Create new event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+    })
+    @PostMapping(value = "/createV2", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventResponseDto> saveV2(
+        @Parameter(description = SwaggerExampleModel.ADD_EVENT,
+            required = true) @ValidEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable @ImageArrayValidation(
+            allowedTypes = {"image/jpeg", "image/png", "image/jpg"}) MultipartFile[] images) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(eventService.saveV2(addEventDtoRequest, principal.getName(), images));
+    }
+
+    /**
      * Method for deleting an event.
      *
      * @author Max Bohonko.
@@ -163,6 +189,27 @@ public class EventController {
         @PathVariable Long eventId,
         @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.ok().body(eventService.getEvent(eventId, principal));
+    }
+
+    /**
+     * Method for getting the event by event id version 2.
+     *
+     * @return {@link EventResponseDto} instance.
+     * @author Yurii Osovskyi.
+     */
+    @Operation(summary = "Get the event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/v2/{eventId}")
+    public ResponseEntity<EventResponseDto> getEventV2(
+        @PathVariable Long eventId,
+        @Parameter(hidden = true) Principal principal) {
+        return ResponseEntity.ok().body(eventService.getEventV2(eventId, principal));
     }
 
     /**
