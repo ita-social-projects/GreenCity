@@ -150,6 +150,7 @@ public class EventSearchRepoImpl implements EventSearchRepo {
                     datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
                 case EventTime.PAST -> predicates.add(criteriaBuilder.lessThan(
                     datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now()));
+                default -> throw new IllegalArgumentException("Incorrect time predicate provided");
             }
         }
     }
@@ -249,12 +250,12 @@ public class EventSearchRepoImpl implements EventSearchRepo {
         if (isFavorite == null) {
             return;
         }
+
         SetJoin<Event, User> followersJoin = root.join(Event_.followers);
-        if (Boolean.TRUE.equals(isFavorite)) {
-            predicates.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
-        } else {
-            predicates.add(criteriaBuilder.notEqual(followersJoin.get(User_.ID), userId));
-        }
+        Predicate isFavoritePred = isFavorite
+            ? criteriaBuilder.equal(followersJoin.get(User_.ID), userId)
+            : criteriaBuilder.notEqual(followersJoin.get(User_.ID), userId);
+        predicates.add(isFavoritePred);
     }
 
     private List<Order> getOrders(Long userId, Root<Event> eventRoot) {
