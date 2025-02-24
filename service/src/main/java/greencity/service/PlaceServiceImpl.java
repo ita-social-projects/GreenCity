@@ -585,7 +585,7 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email) {
-        PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
+        final PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
         User user = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException("User with email " + email + " doesn't exist"));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
