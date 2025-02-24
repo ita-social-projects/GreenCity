@@ -7,8 +7,11 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
 import greencity.exception.exceptions.EventDtoValidationException;
+import greencity.exception.exceptions.FileReadException;
+import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.LowRoleLevelException;
@@ -552,5 +555,54 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link FileReadException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(FileReadException.class)
+    public final ResponseEntity<Object> handleFileReadException(FileReadException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link BadSecretKeyException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(BadSecretKeyException.class)
+    public final ResponseEntity<Object> handleBadSecretKeyException(BadSecretKeyException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(FunctionalityNotAvailableException.class)
+    public final ResponseEntity<Object> handleFunctionalityNotAvailableException(FunctionalityNotAvailableException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 }
