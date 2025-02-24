@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -135,7 +136,8 @@ public class LogFileServiceImpl implements LogFileService {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), dtos.size());
 
-        List<LogFileMetadataDto> paginatedList = dtos.subList(start, end);
+        List<LogFileMetadataDto> paginatedList =
+            (start < totalElements) ? dtos.subList(start, end) : Collections.emptyList();
 
         return new PageableDto<>(paginatedList, totalElements, pageable.getPageNumber(), totalPages);
     }
