@@ -564,7 +564,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
-  @Override
+
+    @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
         HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ResponseEntity<Object> response = endpointValidationHelper.response(ex, headers, request);
