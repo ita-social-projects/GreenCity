@@ -18,7 +18,7 @@ public class DotenvConfig {
             return Dotenv.configure()
                 .filename(AppConstant.DOTENV_FILENAME)
                 .load();
-        } catch (DotenvException ex) {
+        } catch (DotenvException ignored) {
             throw new FunctionalityNotAvailableException(ErrorMessage.FUNCTIONALITY_NOT_AVAILABLE);
         }
     }
