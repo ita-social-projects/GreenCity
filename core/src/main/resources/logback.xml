@@ -1,20 +1,37 @@
 <configuration>
 
-    <!-- Define the custom date format -->
     <property name="DATE_FORMAT" value="yyyy-MM-dd HH:mm:ss" />
-
-    <!-- Define the log pattern with the custom date format -->
+    <property name="LOG_PATH" value="./logs" />
+    <property name="LOG_MAX_SIZE" value="5MB" />
     <property name="LOG_PATTERN" value="[%d{${DATE_FORMAT}}] %highlight(%level) %cyan(%-40.40logger{40}) %magenta(%-5.5(:%line)) %msg%n" />
+
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <!-- Use the log pattern with the custom date format -->
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- Define loggers and root level -->
+    <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/application.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Daily log file rotation -->
+            <fileNamePattern>${LOG_PATH}/application-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+            <!-- Max file size before rolling -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${LOG_MAX_SIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
     <root level="INFO">
-        <appender-ref ref="console" />
+        <appender-ref ref="console"/>
+        <appender-ref ref="rollingFile"/>
     </root>
 
 </configuration>
