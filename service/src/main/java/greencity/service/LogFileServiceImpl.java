@@ -200,7 +200,8 @@ public class LogFileServiceImpl implements LogFileService {
      * Checks if the log file's content contains the given query filter.
      *
      * @param fileContentStream Stream of lines of the log file.
-     * @param fileContentFilter The filter to match against the file content. Can be null.
+     * @param fileContentFilter The filter to match against the file content. Can be
+     *                          null.
      * @return true if the file content contains the given text, false otherwise.
      * @author Hrenevych Ivan
      */
@@ -242,7 +243,7 @@ public class LogFileServiceImpl implements LogFileService {
      * Checks if the log file contains the specified log level.
      *
      * @param fileContentStream Stream of lines of the log file.
-     * @param logLevel The log level filter. Can be null.
+     * @param logLevel          The log level filter. Can be null.
      * @return true if the log file contains the specified log level, false
      *         otherwise.
      * @author Hrenevych Ivan
