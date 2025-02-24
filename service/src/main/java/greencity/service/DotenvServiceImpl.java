@@ -6,6 +6,7 @@ import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @Service
+@Lazy
 @Profile({"dev", "test"})
 public class DotenvServiceImpl implements DotenvService {
     private Dotenv dotenv;
