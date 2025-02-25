@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.exception.handler.CustomExceptionHandler;
+import greencity.exception.helper.EndpointValidationHelper;
 import greencity.service.DotenvService;
 import greencity.service.LogFileService;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +54,9 @@ class LogFileControllerTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private EndpointValidationHelper endpointValidationHelper;
+
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
     @BeforeEach
@@ -60,7 +64,7 @@ class LogFileControllerTest {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(controller)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, endpointValidationHelper))
             .build();
     }
 
