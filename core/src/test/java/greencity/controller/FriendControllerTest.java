@@ -60,7 +60,7 @@ class FriendControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(friendController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
-            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, null))
             .build();
     }
 
