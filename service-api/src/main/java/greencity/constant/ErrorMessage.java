@@ -229,6 +229,11 @@ public class ErrorMessage {
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
         "Git repository not initialized. Commit info is unavailable.";
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
+    public static final String METHOD_NOT_ALLOWED = "Method not allowed";
+    public static final String NOT_FOUND_ENDPOINT_FOR_URL = "No endpoint found for %s";
+    public static final String NOT_FOUND = "Not Found";
+    public static final String METHOD_NOT_ALLOWED_FOR_URL = "Method %s is not allowed for %s. Supported Methods: %s";
+    public static final String INVALID_REQUEST_TYPE = "Invalid request type: ServletWebRequest expected";
     public static final String DATES_LIST_COULD_NOT_BE_EMPTY = "Dates list cannot be empty";
     public static final String DATES_COULD_NOT_BE_NULL = "Dates could not be null";
     public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";

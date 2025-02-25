@@ -77,7 +77,7 @@ class HabitControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, null))
             .setValidator(mockValidator)
             .build();
     }
