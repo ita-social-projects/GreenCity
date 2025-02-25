@@ -36,7 +36,6 @@ class ExportToFileServiceImplTest {
     private static final int OFFSET = 1;
     @InjectMocks
     private ExportToFileServiceImpl exportToFileService;;
-
     @Mock
     private ExportSettingsRepo exportSettingsRepo;
 
@@ -52,7 +51,7 @@ class ExportToFileServiceImplTest {
     }
 
     @Test
-    void exportTableDataToExcelWithOutOfLimitValueTest() throws Exception {
+    void exportTableDataToExcelWithOutOfLimitValueTest() {
         int outOfLimit = 100_000;
 
         assertThrows(InvalidLimitException.class,
