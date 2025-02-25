@@ -16,22 +16,26 @@ import java.io.InputStream;
 public class ExportSettingsServiceImpl implements ExportSettingsService {
     private final ExportSettingsRepo exportSettingsRepo;
     private final ExportToFileService exportToFileService;
+    private final DotenvService dotenvService;
 
     @Override
-    public TablesMetadataDto getTablesMetadata() {
+    public TablesMetadataDto getTablesMetadata(String secretKey) {
+        dotenvService.validateSecretKey(secretKey);
         return exportSettingsRepo.getTablesMetadata();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public TableRowsDto selectFromTable(String tableName, int limit, int offset) {
+    public TableRowsDto selectFromTable(String tableName, int limit, int offset, String secretKey) {
+        dotenvService.validateSecretKey(secretKey);
         checkLimitAndOffset(limit, offset);
 
         return exportSettingsRepo.selectPortionFromTable(tableName, limit, offset);
     }
 
     @Override
-    public InputStream getExcelFileAsResource(String tableName, int limit, int offset) {
+    public InputStream getExcelFileAsResource(String tableName, int limit, int offset, String secretKey) {
+        dotenvService.validateSecretKey(secretKey);
         checkLimitAndOffset(limit, offset);
 
         return exportToFileService.exportTableDataToExcel(tableName, limit, offset);

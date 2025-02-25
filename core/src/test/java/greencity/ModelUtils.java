@@ -671,8 +671,8 @@ public class ModelUtils {
         tables.put("users", columns);
 
         return TablesMetadataDto.builder()
-                .tables(tables)
-                .build();
+            .tables(tables)
+            .build();
     }
 
     public static TableRowsDto getTableRowsDto() {
@@ -686,7 +686,7 @@ public class ModelUtils {
         tableData.add(row);
 
         return TableRowsDto.builder()
-                .tableData(tableData)
-                .build();
+            .tableData(tableData)
+            .build();
     }
 }

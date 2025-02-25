@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,8 +41,8 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @GetMapping(value = "/tables", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TablesMetadataDto> getTablesInfo() {
-        return ResponseEntity.ok(exportSettingsService.getTablesMetadata());
+    public ResponseEntity<TablesMetadataDto> getTablesInfo(@RequestHeader String secretKey) {
+        return ResponseEntity.ok(exportSettingsService.getTablesMetadata(secretKey));
     }
 
     /**
@@ -61,12 +62,13 @@ public class ExportSettingsController {
     @GetMapping("/select")
     public ResponseEntity<TableRowsDto> getSelected(@RequestParam @Pattern(regexp = "^[A-Za-z_]+$") String tableName,
         @RequestParam int limit,
-        @RequestParam int offset) {
-        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableName, limit, offset));
+        @RequestParam int offset,
+        @RequestHeader String secretKey) {
+        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableName, limit, offset, secretKey));
     }
 
     /**
-     * Method for receiving an excel file with rows from DB by table name, limit and
+     * Method for receiving an .xlsx file with rows from DB by table name, limit and
      * offset.
      *
      * @return dto {@link TableRowsDto}
@@ -82,7 +84,8 @@ public class ExportSettingsController {
     public ResponseEntity<InputStreamResource> downloadExcel(
         @RequestParam @Pattern(regexp = "^[A-Za-z_]+$") String tableName,
         @RequestParam int limit,
-        @RequestParam int offset) {
+        @RequestParam int offset,
+        @RequestHeader String secretKey) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION,
             String.format("attachment; filename= %s(%d - %d).xlsx", tableName, offset, limit));
@@ -90,6 +93,7 @@ public class ExportSettingsController {
 
         return ResponseEntity.ok()
             .headers(headers)
-            .body(new InputStreamResource(exportSettingsService.getExcelFileAsResource(tableName, limit, offset)));
+            .body(new InputStreamResource(
+                exportSettingsService.getExcelFileAsResource(tableName, limit, offset, secretKey)));
     }
 }

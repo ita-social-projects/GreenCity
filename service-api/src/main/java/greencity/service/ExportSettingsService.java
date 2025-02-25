@@ -10,7 +10,7 @@ public interface ExportSettingsService {
      *
      * @return {@link TablesMetadataDto} instance.
      */
-    TablesMetadataDto getTablesMetadata();
+    TablesMetadataDto getTablesMetadata(String secretKey);
 
     /**
      * Method for receiving rows from table by table name, limit and offset.
@@ -21,7 +21,7 @@ public interface ExportSettingsService {
      *
      * @return {@link TablesMetadataDto} object with metadata.
      */
-    TableRowsDto selectFromTable(String tableName, int limit, int offset);
+    TableRowsDto selectFromTable(String tableName, int limit, int offset, String secretKey);
 
     /**
      * Method for receiving an excel file as InputStream with rows from DB by table
@@ -33,5 +33,5 @@ public interface ExportSettingsService {
      *
      * @return {@link InputStream} InputStream with file.
      */
-    InputStream getExcelFileAsResource(String tableName, int limit, int offset);
+    InputStream getExcelFileAsResource(String tableName, int limit, int offset, String secretKey);
 }

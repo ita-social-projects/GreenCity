@@ -85,6 +85,7 @@ public class SecurityConfig {
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
     public static final String LOGS = "/logs/**";
+    public static final String SETTINGS_EXPORT = "/settings/export/**";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -292,7 +293,8 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    "/ai/**")
+                    "/ai/**",
+                    SETTINGS_EXPORT)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,

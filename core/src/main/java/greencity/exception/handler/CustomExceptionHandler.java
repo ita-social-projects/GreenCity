@@ -619,7 +619,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(DatabaseMetadataException.class)
     public final ResponseEntity<Object> handleDatabaseMetadataException(DatabaseMetadataException ex,
-                                                                        WebRequest request) {
+        WebRequest request) {
         log.error(ex.getMessage(), ex);
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
