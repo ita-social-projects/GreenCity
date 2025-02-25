@@ -18,7 +18,10 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -27,10 +30,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class ExportToFileServiceImplTest {
-    private final String TABLE_NAME = "users";
-    private final int LIMIT = 10;
-    private final int OFFSET = 1;
+class ExportToFileServiceImplTest {
+    private static final String TABLE_NAME = "users";
+    private static final int LIMIT = 10;
+    private static final int OFFSET = 1;
     @InjectMocks
     private ExportToFileServiceImpl exportToFileService;;
 
@@ -38,7 +41,7 @@ public class ExportToFileServiceImplTest {
     private ExportSettingsRepo exportSettingsRepo;
 
     @Test
-    public void exportTableDataToExcelWithValidParamsTest() {
+    void exportTableDataToExcelWithValidParamsTest() {
         TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
         when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, OFFSET, LIMIT)).thenReturn(tableRowsDto);
 
@@ -49,7 +52,7 @@ public class ExportToFileServiceImplTest {
     }
 
     @Test
-    public void exportTableDataToExcelWithOutOfLimitValueTest() throws Exception {
+    void exportTableDataToExcelWithOutOfLimitValueTest() throws Exception {
         int outOfLimit = 100_000;
 
         assertThrows(InvalidLimitException.class,
@@ -59,7 +62,7 @@ public class ExportToFileServiceImplTest {
     }
 
     @Test
-    public void testExceptionCatchingDuringCreatingFileTest() throws Exception {
+    void testExceptionCatchingDuringCreatingFileTest() throws Exception {
         Method method = ExportToFileServiceImpl.class.getDeclaredMethod("convertWorkbookToInputStream", Workbook.class);
         method.setAccessible(true);
         Workbook spyWorkbook = spy(new XSSFWorkbook());

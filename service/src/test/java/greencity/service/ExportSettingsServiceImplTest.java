@@ -17,15 +17,19 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ExportSettingsServiceImplTest {
-    private final String TABLE_NAME = "users";
-    private final int LIMIT = 10;
-    private final int OFFSET = 1;
-    private final String SECRET_KEY = "SomeSecretKey";
-    private final String NOT_VALID_SECRET_KEY = "SomeNotValidSecretKey";
+class ExportSettingsServiceImplTest {
+    private static final String TABLE_NAME = "users";
+    private static final int LIMIT = 10;
+    private static final int OFFSET = 1;
+    private static final String SECRET_KEY = "SomeSecretKey";
+    private static final String NOT_VALID_SECRET_KEY = "SomeNotValidSecretKey";
 
     @InjectMocks
     private ExportSettingsServiceImpl settingsService;
@@ -40,7 +44,7 @@ public class ExportSettingsServiceImplTest {
     private DotenvService dotenvService;
 
     @Test
-    public void getTablesMetadataTest() {
+    void getTablesMetadataTest() {
         TablesMetadataDto tablesMetadataDto = ModelUtils.getTablesMetadataDto();
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
         when(exportSettingsRepo.getTablesMetadata()).thenReturn(tablesMetadataDto);
@@ -52,7 +56,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void getTablesMetadataWithNotWalidSecretKeyTest() {
+    void getTablesMetadataWithNotWalidSecretKeyTest() {
         doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
             .validateSecretKey(NOT_VALID_SECRET_KEY);
 
@@ -63,7 +67,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void selectFromTableWithWalidParamsTest() {
+    void selectFromTableWithWalidParamsTest() {
         TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
         when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
@@ -75,7 +79,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void selectFromTableWithNegativeLimitTest() {
+    void selectFromTableWithNegativeLimitTest() {
         int negativeLimit = -1;
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
 
@@ -86,7 +90,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void selectFromTableWithNegativeOffsetTest() {
+    void selectFromTableWithNegativeOffsetTest() {
         int negativeOffset = -1;
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
 
@@ -97,7 +101,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void selectFromTableWithOutOfLimitValueTest() {
+    void selectFromTableWithOutOfLimitValueTest() {
         int invalidLimit = 100_000;
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
 
@@ -108,7 +112,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void selectFromTableWithNotValidSecretKeyTest() {
+    void selectFromTableWithNotValidSecretKeyTest() {
         doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
             .validateSecretKey(NOT_VALID_SECRET_KEY);
 
@@ -119,7 +123,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void getExcelFileAsResourceWithValidParamsTest() {
+    void getExcelFileAsResourceWithValidParamsTest() {
         InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
         when(exportToFileService.exportTableDataToExcel(TABLE_NAME, LIMIT, OFFSET)).thenReturn(excelResource);
@@ -131,7 +135,7 @@ public class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void getExcelFileAsResourceWithNotValidSecretKeyTest() {
+    void getExcelFileAsResourceWithNotValidSecretKeyTest() {
         doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
             .validateSecretKey(NOT_VALID_SECRET_KEY);
 

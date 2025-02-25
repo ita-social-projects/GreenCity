@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ExportSettingsRepoImplTest {
-    private final String TABLE_NAME = "users";
-    private final int LIMIT = 10;
-    private final int OFFSET = 1;
+class ExportSettingsRepoImplTest {
+    private static final String TABLE_NAME = "users";
+    private static final int LIMIT = 10;
+    private static final int OFFSET = 1;
 
     @InjectMocks
     private ExportSettingsRepoImpl settingsRepo;
@@ -48,7 +48,7 @@ public class ExportSettingsRepoImplTest {
     private PreparedStatement preparedStatement;
 
     @Test
-    public void getTablesMetadataTest() throws Exception{
+    void getTablesMetadataTest() throws Exception{
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getTables(null, null, null, new String[] {"TABLE"})).thenReturn(resultSet);
@@ -63,14 +63,14 @@ public class ExportSettingsRepoImplTest {
     }
 
     @Test
-    public void getTablesMetadataSQLExceptionThrownTest() throws Exception{
+    void getTablesMetadataSQLExceptionThrownTest() throws Exception{
         when(dataSource.getConnection()).thenThrow(new SQLException());
 
         assertThrows(DatabaseMetadataException.class , () -> settingsRepo.getTablesMetadata());
     }
 
     @Test
-    public void selectPortionFromTableWithValidParamsTest() throws Exception {
+    void selectPortionFromTableWithValidParamsTest() throws Exception {
         String query = String.format("SELECT * FROM %s LIMIT %d OFFSET %d;", TABLE_NAME, LIMIT, OFFSET);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(query)).thenReturn(preparedStatement);
@@ -87,7 +87,7 @@ public class ExportSettingsRepoImplTest {
     }
 
     @Test
-    public void selectPortionFromTableSQLExceptionThrownTest() throws Exception{
+    void selectPortionFromTableSQLExceptionThrownTest() throws Exception{
         when(dataSource.getConnection()).thenThrow(new SQLException());
 
         assertThrows(DatabaseMetadataException.class,
