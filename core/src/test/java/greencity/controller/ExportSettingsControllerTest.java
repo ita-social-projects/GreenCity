@@ -1,0 +1,168 @@
+package greencity.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.ModelUtils;
+import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
+import greencity.dto.exportsettings.TableRowsDto;
+import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.exception.exceptions.DatabaseMetadataException;
+import greencity.exception.exceptions.InvalidLimitException;
+import greencity.exception.handler.CustomExceptionHandler;
+import greencity.service.ExportSettingsService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@ExtendWith(MockitoExtension.class)
+public class ExportSettingsControllerTest {
+    private MockMvc mockMvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final String SETTINGS_CONTROLLER_LINK = "/settings";
+    private final String TABLE_NAME = "users";
+    private final String INVALID_TABLE_NAME = "users1";
+    private final String NOT_EXISTS_TABLE_NAME = "usersssssss";
+    private final int LIMIT = 20;
+    private final int OFFSET = 1;
+    private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+    @InjectMocks
+    private ExportSettingsController exportSettingsController;
+    @Mock
+    private ExportSettingsService exportSettingsService;
+
+    @BeforeEach
+    void setup() {
+        this.mockMvc = MockMvcBuilders.standaloneSetup(exportSettingsController)
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
+            .build();
+    }
+
+    @Test
+    public void getTablesInfoWithValidParamsTest() throws Exception {
+        TablesMetadataDto tablesMetadataDto = ModelUtils.getTablesMetadataDto();
+        when(exportSettingsService.getTablesMetadata()).thenReturn(tablesMetadataDto);
+        String expectedJson = objectMapper.writeValueAsString(tablesMetadataDto);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/tables")
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    public void getSelectedWithValidParamsTest() throws Exception {
+        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
+        when(exportSettingsService.selectFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
+        String expectedJson = objectMapper.writeValueAsString(tableRowsDto);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(OFFSET))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    public void getSelectedWithInvalidTableNameTest() throws Exception {
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+            .param("tableName", INVALID_TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(OFFSET))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    public void getSelectedWithNonExistentTableNameTest() throws Exception {
+        doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
+            .when(exportSettingsService)
+            .selectFromTable(NOT_EXISTS_TABLE_NAME, LIMIT, OFFSET);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+            .param("tableName", NOT_EXISTS_TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(OFFSET))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError()) // Expect 404 Not Found for non-existent table
+            .andReturn();
+    }
+
+    @Test
+    public void getSelectedWithNegativeOffsetTest() throws Exception {
+        int negativeOffset = -1;
+        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET))
+            .when(exportSettingsService).selectFromTable(TABLE_NAME, LIMIT, negativeOffset);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(negativeOffset))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    public void getSelectedWithNegativeLimitTest() throws Exception {
+        int negativeLimit = -1;
+        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_LIMIT))
+            .when(exportSettingsService).selectFromTable(TABLE_NAME, negativeLimit, OFFSET);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(negativeLimit))
+            .param("offset", String.valueOf(OFFSET))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    public void getSelectedWithOutOfLimitValueTest() throws Exception {
+        int invalidLimit = 100_000;
+        doThrow(new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, AppConstant.SQL_ROW_LIMIT)))
+            .when(exportSettingsService).selectFromTable(TABLE_NAME, invalidLimit, OFFSET);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(invalidLimit))
+            .param("offset", String.valueOf(OFFSET))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    public void downloadExcelWithValidParamsTest() throws Exception {
+        InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+        when(exportSettingsService.getExcelFileAsResource(TABLE_NAME, LIMIT, OFFSET)).thenReturn(excelResource);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(OFFSET))
+            .accept(MediaType.APPLICATION_OCTET_STREAM))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= users(1 - 20).xlsx"));
+    }
+}

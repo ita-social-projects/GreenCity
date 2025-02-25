@@ -29,4 +29,5 @@ public class AppConstant {
     public static final String TWO_USERS = "TWO_USERS";
     public static final String THREE_OR_MORE_USERS = "THREE_OR_MORE_USERS";
     public static final String DOTENV_FILENAME = "secretKeys.env";
+    public static final int SQL_ROW_LIMIT = 10_000;
 }

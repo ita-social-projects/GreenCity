@@ -241,4 +241,9 @@ public class ErrorMessage {
     public static final String BAD_SECRET_KEY = "The given secret key is incorrect";
     public static final String CANNOT_DELETE_DOTENV = "Failed to delete .env file";
     public static final String FUNCTIONALITY_NOT_AVAILABLE = "Functionality is not available";
+    public static final String NEGATIVE_LIMIT = "Limit cannot be negative";
+    public static final String NEGATIVE_OFFSET = "Offset cannot be negative";
+    public static final String SQL_METADATA_EXCEPTION_MESSAGE = "Error occurred while retrieving database data for: ";
+    public static final String EXCEED_LIMIT = "The limit exceeds the allowed limit of %d";
+    public static final String GENERATION_EXCEL_FILE_ERROR = "Error generating Excel file";
 }

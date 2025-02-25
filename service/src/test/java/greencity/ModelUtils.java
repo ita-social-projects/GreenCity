@@ -111,6 +111,8 @@ import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
+import greencity.dto.exportsettings.TableRowsDto;
+import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
@@ -230,6 +232,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -3523,5 +3529,30 @@ public class ModelUtils {
             new ByteSizeRange(0, 1000),
             null,
             null);
+    }
+
+    public static TablesMetadataDto getTablesMetadataDto() {
+        Map<String, List<String>> tables = new HashMap<>();
+        List<String> columns = List.of("id", "name", "email");
+        tables.put("users", columns);
+
+        return TablesMetadataDto.builder()
+                .tables(tables)
+                .build();
+    }
+
+    public static TableRowsDto getTableRowsDto() {
+        List<Map<String, String>> tableData = new LinkedList<>();
+        Map<String, String> row = new LinkedHashMap<>();
+        row.put("id", "1");
+        row.put("date_of_registration", "1970-01-01 00:00:00");
+        row.put("email", "someemail@some.com");
+        row.put("name", "Name");
+        row.put("role", "ROLE_ADMIN");
+        tableData.add(row);
+
+        return TableRowsDto.builder()
+                .tableData(tableData)
+                .build();
     }
 }
