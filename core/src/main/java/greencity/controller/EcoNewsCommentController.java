@@ -68,8 +68,6 @@ public class EcoNewsCommentController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
             content = @Content(schema = @Schema(implementation = AddCommentDtoResponse.class))),
-        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER,
-            content = @Content(examples = @ExampleObject(HttpStatuses.SEE_OTHER))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
