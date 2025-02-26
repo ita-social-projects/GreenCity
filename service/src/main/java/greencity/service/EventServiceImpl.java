@@ -841,7 +841,7 @@ public class EventServiceImpl implements EventService {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
         eventDto.setDislikes(event.getUsersDislikedEvents().size());
         return eventDto;
-        }
+    }
 
     /**
      * {@inheritDoc}
@@ -898,11 +898,9 @@ public class EventServiceImpl implements EventService {
         if (isAuthor) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-
         if (removeLikeIfExists(event, userVO, eventAuthor)) {
             return;
         }
-
         removeDislikeIfExists(event, userVO);
 
         event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
