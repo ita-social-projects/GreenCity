@@ -257,6 +257,8 @@ public class EventServiceImpl implements EventService {
     public EventDto getEvent(Long eventId, Principal principal) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        System.out.println("users disliked: ");
+        System.out.println(event.getUsersDislikedEvents().size());
         if (principal != null) {
             User currentUser =
                 modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
@@ -833,12 +835,15 @@ public class EventServiceImpl implements EventService {
         setFollowers(List.of(eventDto), userId);
         setSubscribes(List.of(eventDto), userId);
         eventDto.setCurrentUserGrade(currentUserGrade);
+        eventDto.setDislikes(event.getUsersDislikedEvents().size());
         return eventDto;
     }
 
     private EventDto buildEventDto(Event event) {
-        return modelMapper.map(event, EventDto.class);
-    }
+        EventDto eventDto = modelMapper.map(event, EventDto.class);
+        eventDto.setDislikes(event.getUsersDislikedEvents().size());
+        return eventDto;
+        }
 
     /**
      * {@inheritDoc}
