@@ -80,6 +80,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
                 .map(EventImages::getLink).collect(Collectors.toList()));
         }
         eventDto.setEventRate(EventUtils.calculateEventRate(event.getEventGrades()));
+        eventDto.setLikes(event.getUsersLikedEvents().size());
+        eventDto.setDislikes(event.getUsersDislikedEvents().size());
         return eventDto;
     }
 

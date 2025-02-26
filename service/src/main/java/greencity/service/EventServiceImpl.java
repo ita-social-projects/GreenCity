@@ -833,14 +833,11 @@ public class EventServiceImpl implements EventService {
         setFollowers(List.of(eventDto), userId);
         setSubscribes(List.of(eventDto), userId);
         eventDto.setCurrentUserGrade(currentUserGrade);
-        eventDto.setDislikes(event.getUsersDislikedEvents().size());
         return eventDto;
     }
 
     private EventDto buildEventDto(Event event) {
-        EventDto eventDto = modelMapper.map(event, EventDto.class);
-        eventDto.setDislikes(event.getUsersDislikedEvents().size());
-        return eventDto;
+        return modelMapper.map(event, EventDto.class);
     }
 
     /**
