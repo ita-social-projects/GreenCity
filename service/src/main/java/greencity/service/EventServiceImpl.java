@@ -257,6 +257,8 @@ public class EventServiceImpl implements EventService {
     public EventDto getEvent(Long eventId, Principal principal) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        System.out.println("users disliked: ");
+        System.out.println(event.getUsersDislikedEvents().size());
         if (principal != null) {
             User currentUser =
                 modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
