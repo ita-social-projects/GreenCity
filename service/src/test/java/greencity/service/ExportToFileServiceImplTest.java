@@ -44,12 +44,12 @@ class ExportToFileServiceImplTest {
     @Test
     void exportTableDataToExcelWithValidParamsTest() {
         TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
-        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, OFFSET, LIMIT)).thenReturn(tableRowsDto);
+        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
 
-        InputStream result = exportToFileService.exportTableDataToExcel(TABLE_NAME, OFFSET, LIMIT);
+        InputStream result = exportToFileService.exportTableDataToExcel(TABLE_NAME, LIMIT, OFFSET);
 
         assertNotNull(result);
-        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, OFFSET, LIMIT);
+        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
     }
 
     @Test
@@ -57,20 +57,20 @@ class ExportToFileServiceImplTest {
         int outOfLimit = 100_000;
 
         assertThrows(InvalidLimitException.class,
-            () -> exportToFileService.exportTableDataToExcel(TABLE_NAME, outOfLimit, LIMIT));
+            () -> exportToFileService.exportTableDataToExcel(TABLE_NAME, outOfLimit, OFFSET));
 
-        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, OFFSET, outOfLimit);
+        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, outOfLimit, OFFSET);
     }
 
     @Test
     void exportTableDataToExcelIfTableIsEmptyTest() {
         TableRowsDto emptyRow = TableRowsDto.builder().tableData(new LinkedList<>()).build();
-        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, OFFSET, LIMIT)).thenReturn(emptyRow);
+        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(emptyRow);
 
         assertThrows(ResourceNotFoundException.class,
-            () -> exportToFileService.exportTableDataToExcel(TABLE_NAME, OFFSET, LIMIT));
+            () -> exportToFileService.exportTableDataToExcel(TABLE_NAME, LIMIT, OFFSET));
 
-        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, OFFSET, LIMIT);
+        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
     }
 
     @Test
