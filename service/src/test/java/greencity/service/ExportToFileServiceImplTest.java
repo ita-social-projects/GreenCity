@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.exception.exceptions.FileGenerationException;
 import greencity.exception.exceptions.InvalidLimitException;
+import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.repository.ExportSettingsRepo;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,7 +37,7 @@ class ExportToFileServiceImplTest {
     private static final int LIMIT = 10;
     private static final int OFFSET = 1;
     @InjectMocks
-    private ExportToFileServiceImpl exportToFileService;;
+    private ExportToFileServiceImpl exportToFileService;
     @Mock
     private ExportSettingsRepo exportSettingsRepo;
 
@@ -58,6 +60,17 @@ class ExportToFileServiceImplTest {
             () -> exportToFileService.exportTableDataToExcel(TABLE_NAME, outOfLimit, LIMIT));
 
         verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, OFFSET, outOfLimit);
+    }
+
+    @Test
+    void exportTableDataToExcelIfTableIsEmptyTest() {
+        TableRowsDto emptyRow = TableRowsDto.builder().tableData(new LinkedList<>()).build();
+        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, OFFSET, LIMIT)).thenReturn(emptyRow);
+
+        assertThrows(ResourceNotFoundException.class,
+            () -> exportToFileService.exportTableDataToExcel(TABLE_NAME, OFFSET, LIMIT));
+
+        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, OFFSET, LIMIT);
     }
 
     @Test

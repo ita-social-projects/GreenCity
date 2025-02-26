@@ -19,7 +19,7 @@ public interface ExportSettingsService {
      * @param limit     is limit of rows to return.
      * @param offset    is offset for rows to return.
      *
-     * @return {@link TablesMetadataDto} object with metadata.
+     * @return {@link TableRowsDto} object with metadata.
      */
     TableRowsDto selectFromTable(String tableName, int limit, int offset, String secretKey);
 

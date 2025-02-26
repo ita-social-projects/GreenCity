@@ -251,4 +251,5 @@ public class ErrorMessage {
     public static final String SQL_METADATA_EXCEPTION_MESSAGE = "Error occurred while retrieving database data for: ";
     public static final String EXCEED_LIMIT = "The limit exceeds the allowed limit of %d";
     public static final String GENERATION_EXCEL_FILE_ERROR = "Error generating Excel file";
+    public static final String EMPTY_TABLE = "Table '%s' doesn't contain any row";
 }

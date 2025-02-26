@@ -37,6 +37,8 @@ public class ExportSettingsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = TablesMetadataDto.class))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
@@ -54,10 +56,12 @@ public class ExportSettingsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = TableRowsDto.class))),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @GetMapping("/select")
     public ResponseEntity<TableRowsDto> getSelected(@RequestParam @Pattern(regexp = "^[A-Za-z_]+$") String tableName,
@@ -77,6 +81,10 @@ public class ExportSettingsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = TableRowsDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })

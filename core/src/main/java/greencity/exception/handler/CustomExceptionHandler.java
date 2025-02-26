@@ -628,37 +628,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercepts exception {@link DatabaseMetadataException}.
+     * Method intercepts exception {@link InvalidLimitException},
+     * {@link DatabaseMetadataException}.
      *
-     * @param ex      Exception that should be intercepted.
      * @param request Contains details about the occurred exception.
      * @return {@code ResponseEntity} which contains the HTTP status and body with
      *         the exception message.
      */
-    @ExceptionHandler(DatabaseMetadataException.class)
-    public final ResponseEntity<Object> handleDatabaseMetadataException(DatabaseMetadataException ex,
-        WebRequest request) {
-        log.error(ex.getMessage(), ex);
+    @ExceptionHandler({InvalidLimitException.class,
+        DatabaseMetadataException.class})
+    public final ResponseEntity<Object> handleInvalidDataException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        exceptionResponse.setMessage(ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercepts exception {@link InvalidLimitException}.
-     *
-     * @param ex      Exception that should be intercepted.
-     * @param request Contains details about the occurred exception.
-     * @return {@code ResponseEntity} which contains the HTTP status and body with
-     *         the exception message.
-     */
-    @ExceptionHandler(InvalidLimitException.class)
-    public final ResponseEntity<Object> handleInvalidOffsetException(InvalidLimitException ex, WebRequest request) {
-        log.error(ex.getMessage(), ex);
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        exceptionResponse.setMessage(ex.getMessage());
-
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 

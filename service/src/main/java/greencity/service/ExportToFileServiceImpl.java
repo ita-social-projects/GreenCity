@@ -5,6 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.exception.exceptions.FileGenerationException;
 import greencity.exception.exceptions.InvalidLimitException;
+import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.repository.ExportSettingsRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +42,15 @@ public class ExportToFileServiceImpl implements ExportToFileService {
             throw new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, limit));
         }
 
+        TableRowsDto data = exportSettingsRepo.selectPortionFromTable(tableName, limit, offset);
+        if (data == null || data.getTableData().isEmpty()) {
+            final String errorMessage = String.format(ErrorMessage.EMPTY_TABLE, tableName);
+            log.info(errorMessage);
+            throw new ResourceNotFoundException(String.format(errorMessage));
+        }
+
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet(tableName);
-        TableRowsDto data = exportSettingsRepo.selectPortionFromTable(tableName, limit, offset);
         createHeaderRow(workbook, sheet, data);
         populateTableCells(workbook, sheet, data);
         return convertWorkbookToInputStream(workbook);

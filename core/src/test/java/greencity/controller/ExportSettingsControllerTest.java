@@ -109,7 +109,7 @@ class ExportSettingsControllerTest {
             .param("offset", String.valueOf(OFFSET))
             .header("secretKey", SECRET_KEY)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isInternalServerError()) // Expect 404 Not Found for non-existent table
+            .andExpect(status().isBadRequest())
             .andReturn();
     }
 
