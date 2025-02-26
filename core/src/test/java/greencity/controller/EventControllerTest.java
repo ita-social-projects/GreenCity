@@ -44,6 +44,7 @@ import static greencity.ModelUtils.getUserVO;
 import static greencity.TestConst.EVENT_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -390,6 +391,30 @@ class EventControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
         verify(eventService).dislike(userVO, 1L);
+    }
+
+    @Test
+    void dislikev2Test() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislike-v2", 2)
+            .principal(principal))
+            .andExpect(status().isOk())
+            .andReturn();
+        assertNotNull(result.getResponse().getContentAsString());
+        verify(eventService).dislikeV2(2L, userVO);
+    }
+
+    @Test
+    void likev2Test() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/like-v2", 2)
+            .principal(principal))
+            .andExpect(status().isOk())
+            .andReturn();
+        assertNotNull(result.getResponse().getContentAsString());
+        verify(eventService).likeV2(2L, userVO);
     }
 
     @Test
