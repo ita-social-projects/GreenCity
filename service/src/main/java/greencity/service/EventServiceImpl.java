@@ -426,34 +426,8 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDto update(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
-        UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
-        checkingEqualityDateTimeInEventDateLocationDto(eventDto.getDatesLocations());
-
-        Event toUpdate = eventRepo.findById(eventDto.getId())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
-
-        if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
-            && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
-            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
-            throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
-        }
-        List<UserVO> userVOList = toUpdate.getAttenders().stream()
-            .map(user -> modelMapper.map(user, UserVO.class))
-            .collect(Collectors.toList());
-        if (toUpdate.getTitle().equals(eventDto.getTitle())) {
-            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
-                NotificationType.EVENT_UPDATED, toUpdate.getId());
-        } else {
-            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
-                NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
-        }
-        enhanceWithNewData(toUpdate, eventDto, images);
-        Event updatedEvent = eventRepo.save(toUpdate);
-        return buildEventDto(updatedEvent, organizer.getId());
+        Event updatedEvent = processEventUpdate(eventDtoRequest, email, images);
+        return buildEventDto(updatedEvent, updatedEvent.getOrganizer().getId());
     }
 
     /**
@@ -462,24 +436,46 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventResponseDto updateV2(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
+        Event updatedEvent = processEventUpdate(eventDtoRequest, email, images);
+        return buildEventResponseDto(updatedEvent, updatedEvent.getOrganizer().getId());
+    }
+
+    private Event processEventUpdate(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
         UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
         checkingEqualityDateTimeInEventDateLocationDto(eventDto.getDatesLocations());
 
         Event toUpdate = eventRepo.findById(eventDto.getId())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
 
+        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
+        validateOrganizerPermissions(organizer, toUpdate);
+        validateEventNotFinished(toUpdate);
+
+        notifyAttenders(toUpdate, eventDto);
+
+        enhanceWithNewData(toUpdate, eventDto, images);
+
+        return eventRepo.save(toUpdate);
+    }
+
+    private void validateOrganizerPermissions(User organizer, Event toUpdate) {
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+    }
 
+    private void validateEventNotFinished(Event toUpdate) {
         if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
+    }
+
+    private void notifyAttenders(Event toUpdate, UpdateEventDto eventDto) {
         List<UserVO> userVOList = toUpdate.getAttenders().stream()
             .map(user -> modelMapper.map(user, UserVO.class))
             .collect(Collectors.toList());
+
         if (toUpdate.getTitle().equals(eventDto.getTitle())) {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
                 NotificationType.EVENT_UPDATED, toUpdate.getId());
@@ -487,9 +483,6 @@ public class EventServiceImpl implements EventService {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
                 NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
         }
-        enhanceWithNewData(toUpdate, eventDto, images);
-        Event updatedEvent = eventRepo.save(toUpdate);
-        return buildEventResponseDto(updatedEvent, organizer.getId());
     }
 
     /**
