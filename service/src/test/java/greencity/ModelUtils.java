@@ -91,6 +91,8 @@ import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.logs.filter.ByteSizeRange;
+import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
@@ -3513,5 +3515,13 @@ public class ModelUtils {
             .startDate(start)
             .finishDate(finish)
             .build();
+    }
+
+    public static LogFileFilterDto getLogFileFilterDto() {
+        return new LogFileFilterDto("test",
+            null,
+            new ByteSizeRange(0, 1000),
+            null,
+            null);
     }
 }

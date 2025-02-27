@@ -7,8 +7,11 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
 import greencity.exception.exceptions.EventDtoValidationException;
+import greencity.exception.exceptions.FileReadException;
+import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.LowRoleLevelException;
@@ -27,11 +30,12 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoToDoListItemsException;
 import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.ResourceNotFoundException;
+import greencity.exception.exceptions.*;
+import greencity.exception.helper.EndpointValidationHelper;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -41,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -60,12 +65,19 @@ import java.util.stream.Collectors;
 /**
  * Custom exception handler.
  */
-@AllArgsConstructor
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
     private final ObjectMapper objectMapper;
+    private final EndpointValidationHelper endpointValidationHelper;
+
+    public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper,
+        EndpointValidationHelper endpointValidationHelper) {
+        this.errorAttributes = errorAttributes;
+        this.objectMapper = objectMapper;
+        this.endpointValidationHelper = endpointValidationHelper;
+    }
 
     /**
      * ExceptionHandler for intercepting errors from GreenCityUser.
@@ -105,8 +117,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Danylo Hlynskyi
      */
     @ExceptionHandler(MultipartException.class)
-    public final ResponseEntity<Object> handleTooLargeMultipartFileRequest(MultipartException ex,
-        WebRequest request) {
+    public final ResponseEntity<Object> handleTooLargeMultipartFileRequest(MultipartException ex, WebRequest request) {
         log.warn(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(exceptionResponse);
@@ -552,5 +563,64 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+        HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ResponseEntity<Object> response = endpointValidationHelper.response(ex, headers, request);
+        if (response == null) {
+            return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
+        }
+        return response;
+    }
+
+    /**
+     * Method intercepts exception {@link FileReadException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(FileReadException.class)
+    public final ResponseEntity<Object> handleFileReadException(FileReadException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link BadSecretKeyException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(BadSecretKeyException.class)
+    public final ResponseEntity<Object> handleBadSecretKeyException(BadSecretKeyException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(FunctionalityNotAvailableException.class)
+    public final ResponseEntity<Object> handleFunctionalityNotAvailableException(FunctionalityNotAvailableException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 }

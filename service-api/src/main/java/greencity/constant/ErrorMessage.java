@@ -229,10 +229,21 @@ public class ErrorMessage {
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
         "Git repository not initialized. Commit info is unavailable.";
     public static final String FAILED_TO_FETCH_COMMIT_INFO = "Failed to fetch commit info due to I/O error: ";
+    public static final String METHOD_NOT_ALLOWED = "Method not allowed";
+    public static final String NOT_FOUND_ENDPOINT_FOR_URL = "No endpoint found for %s";
+    public static final String NOT_FOUND = "Not Found";
+    public static final String METHOD_NOT_ALLOWED_FOR_URL = "Method %s is not allowed for %s. Supported Methods: %s";
+    public static final String INVALID_REQUEST_TYPE = "Invalid request type: ServletWebRequest expected";
     public static final String DATES_LIST_COULD_NOT_BE_EMPTY = "Dates list cannot be empty";
     public static final String DATES_COULD_NOT_BE_NULL = "Dates could not be null";
     public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";
     public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
     public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
     public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
+    public static final String LOG_FILES_NOT_FOUND = "No log files found";
+    public static final String LOG_FILE_NOT_FOUND = "No file found with name: %s";
+    public static final String CANNOT_READ_LOG_FILE = "Error reading log file: %s";
+    public static final String BAD_SECRET_KEY = "The given secret key is incorrect";
+    public static final String CANNOT_DELETE_DOTENV = "Failed to delete .env file";
+    public static final String FUNCTIONALITY_NOT_AVAILABLE = "Functionality is not available";
 }
