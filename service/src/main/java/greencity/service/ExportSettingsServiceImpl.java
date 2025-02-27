@@ -37,19 +37,17 @@ public class ExportSettingsServiceImpl implements ExportSettingsService {
     public InputStream getExcelFileAsResource(String tableName, int limit, int offset, String secretKey) {
         dotenvService.validateSecretKey(secretKey);
         checkLimitAndOffset(limit, offset);
+        TableRowsDto data = exportSettingsRepo.selectPortionFromTable(tableName, limit, offset);
 
-        return exportToFileService.exportTableDataToExcel(tableName, limit, offset);
+        return exportToFileService.exportTableDataToExcel(data);
     }
 
     private void checkLimitAndOffset(int limit, int offset) {
-        if (limit < 0) {
+        if (limit < 0 || offset < 0) {
             throw new IllegalArgumentException(ErrorMessage.NEGATIVE_LIMIT);
         }
         if (limit > AppConstant.SQL_ROW_LIMIT) {
             throw new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, AppConstant.SQL_ROW_LIMIT));
-        }
-        if (offset < 0) {
-            throw new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET);
         }
     }
 }

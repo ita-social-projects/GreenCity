@@ -3552,6 +3552,7 @@ public class ModelUtils {
         tableData.add(row);
 
         return TableRowsDto.builder()
+            .tableName("users")
             .tableData(tableData)
             .build();
     }

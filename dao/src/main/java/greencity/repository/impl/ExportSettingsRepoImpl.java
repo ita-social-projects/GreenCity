@@ -29,7 +29,7 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
 
     @Override
     public TablesMetadataDto getTablesMetadata() {
-        Map<String, List<String>> tablesNames = new HashMap<>();
+        Map<String, List<String>> tablesMetaDada = new HashMap<>();
 
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
@@ -47,10 +47,10 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
                     String columnName = columns.getString("COLUMN_NAME");
                     columnsNames.add(columnName);
                 }
-                tablesNames.put(tableName, columnsNames);
+                tablesMetaDada.put(tableName, columnsNames);
             }
             return TablesMetadataDto.builder()
-                .tables(tablesNames)
+                .tables(tablesMetaDada)
                 .build();
         } catch (SQLException e) {
             log.error(e.getMessage());
@@ -78,8 +78,8 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
             log.error(e.getMessage());
             throw new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + tableName, e);
         }
-
         return TableRowsDto.builder()
+            .tableName(tableName)
             .tableData(tableData)
             .build();
     }

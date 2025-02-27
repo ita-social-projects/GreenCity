@@ -1,13 +1,9 @@
 package greencity.service;
 
-import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.exception.exceptions.FileGenerationException;
-import greencity.exception.exceptions.InvalidLimitException;
 import greencity.exception.exceptions.ResourceNotFoundException;
-import greencity.repository.ExportSettingsRepo;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,28 +25,17 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class ExportToFileServiceImpl implements ExportToFileService {
-    private final ExportSettingsRepo exportSettingsRepo;
-
     @Transactional(readOnly = true)
     @Override
-    public InputStream exportTableDataToExcel(String tableName, int limit, int offset) {
-        if (limit > AppConstant.SQL_ROW_LIMIT) {
-            log.warn("Table data exceeds limit: {}", limit);
-            throw new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, limit));
-        }
-
-        TableRowsDto data = exportSettingsRepo.selectPortionFromTable(tableName, limit, offset);
-        if (data == null || data.getTableData().isEmpty()) {
-            final String errorMessage = String.format(ErrorMessage.EMPTY_TABLE, tableName);
-            log.info(errorMessage);
-            throw new ResourceNotFoundException(String.format(errorMessage));
+    public InputStream exportTableDataToExcel(TableRowsDto data) {
+        if (data.getTableData().isEmpty()) {
+            throw new ResourceNotFoundException(String.format(ErrorMessage.EMPTY_TABLE, data.getTableData()));
         }
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(tableName);
+        Sheet sheet = workbook.createSheet(data.getTableName());
         createHeaderRow(workbook, sheet, data);
         populateTableCells(workbook, sheet, data);
         return convertWorkbookToInputStream(workbook);

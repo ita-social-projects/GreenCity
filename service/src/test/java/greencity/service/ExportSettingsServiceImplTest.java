@@ -125,13 +125,15 @@ class ExportSettingsServiceImplTest {
     @Test
     void getExcelFileAsResourceWithValidParamsTest() {
         InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
-        when(exportToFileService.exportTableDataToExcel(TABLE_NAME, LIMIT, OFFSET)).thenReturn(excelResource);
+        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
+        when(exportToFileService.exportTableDataToExcel(tableRowsDto)).thenReturn(excelResource);
 
         InputStream result = settingsService.getExcelFileAsResource(TABLE_NAME, LIMIT, OFFSET, SECRET_KEY);
 
         assertNotNull(result);
-        verify(exportToFileService, times(1)).exportTableDataToExcel(TABLE_NAME, LIMIT, OFFSET);
+        verify(exportToFileService, times(1)).exportTableDataToExcel(tableRowsDto);
     }
 
     @Test

@@ -8,5 +8,6 @@ import java.util.Map;
 @Data
 @Builder
 public class TableRowsDto {
+    private String tableName;
     private List<Map<String, String>> tableData;
 }
