@@ -1775,7 +1775,6 @@ class EventServiceImplTest {
         Event mockEvent = new Event();
         when(eventRepo.findById(eventId)).thenReturn(Optional.of(mockEvent));
         when(modelMapper.map(any(User.class), eq(UserProfilePictureDto.class))).thenReturn(null); // Simulate empty
-        // liked users
 
         Set<UserProfilePictureDto> actualUsersLiked = eventService.getUsersLikedByEvent(eventId);
 
@@ -1790,7 +1789,6 @@ class EventServiceImplTest {
         Event mockEvent = new Event();
         when(eventRepo.findById(eventId)).thenReturn(Optional.of(mockEvent));
         when(modelMapper.map(any(User.class), eq(UserProfilePictureDto.class))).thenReturn(null); // Simulate empty
-        // disliked users
 
         Set<UserProfilePictureDto> actualUsersDisliked = eventService.getUsersDislikedByEvent(eventId);
 
