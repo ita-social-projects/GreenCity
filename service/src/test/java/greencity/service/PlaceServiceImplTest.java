@@ -48,6 +48,9 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
+import greencity.mapping.CategoryDtoToVOMapper;
+import greencity.mapping.CategoryVOMapper;
+import greencity.mapping.LocationDtoMapper;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PhotoRepo;
@@ -111,6 +114,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -231,6 +235,10 @@ class PlaceServiceImplTest {
 
     @BeforeEach
     void init() {
+        modelMapper.addConverter(new CategoryVOMapper());
+        modelMapper.addConverter(new CategoryDtoToVOMapper());
+        modelMapper.addConverter(new LocationDtoMapper());
+
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
