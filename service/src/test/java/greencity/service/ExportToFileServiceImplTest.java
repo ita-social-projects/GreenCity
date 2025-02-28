@@ -58,7 +58,6 @@ class ExportToFileServiceImplTest {
             method.invoke(exportToFileService, spyWorkbook);
             fail("Expected FileGenerationException to be thrown");
         } catch (InvocationTargetException e) {
-            // Unwrap the InvocationTargetException to get the actual cause
             Throwable cause = e.getCause();
             assertInstanceOf(FileGenerationException.class, cause);
         }
