@@ -51,7 +51,6 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setOpen(event.isOpen());
         eventDto.setType(event.getType());
         eventDto.setIsRelevant(EventUtils.isRelevant(event.getDates()));
-        eventDto.setLikes(event.getUsersLikedEvents().size());
         eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
         eventDto.setOrganizer(

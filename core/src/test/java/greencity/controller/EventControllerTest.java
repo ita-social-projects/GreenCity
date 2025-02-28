@@ -5,10 +5,7 @@ import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.EventResponseDto;
-import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.event.*;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EventStatus;
@@ -17,6 +14,10 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EventService;
 import greencity.service.UserService;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import java.security.Principal;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
@@ -38,16 +39,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.TestConst.EVENT_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -396,24 +394,34 @@ class EventControllerTest {
     @Test
     void dislikev2Test() throws Exception {
         UserVO userVO = getUserVO();
+        EventDto eventDto = getEventDto();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(eventService.dislikeV2(anyLong(), eq(userVO))).thenReturn(eventDto);
         MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislike-v2", 2)
             .principal(principal))
             .andExpect(status().isOk())
             .andReturn();
-        assertNotNull(result.getResponse().getContentAsString());
+        assertEquals(200, result.getResponse().getStatus());
+        assertEquals(eventDto, objectMapper.readValue(result.getResponse().getContentAsString(), EventDto.class));
         verify(eventService).dislikeV2(2L, userVO);
     }
 
     @Test
     void likev2Test() throws Exception {
         UserVO userVO = getUserVO();
+        EventDto eventDto = getEventDto();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(eventService.likeV2(anyLong(), eq(userVO))).thenReturn(eventDto);
         MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/like-v2", 2)
             .principal(principal))
             .andExpect(status().isOk())
             .andReturn();
-        assertNotNull(result.getResponse().getContentAsString());
+        assertEquals(200, result.getResponse().getStatus());
+        assertEquals(eventDto, objectMapper.readValue(result.getResponse().getContentAsString(), EventDto.class));
         verify(eventService).likeV2(2L, userVO);
     }
 
