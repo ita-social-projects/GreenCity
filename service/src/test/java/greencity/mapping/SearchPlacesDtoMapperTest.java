@@ -20,14 +20,14 @@ class SearchPlacesDtoMapperTest {
     void convertTest() {
         Place place = getPlace();
         place.setCategory(Category.builder()
-            .name("Name")
-            .nameUa("Назва")
+            .nameEn("Name")
+            .nameUk("Назва")
             .build());
         String language = LocaleContextHolder.getLocale().getLanguage();
         SearchPlacesDto searchedPlace = SearchPlacesDto.builder()
             .id(1L)
             .name(place.getName())
-            .category(language.equals("ua") ? place.getCategory().getNameUa() : place.getCategory().getName())
+            .category(language.equals("ua") ? place.getCategory().getNameUk() : place.getCategory().getNameEn())
             .build();
 
         assertEquals(searchedPlace, searchPlacesDtoMapper.convert(place));

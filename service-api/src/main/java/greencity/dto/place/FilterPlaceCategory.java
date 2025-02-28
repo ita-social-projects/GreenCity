@@ -15,6 +15,6 @@ import lombok.ToString;
 @ToString
 public class FilterPlaceCategory {
     private Long id;
-    private String name;
-    private String nameUa;
+    private String nameEn;
+    private String nameUk;
 }

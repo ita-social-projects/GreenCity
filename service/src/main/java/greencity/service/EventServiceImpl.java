@@ -22,7 +22,7 @@ import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
-import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserForListDto;
@@ -77,10 +77,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import static greencity.constant.EventTupleConstant.cityEn;
-import static greencity.constant.EventTupleConstant.cityUa;
+import static greencity.constant.EventTupleConstant.cityUk;
 import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
-import static greencity.constant.EventTupleConstant.countryUa;
+import static greencity.constant.EventTupleConstant.countryUk;
 import static greencity.constant.EventTupleConstant.creationDate;
 import static greencity.constant.EventTupleConstant.currentUserGrade;
 import static greencity.constant.EventTupleConstant.description;
@@ -88,7 +88,7 @@ import static greencity.constant.EventTupleConstant.dislikes;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
-import static greencity.constant.EventTupleConstant.formattedAddressUa;
+import static greencity.constant.EventTupleConstant.formattedAddressUk;
 import static greencity.constant.EventTupleConstant.grade;
 import static greencity.constant.EventTupleConstant.houseNumber;
 import static greencity.constant.EventTupleConstant.isFavorite;
@@ -104,10 +104,10 @@ import static greencity.constant.EventTupleConstant.onlineLink;
 import static greencity.constant.EventTupleConstant.organizerId;
 import static greencity.constant.EventTupleConstant.organizerName;
 import static greencity.constant.EventTupleConstant.regionEn;
-import static greencity.constant.EventTupleConstant.regionUa;
+import static greencity.constant.EventTupleConstant.regionUk;
 import static greencity.constant.EventTupleConstant.startDate;
 import static greencity.constant.EventTupleConstant.streetEn;
-import static greencity.constant.EventTupleConstant.streetUa;
+import static greencity.constant.EventTupleConstant.streetUk;
 import static greencity.constant.EventTupleConstant.tagId;
 import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
@@ -1183,21 +1183,21 @@ public class EventServiceImpl implements EventService {
                 .latitude(tuple.get(latitude, Double.class))
                 .longitude(tuple.get(longitude, Double.class))
                 .streetEn(tuple.get(streetEn, String.class))
-                .streetUa(tuple.get(streetUa, String.class))
+                .streetUk(tuple.get(streetUk, String.class))
                 .houseNumber(tuple.get(houseNumber, String.class))
                 .cityEn(tuple.get(cityEn, String.class))
-                .cityUa(tuple.get(cityUa, String.class))
+                .cityUk(tuple.get(cityUk, String.class))
                 .regionEn(tuple.get(regionEn, String.class))
-                .regionUa(tuple.get(regionUa, String.class))
+                .regionUk(tuple.get(regionUk, String.class))
                 .countryEn(tuple.get(countryEn, String.class))
-                .countryUa(tuple.get(countryUa, String.class))
+                .countryUk(tuple.get(countryUk, String.class))
                 .formattedAddressEn(tuple.get(formattedAddressEn, String.class))
-                .formattedAddressUa(tuple.get(formattedAddressUa, String.class))
+                .formattedAddressUk(tuple.get(formattedAddressUk, String.class))
                 .build();
             if (ObjectUtils.allNull(addressDto.getLatitude(), addressDto.getLongitude(), addressDto.getStreetEn(),
-                addressDto.getStreetUa(), addressDto.getCityEn(), addressDto.getCityUa(), addressDto.getCountryEn(),
-                addressDto.getCountryUa(), addressDto.getRegionEn(), addressDto.getRegionUa(),
-                addressDto.getHouseNumber(), addressDto.getFormattedAddressEn(), addressDto.getFormattedAddressUa())) {
+                addressDto.getStreetUk(), addressDto.getCityEn(), addressDto.getCityUk(), addressDto.getCountryEn(),
+                addressDto.getCountryUk(), addressDto.getRegionEn(), addressDto.getRegionUk(),
+                addressDto.getHouseNumber(), addressDto.getFormattedAddressEn(), addressDto.getFormattedAddressUk())) {
                 addressDto = null;
             }
             eventDto.getDates().add(EventDateLocationDto.builder()
@@ -1217,7 +1217,7 @@ public class EventServiceImpl implements EventService {
         for (Long id : sortedIds) {
             EventDto eventDto = eventsMap.get(id);
             Set<TagDto> tags = tagsMap.get(id);
-            List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
+            List<TagUkEnDto> tagUaEnDtos = new ArrayList<>();
 
             Map<Long, List<TagDto>> groupedTags = tags.stream()
                 .collect(Collectors.groupingBy(TagDto::getId));
@@ -1228,9 +1228,9 @@ public class EventServiceImpl implements EventService {
                     .filter(tag -> !uaEnMap.containsKey(tag.getLanguageCode()))
                     .forEach(tag -> uaEnMap.put(tag.getLanguageCode(), tag));
                 if (uaEnMap.containsKey("ua") && uaEnMap.containsKey("en")) {
-                    TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
+                    TagUkEnDto tagUaEnDto = TagUkEnDto.builder()
                         .id(tagId)
-                        .nameUa(uaEnMap.get("ua").getName())
+                        .nameUk(uaEnMap.get("ua").getName())
                         .nameEn(uaEnMap.get("en").getName())
                         .build();
                     tagUaEnDtos.add(tagUaEnDto);

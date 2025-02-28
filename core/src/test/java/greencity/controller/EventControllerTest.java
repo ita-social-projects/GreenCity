@@ -698,14 +698,14 @@ class EventControllerTest {
               "dates": [
                 {
                     "coordinates": {
-                    "streetUa": "string",
+                    "streetUk": "string",
                     "streetEn": "string",
                     "houseNumber": "string",
-                    "cityUa": "string",
+                    "cityUk": "string",
                     "cityEn": "string",
-                    "regionUa": "string",
+                    "regionUk": "string",
                     "regionEn": "string",
-                    "countryUa": "string",
+                    "countryUk": "string",
                     "countryEn": "string",
                     "latitude": 0,
                     "longitude": 0
@@ -730,7 +730,7 @@ class EventControllerTest {
                 {
                   "id": 0,
                   "nameEn": "string",
-                  "nameUa": "string"
+                  "nameUk": "string"
                 }
               ],
               "title": "string",

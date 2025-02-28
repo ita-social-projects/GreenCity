@@ -39,7 +39,7 @@ class CategoryServiceImplTest {
 
     private final Category category = Category.builder()
         .id(1L)
-        .name("Test")
+        .nameEn("Test")
         .places(Collections.emptyList())
         .build();
     private final CategoryDtoResponse categoryDtoResponse = CategoryDtoResponse.builder()
@@ -48,13 +48,13 @@ class CategoryServiceImplTest {
         .build();
 
     private final CategoryDto categoryDto = CategoryDto.builder()
-        .name("Test")
+        .nameEn("Test")
         .build();
 
     @Test
     void saveDtoTest() {
         Category parentCategory = Category.builder().id(2L)
-            .name("parent")
+            .nameEn("parent")
             .build();
         categoryDto.setParentCategoryId(2L);
         when(modelMapper.map(categoryDto, Category.class)).thenReturn(category);
@@ -70,7 +70,7 @@ class CategoryServiceImplTest {
     @Test
     void saveDtoTestException() {
         Category parentCategory = Category.builder().id(2L)
-            .name("parent")
+            .nameEn("parent")
             .parentCategory(category)
             .build();
         categoryDto.setParentCategoryId(2L);
@@ -84,7 +84,7 @@ class CategoryServiceImplTest {
 
     @Test
     void saveDtoWhenFindByNameTrueTest() {
-        when(categoryRepo.findByName(any())).thenReturn(category);
+        when(categoryRepo.findByNameEn(any())).thenReturn(category);
         Assertions
             .assertThrows(BadCategoryRequestException.class,
                 () -> categoryService.save(categoryDto));
@@ -92,7 +92,7 @@ class CategoryServiceImplTest {
 
     @Test
     void findByNameTest() {
-        when(categoryRepo.findByName("Test")).thenReturn(category);
+        when(categoryRepo.findByNameEn("Test")).thenReturn(category);
         when(modelMapper.map(category, CategoryDtoResponse.class)).thenReturn(categoryDtoResponse);
 
         CategoryDtoResponse foundEntity = categoryService.findByName("Test");
@@ -101,7 +101,7 @@ class CategoryServiceImplTest {
 
     @Test
     void findByNameWhenCategoryNullTest() {
-        when(categoryRepo.findByName(anyString())).thenReturn(null);
+        when(categoryRepo.findByNameEn(anyString())).thenReturn(null);
         Assertions
             .assertThrows(NotFoundException.class,
                 () -> categoryService.findByName("test"));
@@ -111,10 +111,10 @@ class CategoryServiceImplTest {
     void findAllCategoryDtoTest() {
         List<Category> genericEntityList = Arrays.asList(
             Category.builder()
-                .name("Test")
+                .nameEn("Test")
                 .build(),
             Category.builder()
-                .name("Test1")
+                .nameEn("Test1")
                 .build());
         when(categoryRepo.findAll()).thenReturn(genericEntityList);
         List<CategoryDto> mappedList = genericEntityList

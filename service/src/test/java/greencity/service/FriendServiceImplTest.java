@@ -793,7 +793,7 @@ class FriendServiceImplTest {
 
         User userWithLocation = new User();
         UserLocation userLocation = new UserLocation();
-        userLocation.setCityUa("testCity");
+        userLocation.setCityUk("testCity");
         userWithLocation.setUserLocation(userLocation);
 
         when(userRepo.existsById(userId)).thenReturn(true);

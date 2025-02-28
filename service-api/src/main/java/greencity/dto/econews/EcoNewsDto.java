@@ -44,10 +44,10 @@ public class EcoNewsDto {
     private EcoNewsAuthorDto author;
 
     @NotEmpty
-    private List<String> tags;
+    private List<String> tagsEn;
 
     @NotEmpty
-    private List<String> tagsUa;
+    private List<String> tagsUk;
 
     private int likes;
 

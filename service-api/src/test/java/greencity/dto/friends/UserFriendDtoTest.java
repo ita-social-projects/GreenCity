@@ -21,8 +21,8 @@ class UserFriendDtoTest {
         String friendStatus = "FRIEND";
         Long requesterId = 3L;
         UserFriendDto userFriendDto = new UserFriendDto(id, name, email, rating, uLocation.getId(),
-            uLocation.getCityEn(), uLocation.getCityUa(), uLocation.getRegionEn(), uLocation.getRegionUa(),
-            uLocation.getCountryEn(), uLocation.getCountryUa(), uLocation.getLatitude(), uLocation.getLongitude(),
+            uLocation.getCityEn(), uLocation.getCityUk(), uLocation.getRegionEn(), uLocation.getRegionUk(),
+            uLocation.getCountryEn(), uLocation.getCountryUk(), uLocation.getLatitude(), uLocation.getLongitude(),
             mutualFriends, profilePicture, chatId, friendStatus, requesterId);
 
         assertEquals(id, userFriendDto.getId());

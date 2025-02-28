@@ -14,9 +14,9 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
     @Override
     protected HabitTranslation convert(HabitTranslationDto habitTranslationDto) {
         return HabitTranslation.builder()
-            .description(habitTranslationDto.getDescription())
-            .habitItem(habitTranslationDto.getHabitItem())
-            .name(habitTranslationDto.getName())
+            .description(habitTranslationDto.getDescriptionEn())
+            .habitItem(habitTranslationDto.getHabitItemEn())
+            .name(habitTranslationDto.getNameEn())
             .build();
     }
 
@@ -33,11 +33,11 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
     public HabitTranslation convertUa(HabitTranslationDto habitTranslationDto) {
         HabitTranslation habitTranslation = new HabitTranslation();
         habitTranslation
-            .setName(ObjectUtils.defaultIfNull(habitTranslationDto.getNameUa(), habitTranslationDto.getName()));
+            .setName(ObjectUtils.defaultIfNull(habitTranslationDto.getNameUk(), habitTranslationDto.getNameEn()));
         habitTranslation.setDescription(
-            ObjectUtils.defaultIfNull(habitTranslationDto.getDescriptionUa(), habitTranslationDto.getDescription()));
+            ObjectUtils.defaultIfNull(habitTranslationDto.getDescriptionUk(), habitTranslationDto.getDescriptionEn()));
         habitTranslation.setHabitItem(
-            ObjectUtils.defaultIfNull(habitTranslationDto.getHabitItemUa(), habitTranslationDto.getHabitItem()));
+            ObjectUtils.defaultIfNull(habitTranslationDto.getHabitItemUk(), habitTranslationDto.getHabitItemEn()));
 
         return habitTranslation;
     }

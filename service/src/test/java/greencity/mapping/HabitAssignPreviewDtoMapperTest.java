@@ -47,12 +47,12 @@ class HabitAssignPreviewDtoMapperTest {
             .filter(translation -> !translation.getLanguage().getCode().equalsIgnoreCase("en"))
             .findFirst().orElse(null);
         HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
-            .name(habitTranslation.getName())
-            .nameUa(habitTranslationUa.getName())
-            .habitItem(habitTranslation.getHabitItem())
-            .habitItemUa(habitTranslationUa.getHabitItem())
-            .description(habitTranslation.getDescription())
-            .descriptionUa(habitTranslationUa.getDescription())
+            .nameEn(habitTranslation.getName())
+            .nameUk(habitTranslationUa.getName())
+            .habitItemEn(habitTranslation.getHabitItem())
+            .habitItemUk(habitTranslationUa.getHabitItem())
+            .descriptionEn(habitTranslation.getDescription())
+            .descriptionUk(habitTranslationUa.getDescription())
             .build();
         HabitPreviewDto habitPreviewDto = HabitPreviewDto.builder()
             .id(habit.getId())
