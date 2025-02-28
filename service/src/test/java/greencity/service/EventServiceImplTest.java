@@ -553,7 +553,7 @@ class EventServiceImplTest {
         assertTrue(updatedEventDto.isFavorite());
         assertTrue(updatedEventDto.isSubscribed());
 
-//        verify(restClient).findByEmail(anyString());
+        verify(restClient).findByEmail(anyString());
     }
 
     @ParameterizedTest
