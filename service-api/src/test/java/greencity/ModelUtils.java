@@ -10,7 +10,7 @@ import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
-import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
@@ -77,7 +77,7 @@ public class ModelUtils {
 
     public static CategoryDto getCategoryDto() {
         return CategoryDto.builder()
-            .name("name")
+            .nameEn("name")
             .parentCategoryId(1L)
             .build();
     }
@@ -122,7 +122,7 @@ public class ModelUtils {
             .build());
     }
 
-    public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();
+    public static TagUkEnDto tagUaEnDto = TagUkEnDto.builder().id(1L).nameUk("Сщціальний").nameEn("Social").build();
 
     public static EventDto getEventDtoWithTag() {
         return EventDto.builder()

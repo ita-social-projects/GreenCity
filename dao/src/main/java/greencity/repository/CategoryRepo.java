@@ -16,7 +16,7 @@ public interface CategoryRepo extends JpaRepository<Category, Long> {
      * @param name to find by.
      * @return a category by name.
      */
-    Category findByName(String name);
+    Category findByNameEn(String name);
 
     /**
      * Find category by name or nameUa.

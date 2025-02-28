@@ -193,8 +193,8 @@ public class AchievementServiceImpl implements AchievementService {
     private void populateAchievement(Achievement achievement, AchievementPostDto achievementPostDto,
         AchievementCategory achievementCategory) {
         achievement.setTitle(achievementPostDto.getTitle());
-        achievement.setName(achievementPostDto.getName());
-        achievement.setNameEng(achievementPostDto.getNameEng());
+        achievement.setNameUk(achievementPostDto.getNameUk());
+        achievement.setNameEn(achievementPostDto.getNameEn());
         achievement.setAchievementCategory(achievementCategory);
         achievement.setCondition(achievementPostDto.getCondition());
     }
@@ -225,8 +225,8 @@ public class AchievementServiceImpl implements AchievementService {
                     HabitTranslation translationEn =
                         habitTranslationRepo.getHabitTranslationByEnLanguage(userAchievement.getHabit().getId());
                     achievementVO.setHabit(mapHabitToVO(userAchievement.getHabit()));
-                    achievementVO.setName(achievementVO.getName() + " " + translationUa.getName());
-                    achievementVO.setNameEng(achievementVO.getName() + " " + translationEn.getName());
+                    achievementVO.setNameUk(achievementVO.getNameUk() + " " + translationUa.getName());
+                    achievementVO.setNameEn(achievementVO.getNameEn() + " " + translationEn.getName());
                 }
                 return achievementVO;
             })
@@ -280,8 +280,8 @@ public class AchievementServiceImpl implements AchievementService {
                 AchievementVO achievementByHabit = AchievementVO.builder()
                     .id(achievementByDuration.getId())
                     .title(achievementByDuration.getTitle())
-                    .name(achievementByDuration.getName() + " " + translationUa.getName())
-                    .nameEng(achievementByDuration.getNameEng() + " " + translationEn.getName())
+                    .nameUk(achievementByDuration.getNameUk() + " " + translationUa.getName())
+                    .nameEn(achievementByDuration.getNameEn() + " " + translationEn.getName())
                     .achievementCategory(achievementByDuration.getAchievementCategory())
                     .condition(achievementByDuration.getCondition())
                     .habit(mapHabitToVO(habitAssign.getHabit()))

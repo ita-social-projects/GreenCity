@@ -21,7 +21,7 @@ public class CategoryDtoResponseMapper extends AbstractConverter<Category, Categ
     protected CategoryDtoResponse convert(Category category) {
         return CategoryDtoResponse.builder()
             .id(category.getId())
-            .name(category.getName())
+            .name(category.getNameEn())
             .build();
     }
 }

@@ -4,7 +4,7 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagUkEnDto;
 import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
@@ -63,11 +63,11 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
                 .build());
         eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));
 
-        List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
+        List<TagUkEnDto> tagUaEnDtos = new ArrayList<>();
         event.getTags().forEach(t -> {
             var translations = t.getTagTranslations();
-            tagUaEnDtos.add(TagUaEnDto.builder().id(t.getId())
-                .nameUa(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst()
+            tagUaEnDtos.add(TagUkEnDto.builder().id(t.getId())
+                .nameUk(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst()
                     .orElseThrow().getName())
                 .nameEn(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("en")).findFirst()
                     .orElseThrow().getName())
@@ -95,16 +95,16 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             AddressDto addressDto = AddressDto.builder().latitude(address.getLatitude())
                 .longitude(address.getLongitude())
                 .streetEn(address.getStreetEn())
-                .streetUa(address.getStreetUa())
+                .streetUk(address.getStreetUk())
                 .houseNumber(address.getHouseNumber())
                 .cityEn(address.getCityEn())
-                .cityUa(address.getCityUa())
+                .cityUk(address.getCityUk())
                 .regionEn(address.getRegionEn())
-                .regionUa(address.getRegionUa())
+                .regionUk(address.getRegionUk())
                 .countryEn(address.getCountryEn())
-                .countryUa(address.getCountryUa())
+                .countryUk(address.getCountryUk())
                 .formattedAddressEn(address.getFormattedAddressEn())
-                .formattedAddressUa(address.getFormattedAddressUa())
+                .formattedAddressUk(address.getFormattedAddressUk())
                 .build();
             eventDateLocationDto.setCoordinates(addressDto);
         }

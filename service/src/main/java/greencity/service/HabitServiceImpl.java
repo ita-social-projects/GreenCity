@@ -278,13 +278,13 @@ public class HabitServiceImpl implements HabitService {
                 HabitTranslation habitTranslationByUaLanguage =
                     habitTranslationRepo.getHabitTranslationByUaLanguage(habitTranslation.getHabit().getId());
                 habitDto.getHabitTranslation()
-                    .setDescriptionUa(habitTranslationByUaLanguage.getDescription() != null
+                    .setDescriptionUk(habitTranslationByUaLanguage.getDescription() != null
                         ? habitTranslationByUaLanguage.getDescription()
                         : "");
-                habitDto.getHabitTranslation().setNameUa(
+                habitDto.getHabitTranslation().setNameUk(
                     habitTranslationByUaLanguage.getName() != null ? habitTranslationByUaLanguage.getName() : "");
                 habitDto.getHabitTranslation()
-                    .setHabitItemUa(habitTranslationByUaLanguage.getHabitItem() != null
+                    .setHabitItemUk(habitTranslationByUaLanguage.getHabitItem() != null
                         ? habitTranslationByUaLanguage.getHabitItem()
                         : "");
                 boolean isFavorite = isCurrentUserFollower(habitTranslation.getHabit(), userId);
@@ -495,9 +495,9 @@ public class HabitServiceImpl implements HabitService {
             .findFirst();
         habitTranslationDtoOptional.ifPresent(habitTranslationDto -> habitTranslationRepo.findAllByHabit(habit)
             .forEach(habitTranslation -> {
-                habitTranslation.setName(habitTranslationDto.getName());
-                habitTranslation.setDescription(habitTranslationDto.getDescription());
-                habitTranslation.setHabitItem(habitTranslationDto.getHabitItem());
+                habitTranslation.setName(habitTranslationDto.getNameEn());
+                habitTranslation.setDescription(habitTranslationDto.getDescriptionEn());
+                habitTranslation.setHabitItem(habitTranslationDto.getHabitItemEn());
             }));
     }
 

@@ -20,7 +20,7 @@ public class LocationAddressAndGeoForUpdateDto {
         min = ServiceValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
         max = ServiceValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
     @Pattern(regexp = "^[^<>]+$")
-    private String address;
+    private String addressEn;
 
     @NotNull(message = ServiceValidationConstants.EMPTY_VALUE_OF_LATITUDE)
     private Double lat;
@@ -33,5 +33,5 @@ public class LocationAddressAndGeoForUpdateDto {
         min = ServiceValidationConstants.PLACE_ADDRESS_MIN_LENGTH,
         max = ServiceValidationConstants.PLACE_ADDRESS_MAX_LENGTH)
     @Pattern(regexp = "^[^<>]+$")
-    private String addressUa;
+    private String addressUk;
 }
