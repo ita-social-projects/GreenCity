@@ -177,4 +177,80 @@ class ExportSettingsControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
             .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= users(1 - 20).xlsx"));
     }
+
+    @Test
+    void downloadExcelWithInvalidTableNameTest() throws Exception {
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+            .param("tableName", INVALID_TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(OFFSET))
+            .header("secretKey", SECRET_KEY)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    void downloadExcelWithNonExistentTableNameTest() throws Exception {
+        doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
+            .when(exportSettingsService)
+            .getExcelFileAsResource(NOT_EXISTS_TABLE_NAME, LIMIT, OFFSET, SECRET_KEY);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+            .param("tableName", NOT_EXISTS_TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(OFFSET))
+            .header("secretKey", SECRET_KEY)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    void downloadExcelWithNegativeOffsetTest() throws Exception {
+        int negativeOffset = -1;
+        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET))
+            .when(exportSettingsService).getExcelFileAsResource(TABLE_NAME, LIMIT, negativeOffset, SECRET_KEY);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(LIMIT))
+            .param("offset", String.valueOf(negativeOffset))
+            .header("secretKey", SECRET_KEY)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    void downloadExcelWithNegativeLimitTest() throws Exception {
+        int negativeLimit = -1;
+        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_LIMIT))
+            .when(exportSettingsService).getExcelFileAsResource(TABLE_NAME, negativeLimit, OFFSET, SECRET_KEY);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(negativeLimit))
+            .param("offset", String.valueOf(OFFSET))
+            .header("secretKey", SECRET_KEY)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+
+    @Test
+    void downloadExcelWithOutOfLimitValueTest() throws Exception {
+        int invalidLimit = 100_000;
+        doThrow(new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, AppConstant.SQL_ROW_LIMIT)))
+            .when(exportSettingsService).getExcelFileAsResource(TABLE_NAME, invalidLimit, OFFSET, SECRET_KEY);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+            .param("tableName", TABLE_NAME)
+            .param("limit", String.valueOf(invalidLimit))
+            .param("offset", String.valueOf(OFFSET))
+            .header("secretKey", SECRET_KEY)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
 }

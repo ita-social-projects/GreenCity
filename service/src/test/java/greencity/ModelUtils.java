@@ -3536,9 +3536,7 @@ public class ModelUtils {
         List<String> columns = List.of("id", "name", "email");
         tables.put("users", columns);
 
-        return TablesMetadataDto.builder()
-            .tables(tables)
-            .build();
+        return new TablesMetadataDto(tables);
     }
 
     public static TableRowsDto getTableRowsDto() {
@@ -3551,9 +3549,6 @@ public class ModelUtils {
         row.put("role", "ROLE_ADMIN");
         tableData.add(row);
 
-        return TableRowsDto.builder()
-            .tableName("users")
-            .tableData(tableData)
-            .build();
+        return new TableRowsDto("users", tableData);
     }
 }

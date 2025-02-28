@@ -1,5 +1,6 @@
 package greencity.repository.impl;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
@@ -17,7 +18,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,23 +35,21 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
             DatabaseMetaData metaData = connection.getMetaData();
             // null for database, schema, and catalog means the method will return all
             // tables in the current database.
-            ResultSet tables = metaData.getTables(null, null, null, new String[] {"TABLE"});
+            ResultSet tables = metaData.getTables(null, null, null, new String[] {AppConstant.TABLE});
             while (tables.next()) {
-                List<String> columnsNames = new LinkedList<>();
-                String tableName = tables.getString("TABLE_NAME");
+                List<String> columnsNames = new ArrayList<>();
+                String tableName = tables.getString(AppConstant.TABLE_NAME);
                 // null for database, schema, and catalog means it will return columns for the
                 // current table across all schemas.
                 // "%" means "all columns" for the given table.
                 ResultSet columns = metaData.getColumns(null, null, tableName, "%");
                 while (columns.next()) {
-                    String columnName = columns.getString("COLUMN_NAME");
+                    String columnName = columns.getString(AppConstant.COLUMN_NAME);
                     columnsNames.add(columnName);
                 }
                 tablesMetaDada.put(tableName, columnsNames);
             }
-            return TablesMetadataDto.builder()
-                .tables(tablesMetaDada)
-                .build();
+            return new TablesMetadataDto(tablesMetaDada);
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new DatabaseMetadataException(e.getMessage(), e);
@@ -60,7 +58,7 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
 
     @Override
     public TableRowsDto selectPortionFromTable(String tableName, int limit, int offset) {
-        String query = String.format("SELECT * FROM %s LIMIT %d OFFSET %d;", tableName, limit, offset);
+        String query = String.format(AppConstant.SELECT_FROM_WITH_LIMIT_AND_OFFSET, tableName, limit, offset);
         List<Map<String, String>> tableData = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
@@ -78,9 +76,6 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
             log.error(e.getMessage());
             throw new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + tableName, e);
         }
-        return TableRowsDto.builder()
-            .tableName(tableName)
-            .tableData(tableData)
-            .build();
+        return new TableRowsDto(tableName, tableData);
     }
 }

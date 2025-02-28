@@ -30,12 +30,12 @@ public class ExportToFileServiceImpl implements ExportToFileService {
     @Transactional(readOnly = true)
     @Override
     public InputStream exportTableDataToExcel(TableRowsDto data) {
-        if (data.getTableData().isEmpty()) {
-            throw new ResourceNotFoundException(String.format(ErrorMessage.EMPTY_TABLE, data.getTableData()));
+        if (data.tableData().isEmpty()) {
+            throw new ResourceNotFoundException(String.format(ErrorMessage.EMPTY_TABLE, data.tableData()));
         }
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(data.getTableName());
+        Sheet sheet = workbook.createSheet(data.tableName());
         createHeaderRow(workbook, sheet, data);
         populateTableCells(workbook, sheet, data);
         return convertWorkbookToInputStream(workbook);
@@ -52,7 +52,7 @@ public class ExportToFileServiceImpl implements ExportToFileService {
         font.setFontHeightInPoints((short) 16);
         font.setBold(true);
 
-        Set<String> raw = data.getTableData().getFirst().keySet();
+        Set<String> raw = data.tableData().getFirst().keySet();
         int cellIndex = 0;
         for (String key : raw) {
             Cell headerCell = header.createCell(cellIndex++);
@@ -66,18 +66,16 @@ public class ExportToFileServiceImpl implements ExportToFileService {
         style.setWrapText(true);
 
         Row headerRow = sheet.getRow(0);
-        List<Map<String, String>> tableData = data.getTableData();
+        List<Map<String, String>> tableData = data.tableData();
 
-        int rowIndex = 1; // Start after the header row
+        int rowIndex = 1;
         for (Map<String, String> r : tableData) {
             Row row = sheet.createRow(rowIndex++);
-            int cellIndex = 0; // Reset the cell index for each new row
+            int cellIndex = 0;
 
             for (Map.Entry<String, String> entry : r.entrySet()) {
-                // Check if the current header matches the entry's key
                 Cell headerCell = headerRow.getCell(cellIndex);
                 if (headerCell != null && headerCell.getStringCellValue().equals(entry.getKey())) {
-                    // Create a new cell in the current row
                     Cell cell = row.createCell(cellIndex);
                     cell.setCellValue(entry.getValue());
                     cell.setCellStyle(style);

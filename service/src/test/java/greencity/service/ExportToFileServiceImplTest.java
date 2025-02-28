@@ -41,7 +41,7 @@ class ExportToFileServiceImplTest {
 
     @Test
     void exportTableDataToExcelIfTableIsEmptyTest() {
-        TableRowsDto emptyRow = TableRowsDto.builder().tableData(new LinkedList<>()).build();
+        TableRowsDto emptyRow = new TableRowsDto("users", new LinkedList<>());
 
         assertThrows(ResourceNotFoundException.class,
             () -> exportToFileService.exportTableDataToExcel(emptyRow));

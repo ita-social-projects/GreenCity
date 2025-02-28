@@ -43,11 +43,14 @@ public class ExportSettingsServiceImpl implements ExportSettingsService {
     }
 
     private void checkLimitAndOffset(int limit, int offset) {
-        if (limit < 0 || offset < 0) {
+        if (limit < 0) {
             throw new IllegalArgumentException(ErrorMessage.NEGATIVE_LIMIT);
         }
         if (limit > AppConstant.SQL_ROW_LIMIT) {
             throw new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, AppConstant.SQL_ROW_LIMIT));
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET);
         }
     }
 }
