@@ -36,7 +36,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getCreateJsonFile;
@@ -45,8 +44,6 @@ import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.TestConst.EVENT_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -853,25 +850,24 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
-    void updateV2WhenIdNotEqualExceptionTest() {
+    void updateV2_ThrowException_WhenIdNotEqualTest() {
         UpdateEventRequestDto updateEventDto = getUpdateEventDto();
+
         MockMultipartFile jsonFile = getCreateJsonFile(updateEventDto, "eventDto");
 
-        MockHttpServletRequestBuilder builder = multipart(UPDATE_EVENT_V2_URL, 999L)
-            .file(jsonFile)
-            .principal(principal)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE);
-
+        MockMultipartHttpServletRequestBuilder builder = multipart(UPDATE_EVENT_V2_URL, 2L);
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
         });
 
-        Exception exception = assertThrows(Exception.class, () -> mockMvc.perform(builder)
-            .andExpect(status().isBadRequest()));
-
-        assertInstanceOf(WrongIdException.class, exception.getCause());
-        assertEquals(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL, exception.getCause().getMessage());
+        assertThatThrownBy(() -> mockMvc
+            .perform(builder
+                .file(jsonFile)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest()))
+            .hasCause(new WrongIdException(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL));
     }
 }
