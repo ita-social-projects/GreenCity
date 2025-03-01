@@ -850,7 +850,7 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
-    void updateV2_ThrowException_WhenIdNotEqualTest() {
+    void updateV2WhenIdNotEqualExceptionTest() {
         UpdateEventRequestDto updateEventDto = getUpdateEventDto();
 
         MockMultipartFile jsonFile = getCreateJsonFile(updateEventDto, "eventDto");
