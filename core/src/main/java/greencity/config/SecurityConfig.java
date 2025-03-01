@@ -147,7 +147,7 @@ public class SecurityConfig {
                     "/habit/statistic/assign/{habitAssignId}",
                     "/habit/assign/confirm/{habitAssignId}",
                     "/place/info/favorite/{placeId}")
-                .authenticated()
+                .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
