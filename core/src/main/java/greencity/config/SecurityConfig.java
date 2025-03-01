@@ -143,12 +143,6 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/css/**", "/img/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
-                    "/favorite_place/favorite/{placeId}",
-                    "/habit/statistic/assign/{habitAssignId}",
-                    "/habit/assign/confirm/{habitAssignId}",
-                    "/place/info/favorite/{placeId}")
-                .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
-                .requestMatchers(HttpMethod.GET,
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
                     "/place/info/{id}",
@@ -285,6 +279,10 @@ public class SecurityConfig {
                     "/habit/allMutualHabits/{friendId}",
                     "/habit/{habitId}/friends/profile-pictures",
                     "habit/favorites",
+                    "/favorite_place/favorite/{placeId}",
+                    "/habit/statistic/assign/{habitAssignId}",
+                    "/habit/assign/confirm/{habitAssignId}",
+                    "/place/info/favorite/{placeId}",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
