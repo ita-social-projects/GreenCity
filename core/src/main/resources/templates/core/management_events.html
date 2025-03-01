@@ -104,9 +104,9 @@
                                             [[#{greenCity.pages.table.eventTime}]]
                                         </button>
                                         <div class="dropdown-container">
-                                            <input type="checkbox" name="time" id="future" value="FUTURE"
-                                                   th:checked="${filterEventDto?.time != null && filterEventDto.time.name() == 'FUTURE'}">
-                                            <label for="future">Future</label><br>
+                                            <input type="checkbox" name="time" id="upcoming" value="UPCOMING"
+                                                   th:checked="${filterEventDto?.time != null && filterEventDto.time.name() == 'UPCOMING'}">
+                                            <label for="upcoming">Upcoming</label><br>
                                             <input type="checkbox" name="time" id="past" value="PAST"
                                                    th:checked="${filterEventDto?.time != null && filterEventDto.time.name() == 'PAST'}">
                                             <label for="past">Past</label><br>
