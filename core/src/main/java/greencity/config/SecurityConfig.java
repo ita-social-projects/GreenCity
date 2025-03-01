@@ -143,11 +143,15 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/css/**", "/img/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
+                    "/favorite_place/favorite/{placeId}",
+                    "/habit/statistic/assign/{habitAssignId}",
+                    "/habit/assign/confirm/{habitAssignId}",
+                    "/place/info/favorite/{placeId}")
+                .authenticated()
+                .requestMatchers(HttpMethod.GET,
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
                     "/place/info/{id}",
-                    "/place/info/favorite/{placeId}",
-                    "/favorite_place/favorite/{placeId}",
                     "/place/statuses",
                     "/place/all",
                     "/habit",
@@ -157,7 +161,6 @@ public class SecurityConfig {
                     "/tags/v2/search",
                     "/habit/tags/all",
                     "/habit/statistic/{habitId}",
-                    "/habit/statistic/assign/{habitAssignId}",
                     "/habit/statistic/todayStatisticsForAllHabitItems",
                     HABITS + "/comments/{id}",
                     HABITS + "/comments/{parentCommentId}/replies/active",
@@ -206,7 +209,6 @@ public class SecurityConfig {
                     "/token",
                     "/socket/**",
                     FRIENDS + "/user/{userId}",
-                    "/habit/assign/confirm/{habitAssignId}",
                     "/database/backup",
                     "/database/backupFiles",
                     COMMIT_INFO)
@@ -214,7 +216,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     "/place/{id}",
                     "/place")
-                .permitAll()
+                .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
                     "/place/getListPlaceLocationByMapsBounds",
