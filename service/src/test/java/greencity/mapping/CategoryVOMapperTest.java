@@ -20,9 +20,9 @@ public class CategoryVOMapperTest {
         Category category = ModelUtils.getCategory();
 
         CategoryVO expected = CategoryVO.builder()
-                .id(category.getId())
-                .name(category.getNameEn())
-                .build();
+            .id(category.getId())
+            .name(category.getNameEn())
+            .build();
 
         CategoryVO actual = categoryVOMapper.convert(category);
 

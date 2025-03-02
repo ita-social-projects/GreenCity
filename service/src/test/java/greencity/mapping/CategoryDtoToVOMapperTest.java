@@ -17,14 +17,14 @@ public class CategoryDtoToVOMapperTest {
     @Test
     void convertTest() {
         CategoryDto testCategoryDto = CategoryDto.builder()
-                .nameEn("Test name")
-                .nameUk("Тестове ім'я")
-                .parentCategoryId(1L)
-                .build();
+            .nameEn("Test name")
+            .nameUk("Тестове ім'я")
+            .parentCategoryId(1L)
+            .build();
 
         CategoryVO expected = CategoryVO.builder()
-                .name(testCategoryDto.getNameEn())
-                .build();
+            .name(testCategoryDto.getNameEn())
+            .build();
 
         CategoryVO actual = categoryDtoToVOMapper.convert(testCategoryDto);
 

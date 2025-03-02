@@ -20,11 +20,11 @@ public class LocationDtoMapperTest {
         Location location = ModelUtils.getLocation();
 
         LocationDto expected = LocationDto.builder()
-                .id(location.getId())
-                .lat(location.getLat())
-                .lng(location.getLng())
-                .address(location.getAddressEn())
-                .build();
+            .id(location.getId())
+            .lat(location.getLat())
+            .lng(location.getLng())
+            .address(location.getAddressEn())
+            .build();
 
         LocationDto actual = mapper.convert(location);
 

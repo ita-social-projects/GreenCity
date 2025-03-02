@@ -7,8 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link CategoryDto}
- * into {@link CategoryVO}.
+ * Class that used by {@link ModelMapper} to map {@link CategoryDto} into
+ * {@link CategoryVO}.
  */
 @Component
 public class CategoryDtoToVOMapper extends AbstractConverter<CategoryDto, CategoryVO> {
@@ -24,7 +24,7 @@ public class CategoryDtoToVOMapper extends AbstractConverter<CategoryDto, Catego
             return null;
         }
         return CategoryVO.builder()
-                .name(categoryDto.getNameEn())
-                .build();
+            .name(categoryDto.getNameEn())
+            .build();
     }
 }

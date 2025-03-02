@@ -7,8 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link Location}
- * into {@link LocationDto}.
+ * Class that used by {@link ModelMapper} to map {@link Location} into
+ * {@link LocationDto}.
  */
 @Component
 public class LocationDtoMapper extends AbstractConverter<Location, LocationDto> {
@@ -24,10 +24,10 @@ public class LocationDtoMapper extends AbstractConverter<Location, LocationDto> 
             return null;
         }
         return LocationDto.builder()
-                .address(location.getAddressEn())
-                .id(location.getId())
-                .lat(location.getLat())
-                .lng(location.getLng())
-                .build();
+            .address(location.getAddressEn())
+            .id(location.getId())
+            .lat(location.getLat())
+            .lng(location.getLng())
+            .build();
     }
 }
