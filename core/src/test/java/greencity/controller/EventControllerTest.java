@@ -72,11 +72,13 @@ class EventControllerTest {
     @Mock
     private ModelMapper modelMapper;
     private static ObjectMapper objectMapper;
+
     @BeforeAll
     static void setUp() {
         objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
     }
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventController)
@@ -92,7 +94,6 @@ class EventControllerTest {
         Long userId = 1L;
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = getEventDtoPageableAdvancedDto(pageable);
-
 
         String expectedJson = objectMapper.writeValueAsString(eventDtoPageableAdvancedDto);
 
@@ -198,7 +199,6 @@ class EventControllerTest {
     void saveTest() {
         AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
 
-
         String json = objectMapper.writeValueAsString(addEventDtoRequest);
 
         MockMultipartFile jsonFile =
@@ -232,7 +232,6 @@ class EventControllerTest {
     @SneakyThrows
     void saveV2Test() {
         AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
-
 
         String json = objectMapper.writeValueAsString(addEventDtoRequest);
 
@@ -317,7 +316,6 @@ class EventControllerTest {
     void updateTest() {
         UpdateEventRequestDto updateEventDto = getUpdateEventDto();
 
-
         String json = objectMapper.writeValueAsString(updateEventDto);
 
         MockMultipartFile jsonFile =
@@ -343,7 +341,6 @@ class EventControllerTest {
     @SneakyThrows
     void update_ThrowException_WhenIdNotEqualTest() {
         UpdateEventRequestDto updateEventDto = getUpdateEventDto();
-
 
         String json = objectMapper.writeValueAsString(updateEventDto);
 
@@ -602,7 +599,6 @@ class EventControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andReturn();
 
-
         EventDto responseEventDto = objectMapper.readValue(result.getResponse().getContentAsString(), EventDto.class);
 
         assertEquals(eventDto, responseEventDto);
@@ -828,7 +824,6 @@ class EventControllerTest {
         EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
 
         when(eventService.getEventV2(eventId, principal)).thenReturn(eventResponseDto);
-
 
         String expectedJson = objectMapper.writeValueAsString(eventResponseDto);
 
