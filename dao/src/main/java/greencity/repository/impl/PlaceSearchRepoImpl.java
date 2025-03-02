@@ -78,13 +78,13 @@ public class PlaceSearchRepoImpl implements PlaceSearchRepo {
                     "%" + p.toLowerCase() + "%"),
                 criteriaBuilder.like(criteriaBuilder.lower(root.get(Place_.DESCRIPTION)),
                     "%" + p.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS)),
+                criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS_EN)),
                     "%" + p.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS_UA)),
+                criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS_UK)),
                     "%" + p.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME)),
+                criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME_EN)),
                     "%" + p.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME_UA)),
+                criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME_UK)),
                     "%" + p.toLowerCase() + "%"))));
         predicates.add(criteriaBuilder.or(placesLikePredicates.toArray(new Predicate[0])));
     }
