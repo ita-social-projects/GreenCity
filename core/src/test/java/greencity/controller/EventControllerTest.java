@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import java.security.Principal;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +40,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -71,7 +71,12 @@ class EventControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
-
+    private static ObjectMapper objectMapper;
+    @BeforeAll
+    static void setUp() {
+        objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+    }
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventController)
@@ -88,8 +93,7 @@ class EventControllerTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = getEventDtoPageableAdvancedDto(pageable);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         String expectedJson = objectMapper.writeValueAsString(eventDtoPageableAdvancedDto);
 
         FilterEventDto filterEventDto = ModelUtils.getFilterEventDto();
@@ -194,8 +198,7 @@ class EventControllerTest {
     void saveTest() {
         AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         String json = objectMapper.writeValueAsString(addEventDtoRequest);
 
         MockMultipartFile jsonFile =
@@ -230,8 +233,7 @@ class EventControllerTest {
     void saveV2Test() {
         AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         String json = objectMapper.writeValueAsString(addEventDtoRequest);
 
         MockMultipartFile jsonFile =
@@ -315,8 +317,7 @@ class EventControllerTest {
     void updateTest() {
         UpdateEventRequestDto updateEventDto = getUpdateEventDto();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         String json = objectMapper.writeValueAsString(updateEventDto);
 
         MockMultipartFile jsonFile =
@@ -343,8 +344,7 @@ class EventControllerTest {
     void update_ThrowException_WhenIdNotEqualTest() {
         UpdateEventRequestDto updateEventDto = getUpdateEventDto();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         String json = objectMapper.writeValueAsString(updateEventDto);
 
         MockMultipartFile jsonFile =
@@ -395,8 +395,7 @@ class EventControllerTest {
     void dislikev2Test() throws Exception {
         UserVO userVO = getUserVO();
         EventDto eventDto = getEventDto();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(eventService.dislikeV2(anyLong(), eq(userVO))).thenReturn(eventDto);
         MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislike-v2", 2)
@@ -412,8 +411,7 @@ class EventControllerTest {
     void likev2Test() throws Exception {
         UserVO userVO = getUserVO();
         EventDto eventDto = getEventDto();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(eventService.likeV2(anyLong(), eq(userVO))).thenReturn(eventDto);
         MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/like-v2", 2)
@@ -604,8 +602,7 @@ class EventControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk()).andReturn();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         EventDto responseEventDto = objectMapper.readValue(result.getResponse().getContentAsString(), EventDto.class);
 
         assertEquals(eventDto, responseEventDto);
@@ -690,8 +687,7 @@ class EventControllerTest {
                 ],
                 "tags":["Social"]
             }""";
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         return objectMapper.readValue(json, AddEventDtoRequest.class);
     }
 
@@ -716,8 +712,7 @@ class EventControllerTest {
                 ],
                 "tags":["Social"]
             }""";
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         return objectMapper.readValue(json, UpdateEventRequestDto.class);
     }
 
@@ -769,8 +764,7 @@ class EventControllerTest {
               "title": "string",
               "titleImage": "string"
             }""";
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         return objectMapper.readValue(json, EventDto.class);
     }
 
@@ -835,8 +829,7 @@ class EventControllerTest {
 
         when(eventService.getEventV2(eventId, principal)).thenReturn(eventResponseDto);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
+
         String expectedJson = objectMapper.writeValueAsString(eventResponseDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/v2/{eventId}", eventId)
