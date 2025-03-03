@@ -14,7 +14,6 @@ public interface AchievementCategoryRepo extends JpaRepository<AchievementCatego
      * @return a category by name.
      */
     Optional<AchievementCategory> findByName(String name);
-
     /**
      * Finds list of {@link AchievementCategory} with at least one achievement in
      * category.

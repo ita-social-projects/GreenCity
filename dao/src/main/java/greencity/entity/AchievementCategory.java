@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "achievement_categories")
 @EqualsAndHashCode
 @Builder
-public class AchievementCategory {
+    public class AchievementCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

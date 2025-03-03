@@ -8,6 +8,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,17 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
@@ -45,15 +39,26 @@ public class ManagementAchievementController {
      * @author Orest Mamchuk
      */
     @GetMapping
-    public String getAllAchievement(@RequestParam(required = false, name = "query") String query, Pageable pageable,
-        Model model) {
-        PageableAdvancedDto<AchievementVO> allAchievements = query == null || query.isEmpty()
-            ? achievementService.findAll(pageable)
-            : achievementService.searchAchievementBy(pageable, query);
+    public String getAllAchievement(
+            @RequestParam(required = false, name = "query") String query,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            Pageable pageable,
+            Model model) {
+
+        Pageable actualPageable = achievementService.preparePageable(pageable, sortBy, sortDir);
+
+        PageableAdvancedDto<AchievementVO> allAchievements = (query == null || query.isEmpty())
+                ? achievementService.findAll(actualPageable)
+                : achievementService.searchAchievementBy(actualPageable, query);
+
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAllForManagement());
         model.addAttribute("languages", languageService.getAllLanguages());
         model.addAttribute("query", query);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+
         return "core/management_achievement";
     }
 
@@ -67,7 +72,7 @@ public class ManagementAchievementController {
     @PostMapping
     @ResponseBody
     public GenericResponseDto saveAchievement(@Valid @RequestBody AchievementPostDto achievementPostDto,
-        BindingResult bindingResult) {
+                                              BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             achievementService.save(achievementPostDto);
         }
@@ -84,7 +89,7 @@ public class ManagementAchievementController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteAchievementById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(achievementService.delete(id));
+                .body(achievementService.delete(id));
     }
 
     /**
@@ -109,7 +114,7 @@ public class ManagementAchievementController {
     @PutMapping
     @ResponseBody
     public GenericResponseDto update(@Valid @RequestBody AchievementManagementDto achievementManagementDto,
-        BindingResult bindingResult) {
+                                     BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             achievementService.update(achievementManagementDto);
         }

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -32,11 +33,11 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
     @Override
     public AchievementCategoryVO save(AchievementCategoryDto achievementCategoryDto) {
         achievementCategoryRepo.findByName(achievementCategoryDto.getName())
-            .ifPresent(category -> {
-                throw new BadCategoryRequestException(ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
-            });
+                .ifPresent(category -> {
+                    throw new BadCategoryRequestException(ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME);
+                });
         AchievementCategory achievementCategoryToSave =
-            modelMapper.map(achievementCategoryDto, AchievementCategory.class);
+                modelMapper.map(achievementCategoryDto, AchievementCategory.class);
         return mapToVO(achievementCategoryRepo.save(achievementCategoryToSave));
     }
 
@@ -47,17 +48,17 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
     public List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(String email) {
         UserVO user = userService.findByEmail(email);
         return achievementCategoryRepo.findAllWithAtLeastOneAchievement().stream()
-            .map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class))
-            .map(achievementCategory -> {
-                Long achievementCategoryId = achievementCategory.getId();
-                achievementCategory
-                    .setTotalQuantity(
-                        achievementService.findAchievementCountByTypeAndCategory(email, null, achievementCategoryId));
-                achievementCategory.setAchieved(userAchievementRepo
-                    .findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
-                return achievementCategory;
-            })
-            .toList();
+                .map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class))
+                .map(achievementCategory -> {
+                    Long achievementCategoryId = achievementCategory.getId();
+                    achievementCategory
+                            .setTotalQuantity(
+                                    achievementService.findAchievementCountByTypeAndCategory(email, null, achievementCategoryId));
+                    achievementCategory.setAchieved(userAchievementRepo
+                            .findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
+                    return achievementCategory;
+                })
+                .toList();
     }
 
     /**
@@ -75,7 +76,7 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
     @Transactional
     public AchievementCategoryVO findByName(String name) {
         AchievementCategory achievementCategory = achievementCategoryRepo.findByName(name)
-            .orElseThrow(() -> new BadCategoryRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME));
+                .orElseThrow(() -> new BadCategoryRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME));
         return mapToVO(achievementCategory);
     }
 
