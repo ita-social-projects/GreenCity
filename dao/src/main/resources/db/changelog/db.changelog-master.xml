@@ -195,5 +195,6 @@
     <include file="/db/changelog/logs/ch-delete-values-positions-authorities-mapping-Kizerov.xml"/>
     <include file="db/changelog/logs/ch-change-user-profile-columns-type-Haliara.xml"/>
     <include file="db/changelog/logs/ch-add-default-value-userprofile-confidentiality-Haliara.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-employee-authorities-Haliara.xml"/>
 </databaseChangeLog>
 
