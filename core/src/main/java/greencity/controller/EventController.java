@@ -353,6 +353,48 @@ public class EventController {
     }
 
     /**
+     * Updated method to like/unlike Event.
+     *
+     * @author Andrii Danylenko
+     */
+    @Operation(summary = "Like/unlike Event and get response entity")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping(path = "/{eventId}/like-v2", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EventDto> likeV2(@PathVariable Long eventId,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        return ResponseEntity.ok().body(eventService.likeV2(eventId, user));
+    }
+
+    /**
+     * Updated method to dislike Event.
+     *
+     * @author Andrii Danylenko
+     */
+    @Operation(description = "Dislike event and get response entity")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping(path = "/{eventId}/dislike-v2", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EventDto> dislikeV2(@PathVariable Long eventId,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        return ResponseEntity.ok().body(eventService.dislikeV2(eventId, user));
+    }
+
+    /**
      * Method to dislike Event.
      */
     @Operation(description = "Dislike event")
@@ -361,7 +403,9 @@ public class EventController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PostMapping("/{eventId}/dislike")
     public void dislike(@PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO user) {
@@ -378,6 +422,8 @@ public class EventController {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })

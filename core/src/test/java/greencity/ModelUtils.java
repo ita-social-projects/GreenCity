@@ -660,4 +660,19 @@ public class ModelUtils {
             .countryEn("Country")
             .build();
     }
+
+    public static EventDto getEventDto() {
+        return EventDto.builder()
+            .id(1L)
+            .eventRate(10d)
+            .dates(Collections.emptyList())
+            .additionalImages(Collections.emptyList())
+            .dislikes(1)
+            .likes(1)
+            .isOpen(true)
+            .type(EventType.OFFLINE)
+            .title("EventDto")
+            .description("EventDto description")
+            .build();
+    }
 }
