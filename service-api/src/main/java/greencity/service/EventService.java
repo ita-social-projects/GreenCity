@@ -203,12 +203,31 @@ public interface EventService {
     void like(Long eventId, UserVO userVO);
 
     /**
+     * Method to like or unlike {@link EventVO} specified by id and returns it's
+     * instance.
+     *
+     * @param id   id of {@link EventVO} to like/dislike.
+     * @param user current {@link UserVO} who wants to like/dislike.
+     * @return EventDto
+     */
+    EventDto likeV2(Long id, UserVO user);
+
+    /**
      * Method to mark event as disliked by User.
      *
      * @param user - instance of {@link UserVO}
      * @param id   - {@link Long} event id.
      */
     void dislike(UserVO user, Long id);
+
+    /**
+     * Method to mark event as disliked by User and return it's instance.
+     *
+     * @param user - instance of {@link UserVO}
+     * @param id   - {@link Long} event id.
+     * @return EventDto
+     */
+    EventDto dislikeV2(Long id, UserVO user);
 
     /**
      * Method to get amount of likes by event id.

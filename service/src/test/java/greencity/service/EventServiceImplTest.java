@@ -1333,9 +1333,8 @@ class EventServiceImplTest {
             "checkingEqualityDateTimeInEventDateLocationDto", List.class);
         method.setAccessible(true);
 
-        InvocationTargetException exception = assertThrows(InvocationTargetException.class, () -> {
-            method.invoke(eventService, eventDateLocationDtos);
-        });
+        InvocationTargetException exception =
+            assertThrows(InvocationTargetException.class, () -> method.invoke(eventService, eventDateLocationDtos));
 
         Throwable cause = exception.getCause();
         assertInstanceOf(IllegalArgumentException.class, cause);
@@ -2155,5 +2154,4 @@ class EventServiceImplTest {
 
         assertTrue(result.isEmpty());
     }
-
 }
