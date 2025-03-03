@@ -23,10 +23,10 @@ public class Location {
     @Column(nullable = false)
     private Double lng;
 
-    @Column(nullable = false, name = "address")
+    @Column(nullable = false, name = "address_en")
     private String addressEn;
 
-    @Column(nullable = false, name = "address_ua")
+    @Column(nullable = false, name = "address_uk")
     private String addressUk;
 
     @OneToOne(mappedBy = "location")

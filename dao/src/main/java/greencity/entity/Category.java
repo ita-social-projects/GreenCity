@@ -23,10 +23,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100, name = "name")
+    @Column(nullable = false, unique = true, length = 100, name = "name_en")
     private String nameEn;
 
-    @Column(unique = true, length = 100, name = "name_ua")
+    @Column(unique = true, length = 100, name = "name_uk")
     private String nameUk;
 
     @ManyToOne

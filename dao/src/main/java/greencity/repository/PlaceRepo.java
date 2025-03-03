@@ -77,8 +77,8 @@ public interface PlaceRepo extends PlaceSearchRepo, JpaRepository<Place, Long>, 
     @Query(nativeQuery = true,
         value = "SELECT p.* FROM places p "
             + "join categories c on c.id = p.category_id "
-            + "WHERE c.name IN (:category) "
-            + "or c.name_ua IN (:category)")
+            + "WHERE c.name_en IN (:category) "
+            + "or c.name_uk IN (:category)")
     List<Place> findPlaceByCategory(String[] category);
 
     /**
