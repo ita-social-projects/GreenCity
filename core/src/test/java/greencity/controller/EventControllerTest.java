@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static greencity.ModelUtils.getCreateJsonFile;
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -61,6 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EventControllerTest {
     private static final String EVENTS_CONTROLLER_LINK = "/events";
+    private static final String UPDATE_EVENT_V2_URL = EVENTS_CONTROLLER_LINK + "/updateV2/{eventId}";
     private final Principal principal = getPrincipal();
     private MockMvc mockMvc;
     @InjectMocks
@@ -843,5 +845,50 @@ class EventControllerTest {
             .andExpect(status().isBadRequest());
 
         verify(eventService, times(0)).getEventV2(1L, principal);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateV2Test() {
+        UpdateEventRequestDto updateEventDto = getUpdateEventDto();
+        MockMultipartFile jsonFile = getCreateJsonFile(updateEventDto, "eventDto");
+
+        MockMultipartHttpServletRequestBuilder builder = multipart(UPDATE_EVENT_V2_URL, updateEventDto.getId());
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
+        mockMvc.perform(builder
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isOk());
+
+        verify(eventService).updateV2(updateEventDto, principal.getName(), null);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateV2WhenIdNotEqualExceptionTest() {
+        UpdateEventRequestDto updateEventDto = getUpdateEventDto();
+
+        MockMultipartFile jsonFile = getCreateJsonFile(updateEventDto, "eventDto");
+
+        MockMultipartHttpServletRequestBuilder builder = multipart(UPDATE_EVENT_V2_URL, 2L);
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
+        assertThatThrownBy(() -> mockMvc
+            .perform(builder
+                .file(jsonFile)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest()))
+            .hasCause(new WrongIdException(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL));
     }
 }

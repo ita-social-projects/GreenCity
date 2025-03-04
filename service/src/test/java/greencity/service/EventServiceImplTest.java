@@ -322,6 +322,36 @@ class EventServiceImplTest {
     }
 
     @Test
+    void updateV2Test() {
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+        Event expectedEvent = ModelUtils.getEvent();
+        List<Long> eventIds = List.of(eventResponseDto.id());
+        UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
+        User user = ModelUtils.getUser();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
+        when(modelMapper.map(expectedEvent, EventResponseDto.class)).thenReturn(eventResponseDto);
+        when(eventRepo.save(expectedEvent)).thenReturn(expectedEvent);
+        when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
+
+        EventResponseDto actualEvent = eventService.updateV2(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
+
+        assertEquals(eventResponseDto, actualEvent);
+
+        assertFalse(actualEvent.isFavorite());
+        assertFalse(actualEvent.isSubscribed());
+
+        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
+        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+        verify(restClient).findByEmail(anyString());
+    }
+
+    @Test
     void updateThrowsUserHasNoPermissionToAccessException() {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         UserVO userVO = ModelUtils.getTestUserVo();
@@ -1744,7 +1774,6 @@ class EventServiceImplTest {
         Event mockEvent = new Event();
         when(eventRepo.findById(eventId)).thenReturn(Optional.of(mockEvent));
         when(modelMapper.map(any(User.class), eq(UserProfilePictureDto.class))).thenReturn(null); // Simulate empty
-                                                                                                  // liked users
 
         Set<UserProfilePictureDto> actualUsersLiked = eventService.getUsersLikedByEvent(eventId);
 
@@ -1759,7 +1788,6 @@ class EventServiceImplTest {
         Event mockEvent = new Event();
         when(eventRepo.findById(eventId)).thenReturn(Optional.of(mockEvent));
         when(modelMapper.map(any(User.class), eq(UserProfilePictureDto.class))).thenReturn(null); // Simulate empty
-                                                                                                  // disliked users
 
         Set<UserProfilePictureDto> actualUsersDisliked = eventService.getUsersDislikedByEvent(eventId);
 
