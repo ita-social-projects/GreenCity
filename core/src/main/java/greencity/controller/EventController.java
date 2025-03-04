@@ -171,6 +171,44 @@ public class EventController {
     }
 
     /**
+     * Updates an event with the provided details.
+     *
+     * @param eventDto  - the updated event information.
+     * @param principal - the authenticated user performing the update.
+     * @param images    - optional images to be associated with the event.
+     * @param eventId   - the ID of the event to be updated.
+     * @return a {@link ResponseEntity} containing an {@link EventResponseDto} with
+     *         the updated event details.
+     *
+     * @author Yurii Osovskyi
+     */
+    @Operation(summary = "Update event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = EventResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PutMapping(value = "/updateV2/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventResponseDto> updateV2(
+        @Parameter(required = true,
+            description = UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventRequestDto eventDto,
+        @Parameter(hidden = true) Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images,
+        @PathVariable Long eventId) {
+        if (!eventId.equals(eventDto.getId())) {
+            throw new WrongIdException(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL);
+        }
+        return ResponseEntity.ok().body(eventService.updateV2(eventDto, principal.getName(), images));
+    }
+
+    /**
      * Method for getting the event by event id.
      *
      * @return {@link EventDto} instance.

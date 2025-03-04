@@ -1,5 +1,6 @@
 package greencity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PriceLevel;
 import com.google.maps.model.RankBy;
@@ -87,6 +88,7 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 
 import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
@@ -661,18 +663,12 @@ public class ModelUtils {
             .build();
     }
 
-    public static EventDto getEventDto() {
-        return EventDto.builder()
-            .id(1L)
-            .eventRate(10d)
-            .dates(Collections.emptyList())
-            .additionalImages(Collections.emptyList())
-            .dislikes(1)
-            .likes(1)
-            .isOpen(true)
-            .type(EventType.OFFLINE)
-            .title("EventDto")
-            .description("EventDto description")
-            .build();
+    public static MockMultipartFile getCreateJsonFile(Object dto, String fieldName) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        return new MockMultipartFile(
+            fieldName,
+            "",
+            "application/json",
+            objectMapper.writeValueAsBytes(dto));
     }
 }
