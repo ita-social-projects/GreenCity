@@ -203,8 +203,6 @@ public class SecurityConfig {
                     "/token",
                     "/socket/**",
                     FRIENDS + "/user/{userId}",
-                    "/database/backup",
-                    "/database/backupFiles",
                     COMMIT_INFO)
                 .permitAll()
                 .requestMatchers(HttpMethod.DELETE,
@@ -283,6 +281,8 @@ public class SecurityConfig {
                     "/habit/statistic/assign/{habitAssignId}",
                     "/habit/assign/confirm/{habitAssignId}",
                     "/place/info/favorite/{placeId}",
+                    "/database/backup",
+                    "/database/backupFiles",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
