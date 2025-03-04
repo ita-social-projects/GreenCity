@@ -262,6 +262,7 @@
     <include file="db/changelog/logs/ch-add-default-value-userprofile-confidentiality-Haliara.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-requesters-Pitsyk.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-Bulhakova.xml"/>
+    <include file="db/changelog/logs/ch-update-column-names-positions-Bulhakova.xml"/>
     <include file="/db/changelog/logs/ch-add-quartz-tables.xml"/>
     <include file="db/changelog/logs/ch-add-table-eco_news-relevance.xml"/>
     <include file="db/changelog/logs/ch-create-user_eco_news_relevance-indexes.xml"/>
