@@ -3,9 +3,10 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.commitinfo.CommitInfoDto;
 import greencity.service.CommitInfoService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +27,28 @@ public class CommitInfoController {
      *
      * @return {@link CommitInfoDto}
      */
-    @ApiOperation(value = "Get the latest commit hash and date.")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
+    @Operation(summary = "Get the latest commit hash and date.")
+    @ApiResponse(
+        responseCode = "200",
+        description = HttpStatuses.OK,
+        content = @Content(
+            mediaType = "application/json",
+            examples = @ExampleObject(
+                value = """
+                    {
+                        "commitHash": "d6e70c46b39857846f3f13ca9756c39448ab3d6f",
+                        "commitDate": "16/12/2024 10:55:00"
+                    }""")))
+    @ApiResponse(
+        responseCode = "404",
+        description = HttpStatuses.NOT_FOUND,
+        content = @Content(
+            mediaType = "application/json",
+            examples = @ExampleObject(
+                value = """
+                    {
+                        "message": "Git repository not initialized. Commit info is unavailable."
+                    }""")))
     @GetMapping
     public ResponseEntity<CommitInfoDto> getCommitInfo() {
         return ResponseEntity.ok(commitInfoService.getLatestCommitInfo());

@@ -1,13 +1,8 @@
 package greencity.service;
 
-import static greencity.ModelUtils.getFilterPlacesApiDto;
-import static greencity.ModelUtils.getPlaceByBoundsDtoFromApi;
-import static greencity.ModelUtils.getPlacesSearchResultEn;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
+import com.google.maps.model.LatLng;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
@@ -18,25 +13,34 @@ import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.filter.FilterPlacesApiDto;
-import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
-import greencity.dto.photo.PhotoAddDto;
-import greencity.dto.place.AddPlaceDto;
-import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.BulkUpdatePlaceStatusDto;
-import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.PlaceResponse;
+import greencity.dto.place.FilterPlaceCategory;
+import greencity.dto.place.FilterAdminPlaceDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.User;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -46,9 +50,16 @@ import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
+import greencity.repository.PhotoRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -62,30 +73,66 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
+import static greencity.ModelUtils.getPlace;
+import static greencity.ModelUtils.getPlaceUpdateDto;
+import static greencity.ModelUtils.getSearchPlacesDto;
+import static greencity.ModelUtils.getFilterPlacesApiDto;
+import static greencity.ModelUtils.getPlacesSearchResultEn;
+import static greencity.ModelUtils.getPlaceByBoundsDtoFromApi;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
         .name("test").build();
-
-    private final CategoryDto categoryDto = CategoryDto.builder()
-        .name("test")
+    private final Language language = Language.builder()
+        .id(2L)
+        .code("en")
         .build();
-
+    private final LanguageVO languageVO = LanguageVO.builder()
+        .id(2L)
+        .code("en")
+        .build();
     private final User user =
         User.builder()
             .id(1L)
@@ -95,6 +142,7 @@ class PlaceServiceImplTest {
             .userStatus(UserStatus.ACTIVATED)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
+            .language(language)
             .build();
     private final UserVO userVO =
         UserVO.builder()
@@ -104,11 +152,30 @@ class PlaceServiceImplTest {
             .role(Role.ROLE_USER)
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .languageVO(languageVO)
             .build();
-    private final Place genericEntity1 = Place.builder()
+    private final UserVO userVOAdmin =
+        UserVO.builder()
+            .id(1L)
+            .email("Nazar.stasyuk@gmail.com")
+            .name("Nazar Stasyuk")
+            .role(Role.ROLE_ADMIN)
+            .lastActivityTime(LocalDateTime.now())
+            .dateOfRegistration(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVATED)
+            .languageVO(languageVO)
+            .build();
+    Place genericEntity1 = Place.builder()
         .id(1L)
         .name("test1")
         .author(user)
+        .location(Location.builder()
+            .id(1L)
+            .lat(42.57)
+            .lng(46.53)
+            .address("Location")
+            .build())
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
@@ -119,38 +186,9 @@ class PlaceServiceImplTest {
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
         .build();
-    private final LocationAddressAndGeoDto locationDto = LocationAddressAndGeoDto.builder()
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
-    private final Location location = Location.builder()
+    private final CategoryDtoResponse categoryDtoResponse = CategoryDtoResponse.builder()
         .id(1L)
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
-    private final LocationVO locationVO = LocationVO.builder()
-        .id(1L)
-        .address("test")
-        .lat(45.456)
-        .lng(46.456)
-        .build();
-    private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
-    private Set<OpeningHours> openingHoursListEntity = new HashSet<>();
-    private Set<OpeningHoursVO> openingHoursListEntityVO = new HashSet<>();
-    private Set<DiscountValue> discountValues = new HashSet<>();
-    private Set<DiscountValueDto> discountValuesDto = new HashSet<>();
-    private Set<DiscountValueVO> discountValuesVO = new HashSet<>();
-    private List<PhotoAddDto> photoDtos = new ArrayList<>();
-    private List<Photo> photos = new ArrayList<>();
-    private PlaceAddDto placeAddDto = PlaceAddDto.builder()
-        .name("Test")
-        .category(categoryDto)
-        .location(locationDto)
-        .openingHoursList(openingHoursList)
-        .discountValues(discountValuesDto)
-        .photos(photoDtos)
+        .name("Caterory")
         .build();
     @Mock
     private PlaceRepo placeRepo;
@@ -163,61 +201,97 @@ class PlaceServiceImplTest {
     @Spy
     private ModelMapper modelMapper;
     @Mock
-    private RestClient restClient;
-    @Mock
     private ProposePlaceServiceImpl proposePlaceMapper;
     @Mock
     private SpecificationService specificationService;
     @Mock
     private DiscountService discountService;
     @Mock
-    private NotificationService notificationService;
-
-    @Mock
     private CategoryRepo categoryRepo;
-    private ZoneId zoneId = ZoneId.of("Europe/Kiev");
+    private final ZoneId zoneId = ZoneId.of("Europe/Kiev");
     private PlaceService placeService;
     @Mock
     private GoogleApiService googleApiService;
     @Mock
     UserRepo userRepo;
     @Mock
+    UserService userService;
+    @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
+    @Mock
+    private FileService fileService;
+    @Mock
+    private UserNotificationService userNotificationService;
+    @Mock
+    private RestClient restClient;
+    @Mock
+    private PhotoRepo photoRepo;
+    @InjectMocks
+    private PlaceServiceImpl placeServiceImpl;
 
     @BeforeEach
     void init() {
-        MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
-            specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
-            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo);
+            specificationService, openingHoursService, userService, discountService, zoneId,
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
+            userNotificationService, restClient, photoRepo);
     }
 
     @Test
     void saveTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
-        when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
-        userVO.setUserStatus(UserStatus.ACTIVATED);
-        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVOAdmin);
+        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
+        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
         when(categoryRepo.findByName(anyString())).thenReturn(new Category());
         when(placeRepo.save(any())).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
 
         PlaceVO saved = placeService.save(placeAddDto, user.getEmail());
         assertEquals(placeVO, saved);
+
+        verify(userService).getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY);
+        verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), placeVO.getId(),
+            placeVO.getCategory().getName(), placeVO.getName());
+    }
+
+    @Test
+    void savePlaceWithValidDataSucceedsTest() {
+        PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
+        PlaceVO placeVO = ModelUtils.getPlaceVO();
+        Place place = getPlace();
+        when(userService.findByEmail(user.getEmail())).thenReturn(userVOAdmin);
+        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
+        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
+        when(categoryRepo.findByName(placeAddDto.getCategory().getName())).thenReturn(category);
+        when(placeRepo.save(place)).thenReturn(place);
+        when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
+        PlaceVO savedPlace = placeService.save(placeAddDto, user.getEmail());
+        assertEquals(placeVO, savedPlace);
+        verify(userService).findByEmail(user.getEmail());
+        verify(proposePlaceMapper).checkLocationValues(placeAddDto.getLocation());
+        verify(categoryRepo).findByName(placeAddDto.getCategory().getName());
+        verify(placeRepo).save(place);
     }
 
     @Test
     void updateStatusTest() {
-        Place genericEntity = ModelUtils.getPlace();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
-        when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
-        when(modelMapper.map(placeVO, Place.class)).thenReturn(genericEntity);
+        Place genericEntity = getPlace();
+        genericEntity.setCategory(ModelUtils.getCategory());
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
+        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
         when(placeRepo.save(any())).thenReturn(genericEntity);
-        placeService.updateStatus(1L, PlaceStatus.DECLINED);
-        assertEquals(PlaceStatus.DECLINED, genericEntity.getStatus());
+        placeService.updateStatus(1L, PlaceStatus.APPROVED);
+        assertEquals(PlaceStatus.APPROVED, genericEntity.getStatus());
+
+        verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), genericEntity.getId(),
+            genericEntity.getCategory().getName(), genericEntity.getName());
     }
 
     @Test
@@ -247,10 +321,10 @@ class PlaceServiceImplTest {
 
     @Test
     void getAllCreatedPlacesByUserId() {
-        List<Place> places = Collections.singletonList(ModelUtils.getPlace());
+        List<Place> places = Collections.singletonList(getPlace());
         List<PlaceVO> voList = Collections.singletonList(modelMapper.map(places, PlaceVO.class));
 
-        when(modelMapper.map(places.get(0), PlaceVO.class)).thenReturn(voList.get(0));
+        when(modelMapper.map(places.getFirst(), PlaceVO.class)).thenReturn(voList.getFirst());
         when(placeRepo.findAllByUserId(1L)).thenReturn(places);
 
         List<PlaceVO> actual = placeService.getAllCreatedPlacesByUserId(1L);
@@ -260,7 +334,7 @@ class PlaceServiceImplTest {
 
     @Test
     void updateStatusGivenTheSameStatusThenThrowException() {
-        Place genericEntity = ModelUtils.getPlace();
+        Place genericEntity = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
 
         when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
@@ -277,7 +351,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findByIdTest() {
-        Place genericEntity = ModelUtils.getPlace();
+        Place genericEntity = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
         when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
@@ -305,13 +379,22 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoByIdTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
+        place.setDescription("description");
+        place.setEmail("http://www.websitetest.com");
+        place.setPhotos(new ArrayList<>());
+
         PlaceInfoDto gen = modelMapper.map(place, PlaceInfoDto.class);
         gen.setRate(1.5);
+
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(place));
         when(placeRepo.getAverageRate(anyLong())).thenReturn(1.5);
-        PlaceInfoDto res = placeService.getInfoById(anyLong());
+
+        PlaceInfoDto res = placeService.getInfoById(1L);
+
         assertEquals(gen, res);
+        verify(placeRepo).findById(anyLong());
+        verify(placeRepo).getAverageRate(anyLong());
     }
 
     @Test
@@ -402,8 +485,8 @@ class PlaceServiceImplTest {
 
     @Test
     void findAllTest() {
-        List<Place> list = Arrays.asList(ModelUtils.getPlace());
-        List<PlaceVO> expectedList = Arrays.asList(ModelUtils.getPlaceVO());
+        List<Place> list = List.of(getPlace());
+        List<PlaceVO> expectedList = List.of(ModelUtils.getPlaceVO());
         when(placeRepo.findAll()).thenReturn(list);
         when(modelMapper.map(list, new TypeToken<List<PlaceVO>>() {
         }.getType())).thenReturn(expectedList);
@@ -417,14 +500,23 @@ class PlaceServiceImplTest {
     @Test
     void findAllPageableWithoutPrincipalTest() {
         Pageable pageable = PageRequest.of(0, 1);
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.findAll(pageable)).thenReturn(pages);
         List<AdminPlaceDto> placeDtos =
-            pages.stream().map(elem -> modelMapper.map(elem, AdminPlaceDto.class)).collect(Collectors.toList());
+            pages.stream().map(elem -> {
+                AdminPlaceDto adminPlaceDto = modelMapper.map(place, AdminPlaceDto.class);
+                List<String> photoNames = Optional.ofNullable(place.getPhotos())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(Photo::getName)
+                    .collect(Collectors.toList());
+                adminPlaceDto.setImages(photoNames);
+                return adminPlaceDto;
+            }).collect(Collectors.toList());
         PageableDto<AdminPlaceDto> expected =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
+        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, null);
 
         assertEquals(expected, actual);
         verify(placeRepo).findAll(pageable);
@@ -438,7 +530,7 @@ class PlaceServiceImplTest {
         List<AdminPlaceDto> placeDtos = new ArrayList<>();
         PageableDto<AdminPlaceDto> expected =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
+        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, null);
 
         assertEquals(expected, actual);
         verify(placeRepo).findAll(pageable);
@@ -448,17 +540,23 @@ class PlaceServiceImplTest {
     void findAllWithPrincipalTest() {
         Pageable pageable = PageRequest.of(0, 1);
         Principal principal = ModelUtils.getPrincipal();
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
 
         when(placeRepo.findAll(pageable)).thenReturn(pages);
         when(favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(principal.getName()))
             .thenReturn(Collections.singletonList(1L));
 
-        PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal.getName());
-        AdminPlaceDto actual = resultPageableDto.getPage().get(0);
+        PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal);
+        AdminPlaceDto actual = resultPageableDto.getPage().getFirst();
 
         AdminPlaceDto expected = modelMapper.map(place, AdminPlaceDto.class);
+        List<String> photoNames = Optional.ofNullable(place.getPhotos())
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(Photo::getName)
+            .collect(Collectors.toList());
+        expected.setImages(photoNames);
         expected.setIsFavorite(true);
 
         assertEquals(expected, actual);
@@ -469,45 +567,19 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void updateTest() {
-        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-        Place place = ModelUtils.getPlace();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
-        placeUpdateDto.setId(1L);
-        placeUpdateDto.setOpeningHoursList(openingHoursList);
-        placeUpdateDto.setDiscountValues(discountValuesDto);
-        placeUpdateDto.setName("new Name");
-        placeUpdateDto.setCategory(categoryDto);
-        placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto());
-        CategoryDtoResponse categoryDtoResponce = CategoryDtoResponse.builder().build();
-        when(modelMapper.map(placeUpdateDto.getLocation(), LocationVO.class)).thenReturn(locationVO);
-        when(categoryService.findByName(category.getName())).thenReturn(categoryDtoResponce);
-        when(modelMapper.map(categoryDtoResponce, Category.class)).thenReturn(category);
-        when(placeRepo.findById(placeUpdateDto.getId())).thenReturn(Optional.of(place));
-
-        PlaceVO updatedPlace = placeService.update(placeUpdateDto);
-
-        assertEquals(placeUpdateDto.getName(), updatedPlace.getName());
-        assertEquals(placeUpdateDto.getCategory().getName(), updatedPlace.getCategory().getName());
-        verify(modelMapper).map(placeUpdateDto.getLocation(), LocationVO.class);
-        verify(locationService).update(place.getLocation().getId(), locationVO);
-    }
-
-    @Test
     void deleteByIdTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
         when(placeRepo.save(place)).thenReturn(place);
 
         placeService.deleteById(place.getId());
 
         assertEquals(PlaceStatus.DELETED, place.getStatus());
-        verify(notificationService, never()).sendImmediatelyReport(any());
     }
 
     @Test
     void findByIdOptionalTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
         Optional<PlaceVO> resultOptional = placeService.findByIdOptional(place.getId());
@@ -519,7 +591,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoForUpdatingByIdTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         placeUpdateDto.setId(place.getId());
         when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
@@ -534,7 +606,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getInfoForUpdatingThrowingExceptionTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> placeService.getInfoForUpdatingById(1L));
@@ -544,7 +616,7 @@ class PlaceServiceImplTest {
 
     @Test
     void findPlacesByMapsBoundsTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         List<Place> places = Collections.singletonList(place);
         PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
         FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
@@ -561,7 +633,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getPlacesByFilterWithNullDistanceFromUserTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         List<Place> places = Collections.singletonList(place);
         FilterPlaceDto filterDto = new FilterPlaceDto();
         PlaceByBoundsDto placeByBoundsDto = new PlaceByBoundsDto();
@@ -570,7 +642,7 @@ class PlaceServiceImplTest {
         when(placeRepo.findAll((any(PlaceFilter.class)))).thenReturn(places);
         when(modelMapper.map(place, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
 
-        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto);
+        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto, null);
 
         assertEquals(placeByBoundsDtos, result);
         verify(placeRepo).findAll(any(PlaceFilter.class));
@@ -579,7 +651,7 @@ class PlaceServiceImplTest {
 
     @Test
     void getPlacesByFilterWithDistanceFromUserTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Location newLocation = new Location();
         newLocation.setLat(-80.0);
         newLocation.setLng(-170.0);
@@ -592,7 +664,7 @@ class PlaceServiceImplTest {
         when(placeRepo.findAll((any(PlaceFilter.class)))).thenReturn(places);
         when(modelMapper.map(genericEntity1, PlaceByBoundsDto.class)).thenReturn(placeByBoundsDto);
 
-        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto);
+        List<PlaceByBoundsDto> result = placeService.getPlacesByFilter(filterDto, null);
 
         assertEquals(placeByBoundsDtos, result);
         verify(placeRepo).findAll(any(PlaceFilter.class));
@@ -610,7 +682,7 @@ class PlaceServiceImplTest {
             el.setId(1L);
             el.getLocation().setId(1L);
             return el;
-        }).collect(Collectors.toList());
+        }).toList();
         List<PlaceByBoundsDto> expectedResult = getPlaceByBoundsDtoFromApi();
 
         Assertions.assertArrayEquals(updatedResult.toArray(), expectedResult.toArray());
@@ -620,7 +692,7 @@ class PlaceServiceImplTest {
 
     @Test
     void filterPlaceBySearchPredicateTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         Pageable pageable = PageRequest.of(0, 1);
         Page<Place> pageOfPlaces = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.findAll(any(PlaceFilter.class), any(Pageable.class))).thenReturn(pageOfPlaces);
@@ -638,13 +710,22 @@ class PlaceServiceImplTest {
 
     @Test
     void searchByTest() {
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
         String searchQuery = "test";
         Pageable pageable = PageRequest.of(0, 1);
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.searchBy(pageable, searchQuery)).thenReturn(pages);
         List<AdminPlaceDto> placeDtos =
-            pages.stream().map(p -> modelMapper.map(p, AdminPlaceDto.class)).collect(Collectors.toList());
+            pages.stream().map(elem -> {
+                AdminPlaceDto adminPlaceDto = modelMapper.map(place, AdminPlaceDto.class);
+                List<String> photoNames = Optional.ofNullable(place.getPhotos())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(Photo::getName)
+                    .collect(Collectors.toList());
+                adminPlaceDto.setImages(photoNames);
+                return adminPlaceDto;
+            }).collect(Collectors.toList());
         PageableDto<AdminPlaceDto> result =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
         assertEquals(result, placeService.searchBy(pageable, searchQuery));
@@ -669,10 +750,10 @@ class PlaceServiceImplTest {
     void addPlaceFromUi() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        Place place = ModelUtils.getPlace();
+        Place place = getPlace();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail("test@mail.com")).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
         when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
         when(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class))
@@ -680,7 +761,7 @@ class PlaceServiceImplTest {
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceResponse.class)).thenReturn(placeResponse);
 
-        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, "test@mail.com"));
+        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, "test@mail.com", null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail("test@mail.com");
@@ -689,6 +770,19 @@ class PlaceServiceImplTest {
         verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);
         verify(placeRepo).save(place);
         verify(modelMapper).map(place, PlaceResponse.class);
+
+        MultipartFile multipartFile = ModelUtils.getMultipartFile();
+        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        assertEquals(placeResponse,
+            placeService.addPlaceFromUi(dto, user.getEmail(),
+                new MultipartFile[] {multipartFile}));
+
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        assertEquals(placeResponse,
+            placeService.addPlaceFromUi(dto, ModelUtils.getUser().getEmail(), multipartFiles));
+        verify(fileService, times(3)).upload(any(MultipartFile.class));
     }
 
     @Test
@@ -697,13 +791,13 @@ class PlaceServiceImplTest {
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         User user = ModelUtils.getUser();
         user.setUserStatus(UserStatus.BLOCKED);
+        String email = user.getEmail();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
-        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, user.getEmail()));
+        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
-        verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
     }
 
@@ -717,12 +811,12 @@ class PlaceServiceImplTest {
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
 
-        double lat = ModelUtils.getGeocodingResult().get(0).geometry.location.lat;
-        double lng = ModelUtils.getGeocodingResult().get(0).geometry.location.lng;
+        double lat = ModelUtils.getGeocodingResult().getFirst().geometry.location.lat;
+        double lng = ModelUtils.getGeocodingResult().getFirst().geometry.location.lng;
 
         when(locationService.existsByLatAndLng(lat, lng)).thenReturn(true);
 
-        assertThrows(PlaceAlreadyExistsException.class, () -> placeService.addPlaceFromUi(dto, email));
+        assertThrows(PlaceAlreadyExistsException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
         verify(userRepo).findByEmail(user.getEmail());
@@ -730,5 +824,357 @@ class PlaceServiceImplTest {
         verify(locationService).existsByLatAndLng(lat, lng);
 
         verify(modelMapper, times(0)).map(placeResponse, Place.class);
+    }
+
+    @Test
+    void getFilteredPlacesForAdminTest() {
+        FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
+        filterDto.setName("test name");
+        filterDto.setStatus("APPROVED");
+
+        Pageable pageable = Pageable.ofSize(10);
+
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test name");
+        place.setStatus(PlaceStatus.APPROVED);
+
+        List<Place> places = List.of(place);
+        Page<Place> page = new PageImpl<>(places, pageable, places.size());
+
+        when(placeRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+
+        PageableDto<AdminPlaceDto> result = placeService.getFilteredPlacesForAdmin(filterDto, pageable);
+
+        assertEquals(1, result.getPage().size());
+        assertEquals(places.size(), result.getTotalElements());
+
+        ArgumentCaptor<Specification<Place>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        verify(placeRepo).findAll(specCaptor.capture(), eq(pageable));
+
+        Specification<Place> capturedSpec = specCaptor.getValue();
+        assertNotNull(capturedSpec);
+    }
+
+    @Test
+    void getFilteredPlacesForAdminWithAllFiltersTest() {
+        FilterAdminPlaceDto filterDto = new FilterAdminPlaceDto();
+        filterDto.setId("1");
+        filterDto.setName("test name");
+        filterDto.setStatus("APPROVED");
+        filterDto.setAuthor("author name");
+        filterDto.setAddress("test address");
+        Pageable pageable = Pageable.ofSize(10);
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test name");
+        place.setStatus(PlaceStatus.APPROVED);
+        List<Place> places = List.of(place);
+        Page<Place> page = new PageImpl<>(places, pageable, places.size());
+
+        when(placeRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        CriteriaQuery<?> query = mock(CriteriaQuery.class);
+        Root<Place> root = mock(Root.class);
+        Join<Object, Object> authorJoin = mock(Join.class);
+        Join<Object, Object> locationJoin = mock(Join.class);
+
+        when(root.join("author")).thenReturn(authorJoin);
+        when(root.join("location")).thenReturn(locationJoin);
+
+        when(authorJoin.get("name")).thenReturn(mock(Path.class));
+        when(locationJoin.get("address")).thenReturn(mock(Path.class));
+        when(root.get("id")).thenReturn(mock(Path.class));
+        when(root.get("name")).thenReturn(mock(Path.class));
+        when(root.get("status")).thenReturn(mock(Path.class));
+
+        Predicate idPredicate = mock(Predicate.class);
+        Predicate namePredicate = mock(Predicate.class);
+        Predicate statusPredicate = mock(Predicate.class);
+        Predicate authorPredicate = mock(Predicate.class);
+        Predicate addressPredicate = mock(Predicate.class);
+        Predicate combinedPredicate = mock(Predicate.class);
+
+        when(cb.equal(root.get("id"), "1")).thenReturn(idPredicate);
+        when(cb.like(root.get("name"), "%test name%")).thenReturn(namePredicate);
+        when(cb.equal(root.get("status"), PlaceStatus.APPROVED)).thenReturn(statusPredicate);
+        when(cb.like(authorJoin.get("name"), "%author name%")).thenReturn(authorPredicate);
+        when(cb.like(locationJoin.get("address"), "%test address%")).thenReturn(addressPredicate);
+        when(cb.and(idPredicate, namePredicate, statusPredicate, authorPredicate, addressPredicate))
+            .thenReturn(combinedPredicate);
+
+        PageableDto<AdminPlaceDto> result = placeService.getFilteredPlacesForAdmin(filterDto, pageable);
+        assertEquals(1, result.getPage().size());
+        assertEquals(places.size(), result.getTotalElements());
+
+        ArgumentCaptor<Specification<Place>> specCaptor = ArgumentCaptor.forClass(Specification.class);
+        verify(placeRepo).findAll(specCaptor.capture(), eq(pageable));
+
+        Specification<Place> capturedSpec = specCaptor.getValue();
+
+        Predicate predicate = capturedSpec.toPredicate(root, query, cb);
+
+        assertNotNull(predicate);
+        verify(cb).equal(root.get("id"), "1");
+        verify(cb).like(root.get("name"), "%test name%");
+        verify(cb).equal(root.get("status"), PlaceStatus.APPROVED);
+        verify(cb).like(authorJoin.get("name"), "%author name%");
+        verify(cb).like(locationJoin.get("address"), "%test address%");
+    }
+
+    @Test
+    void searchTest() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Place place = getPlace();
+        place.setCategory(Category.builder().name("Category").build());
+        List<Place> places = List.of(place, place);
+        PageImpl<Place> page = new PageImpl<>(places, pageRequest, places.size());
+        SearchPlacesDto searchPlacesDto = getSearchPlacesDto();
+
+        when(placeRepo.find(pageRequest, "text", null, null)).thenReturn(page);
+        when(modelMapper.map(place, SearchPlacesDto.class)).thenReturn(searchPlacesDto);
+
+        PageableDto<SearchPlacesDto> result = placeService.search(pageRequest, "text", null, null);
+
+        assertEquals(List.of(searchPlacesDto, searchPlacesDto), result.getPage());
+    }
+
+    @Test
+    void updatePlaceStatusWithUserEmailTest() {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("test1");
+        dto.setNewStatus(PlaceStatus.APPROVED);
+        dto.setEmail("user@example.com");
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test1");
+        place.setStatus(PlaceStatus.PROPOSED);
+        when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
+        when(userRepo.findByEmail(dto.getEmail())).thenReturn(Optional.of(user));
+        when(placeRepo.save(any(Place.class))).thenReturn(place);
+        UpdatePlaceStatusWithUserEmailDto result = placeService.updatePlaceStatus(dto);
+        assertEquals("test1", result.getPlaceName());
+        assertEquals(PlaceStatus.APPROVED, place.getStatus());
+        verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
+        verify(userRepo).findByEmail(dto.getEmail());
+        verify(placeRepo).save(place);
+    }
+
+    @Test
+    void updatePlaceStatusWithPlaceNotFoundTest() {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("nonexistentPlace");
+        dto.setNewStatus(PlaceStatus.APPROVED);
+        when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.empty());
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeService.updatePlaceStatus(dto));
+        assertEquals("The place does not exist by this name: nonexistentPlace", exception.getMessage());
+        verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
+        verify(placeRepo, times(0)).save(any(Place.class));
+    }
+
+    @Test
+    void updatePlaceStatusWithUserNotFoundTest() {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("test1");
+        dto.setNewStatus(PlaceStatus.APPROVED);
+        dto.setEmail("nonexistent@example.com");
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test1");
+        place.setStatus(PlaceStatus.PROPOSED);
+        when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
+        when(userRepo.findByEmail(dto.getEmail())).thenReturn(Optional.empty());
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeService.updatePlaceStatus(dto));
+        assertEquals("The user does not exist by this email: nonexistent@example.com", exception.getMessage());
+        verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
+        verify(userRepo).findByEmail(dto.getEmail());
+        verify(placeRepo, times(0)).save(any(Place.class));
+    }
+
+    @Test
+    void updatePlaceStatusWithPlaceAndUserNotFoundTest() {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("nonexistentPlace");
+        dto.setNewStatus(PlaceStatus.APPROVED);
+        dto.setEmail("nonexistent@example.com");
+        when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.empty());
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeService.updatePlaceStatus(dto));
+        assertEquals("The place does not exist by this name: nonexistentPlace", exception.getMessage());
+        verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
+        verify(userRepo, times(0)).findByEmail(dto.getEmail());
+        verify(placeRepo, times(0)).save(any(Place.class));
+    }
+
+    @Test
+    void updatePlaceStatusWithoutSendingEmailNotificationTest() {
+        UpdatePlaceStatusWithUserEmailDto dto = new UpdatePlaceStatusWithUserEmailDto();
+        dto.setPlaceName("test1");
+        dto.setNewStatus(PlaceStatus.PROPOSED);
+        dto.setEmail("user@example.com");
+        Place place = new Place();
+        place.setId(1L);
+        place.setName("test1");
+        place.setStatus(PlaceStatus.PROPOSED);
+        when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
+        when(userRepo.findByEmail(dto.getEmail())).thenReturn(Optional.of(user));
+        when(placeRepo.save(any(Place.class))).thenReturn(place);
+        UpdatePlaceStatusWithUserEmailDto result = placeService.updatePlaceStatus(dto);
+        assertEquals("test1", result.getPlaceName());
+        assertEquals(PlaceStatus.PROPOSED, place.getStatus());
+        verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
+        verify(userRepo).findByEmail(dto.getEmail());
+        verify(placeRepo).save(place);
+        verify(restClient, times(0)).sendEmailNotificationChangesPlaceStatus(dto);
+    }
+
+    @Test
+    void updateOpeningThrowsExceptionForInvalidOperationTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        updatedPlace.setOpeningHoursList(null);
+
+        Set<OpeningHoursDto> hoursUpdateDtoSet = new HashSet<>();
+        OpeningHoursDto openingHoursDto = new OpeningHoursDto();
+        hoursUpdateDtoSet.add(openingHoursDto);
+
+        Mockito.doThrow(new RuntimeException("Test exception"))
+            .when(openingHoursService)
+            .deleteAllByPlaceId(Mockito.anyLong());
+
+        Assertions.assertThrows(RuntimeException.class,
+            () -> placeServiceImpl.updateOpening(hoursUpdateDtoSet, updatedPlace),
+            "Expected updateOpening to throw an exception");
+    }
+
+    @Test
+    void updateDiscountThrowsExceptionForInvalidOperationTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+
+        Set<DiscountValueDto> discounts = new HashSet<>();
+        DiscountValueDto discountValueDto = new DiscountValueDto();
+        discounts.add(discountValueDto);
+
+        Mockito.doThrow(new RuntimeException("Test exception"))
+            .when(discountService)
+            .deleteAllByPlaceId(Mockito.anyLong());
+
+        Assertions.assertThrows(RuntimeException.class,
+            () -> placeServiceImpl.updateDiscount(discounts, updatedPlace),
+            "Expected updateDiscount to throw an exception");
+    }
+
+    @Test
+    void updateOpeningExecutesCorrectlyForValidInputTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        Set<OpeningHoursDto> hoursUpdateDtoSet = new HashSet<>();
+        OpeningHoursDto openingHoursDto = new OpeningHoursDto();
+        hoursUpdateDtoSet.add(openingHoursDto);
+        Set<OpeningHoursVO> existingOpeningHoursVO = new HashSet<>();
+        OpeningHoursVO openingHoursVO = new OpeningHoursVO();
+        existingOpeningHoursVO.add(openingHoursVO);
+
+        Mockito.when(openingHoursService.findAllByPlaceId(updatedPlace.getId()))
+            .thenReturn(existingOpeningHoursVO);
+
+        placeServiceImpl.updateOpening(hoursUpdateDtoSet, updatedPlace);
+        Mockito.verify(openingHoursService).deleteAllByPlaceId(updatedPlace.getId());
+        Mockito.verify(openingHoursService, Mockito.times(hoursUpdateDtoSet.size()))
+            .save(Mockito.any(OpeningHoursVO.class));
+    }
+
+    @Test
+    void updateDiscountDoesNotThrowExceptionTest() {
+        Place updatedPlace = new Place();
+        updatedPlace.setId(1L);
+        Set<DiscountValueDto> discounts = new HashSet<>();
+
+        Mockito.when(discountService.findAllByPlaceId(Mockito.anyLong()))
+            .thenReturn(new HashSet<>());
+        Mockito.doAnswer(invocation -> null)
+            .when(discountService).deleteAllByPlaceId(Mockito.anyLong());
+        Mockito.doAnswer(invocation -> null)
+            .when(discountService).save(Mockito.any(DiscountValueVO.class));
+
+        Assertions.assertDoesNotThrow(() -> placeServiceImpl.updateDiscount(discounts, updatedPlace));
+    }
+
+    @Test
+    void updateFromUISucceedsForValidPlaceTest() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setName("Updated Place");
+        dto.setCategory(new CategoryDto("Test Category", "Test Category Ua", 1L));
+        dto.setLocation(new LocationAddressAndGeoForUpdateDto("New Address", 50.45, 30.52, "New Address Ua"));
+
+        MultipartFile[] images = new MultipartFile[] {
+            new MockMultipartFile("image1.jpg", "image1.jpg", "image/jpeg", new byte[0])
+        };
+        LocationVO locationVO = LocationVO.builder()
+            .id(1L)
+            .address("New Address")
+            .lat(50.45)
+            .lng(30.52)
+            .addressUa("New Address Ua")
+            .build();
+        when(categoryService.findByName("Test Category")).thenReturn(categoryDtoResponse);
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
+        when(userRepo.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(locationService.findById(1L)).thenReturn(locationVO);
+        List<GeocodingResult> geocodingResults = new ArrayList<>();
+        GeocodingResult ukrLang = new GeocodingResult();
+        ukrLang.formattedAddress = "New Address";
+        ukrLang.geometry = new Geometry();
+        ukrLang.geometry.location = new LatLng(50.45, 30.52);
+        GeocodingResult engLang = new GeocodingResult();
+        engLang.formattedAddress = "New Address Ua";
+        engLang.geometry = new Geometry();
+        engLang.geometry.location = new LatLng(50.45, 30.52);
+        geocodingResults.add(ukrLang);
+        geocodingResults.add(engLang);
+        when(googleApiService.getResultFromGeoCode("New Address")).thenReturn(geocodingResults);
+        PlaceVO result = placeServiceImpl.updateFromUI(dto, images, "test@example.com");
+
+        assertNotNull(result);
+        assertEquals("Updated Place", result.getName());
+        verify(placeRepo, atLeastOnce()).save(any(Place.class));
+        verify(photoRepo, times(1)).save(any(Photo.class));
+        verify(locationService, times(1)).update(anyLong(), any(LocationVO.class));
+    }
+
+    @Test
+    void updateFromUIThrowsNotFoundExceptionForUserTest() {
+        PlaceUpdateDto dto = getPlaceUpdateDto();
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+            () -> placeService.updateFromUI(dto, null, "invalid_email@example.com"));
+    }
+
+    @Test
+    void updateFromUIThrowsNotFoundExceptionForCategoryTest() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setCategory(new CategoryDto("Nonexistent Category", "Nonexistent Category", 1L));
+
+        when(categoryService.findByName("Nonexistent Category"))
+            .thenThrow(new NotFoundException("Category not found"));
+        assertThrows(NotFoundException.class, () -> placeServiceImpl.updateFromUI(dto, null, "test@example.com"));
+    }
+
+    @Test
+    void updateCategoryThrowsNotFoundExceptionTest() {
+        PlaceUpdateDto dto = new PlaceUpdateDto();
+        dto.setId(1L);
+        dto.setCategory(new CategoryDto("Non-existent Category", "Non-existent Category Ua", 2L));
+        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
+        when(categoryService.findByName("Non-existent Category"))
+            .thenThrow(new NotFoundException("Category not found"));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeServiceImpl.update(dto));
+        assertEquals("Category not found", exception.getMessage());
+        verify(placeRepo, never()).save(any(Place.class));
     }
 }

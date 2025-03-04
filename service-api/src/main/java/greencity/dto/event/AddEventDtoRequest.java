@@ -1,27 +1,41 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import greencity.annotations.DecodedSize;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Builder
 @EqualsAndHashCode
 public class AddEventDtoRequest {
-    @NotEmpty
-    @Size(min = 1, max = 70)
+    @NotBlank
+    @DecodedSize(min = 1, max = 70)
     private String title;
 
-    @NotEmpty
-    @Size(min = 20, max = 63206)
+    @NotBlank
+    @Size(min = 10, max = 63206)
+    @Pattern(
+        regexp = "^(?!\\S*\\s{2,})\\S.{8,}\\S$",
+        message = "Description must be at least 10 characters long (excluding leading / trailing spaces) "
+            + "and must not contain consecutive spaces.")
     private String description;
 
     @NotEmpty
+    @Valid
     private List<EventDateLocationDto> datesLocations;
 
     @NotEmpty

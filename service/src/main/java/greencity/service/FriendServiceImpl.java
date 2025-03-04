@@ -1,10 +1,15 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
+import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
+import greencity.enums.NotificationType;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -12,11 +17,11 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
+import java.util.Collections;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -33,6 +38,8 @@ public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
     private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
@@ -57,6 +64,10 @@ public class FriendServiceImpl implements FriendService {
         validateFriendRequestNotSent(userId, friendId);
         validateFriendNotExists(userId, friendId);
         userRepo.addNewFriend(userId, friendId);
+        User emailReceiver = userRepo.getReferenceById(friendId);
+        User friendRequestSender = userRepo.getReferenceById(userId);
+        userNotificationService.createNotification(modelMapper.map(emailReceiver, UserVO.class),
+            modelMapper.map(friendRequestSender, UserVO.class), NotificationType.FRIEND_REQUEST_RECEIVED);
     }
 
     /**
@@ -70,6 +81,10 @@ public class FriendServiceImpl implements FriendService {
         validateFriendNotExists(userId, friendId);
         validateFriendRequestSentByFriend(userId, friendId);
         userRepo.acceptFriendRequest(userId, friendId);
+        User user = userRepo.getReferenceById(userId);
+        User friend = userRepo.getReferenceById(friendId);
+        userNotificationService.createNotification(modelMapper.map(friend, UserVO.class),
+            modelMapper.map(user, UserVO.class), NotificationType.FRIEND_REQUEST_ACCEPTED);
     }
 
     /**
@@ -122,12 +137,9 @@ public class FriendServiceImpl implements FriendService {
         }
 
         List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, friends.getContent());
-        for (UserFriendDto userFriendDto : userFriendDtoList) {
-            Long oneOfListUserFriendsId = userFriendDto.getId();
-            userFriendDto.setFriendStatus(
-                userRepo.getFriendStatusByUserIdAndCurrentUserId(oneOfListUserFriendsId, currentUserId));
-        }
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
+                friends.getContent());
+
         return new PageableDto<>(
             userFriendDtoList,
             friends.getTotalElements(),
@@ -140,14 +152,18 @@ public class FriendServiceImpl implements FriendService {
      */
     @Override
     public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
-        @Nullable String name, Pageable pageable) {
+        String name,
+        boolean filterByFriendsOfFriends,
+        boolean filterByCity,
+        Pageable pageable) {
         Objects.requireNonNull(pageable);
-
         validateUserExistence(userId);
-        name = name == null ? "" : name;
+        name = name != null ? name : "";
+
         Page<User> users;
         if (pageable.getSort().isEmpty()) {
-            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable);
+            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
+                filterByFriendsOfFriends, filterByCity, pageable);
         } else {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
@@ -175,7 +191,12 @@ public class FriendServiceImpl implements FriendService {
         } else if (type == RecommendedFriendsType.HABITS) {
             mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
         } else if (type == RecommendedFriendsType.CITY) {
-            mutualFriends = userRepo.findRecommendedFriendsByCity(userId, user.getUserLocation().getCityUa(), pageable);
+            UserLocation userLocation = user.getUserLocation();
+            if (userLocation != null && userLocation.getCityUa() != null) {
+                mutualFriends = userRepo.findRecommendedFriendsByCity(userId, userLocation.getCityUa(), pageable);
+            } else {
+                return new PageableDto<>(Collections.emptyList(), 0, pageable.getPageNumber(), 0);
+            }
         } else {
             mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
         }
@@ -207,11 +228,12 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, Pageable pageable) {
+    public PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, String name, boolean filterByCity,
+        Pageable pageable) {
         Objects.requireNonNull(pageable);
 
         validateUserExistence(userId);
-        Page<User> users = userRepo.getAllUserFriendRequests(userId, pageable);
+        Page<User> users = userRepo.getAllUserFriendRequests(userId, name, filterByCity, pageable);
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
@@ -225,14 +247,16 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findAllFriendsOfUser(long userId, @Nullable String name, Pageable pageable) {
+    public PageableDto<UserFriendDto> findAllFriendsOfUser(long userId,
+        String name,
+        boolean filterByCity,
+        Pageable pageable) {
         Objects.requireNonNull(pageable);
-
         validateUserExistence(userId);
-        name = name == null ? "" : name;
+
         Page<User> users;
         if (pageable.getSort().isEmpty()) {
-            users = userRepo.findAllFriendsOfUser(userId, name, pageable);
+            users = userRepo.findAllFriendsOfUser(userId, name, filterByCity, pageable);
         } else {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
@@ -260,6 +284,24 @@ public class FriendServiceImpl implements FriendService {
 
     private Page<User> getAllUsersExceptMainUserAndFriends(long userId, Pageable pageable) {
         return userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+    }
+
+    @Override
+    public UserAsFriendDto getUserAsFriend(Long currentUserId, Long friendId) {
+        validateUserExistence(friendId);
+        return getUserAsFriendDto(currentUserId, friendId);
+    }
+
+    private UserAsFriendDto getUserAsFriendDto(Long id, Long friendId) {
+        var tuple = userRepo.findUsersFriendByUserIdAndFriendId(id, friendId);
+        var chatId = userRepo.findIdOfPrivateChatOfUsers(id, friendId);
+        var userAsFriend = new UserAsFriendDto(friendId, chatId);
+
+        if (Objects.nonNull(tuple)) {
+            userAsFriend.setFriendStatus(tuple.get(FriendTupleConstant.STATUS, String.class));
+            userAsFriend.setRequesterId(tuple.get(FriendTupleConstant.REQUESTER_ID, Long.class));
+        }
+        return userAsFriend;
     }
 
     private void validateUserAndFriends(Long userId, Long friendId) {

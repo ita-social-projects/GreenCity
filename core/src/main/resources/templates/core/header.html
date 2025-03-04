@@ -9,17 +9,24 @@
                         <img alt="logo" th:src="@{/img/logo_M.png}">
                     </a>
                 </div>
-                <div class="dropdown" style="position: relative; left: 500px">
-                    <button class="dropbtn header">[[#{greenCity.current.language}]]
-                        <i class="fas fa-caret-down"></i>
-                    </button>
-                    <div class="dropdown-content">
-                        <a onclick="setLanguageUa()">Ua</a>
-                        <a onclick="setLanguageEn()">En</a>
+                <div class="header-content-left">
+                    <div class="dropdown">
+                        <button class="dropbtn header">[[#{greenCity.current.language}]]
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a onclick="setLanguageUa()">Ua</a>
+                            <a onclick="setLanguageEn()">En</a>
+                        </div>
                     </div>
-                </div>
-                <div class="login">
-                    <button formaction="/management/login">Login</button>
+                    <div class="login">
+                        <form th:if="${T(greencity.security.utils.SecurityUtils).isAuthenticated()}" action="/management/logout" method="get" >
+                            <button type="submit">Logout</button>
+                        </form>
+                        <form th:if="${!T(greencity.security.utils.SecurityUtils).isAuthenticated()}" action="/management/login" method="get" >
+                            <button type="submit">Login</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

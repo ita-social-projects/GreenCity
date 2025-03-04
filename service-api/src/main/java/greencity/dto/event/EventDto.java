@@ -2,21 +2,22 @@ package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.dto.tag.TagUaEnDto;
-import lombok.*;
+import greencity.enums.EventType;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotEmpty;
+import java.time.LocalDate;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
-import java.time.LocalDate;
-import java.util.List;
-
 @Builder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@EqualsAndHashCode
+@Data
 public class EventDto {
     private Long id;
 
@@ -43,6 +44,8 @@ public class EventDto {
 
     private boolean isOpen;
 
+    private EventType type;
+
     @JsonProperty("isSubscribed")
     private boolean isSubscribed;
 
@@ -53,11 +56,19 @@ public class EventDto {
 
     private int likes;
 
+    private int dislikes;
+
     private int countComments;
+
+    @JsonProperty("isOrganizedByFriend")
+    private boolean isOrganizedByFriend;
+
+    private double eventRate;
+
+    private Integer currentUserGrade;
 
     /**
      * Return String of event tags in English.
-     *
      */
     public String tagsToStringEn() {
         if (!CollectionUtils.isEmpty(tags)) {

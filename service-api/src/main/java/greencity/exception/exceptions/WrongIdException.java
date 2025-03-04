@@ -1,17 +1,13 @@
 package greencity.exception.exceptions;
 
+import lombok.experimental.StandardException;
+
 /**
  * Exception that we get when in some logic we have bad ID.
  *
  * @author Nazar Stasyuk
+ * @version 1.0
  */
-public class WrongIdException extends RuntimeException {
-    /**
-     * Constructor.
-     *
-     * @param message {@link String}
-     */
-    public WrongIdException(String message) {
-        super(message);
-    }
+@StandardException
+public class WrongIdException extends BadRequestException {
 }

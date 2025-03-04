@@ -1,14 +1,20 @@
 package greencity;
 
+import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
+import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 
-import java.time.LocalDateTime;
+import java.time.*;
+import java.util.List;
 
 public class ModelUtils {
-
     public static User getUser() {
         return User.builder()
             .id(1L)
@@ -20,5 +26,77 @@ public class ModelUtils {
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(LocalDateTime.now())
             .build();
+    }
+
+    public static List<EventDto> getListEventDto() {
+        return List.of(
+            EventDto.builder()
+                .id(3L)
+                .title("test3")
+                .organizer(EventAuthorDto.builder().id(1L).name("Test3").build())
+                .creationDate(LocalDate.now().plus(Period.ofDays(12)))
+                .dates(List.of(
+                    EventDateLocationDto.builder()
+                        .startDate(ZonedDateTime.now().plus(Period.ofDays(15)))
+                        .finishDate(ZonedDateTime.now().plus(Period.ofDays(20)))
+                        .onlineLink("testtesttesttest")
+                        .coordinates(AddressDto.builder()
+                            .latitude(0.0)
+                            .longitude(1.0)
+                            .cityEn("Kyiv")
+                            .build())
+                        .build()))
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(2L)
+                    .nameUa("Соціальний1")
+                    .nameEn("Social1")
+                    .build()))
+                .titleImage("image.png")
+                .isOpen(true)
+                .isSubscribed(true)
+                .isFavorite(true)
+                .isRelevant(true)
+                .likes(0)
+                .countComments(2)
+                .isOrganizedByFriend(false)
+                .eventRate(3.5)
+                .description("123")
+                .type(EventType.ONLINE)
+                .build(),
+            EventDto.builder()
+                .id(1L)
+                .title("test1")
+                .organizer(EventAuthorDto.builder().id(1L).name("Test").build())
+                .creationDate(LocalDate.now().minus(Period.ofDays(12)))
+                .dates(List.of(
+                    EventDateLocationDto.builder()
+                        .startDate(
+                            ZonedDateTime.now().minus(Period.ofDays(10)))
+                        .finishDate(
+                            ZonedDateTime.now().minus(Period.ofDays(5)))
+                        .onlineLink("testtesttesttest")
+                        .coordinates(AddressDto.builder()
+                            .latitude(0.0)
+                            .longitude(1.0)
+                            .cityEn("Kyiv")
+                            .build())
+                        .build()))
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(1L)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build()))
+                .titleImage("image.png")
+                .isOpen(true)
+                .isSubscribed(true)
+                .isFavorite(true)
+                .isRelevant(true)
+                .likes(0)
+                .countComments(2)
+                .isOrganizedByFriend(false)
+                .eventRate(3.5)
+                .description("123")
+                .type(EventType.ONLINE)
+                .build());
     }
 }

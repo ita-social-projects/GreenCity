@@ -25,9 +25,6 @@ public class CommitInfoServiceImpl implements CommitInfoService {
 
     private static final String COMMIT_REF = "HEAD";
 
-    /**
-     * Constructor.
-     */
     public CommitInfoServiceImpl() {
         try {
             repository = new FileRepositoryBuilder()
@@ -58,10 +55,9 @@ public class CommitInfoServiceImpl implements CommitInfoService {
         try (RevWalk revWalk = new RevWalk(repository)) {
             RevCommit latestCommit = revWalk.parseCommit(repository.resolve(COMMIT_REF));
             String latestCommitHash = latestCommit.name();
-            String latestCommitDate = DateTimeFormatter
-                .ofPattern(AppConstant.DATE_FORMAT)
+            String latestCommitDate = DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT)
                 .withZone(ZoneId.of(AppConstant.UKRAINE_TIMEZONE))
-                .format(latestCommit.getAuthorIdent().getWhen().toInstant());
+                .format(latestCommit.getAuthorIdent().getWhenAsInstant());
 
             return new CommitInfoDto(latestCommitHash, latestCommitDate);
         } catch (IOException e) {

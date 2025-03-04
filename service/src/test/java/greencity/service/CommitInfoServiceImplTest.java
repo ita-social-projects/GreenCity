@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
@@ -68,8 +67,7 @@ class CommitInfoServiceImplTest {
             })) {
             CommitInfoServiceImpl service = new CommitInfoServiceImpl();
 
-            // Use reflection to check if repository was initialized
-            java.lang.reflect.Field repositoryField = CommitInfoServiceImpl.class.getDeclaredField(REPOSITORY_FIELD);
+            var repositoryField = CommitInfoServiceImpl.class.getDeclaredField(REPOSITORY_FIELD);
             repositoryField.setAccessible(true);
             Repository initializedRepository = (Repository) repositoryField.get(service);
 
@@ -86,8 +84,7 @@ class CommitInfoServiceImplTest {
             })) {
             CommitInfoServiceImpl service = new CommitInfoServiceImpl();
 
-            // Use reflection to check if repository is null
-            java.lang.reflect.Field repositoryField = CommitInfoServiceImpl.class.getDeclaredField(REPOSITORY_FIELD);
+            var repositoryField = CommitInfoServiceImpl.class.getDeclaredField(REPOSITORY_FIELD);
             repositoryField.setAccessible(true);
             Repository initializedRepository = (Repository) repositoryField.get(service);
 
@@ -116,9 +113,8 @@ class CommitInfoServiceImplTest {
         when(revCommit.name()).thenReturn(COMMIT_HASH);
         when(revCommit.getAuthorIdent()).thenReturn(personIdent);
 
-        Instant expectedInstant = Instant.parse("2024-12-14T16:30:00Z");
-        Date expectedDate = Date.from(expectedInstant);
-        when(personIdent.getWhen()).thenReturn(expectedDate);
+        Instant expectedDate = Instant.parse("2024-12-14T16:30:00Z");
+        when(personIdent.getWhenAsInstant()).thenReturn(expectedDate);
 
         try (
             MockedConstruction<RevWalk> ignored = mockConstruction(RevWalk.class,
@@ -129,8 +125,7 @@ class CommitInfoServiceImplTest {
 
             String latestCommitDate = DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT)
                 .withZone(ZoneId.of(AppConstant.UKRAINE_TIMEZONE))
-                .format(expectedInstant);
-
+                .format(expectedDate);
             assertEquals(latestCommitDate, actualDto.getCommitDate());
         }
     }
@@ -153,8 +148,8 @@ class CommitInfoServiceImplTest {
 
         try (
             MockedConstruction<RevWalk> ignored = mockConstruction(RevWalk.class,
-                (revWalkMock, context) -> when(revWalkMock.parseCommit(objectId))
-                    .thenThrow(new IOException(missingObjectMessage)))) {
+                (revWalkMock, context) -> when(revWalkMock.parseCommit(objectId)).thenThrow(
+                    new IOException(missingObjectMessage)))) {
             ResourceNotFoundException notFoundException =
                 assertThrows(ResourceNotFoundException.class, () -> commitInfoService.getLatestCommitInfo());
 

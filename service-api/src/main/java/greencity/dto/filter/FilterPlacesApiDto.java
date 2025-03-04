@@ -1,9 +1,6 @@
 package greencity.dto.filter;
 
-import com.google.maps.model.LatLng;
-import com.google.maps.model.PlaceType;
-import com.google.maps.model.PriceLevel;
-import com.google.maps.model.RankBy;
+import com.google.maps.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +20,21 @@ public class FilterPlacesApiDto {
     private String name;
     private boolean openNow;
     private PlaceType type;
+
+    public static final String defaultJson = """
+        {
+          "location": {
+            "lat": 50.4500,
+            "lng": 30.5234
+          },
+          "radius": 0,
+          "rankBy": "PROMINENCE",
+          "keyword": "string",
+          "minPrice": "0",
+          "maxPrice": "4",
+          "name": "string",
+          "openNow": true,
+          "type": "restaurant"
+        }
+        """;
 }

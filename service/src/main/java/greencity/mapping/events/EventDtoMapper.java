@@ -5,16 +5,18 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUaEnDto;
-import greencity.entity.*;
+import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
-import greencity.enums.CommentStatus;
+import greencity.service.CommentService;
+import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,13 +27,19 @@ import java.util.stream.Collectors;
  */
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
+    private final CommentService commentService;
+
+    @Autowired
+    public EventDtoMapper(@Lazy CommentService commentService) {
+        this.commentService = commentService;
+    }
+
     /**
      * Method for converting {@link Event} into {@link EventDto}.
      *
      * @param event object to convert.
      * @return converted object.
      */
-
     @Override
     public EventDto convert(Event event) {
         EventDto eventDto = new EventDto();
@@ -41,14 +49,17 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setDescription(event.getDescription());
         eventDto.setTitleImage(event.getTitleImage());
         eventDto.setOpen(event.isOpen());
-        eventDto.setIsRelevant(event.isRelevant());
-        eventDto.setLikes(event.getUsersLikedEvents().size());
-        eventDto
-            .setCountComments((int) event.getEventsComments().stream()
-                .filter(eventComment -> !eventComment.getStatus().equals(CommentStatus.DELETED)).count());
+        eventDto.setType(event.getType());
+        eventDto.setIsRelevant(EventUtils.isRelevant(event.getDates()));
+        eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
-        eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName())
-            .organizerRating(organizer.getEventOrganizerRating()).build());
+        eventDto.setOrganizer(
+            EventAuthorDto.builder()
+                .id(organizer.getId())
+                .name(organizer.getName())
+                .email(organizer.getEmail())
+                .organizerRating(organizer.getEventOrganizerRating())
+                .build());
         eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));
 
         List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
@@ -67,6 +78,9 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             eventDto.setAdditionalImages(event.getAdditionalImages().stream()
                 .map(EventImages::getLink).collect(Collectors.toList()));
         }
+        eventDto.setEventRate(EventUtils.calculateEventRate(event.getEventGrades()));
+        eventDto.setLikes(event.getUsersLikedEvents().size());
+        eventDto.setDislikes(event.getUsersDislikedEvents().size());
         return eventDto;
     }
 
