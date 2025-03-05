@@ -128,6 +128,18 @@ public interface EventService {
     EventDto update(UpdateEventRequestDto eventDto, String email, MultipartFile[] images);
 
     /**
+     * Updates an event with the provided details.
+     *
+     * @param eventDto - the updated event information.
+     * @param email    - the email of the user performing the update.
+     * @param images   - the new images for the event.
+     * @return an {@link EventResponseDto} instance containing the updated event
+     *         details.
+     * @author Yurii Osovskyi.
+     */
+    EventResponseDto updateV2(UpdateEventRequestDto eventDto, String email, MultipartFile[] images);
+
+    /**
      * Rate Event.
      *
      * @param email   - user that rates event
@@ -191,12 +203,31 @@ public interface EventService {
     void like(Long eventId, UserVO userVO);
 
     /**
+     * Method to like or unlike {@link EventVO} specified by id and returns it's
+     * instance.
+     *
+     * @param id   id of {@link EventVO} to like/dislike.
+     * @param user current {@link UserVO} who wants to like/dislike.
+     * @return EventDto
+     */
+    EventDto likeV2(Long id, UserVO user);
+
+    /**
      * Method to mark event as disliked by User.
      *
      * @param user - instance of {@link UserVO}
      * @param id   - {@link Long} event id.
      */
     void dislike(UserVO user, Long id);
+
+    /**
+     * Method to mark event as disliked by User and return it's instance.
+     *
+     * @param user - instance of {@link UserVO}
+     * @param id   - {@link Long} event id.
+     * @return EventDto
+     */
+    EventDto dislikeV2(Long id, UserVO user);
 
     /**
      * Method to get amount of likes by event id.
