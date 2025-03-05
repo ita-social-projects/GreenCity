@@ -39,7 +39,7 @@ DELETE FROM table1
 WHERE id=<item1_id>;"
 
 **User story and test case links**
-E.g.: "User story #100
+E.g.: "User story #123
 [Test case](https://jira.softserve.academy/browse/100)"
 
 **Labels to be added**
