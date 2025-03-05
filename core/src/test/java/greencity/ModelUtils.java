@@ -25,6 +25,7 @@ import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -684,5 +685,9 @@ public class ModelUtils {
         tableData.add(row);
 
         return new TableRowsDto("users", tableData);
+    }
+
+    public static TableParamsRequestDto tableParamsRequestDto() {
+        return new TableParamsRequestDto("users", 10, 1);
     }
 }

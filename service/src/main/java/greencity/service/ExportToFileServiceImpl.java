@@ -85,7 +85,7 @@ public class ExportToFileServiceImpl implements ExportToFileService {
         }
     }
 
-    private InputStream convertWorkbookToInputStream(Workbook workbook) {
+    InputStream convertWorkbookToInputStream(Workbook workbook) {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             workbook.write(byteArrayOutputStream);
             workbook.close();

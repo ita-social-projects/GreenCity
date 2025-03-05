@@ -249,7 +249,9 @@ public class ErrorMessage {
     public static final String NEGATIVE_LIMIT = "Limit cannot be negative";
     public static final String NEGATIVE_OFFSET = "Offset cannot be negative";
     public static final String SQL_METADATA_EXCEPTION_MESSAGE = "Error occurred while retrieving database data for: ";
-    public static final String EXCEED_LIMIT = "The limit exceeds the allowed limit of %d";
+    public static final String EXCEED_LIMIT = "Out of max rows limit. Max limit is " + AppConstant.SQL_ROW_LIMIT;
     public static final String GENERATION_EXCEL_FILE_ERROR = "Error generating Excel file";
     public static final String EMPTY_TABLE = "Table '%s' doesn't contain any row";
+    public static final String INVALID_TABLE_NAME = "Table name must contain only lowercase letters "
+        + "and single underscores between words. Cannot start or end with an underscore.";
 }

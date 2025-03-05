@@ -2,12 +2,11 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.exception.exceptions.DatabaseMetadataException;
-import greencity.exception.exceptions.InvalidLimitException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.ExportSettingsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,15 +34,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class ExportSettingsControllerTest {
     private MockMvc mockMvc;
+    private static final TableParamsRequestDto tableParams = ModelUtils.tableParamsRequestDto();
     private static final String SETTINGS_CONTROLLER_LINK = "/export/settings";
-    private static final String TABLE_NAME = "users";
+    private static final String TABLE_NAME = tableParams.tableName();
     private static final String INVALID_TABLE_NAME = "users1";
     private static final String NOT_EXISTS_TABLE_NAME = "usersssssss";
-    private static final int LIMIT = 20;
-    private static final int OFFSET = 1;
+    private static final int LIMIT = tableParams.limit();
+    private static final int OFFSET = tableParams.offset();
     private static final String SECRET_KEY = "SomeSecretKey";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+    private final TableParamsRequestDto tableParamsWithNotValidTableName =
+        new TableParamsRequestDto(NOT_EXISTS_TABLE_NAME, LIMIT, OFFSET);
     @InjectMocks
     private ExportSettingsController exportSettingsController;
     @Mock
@@ -72,7 +74,7 @@ class ExportSettingsControllerTest {
     @Test
     void getSelectedWithValidParamsTest() throws Exception {
         TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
-        when(exportSettingsService.selectFromTable(TABLE_NAME, LIMIT, OFFSET, SECRET_KEY)).thenReturn(tableRowsDto);
+        when(exportSettingsService.selectFromTable(tableParams, SECRET_KEY)).thenReturn(tableRowsDto);
         String expectedJson = objectMapper.writeValueAsString(tableRowsDto);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
@@ -101,7 +103,7 @@ class ExportSettingsControllerTest {
     void getSelectedWithNonExistentTableNameTest() throws Exception {
         doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
             .when(exportSettingsService)
-            .selectFromTable(NOT_EXISTS_TABLE_NAME, LIMIT, OFFSET, SECRET_KEY);
+            .selectFromTable(tableParamsWithNotValidTableName, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
             .param("tableName", NOT_EXISTS_TABLE_NAME)
@@ -116,8 +118,6 @@ class ExportSettingsControllerTest {
     @Test
     void getSelectedWithNegativeOffsetTest() throws Exception {
         int negativeOffset = -1;
-        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET))
-            .when(exportSettingsService).selectFromTable(TABLE_NAME, LIMIT, negativeOffset, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
             .param("tableName", TABLE_NAME)
@@ -132,8 +132,6 @@ class ExportSettingsControllerTest {
     @Test
     void getSelectedWithNegativeLimitTest() throws Exception {
         int negativeLimit = -1;
-        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_LIMIT))
-            .when(exportSettingsService).selectFromTable(TABLE_NAME, negativeLimit, OFFSET, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
             .param("tableName", TABLE_NAME)
@@ -148,8 +146,6 @@ class ExportSettingsControllerTest {
     @Test
     void getSelectedWithOutOfLimitValueTest() throws Exception {
         int invalidLimit = 100_000;
-        doThrow(new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, AppConstant.SQL_ROW_LIMIT)))
-            .when(exportSettingsService).selectFromTable(TABLE_NAME, invalidLimit, OFFSET, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
             .param("tableName", TABLE_NAME)
@@ -164,7 +160,7 @@ class ExportSettingsControllerTest {
     @Test
     void downloadExcelWithValidParamsTest() throws Exception {
         InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
-        when(exportSettingsService.getExcelFileAsResource(TABLE_NAME, LIMIT, OFFSET, SECRET_KEY))
+        when(exportSettingsService.getExcelFileAsResource(tableParams, SECRET_KEY))
             .thenReturn(excelResource);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
@@ -175,7 +171,7 @@ class ExportSettingsControllerTest {
             .accept(MediaType.APPLICATION_OCTET_STREAM))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
-            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= users(1 - 20).xlsx"));
+            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= users(1 - 10).xlsx"));
     }
 
     @Test
@@ -194,7 +190,7 @@ class ExportSettingsControllerTest {
     void downloadExcelWithNonExistentTableNameTest() throws Exception {
         doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
             .when(exportSettingsService)
-            .getExcelFileAsResource(NOT_EXISTS_TABLE_NAME, LIMIT, OFFSET, SECRET_KEY);
+            .getExcelFileAsResource(tableParamsWithNotValidTableName, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
             .param("tableName", NOT_EXISTS_TABLE_NAME)
@@ -209,8 +205,6 @@ class ExportSettingsControllerTest {
     @Test
     void downloadExcelWithNegativeOffsetTest() throws Exception {
         int negativeOffset = -1;
-        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_OFFSET))
-            .when(exportSettingsService).getExcelFileAsResource(TABLE_NAME, LIMIT, negativeOffset, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
             .param("tableName", TABLE_NAME)
@@ -225,8 +219,6 @@ class ExportSettingsControllerTest {
     @Test
     void downloadExcelWithNegativeLimitTest() throws Exception {
         int negativeLimit = -1;
-        doThrow(new IllegalArgumentException(ErrorMessage.NEGATIVE_LIMIT))
-            .when(exportSettingsService).getExcelFileAsResource(TABLE_NAME, negativeLimit, OFFSET, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
             .param("tableName", TABLE_NAME)
@@ -241,8 +233,6 @@ class ExportSettingsControllerTest {
     @Test
     void downloadExcelWithOutOfLimitValueTest() throws Exception {
         int invalidLimit = 100_000;
-        doThrow(new InvalidLimitException(String.format(ErrorMessage.EXCEED_LIMIT, AppConstant.SQL_ROW_LIMIT)))
-            .when(exportSettingsService).getExcelFileAsResource(TABLE_NAME, invalidLimit, OFFSET, SECRET_KEY);
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
             .param("tableName", TABLE_NAME)

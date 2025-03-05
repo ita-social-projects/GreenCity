@@ -52,6 +52,7 @@ import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -3550,5 +3551,9 @@ public class ModelUtils {
         tableData.add(row);
 
         return new TableRowsDto("users", tableData);
+    }
+
+    public static TableParamsRequestDto tableParamsRequestDto() {
+        return new TableParamsRequestDto("users", 10, 1);
     }
 }

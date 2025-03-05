@@ -14,7 +14,6 @@ import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.FileGenerationException;
 import greencity.exception.exceptions.FileReadException;
 import greencity.exception.exceptions.FunctionalityNotAvailableException;
-import greencity.exception.exceptions.InvalidLimitException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.LowRoleLevelException;
@@ -628,15 +627,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercepts exception {@link InvalidLimitException},
-     * {@link DatabaseMetadataException}.
+     * Method intercepts exception {@link DatabaseMetadataException}.
      *
      * @param request Contains details about the occurred exception.
      * @return {@code ResponseEntity} which contains the HTTP status and body with
      *         the exception message.
      */
-    @ExceptionHandler({InvalidLimitException.class,
-        DatabaseMetadataException.class})
+    @ExceptionHandler(DatabaseMetadataException.class)
     public final ResponseEntity<Object> handleInvalidDataException(WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());

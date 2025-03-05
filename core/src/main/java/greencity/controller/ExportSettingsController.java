@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
+import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.service.ExportSettingsService;
@@ -10,20 +11,21 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @RequiredArgsConstructor
 @RestController
+@Validated
 @RequestMapping("/export/settings")
 public class ExportSettingsController {
     private final ExportSettingsService exportSettingsService;
@@ -64,11 +66,9 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @GetMapping("/select")
-    public ResponseEntity<TableRowsDto> getSelected(@RequestParam @Pattern(regexp = "^[A-Za-z_]+$") String tableName,
-        @RequestParam int limit,
-        @RequestParam int offset,
+    public ResponseEntity<TableRowsDto> selectFromTable(@Valid TableParamsRequestDto tableParams,
         @RequestHeader String secretKey) {
-        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableName, limit, offset, secretKey));
+        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableParams, secretKey));
     }
 
     /**
@@ -89,19 +89,17 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @GetMapping("/download-table-data")
-    public ResponseEntity<InputStreamResource> downloadExcel(
-        @RequestParam @Pattern(regexp = "^[A-Za-z_]+$") String tableName,
-        @RequestParam int limit,
-        @RequestParam int offset,
+    public ResponseEntity<InputStreamResource> exportTableRowsAsExcel(@Valid TableParamsRequestDto tableParams,
         @RequestHeader String secretKey) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION,
-            String.format("attachment; filename= %s(%d - %d).xlsx", tableName, offset, limit));
+            String.format("attachment; filename= %s(%d - %d).xlsx", tableParams.tableName(), tableParams.offset(),
+                tableParams.limit()));
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
         return ResponseEntity.ok()
             .headers(headers)
             .body(new InputStreamResource(
-                exportSettingsService.getExcelFileAsResource(tableName, limit, offset, secretKey)));
+                exportSettingsService.getExcelFileAsResource(tableParams, secretKey)));
     }
 }

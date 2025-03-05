@@ -2,10 +2,10 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.exception.exceptions.BadSecretKeyException;
-import greencity.exception.exceptions.InvalidLimitException;
 import greencity.repository.ExportSettingsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +30,7 @@ class ExportSettingsServiceImplTest {
     private static final int OFFSET = 1;
     private static final String SECRET_KEY = "SomeSecretKey";
     private static final String NOT_VALID_SECRET_KEY = "SomeNotValidSecretKey";
+    private final TableParamsRequestDto tableParams = ModelUtils.tableParamsRequestDto();
 
     @InjectMocks
     private ExportSettingsServiceImpl settingsService;
@@ -67,48 +68,15 @@ class ExportSettingsServiceImplTest {
     }
 
     @Test
-    void selectFromTableWithWalidParamsTest() {
+    void selectFromTableWithValidParamsTest() {
         TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
         doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
         when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
 
-        TableRowsDto result = settingsService.selectFromTable(TABLE_NAME, LIMIT, OFFSET, SECRET_KEY);
+        TableRowsDto result = settingsService.selectFromTable(tableParams, SECRET_KEY);
 
         assertNotNull(result);
         verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
-    }
-
-    @Test
-    void selectFromTableWithNegativeLimitTest() {
-        int negativeLimit = -1;
-        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
-
-        assertThrows(IllegalArgumentException.class,
-            () -> settingsService.selectFromTable(TABLE_NAME, negativeLimit, OFFSET, SECRET_KEY));
-
-        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
-    }
-
-    @Test
-    void selectFromTableWithNegativeOffsetTest() {
-        int negativeOffset = -1;
-        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
-
-        assertThrows(IllegalArgumentException.class,
-            () -> settingsService.selectFromTable(TABLE_NAME, LIMIT, negativeOffset, SECRET_KEY));
-
-        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
-    }
-
-    @Test
-    void selectFromTableWithOutOfLimitValueTest() {
-        int invalidLimit = 100_000;
-        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
-
-        assertThrows(InvalidLimitException.class,
-            () -> settingsService.selectFromTable(TABLE_NAME, invalidLimit, OFFSET, SECRET_KEY));
-
-        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
     }
 
     @Test
@@ -117,7 +85,7 @@ class ExportSettingsServiceImplTest {
             .validateSecretKey(NOT_VALID_SECRET_KEY);
 
         assertThrows(BadSecretKeyException.class,
-            () -> settingsService.selectFromTable(TABLE_NAME, LIMIT, OFFSET, NOT_VALID_SECRET_KEY));
+            () -> settingsService.selectFromTable(tableParams, NOT_VALID_SECRET_KEY));
 
         verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
     }
@@ -130,7 +98,7 @@ class ExportSettingsServiceImplTest {
         when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
         when(exportToFileService.exportTableDataToExcel(tableRowsDto)).thenReturn(excelResource);
 
-        InputStream result = settingsService.getExcelFileAsResource(TABLE_NAME, LIMIT, OFFSET, SECRET_KEY);
+        InputStream result = settingsService.getExcelFileAsResource(tableParams, SECRET_KEY);
 
         assertNotNull(result);
         verify(exportToFileService, times(1)).exportTableDataToExcel(tableRowsDto);
@@ -142,7 +110,7 @@ class ExportSettingsServiceImplTest {
             .validateSecretKey(NOT_VALID_SECRET_KEY);
 
         assertThrows(BadSecretKeyException.class,
-            () -> settingsService.getExcelFileAsResource(TABLE_NAME, LIMIT, OFFSET, NOT_VALID_SECRET_KEY));
+            () -> settingsService.getExcelFileAsResource(tableParams, NOT_VALID_SECRET_KEY));
 
         verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
     }
