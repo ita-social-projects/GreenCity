@@ -5,12 +5,14 @@ import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.repository.ExportSettingsRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.InputStream;
 
 @RequiredArgsConstructor
 @Service
+@Lazy
 public class ExportSettingsServiceImpl implements ExportSettingsService {
     private final ExportSettingsRepo exportSettingsRepo;
     private final ExportToFileService exportToFileService;
