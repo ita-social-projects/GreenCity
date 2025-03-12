@@ -51,6 +51,7 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 public class RestClient {
     private final RestTemplate restTemplate;
     private final String greenCityUserServerAddress;
+    private final String greenCityUbsServerAddress;
 
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
@@ -62,6 +63,7 @@ public class RestClient {
      * @param restTemplate               The RestTemplate to be used for making HTTP
      *                                   requests to GreenCityUser.
      * @param greenCityUserServerAddress The address of the GreenCityUser server.
+     * @param greenCityUbsServerAddress  The address of the GreenCityUBS server.
      * @param httpServletRequest         The HttpServletRequest object contains data
      *                                   related to the current http request.
      * @param jwtTool                    The JwtTool is used to create JWT tokens
@@ -72,11 +74,13 @@ public class RestClient {
      */
     public RestClient(RestTemplate restTemplate,
         @Value("${greencityuser.server.address}") String greenCityUserServerAddress,
+        @Value("${greencityubs.server.address}") String greenCityUbsServerAddress,
         HttpServletRequest httpServletRequest,
         JwtTool jwtTool,
         @Value("${spring.liquibase.parameters.service-email}") String systemEmail) {
         this.restTemplate = restTemplate;
         this.greenCityUserServerAddress = greenCityUserServerAddress;
+        this.greenCityUbsServerAddress = greenCityUbsServerAddress;
         this.httpServletRequest = httpServletRequest;
         this.jwtTool = jwtTool;
         this.systemEmail = systemEmail;
