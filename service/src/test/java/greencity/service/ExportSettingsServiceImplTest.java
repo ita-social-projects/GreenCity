@@ -118,14 +118,14 @@ class ExportSettingsServiceImplTest {
     }
 
     @Test
-    public void getEnvironmentVariablesWithValidSecretKeyTest() {
+    void getEnvironmentVariablesWithValidSecretKeyTest() {
         EnvironmentDto result = settingsService.getEnvironmentVariables(SECRET_KEY);
 
         assertFalse(result.environments().isEmpty());
     }
 
     @Test
-    public void getEnvironmentVariablesWithNotValidSecretKeyTest() {
+    void getEnvironmentVariablesWithNotValidSecretKeyTest() {
         doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
             .validateSecretKey(NOT_VALID_SECRET_KEY);
 

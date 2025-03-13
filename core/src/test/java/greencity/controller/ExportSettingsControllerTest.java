@@ -248,7 +248,7 @@ class ExportSettingsControllerTest {
     }
 
     @Test
-    public void getEnvVariablesWithValidSecretKeyTest() throws Exception {
+    void getEnvVariablesWithValidSecretKeyTest() throws Exception {
         EnvironmentDto environmentDto = ModelUtils.getEnvironmentDto();
         when(exportSettingsService.getEnvironmentVariables(SECRET_KEY)).thenReturn(environmentDto);
         String expectedJson = objectMapper.writeValueAsString(environmentDto);
@@ -261,7 +261,7 @@ class ExportSettingsControllerTest {
     }
 
     @Test
-    public void getEnvVariablesWithNotValidSecretKeyTest() throws Exception {
+    void getEnvVariablesWithNotValidSecretKeyTest() throws Exception {
         when(exportSettingsService.getEnvironmentVariables(NOT_VALID_SECRET_KEY)).thenThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY));
 
         mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/env")
