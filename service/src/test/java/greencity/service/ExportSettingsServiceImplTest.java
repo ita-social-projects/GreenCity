@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.exportsettings.EnvironmentDto;
 import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -113,5 +115,21 @@ class ExportSettingsServiceImplTest {
             () -> settingsService.getExcelFileAsResource(tableParams, NOT_VALID_SECRET_KEY));
 
         verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
+    }
+
+    @Test
+    void getEnvironmentVariablesWithValidSecretKeyTest() {
+        EnvironmentDto result = settingsService.getEnvironmentVariables(SECRET_KEY);
+
+        assertFalse(result.variables().isEmpty());
+    }
+
+    @Test
+    void getEnvironmentVariablesWithNotValidSecretKeyTest() {
+        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
+            .validateSecretKey(NOT_VALID_SECRET_KEY);
+
+        assertThrows(BadSecretKeyException.class,
+            () -> settingsService.getEnvironmentVariables(NOT_VALID_SECRET_KEY));
     }
 }

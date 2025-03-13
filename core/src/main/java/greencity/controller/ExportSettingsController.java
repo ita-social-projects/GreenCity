@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
+import greencity.dto.exportsettings.EnvironmentDto;
 import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
@@ -103,5 +104,24 @@ public class ExportSettingsController {
             .headers(headers)
             .body(new InputStreamResource(
                 exportSettingsService.getExcelFileAsResource(tableParams, secretKey)));
+    }
+
+    /**
+     * Method for receiving all environment variables use in the app.
+     *
+     * @return dto {@link EnvironmentDto}
+     */
+    @Operation(summary = "Get all environment variables")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = EnvironmentDto.class))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+    })
+    @GetMapping("/env")
+    public ResponseEntity<EnvironmentDto> getEnvVariables(@RequestHeader String secretKey) {
+        return ResponseEntity.ok(exportSettingsService.getEnvironmentVariables(secretKey));
     }
 }
