@@ -121,7 +121,7 @@ class ExportSettingsServiceImplTest {
     void getEnvironmentVariablesWithValidSecretKeyTest() {
         EnvironmentDto result = settingsService.getEnvironmentVariables(SECRET_KEY);
 
-        assertFalse(result.environments().isEmpty());
+        assertFalse(result.variables().isEmpty());
     }
 
     @Test

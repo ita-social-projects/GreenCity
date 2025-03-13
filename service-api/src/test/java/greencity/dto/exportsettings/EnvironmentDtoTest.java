@@ -15,9 +15,9 @@ class EnvironmentDtoTest {
         EnvironmentDto dto = new EnvironmentDto(envVars);
 
         assertThat(dto).isNotNull();
-        assertThat(dto.environments()).isNotEmpty();
-        assertThat(dto.environments()).containsEntry("JAVA_HOME", "/usr/lib/jvm/java-11-openjdk");
-        assertThat(dto.environments()).containsEntry("APP_ENV", "production");
+        assertThat(dto.variables()).isNotEmpty();
+        assertThat(dto.variables()).containsEntry("JAVA_HOME", "/usr/lib/jvm/java-11-openjdk");
+        assertThat(dto.variables()).containsEntry("APP_ENV", "production");
     }
 
     @Test
@@ -27,6 +27,6 @@ class EnvironmentDtoTest {
         EnvironmentDto dto = new EnvironmentDto(emptyEnvVars);
 
         assertThat(dto).isNotNull();
-        assertThat(dto.environments()).isEmpty();
+        assertThat(dto.variables()).isEmpty();
     }
 }
