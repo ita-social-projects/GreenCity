@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,6 +53,7 @@ public class NotificationController {
     @ApiPageableWithoutSort
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getNotificationsFiltered(
+        @RequestHeader("Authorization") String authorizationHeader,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) Principal principal,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
@@ -59,7 +61,7 @@ public class NotificationController {
         @RequestParam(name = "notification-types", required = false) List<NotificationType> notificationTypes,
         @RequestParam(required = false) Boolean viewed) {
         return ResponseEntity.ok().body(userNotificationService.getNotificationsFiltered(pageable, principal,
-            locale.getLanguage(), projectName, notificationTypes, viewed));
+            locale.getLanguage(), projectName, notificationTypes, viewed, authorizationHeader));
     }
 
     /**
