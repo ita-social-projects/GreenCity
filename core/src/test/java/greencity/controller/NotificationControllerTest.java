@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -49,9 +50,13 @@ class NotificationControllerTest {
     @Test
     void getNotificationsFilteredTest() throws Exception {
         var pageable = PageRequest.of(0, 20);
-        mockMvc.perform(get(notificationLink).principal(principal))
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String token = "token";
+        httpHeaders.add("Authorization", token);
+
+        mockMvc.perform(get(notificationLink).principal(principal).headers(httpHeaders))
             .andExpect(status().isOk());
-        verify(userNotificationService).getNotificationsFiltered(pageable, principal, "en", null, null, null);
+        verify(userNotificationService).getNotificationsFiltered(pageable, principal, "en", null, null, null, token);
     }
 
     @Test
