@@ -116,10 +116,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 int currentPage = page.getPageNumber();
                 int totalPages = (int) Math.ceilDiv(totalElements, page.getPageSize());
                 int number = page.getPageNumber();
-                boolean hasPrevious = notificationsForUserFromGreenCity.isHasPrevious() || notificationsFromUbs.isHasPrevious();
-                boolean hasNext = notificationsForUserFromGreenCity.isHasNext() || notificationsFromUbs.isHasNext();
-                boolean isFirst = notificationsForUserFromGreenCity.isFirst() && notificationsFromUbs.isFirst();
-                boolean isLast = notificationsForUserFromGreenCity.isLast() && notificationsFromUbs.isLast();
+                boolean hasPrevious = currentPage > 0;
+                boolean hasNext = totalElements > (long) (currentPage + 1) * page.getPageSize();
+                boolean isFirst = currentPage == 0;
+                boolean isLast = !hasNext;
 
                 yield new PageableAdvancedDto<>(
                         mergedNotifications,
