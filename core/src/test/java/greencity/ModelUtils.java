@@ -26,6 +26,7 @@ import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.exportsettings.EnvironmentDto;
 import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterDiscountDto;
@@ -700,5 +701,11 @@ public class ModelUtils {
             "",
             "application/json",
             objectMapper.writeValueAsBytes(dto));
+    }
+
+    public static EnvironmentDto getEnvironmentDto() {
+        Map<String, String> env = new HashMap<>();
+        env.put("TEST_ENV_NAME", "TEST_ENV_VALUE");
+        return new EnvironmentDto(env);
     }
 }

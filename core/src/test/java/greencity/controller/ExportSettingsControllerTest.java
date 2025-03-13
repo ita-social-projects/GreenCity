@@ -3,9 +3,11 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.exportsettings.EnvironmentDto;
 import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.DatabaseMetadataException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.ExportSettingsService;
@@ -42,6 +44,7 @@ class ExportSettingsControllerTest {
     private static final int LIMIT = tableParams.limit();
     private static final int OFFSET = tableParams.offset();
     private static final String SECRET_KEY = "SomeSecretKey";
+    private static final String NOT_VALID_SECRET_KEY = "NotValidSecretKey";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
     private final TableParamsRequestDto tableParamsWithNotValidTableName =
@@ -242,5 +245,28 @@ class ExportSettingsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andReturn();
+    }
+
+    @Test
+    public void getEnvVariablesWithValidSecretKeyTest() throws Exception {
+        EnvironmentDto environmentDto = ModelUtils.getEnvironmentDto();
+        when(exportSettingsService.getEnvironmentVariables(SECRET_KEY)).thenReturn(environmentDto);
+        String expectedJson = objectMapper.writeValueAsString(environmentDto);
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/env")
+            .header("secretKey", SECRET_KEY)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    public void getEnvVariablesWithNotValidSecretKeyTest() throws Exception {
+        when(exportSettingsService.getEnvironmentVariables(NOT_VALID_SECRET_KEY)).thenThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY));
+
+        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/env")
+                        .header("secretKey", NOT_VALID_SECRET_KEY)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 }

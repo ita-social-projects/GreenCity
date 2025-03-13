@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.exportsettings.EnvironmentDto;
 import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
@@ -42,5 +43,12 @@ public class ExportSettingsServiceImpl implements ExportSettingsService {
             tableParams.offset());
 
         return exportToFileService.exportTableDataToExcel(data);
+    }
+
+    @Override
+    public EnvironmentDto getEnvironmentVariables(String secretKey) {
+        dotenvService.validateSecretKey(secretKey);
+
+        return new EnvironmentDto(System.getenv());
     }
 }
