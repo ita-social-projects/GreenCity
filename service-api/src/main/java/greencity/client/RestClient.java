@@ -89,7 +89,12 @@ public class RestClient {
     }
 
     public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(String authorizationHeader) {
-        String token = authorizationHeader.substring(7);
+        String bearerTokenPrefix = "Bearer ";
+        if (!authorizationHeader.startsWith(bearerTokenPrefix)) {
+            throw new IllegalArgumentException("Invalid authorization header");
+        }
+        String token = authorizationHeader.substring(bearerTokenPrefix.length());
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(token);
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);

@@ -10,6 +10,7 @@ import static greencity.TestConst.UPDATE_STATUS_URL;
 import static greencity.TestConst.USER_ID;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -41,7 +42,10 @@ import greencity.security.jwt.JwtTool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
@@ -58,12 +62,14 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class RestClientTest {
@@ -88,6 +94,52 @@ class RestClientTest {
     void init() {
         restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, GREEN_CITY_UBS_ADDRESS, httpServletRequest, jwtTool, SYSTEM_EMAIL);
         RequestContextHolder.setRequestAttributes(requestAttributes);
+    }
+
+    @Test
+    void findAllNotificationsForUserFromUbsTest() {
+        String authorizationHeader = "Bearer token";
+        String url = GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS;
+        PageableAdvancedDto<UbsNotificationDto> expectedResult = Mockito.mock(PageableAdvancedDto.class);
+
+        when(restTemplate.exchange(
+                eq(url),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+        )).thenReturn(ResponseEntity.ok(expectedResult));
+
+        PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(authorizationHeader);
+
+        verify(restTemplate).exchange(
+                eq(url),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+        );
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "not valid Bearer token",
+            "1234",
+            "a"
+    })
+    void findAllNotificationsForUserFromUbsTestWithInvalidAuthorizationHeader(String authorizationHeader) {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> restClient.findAllNotificationsForUserFromUbs(
+                        authorizationHeader
+                )
+        );
+
+        verify(restTemplate, never()).exchange(
+                any(),
+                any(),
+                any(),
+                any(ParameterizedTypeReference.class)
+        );
     }
 
     @Test
