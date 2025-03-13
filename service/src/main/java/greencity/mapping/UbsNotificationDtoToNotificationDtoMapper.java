@@ -15,8 +15,6 @@ public class UbsNotificationDtoToNotificationDtoMapper extends AbstractConverter
 
     @Override
     protected NotificationDto convert(UbsNotificationDto ubsNotificationDto) {
-        ZonedDateTime zonedDateTime = ubsNotificationDto.getNotificationTime().atZone(ZoneOffset.UTC);
-
         return NotificationDto.builder()
                 .actionUserId(Collections.emptyList())
                 .actionUserText(Collections.emptyList())
@@ -28,7 +26,7 @@ public class UbsNotificationDtoToNotificationDtoMapper extends AbstractConverter
                 .secondMessage("")
                 .secondMessageId(0L)
                 .targetId(ubsNotificationDto.getOrderId())
-                .time(zonedDateTime)
+                .time(ubsNotificationDto.getNotificationTime().atZone(ZoneOffset.UTC))
                 .titleText(ubsNotificationDto.getTitle())
                 .viewed(ubsNotificationDto.isRead())
                 .build();
