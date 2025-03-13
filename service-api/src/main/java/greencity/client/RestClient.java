@@ -2,7 +2,9 @@ package greencity.client;
 
 import greencity.annotations.CheckEmailPreference;
 import greencity.constant.AppConstant;
+import greencity.dto.PageableDto;
 import greencity.dto.econews.InterestingEcoNewsDto;
+import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
@@ -84,6 +86,23 @@ public class RestClient {
         this.httpServletRequest = httpServletRequest;
         this.jwtTool = jwtTool;
         this.systemEmail = systemEmail;
+    }
+
+    public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(token);
+        HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
+        String url = greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS;
+
+        ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                httpEntity,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        return notifications.getBody();
     }
 
     /**

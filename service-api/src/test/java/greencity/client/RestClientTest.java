@@ -3,6 +3,7 @@ package greencity.client;
 import static greencity.ModelUtils.getEntity;
 import static greencity.TestConst.ACCESS_TOKEN;
 import static greencity.TestConst.GREEN_CITY_USER_ADDRESS;
+import static greencity.TestConst.GREEN_CITY_UBS_ADDRESS;
 import static greencity.TestConst.SYSTEM_EMAIL;
 import static greencity.TestConst.TOKEN;
 import static greencity.TestConst.UPDATE_STATUS_URL;
@@ -85,7 +86,7 @@ class RestClientTest {
 
     @BeforeEach
     void init() {
-        restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, httpServletRequest, jwtTool, SYSTEM_EMAIL);
+        restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, GREEN_CITY_UBS_ADDRESS, httpServletRequest, jwtTool, SYSTEM_EMAIL);
         RequestContextHolder.setRequestAttributes(requestAttributes);
     }
 
