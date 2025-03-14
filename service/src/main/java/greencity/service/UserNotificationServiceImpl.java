@@ -35,9 +35,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.PriorityQueue;
 import java.util.ResourceBundle;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 import static greencity.constant.AppConstant.LANGUAGE_CODE_UA;
 import static greencity.constant.AppConstant.THREE_OR_MORE_USERS;
@@ -95,11 +95,12 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                         NotificationDto::getTime
                 ).reversed();
 
-                PriorityQueue<NotificationDto> notificationsPriorityQueue = new PriorityQueue<>(sortByRecentNotificationsComparator);
-                notificationsPriorityQueue.addAll(notificationsFromGreenCity.getPage());
-                notificationsPriorityQueue.addAll(notificationsFromUbs.getPage());
-
-                List<NotificationDto> mergedNotifications = notificationsPriorityQueue.stream()
+                List<NotificationDto> mergedNotifications = Stream
+                        .concat(
+                                notificationsFromGreenCity.getPage().stream(),
+                                notificationsFromUbs.getPage().stream()
+                        )
+                        .sorted(sortByRecentNotificationsComparator)
                         .limit(2L * page.getPageSize())
                         .toList();
 
