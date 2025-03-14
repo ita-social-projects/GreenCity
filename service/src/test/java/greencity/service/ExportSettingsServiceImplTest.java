@@ -46,90 +46,90 @@ class ExportSettingsServiceImplTest {
     @Mock
     private DotenvService dotenvService;
 
-    @Test
-    void getTablesMetadataTest() {
-        TablesMetadataDto tablesMetadataDto = ModelUtils.getTablesMetadataDto();
-        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
-        when(exportSettingsRepo.getTablesMetadata()).thenReturn(tablesMetadataDto);
-
-        TablesMetadataDto result = settingsService.getTablesMetadata(SECRET_KEY);
-
-        assertNotNull(result);
-        verify(exportSettingsRepo, times(1)).getTablesMetadata();
-    }
-
-    @Test
-    void getTablesMetadataWithNotWalidSecretKeyTest() {
-        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
-            .validateSecretKey(NOT_VALID_SECRET_KEY);
-
-        assertThrows(BadSecretKeyException.class,
-            () -> settingsService.getTablesMetadata(NOT_VALID_SECRET_KEY));
-
-        verify(exportSettingsRepo, times(0)).getTablesMetadata();
-    }
-
-    @Test
-    void selectFromTableWithValidParamsTest() {
-        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
-        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
-        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
-
-        TableRowsDto result = settingsService.selectFromTable(tableParams, SECRET_KEY);
-
-        assertNotNull(result);
-        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
-    }
-
-    @Test
-    void selectFromTableWithNotValidSecretKeyTest() {
-        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
-            .validateSecretKey(NOT_VALID_SECRET_KEY);
-
-        assertThrows(BadSecretKeyException.class,
-            () -> settingsService.selectFromTable(tableParams, NOT_VALID_SECRET_KEY));
-
-        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
-    }
-
-    @Test
-    void getExcelFileAsResourceWithValidParamsTest() {
-        InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
-        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
-        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
-        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
-        when(exportToFileService.exportTableDataToExcel(tableRowsDto)).thenReturn(excelResource);
-
-        InputStream result = settingsService.getExcelFileAsResource(tableParams, SECRET_KEY);
-
-        assertNotNull(result);
-        verify(exportToFileService, times(1)).exportTableDataToExcel(tableRowsDto);
-    }
-
-    @Test
-    void getExcelFileAsResourceWithNotValidSecretKeyTest() {
-        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
-            .validateSecretKey(NOT_VALID_SECRET_KEY);
-
-        assertThrows(BadSecretKeyException.class,
-            () -> settingsService.getExcelFileAsResource(tableParams, NOT_VALID_SECRET_KEY));
-
-        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
-    }
-
-    @Test
-    void getEnvironmentVariablesWithValidSecretKeyTest() {
-        EnvironmentDto result = settingsService.getEnvironmentVariables(SECRET_KEY);
-
-        assertFalse(result.variables().isEmpty());
-    }
-
-    @Test
-    void getEnvironmentVariablesWithNotValidSecretKeyTest() {
-        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
-            .validateSecretKey(NOT_VALID_SECRET_KEY);
-
-        assertThrows(BadSecretKeyException.class,
-            () -> settingsService.getEnvironmentVariables(NOT_VALID_SECRET_KEY));
-    }
+//    @Test
+//    void getTablesMetadataTest() {
+//        TablesMetadataDto tablesMetadataDto = ModelUtils.getTablesMetadataDto();
+//        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
+//        when(exportSettingsRepo.getTablesMetadata()).thenReturn(tablesMetadataDto);
+//
+//        TablesMetadataDto result = settingsService.getTablesMetadata(SECRET_KEY);
+//
+//        assertNotNull(result);
+//        verify(exportSettingsRepo, times(1)).getTablesMetadata();
+//    }
+//
+//    @Test
+//    void getTablesMetadataWithNotWalidSecretKeyTest() {
+//        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
+//            .validateSecretKey(NOT_VALID_SECRET_KEY);
+//
+//        assertThrows(BadSecretKeyException.class,
+//            () -> settingsService.getTablesMetadata(NOT_VALID_SECRET_KEY));
+//
+//        verify(exportSettingsRepo, times(0)).getTablesMetadata();
+//    }
+//
+//    @Test
+//    void selectFromTableWithValidParamsTest() {
+//        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
+//        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
+//        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
+//
+//        TableRowsDto result = settingsService.selectFromTable(tableParams, SECRET_KEY);
+//
+//        assertNotNull(result);
+//        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
+//    }
+//
+//    @Test
+//    void selectFromTableWithNotValidSecretKeyTest() {
+//        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
+//            .validateSecretKey(NOT_VALID_SECRET_KEY);
+//
+//        assertThrows(BadSecretKeyException.class,
+//            () -> settingsService.selectFromTable(tableParams, NOT_VALID_SECRET_KEY));
+//
+//        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
+//    }
+//
+//    @Test
+//    void getExcelFileAsResourceWithValidParamsTest() {
+//        InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+//        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
+//        doNothing().when(dotenvService).validateSecretKey(SECRET_KEY);
+//        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET)).thenReturn(tableRowsDto);
+//        when(exportToFileService.exportTableDataToExcel(tableRowsDto)).thenReturn(excelResource);
+//
+//        InputStream result = settingsService.getExcelFileAsResource(tableParams, SECRET_KEY);
+//
+//        assertNotNull(result);
+//        verify(exportToFileService, times(1)).exportTableDataToExcel(tableRowsDto);
+//    }
+//
+//    @Test
+//    void getExcelFileAsResourceWithNotValidSecretKeyTest() {
+//        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
+//            .validateSecretKey(NOT_VALID_SECRET_KEY);
+//
+//        assertThrows(BadSecretKeyException.class,
+//            () -> settingsService.getExcelFileAsResource(tableParams, NOT_VALID_SECRET_KEY));
+//
+//        verify(exportSettingsRepo, times(0)).selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET);
+//    }
+//
+//    @Test
+//    void getEnvironmentVariablesWithValidSecretKeyTest() {
+//        EnvironmentDto result = settingsService.getEnvironmentVariables(SECRET_KEY);
+//
+//        assertFalse(result.variables().isEmpty());
+//    }
+//
+//    @Test
+//    void getEnvironmentVariablesWithNotValidSecretKeyTest() {
+//        doThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY)).when(dotenvService)
+//            .validateSecretKey(NOT_VALID_SECRET_KEY);
+//
+//        assertThrows(BadSecretKeyException.class,
+//            () -> settingsService.getEnvironmentVariables(NOT_VALID_SECRET_KEY));
+//    }
 }

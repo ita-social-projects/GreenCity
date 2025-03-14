@@ -12,14 +12,14 @@ import org.springframework.context.annotation.Lazy;
 @Configuration
 @Lazy
 public class DotenvConfig {
-    @Bean
-    Dotenv dotenv() {
-        try {
-            return Dotenv.configure()
-                .filename(AppConstant.DOTENV_FILENAME)
-                .load();
-        } catch (DotenvException ignored) {
-            throw new FunctionalityNotAvailableException(ErrorMessage.FUNCTIONALITY_NOT_AVAILABLE);
-        }
-    }
+//    @Bean
+//    Dotenv dotenv() {
+//        try {
+//            return Dotenv.configure()
+//                .filename(AppConstant.DOTENV_FILENAME)
+//                .load();
+//        } catch (DotenvException ignored) {
+//            throw new FunctionalityNotAvailableException(ErrorMessage.FUNCTIONALITY_NOT_AVAILABLE);
+//        }
+//    }
 }

@@ -61,212 +61,212 @@ class ExportSettingsControllerTest {
             .build();
     }
 
-    @Test
-    void getTablesInfoWithValidParamsTest() throws Exception {
-        TablesMetadataDto tablesMetadataDto = ModelUtils.getTablesMetadataDto();
-        when(exportSettingsService.getTablesMetadata(SECRET_KEY)).thenReturn(tablesMetadataDto);
-        String expectedJson = objectMapper.writeValueAsString(tablesMetadataDto);
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/tables")
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(expectedJson));
-    }
-
-    @Test
-    void getSelectedWithValidParamsTest() throws Exception {
-        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
-        when(exportSettingsService.selectFromTable(tableParams, SECRET_KEY)).thenReturn(tableRowsDto);
-        String expectedJson = objectMapper.writeValueAsString(tableRowsDto);
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(expectedJson));
-    }
-
-    @Test
-    void getSelectedWithInvalidTableNameTest() throws Exception {
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
-            .param("tableName", INVALID_TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void getSelectedWithNonExistentTableNameTest() throws Exception {
-        doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
-            .when(exportSettingsService)
-            .selectFromTable(tableParamsWithNotValidTableName, SECRET_KEY);
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
-            .param("tableName", NOT_EXISTS_TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void getSelectedWithNegativeOffsetTest() throws Exception {
-        int negativeOffset = -1;
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(negativeOffset))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void getSelectedWithNegativeLimitTest() throws Exception {
-        int negativeLimit = -1;
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(negativeLimit))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void getSelectedWithOutOfLimitValueTest() throws Exception {
-        int invalidLimit = 100_000;
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(invalidLimit))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void downloadExcelWithValidParamsTest() throws Exception {
-        InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
-        when(exportSettingsService.getExcelFileAsResource(tableParams, SECRET_KEY))
-            .thenReturn(excelResource);
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_OCTET_STREAM))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
-            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= users(1 - 10).xlsx"));
-    }
-
-    @Test
-    void downloadExcelWithInvalidTableNameTest() throws Exception {
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
-            .param("tableName", INVALID_TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void downloadExcelWithNonExistentTableNameTest() throws Exception {
-        doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
-            .when(exportSettingsService)
-            .getExcelFileAsResource(tableParamsWithNotValidTableName, SECRET_KEY);
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
-            .param("tableName", NOT_EXISTS_TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void downloadExcelWithNegativeOffsetTest() throws Exception {
-        int negativeOffset = -1;
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(LIMIT))
-            .param("offset", String.valueOf(negativeOffset))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void downloadExcelWithNegativeLimitTest() throws Exception {
-        int negativeLimit = -1;
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(negativeLimit))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void downloadExcelWithOutOfLimitValueTest() throws Exception {
-        int invalidLimit = 100_000;
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
-            .param("tableName", TABLE_NAME)
-            .param("limit", String.valueOf(invalidLimit))
-            .param("offset", String.valueOf(OFFSET))
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
-    }
-
-    @Test
-    void getEnvVariablesWithValidSecretKeyTest() throws Exception {
-        EnvironmentDto environmentDto = ModelUtils.getEnvironmentDto();
-        when(exportSettingsService.getEnvironmentVariables(SECRET_KEY)).thenReturn(environmentDto);
-        String expectedJson = objectMapper.writeValueAsString(environmentDto);
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/env")
-            .header("secretKey", SECRET_KEY)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(expectedJson));
-    }
-
-    @Test
-    void getEnvVariablesWithNotValidSecretKeyTest() throws Exception {
-        when(exportSettingsService.getEnvironmentVariables(NOT_VALID_SECRET_KEY)).thenThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY));
-
-        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/env")
-                        .header("secretKey", NOT_VALID_SECRET_KEY)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
+//    @Test
+//    void getTablesInfoWithValidParamsTest() throws Exception {
+//        TablesMetadataDto tablesMetadataDto = ModelUtils.getTablesMetadataDto();
+//        when(exportSettingsService.getTablesMetadata(SECRET_KEY)).thenReturn(tablesMetadataDto);
+//        String expectedJson = objectMapper.writeValueAsString(tablesMetadataDto);
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/tables")
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isOk())
+//            .andExpect(content().json(expectedJson));
+//    }
+//
+//    @Test
+//    void getSelectedWithValidParamsTest() throws Exception {
+//        TableRowsDto tableRowsDto = ModelUtils.getTableRowsDto();
+//        when(exportSettingsService.selectFromTable(tableParams, SECRET_KEY)).thenReturn(tableRowsDto);
+//        String expectedJson = objectMapper.writeValueAsString(tableRowsDto);
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isOk())
+//            .andExpect(content().json(expectedJson));
+//    }
+//
+//    @Test
+//    void getSelectedWithInvalidTableNameTest() throws Exception {
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+//            .param("tableName", INVALID_TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void getSelectedWithNonExistentTableNameTest() throws Exception {
+//        doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
+//            .when(exportSettingsService)
+//            .selectFromTable(tableParamsWithNotValidTableName, SECRET_KEY);
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+//            .param("tableName", NOT_EXISTS_TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void getSelectedWithNegativeOffsetTest() throws Exception {
+//        int negativeOffset = -1;
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(negativeOffset))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void getSelectedWithNegativeLimitTest() throws Exception {
+//        int negativeLimit = -1;
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(negativeLimit))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void getSelectedWithOutOfLimitValueTest() throws Exception {
+//        int invalidLimit = 100_000;
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/select")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(invalidLimit))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void downloadExcelWithValidParamsTest() throws Exception {
+//        InputStream excelResource = new ByteArrayInputStream(new byte[] {1, 2, 3, 4, 5});
+//        when(exportSettingsService.getExcelFileAsResource(tableParams, SECRET_KEY))
+//            .thenReturn(excelResource);
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_OCTET_STREAM))
+//            .andExpect(status().isOk())
+//            .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+//            .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= users(1 - 10).xlsx"));
+//    }
+//
+//    @Test
+//    void downloadExcelWithInvalidTableNameTest() throws Exception {
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+//            .param("tableName", INVALID_TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void downloadExcelWithNonExistentTableNameTest() throws Exception {
+//        doThrow(new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + NOT_EXISTS_TABLE_NAME))
+//            .when(exportSettingsService)
+//            .getExcelFileAsResource(tableParamsWithNotValidTableName, SECRET_KEY);
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+//            .param("tableName", NOT_EXISTS_TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void downloadExcelWithNegativeOffsetTest() throws Exception {
+//        int negativeOffset = -1;
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(LIMIT))
+//            .param("offset", String.valueOf(negativeOffset))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void downloadExcelWithNegativeLimitTest() throws Exception {
+//        int negativeLimit = -1;
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(negativeLimit))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void downloadExcelWithOutOfLimitValueTest() throws Exception {
+//        int invalidLimit = 100_000;
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/download-table-data")
+//            .param("tableName", TABLE_NAME)
+//            .param("limit", String.valueOf(invalidLimit))
+//            .param("offset", String.valueOf(OFFSET))
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isBadRequest())
+//            .andReturn();
+//    }
+//
+//    @Test
+//    void getEnvVariablesWithValidSecretKeyTest() throws Exception {
+//        EnvironmentDto environmentDto = ModelUtils.getEnvironmentDto();
+//        when(exportSettingsService.getEnvironmentVariables(SECRET_KEY)).thenReturn(environmentDto);
+//        String expectedJson = objectMapper.writeValueAsString(environmentDto);
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/env")
+//            .header("secretKey", SECRET_KEY)
+//            .accept(MediaType.APPLICATION_JSON))
+//            .andExpect(status().isOk())
+//            .andExpect(content().json(expectedJson));
+//    }
+//
+//    @Test
+//    void getEnvVariablesWithNotValidSecretKeyTest() throws Exception {
+//        when(exportSettingsService.getEnvironmentVariables(NOT_VALID_SECRET_KEY)).thenThrow(new BadSecretKeyException(ErrorMessage.BAD_SECRET_KEY));
+//
+//        mockMvc.perform(get(SETTINGS_CONTROLLER_LINK + "/env")
+//                        .header("secretKey", NOT_VALID_SECRET_KEY)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isForbidden());
+//    }
 }

@@ -17,38 +17,38 @@ import java.io.InputStream;
 public class ExportSettingsServiceImpl implements ExportSettingsService {
     private final ExportSettingsRepo exportSettingsRepo;
     private final ExportToFileService exportToFileService;
-    private final DotenvService dotenvService;
+//    private final DotenvService dotenvService;
 
-    @Override
-    public TablesMetadataDto getTablesMetadata(String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
+//    @Override
+//    public TablesMetadataDto getTablesMetadata(String secretKey) {
+//        dotenvService.validateSecretKey(secretKey);
+//
+//        return exportSettingsRepo.getTablesMetadata();
+//    }
 
-        return exportSettingsRepo.getTablesMetadata();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public TableRowsDto selectFromTable(TableParamsRequestDto tableParams, String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
-
-        return exportSettingsRepo.selectPortionFromTable(tableParams.tableName(), tableParams.limit(),
-            tableParams.offset());
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public InputStream getExcelFileAsResource(TableParamsRequestDto tableParams, String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
-        TableRowsDto data = exportSettingsRepo.selectPortionFromTable(tableParams.tableName(), tableParams.limit(),
-            tableParams.offset());
-
-        return exportToFileService.exportTableDataToExcel(data);
-    }
-
-    @Override
-    public EnvironmentDto getEnvironmentVariables(String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
-
-        return new EnvironmentDto(System.getenv());
-    }
+//    @Transactional(readOnly = true)
+//    @Override
+//    public TableRowsDto selectFromTable(TableParamsRequestDto tableParams, String secretKey) {
+//        dotenvService.validateSecretKey(secretKey);
+//
+//        return exportSettingsRepo.selectPortionFromTable(tableParams.tableName(), tableParams.limit(),
+//            tableParams.offset());
+//    }
+//
+//    @Transactional(readOnly = true)
+//    @Override
+//    public InputStream getExcelFileAsResource(TableParamsRequestDto tableParams, String secretKey) {
+//        dotenvService.validateSecretKey(secretKey);
+//        TableRowsDto data = exportSettingsRepo.selectPortionFromTable(tableParams.tableName(), tableParams.limit(),
+//            tableParams.offset());
+//
+//        return exportToFileService.exportTableDataToExcel(data);
+//    }
+//
+//    @Override
+//    public EnvironmentDto getEnvironmentVariables(String secretKey) {
+//        dotenvService.validateSecretKey(secretKey);
+//
+//        return new EnvironmentDto(System.getenv());
+//    }
 }
