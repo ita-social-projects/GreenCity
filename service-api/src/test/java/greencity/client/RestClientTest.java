@@ -92,7 +92,8 @@ class RestClientTest {
 
     @BeforeEach
     void init() {
-        restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, GREEN_CITY_UBS_ADDRESS, httpServletRequest, jwtTool, SYSTEM_EMAIL);
+        restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, GREEN_CITY_UBS_ADDRESS, httpServletRequest,
+            jwtTool, SYSTEM_EMAIL);
         RequestContextHolder.setRequestAttributes(requestAttributes);
     }
 
@@ -102,57 +103,52 @@ class RestClientTest {
         Pageable pageable = Mockito.mock(Pageable.class);
         int pageNumber = 0;
         int pageSize = 10;
-        String expectedUrl = GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize;
+        String expectedUrl =
+            GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize;
         PageableAdvancedDto<UbsNotificationDto> expectedResult = Mockito.mock(PageableAdvancedDto.class);
 
         when(pageable.getPageNumber())
-                .thenReturn(pageNumber);
+            .thenReturn(pageNumber);
         when(pageable.getPageSize())
-                .thenReturn(pageSize);
+            .thenReturn(pageSize);
         when(restTemplate.exchange(
-                eq(expectedUrl),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-        )).thenReturn(ResponseEntity.ok(expectedResult));
+            eq(expectedUrl),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            any(ParameterizedTypeReference.class))).thenReturn(ResponseEntity.ok(expectedResult));
 
         PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
-                authorizationHeader,
-                pageable
-        );
+            authorizationHeader,
+            pageable);
 
         verify(restTemplate).exchange(
-                eq(expectedUrl),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-        );
+            eq(expectedUrl),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            any(ParameterizedTypeReference.class));
         assertEquals(expectedResult, actualResult);
     }
 
     @ParameterizedTest
     @CsvSource({
-            "not valid Bearer token",
-            "1234",
-            "a"
+        "not valid Bearer token",
+        "1234",
+        "a"
     })
     void findAllNotificationsForUserFromUbsTestWithInvalidAuthorizationHeader(String authorizationHeader) {
         Pageable pageable = Mockito.mock(Pageable.class);
 
         assertThrows(
-                IllegalArgumentException.class,
-                () -> restClient.findAllNotificationsForUserFromUbs(
-                        authorizationHeader,
-                        pageable
-                )
-        );
+            IllegalArgumentException.class,
+            () -> restClient.findAllNotificationsForUserFromUbs(
+                authorizationHeader,
+                pageable));
 
         verify(restTemplate, never()).exchange(
-                any(),
-                any(),
-                any(),
-                any(ParameterizedTypeReference.class)
-        );
+            any(),
+            any(),
+            any(),
+            any(ParameterizedTypeReference.class));
     }
 
     @Test

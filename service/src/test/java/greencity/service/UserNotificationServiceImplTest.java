@@ -120,15 +120,13 @@ class UserNotificationServiceImplTest {
         String authorizationHeader = "header";
         PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = Mockito.mock(PageableAdvancedDto.class);
         List<UbsNotificationDto> page = List.of(
-                new UbsNotificationDto(),
-                new UbsNotificationDto()
-        );
+            new UbsNotificationDto(),
+            new UbsNotificationDto());
         NotificationDto notificationDto = Mockito.mock(NotificationDto.class);
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         List<NotificationDto> expectedPage = List.of(
-                notificationDto,
-                notificationDto
-        );
+            notificationDto,
+            notificationDto);
         Pageable pageable = Mockito.mock(Pageable.class);
         int pageSize = 10;
         int pageNumber = 0;
@@ -138,31 +136,31 @@ class UserNotificationServiceImplTest {
         Page<Notification> notificationPage = new PageImpl<>(List.of(), pageable, 0);
 
         when(userService.findByEmail(email))
-                .thenReturn(testUserVo);
-        when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed, pageable))
-                .thenReturn(notificationPage);
+            .thenReturn(testUserVo);
+        when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
+            pageable))
+            .thenReturn(notificationPage);
         when(restClient.findAllNotificationsForUserFromUbs(authorizationHeader, pageable))
-                .thenReturn(notificationsFromUbs);
+            .thenReturn(notificationsFromUbs);
         when(notificationsFromUbs.getPage())
-                .thenReturn(page);
+            .thenReturn(page);
         when(modelMapper.map(any(UbsNotificationDto.class), eq(NotificationDto.class)))
-                .thenReturn(notificationDto);
+            .thenReturn(notificationDto);
         when(notificationDto.getTime())
-                .thenReturn(zonedDateTime);
+            .thenReturn(zonedDateTime);
         when(pageable.getPageSize())
-                .thenReturn(pageSize);
+            .thenReturn(pageSize);
         when(pageable.getPageNumber())
-                .thenReturn(pageNumber);
+            .thenReturn(pageNumber);
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
-                pageable,
-                principal,
-                language,
-                projectName,
-                notificationTypes,
-                viewed,
-                authorizationHeader
-        );
+            pageable,
+            principal,
+            language,
+            projectName,
+            notificationTypes,
+            viewed,
+            authorizationHeader);
 
         assertEquals(expectedPage, actualResult.getPage());
         assertEquals(expectedPage.size(), actualResult.getTotalElements());
@@ -174,7 +172,8 @@ class UserNotificationServiceImplTest {
         assertEquals(first, actualResult.isFirst());
         assertEquals(last, actualResult.isLast());
         verify(userService).findByEmail(email);
-        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed, pageable);
+        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
+            pageable);
         verify(restClient).findAllNotificationsForUserFromUbs(authorizationHeader, pageable);
         verify(modelMapper, times(page.size())).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
     }
@@ -215,31 +214,28 @@ class UserNotificationServiceImplTest {
         String authorizationHeader = "header";
         PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = Mockito.mock(PageableAdvancedDto.class);
         List<UbsNotificationDto> page = List.of(
-                new UbsNotificationDto(),
-                new UbsNotificationDto()
-        );
+            new UbsNotificationDto(),
+            new UbsNotificationDto());
         NotificationDto notificationDto = Mockito.mock(NotificationDto.class);
         List<NotificationDto> expectedPage = List.of(
-                notificationDto,
-                notificationDto
-        );
+            notificationDto,
+            notificationDto);
 
         when(restClient.findAllNotificationsForUserFromUbs(authorizationHeader, pageable))
-                .thenReturn(notificationsFromUbs);
+            .thenReturn(notificationsFromUbs);
         when(notificationsFromUbs.getPage())
-                .thenReturn(page);
+            .thenReturn(page);
         when(modelMapper.map(any(UbsNotificationDto.class), eq(NotificationDto.class)))
-                .thenReturn(notificationDto);
+            .thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
-                pageable,
-                principal,
-                language,
-                PICKUP,
-                notificationTypes,
-                viewed,
-                authorizationHeader
-        );
+            pageable,
+            principal,
+            language,
+            PICKUP,
+            notificationTypes,
+            viewed,
+            authorizationHeader);
 
         assertEquals(expectedPage, actualResult.getPage());
         assertEquals(notificationsFromUbs.getTotalElements(), actualResult.getTotalElements());

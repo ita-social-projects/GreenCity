@@ -2,7 +2,6 @@ package greencity.client;
 
 import greencity.annotations.CheckEmailPreference;
 import greencity.constant.AppConstant;
-import greencity.dto.PageableDto;
 import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
@@ -89,9 +88,8 @@ public class RestClient {
     }
 
     public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(
-            String authorizationHeader,
-            Pageable pageable
-    ) {
+        String authorizationHeader,
+        Pageable pageable) {
         String bearerTokenPrefix = "Bearer ";
         if (!authorizationHeader.startsWith(bearerTokenPrefix)) {
             throw new IllegalArgumentException("Invalid authorization header");
@@ -103,17 +101,17 @@ public class RestClient {
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
 
         String url = UriComponentsBuilder
-                .fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
-                .queryParam("page", pageable.getPageNumber())
-                .queryParam("size", pageable.getPageSize())
-                .toUriString();
+            .fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
+            .queryParam("page", pageable.getPageNumber())
+            .queryParam("size", pageable.getPageSize())
+            .toUriString();
 
         ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                httpEntity,
-                new ParameterizedTypeReference<>() {}
-        );
+            url,
+            HttpMethod.GET,
+            httpEntity,
+            new ParameterizedTypeReference<>() {
+            });
 
         return notifications.getBody();
     }

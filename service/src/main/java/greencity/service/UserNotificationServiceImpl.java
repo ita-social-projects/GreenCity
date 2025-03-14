@@ -38,7 +38,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Comparator;
 import java.util.stream.Stream;
-
 import static greencity.constant.AppConstant.LANGUAGE_CODE_UA;
 import static greencity.constant.AppConstant.THREE_OR_MORE_USERS;
 import static greencity.constant.AppConstant.TIMES_PLACEHOLDER;
@@ -75,36 +74,32 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
         String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed,
         String authorizationHeader) {
-
         return switch (projectName) {
             case null -> {
                 PageableAdvancedDto<NotificationDto> notificationsFromGreenCity = getNotificationsForUserFromGreenCity(
-                        page,
-                        principal,
-                        language,
-                        projectName,
-                        notificationTypes,
-                        viewed
-                );
+                    page,
+                    principal,
+                    language,
+                    projectName,
+                    notificationTypes,
+                    viewed);
                 PageableAdvancedDto<NotificationDto> notificationsFromUbs = getNotificationsForUserFromUbs(
-                        authorizationHeader,
-                        page
-                );
+                    authorizationHeader,
+                    page);
 
                 Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator.comparing(
-                        NotificationDto::getTime
-                ).reversed();
+                    NotificationDto::getTime).reversed();
 
                 List<NotificationDto> mergedNotifications = Stream
-                        .concat(
-                                notificationsFromGreenCity.getPage().stream(),
-                                notificationsFromUbs.getPage().stream()
-                        )
-                        .sorted(sortByRecentNotificationsComparator)
-                        .limit(2L * page.getPageSize())
-                        .toList();
+                    .concat(
+                        notificationsFromGreenCity.getPage().stream(),
+                        notificationsFromUbs.getPage().stream())
+                    .sorted(sortByRecentNotificationsComparator)
+                    .limit(2L * page.getPageSize())
+                    .toList();
 
-                long totalElements = notificationsFromGreenCity.getTotalElements() + notificationsFromUbs.getTotalElements();
+                long totalElements =
+                    notificationsFromGreenCity.getTotalElements() + notificationsFromUbs.getTotalElements();
 
                 long mergedPageSize = mergedNotifications.size();
                 int currentPage = page.getPageNumber();
@@ -116,29 +111,26 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 boolean isLast = !hasNext;
 
                 yield new PageableAdvancedDto<>(
-                        mergedNotifications,
-                        mergedPageSize,
-                        currentPage,
-                        totalPages,
-                        number,
-                        hasPrevious,
-                        hasNext,
-                        isFirst,
-                        isLast
-                );
+                    mergedNotifications,
+                    mergedPageSize,
+                    currentPage,
+                    totalPages,
+                    number,
+                    hasPrevious,
+                    hasNext,
+                    isFirst,
+                    isLast);
             }
             case GREENCITY -> getNotificationsForUserFromGreenCity(
-                    page,
-                    principal,
-                    language,
-                    projectName,
-                    notificationTypes,
-                    viewed
-            );
+                page,
+                principal,
+                language,
+                projectName,
+                notificationTypes,
+                viewed);
             case PICKUP -> getNotificationsForUserFromUbs(
-                    authorizationHeader,
-                    page
-            );
+                authorizationHeader,
+                page);
         };
     }
 
@@ -515,40 +507,37 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         sendNotification(notification.getTargetUser().getId());
     }
 
-    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable page, Principal principal, String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed) {
+    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable page,
+        Principal principal, String language, ProjectName projectName, List<NotificationType> notificationTypes,
+        Boolean viewed) {
         UserVO user = userService.findByEmail(principal.getName());
         Long userId = user.getId();
         Page<Notification> notificationsFromGreenCityPage =
-                notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
+            notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
 
         return buildPageableAdvancedDto(notificationsFromGreenCityPage, language);
     }
 
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromUbs(
-            String authorizationHeader,
-            Pageable page
-    ) {
+        String authorizationHeader,
+        Pageable page) {
         PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = restClient.findAllNotificationsForUserFromUbs(
-                authorizationHeader,
-                page
-        );
+            authorizationHeader,
+            page);
         List<NotificationDto> mappedNotificationsFromUbsList = notificationsFromUbs.getPage()
-                .stream()
-                .map(ubsNotificationDto ->
-                        modelMapper.map(ubsNotificationDto, NotificationDto.class)
-                ).toList();
+            .stream()
+            .map(ubsNotificationDto -> modelMapper.map(ubsNotificationDto, NotificationDto.class)).toList();
 
         return new PageableAdvancedDto<>(
-                mappedNotificationsFromUbsList,
-                notificationsFromUbs.getTotalElements(),
-                notificationsFromUbs.getCurrentPage(),
-                notificationsFromUbs.getTotalPages(),
-                notificationsFromUbs.getNumber(),
-                notificationsFromUbs.isHasPrevious(),
-                notificationsFromUbs.isHasNext(),
-                notificationsFromUbs.isFirst(),
-                notificationsFromUbs.isLast()
-        );
+            mappedNotificationsFromUbsList,
+            notificationsFromUbs.getTotalElements(),
+            notificationsFromUbs.getCurrentPage(),
+            notificationsFromUbs.getTotalPages(),
+            notificationsFromUbs.getNumber(),
+            notificationsFromUbs.isHasPrevious(),
+            notificationsFromUbs.isHasNext(),
+            notificationsFromUbs.isFirst(),
+            notificationsFromUbs.isLast());
     }
 
     private Notification buildNotification(NotificationType notificationType, UserVO targetUserVO, Long targetId,

@@ -35,33 +35,33 @@ public class UbsNotificationDtoToNotificationDtoMapperTest {
         UbsNotificationDto ubsNotificationDto = Mockito.mock(UbsNotificationDto.class);
 
         when(ubsNotificationDto.getBody())
-                .thenReturn(body);
+            .thenReturn(body);
         when(ubsNotificationDto.getId())
-                .thenReturn(id);
+            .thenReturn(id);
         when(ubsNotificationDto.getOrderId())
-                .thenReturn(orderId);
+            .thenReturn(orderId);
         when(ubsNotificationDto.getNotificationTime())
-                .thenReturn(notificationTime);
+            .thenReturn(notificationTime);
         when(ubsNotificationDto.getTitle())
-                .thenReturn(title);
+            .thenReturn(title);
         when(ubsNotificationDto.isRead())
-                .thenReturn(isRead);
+            .thenReturn(isRead);
 
         NotificationDto expected = NotificationDto.builder()
-                .actionUserId(Collections.emptyList())
-                .actionUserText(Collections.emptyList())
-                .bodyText(body)
-                .message(body)
-                .notificationId(id)
-                .notificationType("")
-                .projectName(ProjectName.PICKUP.name())
-                .secondMessage("")
-                .secondMessageId(0L)
-                .targetId(orderId)
-                .time(notificationTime.atZone(ZoneOffset.UTC))
-                .titleText(title)
-                .viewed(isRead)
-                .build();
+            .actionUserId(Collections.emptyList())
+            .actionUserText(Collections.emptyList())
+            .bodyText(body)
+            .message(body)
+            .notificationId(id)
+            .notificationType("")
+            .projectName(ProjectName.PICKUP.name())
+            .secondMessage("")
+            .secondMessageId(0L)
+            .targetId(orderId)
+            .time(notificationTime.atZone(ZoneOffset.UTC))
+            .titleText(title)
+            .viewed(isRead)
+            .build();
 
         NotificationDto actual = ubsNotificationDtoToNotificationDtoMapper.convert(ubsNotificationDto);
 
