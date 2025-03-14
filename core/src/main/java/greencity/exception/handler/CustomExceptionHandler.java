@@ -9,7 +9,9 @@ import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
+import greencity.exception.exceptions.DatabaseMetadataException;
 import greencity.exception.exceptions.EventDtoValidationException;
+import greencity.exception.exceptions.FileGenerationException;
 import greencity.exception.exceptions.FileReadException;
 import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import greencity.exception.exceptions.InvalidStatusException;
@@ -622,5 +624,36 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link DatabaseMetadataException}.
+     *
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(DatabaseMetadataException.class)
+    public final ResponseEntity<Object> handleInvalidDataException(WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link FileGenerationException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(FileGenerationException.class)
+    public final ResponseEntity<Object> handleFileGenerationException(FileGenerationException ex, WebRequest request) {
+        log.error(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
 }

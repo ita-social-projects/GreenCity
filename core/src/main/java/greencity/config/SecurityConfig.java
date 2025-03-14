@@ -85,6 +85,7 @@ public class SecurityConfig {
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
     public static final String LOGS = "/logs/**";
+    public static final String SETTINGS_EXPORT = "/export/settings/**";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -146,8 +147,6 @@ public class SecurityConfig {
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
                     "/place/info/{id}",
-                    "/place/info/favorite/{placeId}",
-                    "/favorite_place/favorite/{placeId}",
                     "/place/statuses",
                     "/place/all",
                     "/habit",
@@ -157,7 +156,6 @@ public class SecurityConfig {
                     "/tags/v2/search",
                     "/habit/tags/all",
                     "/habit/statistic/{habitId}",
-                    "/habit/statistic/assign/{habitAssignId}",
                     "/habit/statistic/todayStatisticsForAllHabitItems",
                     HABITS + "/comments/{id}",
                     HABITS + "/comments/{parentCommentId}/replies/active",
@@ -206,14 +204,7 @@ public class SecurityConfig {
                     "/token",
                     "/socket/**",
                     FRIENDS + "/user/{userId}",
-                    "/habit/assign/confirm/{habitAssignId}",
-                    "/database/backup",
-                    "/database/backupFiles",
                     COMMIT_INFO)
-                .permitAll()
-                .requestMatchers(HttpMethod.DELETE,
-                    "/place/{id}",
-                    "/place")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
@@ -283,6 +274,12 @@ public class SecurityConfig {
                     "/habit/allMutualHabits/{friendId}",
                     "/habit/{habitId}/friends/profile-pictures",
                     "habit/favorites",
+                    "/favorite_place/favorite/{placeId}",
+                    "/habit/statistic/assign/{habitAssignId}",
+                    "/habit/assign/confirm/{habitAssignId}",
+                    "/place/info/favorite/{placeId}",
+                    "/database/backup",
+                    "/database/backupFiles",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
@@ -292,7 +289,8 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    "/ai/**")
+                    "/ai/**",
+                    SETTINGS_EXPORT)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
