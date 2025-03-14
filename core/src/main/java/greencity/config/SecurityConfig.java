@@ -205,10 +205,6 @@ public class SecurityConfig {
                     FRIENDS + "/user/{userId}",
                     COMMIT_INFO)
                 .permitAll()
-                .requestMatchers(HttpMethod.DELETE,
-                    "/place/{id}",
-                    "/place")
-                .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
                     "/place/getListPlaceLocationByMapsBounds",
