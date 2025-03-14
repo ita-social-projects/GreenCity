@@ -111,8 +111,6 @@ class UserNotificationServiceImplTest {
 
     @Test
     void getNotificationsFilteredTestWhenProjectNameIsNull() {
-        Pageable pageable = Mockito.mock(Pageable.class);
-        int pageSize = 10;
         Principal principal = getPrincipal();
         String language = "en";
         String email = "danylo@gmail.com";
@@ -131,6 +129,12 @@ class UserNotificationServiceImplTest {
                 notificationDto,
                 notificationDto
         );
+        Pageable pageable = Mockito.mock(Pageable.class);
+        int pageSize = 10;
+        int pageNumber = 0;
+        int totalPages = Math.ceilDiv(expectedPage.size(), pageSize);
+        boolean first = pageNumber == 0;
+        boolean last = (pageNumber + 1) >= totalPages;
         Page<Notification> notificationPage = new PageImpl<>(List.of(), pageable, 0);
 
         when(userService.findByEmail(email))
@@ -147,6 +151,8 @@ class UserNotificationServiceImplTest {
                 .thenReturn(zonedDateTime);
         when(pageable.getPageSize())
                 .thenReturn(pageSize);
+        when(pageable.getPageNumber())
+                .thenReturn(pageNumber);
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
                 pageable,
@@ -159,14 +165,14 @@ class UserNotificationServiceImplTest {
         );
 
         assertEquals(expectedPage, actualResult.getPage());
-        //assertEquals(notificationsFromUbs.getTotalElements(), actualResult.getTotalElements());
+        assertEquals(expectedPage.size(), actualResult.getTotalElements());
         assertEquals(notificationsFromUbs.getCurrentPage(), actualResult.getCurrentPage());
         assertEquals(notificationsFromUbs.getTotalPages(), actualResult.getTotalPages());
         assertEquals(notificationsFromUbs.getNumber(), actualResult.getNumber());
         assertEquals(notificationsFromUbs.isHasPrevious(), actualResult.isHasPrevious());
         assertEquals(notificationsFromUbs.isHasNext(), actualResult.isHasNext());
-        //assertEquals(notificationsFromUbs.isFirst(), actualResult.isFirst());
-        //assertEquals(notificationsFromUbs.isLast(), actualResult.isLast());
+        assertEquals(first, actualResult.isFirst());
+        assertEquals(last, actualResult.isLast());
         verify(userService).findByEmail(email);
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed, pageable);
         verify(restClient).findAllNotificationsForUserFromUbs(authorizationHeader, pageable);
