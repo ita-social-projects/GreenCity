@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-public class UbsNotificationDtoToNotificationDtoMapperTest {
+class UbsNotificationDtoToNotificationDtoMapperTest {
 
     @InjectMocks
     UbsNotificationDtoToNotificationDtoMapper ubsNotificationDtoToNotificationDtoMapper;

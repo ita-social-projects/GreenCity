@@ -52,7 +52,7 @@ public class CustomNotificationRepoImpl implements CustomNotificationRepo {
             .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
             .setMaxResults(pageable.getPageSize());
         List<Notification> resultList = typedQuery.getResultList();
-        long total = resultList.size();
+        long total = getNotificationsCount(targetUserId, projectName, notificationTypes, viewed);
 
         return new PageImpl<>(resultList, pageable, total);
     }
@@ -105,5 +105,15 @@ public class CustomNotificationRepoImpl implements CustomNotificationRepo {
 
     private void addSortByDateOrder(Root<Notification> notificationRoot, ArrayList<Order> orders) {
         orders.add(criteriaBuilder.desc(notificationRoot.get(Notification_.TIME)));
+    }
+
+    private long getNotificationsCount(Long targetUserId, ProjectName projectName,
+        List<NotificationType> notificationTypes, Boolean viewed) {
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        Root<Notification> countRoot = countQuery.from(Notification.class);
+
+        countQuery.select(criteriaBuilder.count(countRoot))
+            .where(getPredicate(targetUserId, projectName, notificationTypes, viewed, countRoot));
+        return entityManager.createQuery(countQuery).getSingleResult();
     }
 }
