@@ -116,8 +116,6 @@ public class HabitController {
     @Operation(summary = "Find all habits created by the current user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
@@ -141,14 +139,6 @@ public class HabitController {
      * @return {@link ResponseEntity} containing a pageable list of
      *         {@link HabitDto}.
      */
-    @Operation(summary = "Find all habits of a specified friend for the current user.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
-    })
     @GetMapping("/all/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllHabitsOfFriend(
         @PathVariable Long friendId,
@@ -170,14 +160,6 @@ public class HabitController {
      * @return {@link ResponseEntity} containing a pageable list of
      *         {@link HabitDto}.
      */
-    @Operation(summary = "Find all mutual habits shared between the current user and a specified friend.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-    })
     @GetMapping("/allMutualHabits/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
         @PathVariable Long friendId,
@@ -200,8 +182,6 @@ public class HabitController {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @GetMapping("{id}/to-do-list")
     @ApiLocale
@@ -227,8 +207,6 @@ public class HabitController {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
