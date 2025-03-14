@@ -78,7 +78,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
         return switch (projectName) {
             case null -> {
-                PageableAdvancedDto<NotificationDto> notificationsForUserFromGreenCity = getNotificationsForUserFromGreenCity(
+                PageableAdvancedDto<NotificationDto> notificationsFromGreenCity = getNotificationsForUserFromGreenCity(
                         page,
                         principal,
                         language,
@@ -86,18 +86,19 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                         notificationTypes,
                         viewed
                 );
-                Stream<NotificationDto> notificationsFromGreenCityStream = notificationsForUserFromGreenCity
+                PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = restClient.findAllNotificationsForUserFromUbs(
+                        authorizationHeader,
+                        page
+                );
+
+                Stream<NotificationDto> notificationsFromGreenCityStream = notificationsFromGreenCity
                         .getPage()
                         .stream();
-
-                PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = restClient.findAllNotificationsForUserFromUbs(
-                        authorizationHeader
-                );
                 Stream<NotificationDto> notificationsFromUbsStream = mapPageableOfUbsNotificationsToNotificationDtoStream(
                         notificationsFromUbs
                 );
 
-                Comparator<NotificationDto> sortByDateComparator = Comparator.comparing(
+                Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator.comparing(
                         NotificationDto::getTime
                 ).reversed();
 
@@ -106,18 +107,18 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                                 notificationsFromGreenCityStream,
                                 notificationsFromUbsStream
                         )
-                        .sorted(sortByDateComparator)
+                        .sorted(sortByRecentNotificationsComparator)
                         .limit(page.getPageSize())
                         .toList();
 
-                long totalElements = notificationsForUserFromGreenCity.getTotalElements() + notificationsFromUbs.getTotalElements();
+                long totalElements = notificationsFromGreenCity.getTotalElements() + notificationsFromUbs.getTotalElements();
 
                 long mergedPageSize = mergedNotifications.size();
                 int currentPage = page.getPageNumber();
                 int totalPages = (int) Math.ceilDiv(totalElements, page.getPageSize());
                 int number = page.getPageNumber();
                 boolean hasPrevious = currentPage > 0;
-                boolean hasNext = totalElements > (long) (currentPage + 1) * page.getPageSize();
+                boolean hasNext = (currentPage + 1) < totalPages;
                 boolean isFirst = currentPage == 0;
                 boolean isLast = !hasNext;
 
@@ -143,7 +144,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             );
             case PICKUP -> {
                 PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = restClient.findAllNotificationsForUserFromUbs(
-                        authorizationHeader
+                        authorizationHeader,
+                        page
                 );
                 List<NotificationDto> mappedNotificationDtos = mapPageableOfUbsNotificationsToNotificationDtoStream(
                         notificationsFromUbs

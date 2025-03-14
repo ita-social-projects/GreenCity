@@ -88,7 +88,10 @@ public class RestClient {
         this.systemEmail = systemEmail;
     }
 
-    public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(String authorizationHeader) {
+    public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(
+            String authorizationHeader,
+            Pageable pageable
+    ) {
         String bearerTokenPrefix = "Bearer ";
         if (!authorizationHeader.startsWith(bearerTokenPrefix)) {
             throw new IllegalArgumentException("Invalid authorization header");
@@ -98,7 +101,12 @@ public class RestClient {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(token);
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
-        String url = greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS;
+
+        String url = UriComponentsBuilder
+                .fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
+                .queryParam("page", pageable.getPageNumber())
+                .queryParam("size", pageable.getPageSize())
+                .toUriString();
 
         ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications = restTemplate.exchange(
                 url,

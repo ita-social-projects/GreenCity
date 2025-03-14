@@ -99,20 +99,30 @@ class RestClientTest {
     @Test
     void findAllNotificationsForUserFromUbsTest() {
         String authorizationHeader = "Bearer token";
-        String url = GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS;
+        Pageable pageable = Mockito.mock(Pageable.class);
+        int pageNumber = 0;
+        int pageSize = 10;
+        String expectedUrl = GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize;
         PageableAdvancedDto<UbsNotificationDto> expectedResult = Mockito.mock(PageableAdvancedDto.class);
 
+        when(pageable.getPageNumber())
+                .thenReturn(pageNumber);
+        when(pageable.getPageSize())
+                .thenReturn(pageSize);
         when(restTemplate.exchange(
-                eq(url),
+                eq(expectedUrl),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
         )).thenReturn(ResponseEntity.ok(expectedResult));
 
-        PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(authorizationHeader);
+        PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
+                authorizationHeader,
+                pageable
+        );
 
         verify(restTemplate).exchange(
-                eq(url),
+                eq(expectedUrl),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
@@ -127,10 +137,13 @@ class RestClientTest {
             "a"
     })
     void findAllNotificationsForUserFromUbsTestWithInvalidAuthorizationHeader(String authorizationHeader) {
+        Pageable pageable = Mockito.mock(Pageable.class);
+
         assertThrows(
                 IllegalArgumentException.class,
                 () -> restClient.findAllNotificationsForUserFromUbs(
-                        authorizationHeader
+                        authorizationHeader,
+                        pageable
                 )
         );
 
