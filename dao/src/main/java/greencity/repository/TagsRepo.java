@@ -12,7 +12,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExecutor<Tag> {
     /**
      * Method finds all tags and fetches theirs translations.

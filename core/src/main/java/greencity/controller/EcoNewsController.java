@@ -22,6 +22,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.service.AIService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,6 +60,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
+    private final AIService aiService;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -397,4 +399,11 @@ public class EcoNewsController {
     public ResponseEntity<EcoNewContentSourceDto> getContentAndSourceForEcoNewsById(@PathVariable Long ecoNewsId) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
     }
+
+    @PostMapping("/generate")
+    public String generateEcoNewsBasedOnHabits(@RequestParam String language) {
+        return aiService.generateEcoNewsBasedOnHabits(language);
+    }
+
+
 }

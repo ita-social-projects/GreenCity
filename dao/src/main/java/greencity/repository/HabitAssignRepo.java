@@ -453,4 +453,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
             GROUP BY ha.status
         """)
     List<HabitStatusCount> countHabitAssignsByStatus();
+
+    @Query("""
+            SELECT ht.name FROM HabitAssign ha
+            JOIN ha.habit h
+            JOIN h.habitTranslations ht
+            WHERE ha.user.id = :userId
+        """)
+    List<String> fetchHabitNamesByUserId(@Param("userId") Long userId);
 }

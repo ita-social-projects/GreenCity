@@ -56,4 +56,6 @@ public class EcoNewsDto {
     private int countComments;
 
     private boolean hidden;
+
+    private double relevanceScore;
 }
