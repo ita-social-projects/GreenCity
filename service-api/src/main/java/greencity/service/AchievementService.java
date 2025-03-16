@@ -87,10 +87,10 @@ public interface AchievementService {
      * @param achievementCategoryId The ID of the achievement category to filter by
      *                              category.
      * @return List AchievementVO Returns a list of achievements matching the given
-     * criteria.
+     *         criteria.
      */
     List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
-                                                 Long achievementCategoryId);
+        Long achievementCategoryId);
 
     /**
      * Method for achieve.
@@ -109,18 +109,20 @@ public interface AchievementService {
      * @param achievementCategoryId The ID of the achievement category to filter by
      *                              category.
      * @return Integer Returns a quantity of achievements matching the given
-     * criteria.
+     *         criteria.
      */
     Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
-                                                  Long achievementCategoryId);
+        Long achievementCategoryId);
 
     /**
      * Prepares a Pageable object with the specified sorting parameters.
      *
      * @param pageable The original Pageable object containing pagination details.
      * @param sortBy   The field by which the results should be sorted.
-     * @param sortDir  The direction of sorting, either "ASC" (ascending) or "DESC" (descending).
-     * @return Pageable Returns a new Pageable object with the applied sorting parameters.
+     * @param sortDir  The direction of sorting, either "ASC" (ascending) or "DESC"
+     *                 (descending).
+     * @return Pageable Returns a new Pageable object with the applied sorting
+     *         parameters.
      */
     Pageable preparePageable(Pageable pageable, String sortBy, String sortDir);
 }
