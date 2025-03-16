@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.constant.ErrorMessage;
+import static greencity.utils.OpenAIConstants.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,39 +31,73 @@ public class OpenAIServiceImpl implements OpenAIService {
         this.restTemplate = restTemplate;
     }
 
+    @SuppressWarnings("checkstyle:WhitespaceAround")
     @Override
     public String makeRequest(String prompt) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + apiKey);
-        headers.add("Content-Type", "application/json");
+        String validationError = validateRequestParameters(prompt);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("model", "gpt-4o-mini");
-        List<Map<String, String>> messages = new ArrayList<>();
-        messages.add(Map.of("role", "user", "content", prompt));
-        body.put("messages", messages);
-        body.put("max_tokens", 450);
-        body.put("temperature", 0.8);
+        if (validationError != null) {
+            return validationError;
+        }
+
+        HttpHeaders headers = createHttpHeaders();
+        Map<String, Object> body = createRequestBody(prompt);
+
+        return sendRequest(headers, body);
+    }
+
+    private String sendRequest(HttpHeaders headers, Map<String, Object> body) {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
         try {
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 apiUrl,
                 HttpMethod.POST,
                 request,
-                new ParameterizedTypeReference<>() {
-                });
-
-            return Optional.ofNullable(response)
-                .map(ResponseEntity::getBody)
-                .filter(responseBody -> responseBody.containsKey("choices"))
-                .map(responseBody -> (List<Map<String, Object>>) responseBody.get("choices"))
+                new ParameterizedTypeReference<>() {}
+            );
+            return Optional.ofNullable(response.getBody())
+                .map(responseBody -> (List<Map<String, Object>>) responseBody.get(CHOICES_KEY))
                 .filter(choices -> !choices.isEmpty())
-                .map(choices -> choices.get(0))
-                .map(choice -> (Map<String, Object>) choice.get("message"))
-                .map(message -> (String) message.get("content"))
-                .orElse(ErrorMessage.OPEN_AI_IS_NOT_RESPONDING);
+                .map(choices -> (Map<String, Object>) choices.getFirst().get(MESSAGE_KEY))
+                .map(message -> (String) message.get(JSON_CONTENT_KEY))
+                .filter(content -> !content.isEmpty())
+                .orElse(ERROR_INVALID_RESPONSE);
         } catch (Exception e) {
-            return ErrorMessage.OPEN_AI_IS_NOT_RESPONDING;
+            return ERROR_NO_RESPONSE;
         }
+    }
+
+    private Map<String, Object> createRequestBody(String prompt) {
+        Map<String, Object> body = new HashMap<>();
+        body.put(MODEL_KEY, MODEL_NAME);
+
+        List<Map<String, String>> messages = new ArrayList<>();
+        messages.add(Map.of(ROLE_KEY, SYSTEM_ROLE, JSON_CONTENT_KEY, LANGUAGE_POLICY));
+        messages.add(Map.of(ROLE_KEY, USER_ROLE, JSON_CONTENT_KEY, prompt));
+        body.put(MESSAGES_KEY, messages);
+        body.put(MAX_TOKENS_KEY, 1000);
+        body.put(TEMPERATURE_KEY, 0.5);
+
+        return body;
+    }
+
+    private HttpHeaders createHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(AUTH_HEADER, BEARER_PREFIX + apiKey);
+        headers.add(CONTENT_TYPE_HEADER, APPLICATION_JSON_TYPE);
+        return headers;
+    }
+
+    private String validateRequestParameters(String prompt) {
+        if (apiKey == null || apiKey.isEmpty()) {
+            return ERROR_MISSING_API_KEY;
+        }
+        if (apiUrl == null || apiUrl.isEmpty()) {
+            return ERROR_MISSING_API_URL;
+        }
+        if (prompt == null || prompt.isEmpty()) {
+            return ERROR_MISSING_PROMPT;
+        }
+        return null;
     }
 }

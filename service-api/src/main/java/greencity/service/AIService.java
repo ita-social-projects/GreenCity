@@ -1,5 +1,8 @@
 package greencity.service;
 
+import greencity.dto.econews.EcoNewsDto;
+import java.util.List;
+
 /**
  * Interface for interacting with an AI-based forecasting service.
  */
@@ -31,4 +34,17 @@ public interface AIService {
      * @return The generated news as a string in the specified language.
      */
     String getNews(String language, String query);
+    
+    /**
+     * Generates eco-news based on the user's habits.
+     *
+     * @param language The preferred language for the eco-news response.
+     *
+     * @return The generated eco-news as a string in the specified language.
+     */
+    String generateEcoNewsBasedOnHabits(String language);
+
+    List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language);
+
+    List<EcoNewsDto> getCombinedEcoNewsForUser(Long userId, String language);
 }
