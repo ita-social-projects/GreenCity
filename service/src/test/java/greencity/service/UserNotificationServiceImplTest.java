@@ -209,7 +209,6 @@ class UserNotificationServiceImplTest {
         String language = "en";
         List<NotificationType> notificationTypes = Collections.emptyList();
         Boolean viewed = false;
-        String authorizationHeader = "header";
         PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = Mockito.mock(PageableAdvancedDto.class);
         List<UbsNotificationDto> page = List.of(
             new UbsNotificationDto(),

@@ -58,9 +58,9 @@ public class RestClient {
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
     private final String systemEmail;
-    private final String pageQueryParam = "page";
-    private final String pageSizeQueryParam = "size";
-    private final String userEmailQueryParam = "email";
+    private static final String pageQueryParam = "page";
+    private static final String pageSizeQueryParam = "size";
+    private static final String userEmailQueryParam = "email";
 
     /**
      * Constructs a new instance of the RestClient class.
@@ -166,7 +166,7 @@ public class RestClient {
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam("email", email);
+            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(userEmailQueryParam, email);
         return restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();
     }
@@ -353,7 +353,7 @@ public class RestClient {
     public Long findIdByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam("email", email);
+            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam(userEmailQueryParam, email);
         return restTemplate.exchange(url.toUriString(), HttpMethod.GET, entity, Long.class).getBody();
     }
 
