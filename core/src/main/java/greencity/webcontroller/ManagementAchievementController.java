@@ -17,9 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
@@ -45,9 +43,7 @@ public class ManagementAchievementController {
         @RequestParam(defaultValue = "asc") String sortDir,
         Pageable pageable,
         Model model) {
-
         Pageable actualPageable = achievementService.preparePageable(pageable, sortBy, sortDir);
-
         PageableAdvancedDto<AchievementVO> allAchievements = (query == null || query.isEmpty())
             ? achievementService.findAll(actualPageable)
             : achievementService.searchAchievementBy(actualPageable, query);
