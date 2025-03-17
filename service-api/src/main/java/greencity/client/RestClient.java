@@ -57,6 +57,8 @@ public class RestClient {
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
     private final String systemEmail;
+    private final String pageQueryParam = "page";
+    private final String pageSizeQueryParam = "size";
 
     /**
      * Constructs a new instance of the RestClient class.
@@ -102,8 +104,8 @@ public class RestClient {
 
         String url = UriComponentsBuilder
             .fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
-            .queryParam("page", pageable.getPageNumber())
-            .queryParam("size", pageable.getPageSize())
+            .queryParam(pageQueryParam, pageable.getPageNumber())
+            .queryParam(pageSizeQueryParam, pageable.getPageSize())
             .toUriString();
 
         ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications = restTemplate.exchange(

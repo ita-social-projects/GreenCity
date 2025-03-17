@@ -39,6 +39,10 @@ class NotificationControllerTest {
     @Mock
     private Validator mockValidator;
 
+    private final String token = "token";
+    private final String authorizationHeader = "Authorization";
+    private final String locale = "en";
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
@@ -51,12 +55,11 @@ class NotificationControllerTest {
     void getNotificationsFilteredTest() throws Exception {
         var pageable = PageRequest.of(0, 20);
         HttpHeaders httpHeaders = new HttpHeaders();
-        String token = "token";
-        httpHeaders.add("Authorization", token);
+        httpHeaders.add(authorizationHeader, token);
 
         mockMvc.perform(get(notificationLink).principal(principal).headers(httpHeaders))
             .andExpect(status().isOk());
-        verify(userNotificationService).getNotificationsFiltered(pageable, principal, "en", null, null, null, token);
+        verify(userNotificationService).getNotificationsFiltered(pageable, principal, locale, null, null, null, token);
     }
 
     @Test
