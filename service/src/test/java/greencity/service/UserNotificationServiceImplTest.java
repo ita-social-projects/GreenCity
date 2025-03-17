@@ -117,7 +117,6 @@ class UserNotificationServiceImplTest {
         ProjectName projectName = null;
         List<NotificationType> notificationTypes = Collections.emptyList();
         Boolean viewed = false;
-        String authorizationHeader = "header";
         PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = Mockito.mock(PageableAdvancedDto.class);
         List<UbsNotificationDto> page = List.of(
             new UbsNotificationDto(),
@@ -140,7 +139,7 @@ class UserNotificationServiceImplTest {
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             pageable))
             .thenReturn(notificationPage);
-        when(restClient.findAllNotificationsForUserFromUbs(authorizationHeader, pageable))
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageable))
             .thenReturn(notificationsFromUbs);
         when(notificationsFromUbs.getPage())
             .thenReturn(page);
@@ -159,8 +158,7 @@ class UserNotificationServiceImplTest {
             language,
             projectName,
             notificationTypes,
-            viewed,
-            authorizationHeader);
+            viewed);
 
         assertEquals(expectedPage, actualResult.getPage());
         assertEquals(expectedPage.size(), actualResult.getTotalElements());
@@ -174,7 +172,7 @@ class UserNotificationServiceImplTest {
         verify(userService).findByEmail(email);
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             pageable);
-        verify(restClient).findAllNotificationsForUserFromUbs(authorizationHeader, pageable);
+        verify(restClient).findAllNotificationsForUserFromUbs(principal, pageable);
         verify(modelMapper, times(page.size())).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
     }
 
@@ -195,7 +193,7 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> expected = userNotificationService
-            .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null, true, "");
+            .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null, true);
 
         assertEquals(expected, actual);
 
@@ -221,7 +219,7 @@ class UserNotificationServiceImplTest {
             notificationDto,
             notificationDto);
 
-        when(restClient.findAllNotificationsForUserFromUbs(authorizationHeader, pageable))
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageable))
             .thenReturn(notificationsFromUbs);
         when(notificationsFromUbs.getPage())
             .thenReturn(page);
@@ -234,8 +232,7 @@ class UserNotificationServiceImplTest {
             language,
             PICKUP,
             notificationTypes,
-            viewed,
-            authorizationHeader);
+            viewed);
 
         assertEquals(expectedPage, actualResult.getPage());
         assertEquals(notificationsFromUbs.getTotalElements(), actualResult.getTotalElements());
@@ -246,7 +243,7 @@ class UserNotificationServiceImplTest {
         assertEquals(notificationsFromUbs.isHasNext(), actualResult.isHasNext());
         assertEquals(notificationsFromUbs.isFirst(), actualResult.isFirst());
         assertEquals(notificationsFromUbs.isLast(), actualResult.isLast());
-        verify(restClient).findAllNotificationsForUserFromUbs(authorizationHeader, pageable);
+        verify(restClient).findAllNotificationsForUserFromUbs(principal, pageable);
         verify(modelMapper, times(page.size())).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
     }
 
@@ -309,8 +306,7 @@ class UserNotificationServiceImplTest {
                 "en",
                 ProjectName.GREENCITY,
                 null,
-                true,
-                "");
+                true);
         PageableAdvancedDto<NotificationDto> expected =
             getPageableAdvancedDtoWithNotificationForEventCommentUserTag(
                 getBaseOfNotificationDtoForEventCommentUserTag(
@@ -376,7 +372,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> result = userNotificationService
             .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null,
-                true, "");
+                true);
 
         NotificationInviteDto notificationInviteDto = (NotificationInviteDto) result.getPage().getFirst();
 
@@ -463,8 +459,7 @@ class UserNotificationServiceImplTest {
                 "ua",
                 ProjectName.GREENCITY,
                 null,
-                true,
-                "");
+                true);
         PageableAdvancedDto<NotificationDto> expected =
             getPageableAdvancedDtoWithNotificationForEventCommentUserTag(
                 getBaseOfNotificationDtoForEventCommentUserTag(

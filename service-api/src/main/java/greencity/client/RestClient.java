@@ -14,6 +14,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.Role;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,7 @@ public class RestClient {
     private final String systemEmail;
     private final String pageQueryParam = "page";
     private final String pageSizeQueryParam = "size";
+    private final String userEmailQueryParam = "email";
 
     /**
      * Constructs a new instance of the RestClient class.
@@ -89,23 +91,17 @@ public class RestClient {
         this.systemEmail = systemEmail;
     }
 
-    public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(
-        String authorizationHeader,
+    public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(Principal principal,
         Pageable pageable) {
-        String bearerTokenPrefix = "Bearer ";
-        if (!authorizationHeader.startsWith(bearerTokenPrefix)) {
-            throw new IllegalArgumentException("Invalid authorization header");
-        }
-        String token = authorizationHeader.substring(bearerTokenPrefix.length());
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(token);
+        HttpHeaders httpHeaders = setHeader();
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
+        String userEmail = principal.getName();
 
         String url = UriComponentsBuilder
             .fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
             .queryParam(pageQueryParam, pageable.getPageNumber())
             .queryParam(pageSizeQueryParam, pageable.getPageSize())
+            .queryParam(userEmailQueryParam, userEmail)
             .toUriString();
 
         ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications = restTemplate.exchange(

@@ -2,7 +2,6 @@ package greencity.controller;
 
 import greencity.dto.achievement.ActionDto;
 import greencity.service.UserNotificationService;
-import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,11 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
+
+import java.security.Principal;
 
 import static greencity.ModelUtils.getActionDto;
 import static greencity.ModelUtils.getPrincipal;
@@ -39,10 +39,6 @@ class NotificationControllerTest {
     @Mock
     private Validator mockValidator;
 
-    private final String token = "token";
-    private final String authorizationHeader = "Authorization";
-    private final String locale = "en";
-
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
@@ -54,12 +50,10 @@ class NotificationControllerTest {
     @Test
     void getNotificationsFilteredTest() throws Exception {
         var pageable = PageRequest.of(0, 20);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(authorizationHeader, token);
 
-        mockMvc.perform(get(notificationLink).principal(principal).headers(httpHeaders))
+        mockMvc.perform(get(notificationLink).principal(principal))
             .andExpect(status().isOk());
-        verify(userNotificationService).getNotificationsFiltered(pageable, principal, locale, null, null, null, token);
+        verify(userNotificationService).getNotificationsFiltered(pageable, principal, "en", null, null, null);
     }
 
     @Test

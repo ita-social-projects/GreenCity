@@ -26,8 +26,7 @@ public interface UserNotificationService {
      * @return Page of {@link NotificationDto} instance.
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
-        String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed,
-        String authorizationHeader);
+        String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed);
 
     /**
      * Method for sending socket.

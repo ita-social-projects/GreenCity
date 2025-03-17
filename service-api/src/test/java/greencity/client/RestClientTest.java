@@ -31,6 +31,8 @@ import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
+
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
@@ -90,6 +92,8 @@ class RestClientTest {
     @Mock
     private JwtTool jwtTool;
 
+    private final String userEmail = "email";
+
     @BeforeEach
     void init() {
         restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, GREEN_CITY_UBS_ADDRESS, httpServletRequest,
@@ -99,14 +103,17 @@ class RestClientTest {
 
     @Test
     void findAllNotificationsForUserFromUbsTest() {
-        String authorizationHeader = "Bearer token";
+        Principal principal = Mockito.mock(Principal.class);
         Pageable pageable = Mockito.mock(Pageable.class);
         int pageNumber = 0;
         int pageSize = 10;
         String expectedUrl =
-            GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize;
+            GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize
+                + "&email=" + userEmail;
         PageableAdvancedDto<UbsNotificationDto> expectedResult = Mockito.mock(PageableAdvancedDto.class);
 
+        when(principal.getName())
+            .thenReturn(userEmail);
         when(pageable.getPageNumber())
             .thenReturn(pageNumber);
         when(pageable.getPageSize())
@@ -118,7 +125,7 @@ class RestClientTest {
             any(ParameterizedTypeReference.class))).thenReturn(ResponseEntity.ok(expectedResult));
 
         PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
-            authorizationHeader,
+            principal,
             pageable);
 
         verify(restTemplate).exchange(
@@ -127,28 +134,6 @@ class RestClientTest {
             any(HttpEntity.class),
             any(ParameterizedTypeReference.class));
         assertEquals(expectedResult, actualResult);
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "not valid Bearer token",
-        "1234",
-        "a"
-    })
-    void findAllNotificationsForUserFromUbsTestWithInvalidAuthorizationHeader(String authorizationHeader) {
-        Pageable pageable = Mockito.mock(Pageable.class);
-
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> restClient.findAllNotificationsForUserFromUbs(
-                authorizationHeader,
-                pageable));
-
-        verify(restTemplate, never()).exchange(
-            any(),
-            any(),
-            any(),
-            any(ParameterizedTypeReference.class));
     }
 
     @Test

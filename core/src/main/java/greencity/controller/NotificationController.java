@@ -13,9 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +25,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestHeader;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,7 +52,6 @@ public class NotificationController {
     @ApiPageableWithoutSort
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getNotificationsFiltered(
-        @RequestHeader("Authorization") String authorizationHeader,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) Principal principal,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
@@ -61,7 +59,7 @@ public class NotificationController {
         @RequestParam(name = "notification-types", required = false) List<NotificationType> notificationTypes,
         @RequestParam(required = false) Boolean viewed) {
         return ResponseEntity.ok().body(userNotificationService.getNotificationsFiltered(pageable, principal,
-            locale.getLanguage(), projectName, notificationTypes, viewed, authorizationHeader));
+            locale.getLanguage(), projectName, notificationTypes, viewed));
     }
 
     /**
