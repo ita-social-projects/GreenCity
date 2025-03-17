@@ -1601,10 +1601,10 @@ public class ModelUtils {
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
         String[] tagsEn = {"News"};
-        String[] tagsUa = {"Новини"};
+        String[] tagsUk = {"Новини"};
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
-            List.of(tagsUa), List.of(tagsEn), 0, 1, 0, false);
+            List.of(tagsUk), List.of(tagsEn), 0, 1, 0, false);
     }
 
     public static ShortEcoNewsDto getShortEcoNewsDto() {
