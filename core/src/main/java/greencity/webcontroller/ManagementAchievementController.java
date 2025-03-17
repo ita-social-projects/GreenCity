@@ -40,17 +40,17 @@ public class ManagementAchievementController {
      */
     @GetMapping
     public String getAllAchievement(
-            @RequestParam(required = false, name = "query") String query,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            Pageable pageable,
-            Model model) {
+        @RequestParam(required = false, name = "query") String query,
+        @RequestParam(defaultValue = "id") String sortBy,
+        @RequestParam(defaultValue = "asc") String sortDir,
+        Pageable pageable,
+        Model model) {
 
         Pageable actualPageable = achievementService.preparePageable(pageable, sortBy, sortDir);
 
         PageableAdvancedDto<AchievementVO> allAchievements = (query == null || query.isEmpty())
-                ? achievementService.findAll(actualPageable)
-                : achievementService.searchAchievementBy(actualPageable, query);
+            ? achievementService.findAll(actualPageable)
+            : achievementService.searchAchievementBy(actualPageable, query);
 
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAllForManagement());
@@ -72,7 +72,7 @@ public class ManagementAchievementController {
     @PostMapping
     @ResponseBody
     public GenericResponseDto saveAchievement(@Valid @RequestBody AchievementPostDto achievementPostDto,
-                                              BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             achievementService.save(achievementPostDto);
         }
@@ -89,7 +89,7 @@ public class ManagementAchievementController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteAchievementById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(achievementService.delete(id));
+            .body(achievementService.delete(id));
     }
 
     /**
@@ -114,7 +114,7 @@ public class ManagementAchievementController {
     @PutMapping
     @ResponseBody
     public GenericResponseDto update(@Valid @RequestBody AchievementManagementDto achievementManagementDto,
-                                     BindingResult bindingResult) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             achievementService.update(achievementManagementDto);
         }
