@@ -7,7 +7,6 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 public interface AchievementService {

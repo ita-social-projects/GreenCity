@@ -238,7 +238,6 @@ class AchievementServiceImplTest {
         assertEquals(21, result.getPageSize());
     }
 
-
     @Test
     void findAllACHIEVEDWithCategoryIdInRepoTest() {
         Achievement achievement = getAchievement();
