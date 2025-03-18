@@ -82,18 +82,20 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                     projectName,
                     notificationTypes,
                     viewed);
-                PageableAdvancedDto<NotificationDto> notificationsFromUbs =
-                    getNotificationsForUserFromUbs(principal, page);
+                PageableAdvancedDto<NotificationDto> notificationsFromUbs = getNotificationsForUserFromUbs(principal, page);
 
                 Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator.comparing(
                     NotificationDto::getTime).reversed();
+
+                long notificationSourcesCount = 2L;
+                long mergedPageSize = notificationSourcesCount * page.getPageSize();
 
                 List<NotificationDto> mergedNotifications = Stream
                     .concat(
                         notificationsFromGreenCity.getPage().stream(),
                         notificationsFromUbs.getPage().stream())
                     .sorted(sortByRecentNotificationsComparator)
-                    .limit(2L * page.getPageSize())
+                    .limit(mergedPageSize)
                     .toList();
 
                 long totalElements =
