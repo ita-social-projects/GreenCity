@@ -58,9 +58,9 @@ public class RestClient {
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
     private final String systemEmail;
-    private static final String pageQueryParam = "page";
-    private static final String pageSizeQueryParam = "size";
-    private static final String userEmailQueryParam = "email";
+    private static final String PAGE_QUERY_PARAM = "page";
+    private static final String PAGE_SIZE_QUERY_PARAM = "size";
+    private static final String USER_EMAIL_QUERY_PARAM = "email";
 
     /**
      * Constructs a new instance of the RestClient class.
@@ -99,9 +99,9 @@ public class RestClient {
 
         String url = UriComponentsBuilder
             .fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
-            .queryParam(pageQueryParam, pageable.getPageNumber())
-            .queryParam(pageSizeQueryParam, pageable.getPageSize())
-            .queryParam(userEmailQueryParam, userEmail)
+            .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
+            .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
+            .queryParam(USER_EMAIL_QUERY_PARAM, userEmail)
             .toUriString();
 
         ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications = restTemplate.exchange(
@@ -166,7 +166,7 @@ public class RestClient {
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(userEmailQueryParam, email);
+            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
         return restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();
     }
@@ -353,7 +353,7 @@ public class RestClient {
     public Long findIdByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam(userEmailQueryParam, email);
+            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
         return restTemplate.exchange(url.toUriString(), HttpMethod.GET, entity, Long.class).getBody();
     }
 

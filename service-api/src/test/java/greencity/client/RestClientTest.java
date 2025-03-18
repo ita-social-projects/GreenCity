@@ -87,7 +87,7 @@ class RestClientTest {
     @Mock
     private JwtTool jwtTool;
 
-    private final String userEmail = "email";
+    private static final String USER_EMAIL = "email";
 
     @BeforeEach
     void init() {
@@ -104,11 +104,11 @@ class RestClientTest {
         int pageSize = 10;
         String expectedUrl =
             GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize
-                + "&email=" + userEmail;
+                + "&email=" + USER_EMAIL;
         PageableAdvancedDto<UbsNotificationDto> expectedResult = Mockito.mock(PageableAdvancedDto.class);
 
         when(principal.getName())
-            .thenReturn(userEmail);
+            .thenReturn(USER_EMAIL);
         when(pageable.getPageNumber())
             .thenReturn(pageNumber);
         when(pageable.getPageSize())
