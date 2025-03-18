@@ -99,25 +99,24 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 long totalElements =
                     notificationsFromGreenCity.getTotalElements() + notificationsFromUbs.getTotalElements();
 
-                long mergedPageSize = mergedNotifications.size();
-                int currentPage = page.getPageNumber();
                 int totalPages = (int) Math.ceilDiv(totalElements, page.getPageSize());
-                int number = page.getPageNumber();
-                boolean hasPrevious = currentPage > 0;
-                boolean hasNext = (currentPage + 1) < totalPages;
-                boolean isFirst = currentPage == 0;
+                int pageNumber = page.getPageNumber();
+                boolean hasPrevious = pageNumber > 0;
+                boolean hasNext = (pageNumber + 1) < totalPages;
+                boolean isFirst = pageNumber == 0;
                 boolean isLast = !hasNext;
 
-                yield new PageableAdvancedDto<>(
-                    mergedNotifications,
-                    mergedPageSize,
-                    currentPage,
-                    totalPages,
-                    number,
-                    hasPrevious,
-                    hasNext,
-                    isFirst,
-                    isLast);
+                yield PageableAdvancedDto.<NotificationDto>builder()
+                        .page(mergedNotifications)
+                        .totalElements(totalElements)
+                        .currentPage(pageNumber)
+                        .totalPages(totalPages)
+                        .number(pageNumber)
+                        .hasPrevious(hasPrevious)
+                        .hasNext(hasNext)
+                        .first(isFirst)
+                        .last(isLast)
+                        .build();
             }
             case GREENCITY -> getNotificationsForUserFromGreenCity(
                 page,
