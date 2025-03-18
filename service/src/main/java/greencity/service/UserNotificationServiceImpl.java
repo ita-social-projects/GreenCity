@@ -521,16 +521,17 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .stream()
             .map(ubsNotificationDto -> modelMapper.map(ubsNotificationDto, NotificationDto.class)).toList();
 
-        return new PageableAdvancedDto<>(
-            mappedNotificationsFromUbsList,
-            notificationsFromUbs.getTotalElements(),
-            notificationsFromUbs.getCurrentPage(),
-            notificationsFromUbs.getTotalPages(),
-            notificationsFromUbs.getNumber(),
-            notificationsFromUbs.isHasPrevious(),
-            notificationsFromUbs.isHasNext(),
-            notificationsFromUbs.isFirst(),
-            notificationsFromUbs.isLast());
+        return PageableAdvancedDto.<NotificationDto>builder()
+            .page(mappedNotificationsFromUbsList)
+            .totalElements(notificationsFromUbs.getTotalElements())
+            .currentPage(notificationsFromUbs.getCurrentPage())
+            .totalPages(notificationsFromUbs.getTotalPages())
+            .number(notificationsFromUbs.getNumber())
+            .hasPrevious(notificationsFromUbs.isHasPrevious())
+            .hasNext(notificationsFromUbs.isHasNext())
+            .first(notificationsFromUbs.isFirst())
+            .last(notificationsFromUbs.isLast())
+            .build();
     }
 
     private Notification buildNotification(NotificationType notificationType, UserVO targetUserVO, Long targetId,
