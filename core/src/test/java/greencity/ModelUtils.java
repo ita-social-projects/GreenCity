@@ -144,7 +144,7 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()), null, 1L,
-            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12, false);
+            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12, false, 0.0);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
