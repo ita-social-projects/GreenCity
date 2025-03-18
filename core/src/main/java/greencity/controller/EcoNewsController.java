@@ -218,8 +218,6 @@ public class EcoNewsController {
     @Operation(summary = "Delete eco news.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
@@ -241,9 +239,7 @@ public class EcoNewsController {
      */
     @Operation(summary = "Get three recommended eco news.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
     })
     @GetMapping("/{ecoNewsId}/recommended")
     public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(

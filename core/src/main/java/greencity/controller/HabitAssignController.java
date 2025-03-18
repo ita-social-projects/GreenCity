@@ -737,6 +737,8 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "302", description = HttpStatuses.FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.FOUND))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
