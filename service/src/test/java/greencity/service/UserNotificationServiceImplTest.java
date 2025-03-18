@@ -118,9 +118,10 @@ class UserNotificationServiceImplTest {
         List<NotificationType> notificationTypes = Collections.emptyList();
         Boolean viewed = false;
         PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = Mockito.mock(PageableAdvancedDto.class);
+        UbsNotificationDto ubsNotificationDto = mock(UbsNotificationDto.class);
         List<UbsNotificationDto> page = List.of(
-            new UbsNotificationDto(),
-            new UbsNotificationDto());
+            ubsNotificationDto,
+            ubsNotificationDto);
         NotificationDto notificationDto = Mockito.mock(NotificationDto.class);
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         List<NotificationDto> expectedPage = List.of(
@@ -210,9 +211,10 @@ class UserNotificationServiceImplTest {
         List<NotificationType> notificationTypes = Collections.emptyList();
         Boolean viewed = false;
         PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = Mockito.mock(PageableAdvancedDto.class);
+        UbsNotificationDto ubsNotificationDto = mock(UbsNotificationDto.class);
         List<UbsNotificationDto> page = List.of(
-            new UbsNotificationDto(),
-            new UbsNotificationDto());
+            ubsNotificationDto,
+            ubsNotificationDto);
         NotificationDto notificationDto = Mockito.mock(NotificationDto.class);
         List<NotificationDto> expectedPage = List.of(
             notificationDto,

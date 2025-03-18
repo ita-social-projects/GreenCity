@@ -34,17 +34,17 @@ class UbsNotificationDtoToNotificationDtoMapperTest {
         boolean isRead = false;
         UbsNotificationDto ubsNotificationDto = Mockito.mock(UbsNotificationDto.class);
 
-        when(ubsNotificationDto.getBody())
+        when(ubsNotificationDto.body())
             .thenReturn(body);
-        when(ubsNotificationDto.getId())
+        when(ubsNotificationDto.id())
             .thenReturn(id);
-        when(ubsNotificationDto.getOrderId())
+        when(ubsNotificationDto.orderId())
             .thenReturn(orderId);
-        when(ubsNotificationDto.getNotificationTime())
+        when(ubsNotificationDto.notificationTime())
             .thenReturn(notificationTime);
-        when(ubsNotificationDto.getTitle())
+        when(ubsNotificationDto.title())
             .thenReturn(title);
-        when(ubsNotificationDto.isRead())
+        when(ubsNotificationDto.read())
             .thenReturn(isRead);
 
         NotificationDto expected = NotificationDto.builder()
@@ -65,12 +65,12 @@ class UbsNotificationDtoToNotificationDtoMapperTest {
 
         NotificationDto actual = ubsNotificationDtoToNotificationDtoMapper.convert(ubsNotificationDto);
 
-        verify(ubsNotificationDto, times(2)).getBody();
-        verify(ubsNotificationDto).getId();
-        verify(ubsNotificationDto).getOrderId();
-        verify(ubsNotificationDto).getNotificationTime();
-        verify(ubsNotificationDto).getTitle();
-        verify(ubsNotificationDto).isRead();
+        verify(ubsNotificationDto, times(2)).body();
+        verify(ubsNotificationDto).id();
+        verify(ubsNotificationDto).orderId();
+        verify(ubsNotificationDto).notificationTime();
+        verify(ubsNotificationDto).title();
+        verify(ubsNotificationDto).read();
         assertEquals(expected, actual);
     }
 
