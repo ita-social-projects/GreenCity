@@ -77,7 +77,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * {@inheritDoc}
      */
     @Override
-    @Transactional
     public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
         String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed) {
         return switch (projectName) {
