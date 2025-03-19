@@ -67,6 +67,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final HabitAssignRepo habitAssignRepo;
     private final RestClient restClient;
 
+    private final Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator
+            .comparing(NotificationDto::getTime).reversed();
+
     /**
      * {@inheritDoc}
      */
@@ -83,9 +86,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                     notificationTypes,
                     viewed);
                 PageableAdvancedDto<NotificationDto> notificationsFromUbs = getNotificationsForUserFromUbs(principal, page);
-
-                Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator.comparing(
-                    NotificationDto::getTime).reversed();
 
                 long notificationSourcesCount = 2L;
                 long mergedPageSize = notificationSourcesCount * page.getPageSize();
