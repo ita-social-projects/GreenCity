@@ -53,7 +53,7 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 public class RestClient {
     private final RestTemplate restTemplate;
     private final String greenCityUserServerAddress;
-    private final String greenCityUbsServerAddress;
+    private final UriComponentsBuilder ubsNotificationsUrlBuilder;
 
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
@@ -85,10 +85,11 @@ public class RestClient {
         @Value("${spring.liquibase.parameters.service-email}") String systemEmail) {
         this.restTemplate = restTemplate;
         this.greenCityUserServerAddress = greenCityUserServerAddress;
-        this.greenCityUbsServerAddress = greenCityUbsServerAddress;
         this.httpServletRequest = httpServletRequest;
         this.jwtTool = jwtTool;
         this.systemEmail = systemEmail;
+        this.ubsNotificationsUrlBuilder =
+            UriComponentsBuilder.fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS);
     }
 
     public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(Principal principal,
@@ -97,8 +98,7 @@ public class RestClient {
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         String userEmail = principal.getName();
 
-        String url = UriComponentsBuilder
-            .fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
+        String url = ubsNotificationsUrlBuilder
             .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
             .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
             .queryParam(USER_EMAIL_QUERY_PARAM, userEmail)
