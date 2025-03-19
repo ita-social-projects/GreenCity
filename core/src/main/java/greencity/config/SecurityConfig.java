@@ -51,6 +51,8 @@ public class SecurityConfig {
     private static final String REPLIES = "/replies";
     private static final String LIKE = "/like";
     private static final String DISLIKE = "/dislike";
+    private static final String LIKE_NEW = "/like-v2";
+    private static final String DISLIKE_NEW = "/dislike-v2";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
     private static final String COUNT = "/count";
@@ -316,6 +318,8 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + RATINGS,
                     EVENTS + EVENT_ID + LIKE,
                     EVENTS + EVENT_ID + DISLIKE,
+                    EVENTS + EVENT_ID + LIKE_NEW,
+                    EVENTS + EVENT_ID + DISLIKE_NEW,
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
