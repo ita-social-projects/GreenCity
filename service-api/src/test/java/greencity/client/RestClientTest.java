@@ -56,11 +56,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -129,6 +131,49 @@ class RestClientTest {
             any(HttpEntity.class),
             any(ParameterizedTypeReference.class));
         assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void findAllNotificationsForUserFromUbsTestWhenRestTemplateThrowsException() {
+        Principal principal = Mockito.mock(Principal.class);
+        Pageable pageable = Mockito.mock(Pageable.class);
+        int pageNumber = 0;
+        int pageSize = 10;
+        String expectedUrl =
+            GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize
+                + "&email=" + USER_EMAIL;
+        String exceptionMessage = "exceptionMessage";
+
+        when(principal.getName())
+            .thenReturn(USER_EMAIL);
+        when(pageable.getPageNumber())
+            .thenReturn(pageNumber);
+        when(pageable.getPageSize())
+            .thenReturn(pageSize);
+        when(restTemplate.exchange(
+            eq(expectedUrl),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            any(ParameterizedTypeReference.class))).thenThrow(new RestClientException(exceptionMessage));
+
+        PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
+            principal,
+            pageable);
+
+        verify(restTemplate).exchange(
+            eq(expectedUrl),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            any(ParameterizedTypeReference.class));
+        assertEquals(Collections.emptyList(), actualResult.getPage());
+        assertEquals(0, actualResult.getTotalElements());
+        assertEquals(0, actualResult.getCurrentPage());
+        assertEquals(0, actualResult.getTotalPages());
+        assertEquals(0, actualResult.getNumber());
+        assertFalse(actualResult.isHasPrevious());
+        assertFalse(actualResult.isHasNext());
+        assertFalse(actualResult.isFirst());
+        assertFalse(actualResult.isLast());
     }
 
     @Test

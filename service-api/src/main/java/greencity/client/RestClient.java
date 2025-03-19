@@ -16,6 +16,7 @@ import greencity.enums.EmailPreference;
 import greencity.enums.Role;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,6 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -104,12 +106,20 @@ public class RestClient {
             .queryParam(USER_EMAIL_QUERY_PARAM, userEmail)
             .toUriString();
 
-        ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications = restTemplate.exchange(
-            url,
-            HttpMethod.GET,
-            httpEntity,
-            new ParameterizedTypeReference<>() {
-            });
+        ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications;
+        try {
+            notifications = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                httpEntity,
+                new ParameterizedTypeReference<>() {
+                });
+        } catch (RestClientException e) {
+            log.warn("Exception occurred while trying to reach to UBS: {}", e.getMessage());
+            return PageableAdvancedDto.<UbsNotificationDto>builder()
+                .page(Collections.emptyList())
+                .build();
+        }
 
         return notifications.getBody();
     }
