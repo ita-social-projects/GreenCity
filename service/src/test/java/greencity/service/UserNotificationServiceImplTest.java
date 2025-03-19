@@ -128,9 +128,10 @@ class UserNotificationServiceImplTest {
             notificationDto,
             notificationDto);
         Pageable pageable = Mockito.mock(Pageable.class);
+        long expectedPageSize = expectedPage.size();
         int pageSize = 10;
         int pageNumber = 0;
-        int totalPages = Math.ceilDiv(expectedPage.size(), pageSize);
+        int totalPages = Math.ceilDiv((int) expectedPageSize, pageSize);
         boolean first = pageNumber == 0;
         boolean last = (pageNumber + 1) >= totalPages;
         Page<Notification> notificationPage = new PageImpl<>(List.of(), pageable, 0);
@@ -144,6 +145,10 @@ class UserNotificationServiceImplTest {
             .thenReturn(notificationsFromUbs);
         when(notificationsFromUbs.getPage())
             .thenReturn(page);
+        when(notificationsFromUbs.getTotalElements())
+            .thenReturn(expectedPageSize);
+        when(notificationsFromUbs.getTotalPages())
+            .thenReturn(totalPages);
         when(modelMapper.map(any(UbsNotificationDto.class), eq(NotificationDto.class)))
             .thenReturn(notificationDto);
         when(notificationDto.getTime())
@@ -164,7 +169,7 @@ class UserNotificationServiceImplTest {
         assertEquals(expectedPage, actualResult.getPage());
         assertEquals(expectedPage.size(), actualResult.getTotalElements());
         assertEquals(notificationsFromUbs.getCurrentPage(), actualResult.getCurrentPage());
-        assertEquals(notificationsFromUbs.getTotalPages(), actualResult.getTotalPages());
+        assertEquals(totalPages, actualResult.getTotalPages());
         assertEquals(notificationsFromUbs.getNumber(), actualResult.getNumber());
         assertEquals(notificationsFromUbs.isHasPrevious(), actualResult.isHasPrevious());
         assertEquals(notificationsFromUbs.isHasNext(), actualResult.isHasNext());
