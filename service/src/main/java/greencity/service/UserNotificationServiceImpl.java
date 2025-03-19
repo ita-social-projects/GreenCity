@@ -68,7 +68,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final RestClient restClient;
 
     private final Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator
-            .comparing(NotificationDto::getTime).reversed();
+        .comparing(NotificationDto::getTime).reversed();
 
     /**
      * {@inheritDoc}
@@ -85,7 +85,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                     projectName,
                     notificationTypes,
                     viewed);
-                PageableAdvancedDto<NotificationDto> notificationsFromUbs = getNotificationsForUserFromUbs(principal, page);
+                PageableAdvancedDto<NotificationDto> notificationsFromUbs =
+                    getNotificationsForUserFromUbs(principal, page);
 
                 long notificationSourcesCount = 2L;
                 long mergedPageSize = notificationSourcesCount * page.getPageSize();
@@ -109,16 +110,16 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 boolean isLast = !hasNext;
 
                 yield PageableAdvancedDto.<NotificationDto>builder()
-                        .page(mergedNotifications)
-                        .totalElements(totalElements)
-                        .currentPage(pageNumber)
-                        .totalPages(totalPages)
-                        .number(pageNumber)
-                        .hasPrevious(hasPrevious)
-                        .hasNext(hasNext)
-                        .first(isFirst)
-                        .last(isLast)
-                        .build();
+                    .page(mergedNotifications)
+                    .totalElements(totalElements)
+                    .currentPage(pageNumber)
+                    .totalPages(totalPages)
+                    .number(pageNumber)
+                    .hasPrevious(hasPrevious)
+                    .hasNext(hasNext)
+                    .first(isFirst)
+                    .last(isLast)
+                    .build();
             }
             case GREENCITY -> getNotificationsForUserFromGreenCity(
                 page,
