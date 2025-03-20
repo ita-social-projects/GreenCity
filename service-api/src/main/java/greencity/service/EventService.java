@@ -352,9 +352,8 @@ public interface EventService {
     Page<UserProfilePictureDto> getUsersDislikedEventPage(Long eventId, Pageable pageable);
 
     /**
-     * Retrieves a list of events organized by the user with the specified ID.
-     *
-     * This method fetches all events where the user, identified by the given
+     * Retrieves a list of events organized by the user with the specified ID. This
+     * method fetches all events where the user, identified by the given
      * {@code userId}, is the organizer. The events are returned as a list of
      * {@link EventDto} objects. If the user has not organized any events, an empty
      * list is returned.
@@ -367,9 +366,8 @@ public interface EventService {
     List<EventDto> getAllEventsOrganizedByUser(Long userId);
 
     /**
-     * Retrieves a list of events attended by the user with the specified ID.
-     *
-     * This method fetches all events where the user, identified by the given
+     * Retrieves a list of events attended by the user with the specified ID. This
+     * method fetches all events where the user, identified by the given
      * {@code userId}, is an attender. The events are returned as a list of
      * {@link EventDto} objects. If the user has not attended any events, an empty
      * list is returned.

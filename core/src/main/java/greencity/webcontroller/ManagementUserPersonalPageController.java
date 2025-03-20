@@ -29,7 +29,7 @@ import java.util.Locale;
 
 @Controller
 @AllArgsConstructor
-    @RequestMapping("/management/users/{id}")
+@RequestMapping("/management/users/{id}")
 public class ManagementUserPersonalPageController {
     private final HabitAssignService habitAssignService;
     private final EcoNewsService ecoNewsService;

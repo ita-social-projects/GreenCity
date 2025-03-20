@@ -1126,13 +1126,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDto> getAllEventsOrganizedByUser(Long userId) {
         User user = userRepo.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         List<Event> organizedEvents = eventRepo.getAllByOrganizer(user);
 
         return organizedEvents.stream()
-                .map(event -> buildEventDto(event , userId))
-                .toList();
+            .map(event -> buildEventDto(event, userId))
+            .toList();
     }
 
     /**
@@ -1143,8 +1143,8 @@ public class EventServiceImpl implements EventService {
         List<Event> attendedEvent = eventRepo.findAllByAttendersId(userId);
 
         return attendedEvent.stream()
-                .map(event -> buildEventDto(event , userId))
-                .toList();
+            .map(event -> buildEventDto(event, userId))
+            .toList();
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
