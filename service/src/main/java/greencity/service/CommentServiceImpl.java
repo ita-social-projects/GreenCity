@@ -710,7 +710,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * This helper method provides liking logic, similar both to like and likeV2
+     * This helper method provides liking logic, similar both to like and likeV2.
      *
      * @param commentId - id of a comment to like
      * @param userVO    - current user
@@ -747,7 +747,7 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * This helper method provides disliking logic, similar both to dislike and
-     * dislikeV2
+     * dislikeV2.
      *
      * @param commentId - id of a comment to like
      * @param userVO    - current user
