@@ -1120,6 +1120,33 @@ public class EventServiceImpl implements EventService {
         return eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<EventDto> getAllEventsOrganizedByUser(Long userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        List<Event> organizedEvents = eventRepo.getAllByOrganizer(user);
+
+        return organizedEvents.stream()
+                .map(event -> buildEventDto(event , userId))
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<EventDto> getAllEventsAttendedByUser(Long userId) {
+        List<Event> attendedEvent = eventRepo.findAllByAttendersId(userId);
+
+        return attendedEvent.stream()
+                .map(event -> buildEventDto(event , userId))
+                .toList();
+    }
+
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {
         final LikeNotificationDto likeNotificationDto = LikeNotificationDto.builder()
             .targetUserVO(modelMapper.map(targetUser, UserVO.class))

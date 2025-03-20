@@ -2154,4 +2154,76 @@ class EventServiceImplTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void getAllEventsOrganizedByUser_Success() {
+        Long userId = 1L;
+        User user = getUser();
+        List<Event> organizedEvents = List.of(getEvent());
+        EventDto eventDto = ModelUtils.getEventDto();
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(eventRepo.getAllByOrganizer(user)).thenReturn(organizedEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        List<EventDto> result = eventService.getAllEventsOrganizedByUser(userId);
+
+        assertEquals(1, result.size());
+        assertEquals(eventDto, result.get(0));
+
+        verify(userRepo).findById(userId);
+        verify(eventRepo).getAllByOrganizer(user);
+        verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_UserNotFound_ThrowsNotFoundException() {
+        Long userId = 1L;
+
+        when(userRepo.findById(userId)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            eventService.getAllEventsOrganizedByUser(userId);
+        });
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).findById(userId);
+        verify(eventRepo, never()).getAllByOrganizer(any(User.class));
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_Success() {
+        Long userId = 1L;
+        List<Event> attendedEvents = List.of(getEvent());
+        EventDto eventDto = ModelUtils.getEventDto();
+
+        when(eventRepo.findAllByAttendersId(userId)).thenReturn(attendedEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        List<EventDto> result = eventService.getAllEventsAttendedByUser(userId);
+
+        assertEquals(1, result.size());
+        assertEquals(eventDto, result.get(0));
+
+        verify(eventRepo).findAllByAttendersId(userId);
+        verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
+        verifyNoInteractions(userRepo);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_NoEvents_ReturnsEmptyList() {
+        Long userId = 1L;
+        List<Event> attendedEvents = Collections.emptyList();
+        when(eventRepo.findAllByAttendersId(userId)).thenReturn(attendedEvents);
+
+        List<EventDto> result = eventService.getAllEventsAttendedByUser(userId);
+
+        assertTrue(result.isEmpty());
+
+        verify(eventRepo).findAllByAttendersId(userId);
+        verifyNoInteractions(modelMapper);
+        verifyNoInteractions(userRepo);
+    }
 }

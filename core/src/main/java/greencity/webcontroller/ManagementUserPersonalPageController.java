@@ -3,12 +3,17 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.service.*;
+import greencity.service.EcoNewsService;
+import greencity.service.HabitAssignService;
+import greencity.service.PlaceService;
+import greencity.service.UserService;
+import greencity.service.EventService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -24,12 +29,13 @@ import java.util.Locale;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/management/users/{id}")
+    @RequestMapping("/management/users/{id}")
 public class ManagementUserPersonalPageController {
     private final HabitAssignService habitAssignService;
     private final EcoNewsService ecoNewsService;
     private final PlaceService placeService;
     private final UserService userService;
+    private final EventService eventService;
 
     /**
      * Method that returns management page of a {@link UserVO}.
@@ -56,6 +62,8 @@ public class ManagementUserPersonalPageController {
             .getAllCustomHabitAssignsByUserId(id, locale.getLanguage());
         List<EcoNewsDto> publishedEcoNews = ecoNewsService.getAllByUser(user);
         List<PlaceVO> createdEcoPlaces = placeService.getAllCreatedPlacesByUserId(user.getId());
+        List<EventDto> organizedEvents = eventService.getAllEventsOrganizedByUser(id);
+        List<EventDto> attendedEvents = eventService.getAllEventsAttendedByUser(id);
 
         model.addAttribute("user", user);
         model.addAttribute("acquiredHabits", acquiredHabits);
@@ -64,6 +72,8 @@ public class ManagementUserPersonalPageController {
         model.addAttribute("customHabits", customHabits);
         model.addAttribute("publishedEcoNews", publishedEcoNews);
         model.addAttribute("createdEcoPlaces", createdEcoPlaces);
+        model.addAttribute("organizedEvents", organizedEvents);
+        model.addAttribute("attendedEvents", attendedEvents);
 
         return "core/management_user_personal_page";
     }

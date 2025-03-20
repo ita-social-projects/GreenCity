@@ -234,4 +234,16 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             WHERE e.id = :eventId
         """)
     Page<UserProfilePictureDto> getUsersDislikedEventProfilePicturesPage(Long eventId, Pageable pageable);
+
+    /**
+     * Retrieves a list of events organized by the specified user.
+     *
+     * This method queries the database for all events where the given {@code user} is the organizer.
+     * The result includes all matching events, or an empty list if the user has not organized any events.
+     *
+     * @param userId {@link User} the user whose organized events are to be retrieved.
+     * @return {@link List<Event>} a list of events organized by the user, or an empty list if none are found.
+     */
+    @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
+    List<Event> findAllByAttendersId(Long userId);
 }
