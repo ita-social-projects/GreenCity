@@ -426,24 +426,56 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDto update(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
+        Event updatedEvent = processEventUpdate(eventDtoRequest, email, images);
+        return buildEventDto(updatedEvent, updatedEvent.getOrganizer().getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public EventResponseDto updateV2(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
+        Event updatedEvent = processEventUpdate(eventDtoRequest, email, images);
+        return buildEventResponseDto(updatedEvent, updatedEvent.getOrganizer().getId());
+    }
+
+    private Event processEventUpdate(UpdateEventRequestDto eventDtoRequest, String email, MultipartFile[] images) {
         UpdateEventDto eventDto = modelMapper.map(eventDtoRequest, UpdateEventDto.class);
         checkingEqualityDateTimeInEventDateLocationDto(eventDto.getDatesLocations());
 
         Event toUpdate = eventRepo.findById(eventDto.getId())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
 
+        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
+        validateOrganizerPermissions(organizer, toUpdate);
+        validateEventNotFinished(toUpdate);
+
+        notifyAttenders(toUpdate, eventDto);
+
+        enhanceWithNewData(toUpdate, eventDto, images);
+
+        return eventRepo.save(toUpdate);
+    }
+
+    private void validateOrganizerPermissions(User organizer, Event toUpdate) {
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+    }
 
+    private void validateEventNotFinished(Event toUpdate) {
         if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
+    }
+
+    private void notifyAttenders(Event toUpdate, UpdateEventDto eventDto) {
         List<UserVO> userVOList = toUpdate.getAttenders().stream()
             .map(user -> modelMapper.map(user, UserVO.class))
             .collect(Collectors.toList());
+
         if (toUpdate.getTitle().equals(eventDto.getTitle())) {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
                 NotificationType.EVENT_UPDATED, toUpdate.getId());
@@ -451,9 +483,6 @@ public class EventServiceImpl implements EventService {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
                 NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
         }
-        enhanceWithNewData(toUpdate, eventDto, images);
-        Event updatedEvent = eventRepo.save(toUpdate);
-        return buildEventDto(updatedEvent, organizer.getId());
     }
 
     /**
@@ -888,49 +917,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void like(Long eventId, UserVO userVO) {
-        Event event = findEventId(eventId);
-        User eventAuthor = getEventAuthor(event);
-        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(userVO.getId());
-
-        if (isAuthor) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        if (removeLikeIfExists(event, userVO, eventAuthor)) {
-            return;
-        }
-
-        removeDislikeIfExists(event, userVO);
-
-        event.getUsersLikedEvents().add(modelMapper.map(userVO, User.class));
-        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.LIKE_EVENT,
-            AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT"), userVO);
-
-        sendEventLikeNotification(eventAuthor, userVO, eventId, event);
-
-        eventRepo.save(event);
+        likeMethodHelper(eventId, userVO);
     }
 
     @Override
     public void dislike(UserVO userVO, Long eventId) {
-        Event event = findEventId(eventId);
-        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(userVO.getId());
-
-        if (isAuthor) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        removeLikeIfExists(event, userVO, getEventAuthor(event));
-
-        if (removeDislikeIfExists(event, userVO)) {
-            eventRepo.save(event);
-            return;
-        }
-
-        event.getUsersDislikedEvents().add(modelMapper.map(userVO, User.class));
-
-        eventRepo.save(event);
+        dislikeMethodHelper(eventId, userVO);
     }
 
     /**
@@ -1310,5 +1302,54 @@ public class EventServiceImpl implements EventService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public EventDto likeV2(Long id, UserVO user) {
+        return likeMethodHelper(id, user);
+    }
+
+    @Override
+    public EventDto dislikeV2(Long id, UserVO user) {
+        return dislikeMethodHelper(id, user);
+    }
+
+    private EventDto likeMethodHelper(Long id, UserVO user) {
+        Event event = findEventId(id);
+        User eventAuthor = getEventAuthor(event);
+        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(user.getId());
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        if (removeLikeIfExists(event, user, eventAuthor)) {
+            return modelMapper.map(event, EventDto.class);
+        }
+        removeDislikeIfExists(event, user);
+        event.getUsersLikedEvents().add(modelMapper.map(user, User.class));
+        achievementCalculation.calculateAchievement(user, AchievementCategoryType.LIKE_EVENT,
+            AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT"), user);
+        sendEventLikeNotification(eventAuthor, user, id, event);
+        eventRepo.save(event);
+        return modelMapper.map(event, EventDto.class);
+    }
+
+    private EventDto dislikeMethodHelper(Long id, UserVO user) {
+        Event event = findEventId(id);
+        boolean isAuthor = Objects.nonNull(event.getOrganizer()) && event.getOrganizer().getId().equals(user.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        removeLikeIfExists(event, user, getEventAuthor(event));
+        if (removeDislikeIfExists(event, user)) {
+            eventRepo.save(event);
+            return modelMapper.map(event, EventDto.class);
+        }
+        event.getUsersDislikedEvents().add(modelMapper.map(user, User.class));
+        eventRepo.save(event);
+        return modelMapper.map(event, EventDto.class);
     }
 }
