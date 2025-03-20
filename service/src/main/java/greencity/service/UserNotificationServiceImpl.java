@@ -525,12 +525,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         ExecutorService executorService, Pageable page,
         Principal principal, String language, ProjectName projectName, List<NotificationType> notificationTypes,
         Boolean viewed) {
-        CompletableFuture<PageableAdvancedDto<NotificationDto>> completableFuture = new CompletableFuture<>();
-        completableFuture.completeAsync(
+        return CompletableFuture.supplyAsync(
             () -> getNotificationsForUserFromGreenCity(page, principal, language, projectName, notificationTypes,
                 viewed),
             executorService);
-        return completableFuture;
     }
 
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable page,
@@ -547,11 +545,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     private CompletableFuture<PageableAdvancedDto<NotificationDto>> getNotificationsForUserFromUbs(
         ExecutorService executorService, Principal principal, Pageable page) {
-        CompletableFuture<PageableAdvancedDto<NotificationDto>> completableFuture = new CompletableFuture<>();
-        completableFuture.completeAsync(
+        return CompletableFuture.supplyAsync(
             () -> getNotificationsForUserFromUbs(principal, page),
             executorService);
-        return completableFuture;
     }
 
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromUbs(Principal principal, Pageable page) {
