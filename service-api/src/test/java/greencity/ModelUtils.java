@@ -122,7 +122,7 @@ public class ModelUtils {
             .build());
     }
 
-    public static TagUkEnDto tagUaEnDto = TagUkEnDto.builder().id(1L).nameUk("Сщціальний").nameEn("Social").build();
+    public static TagUkEnDto tagUaEnDto = TagUkEnDto.builder().id(1L).nameUk("Соціальний").nameEn("Social").build();
 
     public static EventDto getEventDtoWithTag() {
         return EventDto.builder()

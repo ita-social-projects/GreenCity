@@ -2341,7 +2341,7 @@ public class ModelUtils {
     }
 
     public static List<TagUkEnDto> getUpdatedEventTagUaEn() {
-        return List.of(TagUkEnDto.builder().nameEn("Social").nameUk("Сщціальний").build());
+        return List.of(TagUkEnDto.builder().nameEn("Social").nameUk("Соціальний").build());
     }
 
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
