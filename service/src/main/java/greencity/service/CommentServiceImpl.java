@@ -523,33 +523,7 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public void like(Long commentId, UserVO userVO, Locale locale) {
-        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-
-        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
-
-        if (isAuthor) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        if (removeLikeIfExists(comment, userVO)) {
-            return;
-        }
-
-        removeDislikeIfExists(comment, userVO);
-
-        User mappedUser = modelMapper.map(userVO, User.class);
-        if (mappedUser.equals(comment.getUser())) {
-            return;
-        }
-
-        comment.getUsersLiked().add(mappedUser);
-        achievementCalculation.calculateAchievement(userVO,
-            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
-        createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
-
-        commentRepo.save(comment);
+        likeHelper(commentId, userVO, locale);
     }
 
     /**
@@ -557,24 +531,7 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public void dislike(Long commentId, UserVO userVO, Locale locale) {
-        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-
-        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
-
-        if (isAuthor) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        removeLikeIfExists(comment, userVO);
-
-        if (removeDislikeIfExists(comment, userVO)) {
-            return;
-        }
-
-        comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
-
-        commentRepo.save(comment);
+        dislikeHelper(commentId, userVO, locale);
     }
 
     /**
@@ -723,7 +680,7 @@ public class CommentServiceImpl implements CommentService {
 
             userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
                 userVO, comment.getId(), getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
-
+            comment.setCurrentUserLiked(false);
             return true;
         }
         return false;
@@ -746,8 +703,89 @@ public class CommentServiceImpl implements CommentService {
 
             userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
                 userVO, comment.getId(), getNotificationType(comment.getArticleType(), CommentActionType.COMMENT_LIKE));
+            comment.setCurrentUserDisliked(false);
             return true;
         }
         return false;
+    }
+
+    /**
+     * This helper method provides liking logic, similar both to like and likeV2
+     *
+     * @param commentId - id of a comment to like
+     * @param userVO    - current user
+     * @param locale    - language of content (if needed)
+     */
+    private CommentDto likeHelper(Long commentId, UserVO userVO, Locale locale) {
+        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+
+        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        if (removeLikeIfExists(comment, userVO)) {
+            return modelMapper.map(comment, CommentDto.class);
+        }
+        removeDislikeIfExists(comment, userVO);
+
+        User mappedUser = modelMapper.map(userVO, User.class);
+        if (mappedUser.equals(comment.getUser())) {
+            return modelMapper.map(comment, CommentDto.class);
+        }
+
+        comment.getUsersLiked().add(mappedUser);
+        comment.setCurrentUserLiked(true);
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
+        createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
+
+        return modelMapper.map(commentRepo.save(comment), CommentDto.class);
+    }
+
+    /**
+     * This helper method provides disliking logic, similar both to dislike and
+     * dislikeV2
+     *
+     * @param commentId - id of a comment to like
+     * @param userVO    - current user
+     * @param locale    - language of content (if needed)
+     */
+    private CommentDto dislikeHelper(Long commentId, UserVO userVO, Locale locale) {
+        Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+        boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        removeLikeIfExists(comment, userVO);
+
+        if (removeDislikeIfExists(comment, userVO)) {
+            return modelMapper.map(comment, CommentDto.class);
+        }
+
+        comment.getUsersDisliked().add(modelMapper.map(userVO, User.class));
+        comment.setCurrentUserDisliked(true);
+        return modelMapper.map(commentRepo.save(comment), CommentDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CommentDto likeV2(Long commentId, UserVO userVO, Locale locale) {
+        return likeHelper(commentId, userVO, locale);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CommentDto dislikeV2(Long commentId, UserVO userVO, Locale locale) {
+        return dislikeHelper(commentId, userVO, locale);
     }
 }

@@ -241,8 +241,9 @@ public class EcoNewsCommentController {
     @PostMapping("/comments/dislike")
     public void dislike(
         @RequestParam("commentId") Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        commentService.dislike(commentId, userVO, null);
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        commentService.dislike(commentId, userVO, locale);
     }
 
     /**

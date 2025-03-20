@@ -1443,4 +1443,52 @@ class CommentServiceImplTest {
 
         verify(econewsRepo).findById(articleId);
     }
+
+    @Test
+    void likeV2Test() {
+        Long commentId = 1L;
+        UserVO userVO = getUserVONotCommentOwner();
+        User user = getUserNotCommentOwner();
+        Comment comment = getComment();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+        Long articleId = 10L;
+        Habit habit = getHabit();
+        habit.setUserId(user.getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
+
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(habitRepo.findById(articleId)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+            .thenReturn(Optional.ofNullable(habitTranslation));
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        doNothing().when(userNotificationService).createNotification(
+            any(UserVO.class), any(UserVO.class), any(NotificationType.class),
+            anyLong(), anyString(), anyLong(), anyString());
+
+        commentService.likeV2(commentId, userVO, Locale.ENGLISH);
+
+        assertTrue(comment.getUsersLiked().contains(user));
+
+        verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
+        verify(modelMapper).map(userVO, User.class);
+    }
+
+    @Test
+    void dislikeV2Test() {
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Comment comment = getComment();
+        comment.getUser().setId(2L);
+        comment.setUsersDisliked(new HashSet<>());
+
+        when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+
+        commentService.dislikeV2(1L, userVO, null);
+
+        verify(commentRepo).save(comment);
+        assertEquals(1L, comment.getUsersDisliked().size());
+    }
 }

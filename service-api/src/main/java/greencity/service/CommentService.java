@@ -137,4 +137,22 @@ public interface CommentService {
      * @author Anton Bondar
      */
     void searchUsers(UserSearchDto searchUsers);
+
+    /**
+     * Method to like or unlike {@link CommentVO} specified by id.
+     *
+     * @param commentId id of {@link CommentVO} to like/unlike.
+     * @param userVO    current {@link UserVO} that wants to like/unlike.
+     * @return {@link CommentDto} comment with updated data.
+     */
+    CommentDto likeV2(Long commentId, UserVO userVO, Locale locale);
+
+    /**
+     * Method to dislike or remove dislike {@link CommentVO} specified by id.
+     *
+     * @param commentId id of {@link CommentVO} to dislike.
+     * @param userVO    current {@link UserVO} that wants to dislike.
+     * @return {@link CommentDto} comment with updated data.
+     */
+    CommentDto dislikeV2(Long commentId, UserVO userVO, Locale locale);
 }

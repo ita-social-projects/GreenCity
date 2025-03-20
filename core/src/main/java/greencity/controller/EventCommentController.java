@@ -284,4 +284,51 @@ public class EventCommentController {
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         commentService.dislike(commentId, user, null);
     }
+
+    /**
+     * Method to like/unlike certain {@link CommentDto} specified by id.
+     *
+     * @param commentId of {@link CommentDto} to like/dislike
+     * @return {@link CommentDto} with updated amount of likes
+     */
+    @Operation(summary = "Like/unlike comment.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/comments/likeV2/{commentId}")
+    public ResponseEntity<CommentDto> likeV2(
+        @PathVariable Long commentId,
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter @ValidLanguage Locale locale) {
+        return ResponseEntity.ok(commentService.likeV2(commentId, user, locale));
+    }
+
+    /**
+     * Method to dislike certain {@link CommentDto} specified by id.
+     *
+     * @param commentId of {@link CommentDto} to like/dislike
+     */
+    @Operation(summary = "Dislike/remove dislike on comment.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/comments/dislikeV2/{commentId}")
+    public CommentDto dislikeV2(
+        @PathVariable Long commentId,
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter @ValidLanguage Locale locale) {
+        return commentService.dislikeV2(commentId, user, locale);
+    }
 }

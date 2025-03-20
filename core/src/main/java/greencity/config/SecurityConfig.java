@@ -350,6 +350,8 @@ public class SecurityConfig {
                     ECO_NEWS + "/{ecoNewsId}/favorites",
                     "/habit/assign/{habitId}/invite",
                     "place/v2/save",
+                    EVENTS + COMMENTS + "/dislikeV2" + COMMENT_ID,
+                    EVENTS + COMMENTS + "/likeV2" + COMMENT_ID,
                     LOGS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,

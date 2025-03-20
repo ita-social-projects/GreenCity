@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.entity.Comment;
 import greencity.entity.CommentImages;
@@ -23,7 +24,6 @@ public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
     protected CommentDto convert(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
-        commentDto.setText(comment.getText());
         commentDto.setCreatedDate(comment.getCreatedDate());
         commentDto.setModifiedDate(comment.getModifiedDate());
         if (comment.getParentComment() != null) {
@@ -34,6 +34,15 @@ public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
         if (comment.getAdditionalImages() != null) {
             commentDto.setAdditionalImages(comment.getAdditionalImages().stream().map(CommentImages::getLink).toList());
         }
+        commentDto.setCurrentUserLiked(comment.isCurrentUserLiked());
+        commentDto.setCurrentUserDisliked(comment.isCurrentUserDisliked());
+        commentDto.setLikes(comment.getUsersLiked().size());
+        commentDto.setDislikes(comment.getUsersDisliked().size());
+        commentDto.setAuthor(
+            CommentAuthorDto.builder()
+                .id(comment.getUser().getId())
+                .name(comment.getUser().getName())
+                .profilePicturePath(comment.getUser().getProfilePicturePath()).build());
         return commentDto;
     }
 }
