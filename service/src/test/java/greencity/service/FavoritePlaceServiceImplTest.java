@@ -229,7 +229,7 @@ class FavoritePlaceServiceImplTest {
         location.setId(favoritePlaceVO.getPlace().getLocation().getId());
         location.setLng(favoritePlaceVO.getPlace().getLocation().getLng());
         location.setLat(favoritePlaceVO.getPlace().getLocation().getLat());
-        location.setAddress(favoritePlaceVO.getPlace().getLocation().getAddress());
+        location.setAddress(favoritePlaceVO.getPlace().getLocation().getAddressEn());
         PlaceByBoundsDto favoritePlaceByBoundsDto =
             new PlaceByBoundsDto(favoritePlaceVO.getId(), favoritePlaceVO.getName(), location);
         when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(favoritePlace);

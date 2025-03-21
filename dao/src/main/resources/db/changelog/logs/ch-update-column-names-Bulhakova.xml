@@ -1,0 +1,40 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="rename-category-columns" author="Oleksandra Bulhakova">
+        <renameColumn tableName="categories" oldColumnName="name" newColumnName="name_en"/>
+        <renameColumn tableName="categories" oldColumnName="name_ua" newColumnName="name_uk"/>
+    </changeSet>
+
+    <changeSet id="rename-location-columns" author="Oleksandra Bulhakova">
+        <renameColumn tableName="locations" oldColumnName="address" newColumnName="address_en"/>
+        <renameColumn tableName="locations" oldColumnName="address_ua" newColumnName="address_uk"/>
+    </changeSet>
+
+    <changeSet id="rename-user-location-columns" author="Oleksandra Bulhakova">
+        <renameColumn tableName="user_location" oldColumnName="city_ua" newColumnName="city_uk"/>
+        <renameColumn tableName="user_location" oldColumnName="region_ua" newColumnName="region_uk"/>
+        <renameColumn tableName="user_location" oldColumnName="country_ua" newColumnName="country_uk"/>
+    </changeSet>
+
+    <changeSet id="rename-achievement-columns" author="Oleksandra Bulhakova">
+        <renameColumn tableName="achievements" oldColumnName="name" newColumnName="name_uk"/>
+        <renameColumn tableName="achievements" oldColumnName="name_eng" newColumnName="name_en"/>
+    </changeSet>
+
+    <changeSet id="rename-achievement-category-columns" author="Oleksandra Bulhakova">
+        <renameColumn tableName="achievement_categories" oldColumnName="title" newColumnName="title_uk"/>
+    </changeSet>
+
+    <changeSet id="rename-event-date-location-columns" author="Oleksandra Bulhakova">
+        <renameColumn tableName="events_dates_locations" oldColumnName="street_ua" newColumnName="street_uk"/>
+        <renameColumn tableName="events_dates_locations" oldColumnName="city_ua" newColumnName="city_uk"/>
+        <renameColumn tableName="events_dates_locations" oldColumnName="region_ua" newColumnName="region_uk"/>
+        <renameColumn tableName="events_dates_locations" oldColumnName="country_ua" newColumnName="country_uk"/>
+        <renameColumn tableName="events_dates_locations" oldColumnName="formatted_address_ua" newColumnName="formatted_address_uk"/>
+    </changeSet>
+
+</databaseChangeLog>

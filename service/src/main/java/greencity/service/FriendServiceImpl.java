@@ -192,8 +192,8 @@ public class FriendServiceImpl implements FriendService {
             mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
         } else if (type == RecommendedFriendsType.CITY) {
             UserLocation userLocation = user.getUserLocation();
-            if (userLocation != null && userLocation.getCityUa() != null) {
-                mutualFriends = userRepo.findRecommendedFriendsByCity(userId, userLocation.getCityUa(), pageable);
+            if (userLocation != null && userLocation.getCityUk() != null) {
+                mutualFriends = userRepo.findRecommendedFriendsByCity(userId, userLocation.getCityUk(), pageable);
             } else {
                 return new PageableDto<>(Collections.emptyList(), 0, pageable.getPageNumber(), 0);
             }

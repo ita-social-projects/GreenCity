@@ -145,10 +145,10 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      *
      * @return List of {@link StatisticsDto} with achievement names and user counts
      */
-    @Query("SELECT new greencity.dto.achievement.StatisticsDto(a.nameEng, COUNT(ua.user))"
+    @Query("SELECT new greencity.dto.achievement.StatisticsDto(a.nameEn, COUNT(ua.user))"
         + "FROM Achievement a "
         + "JOIN UserAchievement ua ON ua.achievement = a "
-        + "GROUP BY a.nameEng ")
+        + "GROUP BY a.nameEn ")
     List<StatisticsDto> getStatisticsUsersWithAchievements();
 
     /**

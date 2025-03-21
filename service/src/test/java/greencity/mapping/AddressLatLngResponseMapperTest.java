@@ -22,14 +22,14 @@ class AddressLatLngResponseMapperTest {
             .builder()
             .latitude(expected.getLatitude())
             .longitude(expected.getLongitude())
-            .addressUa(AddressResponse
+            .addressUk(AddressResponse
                 .builder()
-                .street(expected.getStreetUa())
+                .street(expected.getStreetUk())
                 .houseNumber(expected.getHouseNumber())
-                .city(expected.getCityUa())
-                .region(expected.getRegionUa())
-                .country(expected.getCountryUa())
-                .formattedAddress(expected.getFormattedAddressUa())
+                .city(expected.getCityUk())
+                .region(expected.getRegionUk())
+                .country(expected.getCountryUk())
+                .formattedAddress(expected.getFormattedAddressUk())
                 .build())
             .addressEn(AddressResponse
                 .builder()
