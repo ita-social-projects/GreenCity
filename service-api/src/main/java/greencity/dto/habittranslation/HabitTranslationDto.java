@@ -17,13 +17,13 @@ import lombok.Builder;
 @Builder
 public class HabitTranslationDto implements Serializable {
     @NotBlank
-    private String description;
-    private String habitItem;
+    private String descriptionEn;
+    private String habitItemEn;
     @NotBlank
     private String languageCode;
     @NotBlank
-    private String name;
-    private String descriptionUa;
-    private String nameUa;
-    private String habitItemUa;
+    private String nameEn;
+    private String descriptionUk;
+    private String nameUk;
+    private String habitItemUk;
 }

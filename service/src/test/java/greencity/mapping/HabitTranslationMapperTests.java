@@ -22,9 +22,9 @@ class HabitTranslationMapperTests {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescription())
-            .habitItem(habitTranslationDto.getHabitItem())
-            .name(habitTranslationDto.getName())
+            .description(habitTranslationDto.getDescriptionEn())
+            .habitItem(habitTranslationDto.getHabitItemEn())
+            .name(habitTranslationDto.getNameEn())
             .build();
         assertEquals(expected, habitTranslationMapper.convert(habitTranslationDto));
     }
@@ -34,9 +34,9 @@ class HabitTranslationMapperTests {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoEnAndUa();
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionUa())
-            .habitItem(habitTranslationDto.getHabitItemUa())
-            .name(habitTranslationDto.getNameUa())
+            .description(habitTranslationDto.getDescriptionUk())
+            .habitItem(habitTranslationDto.getHabitItemUk())
+            .name(habitTranslationDto.getNameUk())
             .build();
         assertEquals(expected, habitTranslationMapper.convertUa(habitTranslationDto));
     }
@@ -47,9 +47,9 @@ class HabitTranslationMapperTests {
         List<HabitTranslationDto> habitTranslationDtoList = List.of(ModelUtils.getHabitTranslationDto());
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescription())
-            .habitItem(habitTranslationDto.getHabitItem())
-            .name(habitTranslationDto.getName())
+            .description(habitTranslationDto.getDescriptionEn())
+            .habitItem(habitTranslationDto.getHabitItemEn())
+            .name(habitTranslationDto.getNameEn())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
         assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList));
@@ -61,9 +61,9 @@ class HabitTranslationMapperTests {
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescription())
-            .habitItem(habitTranslationDto.getHabitItem())
-            .name(habitTranslationDto.getName())
+            .description(habitTranslationDto.getDescriptionEn())
+            .habitItem(habitTranslationDto.getHabitItemEn())
+            .name(habitTranslationDto.getNameEn())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
@@ -77,9 +77,9 @@ class HabitTranslationMapperTests {
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionUa())
-            .habitItem(habitTranslationDto.getHabitItemUa())
-            .name(habitTranslationDto.getNameUa())
+            .description(habitTranslationDto.getDescriptionUk())
+            .habitItem(habitTranslationDto.getHabitItemUk())
+            .name(habitTranslationDto.getNameUk())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
@@ -93,9 +93,9 @@ class HabitTranslationMapperTests {
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescription())
-            .habitItem(habitTranslationDto.getHabitItem())
-            .name(habitTranslationDto.getName())
+            .description(habitTranslationDto.getDescriptionEn())
+            .habitItem(habitTranslationDto.getHabitItemEn())
+            .name(habitTranslationDto.getNameEn())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 

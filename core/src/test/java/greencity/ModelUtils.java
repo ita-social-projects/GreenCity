@@ -54,7 +54,7 @@ import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
@@ -372,10 +372,10 @@ public class ModelUtils {
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description("Description")
-                    .habitItem("Item")
+                    .descriptionEn("Description")
+                    .habitItemEn("Item")
                     .languageCode("en")
-                    .name("use shopper")
+                    .nameEn("use shopper")
                     .build()))
             .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
             .tagIds(Set.of(20L))
@@ -425,9 +425,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUaEnDto.builder()
+                .tags(List.of(TagUkEnDto.builder()
                     .id(2L)
-                    .nameUa("Соціальний1")
+                    .nameUk("Соціальний1")
                     .nameEn("Social1")
                     .build()))
                 .titleImage("image.png")
@@ -458,9 +458,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUaEnDto.builder()
+                .tags(List.of(TagUkEnDto.builder()
                     .id(1L)
-                    .nameUa("Соціальний")
+                    .nameUk("Соціальний")
                     .nameEn("Social")
                     .build()))
                 .titleImage("image.png")
@@ -509,9 +509,9 @@ public class ModelUtils {
 
     public static List<AddressDto> getAddressesDtoList() {
         return List.of(
-            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
-            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
-            AddressDto.builder().cityUa("Львів").cityEn("Lviv").build());
+            AddressDto.builder().cityUk("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUk("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUk("Львів").cityEn("Lviv").build());
     }
 
     public static FilterPlaceDto getFilterPlaceDto() {
@@ -621,9 +621,9 @@ public class ModelUtils {
             new EventInformationDto(
                 "Test Event",
                 "New Test Event",
-                List.of(TagUaEnDto.builder()
+                List.of(TagUkEnDto.builder()
                     .id(2L)
-                    .nameUa("Соціальний")
+                    .nameUk("Соціальний")
                     .nameEn("Social")
                     .build())),
             EventAuthorDto.builder()
@@ -657,14 +657,14 @@ public class ModelUtils {
         return AddressDto.builder()
             .latitude(50.4567236)
             .longitude(30.2354469)
-            .streetUa("Вулиця")
+            .streetUk("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUa("Київ")
+            .cityUk("Київ")
             .cityEn("Kyiv")
-            .regionUa("Область")
+            .regionUk("Область")
             .regionEn("Oblast")
-            .countryUa("Країна")
+            .countryUk("Країна")
             .countryEn("Country")
             .build();
     }

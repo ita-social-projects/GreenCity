@@ -48,6 +48,9 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
+import greencity.mapping.CategoryDtoToVOMapper;
+import greencity.mapping.CategoryVOMapper;
+import greencity.mapping.LocationDtoMapper;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PhotoRepo;
@@ -124,7 +127,7 @@ import org.springframework.web.multipart.MultipartFile;
 class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
-        .name("test").build();
+        .nameEn("test").build();
     private final Language language = Language.builder()
         .id(2L)
         .code("en")
@@ -174,7 +177,7 @@ class PlaceServiceImplTest {
             .id(1L)
             .lat(42.57)
             .lng(46.53)
-            .address("Location")
+            .addressEn("Location")
             .build())
         .status(PlaceStatus.PROPOSED)
         .modifiedDate(ZonedDateTime.now())
@@ -231,6 +234,10 @@ class PlaceServiceImplTest {
 
     @BeforeEach
     void init() {
+        modelMapper.addConverter(new CategoryVOMapper());
+        modelMapper.addConverter(new CategoryDtoToVOMapper());
+        modelMapper.addConverter(new LocationDtoMapper());
+
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
             proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
@@ -245,7 +252,7 @@ class PlaceServiceImplTest {
         when(userService.findByEmail(anyString())).thenReturn(userVOAdmin);
         when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
         when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
-        when(categoryRepo.findByName(anyString())).thenReturn(new Category());
+        when(categoryRepo.findByNameEn(anyString())).thenReturn(new Category());
         when(placeRepo.save(any())).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
         when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
@@ -268,14 +275,14 @@ class PlaceServiceImplTest {
         when(userService.findByEmail(user.getEmail())).thenReturn(userVOAdmin);
         when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
         when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
-        when(categoryRepo.findByName(placeAddDto.getCategory().getName())).thenReturn(category);
+        when(categoryRepo.findByNameEn(placeAddDto.getCategory().getNameEn())).thenReturn(category);
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
         PlaceVO savedPlace = placeService.save(placeAddDto, user.getEmail());
         assertEquals(placeVO, savedPlace);
         verify(userService).findByEmail(user.getEmail());
         verify(proposePlaceMapper).checkLocationValues(placeAddDto.getLocation());
-        verify(categoryRepo).findByName(placeAddDto.getCategory().getName());
+        verify(categoryRepo).findByNameEn(placeAddDto.getCategory().getNameEn());
         verify(placeRepo).save(place);
     }
 
@@ -291,7 +298,7 @@ class PlaceServiceImplTest {
         assertEquals(PlaceStatus.APPROVED, genericEntity.getStatus());
 
         verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), genericEntity.getId(),
-            genericEntity.getCategory().getName(), genericEntity.getName());
+            genericEntity.getCategory().getNameEn(), genericEntity.getName());
     }
 
     @Test
@@ -927,7 +934,7 @@ class PlaceServiceImplTest {
     void searchTest() {
         PageRequest pageRequest = PageRequest.of(0, 10);
         Place place = getPlace();
-        place.setCategory(Category.builder().name("Category").build());
+        place.setCategory(Category.builder().nameEn("Category").build());
         List<Place> places = List.of(place, place);
         PageImpl<Place> page = new PageImpl<>(places, pageRequest, places.size());
         SearchPlacesDto searchPlacesDto = getSearchPlacesDto();
@@ -1114,10 +1121,10 @@ class PlaceServiceImplTest {
         };
         LocationVO locationVO = LocationVO.builder()
             .id(1L)
-            .address("New Address")
+            .addressEn("New Address")
             .lat(50.45)
             .lng(30.52)
-            .addressUa("New Address Ua")
+            .addressUk("New Address Ua")
             .build();
         when(categoryService.findByName("Test Category")).thenReturn(categoryDtoResponse);
         when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));

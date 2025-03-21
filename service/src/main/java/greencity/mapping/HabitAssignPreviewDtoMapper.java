@@ -33,12 +33,12 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
         HabitPreviewDto habitPreviewDto = null;
         if (habitTranslation != null && habitTranslationUa != null) {
             HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
-                .name(habitTranslation.getName())
-                .nameUa(habitTranslationUa.getName())
-                .habitItem(habitTranslation.getHabitItem())
-                .habitItemUa(habitTranslationUa.getHabitItem())
-                .description(habitTranslation.getDescription())
-                .descriptionUa(habitTranslationUa.getDescription())
+                .nameEn(habitTranslation.getName())
+                .nameUk(habitTranslationUa.getName())
+                .habitItemEn(habitTranslation.getHabitItem())
+                .habitItemUk(habitTranslationUa.getHabitItem())
+                .descriptionEn(habitTranslation.getDescription())
+                .descriptionUk(habitTranslationUa.getDescription())
                 .build();
             habitPreviewDto = HabitPreviewDto.builder()
                 .id(habit.getId())

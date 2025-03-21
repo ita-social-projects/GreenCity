@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TagUaEnDto {
+public class TagUkEnDto {
     private Long id;
-    private String nameUa;
+    private String nameUk;
     private String nameEn;
 }
