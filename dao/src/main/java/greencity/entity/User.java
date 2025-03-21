@@ -189,11 +189,13 @@ import java.util.Set;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
+    exclude = {"emailPreference", "favoriteHabits", "language", "userLocation", "verifyEmail", "ownSecurity",
+        "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
         "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
         "subscribedEvents"})
 @ToString(
-    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
+    exclude = {"emailPreference", "favoriteHabits", "language", "userLocation", "verifyEmail", "ownSecurity",
+        "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
         "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
         "subscribedEvents"})
 public class User {
