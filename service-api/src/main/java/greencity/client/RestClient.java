@@ -63,6 +63,8 @@ public class RestClient {
     private static final String PAGE_QUERY_PARAM = "page";
     private static final String PAGE_SIZE_QUERY_PARAM = "size";
     private static final String USER_EMAIL_QUERY_PARAM = "email";
+    private static final String UNABLE_TO_REACH_TO_UBS_WARN_MESSAGE =
+        "Exception occurred while trying to reach to UBS: {}";
 
     /**
      * Constructs a new instance of the RestClient class.
@@ -115,7 +117,7 @@ public class RestClient {
                 new ParameterizedTypeReference<>() {
                 });
         } catch (RestClientException e) {
-            log.warn("Exception occurred while trying to reach to UBS: {}", e.getMessage());
+            log.warn(UNABLE_TO_REACH_TO_UBS_WARN_MESSAGE, e.getMessage());
             return PageableAdvancedDto.<UbsNotificationDto>builder()
                 .page(Collections.emptyList())
                 .build();
