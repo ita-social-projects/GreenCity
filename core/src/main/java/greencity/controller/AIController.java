@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,11 +24,11 @@ import java.util.Locale;
 @RestController
 @RequestMapping("/ai")
 @AllArgsConstructor
+@Slf4j
 public class AIController {
     private final AIService aiService;
 
-    @Operation(summary = "Makes predictions about the environmental impact of the current user "
-        + "based on the analysis of their habits and habit duration.")
+    @Operation(summary = "Makes predictions about the environmental impact of the current user")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -40,9 +41,10 @@ public class AIController {
     @ApiLocale
     @GetMapping("/forecast")
     public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.getForecast(userVO.getId(), locale.getDisplayLanguage()));
+                                           @Parameter(hidden = true) Locale locale) {
+        String language = locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage();
+        String forecast = aiService.getForecast(userVO.getId(), language);
+        return new ResponseEntity<>(forecast, HttpStatus.OK);
     }
 
     @Operation(summary = "Generates news content based on the specified language and query")

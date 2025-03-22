@@ -8,8 +8,9 @@ public class OpenAIRequest {
         Provide a personalized and data-driven forecast of this person's impact on the global environment.
         Analyze their habits over the specified number of days and present insights based on realistic
         environmental data. Use numbers and specific examples to illustrate the impact, such as CO2 reduction,
-        water conservation, or waste minimization. The response should be concise yet informative,
-        structured in a way that is easy to understand.
+        water conservation, or waste minimization. The response should be clear, concise, and presented as plain
+        text without bullet points, asterisks, numbers, or any additional symbols. Ensure the output contains
+        only clean, readable text with appropriate punctuation and no special formatting.
         """;
 
     public static final String ADVICE = """
