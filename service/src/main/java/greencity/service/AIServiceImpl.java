@@ -3,9 +3,10 @@ package greencity.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import static greencity.constant.GrammarCheckConstants.ERROR_CHECKING_GRAMMAR;
 import static greencity.constant.OpenAIRequest.*;
 import static greencity.log.OpenAILogMessages.*;
-import static greencity.utils.OpenAIConstants.*;
+import static greencity.constant.OpenAIConstants.*;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
@@ -14,6 +15,7 @@ import static greencity.enums.Role.ROLE_USER;
 import static greencity.enums.TagType.ECO_NEWS;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -37,6 +39,7 @@ public class AIServiceImpl implements AIService {
     private final HabitRepo habitRepo;
     private final TagsRepo tagsRepo;
     private final UserRepo userRepo;
+    private final GrammarChecker grammarChecker;
     private final ModelMapper modelMapper;
     private LocalDate lastGeneratedDate = LocalDate.now().minusWeeks(1);
 
@@ -47,13 +50,22 @@ public class AIServiceImpl implements AIService {
 
         List<HabitAssign> habitAssigns = fetchHabitAssignsByUserId(userId);
 
+        String forecastResponse;
         if (habitAssigns.isEmpty()) {
             log.info(NO_HABIT_ASSIGNMENTS_DETECTED, userId);
-            return getAdvice(userId, language);
+            forecastResponse = getAdvice(userId, language);
         } else {
             log.info(HABIT_ASSIGNMENTS_RETRIEVED, userId);
-            return fetchForecast(language, habitAssigns);
+            forecastResponse = fetchForecast(language, habitAssigns);
         }
+
+        try {
+            forecastResponse = grammarChecker.checkGrammar(forecastResponse);
+        } catch (IOException e) {
+            log.error(ERROR_CHECKING_GRAMMAR, e);
+        }
+
+        return sanitizeJsonResponse(forecastResponse);
     }
 
     @Override
@@ -62,7 +74,14 @@ public class AIServiceImpl implements AIService {
         validateInputs(userId, language);
         Habit habit = fetchRandomHabit();
         log.info(RANDOM_HABIT_SELECTED, habit);
-        return fetchAdvice(language, habit);
+        String adviceResponse = fetchAdvice(language, habit);
+
+        try {
+            adviceResponse = grammarChecker.checkGrammar(adviceResponse);
+        } catch (IOException e) {
+            log.error(ERROR_CHECKING_GRAMMAR, e);
+        }
+        return adviceResponse;
     }
 
     @Override
@@ -71,7 +90,14 @@ public class AIServiceImpl implements AIService {
         validateInputs(language);
         String jsonResponse = openAIService.makeRequest(createNewsRequest(language, query));
         log.info(API_RESPONSE_RECEIVED, jsonResponse);
-        return extractContentFromJson(jsonResponse);
+        String newResponse = extractContentFromJson(jsonResponse);
+
+        try {
+            newResponse = grammarChecker.checkGrammar(newResponse);
+        } catch (IOException e) {
+            log.error(ERROR_CHECKING_GRAMMAR, e);
+        }
+        return newResponse;
     }
 
     @Override
@@ -85,12 +111,19 @@ public class AIServiceImpl implements AIService {
         lastGeneratedDate = LocalDate.now();
 
         String jsonResponse = fetchNewsWithoutQuery(language);
-        log.info("Received JSON response for eco news generation: {}", jsonResponse);
+        log.info(RECEIVED_JSON_RESPONSE, jsonResponse);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
         ecoNews = ecoNewsRepo.save(ecoNews);
         log.info(ECO_NEWS_SAVED_SUCCESSFULLY, ecoNews.getId());
 
-        return ecoNews.getText();
+        String ecoNewsText = ecoNews.getText();
+
+        try {
+            ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
+        } catch (IOException e) {
+            log.error(ERROR_CHECKING_GRAMMAR, e);
+        }
+        return ecoNewsText;
     }
 
     @Override
@@ -373,8 +406,9 @@ public class AIServiceImpl implements AIService {
 
     private String sanitizeJsonResponse(String jsonResponse) {
         log.info(JSON_SANITIZATION_STARTED, jsonResponse);
-        return jsonResponse.replace(FORMAT_ASTERISKS_ESCAPE, FORMAT_EMPTY_STRING).trim();
+        return jsonResponse.replaceAll("[^\\p{L}\\p{N}\\s.,!?-]", "").trim();
     }
+
 
     private boolean isWeekPassed() {
         log.info(WEEK_PASSED_CHECK_INITIATED);
@@ -383,14 +417,17 @@ public class AIServiceImpl implements AIService {
 
     private void validateInputs(Object... inputs) {
         log.info(INPUT_VALIDATION_STARTED, (Object) inputs);
+
         for (Object input : inputs) {
             switch (input) {
                 case null -> throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
                 case String str when str.isBlank() -> throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
                 case Long l when l <= 0 -> throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
+                case Long ignored -> log.debug("Valid Long input: {}", ignored);
+                case String str -> log.info("Valid String input: {}", str);
                 default -> {
-                    log.error(INVALID_INPUT_TYPE, input.getClass().getName());
-                    throw new InvalidInputException(INVALID_INPUT_TYPE + input.getClass().getName());
+                    log.error("Invalid input type: {}", input.getClass().getName());
+                    throw new InvalidInputException("Invalid input type: " + input.getClass().getName());
                 }
             }
         }

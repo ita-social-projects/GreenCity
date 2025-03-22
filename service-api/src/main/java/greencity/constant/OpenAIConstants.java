@@ -1,4 +1,4 @@
-package greencity.utils;
+package greencity.constant;
 
 import lombok.experimental.UtilityClass;
 
@@ -57,6 +57,8 @@ public class OpenAIConstants {
     public static final String AI_USER_NAME = "AI Generated";
     public static final String AI_USER_EMAIL = "ai.generated@example.com";
     public static final String AI_MOCKED_REFRESH_TOKEN = "mocked-refresh-token-key";
+
+    public static final String RECEIVED_JSON_RESPONSE = "Received JSON response for eco news generation: {}";
 }
 
 

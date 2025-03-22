@@ -1,7 +1,7 @@
 package greencity.service;
 
 import static greencity.log.OpenAILogMessages.*;
-import static greencity.utils.OpenAIConstants.*;
+import static greencity.constant.OpenAIConstants.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -63,7 +63,7 @@ public class OpenAIServiceImpl implements OpenAIService {
             log.info(OPENAI_RESPONSE_RECEIVED, response.getBody());
 
             return Optional.ofNullable(response.getBody())
-                .map(responseBody -> (List<Map<String, Object>>) responseBody.get(RESPONSE_CHOICES_KEY))
+                .map(responseBody ->    (List<Map<String, Object>>) responseBody.get(RESPONSE_CHOICES_KEY))
                 .filter(choices -> !choices.isEmpty())
                 .map(choices -> (Map<String, Object>) choices.getFirst().get(RESPONSE_MESSAGE_KEY))
                 .map(message -> (String) message.get(RESPONSE_JSON_CONTENT_KEY))
