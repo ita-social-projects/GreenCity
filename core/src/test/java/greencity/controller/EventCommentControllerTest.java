@@ -122,9 +122,8 @@ class EventCommentControllerTest {
             .content(content))
             .andExpect(status().isCreated());
 
-        ObjectMapper mapper = new ObjectMapper();
         AddCommentDtoRequest addCommentDtoRequest =
-            mapper.readValue(content, AddCommentDtoRequest.class);
+            objectMapper.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(eq(ArticleType.EVENT),
@@ -242,7 +241,6 @@ class EventCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
-        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(commentReplies);
 
         when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
