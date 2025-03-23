@@ -296,7 +296,7 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).like(numericCommentId, userVO, null);
+        verify(commentService).like(numericCommentId, userVO, Locale.ENGLISH);
     }
 
     @Test
@@ -323,7 +323,7 @@ class EcoNewsCommentControllerTest {
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .like(commentId, userVO, null);
+            .like(commentId, userVO, Locale.ENGLISH);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(post(ECONEWS_LINK + "/comments/like")
