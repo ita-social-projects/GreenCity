@@ -110,7 +110,7 @@ public interface CommentService {
      * @param commentId id of {@link CommentVO} to dislike.
      * @param userVO    current {@link UserVO} that wants to dislike.
      */
-    void dislike(Long commentId, UserVO userVO, Locale locale);
+    void dislike(Long commentId, UserVO userVO);
 
     /**
      * Method to change the existing {@link CommentVO}.
@@ -154,5 +154,5 @@ public interface CommentService {
      * @param userVO    current {@link UserVO} that wants to dislike.
      * @return {@link CommentDto} comment with updated data.
      */
-    CommentDto dislikeV2(Long commentId, UserVO userVO, Locale locale);
+    CommentDto dislikeV2(Long commentId, UserVO userVO);
 }

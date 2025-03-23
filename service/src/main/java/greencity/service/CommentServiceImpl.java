@@ -530,8 +530,8 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public void dislike(Long commentId, UserVO userVO, Locale locale) {
-        dislikeHelper(commentId, userVO, locale);
+    public void dislike(Long commentId, UserVO userVO) {
+        dislikeHelper(commentId, userVO);
     }
 
     /**
@@ -751,9 +751,8 @@ public class CommentServiceImpl implements CommentService {
      *
      * @param commentId - id of a comment to like
      * @param userVO    - current user
-     * @param locale    - language of content (if needed)
      */
-    private CommentDto dislikeHelper(Long commentId, UserVO userVO, Locale locale) {
+    private CommentDto dislikeHelper(Long commentId, UserVO userVO) {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         boolean isAuthor = comment.getUser().getId().equals(userVO.getId());
@@ -785,7 +784,7 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public CommentDto dislikeV2(Long commentId, UserVO userVO, Locale locale) {
-        return dislikeHelper(commentId, userVO, locale);
+    public CommentDto dislikeV2(Long commentId, UserVO userVO) {
+        return dislikeHelper(commentId, userVO);
     }
 }

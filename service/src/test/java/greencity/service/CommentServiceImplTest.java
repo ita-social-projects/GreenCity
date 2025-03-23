@@ -1243,7 +1243,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 
-        commentService.dislike(1L, userVO, null);
+        commentService.dislike(1L, userVO);
 
         verify(commentRepo).save(comment);
         assertEquals(1L, comment.getUsersDisliked().size());
@@ -1258,7 +1258,7 @@ class CommentServiceImplTest {
 
         when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
-        assertThrows(BadRequestException.class, () -> commentService.dislike(1L, userVO, Locale.ENGLISH));
+        assertThrows(BadRequestException.class, () -> commentService.dislike(1L, userVO));
     }
 
     @Test
@@ -1273,7 +1273,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 
-        commentService.dislike(1L, userVO, null);
+        commentService.dislike(1L, userVO);
 
         assertEquals(0, comment.getUsersLiked().size());
         assertEquals(1, comment.getUsersDisliked().size());
@@ -1486,7 +1486,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(1L, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
 
-        commentService.dislikeV2(1L, userVO, null);
+        commentService.dislikeV2(1L, userVO);
 
         verify(commentRepo).save(comment);
         assertEquals(1L, comment.getUsersDisliked().size());

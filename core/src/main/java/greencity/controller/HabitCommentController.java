@@ -224,9 +224,8 @@ public class HabitCommentController {
     })
     @PostMapping("/comments/dislike")
     public void dislike(@RequestParam("commentId") Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO user,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        commentService.dislike(commentId, user, locale);
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        commentService.dislike(commentId, user);
     }
 
     /**

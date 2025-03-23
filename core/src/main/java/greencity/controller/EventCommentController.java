@@ -282,7 +282,7 @@ public class EventCommentController {
     public void dislike(
         @PathVariable Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
-        commentService.dislike(commentId, user, null);
+        commentService.dislike(commentId, user);
     }
 
     /**
@@ -325,10 +325,9 @@ public class EventCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PostMapping("/comments/dislikeV2/{commentId}")
-    public CommentDto dislikeV2(
+    public ResponseEntity<CommentDto> dislikeV2(
         @PathVariable Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO user,
-        @Parameter @ValidLanguage Locale locale) {
-        return commentService.dislikeV2(commentId, user, locale);
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        return ResponseEntity.ok(commentService.dislikeV2(commentId, user));
     }
 }
