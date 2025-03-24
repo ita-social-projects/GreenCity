@@ -728,21 +728,16 @@ public class CommentServiceImpl implements CommentService {
         if (removeLikeIfExists(comment, userVO)) {
             return modelMapper.map(comment, CommentDto.class);
         }
+
         removeDislikeIfExists(comment, userVO);
-
-        User mappedUser = modelMapper.map(userVO, User.class);
-        if (mappedUser.equals(comment.getUser())) {
-            return modelMapper.map(comment, CommentDto.class);
-        }
-
-        comment.getUsersLiked().add(mappedUser);
+        comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
         comment.setCurrentUserLiked(true);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
         createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
-
-        return modelMapper.map(commentRepo.save(comment), CommentDto.class);
+        Comment comment1 = commentRepo.save(comment);
+        return modelMapper.map(comment1, CommentDto.class);
     }
 
     /**

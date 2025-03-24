@@ -314,4 +314,50 @@ public class EcoNewsCommentController {
     public void getUsersToTagInComment(@Payload UserSearchDto searchUsers) {
         commentService.searchUsers(searchUsers);
     }
+
+    /**
+     * Method to like/dislike certain {@link CommentVO} specified by id.
+     *
+     * @param commentId of {@link CommentVO} to like/dislike
+     * @return an instance of {@link CommentDto} with updated data
+     */
+    @Operation(summary = "Like/unlike comment and get an instance of a comment with updated data.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping(path = "/comments/likeV2", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommentDto> likeV2(
+        @RequestParam("commentId") Long commentId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @ValidLanguage Locale locale) {
+        return ResponseEntity.ok(commentService.likeV2(commentId, userVO, locale));
+    }
+
+    /**
+     * Method to dislike certain {@link CommentVO} specified by id.
+     *
+     * @param commentId of {@link CommentVO} to like/dislike
+     */
+    @Operation(summary = "Dislike comment and get an instance of a comment with updated data.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping(path = "/comments/dislikeV2", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommentDto> dislikeV2(
+        @RequestParam("commentId") Long commentId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok(commentService.dislikeV2(commentId, userVO));
+    }
 }
