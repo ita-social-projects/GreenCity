@@ -1262,7 +1262,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void givenEventLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
+    void givenEventLikedByUserWhenDislikedByUserShouldRemoveLikeAndAddDislike() {
         UserVO userVO = getUserVO();
         User user = getUser();
         Comment comment = getComment();
