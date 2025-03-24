@@ -149,21 +149,42 @@ public class AIServiceImpl implements AIService {
 
     @Override
     public List<EcoNewsDto> getCombinedEcoNewsForUser(Long userId, String language) {
-        log.info(COMBINED_ECO_NEWS_REQUEST, userId, language);
-        List<EcoNewsDto> relevantEcoNews = getRelevantEcoNewsForUser(userId, language);
-        List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(language);
+        log.info("COMBINED_ECO_NEWS_REQUEST: userId={}, language={}", userId, language);
 
+        // Check if userId is null, then return general news list
+        if (userId == null) {
+            log.info("UserId is null, returning general eco news.");
+            List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(language);
+            log.info("General eco news retrieved: size={}", generalEcoNews.size());
+            return generalEcoNews;
+        }
+
+        // Get relevant news for the user if userId is present
+        log.info("Fetching relevant eco news for userId={}", userId);
+        List<EcoNewsDto> relevantEcoNews = getRelevantEcoNewsForUser(userId, language);
+        log.info("Relevant eco news retrieved: size={}", relevantEcoNews.size());
+
+        // Get general eco news
+        log.info("Fetching general eco news.");
+        List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(language);
+        log.info("General eco news retrieved: size={}", generalEcoNews.size());
+
+        // Combine relevant and general news
+        log.info("Combining relevant and general eco news.");
         List<EcoNewsDto> combinedNews = new ArrayList<>(relevantEcoNews);
         combinedNews.addAll(generalEcoNews);
+        log.info("Combined eco news size before sorting: {}", combinedNews.size());
 
+        // Sort combined news by relevance score
+        log.info("Sorting combined eco news by relevance score.");
         List<EcoNewsDto> sortedCombinedNews = combinedNews.stream()
             .sorted(Comparator.comparingDouble(EcoNewsDto::getRelevanceScore).reversed())
             .toList();
+        log.info("Combined eco news size after sorting: {}", sortedCombinedNews.size());
 
-        log.info(COMBINED_ECO_NEWS_RETRIEVED, userId, sortedCombinedNews.size());
+        log.info("COMBINED_ECO_NEWS_RETRIEVED: userId={}, size={}", userId, sortedCombinedNews.size());
         return sortedCombinedNews;
     }
-
     private List<EcoNewsDto> getGeneralEcoNews(String language) {
         log.info(GENERAL_ECO_NEWS_REQUEST, language);
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
@@ -358,11 +379,10 @@ public class AIServiceImpl implements AIService {
     }
 
     private String extractContentFromJson(String jsonResponse) {
-        log.info(JSON_CONTENT_EXTRACTION_PROCESS, jsonResponse);
-        int maxRetries = 3;
+        log.info(RAW_JSON_LOG_MESSAGE, jsonResponse);
         int retryCount = 0;
 
-        while (retryCount < maxRetries) {
+        while (retryCount < MAX_JSON_PARSE_ATTEMPTS) {
             try {
                 jsonResponse = sanitizeJsonResponse(jsonResponse);
 
@@ -372,14 +392,15 @@ public class AIServiceImpl implements AIService {
                 return parseContentFromJson(jsonResponse);
             } catch (Exception e) {
                 retryCount++;
-                if (retryCount >= maxRetries) {
+                if (retryCount >= MAX_JSON_PARSE_ATTEMPTS) {
                     throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
-                        + maxRetries + FORMAT_ATTEMPTS_SUFFIX, e);
+                        + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX, e);
                 }
             }
         }
         throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS);
     }
+
 
     private String parseContentFromJson(String jsonResponse) {
         log.info(JSON_CONTENT_PARSING_STARTED, jsonResponse);
@@ -406,7 +427,7 @@ public class AIServiceImpl implements AIService {
 
     private String sanitizeJsonResponse(String jsonResponse) {
         log.info(JSON_SANITIZATION_STARTED, jsonResponse);
-        return jsonResponse.replaceAll("[^\\p{L}\\p{N}\\s.,!?-]", "").trim();
+        return jsonResponse.replaceAll(REGEX_NON_ALPHANUMERIC, FORMAT_EMPTY_STRING).trim();
     }
 
 
@@ -423,11 +444,11 @@ public class AIServiceImpl implements AIService {
                 case null -> throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
                 case String str when str.isBlank() -> throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
                 case Long l when l <= 0 -> throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
-                case Long ignored -> log.debug("Valid Long input: {}", ignored);
-                case String str -> log.info("Valid String input: {}", str);
+                case Long ignored -> log.debug(LOG_VALID_LONG_INPUT, ignored);
+                case String str -> log.info(LOG_VALID_STRING_INPUT, str);
                 default -> {
-                    log.error("Invalid input type: {}", input.getClass().getName());
-                    throw new InvalidInputException("Invalid input type: " + input.getClass().getName());
+                    log.error(LOG_UNSUPPORTED_INPUT_TYPE, input.getClass().getName());
+                    throw new InvalidInputException(ERROR_UNSUPPORTED_INPUT_TYPE + input.getClass().getName());
                 }
             }
         }

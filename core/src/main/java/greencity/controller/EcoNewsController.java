@@ -404,6 +404,4 @@ public class EcoNewsController {
     public String generateEcoNewsBasedOnHabits(@RequestParam String language) {
         return aiService.generateEcoNewsBasedOnHabits(language);
     }
-
-
 }

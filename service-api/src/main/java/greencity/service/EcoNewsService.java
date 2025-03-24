@@ -2,16 +2,15 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsGroupedTagsDto;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
 import java.util.List;
@@ -240,30 +239,4 @@ public interface EcoNewsService {
      * @return list of {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> getThreeInterestingEcoNews();
-
-    /**
-     * This method adds user's like on eco news or removes it if already present.
-     *
-     * @param user - instance of {@link UserVO}.
-     * @param id   - {@link Long} eco news id.
-     * @return an instance of {@link EcoNewsDto} with updated data.
-     */
-    EcoNewsDto likeV2(UserVO user, Long id);
-
-    /**
-     * This method adds user's dislike on eco news or removes it if already present.
-     *
-     * @param user - instance of {@link UserVO}.
-     * @param id   - {@link Long} eco news id.
-     * @return an instance of {@link EcoNewsDto} with updated data.
-     */
-    EcoNewsDto dislikeV2(UserVO user, Long id);
-
-    /**
-     * Method for getting the{@link EcoNewsGroupedTagsDto} instance by its id.
-     *
-     * @param id {@link Long} ecoNews id.
-     * @return {@link EcoNewsGroupedTagsDto} instance.
-     */
-    EcoNewsGroupedTagsDto findDtoById(Long id);
 }
