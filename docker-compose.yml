@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - E:/GreenCity/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    restart: always
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
