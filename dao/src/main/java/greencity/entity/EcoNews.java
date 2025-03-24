@@ -79,8 +79,7 @@ public class EcoNews {
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> followers = new HashSet<>();
 
-    @Column
     @Min(0)
     @Max(1)
-    private double relevanceScore;
+    private Double relevanceScore;
 }

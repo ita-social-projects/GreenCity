@@ -1,8 +1,9 @@
 package greencity.constant;
 
-import lombok.experimental.UtilityClass;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@UtilityClass
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OpenAIConstants {
     public static final String OPENAI_MODEL_NAME = "gpt-4o-mini";
     public static final String OPENAI_AUTH_HEADER = "Authorization";
@@ -38,6 +39,10 @@ public class OpenAIConstants {
     public static final String ERROR_NO_TAGS_FOUND = "No tags found for AI-generated content.";
     public static final String ERROR_INVALID_RELEVANCE_SCORE = "Invalid relevance score received from OpenAI.";
     public static final String ERROR_RELEVANCE_SCORE_PARSE_FAILURE = "Failed to parse relevance score from OpenAI response.";
+    public static final String LOG_VALID_LONG_INPUT = "Received valid Long input: {}";
+    public static final String LOG_VALID_STRING_INPUT = "Received valid String input: '{}'";
+    public static final String LOG_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type detected - {}";
+    public static final String ERROR_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type - ";
 
     public static final Integer MAX_ALLOWED_TOKENS = 2048;
     public static final String MESSAGE_ECO_NEWS_LIMIT = "Eco-news can only be generated once per week.";
@@ -53,12 +58,16 @@ public class OpenAIConstants {
     public static final String FORMAT_JSON_CODE_BLOCK_END = "```";
     public static final String FORMAT_ASTERISKS_ESCAPE = "\\*\\*";
     public static final String FORMAT_ATTEMPTS_SUFFIX = " attempts";
+    public static final String REGEX_NON_ALPHANUMERIC = "[^\\p{L}\\p{N}\\s.,!?-]";
 
     public static final String AI_USER_NAME = "AI Generated";
     public static final String AI_USER_EMAIL = "ai.generated@example.com";
     public static final String AI_MOCKED_REFRESH_TOKEN = "mocked-refresh-token-key";
 
     public static final String RECEIVED_JSON_RESPONSE = "Received JSON response for eco news generation: {}";
+    public static final String RAW_JSON_LOG_MESSAGE = "Raw JSON response: {}";
+
+    public static final int MAX_JSON_PARSE_ATTEMPTS = 3;
 }
 
 

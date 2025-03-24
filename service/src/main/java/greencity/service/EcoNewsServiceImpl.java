@@ -780,6 +780,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return mapEcoNewsListToEcoNewsDtoList(ecoNewsRepo.findThreeInterestingEcoNews());
     }
 
+    @Override
+    public List<EcoNewsDto> getAllEcoNews(List<String> tags, String title, Long authorId, boolean favorite, String language) {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.findEcoNews(tags, title, authorId);
+        return ecoNewsList.stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .toList();
+    }
+
     /**
      * Removes a like from the eco news if the user has already liked it. Returns
      * true if a like was removed, false otherwise.

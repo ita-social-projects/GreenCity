@@ -4,4 +4,6 @@ import java.io.IOException;
 
 public interface GrammarCheckerService {
     String checkGrammar(String text) throws IOException;
+
+    void clearCache(String text);
 }

@@ -37,6 +37,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -57,6 +58,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/eco-news")
 @RequiredArgsConstructor
+@Slf4j
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
@@ -403,5 +405,14 @@ public class EcoNewsController {
     @PostMapping("/generate")
     public String generateEcoNewsBasedOnHabits(@RequestParam String language) {
         return aiService.generateEcoNewsBasedOnHabits(language);
+    }
+
+    @GetMapping("/user-habits")
+    public ResponseEntity<List<EcoNewsDto>> findAllEcoNewsBasedOnUserHabits(@RequestParam String language, @RequestParam Long userId) {
+        log.info("Received request to find all eco news based on user habits with language: {} and userId: {}", language, userId);
+
+        List<EcoNewsDto> combinedNews = aiService.getCombinedEcoNewsForUser(userId, language);
+        log.info("Successfully retrieved combined eco news: {}", combinedNews);
+        return ResponseEntity.ok(combinedNews);
     }
 }
