@@ -239,6 +239,4 @@ public interface EcoNewsService {
      * @return list of {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> getThreeInterestingEcoNews();
-
-    List<EcoNewsDto> getAllEcoNews(List<String> tags, String title, Long authorId, boolean favorite, String language);
 }
