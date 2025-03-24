@@ -736,8 +736,7 @@ public class CommentServiceImpl implements CommentService {
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
         createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
-        Comment comment1 = commentRepo.save(comment);
-        return modelMapper.map(comment1, CommentDto.class);
+        return modelMapper.map(commentRepo.save(comment), CommentDto.class);
     }
 
     /**
