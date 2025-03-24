@@ -134,14 +134,8 @@ public class GrammarChecker implements GrammarCheckerService {
      *             This text will be analyzed to determine its language.
      * @return the detected language code (e.g., "en" for English, "uk" for Ukrainian).
      *         This is the language code corresponding to the detected language of the input text.
-     * @throws IOException if an error occurs during language detection.
-     *         This could happen if the language detection model cannot be found or loaded.
-     *
-     * <p>The language detection process checks whether the language of the provided text is already cached.
-     * If the language is cached, it will be returned. Otherwise, OpenNLP's `LanguageDetector` is used to detect
-     * the language, and the result is cached for future use.</p>
      */
-    private String detectLanguage(String text) throws IOException {
+    private String detectLanguage(String text) {
         String cachedLanguageResult = getCacheValue(text);
         if (Objects.nonNull(cachedLanguageResult)) {
             return cachedLanguageResult;
@@ -149,7 +143,8 @@ public class GrammarChecker implements GrammarCheckerService {
 
         try (InputStream modelIn = getClass().getResourceAsStream(LANG_DETECT_MODEL_PATH)) {
             if (Objects.isNull(modelIn)) {
-                throw new IOException(ERROR_LANG_DETECT_MODEL_NOT_FOUND_MESSAGE);
+                log.error(ERROR_LANG_DETECT_MODEL_NOT_FOUND);
+                return DEFAULT_LANGUAGE_CODE;
             }
             LanguageDetectorModel model = new LanguageDetectorModel(modelIn);
             LanguageDetector localLanguageDetector = new LanguageDetectorME(model);
@@ -158,6 +153,9 @@ public class GrammarChecker implements GrammarCheckerService {
 
             putCacheValue(text, detectedLanguage);
             return detectedLanguage;
+        } catch (IOException e) {
+            log.error(ERROR_GRAMMAR_CHECKING_MESSAGE, e);
+            return DEFAULT_LANGUAGE_CODE;
         }
     }
 
