@@ -61,7 +61,7 @@ class EcoNewsCommentControllerTest {
     private static final String ECONEWS_LINK = "/eco-news";
     private final Principal principal = getPrincipal();
     private MockMvc mockMvc;
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     @InjectMocks
     private EcoNewsCommentController ecoNewsCommentController;
     @Mock
@@ -73,7 +73,7 @@ class EcoNewsCommentControllerTest {
 
     @BeforeAll
     static void setUp() {
-        objectMapper.findAndRegisterModules();
+        OBJECT_MAPPER.findAndRegisterModules();
     }
 
     @BeforeEach
@@ -120,7 +120,7 @@ class EcoNewsCommentControllerTest {
             .andExpect(status().isCreated());
 
         AddCommentDtoRequest addCommentDtoRequest =
-            objectMapper.readValue(content, AddCommentDtoRequest.class);
+            OBJECT_MAPPER.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest,
@@ -195,7 +195,7 @@ class EcoNewsCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
-        String expectedJson = objectMapper.writeValueAsString(commentReplies);
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentReplies);
 
         when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
             .thenReturn(commentReplies);
@@ -435,7 +435,7 @@ class EcoNewsCommentControllerTest {
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(commentService.likeV2(commentId, userVO, Locale.ENGLISH)).thenReturn(commentDto);
-        String expectedContent = objectMapper.writeValueAsString(commentDto);
+        String expectedContent = OBJECT_MAPPER.writeValueAsString(commentDto);
         mockMvc.perform(post(ECONEWS_LINK + "/comments/likeV2")
             .param("commentId", commentId.toString())
             .principal(principal))
@@ -452,7 +452,7 @@ class EcoNewsCommentControllerTest {
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(commentService.dislikeV2(commentId, userVO)).thenReturn(commentDto);
-        String expectedContent = objectMapper.writeValueAsString(commentDto);
+        String expectedContent = OBJECT_MAPPER.writeValueAsString(commentDto);
         mockMvc.perform(post(ECONEWS_LINK + "/comments/dislikeV2")
             .param("commentId", commentId.toString())
             .principal(principal))
