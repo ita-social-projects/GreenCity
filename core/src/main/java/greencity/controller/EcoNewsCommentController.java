@@ -202,9 +202,9 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to like/dislike certain {@link CommentDto} specified by id.
+     * Method to like/unlike certain {@link CommentDto} specified by id.
      *
-     * @param commentId of {@link CommentDto} to like/dislike
+     * @param commentId of {@link CommentDto} to like/unlike
      */
     @Operation(summary = "Like/unlike comment.")
     @ApiResponses(value = {
@@ -225,9 +225,9 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to dislike certain {@link CommentDto} specified by id.
+     * Method to dislike/remove dislike certain {@link CommentDto} specified by id.
      *
-     * @param commentId of {@link CommentDto} to like/dislike
+     * @param commentId of {@link CommentDto} to dislike/remove dislike
      */
     @Operation(summary = "Dislike comment.")
     @ApiResponses(value = {
@@ -316,9 +316,9 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to like/dislike certain {@link CommentVO} specified by id.
+     * Method to like/unlike certain {@link CommentVO} specified by id.
      *
-     * @param commentId of {@link CommentVO} to like/dislike
+     * @param commentId of {@link CommentVO} to like/unlike
      * @return an instance of {@link CommentDto} with updated data
      */
     @Operation(summary = "Like/unlike comment and get an instance of a comment with updated data.")
@@ -340,9 +340,10 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to dislike certain {@link CommentVO} specified by id.
+     * Method to dislike/remove dislike certain {@link CommentVO} specified by id.
      *
-     * @param commentId of {@link CommentVO} to like/dislike
+     * @param commentId of {@link CommentVO} to dislike/remove dislike
+     * @return an instance of {@link CommentDto} with updated data
      */
     @Operation(summary = "Dislike comment and get an instance of a comment with updated data.")
     @ApiResponses(value = {
