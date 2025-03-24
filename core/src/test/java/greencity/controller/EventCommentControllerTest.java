@@ -72,11 +72,11 @@ class EventCommentControllerTest {
     @Mock
     private CommentService commentService;
     private final Principal principal = getPrincipal();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @BeforeAll
     static void setUp() {
-        objectMapper.findAndRegisterModules();
+        OBJECT_MAPPER.findAndRegisterModules();
     }
 
     @BeforeEach
@@ -123,7 +123,7 @@ class EventCommentControllerTest {
             .andExpect(status().isCreated());
 
         AddCommentDtoRequest addCommentDtoRequest =
-            objectMapper.readValue(content, AddCommentDtoRequest.class);
+            OBJECT_MAPPER.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(eq(ArticleType.EVENT),
@@ -241,7 +241,7 @@ class EventCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
-        String expectedJson = objectMapper.writeValueAsString(commentReplies);
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentReplies);
 
         when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
             .thenReturn(commentReplies);
@@ -436,7 +436,7 @@ class EventCommentControllerTest {
         long commentId = 1L;
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         UserVO user = getUserVO();
-        String expectedJson = objectMapper.writeValueAsString(commentDto);
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
         when(userService.findByEmail(anyString())).thenReturn(user);
         when(commentService.likeV2(commentId, user, Locale.ENGLISH)).thenReturn(commentDto);
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/likeV2/" + commentId)
@@ -453,7 +453,7 @@ class EventCommentControllerTest {
         long commentId = 1L;
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         UserVO user = getUserVO();
-        String expectedJson = objectMapper.writeValueAsString(commentDto);
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
         when(userService.findByEmail(anyString())).thenReturn(user);
         when(commentService.dislikeV2(commentId, user)).thenReturn(commentDto);
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislikeV2/" + commentId)
