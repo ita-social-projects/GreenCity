@@ -227,6 +227,8 @@ public class SecurityConfig {
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
+                    ECO_NEWS + ECO_NEWS_ID + "/dislikeV2",
+                    ECO_NEWS + ECO_NEWS_ID + "/likeV2",
                     "/favorite_place/",
                     "/to-do-list-items",
                     "/habit/assign/allForCurrentUser",
