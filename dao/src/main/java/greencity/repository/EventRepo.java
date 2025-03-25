@@ -236,16 +236,18 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
     Page<UserProfilePictureDto> getUsersDislikedEventProfilePicturesPage(Long eventId, Pageable pageable);
 
     /**
-     * Retrieves a list of events that the user with the specified ID is attending.
-     * This method queries the database for all events where the user, identified by
-     * the given {@code userId}, is listed as an attender. The result includes all
-     * matching events, or an empty list if the user is not attending any events.
+     * Retrieves a list of events associated with the user identified by the
+     * specified ID. This method queries the database for all events where the user,
+     * identified by the given {@code userId}, is either the organizer or an
+     * attender. The result includes all matching events, ensuring no duplicates, or
+     * an empty list if the user is neither an organizer nor an attender of any
+     * events.
      *
-     * @param userId {@link Long} the ID of the user whose attended events are to be
-     *               retrieved.
-     * @return {@link List}<{@link Event}> a list of events that the user is
-     *         attending, or an empty list if none are found.
+     * @param userId {@link Long} the ID of the user whose associated events
+     *               (organized or attended) are to be retrieved.
+     * @return {@link List}<{@link Event}> a list of events where the user is either
+     *         the organizer or an attender, or an empty list if none are found.
      */
-    @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
-    List<Event> findAllByAttendersId(Long userId);
+    @Query("SELECT DISTINCT e FROM Event e LEFT JOIN e.attenders a WHERE e.organizer.id = :userId OR a.id = :userId")
+    List<Event> findAllUserEventsByUserId(Long userId);
 }

@@ -1120,29 +1120,29 @@ public class EventServiceImpl implements EventService {
         return eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    private void checkUserExists(Long userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+    }
+
     @Override
     public List<EventDto> getAllEventsOrganizedByUser(Long userId) {
-        User user = userRepo.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+        checkUserExists(userId);
 
-        List<Event> organizedEvents = eventRepo.getAllByOrganizer(user);
-
-        return organizedEvents.stream()
+        List<Event> userEvents = eventRepo.findAllUserEventsByUserId(userId);
+        return userEvents.stream()
+            .filter(event -> event.getOrganizer().getId().equals(userId))
             .map(event -> buildEventDto(event, userId))
             .toList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<EventDto> getAllEventsAttendedByUser(Long userId) {
-        List<Event> attendedEvent = eventRepo.findAllByAttendersId(userId);
+        checkUserExists(userId);
 
-        return attendedEvent.stream()
+        List<Event> userEvents = eventRepo.findAllUserEventsByUserId(userId);
+        return userEvents.stream()
             .map(event -> buildEventDto(event, userId))
             .toList();
     }
