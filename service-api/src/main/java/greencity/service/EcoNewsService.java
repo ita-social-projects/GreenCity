@@ -239,4 +239,22 @@ public interface EcoNewsService {
      * @return list of {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> getThreeInterestingEcoNews();
+
+    /**
+     * This method adds user's like on eco news or removes it if already present.
+     *
+     * @param user - instance of {@link UserVO}.
+     * @param id   - {@link Long} eco news id.
+     * @return an instance of {@link EcoNewsDto} with updated data.
+     */
+    EcoNewsDto likeV2(UserVO user, Long id);
+
+    /**
+     * This method adds user's dislike on eco news or removes it if already present.
+     *
+     * @param user - instance of {@link UserVO}.
+     * @param id   - {@link Long} eco news id.
+     * @return an instance of {@link EcoNewsDto} with updated data.
+     */
+    EcoNewsDto dislikeV2(UserVO user, Long id);
 }
