@@ -44,6 +44,11 @@ public class OpenAIConstants {
     public static final String LOG_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type detected - {}";
     public static final String ERROR_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type - ";
 
+    public static final String COMBINED_ECO_NEWS_REQUEST = "COMBINED_ECO_NEWS_REQUEST: userId={}, language={}";
+    public static final String USER_ID_NULL = "UserId is null, returning general eco news.";
+    public static final String FETCHING_RELEVANT_ECO_NEWS = "Fetching relevant eco news for userId={}";
+    public static final String COMBINED_ECO_NEWS_SIZE_AFTER_SORTING = "Combined eco news size after sorting: {}";
+
     public static final Integer MAX_ALLOWED_TOKENS = 2048;
     public static final String MESSAGE_ECO_NEWS_LIMIT = "Eco-news can only be generated once per week.";
     public static final String MESSAGE_JSON_VALIDATION_HINT = "Ensure the JSON response is complete and properly formatted.";
