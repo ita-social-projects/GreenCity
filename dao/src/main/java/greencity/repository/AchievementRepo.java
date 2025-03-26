@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
+    Page<Achievement> findAll(Pageable pageable);
+
     /**
      * Retrieves a list of achievements that a specific user hasn't achieved yet
      * within a specified achievement category. The method identifies unachieved
