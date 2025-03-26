@@ -1,7 +1,6 @@
 package greencity.config.dotenv;
 
 import greencity.constant.AppConstant;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
