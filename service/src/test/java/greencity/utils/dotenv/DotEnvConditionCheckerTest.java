@@ -27,6 +27,8 @@ class DotEnvConditionCheckerTest {
         Field cachedValueField = DotEnvConditionChecker.class.getDeclaredField("cachedValue");
         cachedValueField.setAccessible(true);
         cachedValueField.set(null, null);
+        mockedPaths.clearInvocations();
+        mockedFiles.clearInvocations();
     }
 
     @BeforeAll
