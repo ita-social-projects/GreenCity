@@ -81,8 +81,9 @@ class DotEnvConditionCheckerTest {
     public void checkIsNoInvocationIfAlreadyCalculatedTest() throws NoSuchFieldException, IllegalAccessException {
         Field cachedValueField = DotEnvConditionChecker.class.getDeclaredField("cachedValue");
         cachedValueField.setAccessible(true);
-        cachedValueField.set(null, true);
+        cachedValueField.set(null, false);
 
+        assertFalse(DotEnvConditionChecker.isEnabled());
         mockedPaths.verify(() -> Paths.get(anyString()), times(0));
         mockedFiles.verify(() -> Files.exists(any(Path.class)), times(0));
     }
