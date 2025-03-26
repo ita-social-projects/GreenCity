@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Lazy;
 @Configuration
 @Lazy
 public class DotenvConfig {
-
     @Bean
     public Dotenv fallbackDotenv() {
         return Dotenv.configure().ignoreIfMissing().load();
