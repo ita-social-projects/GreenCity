@@ -45,6 +45,12 @@
     </changeSet>
 
     <changeSet id="7" author="Kravchenko">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="chat_rooms_participants"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="chat_rooms_participants">
             <column name="room_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -66,6 +72,7 @@
         <addPrimaryKey tableName="chat_rooms_participants"
                        columnNames="participant_id, room_id" constraintName="pk_chat_rooms_participants" clustered="true"/>
     </changeSet>
+
 
     <changeSet id="8" author="Kravchenko">
         <addColumn tableName="chat_rooms">
