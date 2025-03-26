@@ -79,6 +79,7 @@ public class ErrorMessage {
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
+    public static final String USER_ID_NULL = "User ID cannot be null";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
     public static final String USER_HAS_NO_TO_DO_LIST_ITEMS =
         "This user hasn't selected any to-do list items yet";
@@ -155,6 +156,7 @@ public class ErrorMessage {
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
 
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
+    public static final String NO_EVENTS_FOUND = "No events found for user with ID: %d";
     public static final String WRONG_COUNT_OF_EVENT_DATES =
         "Count of dates should be at least one but not more seven";
     public static final String NO_EVENT_LINK_OR_ADDRESS = "Invalid online-link or address";
