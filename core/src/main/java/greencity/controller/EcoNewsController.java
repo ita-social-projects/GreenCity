@@ -23,6 +23,7 @@ import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.AIService;
+import greencity.service.AuthService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,10 +39,12 @@ import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,6 +66,7 @@ public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
     private final AIService aiService;
+    private final AuthService authService;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -205,11 +209,18 @@ public class EcoNewsController {
         @RequestParam(required = false, name = "author-id") Long authorId,
         @Parameter(description = "Search for favorite news") @RequestParam(required = false, name = "favorite",
             defaultValue = "false") boolean favorite,
-        @Parameter(hidden = true) Principal principal) {
-        String userEmail = principal != null ? principal.getName() : null;
+        @AuthenticationPrincipal UserVO user,
+        @RequestParam String language) {
+        Long id = (user != null) ? user.getId() : authService.getAuthenticatedUserId();
+
+        Page<EcoNewsGenericDto> combinedEcoNews = aiService.getCombinedEcoNewsForUser(id, language,page, tags, title, authorId, favorite);
+
 
         return ResponseEntity.status(HttpStatus.OK).body(
-            ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
+            new PageableAdvancedDto<>(combinedEcoNews.getContent(), combinedEcoNews.getTotalElements(),
+                combinedEcoNews.getNumber(), combinedEcoNews.getTotalPages(), combinedEcoNews.getNumberOfElements(),
+                combinedEcoNews.hasPrevious(), combinedEcoNews.hasNext(), combinedEcoNews.isFirst(), combinedEcoNews.isLast())
+        );
     }
 
     /**
@@ -405,14 +416,5 @@ public class EcoNewsController {
     @PostMapping("/generate")
     public String generateEcoNewsBasedOnHabits(@RequestParam String language) {
         return aiService.generateEcoNewsBasedOnHabits(language);
-    }
-
-    @GetMapping("/user-habits")
-    public ResponseEntity<List<EcoNewsDto>> findAllEcoNewsBasedOnUserHabits(@RequestParam String language, @RequestParam Long userId) {
-        log.info("Received request to find all eco news based on user habits with language: {} and userId: {}", language, userId);
-
-        List<EcoNewsDto> combinedNews = aiService.getCombinedEcoNewsForUser(userId, language);
-        log.info("Successfully retrieved combined eco news: {}", combinedNews);
-        return ResponseEntity.ok(combinedNews);
     }
 }

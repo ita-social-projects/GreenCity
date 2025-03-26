@@ -1,7 +1,10 @@
 package greencity.service;
 
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsGenericDto;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Interface for interacting with an AI-based forecasting service.
@@ -44,7 +47,8 @@ public interface AIService {
      */
     String generateEcoNewsBasedOnHabits(String language);
 
-    List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language);
+    List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language, List<String> tags, String title, Long authorId, boolean favorite);
 
-    List<EcoNewsDto> getCombinedEcoNewsForUser(Long userId, String language);
+    Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(Long userId, String language, Pageable pageable, List<String> tags, String title, Long authorId, boolean favorite);
+
 }
