@@ -1,0 +1,27 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - E:/GreenCity/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: always
+    networks:
+      - monitoring
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+networks:
+  monitoring:
+    driver: bridge
