@@ -24,8 +24,8 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagVO;
-import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUk;
@@ -1118,6 +1119,52 @@ public class EventServiceImpl implements EventService {
     @Override
     public Page<UserProfilePictureDto> getUsersDislikedEventPage(Long eventId, Pageable pageable) {
         return eventRepo.getUsersDislikedEventProfilePicturesPage(eventId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<EventDto> getAllEventsOrganizedByUser(Long userId) {
+        checkUserIdNotNull(userId);
+
+        List<Event> userEvents = handleEmptyEvents(eventRepo.findAllUserEventsByUserId(userId), userId);
+
+        return userEvents.stream()
+            .filter(event -> event.getOrganizer().getId().equals(userId))
+            .map(event -> buildEventDto(event, userId))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<EventDto> getAllEventsAttendedByUser(Long userId) {
+        checkUserIdNotNull(userId);
+
+        List<Event> attendedEvents = handleEmptyEvents(eventRepo.findAllAttendedEventsByUserId(userId), userId);
+
+        return attendedEvents.stream()
+            .map(event -> buildEventDto(event, userId))
+            .toList();
+    }
+
+    private void checkUserIdNotNull(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException(ErrorMessage.USER_ID_NULL);
+        }
+    }
+
+    private List<Event> handleEmptyEvents(List<Event> events, Long userId) {
+        return Optional.ofNullable(events)
+            .filter(list -> !list.isEmpty())
+            .orElseGet(() -> {
+                if (!userRepo.existsById(userId)) {
+                    throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+                }
+                return Collections.emptyList();
+            });
     }
 
     private void sendEventLikeNotification(User targetUser, UserVO actionUser, Long eventId, Event event) {

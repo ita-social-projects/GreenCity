@@ -54,6 +54,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -2153,5 +2154,353 @@ class EventServiceImplTest {
         Page<UserProfilePictureDto> result = eventService.getUsersDislikedEventPage(eventId, pageable);
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_Success_ReturnsOrganizedEvents() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).build();
+        Event organizedEvent = new Event();
+        organizedEvent.setId(1L);
+        organizedEvent.setOrganizer(user);
+        organizedEvent.setAttenders(new HashSet<>());
+
+        User anotherUser = User.builder().id(2L).build();
+        Event attendedEvent = new Event();
+        attendedEvent.setId(2L);
+        attendedEvent.setOrganizer(anotherUser);
+        attendedEvent.setAttenders(new HashSet<>(Set.of(user)));
+
+        List<Event> userEvents = List.of(organizedEvent, attendedEvent);
+        EventDto eventDto = ModelUtils.getEventDto();
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(userEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        List<EventDto> result = eventService.getAllEventsOrganizedByUser(userId);
+
+        assertEquals(1, result.size());
+        assertEquals(eventDto, result.get(0));
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
+        verifyNoInteractions(userRepo);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_MultipleOrganizedEvents_ReturnsAllOrganizedEvents() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).build();
+        Event organizedEvent1 = new Event();
+        organizedEvent1.setId(1L);
+        organizedEvent1.setOrganizer(user);
+        organizedEvent1.setAttenders(new HashSet<>());
+
+        Event organizedEvent2 = new Event();
+        organizedEvent2.setId(2L);
+        organizedEvent2.setOrganizer(user);
+        organizedEvent2.setAttenders(new HashSet<>());
+
+        User anotherUser = User.builder().id(2L).build();
+        Event attendedEvent = new Event();
+        attendedEvent.setId(3L);
+        attendedEvent.setOrganizer(anotherUser);
+        attendedEvent.setAttenders(new HashSet<>(Set.of(user)));
+
+        List<Event> userEvents = List.of(organizedEvent1, organizedEvent2, attendedEvent);
+        EventDto eventDto = ModelUtils.getEventDto();
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(userEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        List<EventDto> result = eventService.getAllEventsOrganizedByUser(userId);
+
+        assertEquals(2, result.size());
+        assertEquals(eventDto, result.get(0));
+        assertEquals(eventDto, result.get(1));
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verify(modelMapper, times(2)).map(any(Event.class), eq(EventDto.class));
+        verifyNoInteractions(userRepo);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_NoOrganizedEvents_ReturnsEmptyList() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).build();
+        User anotherUser = User.builder().id(2L).build();
+        Event attendedEvent = new Event();
+        attendedEvent.setId(1L);
+        attendedEvent.setOrganizer(anotherUser);
+        attendedEvent.setAttenders(new HashSet<>(Set.of(user)));
+
+        List<Event> userEvents = List.of(attendedEvent);
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(userEvents);
+
+        List<EventDto> result = eventService.getAllEventsOrganizedByUser(userId);
+
+        assertTrue(result.isEmpty());
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verifyNoInteractions(userRepo, modelMapper);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_EmptyEventsList_ReturnsEmptyList() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(Collections.emptyList());
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        List<EventDto> result = eventService.getAllEventsOrganizedByUser(userId);
+
+        assertTrue(result.isEmpty());
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verify(userRepo).existsById(userId);
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_RepositoryReturnsNull_ReturnsEmptyList() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(null);
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        List<EventDto> result = eventService.getAllEventsOrganizedByUser(userId);
+
+        assertTrue(result.isEmpty());
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verify(userRepo).existsById(userId);
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_UserNotFound_ThrowsNotFoundException() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(Collections.emptyList());
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            eventService.getAllEventsOrganizedByUser(userId);
+        });
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verify(userRepo).existsById(userId);
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_NullUserId_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            eventService.getAllEventsOrganizedByUser(null);
+        });
+
+        assertEquals(ErrorMessage.USER_ID_NULL, exception.getMessage());
+
+        verifyNoInteractions(userRepo, eventRepo, modelMapper);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_RepositoryThrowsException_ThrowsDataAccessException() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenThrow(new DataAccessException("Database error") {
+        });
+
+        assertThrows(DataAccessException.class, () -> {
+            eventService.getAllEventsOrganizedByUser(userId);
+        });
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verifyNoInteractions(userRepo, modelMapper);
+    }
+
+    @Test
+    void getAllEventsOrganizedByUser_ModelMapperThrowsException_ThrowsRuntimeException() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).build();
+        Event organizedEvent = new Event();
+        organizedEvent.setId(1L);
+        organizedEvent.setOrganizer(user);
+        organizedEvent.setAttenders(new HashSet<>());
+
+        List<Event> userEvents = List.of(organizedEvent);
+
+        when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(userEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenThrow(new RuntimeException("Mapping error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            eventService.getAllEventsOrganizedByUser(userId);
+        });
+
+        verify(eventRepo).findAllUserEventsByUserId(userId);
+        verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
+        verifyNoInteractions(userRepo);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_Success_ReturnsAttendedEvents() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).build();
+        User anotherUser = User.builder().id(2L).build();
+        Event attendedEvent = new Event();
+        attendedEvent.setId(1L);
+        attendedEvent.setOrganizer(anotherUser);
+        attendedEvent.setAttenders(new HashSet<>(Set.of(user)));
+
+        List<Event> attendedEvents = List.of(attendedEvent);
+        EventDto eventDto = ModelUtils.getEventDto();
+
+        when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(attendedEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        List<EventDto> result = eventService.getAllEventsAttendedByUser(userId);
+
+        assertEquals(1, result.size());
+        assertEquals(eventDto, result.get(0));
+
+        verify(eventRepo).findAllAttendedEventsByUserId(userId);
+        verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
+        verifyNoInteractions(userRepo);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_MultipleAttendedEvents_ReturnsAllAttendedEvents() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).build();
+        User organizer1 = User.builder().id(2L).build();
+        Event attendedEvent1 = new Event();
+        attendedEvent1.setId(1L);
+        attendedEvent1.setOrganizer(organizer1);
+        attendedEvent1.setAttenders(new HashSet<>(Set.of(user)));
+
+        User organizer2 = User.builder().id(3L).build();
+        Event attendedEvent2 = new Event();
+        attendedEvent2.setId(2L);
+        attendedEvent2.setOrganizer(organizer2);
+        attendedEvent2.setAttenders(new HashSet<>(Set.of(user)));
+
+        List<Event> attendedEvents = List.of(attendedEvent1, attendedEvent2);
+        EventDto eventDto = ModelUtils.getEventDto();
+
+        when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(attendedEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenReturn(eventDto);
+
+        List<EventDto> result = eventService.getAllEventsAttendedByUser(userId);
+
+        assertEquals(2, result.size());
+        assertEquals(eventDto, result.get(0));
+        assertEquals(eventDto, result.get(1));
+
+        verify(eventRepo).findAllAttendedEventsByUserId(userId);
+        verify(modelMapper, times(2)).map(any(Event.class), eq(EventDto.class));
+        verifyNoInteractions(userRepo);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_EmptyEventsList_ReturnsEmptyList() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(Collections.emptyList());
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        List<EventDto> result = eventService.getAllEventsAttendedByUser(userId);
+
+        assertTrue(result.isEmpty());
+
+        verify(eventRepo).findAllAttendedEventsByUserId(userId);
+        verify(userRepo).existsById(userId);
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_RepositoryReturnsNull_ReturnsEmptyList() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(null);
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        List<EventDto> result = eventService.getAllEventsAttendedByUser(userId);
+
+        assertTrue(result.isEmpty());
+
+        verify(eventRepo).findAllAttendedEventsByUserId(userId);
+        verify(userRepo).existsById(userId);
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_UserNotFound_ThrowsNotFoundException() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(Collections.emptyList());
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            eventService.getAllEventsAttendedByUser(userId);
+        });
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(eventRepo).findAllAttendedEventsByUserId(userId);
+        verify(userRepo).existsById(userId);
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_NullUserId_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            eventService.getAllEventsAttendedByUser(null);
+        });
+
+        assertEquals(ErrorMessage.USER_ID_NULL, exception.getMessage());
+
+        verifyNoInteractions(userRepo, eventRepo, modelMapper);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_RepositoryThrowsException_ThrowsDataAccessException() {
+        Long userId = 1L;
+
+        when(eventRepo.findAllAttendedEventsByUserId(userId)).thenThrow(new DataAccessException("Database error") {
+        });
+
+        assertThrows(DataAccessException.class, () -> {
+            eventService.getAllEventsAttendedByUser(userId);
+        });
+
+        verify(eventRepo).findAllAttendedEventsByUserId(userId);
+        verifyNoInteractions(userRepo, modelMapper);
+    }
+
+    @Test
+    void getAllEventsAttendedByUser_ModelMapperThrowsException_ThrowsRuntimeException() {
+        Long userId = 1L;
+        User user = User.builder().id(userId).build();
+        User anotherUser = User.builder().id(2L).build();
+        Event attendedEvent = new Event();
+        attendedEvent.setId(1L);
+        attendedEvent.setOrganizer(anotherUser);
+        attendedEvent.setAttenders(new HashSet<>(Set.of(user)));
+
+        List<Event> attendedEvents = List.of(attendedEvent);
+
+        when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(attendedEvents);
+        when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenThrow(new RuntimeException("Mapping error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            eventService.getAllEventsAttendedByUser(userId);
+        });
+
+        verify(eventRepo).findAllAttendedEventsByUserId(userId);
+        verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
+        verifyNoInteractions(userRepo);
     }
 }
