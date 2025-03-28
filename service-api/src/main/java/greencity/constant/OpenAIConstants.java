@@ -43,6 +43,16 @@ public class OpenAIConstants {
     public static final String LOG_VALID_STRING_INPUT = "Received valid String input: '{}'";
     public static final String LOG_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type detected - {}";
     public static final String ERROR_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type - ";
+    public static final String LOG_JSON_VALIDATION_STARTED = "Starting JSON response validation: {}";
+    public static final String ERROR_JSON_VALIDATION_FAILURE = "Unexpected error occurred during JSON validation.";
+    public static final String WARNING_JSON_MISSING_REQUIRED_FIELDS = "JSON validation warning: Required fields are missing. Title present: {}, Content present: {}";
+    public static final String WARNING_JSON_MISSING_BRACES = "JSON validation warning: Response does not start or end with curly braces. Attempting to correct formatting.";
+    public static final String LOG_JSON_CORRECTED_WITH_BRACES = "JSON response wrapped with curly braces for proper formatting: {}";
+    public static final String ERROR_PARSING_JSON_GENERIC = "Error parsing JSON response.";
+    public static final String ERROR_JSON_KEY_NOT_FOUND = "Expected key " + RESPONSE_JSON_CONTENT_KEY + " not found in JSON.";
+    public static final String ERROR_JSON_PARSE_CONTENT_FAILED = "Failed to parse content from JSON";
+
+    public static final String ATTEMPT_LOG_MESSAGE = " Attempt: {}";
 
     public static final String COMBINED_ECO_NEWS_REQUEST = "COMBINED_ECO_NEWS_REQUEST: userId={}, language={}";
     public static final String USER_ID_NULL = "UserId is null, returning general eco news.";
@@ -63,7 +73,16 @@ public class OpenAIConstants {
     public static final String FORMAT_JSON_CODE_BLOCK_END = "```";
     public static final String FORMAT_ASTERISKS_ESCAPE = "\\*\\*";
     public static final String FORMAT_ATTEMPTS_SUFFIX = " attempts";
-    public static final String REGEX_NON_ALPHANUMERIC = "[^\\p{L}\\p{N}\\s.,!?-]";
+    public static final String FORMAT_BOLD_PATTERN = "\\*\\*(.*?)\\*\\*";
+    public static final String FORMAT_ITALIC_PATTERN = "\\*(.*?)\\*";
+    public static final String FORMAT_JSON_BLOCK_PATTERN = "(?s)```json\\s*";
+    public static final String FORMAT_CODE_BLOCK_PATTERN = "(?s)```\\s*$";
+    public static final String FORMAT_QUOTES_PATTERN = "[“”]";
+    public static final String TEXT_FORMAT_REPLACEMENT = "$1";
+    public static final String EMPTY_REPLACEMENT = "";
+    public static final String QUOTES_REPLACEMENT = "\"";
+    public static final String OPENING_CURLY_BRACE = "{";
+    public static final String CLOSING_CURLY_BRACE = "}";
 
     public static final String AI_USER_NAME = "AI Generated";
     public static final String AI_USER_EMAIL = "ai.generated@example.com";
