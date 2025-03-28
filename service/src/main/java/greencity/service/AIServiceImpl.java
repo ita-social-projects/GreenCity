@@ -7,6 +7,7 @@ import static greencity.constant.GrammarCheckConstants.ERROR_CHECKING_GRAMMAR;
 import static greencity.constant.OpenAIConstants.COMBINED_ECO_NEWS_REQUEST;
 import static greencity.constant.OpenAIRequest.*;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.entity.localization.TagTranslation;
 import static greencity.log.OpenAILogMessages.*;
 import static greencity.constant.OpenAIConstants.*;
 import greencity.dto.econews.EcoNewsDto;
@@ -24,7 +25,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -135,12 +135,12 @@ public class AIServiceImpl implements AIService {
 
     @Override
     public List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language,
-                                                      List<String> tags, String title, Long authorId, boolean favorite) {
-
+                                                      List<String> tags, String title,
+                                                      Long authorId, boolean favorite)
+    {
         log.info(USER_RELEVANT_ECO_NEWS_REQUEST, userId, language);
 
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
-
         ecoNewsList = ecoNewsList.stream()
             .filter(ecoNews -> filterByTags(ecoNews, tags))
             .filter(ecoNews -> filterByTitle(ecoNews, title))
@@ -165,9 +165,11 @@ public class AIServiceImpl implements AIService {
     }
 
     @Override
-    public Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(Long userId, String language, Pageable pageable,
-                                                             List<String> tags, String title, Long authorId, boolean favorite) {
-
+    public Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(Long userId, String language,
+                                                             Pageable pageable, List<String> tags,
+                                                             String title, Long authorId,
+                                                             boolean favorite)
+    {
         log.info(COMBINED_ECO_NEWS_REQUEST, userId, language);
 
         List<EcoNewsDto> combinedNews;
@@ -176,7 +178,9 @@ public class AIServiceImpl implements AIService {
             combinedNews = getGeneralEcoNews(language, tags, title, authorId);
         } else {
             log.info(FETCHING_RELEVANT_ECO_NEWS, userId);
-            List<EcoNewsDto> relevantEcoNews = getRelevantEcoNewsForUser(userId, language, tags, title, authorId, favorite);
+            List<EcoNewsDto> relevantEcoNews = getRelevantEcoNewsForUser(userId, language,
+                tags, title,
+                authorId, favorite);
             List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(language, tags, title, authorId);
 
             combinedNews = new ArrayList<>(relevantEcoNews);
@@ -195,39 +199,25 @@ public class AIServiceImpl implements AIService {
             .stream()
             .map(this::convertToGenericDto)
             .toList();
-
         return new PageImpl<>(pageContent, pageable, sortedCombinedNews.size());
     }
 
-
-    private boolean filterByTags(EcoNews ecoNews, List<String> tags) {
-        return tags == null || tags.isEmpty() || ecoNews.getTags().stream().anyMatch(tags::contains);
-    }
-
-    private boolean filterByTitle(EcoNews ecoNews, String title) {
-        return title == null || title.isEmpty() || ecoNews.getTitle().toLowerCase().contains(title.toLowerCase());
-    }
-
-    private boolean filterByAuthor(EcoNews ecoNews, Long authorId) {
-        return authorId == null || ecoNews.getAuthor() == null || ecoNews.getAuthor().getId().equals(authorId);
-    }
-
     private List<EcoNewsDto> getGeneralEcoNews(String language,
-                                               List<String> tags, String title, Long authorId) {
-
+                                               List<String> tags,
+                                               String title,
+                                               Long authorId)
+    {
         log.info(GENERAL_ECO_NEWS_REQUEST, language);
 
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
-
         ecoNewsList = ecoNewsList.stream()
             .filter(ecoNews -> filterByTags(ecoNews, tags))
             .filter(ecoNews -> filterByTitle(ecoNews, title))
             .filter(ecoNews -> filterByAuthor(ecoNews, authorId))
             .toList();
-
         return ecoNewsList.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+            .toList();
     }
 
 
@@ -309,7 +299,8 @@ public class AIServiceImpl implements AIService {
 
     private JsonNode parseJsonResponse(String jsonResponse) {
         log.info(JSON_RESPONSE_PARSING_STARTED, jsonResponse);
-        String sanitizedResponse = jsonResponse.replace(FORMAT_ASTERISKS_ESCAPE, FORMAT_EMPTY_STRING).trim();
+        String sanitizedResponse = jsonResponse.replace(FORMAT_ASTERISKS_ESCAPE,
+            FORMAT_EMPTY_STRING).trim();
 
         if (sanitizedResponse.startsWith(FORMAT_TITLE_PREFIX)) {
             return getJsonNodes(sanitizedResponse);
@@ -321,8 +312,9 @@ public class AIServiceImpl implements AIService {
     private JsonNode parseJsonString(String sanitizedResponse) {
         log.info(JSON_STRING_PARSING_STARTED, sanitizedResponse);
         try {
-            sanitizedResponse = sanitizedResponse.replace(FORMAT_JSON_CODE_BLOCK_START, FORMAT_EMPTY_STRING)
-                .replace(FORMAT_JSON_CODE_BLOCK_END, FORMAT_EMPTY_STRING).trim();
+            sanitizedResponse = sanitizedResponse.replace(FORMAT_JSON_CODE_BLOCK_START,
+                    FORMAT_EMPTY_STRING).replace(FORMAT_JSON_CODE_BLOCK_END,
+                FORMAT_EMPTY_STRING).trim();
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readTree(sanitizedResponse);
@@ -396,7 +388,11 @@ public class AIServiceImpl implements AIService {
         return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
     }
 
-    private EcoNews buildEcoNews(String title, String content, User aiGeneratedUser, Tag tag) {
+    private EcoNews buildEcoNews(String title,
+                                 String content,
+                                 User aiGeneratedUser,
+                                 Tag tag)
+    {
         log.info(ECO_NEWS_BUILD_STARTED, title, content, aiGeneratedUser, tag);
         return EcoNews.builder()
             .creationDate(ZonedDateTime.now())
@@ -421,72 +417,45 @@ public class AIServiceImpl implements AIService {
     }
 
     private String sanitizeJsonResponse(String jsonResponse) {
-        jsonResponse = jsonResponse.trim();
-        jsonResponse = jsonResponse.replaceAll("\\*\\*(.*?)\\*\\*", "$1");
-        jsonResponse = jsonResponse.replaceAll("\\*(.*?)\\*", "$1");
-        jsonResponse = jsonResponse.replaceAll("(?s)```json\\s*", "").replaceAll("(?s)```\\s*$", "");
-        jsonResponse = jsonResponse.replaceAll("[“”]", "\"");
-
-        if (!isValidJson(jsonResponse)) {
-            System.out.println("Sanitized JSON is still invalid: " + jsonResponse);
-            jsonResponse = "{}";
-        }
-
+        jsonResponse = jsonResponse.trim()
+            .replaceAll(FORMAT_BOLD_PATTERN, TEXT_FORMAT_REPLACEMENT)
+            .replaceAll(FORMAT_ITALIC_PATTERN, TEXT_FORMAT_REPLACEMENT)
+            .replaceAll(FORMAT_JSON_BLOCK_PATTERN, EMPTY_REPLACEMENT)
+            .replaceAll(FORMAT_CODE_BLOCK_PATTERN, EMPTY_REPLACEMENT)
+            .replaceAll(FORMAT_QUOTES_PATTERN, QUOTES_REPLACEMENT);
         return jsonResponse;
     }
-    private boolean isValidJson(String json) {
-        try {
-            new ObjectMapper().readTree(json);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-
-
-
-
 
     private boolean isJsonResponseComplete(String jsonResponse) {
-        log.info(JSON_RESPONSE_VALIDATION_STARTED, jsonResponse);
+        log.info(LOG_JSON_VALIDATION_STARTED, jsonResponse);
         try {
-            // Убираем пробелы с краёв
             jsonResponse = jsonResponse.trim();
-
-            // Проверяем, если JSON не начинается и не заканчивается фигурными скобками
-            if (!jsonResponse.startsWith("{") || !jsonResponse.endsWith("}")) {
-                log.warn("JSON does not start or end with curly braces. Attempting to wrap it in {}.");
-
-                // Оборачиваем JSON в фигурные скобки
-                jsonResponse = "{" + jsonResponse + "}";
-
-                log.info("Wrapped JSON in curly braces: " + jsonResponse);
+            if (!jsonResponse.startsWith(OPENING_CURLY_BRACE) ||
+                !jsonResponse.endsWith(CLOSING_CURLY_BRACE))
+            {
+                log.warn(WARNING_JSON_MISSING_BRACES);
+                jsonResponse = OPENING_CURLY_BRACE + jsonResponse + CLOSING_CURLY_BRACE;
+                log.info(LOG_JSON_CORRECTED_WITH_BRACES, jsonResponse);
             }
-
-            // Пробуем распарсить JSON
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
 
-            // Проверка обязательных ключей
             boolean hasTitle = jsonNode.has(FORMAT_TITLE_KEY);
             boolean hasContent = jsonNode.has(RESPONSE_JSON_CONTENT_KEY);
 
             if (!hasTitle || !hasContent) {
-                log.warn("Incomplete JSON: Missing required fields. Title: " + hasTitle + ", Content: " + hasContent);
+                log.warn(WARNING_JSON_MISSING_REQUIRED_FIELDS, hasTitle, hasContent);
             }
-
             return hasTitle && hasContent;
         } catch (JsonParseException e) {
-            // Логируем ошибку, если JSON некорректен
-            log.error("Error checking if JSON response is complete. Invalid format.", e);
+            log.error(ERROR_JSON_INVALID_FORMAT, e);
             return false;
         } catch (Exception e) {
-            // Логируем другие ошибки
-            log.error("Unexpected error during JSON validation", e);
+            log.error(ERROR_JSON_VALIDATION_FAILURE, e);
             return false;
         }
     }
+
 
     private String extractContentFromJson(String jsonResponse) {
         log.info(RAW_JSON_LOG_MESSAGE, jsonResponse);
@@ -496,21 +465,19 @@ public class AIServiceImpl implements AIService {
             try {
                 jsonResponse = sanitizeJsonResponse(jsonResponse);
 
-                // Проверка, является ли JSON завершенным
                 if (!isJsonResponseComplete(jsonResponse)) {
                     throw new IncompleteJsonException(ERROR_JSON_INCOMPLETE);
                 }
-
                 return parseContentFromJson(jsonResponse);
             } catch (IncompleteJsonException e) {
-                log.error("Incomplete JSON structure. Attempt: " + (retryCount + 1), e);
+                log.error(ERROR_JSON_INCOMPLETE + ATTEMPT_LOG_MESSAGE, retryCount + 1, e);
                 retryCount++;
                 if (retryCount >= MAX_JSON_PARSE_ATTEMPTS) {
                     throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
                         + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX, e);
                 }
             } catch (Exception e) {
-                log.error("Error parsing JSON response. Attempt: " + (retryCount + 1), e);
+                log.error(ERROR_PARSING_JSON_GENERIC + ATTEMPT_LOG_MESSAGE, retryCount + 1, e);
                 throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS, e);
             }
         }
@@ -522,15 +489,13 @@ public class AIServiceImpl implements AIService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
-
-            // Параметр проверки на наличие ключа перед извлечением
             if (jsonNode.has(RESPONSE_JSON_CONTENT_KEY)) {
                 return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
             } else {
-                throw new JsonResponseParseException("Expected key " + RESPONSE_JSON_CONTENT_KEY + " not found in JSON.");
+                throw new JsonResponseParseException(ERROR_JSON_KEY_NOT_FOUND);
             }
         } catch (Exception e) {
-            log.error("Failed to parse content from JSON", e);
+            log.error(ERROR_JSON_PARSE_CONTENT_FAILED, e);
             throw new JsonResponseParseException(ERROR_JSON_PARSE_FAILURE, e);
         }
     }
@@ -540,19 +505,51 @@ public class AIServiceImpl implements AIService {
         return ChronoUnit.WEEKS.between(lastGeneratedDate, LocalDate.now()) >= 1;
     }
 
+    private boolean filterByTags(EcoNews ecoNews, List<String> tags) {
+        return tags == null ||
+            tags.isEmpty() ||
+            ecoNews.getTags()
+                .stream()
+                .flatMap(tag -> tag.getTagTranslations().stream())
+                .map(TagTranslation::getName)
+                .anyMatch(tags::contains);
+    }
+
+    private boolean filterByTitle(EcoNews ecoNews, String title) {
+        return title == null ||
+            title.isEmpty() ||
+            ecoNews.getTitle()
+                .toLowerCase()
+                .contains(title.toLowerCase());
+    }
+
+    private boolean filterByAuthor(EcoNews ecoNews, Long authorId) {
+        return authorId == null ||
+            ecoNews.getAuthor() == null ||
+            ecoNews.getAuthor()
+                .getId().equals(authorId);
+    }
+
     private void validateInputs(Object... inputs) {
         log.info(INPUT_VALIDATION_STARTED, (Object) inputs);
 
         for (Object input : inputs) {
             switch (input) {
-                case null -> throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
-                case String str when str.isBlank() -> throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
-                case Long l when l <= 0 -> throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
-                case Long ignored -> log.debug(LOG_VALID_LONG_INPUT, ignored);
-                case String str -> log.info(LOG_VALID_STRING_INPUT, str);
+                case null ->
+                    throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
+                case String str when str.isBlank() ->
+                    throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
+                case Long l when l <= 0 ->
+                    throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
+                case Long ignored ->
+                    log.debug(LOG_VALID_LONG_INPUT, ignored);
+                case String str ->
+                    log.info(LOG_VALID_STRING_INPUT, str);
                 default -> {
-                    log.error(LOG_UNSUPPORTED_INPUT_TYPE, input.getClass().getName());
-                    throw new InvalidInputException(ERROR_UNSUPPORTED_INPUT_TYPE + input.getClass().getName());
+                    log.error(LOG_UNSUPPORTED_INPUT_TYPE,
+                        input.getClass().getName());
+                    throw new InvalidInputException(ERROR_UNSUPPORTED_INPUT_TYPE
+                        + input.getClass().getName());
                 }
             }
         }
