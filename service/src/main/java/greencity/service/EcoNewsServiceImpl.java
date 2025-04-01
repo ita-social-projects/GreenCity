@@ -6,15 +6,7 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewContentSourceDto;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsGenericDto;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
@@ -849,5 +841,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsDto dislikeV2(UserVO user, Long id) {
         return dislikeHelper(user, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EcoNewsGroupedTagsDto findDtoById(Long id) {
+        EcoNews ecoNews = findEcoNewsById(id);
+        return modelMapper.map(ecoNews, EcoNewsGroupedTagsDto.class);
     }
 }
