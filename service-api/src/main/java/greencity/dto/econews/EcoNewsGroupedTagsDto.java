@@ -2,14 +2,11 @@ package greencity.dto.econews;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
