@@ -1,10 +1,15 @@
 package greencity.dto.econews;
 
-import greencity.dto.tag.TagUkEnNamesDto;
-import greencity.dto.user.EcoNewsAuthorDto;
+import java.time.ZonedDateTime;
+import java.util.List;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
+import greencity.dto.tag.TagUkEnNamesDto;
+import greencity.dto.user.EcoNewsAuthorDto;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -12,9 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
