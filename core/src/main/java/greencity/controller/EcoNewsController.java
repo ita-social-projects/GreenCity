@@ -449,17 +449,17 @@ public class EcoNewsController {
      */
     @Operation(summary = "Get eco news by id.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiLocale
     @GetMapping("/{ecoNewsId}/v2")
     public ResponseEntity<EcoNewsGroupedTagsDto> getEcoNewsByIdV2(
-            @PathVariable Long ecoNewsId) {
+        @PathVariable Long ecoNewsId) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ecoNewsService.findDtoById(ecoNewsId));
+            .body(ecoNewsService.findDtoById(ecoNewsId));
     }
 }
