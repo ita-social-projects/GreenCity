@@ -3,15 +3,19 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.entity.EcoNews;
+import greencity.service.CommentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsGroupedTagsDtoMapperTest {
+    @Mock
+    CommentService commentService;
     @InjectMocks
     EcoNewsGroupedTagsDtoMapper mapper;
 
