@@ -987,4 +987,10 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(ecoNews, EcoNewsGroupedTagsDto.class)).thenReturn(expected);
         assertEquals(expected, ecoNewsService.findDtoById(1L));
     }
+
+    @Test
+    void findDtoByIdNoNewsFoundTest() {
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> ecoNewsService.findDtoById(1L));
+    }
 }

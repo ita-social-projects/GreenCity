@@ -36,6 +36,9 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
      */
     @Override
     protected EcoNewsGroupedTagsDto convert(EcoNews ecoNews) {
+        if (ecoNews == null) {
+            throw new NullPointerException("EcoNews cannot be null");
+        }
         return EcoNewsGroupedTagsDto.builder()
             .author(EcoNewsAuthorDto.builder()
                 .id(ecoNews.getAuthor().getId())

@@ -16,6 +16,7 @@ import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
@@ -48,15 +49,11 @@ import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.dto.tag.*;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
-import greencity.dto.tag.TagPostDto;
-import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagUkEnDto;
-import greencity.dto.tag.TagVO;
-import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
@@ -707,5 +704,22 @@ public class ModelUtils {
         Map<String, String> env = new HashMap<>();
         env.put("TEST_ENV_NAME", "TEST_ENV_VALUE");
         return new EnvironmentDto(env);
+    }
+
+    public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
+        return EcoNewsGroupedTagsDto.builder()
+                .tags(List.of(TagUkEnNamesDto.builder().nameUk("Новини").nameEn("News").build()))
+                .author(getEcoNewsAuthorDto())
+                .creationDate(ZonedDateTime.now())
+                .imagePath(TestConst.SITE)
+                .shortInfo("shortInfo")
+                .title("title")
+                .content("text")
+                .hidden(false)
+                .id(1L)
+                .likes(0)
+                .dislikes(0)
+                .countComments(0)
+                .build();
     }
 }
