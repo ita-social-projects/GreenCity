@@ -38,43 +38,43 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
     @Override
     protected EcoNewsGroupedTagsDto convert(EcoNews ecoNews) {
         return EcoNewsGroupedTagsDto.builder()
-                .author(EcoNewsAuthorDto.builder()
-                        .id(ecoNews.getAuthor().getId())
-                        .name(ecoNews.getAuthor().getName())
-                        .build())
-                .id(ecoNews.getId())
-                .content(ecoNews.getText())
-                .creationDate(ecoNews.getCreationDate())
-                .imagePath(ecoNews.getImagePath())
-                .shortInfo(ecoNews.getShortInfo())
-                .tags(ecoNews.getTags().stream()
-                        .map(this::mapToTagUkEnNamesDto)
-                        .collect(Collectors.toList()))
-                .likes(ecoNews.getUsersLikedNews().size())
-                .dislikes(ecoNews.getUsersDislikedNews().size())
-                .title(ecoNews.getTitle())
-                .countComments(commentService.countCommentsForEcoNews(ecoNews.getId()))
-                .hidden(ecoNews.isHidden())
-                .build();
+            .author(EcoNewsAuthorDto.builder()
+                .id(ecoNews.getAuthor().getId())
+                .name(ecoNews.getAuthor().getName())
+                .build())
+            .id(ecoNews.getId())
+            .content(ecoNews.getText())
+            .creationDate(ecoNews.getCreationDate())
+            .imagePath(ecoNews.getImagePath())
+            .shortInfo(ecoNews.getShortInfo())
+            .tags(ecoNews.getTags().stream()
+                .map(this::mapToTagUkEnNamesDto)
+                .collect(Collectors.toList()))
+            .likes(ecoNews.getUsersLikedNews().size())
+            .dislikes(ecoNews.getUsersDislikedNews().size())
+            .title(ecoNews.getTitle())
+            .countComments(commentService.countCommentsForEcoNews(ecoNews.getId()))
+            .hidden(ecoNews.isHidden())
+            .build();
     }
 
     /**
-     * Method for converting {@link Tag} into {@link TagUkEnNamesDto}.
-     * Extracts English and Ukrainian names from tag translations and maps them to a DTO.
+     * Method for converting {@link Tag} into {@link TagUkEnNamesDto}. Extracts
+     * English and Ukrainian names from tag translations and maps them to a DTO.
      *
      * @param tag the tag entity to convert.
      * @return a {@link TagUkEnNamesDto} containing Ukrainian and English tag names.
      */
     private TagUkEnNamesDto mapToTagUkEnNamesDto(Tag tag) {
         String nameEn = tag.getTagTranslations().stream()
-                .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
-                .map(TagTranslation::getName)
-                .findFirst().orElse("");
+            .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
+            .map(TagTranslation::getName)
+            .findFirst().orElse("");
 
         String nameUk = tag.getTagTranslations().stream()
-                .filter(t -> t.getLanguage().getCode().equals("ua"))
-                .map(TagTranslation::getName)
-                .findFirst().orElse("");
+            .filter(t -> t.getLanguage().getCode().equals("ua"))
+            .map(TagTranslation::getName)
+            .findFirst().orElse("");
 
         return TagUkEnNamesDto.builder().nameUk(nameUk).nameEn(nameEn).build();
     }
