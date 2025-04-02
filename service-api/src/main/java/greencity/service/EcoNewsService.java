@@ -2,7 +2,16 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
 import java.util.List;

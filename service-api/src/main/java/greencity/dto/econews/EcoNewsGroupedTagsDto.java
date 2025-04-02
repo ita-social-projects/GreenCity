@@ -5,7 +5,13 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 import java.time.ZonedDateTime;
 import java.util.List;
