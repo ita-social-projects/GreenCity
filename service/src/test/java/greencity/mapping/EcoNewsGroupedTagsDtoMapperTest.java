@@ -25,7 +25,9 @@ class EcoNewsGroupedTagsDtoMapperTest {
 
     @Test
     void convertNullTest() {
-        NullPointerException exception = assertThrows(NullPointerException.class, () -> {mapper.convert((EcoNews) null);});
+        NullPointerException exception = assertThrows(NullPointerException.class, () -> {
+            mapper.convert((EcoNews) null);
+        });
 
         assertEquals("EcoNews cannot be null", exception.getMessage());
     }

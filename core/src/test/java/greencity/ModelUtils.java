@@ -708,18 +708,18 @@ public class ModelUtils {
 
     public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
         return EcoNewsGroupedTagsDto.builder()
-                .tags(List.of(TagUkEnNamesDto.builder().nameUk("Новини").nameEn("News").build()))
-                .author(getEcoNewsAuthorDto())
-                .creationDate(ZonedDateTime.now())
-                .imagePath(TestConst.SITE)
-                .shortInfo("shortInfo")
-                .title("title")
-                .content("text")
-                .hidden(false)
-                .id(1L)
-                .likes(0)
-                .dislikes(0)
-                .countComments(0)
-                .build();
+            .tags(List.of(TagUkEnNamesDto.builder().nameUk("Новини").nameEn("News").build()))
+            .author(getEcoNewsAuthorDto())
+            .creationDate(ZonedDateTime.now())
+            .imagePath(TestConst.SITE)
+            .shortInfo("shortInfo")
+            .title("title")
+            .content("text")
+            .hidden(false)
+            .id(1L)
+            .likes(0)
+            .dislikes(0)
+            .countComments(0)
+            .build();
     }
 }
