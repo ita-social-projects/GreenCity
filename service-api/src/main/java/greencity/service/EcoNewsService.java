@@ -262,7 +262,7 @@ public interface EcoNewsService {
     /**
      * Method for getting the{@link EcoNewsGroupedTagsDto} instance by its id.
      *
-     * @param id       {@link Long} ecoNews id.
+     * @param id {@link Long} ecoNews id.
      * @return {@link EcoNewsGroupedTagsDto} instance.
      */
     EcoNewsGroupedTagsDto findDtoById(Long id);
