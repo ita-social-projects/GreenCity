@@ -1,7 +1,5 @@
 package greencity.dto.econews;
 
-import greencity.dto.user.EcoNewsAuthorDto;
-import java.time.ZonedDateTime;
 import java.util.List;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.NoArgsConstructor;
