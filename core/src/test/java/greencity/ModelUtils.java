@@ -154,20 +154,20 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return EcoNewsDto.builder()
-                .creationDate(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()))
-                .imagePath(null)
-                .id(1L)
-                .title("title")
-                .content("text")
-                .shortInfo("shortInfo")
-                .author(getEcoNewsAuthorDto())
-                .tagsEn(null)
-                .tagsUk(null)
-                .likes(12)
-                .dislikes(12)
-                .countComments(12)
-                .hidden(false)
-                .build();
+            .creationDate(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()))
+            .imagePath(null)
+            .id(1L)
+            .title("title")
+            .content("text")
+            .shortInfo("shortInfo")
+            .author(getEcoNewsAuthorDto())
+            .tagsEn(null)
+            .tagsUk(null)
+            .likes(12)
+            .dislikes(12)
+            .countComments(12)
+            .hidden(false)
+            .build();
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
