@@ -16,14 +16,14 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-@EqualsAndHashCode(callSuper=true)
-public class EcoNewsGroupedTagsDto extends BaseEcoNewsDto{
+@EqualsAndHashCode(callSuper = true)
+public class EcoNewsGroupedTagsDto extends BaseEcoNewsDto {
     @NotEmpty
     private List<TagUkEnNamesDto> tags;
 
     public EcoNewsGroupedTagsDto(List<TagUkEnNamesDto> tags, ZonedDateTime creationDate, String imagePath, Long id,
-                                 String title, String content, String shortInfo, EcoNewsAuthorDto author,
-                                 int likes, int dislikes, int countComments, boolean hidden) {
+        String title, String content, String shortInfo, EcoNewsAuthorDto author,
+        int likes, int dislikes, int countComments, boolean hidden) {
         super(creationDate, imagePath, id, title, content, shortInfo, author, likes, dislikes, countComments, hidden);
         this.tags = tags;
     }
