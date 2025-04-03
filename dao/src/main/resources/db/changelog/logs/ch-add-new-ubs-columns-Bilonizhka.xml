@@ -5,15 +5,7 @@
         xsi:schemaLocation="
         http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="Bilonizhka11" author="Oleh Bilonizhka">
-        <addColumn tableName="users">
-            <column name="violations" type="INT" defaultValue="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
-
-  <changeSet id="Bilonizhka12" author="Oleh Bilonizhka">
+    <changeSet id="Bilonizhka12" author="Oleh Bilonizhka">
         <addColumn tableName="certificate">
             <column name="points" type="INT">
                 <constraints nullable="false"/>
@@ -45,17 +37,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_name" type="varchar(30)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="Bilonizhka15" author="Oleh Bilonizhka">
-        <createTable tableName="positions">
-            <column name="id" autoIncrement="true" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="position" type="varchar(30)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

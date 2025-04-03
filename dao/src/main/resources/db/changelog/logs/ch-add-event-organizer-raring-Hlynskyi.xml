@@ -15,8 +15,5 @@
             </column>
             <column name="grade" type="INT"/>
         </createTable>
-        <addColumn tableName="users">
-            <column name="event_organizer_rating" type="DOUBLE"/>
-        </addColumn>
     </changeSet>
 </databaseChangeLog>

@@ -17,31 +17,4 @@
                                  constraintName="FK_user_profile" referencedColumnNames="id"
                                  referencedTableName="users"/>
     </changeSet>
-
-    <changeSet id="15712275k85316-98" author="Marian Datsko">
-        <addColumn tableName="users">
-            <column name="first_name" type="varchar(255)">
-            </column>
-        </addColumn>
-        <addColumn tableName="users">
-            <column name="city" type="varchar(255)">
-            </column>
-        </addColumn>
-        <addColumn tableName="users">
-            <column name="user_credo" type="varchar(255)">
-            </column>
-        </addColumn>
-        <addColumn tableName="users">
-            <column name="show_location" type="boolean">
-            </column>
-        </addColumn>
-        <addColumn tableName="users">
-            <column name="show_eco_place" type="boolean">
-            </column>
-        </addColumn>
-        <addColumn tableName="users">
-            <column name="show_shopping_list" type="boolean">
-            </column>
-        </addColumn>
-    </changeSet>
 </databaseChangeLog>
