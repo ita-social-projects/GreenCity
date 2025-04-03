@@ -2,56 +2,29 @@ package greencity.dto.econews;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import greencity.dto.tag.TagUkEnNamesDto;
+
 import greencity.dto.user.EcoNewsAuthorDto;
+import jakarta.validation.constraints.NotEmpty;
+import greencity.dto.tag.TagUkEnNamesDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "author")
-@Builder
-@EqualsAndHashCode
-public class EcoNewsGroupedTagsDto {
-    @NotEmpty
-    private ZonedDateTime creationDate;
-
-    @NotEmpty
-    private String imagePath;
-
-    @NotNull
-    @Min(1)
-    private Long id;
-
-    @NotEmpty
-    private String title;
-
-    @NotEmpty
-    private String content;
-
-    private String shortInfo;
-
-    @NotEmpty
-    private EcoNewsAuthorDto author;
-
+@SuperBuilder
+@EqualsAndHashCode(callSuper=true)
+public class EcoNewsGroupedTagsDto extends BaseEcoNewsDto{
     @NotEmpty
     private List<TagUkEnNamesDto> tags;
 
-    private int likes;
-
-    private int dislikes;
-
-    private int countComments;
-
-    private boolean hidden;
+    public EcoNewsGroupedTagsDto(List<TagUkEnNamesDto> tags, ZonedDateTime creationDate, String imagePath, Long id,
+                                 String title, String content, String shortInfo, EcoNewsAuthorDto author,
+                                 int likes, int dislikes, int countComments, boolean hidden) {
+        super(creationDate, imagePath, id, title, content, shortInfo, author, likes, dislikes, countComments, hidden);
+        this.tags = tags;
+    }
 }
