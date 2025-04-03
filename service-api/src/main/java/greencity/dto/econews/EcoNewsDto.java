@@ -21,12 +21,4 @@ public class EcoNewsDto extends BaseEcoNewsDto {
 
     @NotEmpty
     private List<String> tagsUk;
-
-    public EcoNewsDto(ZonedDateTime creationDate, String imagePath, Long id, String title,
-        String content, String shortInfo, EcoNewsAuthorDto author, List<String> tagsEn, List<String> tagsUk,
-        int likes, int dislikes, int countComments, boolean hidden) {
-        super(creationDate, imagePath, id, title, content, shortInfo, author, likes, dislikes, countComments, hidden);
-        this.tagsEn = tagsEn;
-        this.tagsUk = tagsUk;
-    }
 }

@@ -981,9 +981,9 @@ class EcoNewsServiceImplTest {
 
     @Test
     void findDtoByIdTest() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNews ecoNewsExisting = ModelUtils.getEcoNews();
         EcoNewsGroupedTagsDto expected = ModelUtils.getEcoNewsGroupedTagsDto();
-        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNewsExisting));
         when(modelMapper.map(ecoNews, EcoNewsGroupedTagsDto.class)).thenReturn(expected);
         assertEquals(expected, ecoNewsService.findDtoById(1L));
     }

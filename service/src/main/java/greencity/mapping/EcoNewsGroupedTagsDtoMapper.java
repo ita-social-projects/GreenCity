@@ -51,7 +51,7 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
             .shortInfo(ecoNews.getShortInfo())
             .tags(ecoNews.getTags().stream()
                 .map(this::mapToTagUkEnNamesDto)
-                .collect(Collectors.toList()))
+                .toList())
             .likes(ecoNews.getUsersLikedNews().size())
             .dislikes(ecoNews.getUsersDislikedNews().size())
             .title(ecoNews.getTitle())

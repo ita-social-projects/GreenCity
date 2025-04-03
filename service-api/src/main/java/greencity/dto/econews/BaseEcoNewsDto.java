@@ -21,7 +21,7 @@ import java.time.ZonedDateTime;
 @SuperBuilder
 @EqualsAndHashCode
 public class BaseEcoNewsDto {
-    @NotEmpty
+    @NotNull
     private ZonedDateTime creationDate;
 
     @NotEmpty
@@ -39,7 +39,7 @@ public class BaseEcoNewsDto {
 
     private String shortInfo;
 
-    @NotEmpty
+    @NotNull
     private EcoNewsAuthorDto author;
 
     private int likes;

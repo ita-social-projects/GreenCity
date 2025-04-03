@@ -19,11 +19,4 @@ import lombok.experimental.SuperBuilder;
 public class EcoNewsGroupedTagsDto extends BaseEcoNewsDto {
     @NotEmpty
     private List<TagUkEnNamesDto> tags;
-
-    public EcoNewsGroupedTagsDto(List<TagUkEnNamesDto> tags, ZonedDateTime creationDate, String imagePath, Long id,
-        String title, String content, String shortInfo, EcoNewsAuthorDto author,
-        int likes, int dislikes, int countComments, boolean hidden) {
-        super(creationDate, imagePath, id, title, content, shortInfo, author, likes, dislikes, countComments, hidden);
-        this.tags = tags;
-    }
 }
