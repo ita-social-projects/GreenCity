@@ -12,7 +12,6 @@
         <renameTable oldTableName="shopping_list_item_translations" newTableName="to_do_list_item_translations"/>
 
         <renameColumn tableName="habit_to_do_list_items" oldColumnName="shopping_list_item_id" newColumnName="to_do_list_item_id"/>
-        <renameColumn tableName="users" oldColumnName="show_shopping_list" newColumnName="show_to_do_list"/>
         <renameColumn tableName="user_to_do_list" oldColumnName="shopping_list_item_id" newColumnName="to_do_list_item_id"/>
         <renameColumn tableName="to_do_list_item_translations" oldColumnName="shopping_list_item_id" newColumnName="to_do_list_item_id"/>
     </changeSet>

@@ -111,17 +111,6 @@
             <column name="place_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-9">
-        <createTable tableName="own_security">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="password" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="user_id" type="BIGINT"/>
-        </createTable>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-10">
         <createTable tableName="photo">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -153,16 +142,6 @@
             <column name="location_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-12">
-        <createTable tableName="restore_password_email">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="expiry_date" type="datetime(6)"/>
-            <column name="token" type="VARCHAR(255)"/>
-            <column name="user_id" type="BIGINT"/>
-        </createTable>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-13">
         <createTable tableName="specification">
             <column autoIncrement="true" startWith="7" name="id" type="BIGINT">
@@ -171,43 +150,6 @@
             <column name="name" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-        </createTable>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-14">
-        <createTable tableName="user">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="date_of_registration" type="datetime(6)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email_notification" type="INT"/>
-            <column name="first_name" type="VARCHAR(20)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_name" type="VARCHAR(20)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_visit" type="datetime(6)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="role" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="user_status" type="INT"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-15">
-        <createTable tableName="verify_email">
-            <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="expiry_date" type="datetime(6)"/>
-            <column name="token" type="VARCHAR(255)"/>
-            <column name="user_id" type="BIGINT"/>
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-16">
@@ -248,14 +190,6 @@
     <changeSet author="Marian (generated)" id="1571227598316-23">
         <addUniqueConstraint columnNames="name" constraintName="UK_bdpr10axwx0a7ogp5ax531n9f" tableName="specification"/>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-24">
-        <addUniqueConstraint columnNames="email" constraintName="UK_ob8kqyqqgmefl0aco34akdtpe" tableName="user"/>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-25">
-        <createIndex indexName="FK1faffy1p9x95n6v18m5urdkfc" tableName="verify_email">
-            <column name="user_id"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-26">
         <createIndex indexName="FK3297dq7rblawjc9n4kx9htui4" tableName="place">
             <column name="category_id"/>
@@ -274,11 +208,6 @@
     <changeSet author="Marian (generated)" id="1571227598316-29">
         <createIndex indexName="FK74l2uk5a5nrjvi94rd9qaviu1" tableName="place">
             <column name="author_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-30">
-        <createIndex indexName="FK84jlf1nvnb2duww5bi10j5kwy" tableName="restore_password_email">
-            <column name="user_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-31">
@@ -356,11 +285,6 @@
             <column name="user_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-46">
-        <createIndex indexName="FKs084ey5e475cqp4w0hsgisjpd" tableName="own_security">
-            <column name="user_id"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-47">
         <createIndex indexName="FKs2ride9gvilxy2tcuv7witnxc" tableName="category">
             <column name="parent_category_id"/>
@@ -376,9 +300,6 @@
             <column name="place_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-50">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="verify_email" constraintName="FK1faffy1p9x95n6v18m5urdkfc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-51">
         <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="place" constraintName="FK3297dq7rblawjc9n4kx9htui4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="category"/>
     </changeSet>
@@ -390,9 +311,6 @@
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-54">
         <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="place" constraintName="FK74l2uk5a5nrjvi94rd9qaviu1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-55">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="restore_password_email" constraintName="FK84jlf1nvnb2duww5bi10j5kwy" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-56">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comment" constraintName="FK8kcum44fvpupyw6f5baccx25c" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
@@ -438,9 +356,6 @@
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-70">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="favorite_place" constraintName="FKrtlnhb40rfqhkna5ijgoykgyl" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-71">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="own_security" constraintName="FKs084ey5e475cqp4w0hsgisjpd" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="user"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-72">
         <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="category" constraintName="FKs2ride9gvilxy2tcuv7witnxc" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="category"/>
