@@ -16,12 +16,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">3</column>
-            <column name="content">На заводе пленка снимается с стаканчиков, и картон может быть переработан. Но сейчас проблемы с логистикой между Львовом и Харьковской областью. На это пока нет средств</column>
-            <column name="fact_of_the_day_id">1</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">4</column>
             <column name="content">Алюміній можна переробляти безперервно, як завжди. Переробка 1 одиниці алюмінію може заощадити досить енергії, щоб наші телевізори працювали не менше 3 годин. Щороку люди використовують 80 трильйонів алюмінієвих банок.</column>
             <column name="fact_of_the_day_id">3</column>
@@ -32,12 +26,6 @@
             <column name="content">Aluminum can be recycled continuously, as in forever. Recycling 1 aluminum can save enough energy to run our TVs for at least 3 hours. 80 trillion aluminum cans are used by humans every year.</column>
             <column name="fact_of_the_day_id">3</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">6</column>
-            <column name="content">Алюминий можно перерабатывать непрерывно, как всегда. Переработка 1 единицы алюминия может сэкономить достаточно энергии, чтобы наши телевизоры работали не менее 3 часов. Каждый год люди используют 80 триллионов алюминиевых банок.</column>
-            <column name="fact_of_the_day_id">3</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">7</column>
@@ -52,12 +40,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">9</column>
-            <column name="content">Только американские компании используют достаточно Бумаги, чтобы окружить Землю в 3 раза! (Хорошо, что компании переходят к безбумажной рекламе)</column>
-            <column name="fact_of_the_day_id">4</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">10</column>
             <column name="content">Ми зможемо врятувати 75 000 дерев, якщо переробимо тільки папір, використовувану в щоденних випусках New York Times.</column>
             <column name="fact_of_the_day_id">5</column>
@@ -68,12 +50,6 @@
             <column name="content">We can save 75,000 trees if we recycled the paper used on the daily run of the New York Times alone.</column>
             <column name="fact_of_the_day_id">5</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">12</column>
-            <column name="content">Мы сможем спасти 75 000 деревьев, если переработаем только бумагу, используемую в ежедневных выпусках New York Times.</column>
-            <column name="fact_of_the_day_id">5</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">13</column>
@@ -88,12 +64,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">15</column>
-            <column name="content">Когда вы бросаете пластиковые пакеты и другие пластмассовые материалы в океан, он ежегодно убивает до 1 миллиона морских существ.</column>
-            <column name="fact_of_the_day_id">6</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">16</column>
             <column name="content">Скляна пляшка, зроблена в наш час, розкладеться більше 4000 років.</column>
             <column name="fact_of_the_day_id">7</column>
@@ -104,12 +74,6 @@
             <column name="content">A glass bottle made in our time will take more than 4,000 years to decompose.</column>
             <column name="fact_of_the_day_id">7</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">18</column>
-            <column name="content">Стеклянная бутылка, сделанная в наше время, разложится более 4000 лет.</column>
-            <column name="fact_of_the_day_id">7</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">19</column>
@@ -124,12 +88,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">21</column>
-            <column name="content">Можно использовать только 1% водоснабжения нашей планеты. На данный момент 97% - это океанская вода, а 2% - это замерзшая вода в Арктике.</column>
-            <column name="fact_of_the_day_id">8</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">22</column>
             <column name="content">На нашій планеті щорічно проживає 77 мільйонів чоловік.</column>
             <column name="fact_of_the_day_id">9</column>
@@ -140,12 +98,6 @@
             <column name="content">Our planet gains inhabitants numbering to 77 million people a year.</column>
             <column name="fact_of_the_day_id">9</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">24</column>
-            <column name="content">На нашей планете ежегодно проживает 77 миллионов человек.</column>
-            <column name="fact_of_the_day_id">9</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">25</column>
@@ -160,12 +112,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">27</column>
-            <column name="content">По оценкам, ежегодно вымирает около 50 000 видов, населяющих наши тропические леса. Это в среднем 137 видов в день.</column>
-            <column name="fact_of_the_day_id">10</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">28</column>
             <column name="content">Тропічні ліси вирубують зі швидкістю 100 акрів в хвилину.</column>
             <column name="fact_of_the_day_id">11</column>
@@ -176,12 +122,6 @@
             <column name="content">Rainforests are cut down at a rate of 100 acres per minute.</column>
             <column name="fact_of_the_day_id">11</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">30</column>
-            <column name="content">Тропические леса вырубают со скоростью 100 акров в минуту.</column>
-            <column name="fact_of_the_day_id">11</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">31</column>
@@ -196,12 +136,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">33</column>
-            <column name="content">Самым старым деревьям в мире более 4600 лет.</column>
-            <column name="fact_of_the_day_id">12</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">34</column>
             <column name="content">Звалища на 35% складаються з пакувальних матеріалів.</column>
             <column name="fact_of_the_day_id">13</column>
@@ -212,12 +146,6 @@
             <column name="content">Landfills are composed of 35% packaging materials.</column>
             <column name="fact_of_the_day_id">13</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">36</column>
-            <column name="content">Свалки на 35% состоят из упаковочных материалов.</column>
-            <column name="fact_of_the_day_id">13</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">37</column>
@@ -232,12 +160,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">39</column>
-            <column name="content">Только 3% воды на нашей планете пригодно для питья. 97% из них - соленая вода. Более половины пресной воды на Земле находится в ледниках. Остальное под землей.</column>
-            <column name="fact_of_the_day_id">14</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">40</column>
             <column name="content">Вода в наших озерах, ставках, струмках, річках, ставках і інших поверхневих водах складає 0,3% наших ресурсів прісної води.</column>
             <column name="fact_of_the_day_id">15</column>
@@ -248,12 +170,6 @@
             <column name="content">The water in our lakes, ponds, streams, rivers, ponds and other surface water makes up 0.3% of our fresh water resource.</column>
             <column name="fact_of_the_day_id">15</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">42</column>
-            <column name="content">Вода в наших озерах, прудах, ручьях, реках, прудах и других поверхностных водах составляет 0,3% наших ресурсов пресной воды.</column>
-            <column name="fact_of_the_day_id">15</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">43</column>
@@ -268,12 +184,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">45</column>
-            <column name="content">25% воды в бутылках, которую вы покупаете, - это муниципальная водопроводная вода.</column>
-            <column name="fact_of_the_day_id">16</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">46</column>
             <column name="content">В атмосфері водяної пари більше, ніж у всіх річках планети разом узятих.</column>
             <column name="fact_of_the_day_id">17</column>
@@ -284,12 +194,6 @@
             <column name="content">There is more water vapor in the atmosphere than all the combined rivers on the planet.</column>
             <column name="fact_of_the_day_id">17</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">48</column>
-            <column name="content">В атмосфере водяного пара больше, чем во всех реках планеты вместе взятых.</column>
-            <column name="fact_of_the_day_id">17</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">49</column>
@@ -304,12 +208,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">51</column>
-            <column name="content">Ниагарский водопад обрабатывает 750 000 галлонов воды каждую секунду!</column>
-            <column name="fact_of_the_day_id">18</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">52</column>
             <column name="content">Понад 700 мільйонів людей не мають доступу до чистої води, і більше 2 мільярдів мають проблеми з санітарією.</column>
             <column name="fact_of_the_day_id">19</column>
@@ -320,12 +218,6 @@
             <column name="content">More than 700 million people do not have access to clean water and more than 2 billion have sanitation problems.</column>
             <column name="fact_of_the_day_id">19</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">54</column>
-            <column name="content">Более 700 миллионов человек не имеют доступа к чистой воде, и более 2 миллиардов имеют проблемы с санитарией.</column>
-            <column name="fact_of_the_day_id">19</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">55</column>
@@ -340,12 +232,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">57</column>
-            <column name="content">6-8 миллионов человек ежегодно умирают от болезней и стихийных бедствий, передающихся через воду.</column>
-            <column name="fact_of_the_day_id">20</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">58</column>
             <column name="content">Сільське господарство використовує до 70% прісної води в світі. У швидко розвиваються він досягає 90%.</column>
             <column name="fact_of_the_day_id">21</column>
@@ -356,12 +242,6 @@
             <column name="content">Agriculture uses up 70% of our global freshwater. It goes up to 90% in fast developing countries.</column>
             <column name="fact_of_the_day_id">21</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">60</column>
-            <column name="content">Сельское хозяйство использует до 70% пресной воды в мире. В быстро развивающихся странах он достигает 90%.</column>
-            <column name="fact_of_the_day_id">21</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">61</column>
@@ -376,12 +256,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">63</column>
-            <column name="content">Мы используем 10 миллиардов тонн воды по всему миру.</column>
-            <column name="fact_of_the_day_id">22</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">64</column>
             <column name="content">Очікується, що «діра» в озоновому шарі, яка становить 29 мільйонів квадратних кілометрів, буде повністю заживлена ​​протягом наступних 55 років. Це пов'язано із забороною у всьому світі хлорфторуглеродов і гідрофторвуглеців.</column>
             <column name="fact_of_the_day_id">23</column>
@@ -392,12 +266,6 @@
             <column name="content">The Ozone Layer “Hole” which is 29 million square kilometers, is expected to be fully healed in the next 55 years. This is due to the worldwide banning of chlorofluorocarbon and hydro fluorocarbon.</column>
             <column name="fact_of_the_day_id">23</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">66</column>
-            <column name="content">Ожидается, что «дыра» в озоновом слое, которая составляет 29 миллионов квадратных километров, будет полностью заживлена ​​в течение следующих 55 лет. Это связано с запретом во всем мире хлорфторуглеродов и гидрофторуглеродов.</column>
-            <column name="fact_of_the_day_id">23</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">67</column>
@@ -412,12 +280,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">69</column>
-            <column name="content">За последние 170 лет мы добавили в нашу атмосферу 2,4 триллиона тонн углекислого газа. Половина из них была добавлена ​​за последние 35–50 лет.</column>
-            <column name="fact_of_the_day_id">24</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">70</column>
             <column name="content">Ми вже знищили 27% наших коралових рифів, на яких мешкає 25% нашої морського життя.</column>
             <column name="fact_of_the_day_id">25</column>
@@ -428,12 +290,6 @@
             <column name="content">We have already destroyed 27% of our coral reefs which is home to 25% of our marine life.</column>
             <column name="fact_of_the_day_id">25</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">72</column>
-            <column name="content">Мы уже уничтожили 27% наших коралловых рифов, на которых обитает 25% нашей морской жизни.</column>
-            <column name="fact_of_the_day_id">25</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">73</column>
@@ -448,12 +304,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">75</column>
-            <column name="content">Мы исследовали больше Космоса, чем наши земные океаны.</column>
-            <column name="fact_of_the_day_id">26</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">76</column>
             <column name="content">Якщо ви підете в найглибшу частину нашого океану, тиск можна порівняти з тим, як людина намагається утримати 50 гігантських реактивних літаків!</column>
             <column name="fact_of_the_day_id">27</column>
@@ -464,12 +314,6 @@
             <column name="content">If you go to the deepest part of our ocean, the pressure can be compared to a human being trying to hold 50 jumbo jets!</column>
             <column name="fact_of_the_day_id">27</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">78</column>
-            <column name="content">Если вы отправитесь в самую глубокую часть нашего океана, давление можно сравнить с тем, как человек пытается удержать 50 гигантских реактивных самолетов!</column>
-            <column name="fact_of_the_day_id">27</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">79</column>
@@ -484,12 +328,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">81</column>
-            <column name="content">Льда в Антарктиде столько же, сколько воды в Атлантическом океане.</column>
-            <column name="fact_of_the_day_id">28</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">82</column>
             <column name="content">Якщо весь лід в світі розтане, рівень нашого моря підніметься на 66 метрів.</column>
             <column name="fact_of_the_day_id">29</column>
@@ -500,12 +338,6 @@
             <column name="content">If the entire world’s Ice melted, our sea levels will rise by 66 meters.</column>
             <column name="fact_of_the_day_id">29</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">84</column>
-            <column name="content">Если весь лед в мире растает, уровень нашего моря поднимется на 66 метров.</column>
-            <column name="fact_of_the_day_id">29</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">85</column>
@@ -520,12 +352,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">87</column>
-            <column name="content">Пластик навсегда. Он не подвергается биологической классификации и возвращается к природе. Он фоторазлагается на более мелкие части себя, постоянно загрязняя окружающую среду на протяжении всего своего жизненного цикла.</column>
-            <column name="fact_of_the_day_id">30</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">88</column>
             <column name="content">Кожну секунду в світі використовується 160 000 пластикових пакетів. Пластикові пакети зараз заборонені в супермаркетах в більшості країн, що розвиваються.</column>
             <column name="fact_of_the_day_id">31</column>
@@ -536,12 +362,6 @@
             <column name="content">The world uses 160,000 plastic bags every second. Plastic bags are now banned from supermarkets in most developing countries.</column>
             <column name="fact_of_the_day_id">31</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">90</column>
-            <column name="content">Каждую секунду в мире используется 160 000 пластиковых пакетов. Пластиковые пакеты сейчас запрещены в супермаркетах в большинстве развивающихся стран.</column>
-            <column name="fact_of_the_day_id">31</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">91</column>
@@ -556,12 +376,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">93</column>
-            <column name="content">Наши океаны имеют среднюю глубину 12 400 футов. Это означает, что большая часть живых существ на нашей планете живет в полной темноте.</column>
-            <column name="fact_of_the_day_id">32</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">94</column>
             <column name="content">США викидають за тиждень досить пластикових пляшок, щоб обійти Землю 5 разів! Вони всього 5% нашого населення</column>
             <column name="fact_of_the_day_id">33</column>
@@ -574,12 +388,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="fact_of_the_day_translations">
-            <column name="id">96</column>
-            <column name="content">США выбрасывают за неделю достаточно пластиковых бутылок, чтобы обойти Землю 5 раз! Они всего 5% нашего населения</column>
-            <column name="fact_of_the_day_id">33</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
             <column name="id">97</column>
             <column name="content">Кожен день вирубується 27000 дерев, щоб у нас був туалетний папір.</column>
             <column name="fact_of_the_day_id">2</column>
@@ -590,12 +398,6 @@
             <column name="content">27,000 trees are cut down each day so we can have Toilet Paper.</column>
             <column name="fact_of_the_day_id">2</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="fact_of_the_day_translations">
-            <column name="id">99</column>
-            <column name="content">Каждый день вырубается 27000 деревьев, чтобы у нас была туалетная бумага.</column>
-            <column name="fact_of_the_day_id">2</column>
-            <column name="language_id">3</column>
         </insert>
     </changeSet>
 </databaseChangeLog>
