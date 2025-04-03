@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
-
 import java.time.ZonedDateTime;
 
 @NoArgsConstructor
