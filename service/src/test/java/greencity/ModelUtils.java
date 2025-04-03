@@ -1605,20 +1605,20 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return EcoNewsDto.builder()
-                .creationDate(ZonedDateTime.now())
-                .imagePath("imagePath")
-                .id(1L)
-                .title("title")
-                .content("content")
-                .shortInfo("text")
-                .author(getEcoNewsAuthorDto())
-                .tagsEn(Collections.singletonList("tag"))
-                .tagsUk(Collections.singletonList("тег"))
-                .likes(1)
-                .dislikes(0)
-                .countComments(0)
-                .hidden(false)
-                .build();
+            .creationDate(ZonedDateTime.now())
+            .imagePath("imagePath")
+            .id(1L)
+            .title("title")
+            .content("content")
+            .shortInfo("text")
+            .author(getEcoNewsAuthorDto())
+            .tagsEn(Collections.singletonList("tag"))
+            .tagsUk(Collections.singletonList("тег"))
+            .likes(1)
+            .dislikes(0)
+            .countComments(0)
+            .hidden(false)
+            .build();
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
@@ -1640,20 +1640,20 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return EcoNewsDto.builder()
-                .creationDate(null)
-                .imagePath(TestConst.SITE)
-                .id(1L)
-                .title("title")
-                .content("text")
-                .shortInfo("shortInfo")
-                .author(getEcoNewsAuthorDto())
-                .tagsEn(Collections.singletonList("News"))
-                .tagsUk(Collections.singletonList("Новини"))
-                .likes(0)
-                .dislikes(0)
-                .countComments(0)
-                .hidden(false)
-                .build();
+            .creationDate(null)
+            .imagePath(TestConst.SITE)
+            .id(1L)
+            .title("title")
+            .content("text")
+            .shortInfo("shortInfo")
+            .author(getEcoNewsAuthorDto())
+            .tagsEn(Collections.singletonList("News"))
+            .tagsUk(Collections.singletonList("Новини"))
+            .likes(0)
+            .dislikes(0)
+            .countComments(0)
+            .hidden(false)
+            .build();
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
