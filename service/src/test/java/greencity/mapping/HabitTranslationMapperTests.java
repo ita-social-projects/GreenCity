@@ -22,21 +22,21 @@ class HabitTranslationMapperTests {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionEn())
-            .habitItem(habitTranslationDto.getHabitItemEn())
-            .name(habitTranslationDto.getNameEn())
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
             .build();
         assertEquals(expected, habitTranslationMapper.convert(habitTranslationDto));
     }
 
     @Test
     void convertUaWithValidHabitTranslationDtoSucceedsTest() {
-        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoEnAndUa();
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionUk())
-            .habitItem(habitTranslationDto.getHabitItemUk())
-            .name(habitTranslationDto.getNameUk())
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
             .build();
         assertEquals(expected, habitTranslationMapper.convertUa(habitTranslationDto));
     }
@@ -47,9 +47,9 @@ class HabitTranslationMapperTests {
         List<HabitTranslationDto> habitTranslationDtoList = List.of(ModelUtils.getHabitTranslationDto());
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionEn())
-            .habitItem(habitTranslationDto.getHabitItemEn())
-            .name(habitTranslationDto.getNameEn())
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
         assertEquals(expectedList, habitTranslationMapper.mapAllToList(habitTranslationDtoList));
@@ -57,13 +57,13 @@ class HabitTranslationMapperTests {
 
     @Test
     void mapAllToListWithEnLanguageReturnsListTest() {
-        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoEnAndUa();
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionEn())
-            .habitItem(habitTranslationDto.getHabitItemEn())
-            .name(habitTranslationDto.getNameEn())
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
@@ -73,13 +73,13 @@ class HabitTranslationMapperTests {
 
     @Test
     void mapAllToListWithUaLanguageReturnsListTest() {
-        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoEnAndUa();
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionUk())
-            .habitItem(habitTranslationDto.getHabitItemUk())
-            .name(habitTranslationDto.getNameUk())
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 
@@ -93,9 +93,9 @@ class HabitTranslationMapperTests {
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionEn())
-            .habitItem(habitTranslationDto.getHabitItemEn())
-            .name(habitTranslationDto.getNameEn())
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
             .build();
         List<HabitTranslation> expectedList = List.of(expected);
 

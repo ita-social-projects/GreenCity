@@ -240,7 +240,7 @@ class HabitServiceImplTest {
             requestedCustomHabitIds, userVO.getId(), "en")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
-        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
             .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
@@ -774,8 +774,8 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
         List<HabitTranslation> habitTranslationList = List.of(
-            habitTranslationUa.setLanguage(languageEn),
-            habitTranslationUa.setLanguage(languageUa));
+            habitTranslationUa.setLanguage(languageUa),
+            habitTranslationUa.setLanguage(languageEn));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
@@ -1207,7 +1207,7 @@ class HabitServiceImplTest {
         habit.setImage(imageToEncode);
         habit.setTags(Set.of(tag));
 
-        CustomHabitDtoRequest customHabitDtoRequest = ModelUtils.getСustomHabitDtoRequestWithComplexityAndDuration();
+        CustomHabitDtoRequest customHabitDtoRequest = ModelUtils.getCustomHabitDtoRequestWithComplexityAndDuration();
         CustomHabitDtoResponse customHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));

@@ -2610,21 +2610,10 @@ public class ModelUtils {
 
     public static HabitTranslationDto getHabitTranslationDto() {
         return HabitTranslationDto.builder()
-            .descriptionEn(habitTranslationDescriptionEn)
-            .habitItemEn(habitItemEn)
-            .nameEn(habitTranslationNameEn)
-            .build();
-    }
-
-    public static HabitTranslationDto getHabitTranslationDtoEnAndUa() {
-        return HabitTranslationDto.builder()
-            .descriptionEn(habitTranslationDescriptionEn)
-            .habitItemEn(habitItemEn)
-            .nameEn(habitTranslationNameEn)
+            .description(habitTranslationDescriptionEn)
+            .habitItem(habitItemEn)
+            .name(habitTranslationNameEn)
             .languageCode("en")
-            .nameUk(habitTranslationNameUk)
-            .descriptionUk(habitTranslationDescriptionUk)
-            .habitItemUk(habitItemUk)
             .build();
     }
 
@@ -2650,10 +2639,10 @@ public class ModelUtils {
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .descriptionEn(habitTranslationDescriptionEn)
-                    .habitItemEn(habitItemEn)
-                    .languageCode("ua")
-                    .nameEn(habitTranslationNameEn)
+                    .description(habitTranslationDescriptionEn)
+                    .habitItem(habitItemEn)
+                    .languageCode("en")
+                    .name(habitTranslationNameEn)
                     .build()))
             .tagIds(Set.of(20L))
             .friendsToInvite(new HashSet<>())
@@ -2680,7 +2669,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithComplexityAndDuration() {
+    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithComplexityAndDuration() {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
             .defaultDuration(7)
@@ -2700,10 +2689,10 @@ public class ModelUtils {
             .image(habitDefaultImage)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .descriptionEn(habitTranslationDescriptionEn)
-                    .habitItemEn(habitItemEn)
+                    .description(habitTranslationDescriptionEn)
+                    .habitItem(habitItemEn)
                     .languageCode("ua")
-                    .nameEn(habitTranslationNameEn)
+                    .name(habitTranslationNameEn)
                     .build()))
             .tagIds(Set.of(20L))
             .build();
@@ -2722,17 +2711,17 @@ public class ModelUtils {
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .descriptionEn(habitTranslationDescriptionEn)
-                    .habitItemEn(habitItemEn)
+                    .description(habitTranslationDescriptionEn)
+                    .habitItem(habitItemEn)
                     .languageCode("ua")
-                    .nameEn(habitTranslationNameEn)
+                    .name(habitTranslationNameEn)
                     .build(),
 
                     HabitTranslationDto.builder()
-                        .descriptionEn(habitTranslationDescriptionEn)
-                        .habitItemEn(habitItemEn)
+                        .description(habitTranslationDescriptionEn)
+                        .habitItem(habitItemEn)
                         .languageCode("en")
-                        .nameEn(habitTranslationNameEn)
+                        .name(habitTranslationNameEn)
                         .build()))
             .tagIds(Set.of(20L))
             .build();

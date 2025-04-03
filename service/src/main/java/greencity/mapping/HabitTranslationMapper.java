@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.constant.AppConstant;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.HabitTranslation;
-import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -14,9 +13,9 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
     @Override
     protected HabitTranslation convert(HabitTranslationDto habitTranslationDto) {
         return HabitTranslation.builder()
-            .description(habitTranslationDto.getDescriptionEn())
-            .habitItem(habitTranslationDto.getHabitItemEn())
-            .name(habitTranslationDto.getNameEn())
+            .description(habitTranslationDto.getDescription())
+            .habitItem(habitTranslationDto.getHabitItem())
+            .name(habitTranslationDto.getName())
             .build();
     }
 
@@ -33,12 +32,9 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
     public HabitTranslation convertUa(HabitTranslationDto habitTranslationDto) {
         HabitTranslation habitTranslation = new HabitTranslation();
         habitTranslation
-            .setName(ObjectUtils.defaultIfNull(habitTranslationDto.getNameUk(), habitTranslationDto.getNameEn()));
-        habitTranslation.setDescription(
-            ObjectUtils.defaultIfNull(habitTranslationDto.getDescriptionUk(), habitTranslationDto.getDescriptionEn()));
-        habitTranslation.setHabitItem(
-            ObjectUtils.defaultIfNull(habitTranslationDto.getHabitItemUk(), habitTranslationDto.getHabitItemEn()));
-
+            .setName(habitTranslationDto.getName());
+        habitTranslation.setDescription(habitTranslationDto.getDescription());
+        habitTranslation.setHabitItem(habitTranslationDto.getHabitItem());
         return habitTranslation;
     }
 

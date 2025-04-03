@@ -372,10 +372,10 @@ public class ModelUtils {
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .descriptionEn("Description")
-                    .habitItemEn("Item")
+                    .description("Description")
+                    .habitItem("Item")
                     .languageCode("en")
-                    .nameEn("use shopper")
+                    .name("use shopper")
                     .build()))
             .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
             .tagIds(Set.of(20L))

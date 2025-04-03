@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,15 +16,14 @@ import lombok.Builder;
 @Setter
 @EqualsAndHashCode
 @Builder
+@ToString
 public class HabitTranslationDto implements Serializable {
     @NotBlank
-    private String descriptionEn;
-    private String habitItemEn;
+    private String name;
+    @NotBlank
+    private String description;
+    @NotBlank
+    private String habitItem;
     @NotBlank
     private String languageCode;
-    @NotBlank
-    private String nameEn;
-    private String descriptionUk;
-    private String nameUk;
-    private String habitItemUk;
 }
