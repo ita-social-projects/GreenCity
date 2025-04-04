@@ -74,6 +74,7 @@ class HabitTranslationMapperTests {
     @Test
     void mapAllToListWithUaLanguageReturnsListTest() {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
+        habitTranslationDto.setLanguageCode(AppConstant.LANGUAGE_CODE_UA);
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
 
         HabitTranslation expected = HabitTranslation.builder()
@@ -91,7 +92,7 @@ class HabitTranslationMapperTests {
     void mapAllToListWithUaCodeButEmptyUaFieldsReturnListTest() {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
-
+        habitTranslationDto.setLanguageCode(AppConstant.LANGUAGE_CODE_UA);
         HabitTranslation expected = HabitTranslation.builder()
             .description(habitTranslationDto.getDescription())
             .habitItem(habitTranslationDto.getHabitItem())
