@@ -2617,12 +2617,12 @@ public class ModelUtils {
             .build();
     }
 
-    public static HabitTranslation getHabitTranslationForServiceTest() {
+    public static HabitTranslation getHabitTranslationForServiceTestUk() {
         return HabitTranslation.builder()
             .id(1L)
-            .description(habitTranslationDescriptionEn)
-            .habitItem(habitItemEn)
-            .name(habitTranslationNameEn)
+            .description(habitTranslationDescriptionUk)
+            .habitItem(habitItemUk)
+            .name(habitTranslationNameUk)
             .habit(getCustomHabitForServiceTest())
             .build();
     }

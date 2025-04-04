@@ -38,7 +38,7 @@ class HabitTranslationMapperTests {
             .habitItem(habitTranslationDto.getHabitItem())
             .name(habitTranslationDto.getName())
             .build();
-        assertEquals(expected, habitTranslationMapper.convertUa(habitTranslationDto));
+        assertEquals(expected, habitTranslationMapper.convert(habitTranslationDto));
     }
 
     @Test

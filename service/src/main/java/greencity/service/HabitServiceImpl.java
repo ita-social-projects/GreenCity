@@ -43,14 +43,13 @@ import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.RatingPointsRepo;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
@@ -393,7 +392,7 @@ public class HabitServiceImpl implements HabitService {
      */
     private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit, Long userId) {
         CustomHabitDtoResponse response = modelMapper.map(habit, CustomHabitDtoResponse.class);
-
+        response.setUserId(userId);
         response.setCustomToDoListItemDto(customToDoListResponseDtoMapper
             .mapAllToList(customToDoListItemRepo.findAllByUserIdAndHabitId(userId, habit.getId())));
         response.setTagIds(habit.getTags().stream().map(Tag::getId).collect(Collectors.toSet()));
@@ -502,20 +501,17 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
-        List<HabitTranslation> habitTranslationListForUa =
-            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, AppConstant.LANGUAGE_CODE_UA);
-        habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
-        habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode(AppConstant.LANGUAGE_CODE_UA).orElseThrow(NoSuchElementException::new)));
-
-        List<HabitTranslation> habitTranslationListForEn =
-            mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, AppConstant.DEFAULT_LANGUAGE_CODE);
-        habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
-        habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE).orElseThrow(NoSuchElementException::new)));
-
-        habit.setHabitTranslations(Stream.concat(habitTranslationListForUa.stream(), habitTranslationListForEn.stream())
-            .collect(Collectors.toList()));
+        List<HabitTranslation> habitTranslations = habitDto
+            .getHabitTranslations().stream()
+            .filter(dto -> {
+                if (!AppConstant.supportedLanguages.contains(dto.getLanguageCode())) {
+                    throw new NotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE);
+                }
+                return true;
+            })
+            .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, dto.getLanguageCode()))
+            .flatMap(Collection::stream).toList();
+        habit.setHabitTranslations(habitTranslations);
     }
 
     private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,

@@ -1,11 +1,11 @@
 package greencity.mapping;
 
-import greencity.constant.AppConstant;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.HabitTranslation;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -17,25 +17,6 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
             .habitItem(habitTranslationDto.getHabitItem())
             .name(habitTranslationDto.getName())
             .build();
-    }
-
-    /**
-     * Additional method that build {@link HabitTranslation} from
-     * {@link HabitTranslationDto} but from nameUa, descriptionUa, habitItemUa
-     * fields if they not null.
-     *
-     * @param habitTranslationDto {@link HabitTranslationDto}
-     * @return {@link HabitTranslation}
-     *
-     * @author Chernenko Vitaliy
-     */
-    public HabitTranslation convertUa(HabitTranslationDto habitTranslationDto) {
-        HabitTranslation habitTranslation = new HabitTranslation();
-        habitTranslation
-            .setName(habitTranslationDto.getName());
-        habitTranslation.setDescription(habitTranslationDto.getDescription());
-        habitTranslation.setHabitItem(habitTranslationDto.getHabitItem());
-        return habitTranslation;
     }
 
     /**
@@ -62,9 +43,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      * @author Chernenko Vitaliy
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, String language) {
-        if (AppConstant.LANGUAGE_CODE_UA.equals(language)) {
-            return dtoList.stream().map(this::convertUa).collect(Collectors.toList());
-        }
-        return dtoList.stream().map(this::convert).collect(Collectors.toList());
+        return dtoList.stream().filter(dto -> Objects.equals(language, dto.getLanguageCode()))
+            .map(this::convert).collect(Collectors.toList());
     }
 }
