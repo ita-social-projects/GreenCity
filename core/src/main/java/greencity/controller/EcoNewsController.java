@@ -10,13 +10,14 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewContentSourceDto;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -439,5 +440,26 @@ public class EcoNewsController {
         @PathVariable Long ecoNewsId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity.ok(ecoNewsService.dislikeV2(user, ecoNewsId));
+    }
+
+    /**
+     * Method for getting eco news by id.
+     *
+     * @return {@link EcoNewsGroupedTagsDto} instance.
+     */
+    @Operation(summary = "Get eco news by id.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @ApiLocale
+    @GetMapping("/{ecoNewsId}/v2")
+    public ResponseEntity<EcoNewsGroupedTagsDto> getEcoNewsByIdV2(
+        @PathVariable Long ecoNewsId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsService.findDtoById(ecoNewsId));
     }
 }

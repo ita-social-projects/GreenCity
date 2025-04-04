@@ -29,15 +29,16 @@ import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsGenericDto;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.ShortEcoNewsDto;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -114,6 +115,14 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.dto.tag.TagUkEnNamesDto;
+import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationDto;
+import greencity.dto.tag.TagDto;
+import greencity.dto.tag.TagViewDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
@@ -121,13 +130,6 @@ import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
-import greencity.dto.tag.TagDto;
-import greencity.dto.tag.TagPostDto;
-import greencity.dto.tag.TagTranslationDto;
-import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagUkEnDto;
-import greencity.dto.tag.TagVO;
-import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserFilterDto;
@@ -1602,8 +1604,21 @@ public class ModelUtils {
     }
 
     public static EcoNewsDto getEcoNewsDto() {
-        return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false);
+        return EcoNewsDto.builder()
+            .creationDate(ZonedDateTime.now())
+            .imagePath("imagePath")
+            .id(1L)
+            .title("title")
+            .content("content")
+            .shortInfo("text")
+            .author(getEcoNewsAuthorDto())
+            .tagsEn(Collections.singletonList("tag"))
+            .tagsUk(Collections.singletonList("тег"))
+            .likes(1)
+            .dislikes(0)
+            .countComments(0)
+            .hidden(false)
+            .build();
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
@@ -1624,9 +1639,21 @@ public class ModelUtils {
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
-        return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
-            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0,
-            false);
+        return EcoNewsDto.builder()
+            .creationDate(null)
+            .imagePath(TestConst.SITE)
+            .id(1L)
+            .title("title")
+            .content("text")
+            .shortInfo("shortInfo")
+            .author(getEcoNewsAuthorDto())
+            .tagsEn(Collections.singletonList("News"))
+            .tagsUk(Collections.singletonList("Новини"))
+            .likes(0)
+            .dislikes(0)
+            .countComments(0)
+            .hidden(false)
+            .build();
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
@@ -3555,5 +3582,22 @@ public class ModelUtils {
 
     public static TableParamsRequestDto tableParamsRequestDto() {
         return new TableParamsRequestDto("users", 10, 1);
+    }
+
+    public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
+        return EcoNewsGroupedTagsDto.builder()
+            .tags(List.of(TagUkEnNamesDto.builder().nameUk("Новини").nameEn("News").build()))
+            .author(getEcoNewsAuthorDto())
+            .creationDate(zonedDateTime)
+            .imagePath(TestConst.SITE)
+            .shortInfo("shortInfo")
+            .title("title")
+            .content("text")
+            .hidden(false)
+            .id(1L)
+            .likes(0)
+            .dislikes(0)
+            .countComments(0)
+            .build();
     }
 }

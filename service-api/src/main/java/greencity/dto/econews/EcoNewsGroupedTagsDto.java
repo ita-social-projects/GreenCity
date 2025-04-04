@@ -2,10 +2,11 @@ package greencity.dto.econews;
 
 import java.util.List;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.NoArgsConstructor;
-import lombok.EqualsAndHashCode;
+import greencity.dto.tag.TagUkEnNamesDto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
@@ -13,10 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class EcoNewsDto extends BaseEcoNewsDto {
+public class EcoNewsGroupedTagsDto extends BaseEcoNewsDto {
     @NotEmpty
-    private List<String> tagsEn;
-
-    @NotEmpty
-    private List<String> tagsUk;
+    private List<TagUkEnNamesDto> tags;
 }

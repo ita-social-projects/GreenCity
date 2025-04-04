@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static greencity.ModelUtils.getEcoNewsDto;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 
+import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
@@ -381,5 +383,23 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedResponse));
         verify(ecoNewsService, times(1)).dislikeV2(userVO, ecoNewsId);
+    }
+
+    @Test
+    void getEcoNewsByIdV2Test() throws Exception {
+        when(ecoNewsService.findDtoById(anyLong())).thenReturn(getEcoNewsGroupedTagsDto());
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getEcoNewsByIdV2NotFoundTest() throws Exception {
+        when(ecoNewsService.findDtoById(1L)).thenThrow(new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L));
+        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
