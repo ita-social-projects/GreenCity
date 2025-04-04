@@ -2,7 +2,13 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="Spodaryk-28" author="Oksana Spodaryk">
+    <changeSet id="Spodaryk-28" author="Oksana Spodaryk" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_user_actions_habit" />
+            </not>
+        </preConditions>
+
         <addForeignKeyConstraint baseColumnNames="habit_id"
                                  baseTableName="user_actions"
                                  constraintName="fk_user_actions_habit"
@@ -11,7 +17,13 @@
                                  referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>
-    <changeSet id="Spodaryk-29" author="Oksana Spodaryk">
+    <changeSet id="Spodaryk-29" author="Oksana Spodaryk" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_user_achievements_habit" />
+            </not>
+        </preConditions>
+
         <addForeignKeyConstraint baseColumnNames="habit_id"
                                  baseTableName="user_achievements"
                                  constraintName="fk_user_achievements_habit"

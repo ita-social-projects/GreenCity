@@ -4,7 +4,20 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="Herchanivska-10" author="Viktoriia Herchanivska">
+    <changeSet id="Herchanivska-10" author="Viktoriia Herchanivska" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="custom_to_do_list_items" />
+                <tableExists tableName="habit_to_do_list_items" />
+                <tableExists tableName="to_do_list_items" />
+                <tableExists tableName="user_to_do_list" />
+                <tableExists tableName="to_do_list_item_translations" />
+                <columnExists tableName="habit_to_do_list_items" columnName="to_do_list_item_id" />
+                <columnExists tableName="user_to_do_list" columnName="to_do_list_item_id" />
+                <columnExists tableName="to_do_list_item_translations" columnName="to_do_list_item_id" />
+            </not>
+        </preConditions>
+
         <renameTable oldTableName="custom_shopping_list_items" newTableName="custom_to_do_list_items"/>
         <renameTable oldTableName="habit_shopping_list_items" newTableName="habit_to_do_list_items"/>
         <renameTable oldTableName="shopping_list_items" newTableName="to_do_list_items"/>

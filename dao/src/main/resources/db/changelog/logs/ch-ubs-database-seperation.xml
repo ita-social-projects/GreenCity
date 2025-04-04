@@ -7,7 +7,21 @@
         http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="Bilonizhka26" author="Oleh Bilonizhka">
+    <changeSet id="Bilonizhka26" author="Oleh Bilonizhka" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="employee_position" />
+            <tableExists tableName="order_employee"/>
+            <tableExists tableName="employees"/>
+            <tableExists tableName="change_of_points_mapping"/>
+            <tableExists tableName="order_additional"/>
+            <tableExists tableName="order_bag_mapping"/>
+            <tableExists tableName="certificate"/>
+            <tableExists tableName="orders"/>
+            <tableExists tableName="ubs_user"/>
+            <tableExists tableName="address"/>
+            <tableExists tableName="bag"/>
+        </preConditions>
+
         <dropTable tableName="employee_position"/>
         <dropTable tableName="order_employee"/>
         <dropTable tableName="employees"/>
