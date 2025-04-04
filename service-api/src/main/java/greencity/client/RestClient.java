@@ -55,7 +55,7 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 public class RestClient {
     private final RestTemplate restTemplate;
     private final String greenCityUserServerAddress;
-    private final UriComponentsBuilder ubsNotificationsUrlBuilder;
+    private final String greenCityUbsServerAddress;
 
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
@@ -92,8 +92,7 @@ public class RestClient {
         this.httpServletRequest = httpServletRequest;
         this.jwtTool = jwtTool;
         this.systemEmail = systemEmail;
-        this.ubsNotificationsUrlBuilder =
-            UriComponentsBuilder.fromHttpUrl(greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS);
+        this.greenCityUbsServerAddress = greenCityUbsServerAddress;
     }
 
     public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(Principal principal,
@@ -101,6 +100,9 @@ public class RestClient {
         HttpHeaders httpHeaders = setHeader();
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         String userEmail = principal.getName();
+
+        UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromHttpUrl(
+            greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS);
 
         String url = ubsNotificationsUrlBuilder
             .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
