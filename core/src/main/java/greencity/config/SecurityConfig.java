@@ -171,6 +171,7 @@ public class SecurityConfig {
                     ECO_NEWS + "/tags",
                     ECO_NEWS + ECO_NEWS_ID + "/recommended",
                     ECO_NEWS + ECO_NEWS_ID,
+                    ECO_NEWS + ECO_NEWS_ID + "/v2",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES + COUNT,
                     ECO_NEWS_ID_COMMENTS,
