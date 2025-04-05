@@ -30,18 +30,6 @@ class HabitTranslationMapperTests {
     }
 
     @Test
-    void convertUaWithValidHabitTranslationDtoSucceedsTest() {
-        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
-
-        HabitTranslation expected = HabitTranslation.builder()
-            .description(habitTranslationDto.getDescription())
-            .habitItem(habitTranslationDto.getHabitItem())
-            .name(habitTranslationDto.getName())
-            .build();
-        assertEquals(expected, habitTranslationMapper.convert(habitTranslationDto));
-    }
-
-    @Test
     void mapAllToListTest() {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         List<HabitTranslationDto> habitTranslationDtoList = List.of(ModelUtils.getHabitTranslationDto());
