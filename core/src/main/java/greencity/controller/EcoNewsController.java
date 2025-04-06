@@ -197,7 +197,11 @@ public class EcoNewsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiPageable
     @GetMapping
@@ -213,14 +217,24 @@ public class EcoNewsController {
         @RequestParam String language) {
         Long id = (user != null) ? user.getId() : authService.getAuthenticatedUserId();
 
-        Page<EcoNewsGenericDto> combinedEcoNews = aiService.getCombinedEcoNewsForUser(id, language,page, tags, title, authorId, favorite);
-
-
-        return ResponseEntity.status(HttpStatus.OK).body(
-            new PageableAdvancedDto<>(combinedEcoNews.getContent(), combinedEcoNews.getTotalElements(),
-                combinedEcoNews.getNumber(), combinedEcoNews.getTotalPages(), combinedEcoNews.getNumberOfElements(),
-                combinedEcoNews.hasPrevious(), combinedEcoNews.hasNext(), combinedEcoNews.isFirst(), combinedEcoNews.isLast())
+        Page<EcoNewsGenericDto> combinedEcoNews = aiService.getCombinedEcoNewsForUser(
+            id, language,
+            page, tags,
+            title, authorId,
+            favorite
         );
+        return ResponseEntity.status(HttpStatus.OK).body(
+            new PageableAdvancedDto<>(
+                combinedEcoNews.getContent(),
+                combinedEcoNews.getTotalElements(),
+                combinedEcoNews.getNumber(),
+                combinedEcoNews.getTotalPages(),
+                combinedEcoNews.getNumberOfElements(),
+                combinedEcoNews.hasPrevious(),
+                combinedEcoNews.hasNext(),
+                combinedEcoNews.isFirst(),
+                combinedEcoNews.isLast()
+            ));
     }
 
     /**
@@ -413,8 +427,22 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
     }
 
+    @Operation(summary = "Generate eco news based on habits")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @ApiLocale
     @PostMapping("/generate")
-    public String generateEcoNewsBasedOnHabits(@RequestParam String language) {
-        return aiService.generateEcoNewsBasedOnHabits(language);
+    public ResponseEntity<String> generateEcoNewsBasedOnHabits(@Parameter(hidden = true) Locale locale) {
+        String language = locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage();
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(aiService.generateEcoNewsBasedOnHabits(language));
     }
 }

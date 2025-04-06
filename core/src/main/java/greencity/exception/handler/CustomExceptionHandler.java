@@ -686,4 +686,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
+
+    @ExceptionHandler(EcoNewsGenerationLimitException.class)
+    public final ResponseEntity<Object> handleEcoNewsGenerationLimitException(EcoNewsGenerationLimitException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(InvalidJsonFormatException.class)
+    public final ResponseEntity<Object> handleInvalidJsonFormatException(InvalidJsonFormatException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
 }
