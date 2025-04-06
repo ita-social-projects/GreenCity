@@ -42,11 +42,20 @@ public class OpenAIRequest {
 
     public static final String NEWS_WITHOUT_QUERY = """
         Generate a relevant and up-to-date eco-news article on a trending environmental topic.
-        The article should provide a balanced and well-structured analysis, covering the key aspects of
-        the topic, its global impact, and potential solutions or innovations.
-        Ensure that the article consists of at least 5 detailed paragraphs, each with at least 3 complete sentences.
-        Maximum length: 2000 characters.
-        Use real-world statistics and references where possible.
+        The response **must** be in **valid JSON format**.
+
+        JSON Structure:
+        {
+            "title": "string (max 100 characters)",
+            "content": "string (5-10 paragraphs, each 10+ sentences)"
+        }
+
+        Ensure:
+        - The response is a properly formatted JSON object.
+        - "title" is compelling and engaging (max 100 characters).
+        - "content" provides a balanced and well-structured analysis, covering the key aspects of the topic, its global impact, and potential solutions or innovations.
+        - Keep total content length within 2000 characters.
+        - Use real-world statistics and references where possible.
         """;
 
     public static final String OPENAI_SIMILARITY_PROMPT = """

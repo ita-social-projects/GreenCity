@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -187,12 +186,4 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
         GROUP BY tags;
         """, nativeQuery = true)
     List<Object[]> getEcoNewsTagsStatistics(Long languageId);
-
-    @Query("SELECT e FROM EcoNews e WHERE "
-        + "(:tags IS NULL OR :tags MEMBER OF e.tags) AND "
-        + "(:title IS NULL OR e.title LIKE %:title%) AND "
-        + "(:authorId IS NULL OR e.author.id = :authorId)")
-    List<EcoNews> findEcoNews(@Param("tags") List<String> tags,
-                              @Param("title") String title,
-                              @Param("authorId") Long authorId);
 }

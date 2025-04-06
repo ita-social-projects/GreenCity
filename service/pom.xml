@@ -26,7 +26,10 @@
         <apache.commons.version>3.13.0</apache.commons.version>
         <io.github.cdimascio.dotenv.version>3.1.0</io.github.cdimascio.dotenv.version>
         <languagetool.version>6.5</languagetool.version>
-        <apache.tika.version>3.1.0</apache.tika.version>
+        <opennlp-tools.version>2.5.3</opennlp-tools.version>
+        <caffeine.version>3.2.0</caffeine.version>
+        <spring.starter.version>3.4.4</spring.starter.version>
+        <jackson.version>2.18.3</jackson.version>
     </properties>
 
     <dependencies>
@@ -152,9 +155,34 @@
             <version>${languagetool.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-            <version>${apache.tika.version}</version>
+            <groupId>org.apache.opennlp</groupId>
+            <artifactId>opennlp-tools</artifactId>
+            <version>${opennlp-tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+            <version>${spring.starter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+            <version>${spring.starter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>${spring.starter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 </project>

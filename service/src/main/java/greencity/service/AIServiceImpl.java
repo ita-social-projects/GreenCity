@@ -3,12 +3,9 @@ package greencity.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import static greencity.constant.GrammarCheckConstants.ERROR_CHECKING_GRAMMAR;
-import static greencity.constant.OpenAIConstants.COMBINED_ECO_NEWS_REQUEST;
 import static greencity.constant.OpenAIRequest.*;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.entity.localization.TagTranslation;
-import static greencity.log.OpenAILogMessages.*;
 import static greencity.constant.OpenAIConstants.*;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.habit.DurationHabitDto;
@@ -52,24 +49,21 @@ public class AIServiceImpl implements AIService {
 
     @Override
     public String getForecast(Long userId, String language) {
-        log.info(FORECAST_REQUEST_INITIATED, userId, language);
         validateInputs(userId, language);
 
         List<HabitAssign> habitAssigns = fetchHabitAssignsByUserId(userId);
-
         String forecastResponse;
+
         if (habitAssigns.isEmpty()) {
-            log.info(NO_HABIT_ASSIGNMENTS_DETECTED, userId);
             forecastResponse = getAdvice(userId, language);
         } else {
-            log.info(HABIT_ASSIGNMENTS_RETRIEVED, userId);
             forecastResponse = fetchForecast(language, habitAssigns);
         }
 
         try {
             forecastResponse = grammarChecker.checkGrammar(forecastResponse);
         } catch (IOException e) {
-            log.error(ERROR_CHECKING_GRAMMAR, e);
+            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
 
         return sanitizeJsonResponse(forecastResponse);
@@ -77,58 +71,49 @@ public class AIServiceImpl implements AIService {
 
     @Override
     public String getAdvice(Long userId, String language) {
-        log.info(ADVICE_REQUEST_INITIATED, userId, language);
         validateInputs(userId, language);
         Habit habit = fetchRandomHabit();
-        log.info(RANDOM_HABIT_SELECTED, habit);
         String adviceResponse = fetchAdvice(language, habit);
 
         try {
             adviceResponse = grammarChecker.checkGrammar(adviceResponse);
         } catch (IOException e) {
-            log.error(ERROR_CHECKING_GRAMMAR, e);
+            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
         return adviceResponse;
     }
 
     @Override
     public String getNews(String language, String query) {
-        log.info(NEWS_REQUEST_INITIATED, language, query);
         validateInputs(language);
         String jsonResponse = openAIService.makeRequest(createNewsRequest(language, query));
-        log.info(API_RESPONSE_RECEIVED, jsonResponse);
         String newResponse = extractContentFromJson(jsonResponse);
 
         try {
             newResponse = grammarChecker.checkGrammar(newResponse);
         } catch (IOException e) {
-            log.error(ERROR_CHECKING_GRAMMAR, e);
+            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
         return newResponse;
     }
 
     @Override
     public String generateEcoNewsBasedOnHabits(String language) {
-        log.info(ECO_NEWS_GENERATION_REQUEST, language);
         validateInputs(language);
         if (!isWeekPassed()) {
-            log.warn(ECO_NEWS_GENERATION_LIMIT_EXCEEDED, lastGeneratedDate);
-            throw new IllegalStateException(MESSAGE_ECO_NEWS_LIMIT);
+            throw new EcoNewsGenerationLimitException(MESSAGE_ECO_NEWS_LIMIT);
         }
         lastGeneratedDate = LocalDate.now();
 
         String jsonResponse = fetchNewsWithoutQuery(language);
-        log.info(RECEIVED_JSON_RESPONSE, jsonResponse);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
         ecoNews = ecoNewsRepo.save(ecoNews);
-        log.info(ECO_NEWS_SAVED_SUCCESSFULLY, ecoNews.getId());
-
         String ecoNewsText = ecoNews.getText();
 
         try {
             ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
         } catch (IOException e) {
-            log.error(ERROR_CHECKING_GRAMMAR, e);
+            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
         return ecoNewsText;
     }
@@ -138,8 +123,6 @@ public class AIServiceImpl implements AIService {
                                                       List<String> tags, String title,
                                                       Long authorId, boolean favorite)
     {
-        log.info(USER_RELEVANT_ECO_NEWS_REQUEST, userId, language);
-
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
         ecoNewsList = ecoNewsList.stream()
             .filter(ecoNews -> filterByTags(ecoNews, tags))
@@ -149,7 +132,7 @@ public class AIServiceImpl implements AIService {
 
         List<String> habitAssigns = habitAssignRepo.fetchHabitNamesByUserId(userId);
 
-        List<EcoNewsDto> relevantEcoNews = ecoNewsList.stream()
+        return ecoNewsList.stream()
             .map(ecoNews -> {
                 EcoNewsDto ecoNewsDto = modelMapper.map(ecoNews, EcoNewsDto.class);
                 if (habitAssigns != null) {
@@ -159,9 +142,6 @@ public class AIServiceImpl implements AIService {
                 return ecoNewsDto;
             }).sorted(Comparator.comparingDouble(EcoNewsDto::getRelevanceScore).reversed())
             .toList();
-
-        log.info(USER_RELEVANT_ECO_NEWS_RETRIEVED, userId, relevantEcoNews.size());
-        return relevantEcoNews;
     }
 
     @Override
@@ -170,18 +150,14 @@ public class AIServiceImpl implements AIService {
                                                              String title, Long authorId,
                                                              boolean favorite)
     {
-        log.info(COMBINED_ECO_NEWS_REQUEST, userId, language);
-
         List<EcoNewsDto> combinedNews;
         if (userId == null) {
-            log.info(USER_ID_NULL);
-            combinedNews = getGeneralEcoNews(language, tags, title, authorId);
+            combinedNews = getGeneralEcoNews(tags, title, authorId);
         } else {
-            log.info(FETCHING_RELEVANT_ECO_NEWS, userId);
             List<EcoNewsDto> relevantEcoNews = getRelevantEcoNewsForUser(userId, language,
                 tags, title,
                 authorId, favorite);
-            List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(language, tags, title, authorId);
+            List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(tags, title, authorId);
 
             combinedNews = new ArrayList<>(relevantEcoNews);
             combinedNews.addAll(generalEcoNews);
@@ -190,8 +166,6 @@ public class AIServiceImpl implements AIService {
         List<EcoNewsDto> sortedCombinedNews = combinedNews.stream()
             .sorted(Comparator.comparingDouble(EcoNewsDto::getRelevanceScore).reversed())
             .toList();
-
-        log.info(COMBINED_ECO_NEWS_SIZE_AFTER_SORTING, sortedCombinedNews.size());
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), sortedCombinedNews.size());
@@ -202,13 +176,10 @@ public class AIServiceImpl implements AIService {
         return new PageImpl<>(pageContent, pageable, sortedCombinedNews.size());
     }
 
-    private List<EcoNewsDto> getGeneralEcoNews(String language,
-                                               List<String> tags,
+    private List<EcoNewsDto> getGeneralEcoNews(List<String> tags,
                                                String title,
                                                Long authorId)
     {
-        log.info(GENERAL_ECO_NEWS_REQUEST, language);
-
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
         ecoNewsList = ecoNewsList.stream()
             .filter(ecoNews -> filterByTags(ecoNews, tags))
@@ -222,7 +193,6 @@ public class AIServiceImpl implements AIService {
 
 
     private double calculateRelevanceScore(EcoNews ecoNews, List<String> habitNames) {
-        log.info(RELEVANCE_SCORE_CALCULATION_STARTED, ecoNews, habitNames);
         double maxRelevance = 0.0;
         for (String habitName : habitNames) {
             double relevance = analyzeRelevance(ecoNews.getTitle(), habitName);
@@ -234,7 +204,6 @@ public class AIServiceImpl implements AIService {
     }
 
     private double analyzeRelevance(String topic1, String topic2) {
-        log.info(RELEVANCE_ANALYSIS_STARTED, topic1, topic2);
         String prompt = String.format(OPENAI_SIMILARITY_PROMPT, topic1, topic2);
         String response = openAIService.makeRequest(prompt);
 
@@ -250,17 +219,14 @@ public class AIServiceImpl implements AIService {
     }
 
     private List<HabitAssign> fetchHabitAssignsByUserId(Long userId) {
-        log.info(USER_HABIT_ASSIGNMENTS_FETCH_INITIATED, userId);
         return habitAssignRepo.findAllByUserId(userId);
     }
 
     private Habit fetchRandomHabit() {
-        log.info(RANDOM_HABIT_FETCH_INITIATED);
         return habitRepo.findRandomHabit();
     }
 
     private String createNewsRequest(String language, String query) {
-        log.info(NEWS_QUERY_CREATION_STARTED, language, query);
         String baseRequest = query == null
             ? NEWS_WITHOUT_QUERY
             : NEWS_BY_QUERY + query;
@@ -270,7 +236,6 @@ public class AIServiceImpl implements AIService {
     }
 
     private String fetchForecast(String language, List<HabitAssign> habitAssigns) {
-        log.info(FORECAST_FETCH_INITIATED, language, habitAssigns);
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
             .map(this::mapToDurationHabitDto)
             .toList();
@@ -278,7 +243,6 @@ public class AIServiceImpl implements AIService {
     }
 
     private DurationHabitDto mapToDurationHabitDto(HabitAssign habitAssign) {
-        log.info(HABIT_DTO_MAPPING_STARTED, habitAssign);
         return modelMapper.map(habitAssign, DurationHabitDto.class);
     }
 
@@ -287,18 +251,15 @@ public class AIServiceImpl implements AIService {
     }
 
     private String fetchAdvice(String language, Habit habit) {
-        log.info(ADVICE_FETCH_INITIATED, language, habit);
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
         return openAIService.makeRequest(language + ADVICE + shortHabitDto);
     }
 
     private String fetchNewsWithoutQuery(String language) {
-        log.info(NEWS_FETCH_WITHOUT_QUERY_INITIATED, language);
         return openAIService.makeRequest(language + NEWS_WITHOUT_QUERY);
     }
 
     private JsonNode parseJsonResponse(String jsonResponse) {
-        log.info(JSON_RESPONSE_PARSING_STARTED, jsonResponse);
         String sanitizedResponse = jsonResponse.replace(FORMAT_ASTERISKS_ESCAPE,
             FORMAT_EMPTY_STRING).trim();
 
@@ -310,11 +271,15 @@ public class AIServiceImpl implements AIService {
     }
 
     private JsonNode parseJsonString(String sanitizedResponse) {
-        log.info(JSON_STRING_PARSING_STARTED, sanitizedResponse);
         try {
-            sanitizedResponse = sanitizedResponse.replace(FORMAT_JSON_CODE_BLOCK_START,
-                    FORMAT_EMPTY_STRING).replace(FORMAT_JSON_CODE_BLOCK_END,
-                FORMAT_EMPTY_STRING).trim();
+            sanitizedResponse = sanitizedResponse
+                .replace(FORMAT_JSON_CODE_BLOCK_START, FORMAT_EMPTY_STRING)
+                .replace(FORMAT_JSON_CODE_BLOCK_END, FORMAT_EMPTY_STRING)
+                .replace("Title: ", "")
+                .replace("\\*\\*", "")
+                .replace("\\*", "")
+                .replaceAll("\\*+", "")
+                .trim();
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readTree(sanitizedResponse);
@@ -324,7 +289,6 @@ public class AIServiceImpl implements AIService {
     }
 
     private static @NotNull ObjectNode getJsonNodes(String sanitizedResponse) {
-        log.info(JSON_NODES_EXTRACTION_STARTED, sanitizedResponse);
         String[] parts = splitResponse(sanitizedResponse);
         String title = extractTitle(parts);
         String content = extractContent(parts);
@@ -333,7 +297,6 @@ public class AIServiceImpl implements AIService {
     }
 
     private static ObjectNode createJsonNode(String title, String content) {
-        log.info(JSON_NODE_CREATION_STARTED, title, content);
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode jsonNode = objectMapper.createObjectNode();
         jsonNode.put(FORMAT_TITLE_KEY, title);
@@ -342,22 +305,18 @@ public class AIServiceImpl implements AIService {
     }
 
     private static String[] splitResponse(String response) {
-        log.info(RESPONSE_SPLIT_STARTED, response);
         return response.split(FORMAT_NEW_LINE, 2);
     }
 
     private static String extractTitle(String[] parts) {
-        log.info(RESPONSE_TITLE_EXTRACTION_STARTED, (Object) parts);
         return parts[0].replace(FORMAT_TITLE_PREFIX, FORMAT_EMPTY_STRING).trim();
     }
 
     private static String extractContent(String[] parts) {
-        log.info(RESPONSE_CONTENT_EXTRACTION_STARTED, (Object) parts);
         return parts.length > 1 ? parts[1].trim() : FORMAT_EMPTY_STRING;
     }
 
     private EcoNews createEcoNewsInstance(String jsonResponse) {
-        log.info(ECO_NEWS_INSTANCE_CREATION_STARTED, jsonResponse);
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
         String title = extractTitleFromJson(jsonNode);
         String content = extractContentFromJsonNode(jsonNode);
@@ -373,18 +332,15 @@ public class AIServiceImpl implements AIService {
     }
 
     private User fetchOrCreateAiGeneratedUser() {
-        log.info(AI_USER_FETCH_OR_CREATION_INITIATED);
         return userRepo.findByEmail(AI_USER_EMAIL)
             .orElseGet(this::createAiGeneratedUser);
     }
 
     private String extractTitleFromJson(JsonNode jsonNode) {
-        log.info(JSON_TITLE_EXTRACTION_STARTED, jsonNode);
         return jsonNode.get(FORMAT_TITLE_KEY).asText();
     }
 
     private String extractContentFromJsonNode(JsonNode jsonNode) {
-        log.info(JSON_CONTENT_EXTRACTION_STARTED, jsonNode);
         return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
     }
 
@@ -393,7 +349,6 @@ public class AIServiceImpl implements AIService {
                                  User aiGeneratedUser,
                                  Tag tag)
     {
-        log.info(ECO_NEWS_BUILD_STARTED, title, content, aiGeneratedUser, tag);
         return EcoNews.builder()
             .creationDate(ZonedDateTime.now())
             .author(aiGeneratedUser)
@@ -404,7 +359,6 @@ public class AIServiceImpl implements AIService {
     }
 
     private User createAiGeneratedUser() {
-        log.info(AI_GENERATED_USER_CREATION_STARTED);
         User user = User.builder()
             .name(AI_USER_NAME)
             .dateOfRegistration(LocalDateTime.now())
@@ -427,38 +381,28 @@ public class AIServiceImpl implements AIService {
     }
 
     private boolean isJsonResponseComplete(String jsonResponse) {
-        log.info(LOG_JSON_VALIDATION_STARTED, jsonResponse);
         try {
             jsonResponse = jsonResponse.trim();
             if (!jsonResponse.startsWith(OPENING_CURLY_BRACE) ||
                 !jsonResponse.endsWith(CLOSING_CURLY_BRACE))
             {
-                log.warn(WARNING_JSON_MISSING_BRACES);
                 jsonResponse = OPENING_CURLY_BRACE + jsonResponse + CLOSING_CURLY_BRACE;
-                log.info(LOG_JSON_CORRECTED_WITH_BRACES, jsonResponse);
             }
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
 
-            boolean hasTitle = jsonNode.has(FORMAT_TITLE_KEY);
-            boolean hasContent = jsonNode.has(RESPONSE_JSON_CONTENT_KEY);
+            boolean hasTitle = jsonNode.path(FORMAT_TITLE_KEY).isTextual();
+            boolean hasContent = jsonNode.path(RESPONSE_JSON_CONTENT_KEY).isTextual();
 
-            if (!hasTitle || !hasContent) {
-                log.warn(WARNING_JSON_MISSING_REQUIRED_FIELDS, hasTitle, hasContent);
-            }
             return hasTitle && hasContent;
         } catch (JsonParseException e) {
-            log.error(ERROR_JSON_INVALID_FORMAT, e);
-            return false;
+            throw new InvalidJsonFormatException(ERROR_JSON_INVALID_FORMAT, e);
         } catch (Exception e) {
-            log.error(ERROR_JSON_VALIDATION_FAILURE, e);
-            return false;
+            throw new InvalidJsonFormatException(ERROR_JSON_VALIDATION_FAILURE, e);
         }
     }
 
-
     private String extractContentFromJson(String jsonResponse) {
-        log.info(RAW_JSON_LOG_MESSAGE, jsonResponse);
         int retryCount = 0;
 
         while (retryCount < MAX_JSON_PARSE_ATTEMPTS) {
@@ -466,18 +410,21 @@ public class AIServiceImpl implements AIService {
                 jsonResponse = sanitizeJsonResponse(jsonResponse);
 
                 if (!isJsonResponseComplete(jsonResponse)) {
-                    throw new IncompleteJsonException(ERROR_JSON_INCOMPLETE);
+                    retryCount++;
+                    if (retryCount >= MAX_JSON_PARSE_ATTEMPTS) {
+                        throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
+                            + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX);
+                    }
+                    continue;
                 }
                 return parseContentFromJson(jsonResponse);
             } catch (IncompleteJsonException e) {
-                log.error(ERROR_JSON_INCOMPLETE + ATTEMPT_LOG_MESSAGE, retryCount + 1, e);
                 retryCount++;
                 if (retryCount >= MAX_JSON_PARSE_ATTEMPTS) {
                     throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
                         + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX, e);
                 }
             } catch (Exception e) {
-                log.error(ERROR_PARSING_JSON_GENERIC + ATTEMPT_LOG_MESSAGE, retryCount + 1, e);
                 throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS, e);
             }
         }
@@ -485,7 +432,6 @@ public class AIServiceImpl implements AIService {
     }
 
     private String parseContentFromJson(String jsonResponse) {
-        log.info(JSON_CONTENT_PARSING_STARTED, jsonResponse);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
@@ -495,13 +441,11 @@ public class AIServiceImpl implements AIService {
                 throw new JsonResponseParseException(ERROR_JSON_KEY_NOT_FOUND);
             }
         } catch (Exception e) {
-            log.error(ERROR_JSON_PARSE_CONTENT_FAILED, e);
             throw new JsonResponseParseException(ERROR_JSON_PARSE_FAILURE, e);
         }
     }
 
     private boolean isWeekPassed() {
-        log.info(WEEK_PASSED_CHECK_INITIATED);
         return ChronoUnit.WEEKS.between(lastGeneratedDate, LocalDate.now()) >= 1;
     }
 
@@ -531,26 +475,20 @@ public class AIServiceImpl implements AIService {
     }
 
     private void validateInputs(Object... inputs) {
-        log.info(INPUT_VALIDATION_STARTED, (Object) inputs);
-
         for (Object input : inputs) {
             switch (input) {
-                case null ->
-                    throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
-                case String str when str.isBlank() ->
-                    throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
-                case Long l when l <= 0 ->
-                    throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
-                case Long ignored ->
-                    log.debug(LOG_VALID_LONG_INPUT, ignored);
-                case String str ->
-                    log.info(LOG_VALID_STRING_INPUT, str);
-                default -> {
-                    log.error(LOG_UNSUPPORTED_INPUT_TYPE,
-                        input.getClass().getName());
-                    throw new InvalidInputException(ERROR_UNSUPPORTED_INPUT_TYPE
-                        + input.getClass().getName());
+                case null -> throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
+                case String s -> {
+                    if (s.isBlank()) {
+                        throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
+                    }
                 }
+                case Long l -> {
+                    if (l <= 0) {
+                        throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
+                    }
+                }
+                default -> throw new InvalidInputException(ERROR_UNSUPPORTED_INPUT_TYPE + input.getClass().getName());
             }
         }
     }

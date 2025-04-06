@@ -23,6 +23,7 @@ import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.AIService;
+import greencity.service.AuthService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,10 +39,12 @@ import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,6 +66,7 @@ public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
     private final AIService aiService;
+    private final AuthService authService;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -193,7 +197,11 @@ public class EcoNewsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @ApiPageable
     @GetMapping
@@ -205,11 +213,28 @@ public class EcoNewsController {
         @RequestParam(required = false, name = "author-id") Long authorId,
         @Parameter(description = "Search for favorite news") @RequestParam(required = false, name = "favorite",
             defaultValue = "false") boolean favorite,
-        @Parameter(hidden = true) Principal principal) {
-        String userEmail = principal != null ? principal.getName() : null;
+        @AuthenticationPrincipal UserVO user,
+        @RequestParam String language) {
+        Long id = (user != null) ? user.getId() : authService.getAuthenticatedUserId();
 
+        Page<EcoNewsGenericDto> combinedEcoNews = aiService.getCombinedEcoNewsForUser(
+            id, language,
+            page, tags,
+            title, authorId,
+            favorite
+        );
         return ResponseEntity.status(HttpStatus.OK).body(
-            ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
+            new PageableAdvancedDto<>(
+                combinedEcoNews.getContent(),
+                combinedEcoNews.getTotalElements(),
+                combinedEcoNews.getNumber(),
+                combinedEcoNews.getTotalPages(),
+                combinedEcoNews.getNumberOfElements(),
+                combinedEcoNews.hasPrevious(),
+                combinedEcoNews.hasNext(),
+                combinedEcoNews.isFirst(),
+                combinedEcoNews.isLast()
+            ));
     }
 
     /**
@@ -402,17 +427,22 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
     }
 
+    @Operation(summary = "Generate eco news based on habits")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @ApiLocale
     @PostMapping("/generate")
-    public String generateEcoNewsBasedOnHabits(@RequestParam String language) {
-        return aiService.generateEcoNewsBasedOnHabits(language);
-    }
-
-    @GetMapping("/user-habits")
-    public ResponseEntity<List<EcoNewsDto>> findAllEcoNewsBasedOnUserHabits(@RequestParam String language, @RequestParam Long userId) {
-        log.info("Received request to find all eco news based on user habits with language: {} and userId: {}", language, userId);
-
-        List<EcoNewsDto> combinedNews = aiService.getCombinedEcoNewsForUser(userId, language);
-        log.info("Successfully retrieved combined eco news: {}", combinedNews);
-        return ResponseEntity.ok(combinedNews);
+    public ResponseEntity<String> generateEcoNewsBasedOnHabits(@Parameter(hidden = true) Locale locale) {
+        String language = locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage();
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(aiService.generateEcoNewsBasedOnHabits(language));
     }
 }
