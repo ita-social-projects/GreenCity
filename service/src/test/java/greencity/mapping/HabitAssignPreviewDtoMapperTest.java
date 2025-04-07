@@ -34,9 +34,9 @@ class HabitAssignPreviewDtoMapperTest {
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
-                .name("nameUa")
-                .habitItem("habitItemUa")
-                .description("descriptionUa")
+                .name("name")
+                .habitItem("habitItem")
+                .description("description")
                 .language(Language.builder().id(1L).code("en").build())
                 .build()));
         Habit habit = habitAssign.getHabit();
@@ -47,12 +47,9 @@ class HabitAssignPreviewDtoMapperTest {
             .filter(translation -> !translation.getLanguage().getCode().equalsIgnoreCase("en"))
             .findFirst().orElse(null);
         HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
-            .nameEn(habitTranslationEn.getName())
-            .nameUk(habitTranslationUk.getName())
-            .habitItemEn(habitTranslationEn.getHabitItem())
-            .habitItemUk(habitTranslationUk.getHabitItem())
-            .descriptionEn(habitTranslationEn.getDescription())
-            .descriptionUk(habitTranslationUk.getDescription())
+            .name(habitTranslationEn.getName())
+            .habitItem(habitTranslationEn.getHabitItem())
+            .description(habitTranslationUk.getDescription())
             .build();
         HabitPreviewDto habitPreviewDto = HabitPreviewDto.builder()
             .id(habit.getId())
