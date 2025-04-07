@@ -19,13 +19,13 @@ class HabitTranslationDtoMapperTest {
 
     @Test
     void convertTest() {
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTest();
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTestUk();
         habitTranslation.setLanguage(ModelUtils.getLanguage());
 
         HabitTranslationDto expected = HabitTranslationDto.builder()
-            .descriptionEn(habitTranslation.getDescription())
-            .habitItemEn(habitTranslation.getHabitItem())
-            .nameEn(habitTranslation.getName())
+            .description(habitTranslation.getDescription())
+            .habitItem(habitTranslation.getHabitItem())
+            .name(habitTranslation.getName())
             .languageCode("en")
             .build();
         assertEquals(expected, habitTranslationDtoMapper.convert(habitTranslation));
@@ -33,15 +33,15 @@ class HabitTranslationDtoMapperTest {
 
     @Test
     void mapAllToListTest() {
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTest();
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTestUk();
         habitTranslation.setLanguage(ModelUtils.getLanguage());
 
         List<HabitTranslation> habitTranslationList = List.of(habitTranslation);
 
         HabitTranslationDto expected = HabitTranslationDto.builder()
-            .descriptionEn(habitTranslation.getDescription())
-            .habitItemEn(habitTranslation.getHabitItem())
-            .nameEn(habitTranslation.getName())
+            .description(habitTranslation.getDescription())
+            .habitItem(habitTranslation.getHabitItem())
+            .name(habitTranslation.getName())
             .languageCode("en")
             .build();
         List<HabitTranslationDto> expectedList = List.of(expected);
