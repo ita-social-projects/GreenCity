@@ -136,8 +136,8 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
                 .requestMatchers("/management/**").hasAnyRole(ADMIN)
-                .requestMatchers("/v2/api-docs/**",
-                    "/v3/api-docs/**",
+                .requestMatchers(
+                    "/openapi/greencity/**",
                     "/swagger.json",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
