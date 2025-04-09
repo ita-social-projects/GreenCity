@@ -14,6 +14,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EventService;
 import greencity.service.UserService;
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -890,5 +891,20 @@ class EventControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest()))
             .hasCause(new WrongIdException(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL));
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllUserAssignedReturnsResponseWhenUserIsValid() {
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllUserAssigned")
+            .principal(principal)
+            .param("page", "0")
+            .param("size", "2"))
+            .andExpect(status().isOk());
+        verify(userService, times(1)).findByEmail(principal.getName());
+        verify(eventService, times(1))
+            .getPageableAllEventsAttendedByUser(PageRequest.of(0, 2), userVO.getId());
     }
 }

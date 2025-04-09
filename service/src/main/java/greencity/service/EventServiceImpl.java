@@ -55,6 +55,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1398,5 +1399,11 @@ public class EventServiceImpl implements EventService {
         event.getUsersDislikedEvents().add(modelMapper.map(user, User.class));
         eventRepo.save(event);
         return modelMapper.map(event, EventDto.class);
+    }
+
+    public Page<EventResponseDto> getPageableAllEventsAttendedByUser(Pageable pageable, Long userId) {
+        List<EventResponseDto> eventResponseDtoList = eventRepo.findAllAttendedEventsByUserIdPageable(pageable, userId)
+            .stream().map(event -> modelMapper.map(event, EventResponseDto.class)).toList();
+        return new PageImpl<>(eventResponseDtoList);
     }
 }

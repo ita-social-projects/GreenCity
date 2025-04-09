@@ -2503,4 +2503,18 @@ class EventServiceImplTest {
         verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
         verifyNoInteractions(userRepo);
     }
+
+    @Test
+    void getPageableAllEventsAttendedByUserTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getEvent(), ModelUtils.getEvent());
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+        Pageable pageable = PageRequest.of(0, 5);
+        when(eventRepo.findAllAttendedEventsByUserIdPageable(pageable, userVO.getId())).thenReturn(events);
+        when(modelMapper.map(any(Event.class), eq(EventResponseDto.class))).thenReturn(eventResponseDto);
+        Page<EventResponseDto> eventResponseDtoPage =
+            eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId());
+        verify(modelMapper, times(events.size())).map(any(Event.class), eq(EventResponseDto.class));
+        assertEquals(3, eventResponseDtoPage.getTotalElements());
+    }
 }

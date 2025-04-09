@@ -378,4 +378,19 @@ public interface EventService {
      *         user, or an empty list if none are found.
      */
     List<EventDto> getAllEventsAttendedByUser(Long userId);
+
+    /**
+     * Retrieves a list of events attended by the user with the specified ID. This
+     * method fetches all events where the user, identified by the given
+     * {@code userId}, is an attender. The events are returned as a page of
+     * {@link EventResponseDto} objects. If the user has not attended any events, an
+     * empty list is returned.
+     *
+     * @param userId   {@link Long} the id of the user whose attended events are to
+     *                 be retrieved.
+     * @param pageable {@link Pageable} pageable preferences.
+     * @return {@link Page} {@link EventResponseDto} a page of events attended by
+     *         the user, or an empty pageable if none are found.
+     */
+    Page<EventResponseDto> getPageableAllEventsAttendedByUser(Pageable pageable, Long userId);
 }

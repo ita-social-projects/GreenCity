@@ -262,6 +262,7 @@ public class SecurityConfig {
                     "/user/{userId}/friends/",
                     "/user/{userId}/friendRequests/",
                     "/chat",
+                    EVENTS + "/getAllUserAssigned",
                     EVENTS + ATTENDERS + COUNT,
                     EVENTS + ORGANIZERS + COUNT,
                     EVENTS + EVENT_ID + LIKES,

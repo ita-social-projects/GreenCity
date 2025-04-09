@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -732,5 +733,26 @@ public class EventController {
         @Parameter(hidden = true) Principal principal) {
         eventService.declineRequest(eventId, principal.getName(), userId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for retrieving all events, where user is attendee.
+     *
+     * @param userVO {@link UserVO} current user information.
+     * @return all events, where user is an attendee.
+     * @author Andrii Danylenko.
+     */
+    @Operation(summary = "Retrieves all events, where user is an attendee.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/getAllUserAssigned")
+    public ResponseEntity<Page<EventResponseDto>> getAllUserAssigned(
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @NotNull @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId()));
     }
 }

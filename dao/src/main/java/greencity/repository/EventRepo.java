@@ -253,4 +253,13 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      */
     @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
     List<Event> findAllAttendedEventsByUserId(Long userId);
+
+    /**
+     * Retrieves all events attended by the specified user.
+     *
+     * @param userId The ID of the user whose attended events are to be retrieved.
+     * @return A list of events attended by the user.
+     */
+    @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
+    List<Event> findAllAttendedEventsByUserIdPageable(Pageable pageable, Long userId);
 }
