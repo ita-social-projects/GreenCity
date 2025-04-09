@@ -1,45 +1,4 @@
-version: '3.8'
-
 services:
-  greencity:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    networks:
-      - monitoring
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 30s
-    depends_on:
-      postgres:
-        condition: service_healthy
-    env_file:
-      - .env
-
-  postgres:
-    image: postgres:latest
-    environment:
-      - POSTGRES_DB=greencity
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5432:5432"
-    networks:
-      - monitoring
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   prometheus:
     image: prom/prometheus:latest
     ports:
@@ -66,6 +25,3 @@ services:
 networks:
   monitoring:
     driver: bridge
-
-volumes:
-  postgres_data:

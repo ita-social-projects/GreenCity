@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import java.lang.management.ManagementFactory;
 
 @Component
@@ -18,9 +17,9 @@ public class CPUMetrics {
         this.osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
         Gauge.builder("app_cpu_usage_percent", this, CPUMetrics::getCpuUsage)
-                .description("CPU usage of the application in percent")
-                .baseUnit("percent")
-                .register(meterRegistry);
+            .description("CPU usage of the application in percent")
+            .baseUnit("percent")
+            .register(meterRegistry);
     }
 
     @Scheduled(fixedRate = 60000)

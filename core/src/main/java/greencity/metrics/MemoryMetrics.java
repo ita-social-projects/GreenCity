@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 
@@ -18,14 +17,14 @@ public class MemoryMetrics {
         this.memoryMXBean = ManagementFactory.getMemoryMXBean();
 
         Gauge.builder("app_memory_used_bytes", this, MemoryMetrics::getUsedMemory)
-                .description("Amount of memory used by the application in bytes")
-                .baseUnit("bytes")
-                .register(meterRegistry);
+            .description("Amount of memory used by the application in bytes")
+            .baseUnit("bytes")
+            .register(meterRegistry);
 
         Gauge.builder("app_memory_total_bytes", this, MemoryMetrics::getTotalMemory)
-                .description("Total amount of memory available to the JVM in bytes")
-                .baseUnit("bytes")
-                .register(meterRegistry);
+            .description("Total amount of memory available to the JVM in bytes")
+            .baseUnit("bytes")
+            .register(meterRegistry);
     }
 
     @Scheduled(fixedRate = 60000)

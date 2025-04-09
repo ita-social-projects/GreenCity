@@ -2,11 +2,15 @@ package greencity.repository;
 
 import greencity.entity.Notification;
 import greencity.enums.NotificationType;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<Notification, Long>,
@@ -125,7 +129,6 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      * @param targetUserId     id of target user
      * @param notificationType type of notification
      * @param targetId         id of object related to notification
-     *
      * @return count of action users
      */
     @Query("SELECT COUNT(n) FROM Notification n "
@@ -188,4 +191,6 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      */
     Optional<Notification> findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
         Long targetUserId, NotificationType notificationType, Long targetId, Long secondMessageId);
+
+    long countByTimeAfter(ZonedDateTime date);
 }

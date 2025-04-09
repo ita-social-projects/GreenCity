@@ -9,15 +9,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,12 +48,14 @@ class MemoryMetricsTest {
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         Gauge.Builder<MemoryMetrics> usedMemoryBuilder = mock(Gauge.Builder.class);
-        when(usedMemoryBuilder.description("Amount of memory used by the application in bytes")).thenReturn(usedMemoryBuilder);
+        when(usedMemoryBuilder.description("Amount of memory used by the application in bytes"))
+            .thenReturn(usedMemoryBuilder);
         when(usedMemoryBuilder.baseUnit("bytes")).thenReturn(usedMemoryBuilder);
         when(usedMemoryBuilder.register(meterRegistry)).thenReturn(usedMemoryGauge);
 
         Gauge.Builder<MemoryMetrics> totalMemoryBuilder = mock(Gauge.Builder.class);
-        when(totalMemoryBuilder.description("Total amount of memory available to the JVM in bytes")).thenReturn(totalMemoryBuilder);
+        when(totalMemoryBuilder.description("Total amount of memory available to the JVM in bytes"))
+            .thenReturn(totalMemoryBuilder);
         when(totalMemoryBuilder.baseUnit("bytes")).thenReturn(totalMemoryBuilder);
         when(totalMemoryBuilder.register(meterRegistry)).thenReturn(totalMemoryGauge);
 

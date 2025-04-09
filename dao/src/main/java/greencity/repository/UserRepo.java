@@ -924,4 +924,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "JOIN events_requesters ON users.id = events_requesters.user_id "
         + "WHERE events_requesters.event_id = :eventId")
     Page<User> findUsersByRequestedEvents(Long eventId, Pageable pageable);
+
+    long countByDateOfRegistrationAfter(LocalDateTime date);
 }

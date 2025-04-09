@@ -246,4 +246,5 @@ public class ErrorMessage {
     public static final String BAD_SECRET_KEY = "The given secret key is incorrect";
     public static final String CANNOT_DELETE_DOTENV = "Failed to delete .env file";
     public static final String FUNCTIONALITY_NOT_AVAILABLE = "Functionality is not available";
+    public static final String NULL_REQUEST_RESPONSE = "Request, response, or filterChain is null";
 }
