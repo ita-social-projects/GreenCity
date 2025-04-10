@@ -229,7 +229,7 @@ class HabitServiceImplTest {
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
-        String languageCode = "en";
+        String languageCode = "ua";
         Habit habit = ModelUtils.getHabit();
         habit.setIsCustomHabit(true);
         habit.setUserId(1L);
@@ -239,14 +239,14 @@ class HabitServiceImplTest {
         List<Long> requestedCustomHabitIds = List.of(1L);
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-            requestedCustomHabitIds, userVO.getId(), "en")).thenReturn(habitTranslationPage);
+            requestedCustomHabitIds, userVO.getId(), "ua")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
             .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
         when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
-        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("en");
+        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("ua");
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
@@ -267,7 +267,7 @@ class HabitServiceImplTest {
     void getMyHabits() {
         Pageable pageable = PageRequest.of(0, 2);
         Long userId = 0L;
-        String languageCode = "en";
+        String languageCode = "ua";
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         HabitDto habitDto = ModelUtils.getHabitDto();
@@ -305,7 +305,7 @@ class HabitServiceImplTest {
         Pageable pageable = PageRequest.of(0, 2);
         Long userId = 0L;
         Long friendId = 1L;
-        String languageCode = "en";
+        String languageCode = "ua";
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         HabitDto habitDto = ModelUtils.getHabitDto();
@@ -368,7 +368,7 @@ class HabitServiceImplTest {
         Pageable pageable = PageRequest.of(0, 2);
         Long userId = 0L;
         Long friendId = 1L;
-        String languageCode = "en";
+        String languageCode = "ua";
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         HabitDto habitDto = ModelUtils.getHabitDto();
@@ -431,7 +431,7 @@ class HabitServiceImplTest {
         Pageable pageable = PageRequest.of(0, 2);
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
-        String languageCode = "en";
+        String languageCode = "ua";
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
         Habit habit = ModelUtils.getHabit();
