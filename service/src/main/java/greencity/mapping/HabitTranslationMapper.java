@@ -51,11 +51,12 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
 
     /**
      * Method that builds {@link List} of {@link HabitTranslation} from {@link List}
-     * of {@link HabitTranslationDto}, {@link Language} language and {@link Habit} habit.
+     * of {@link HabitTranslationDto}, {@link Language} language and {@link Habit}
+     * habit.
      *
      * @param dtoList  {@link List} of {@link HabitTranslationDto}
      * @param language {@link Language}
-     * @param habit {@link Habit}
+     * @param habit    {@link Habit}
      *
      * @return {@link List} of {@link HabitTranslation}
      *
@@ -63,13 +64,13 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, Language language, Habit habit) {
         return dtoList.stream()
-                .filter(dto -> language.getCode().equals(dto.getLanguageCode()))
-                .map(dto -> {
-                    HabitTranslation habitTranslation = convert(dto);
-                    habitTranslation.setLanguage(language);
-                    habitTranslation.setHabit(habit);
-                    return habitTranslation;
-                })
-                .collect(Collectors.toList());
+            .filter(dto -> language.getCode().equals(dto.getLanguageCode()))
+            .map(dto -> {
+                HabitTranslation habitTranslation = convert(dto);
+                habitTranslation.setLanguage(language);
+                habitTranslation.setHabit(habit);
+                return habitTranslation;
+            })
+            .collect(Collectors.toList());
     }
 }

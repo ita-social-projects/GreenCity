@@ -503,15 +503,16 @@ public class HabitServiceImpl implements HabitService {
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
         List<HabitTranslation> habitTranslations = habitDto
-                .getHabitTranslations().stream()
-                .filter(dto -> {
-                    if (!AppConstant.supportedLanguages.contains(dto.getLanguageCode())) {
-                        throw new NotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE);
-                    }
-                    return true;
-                })
-                .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(habitDto, languageRepo.findByCode(dto.getLanguageCode()).get(), habit))
-                .flatMap(Collection::stream).toList();
+            .getHabitTranslations().stream()
+            .filter(dto -> {
+                if (!AppConstant.supportedLanguages.contains(dto.getLanguageCode())) {
+                    throw new NotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE);
+                }
+                return true;
+            })
+            .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(habitDto,
+                languageRepo.findByCode(dto.getLanguageCode()).get(), habit))
+            .flatMap(Collection::stream).toList();
         habit.setHabitTranslations(habitTranslations);
     }
 
@@ -790,8 +791,9 @@ public class HabitServiceImpl implements HabitService {
         return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(CustomHabitDtoRequest habitDto,
-                                                                                   Language language, Habit habit) {
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(
+        CustomHabitDtoRequest habitDto,
+        Language language, Habit habit) {
         return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language, habit);
     }
 }
