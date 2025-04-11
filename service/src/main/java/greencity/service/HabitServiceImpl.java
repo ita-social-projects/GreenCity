@@ -248,7 +248,6 @@ public class HabitServiceImpl implements HabitService {
             .tags(tags.orElse(new ArrayList<>()))
             .complexities(complexities.orElse(new ArrayList<>()))
             .isCustom(isCustomHabit.orElse(null))
-            .languageCode(languageCode)
             .build();
         Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
         Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
