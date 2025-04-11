@@ -20,26 +20,28 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.NotificationRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Comparator;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static greencity.constant.AppConstant.LANGUAGE_CODE_UA;
 import static greencity.constant.AppConstant.THREE_OR_MORE_USERS;
@@ -57,6 +59,7 @@ import static greencity.utils.NotificationUtils.localizeMessage;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserNotificationServiceImpl implements UserNotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
@@ -668,4 +671,113 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
         return bodyText;
     }
+
+    @Override
+    public List<NotificationType> getNotificationTypesForGreenCity(String language, String searchRequest) {
+        Properties properties = new Properties();
+        String languageSuffix;
+        if (language.equals(LANGUAGE_CODE_UA)) {
+            languageSuffix = "_" + LANGUAGE_CODE_UA;
+        } else {
+            languageSuffix = "";
+        }
+        String fileName = "notification" + languageSuffix + ".properties";
+
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(fileName)) {
+            if (input == null) {
+                throw new FileNotFoundException("File not found " + fileName);
+            }
+
+            InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
+            properties.load(reader);
+
+            return properties.stringPropertyNames().stream()
+                    .filter(key -> {
+                        String value = properties.getProperty(key);
+                        if (value.toLowerCase().contains(searchRequest.toLowerCase())) {
+                            log.error(searchRequest);
+                            log.error(value);
+                        }
+                        return value != null && value.toLowerCase().contains(searchRequest.toLowerCase());
+                    })
+                    .map(key -> {
+                        try {
+                            return NotificationType.valueOf(key);
+                        } catch (IllegalArgumentException e) {
+                            log.error("Unknown notification type for key: {}", key);
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
+        } catch (IOException e) {
+            log.error("Couldn't read the file {}", fileName, e);
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public PageableAdvancedDto<NotificationDto> getNotificationsBySearchRequest(Pageable page, Principal principal,
+                                                                               String language, ProjectName projectName,
+                                                                               String searchRequest, Boolean viewed) {
+//        List<NotificationType> notificationTypes = getNotificationTypesForGreenCity(language, searchRequest);
+//
+//        if (notificationTypes.isEmpty()) {
+//            return new PageableAdvancedDto<>(
+//                    Collections.emptyList(),
+//                    0L,
+//                    page.getPageNumber(),
+//                    0,
+//                    page.getPageNumber(),
+//                    false,
+//                    false,
+//                    true,
+//                    true
+//            );
+//        }
+        UserVO user = userService.findByEmail(principal.getName());
+        List<Notification> notificationsForUserInGreenCity = notificationRepo.findAllByTargetUser_Id(user.getId());
+        List<NotificationDto> allNotificationDtosForGreenCityUser = notificationsForUserInGreenCity.stream()
+                .map(notification -> createNotificationDto(notification, language))
+                .toList();
+        for (NotificationDto n : allNotificationDtosForGreenCityUser) {
+            System.out.println(n.getMessage());
+        }
+        List<NotificationDto> notificationDtosForGreenCityMatchSearchRequest = allNotificationDtosForGreenCityUser.stream()
+                .filter(dto -> {
+                    String search = searchRequest.toLowerCase();
+                    return (dto.getTitleText() != null && dto.getTitleText().toLowerCase().contains(search)) ||
+                            (dto.getBodyText() != null && dto.getBodyText().toLowerCase().contains(search)) ||
+                            (dto.getMessage() != null && dto.getMessage().toLowerCase().contains(search)) ||
+                            (dto.getSecondMessage() != null && dto.getSecondMessage().toLowerCase().contains(search)) ||
+                            (dto.getActionUserText() != null && dto.getActionUserText().stream()
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(text -> text.toLowerCase().contains(search)));
+                })
+                .toList();
+
+        List<Notification> notificationsForUserFromGreenCityMatchSearchRequest = notificationDtosForGreenCityMatchSearchRequest.stream()
+                .map(dto -> notificationRepo.findById(dto.getNotificationId()).get())
+                .toList();
+
+        List<Long> ids = notificationDtosForGreenCityMatchSearchRequest.stream()
+                .map(NotificationDto::getNotificationId)
+                .toList();
+
+        return buildPageableAdvancedDto(notificationRepo.findAllByIdIn(ids, page), language);
+//        List<NotificationType> allNotificationTypesInGreenCityForUser = notificationRepo.findAllNotificationTypesByTargetUserId(user.getId());
+//        List<NotificationDto> allNotificationDtosForGreenCity =
+//
+//        return getNotificationsFiltered(page, principal, language, projectName, notificationTypes, viewed);
+    }
+
+//    public PageableAdvancedDto<NotificationDto> getNotificationsByTypeFiltered(Pageable page, Principal principal,
+//                                                                               String language, ProjectName projectName,
+//                                                                               String searchText, Boolean viewed) {
+//        List<NotificationType> notificationTypes = new ArrayList<>();
+//        if (projectName.equals(ProjectName.GREENCITY)) {
+//            notificationTypes = getNotificationTypesForGreenCity(language, searchText);
+//        }
+//    }
 }

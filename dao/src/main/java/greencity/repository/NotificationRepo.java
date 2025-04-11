@@ -4,6 +4,9 @@ import greencity.entity.Notification;
 import greencity.enums.NotificationType;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -188,4 +191,13 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
      */
     Optional<Notification> findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
         Long targetUserId, NotificationType notificationType, Long targetId, Long secondMessageId);
+
+    List<Notification> findByTargetUser_IdAndNotificationTypeIn(Long targetUserId, List<NotificationType> notificationTypes);
+
+    @Query("SELECT n.notificationType FROM Notification n WHERE n.targetUser.id = :targetUserId")
+    List<NotificationType> findAllNotificationTypesByTargetUserId(Long targetUserId);
+
+    List<Notification> findAllByTargetUser_Id(Long targetUserId);
+
+    Page<Notification> findAllByIdIn(List<Long> ids, Pageable pageable);
 }

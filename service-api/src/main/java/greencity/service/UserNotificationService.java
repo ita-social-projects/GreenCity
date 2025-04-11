@@ -211,4 +211,10 @@ public interface UserNotificationService {
      * successful progress.
      */
     void checkLastDayOfHabitPrimaryDurationToMessage();
+
+    List<NotificationType> getNotificationTypesForGreenCity(String language, String searchText);
+
+    PageableAdvancedDto<NotificationDto> getNotificationsBySearchRequest(Pageable page, Principal principal,
+                                                                               String language, ProjectName projectName,
+                                                                               String searchRequest, Boolean viewed);
 }

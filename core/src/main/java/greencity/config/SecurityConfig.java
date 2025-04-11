@@ -293,6 +293,7 @@ public class SecurityConfig {
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     NOTIFICATIONS,
+                    NOTIFICATIONS + "/search",
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
                     "/ai/**",
                     SETTINGS_EXPORT)

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -125,5 +126,26 @@ public class NotificationController {
     @MessageMapping("/notifications")
     public void notificationSocket(@Payload ActionDto user) {
         userNotificationService.notificationSocket(user);
+    }
+
+    @Operation(summary = "Get page of notifications found by searchRequest filtered and sorted.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/search")
+    public ResponseEntity<PageableAdvancedDto<NotificationDto>> getNotificationsBySearchRequestFiltered(
+            @Parameter(hidden = true) Pageable pageable,
+            @Parameter(hidden = true) Principal principal,
+            @Parameter(hidden = true) @ValidLanguage Locale locale,
+            @RequestParam(name = "project-name", required = true) ProjectName projectName,
+            @RequestParam(name = "search-request", required = true) String searchRequest,
+            @RequestParam(required = false) Boolean viewed) {
+
+        return ResponseEntity.ok().body(userNotificationService.getNotificationsBySearchRequest(pageable, principal,
+                locale.getLanguage(), projectName, searchRequest, viewed));
+
     }
 }
