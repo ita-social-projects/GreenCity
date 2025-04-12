@@ -11,6 +11,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventCityDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
@@ -19,6 +20,7 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
@@ -1148,6 +1150,30 @@ public class EventServiceImpl implements EventService {
         return attendedEvents.stream()
             .map(event -> buildEventDto(event, userId))
             .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO) {
+        String userLocale = userVO.getLanguageVO().getCode();
+        String userCity = AppConstant.EMPTY_STRING;
+        UserLocationDto locationDto = userVO.getUserLocationDto();
+        if (locationDto != null) {
+            if (AppConstant.DEFAULT_LANGUAGE_CODE.equals(userLocale)) {
+                userCity = locationDto.getCityEn();
+            }
+            else {
+                userCity = locationDto.getCityUk();
+            }
+        }
+        return eventRepo.findRelevantCitiesForUser(userCity).stream()
+                .map(eventCityDtoProjection -> EventCityDto.builder()
+                        .cityNameEn(eventCityDtoProjection.getCityNameEn())
+                        .cityNameUa(eventCityDtoProjection.getCityNameUa())
+                        .amountOfEvents(eventCityDtoProjection.getAmountOfEvents())
+                        .build()).toList();
     }
 
     private void checkUserIdNotNull(Long userId) {
