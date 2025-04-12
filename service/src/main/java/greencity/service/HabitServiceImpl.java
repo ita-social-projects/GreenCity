@@ -517,11 +517,6 @@ public class HabitServiceImpl implements HabitService {
         habit.setHabitTranslations(habitTranslations);
     }
 
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,
-        String language) {
-        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language);
-    }
-
     private void setTagsIdsToHabit(CustomHabitDtoRequest habitDto, Habit habit) {
         habit.setTags(habitDto.getTagIds().stream().map(tagId -> tagsRepo.findById(tagId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + tagId)))

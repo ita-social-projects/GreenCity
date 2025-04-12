@@ -3,7 +3,9 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -90,5 +92,47 @@ class HabitTranslationMapperTests {
 
         assertEquals(expectedList,
             habitTranslationMapper.mapAllToList(habitTranslationDtoList, AppConstant.LANGUAGE_CODE_UA));
+    }
+
+    @Test
+    void mapAllToListWithUkLanguageAndHabitTest() {
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoUk();
+        habitTranslationDto.setLanguageCode(AppConstant.LANGUAGE_CODE_UA);
+        Habit habit = ModelUtils.getHabit();
+        Language languageUk = ModelUtils.getLanguageUa();
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
+        HabitTranslation expectedHabitTranslation = HabitTranslation.builder()
+                .description(habitTranslationDto.getDescription())
+                .habitItem(habitTranslationDto.getHabitItem())
+                .name(habitTranslationDto.getName())
+                .habit(habit)
+                .language(languageUk)
+                .build();
+
+        List<HabitTranslation> expectedList = List.of(expectedHabitTranslation);
+
+        assertEquals(expectedList,
+                habitTranslationMapper.mapAllToList(habitTranslationDtoList, languageUk, habit));
+    }
+
+    @Test
+    void mapAllToListWithEnLanguageAndHabitTest() {
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
+        habitTranslationDto.setLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE);
+        Habit habit = ModelUtils.getHabit();
+        Language languageEn = ModelUtils.getLanguage();
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
+        HabitTranslation expectedHabitTranslation = HabitTranslation.builder()
+                .description(habitTranslationDto.getDescription())
+                .habitItem(habitTranslationDto.getHabitItem())
+                .name(habitTranslationDto.getName())
+                .habit(habit)
+                .language(languageEn)
+                .build();
+
+        List<HabitTranslation> expectedList = List.of(expectedHabitTranslation);
+
+        assertEquals(expectedList,
+                habitTranslationMapper.mapAllToList(habitTranslationDtoList, languageEn, habit));
     }
 }
