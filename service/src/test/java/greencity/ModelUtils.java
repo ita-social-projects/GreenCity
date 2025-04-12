@@ -3592,10 +3592,10 @@ public class ModelUtils {
 
     public static HabitTranslationDto getHabitTranslationDtoUk() {
         return HabitTranslationDto.builder()
-                .description(habitTranslationDescriptionUk)
-                .habitItem(habitItemUk)
-                .name(habitTranslationNameUk)
-                .languageCode("ua")
-                .build();
+            .description(habitTranslationDescriptionUk)
+            .habitItem(habitItemUk)
+            .name(habitTranslationNameUk)
+            .languageCode("ua")
+            .build();
     }
 }

@@ -512,7 +512,8 @@ public class HabitServiceImpl implements HabitService {
             })
             .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(habitDto,
                 languageRepo.findByCode(dto.getLanguageCode())
-                        .orElseThrow(() -> new NotFoundException(ErrorMessage.SELECT_CORRECT_LANGUAGE)), habit))
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.SELECT_CORRECT_LANGUAGE)),
+                habit))
             .flatMap(Collection::stream).toList();
         habit.setHabitTranslations(habitTranslations);
     }
