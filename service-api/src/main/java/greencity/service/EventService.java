@@ -381,12 +381,12 @@ public interface EventService {
     List<EventDto> getAllEventsAttendedByUser(Long userId);
 
     /**
-     * Returns a list of cities relevant to the user, including the user's city
-     * (if available) and the top three cities with the most events.
+     * Returns a list of cities relevant to the user, including the user's city (if
+     * available) and the top three cities with the most events.
      *
      * @param userVO {@link UserVO} - represents the current user.
      * @return {@link List} of {@link EventCityDto} containing cities sorted in
-     * descending order based on the number of events.
+     *         descending order based on the number of events.
      * @author Andrii Danylenko
      */
     List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO);

@@ -1163,17 +1163,17 @@ public class EventServiceImpl implements EventService {
         if (locationDto != null) {
             if (AppConstant.DEFAULT_LANGUAGE_CODE.equals(userLocale)) {
                 userCity = locationDto.getCityEn();
-            }
-            else {
+            } else {
                 userCity = locationDto.getCityUk();
             }
         }
         return eventRepo.findRelevantCitiesForUser(userCity).stream()
-                .map(eventCityDtoProjection -> EventCityDto.builder()
-                        .cityNameEn(eventCityDtoProjection.getCityNameEn())
-                        .cityNameUa(eventCityDtoProjection.getCityNameUa())
-                        .amountOfEvents(eventCityDtoProjection.getAmountOfEvents())
-                        .build()).toList();
+            .map(eventCityDtoProjection -> EventCityDto.builder()
+                .cityNameEn(eventCityDtoProjection.getCityNameEn())
+                .cityNameUa(eventCityDtoProjection.getCityNameUa())
+                .amountOfEvents(eventCityDtoProjection.getAmountOfEvents())
+                .build())
+            .toList();
     }
 
     private void checkUserIdNotNull(Long userId) {

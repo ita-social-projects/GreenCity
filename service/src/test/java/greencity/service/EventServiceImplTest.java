@@ -2511,13 +2511,12 @@ class EventServiceImplTest {
         String userCity = "Kyiv";
         userVO.getUserLocationDto().setCityEn(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
-                getProjection(userCity, "Київ", 1L),
-                getProjection("Dnipro", "Дніпро", 3L),
-                getProjection("Lviv", "Львів", 2L),
-                getProjection("Uzhhorod", "Ужгород", 1L)
-        );
+            getProjection(userCity, "Київ", 1L),
+            getProjection("Dnipro", "Дніпро", 3L),
+            getProjection("Lviv", "Львів", 2L),
+            getProjection("Uzhhorod", "Ужгород", 1L));
         when(eventRepo.findRelevantCitiesForUser(userCity))
-                .thenReturn(eventCityDtoProjections);
+            .thenReturn(eventCityDtoProjections);
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(userCity);
     }
@@ -2529,13 +2528,12 @@ class EventServiceImplTest {
         String userCity = "Київ";
         userVO.getUserLocationDto().setCityUk(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
-                getProjection("Kyiv", userCity, 1L),
-                getProjection("Dnipro", "Дніпро", 3L),
-                getProjection("Lviv", "Львів", 2L),
-                getProjection("Uzhhorod", "Ужгород", 1L)
-        );
+            getProjection("Kyiv", userCity, 1L),
+            getProjection("Dnipro", "Дніпро", 3L),
+            getProjection("Lviv", "Львів", 2L),
+            getProjection("Uzhhorod", "Ужгород", 1L));
         when(eventRepo.findRelevantCitiesForUser(userCity))
-                .thenReturn(eventCityDtoProjections);
+            .thenReturn(eventCityDtoProjections);
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(userCity);
     }
@@ -2545,12 +2543,11 @@ class EventServiceImplTest {
         UserVO userVO = ModelUtils.getUserVO();
         userVO.setUserLocationDto(null);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
-                getProjection("Dnipro", "Дніпро", 3L),
-                getProjection("Lviv", "Львів", 2L),
-                getProjection("Uzhhorod", "Ужгород", 1L)
-        );
+            getProjection("Dnipro", "Дніпро", 3L),
+            getProjection("Lviv", "Львів", 2L),
+            getProjection("Uzhhorod", "Ужгород", 1L));
         when(eventRepo.findRelevantCitiesForUser(anyString()))
-                .thenReturn(eventCityDtoProjections);
+            .thenReturn(eventCityDtoProjections);
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(anyString());
     }
