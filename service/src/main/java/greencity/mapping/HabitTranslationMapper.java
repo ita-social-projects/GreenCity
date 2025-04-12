@@ -8,7 +8,6 @@ import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component
 public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDto, HabitTranslation> {
@@ -30,7 +29,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      * @author Lilia Mokhnatska
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList) {
-        return dtoList.stream().map(this::convert).collect(Collectors.toList());
+        return dtoList.stream().map(this::convert).toList();
     }
 
     /**
@@ -46,7 +45,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, String language) {
         return dtoList.stream().filter(dto -> Objects.equals(language, dto.getLanguageCode()))
-            .map(this::convert).collect(Collectors.toList());
+            .map(this::convert).toList();
     }
 
     /**
