@@ -1162,9 +1162,9 @@ public class EventServiceImpl implements EventService {
         UserLocationDto locationDto = userVO.getUserLocationDto();
         if (locationDto != null) {
             if (AppConstant.DEFAULT_LANGUAGE_CODE.equals(userLocale)) {
-                userCity = locationDto.getCityEn();
+                userCity = locationDto.getCityEn() != null ? locationDto.getCityEn() : userCity;
             } else {
-                userCity = locationDto.getCityUk();
+                userCity = locationDto.getCityUk() != null ? locationDto.getCityUk() : userCity;
             }
         }
         return eventRepo.findRelevantCitiesForUser(userCity).stream()
