@@ -742,7 +742,7 @@ public class EventController {
      * @author Andrii Danylenko
      */
     @Operation(summary = "Retrieves cities relevant to the user, such as the user's own city "
-            + "(if available) and the top three cities with the highest number of events.")
+        + "(if available) and the top three cities with the highest number of events.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
