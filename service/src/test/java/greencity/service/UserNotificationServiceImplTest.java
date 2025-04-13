@@ -141,7 +141,7 @@ class UserNotificationServiceImplTest {
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             pageable))
             .thenReturn(notificationPage);
-        when(restClient.findAllNotificationsForUserFromUbs(principal, pageable))
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageable, Optional.empty()))
             .thenReturn(notificationsFromUbs);
         when(notificationsFromUbs.getPage())
             .thenReturn(page);
@@ -178,7 +178,7 @@ class UserNotificationServiceImplTest {
         verify(userService).findByEmail(email);
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             pageable);
-        verify(restClient).findAllNotificationsForUserFromUbs(principal, pageable);
+        verify(restClient).findAllNotificationsForUserFromUbs(principal, pageable, Optional.empty());
         verify(modelMapper, times(page.size())).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
     }
 
@@ -225,7 +225,7 @@ class UserNotificationServiceImplTest {
             notificationDto,
             notificationDto);
 
-        when(restClient.findAllNotificationsForUserFromUbs(principal, pageable))
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageable, Optional.empty()))
             .thenReturn(notificationsFromUbs);
         when(notificationsFromUbs.getPage())
             .thenReturn(page);
@@ -249,7 +249,7 @@ class UserNotificationServiceImplTest {
         assertEquals(notificationsFromUbs.isHasNext(), actualResult.isHasNext());
         assertEquals(notificationsFromUbs.isFirst(), actualResult.isFirst());
         assertEquals(notificationsFromUbs.isLast(), actualResult.isLast());
-        verify(restClient).findAllNotificationsForUserFromUbs(principal, pageable);
+        verify(restClient).findAllNotificationsForUserFromUbs(principal, pageable, Optional.empty());
         verify(modelMapper, times(page.size())).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
     }
 

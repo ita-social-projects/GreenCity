@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -140,12 +139,9 @@ public class NotificationController {
             @Parameter(hidden = true) Pageable pageable,
             @Parameter(hidden = true) Principal principal,
             @Parameter(hidden = true) @ValidLanguage Locale locale,
-            @RequestParam(name = "project-name", required = true) ProjectName projectName,
-            @RequestParam(name = "search-request", required = true) String searchRequest,
-            @RequestParam(required = false) Boolean viewed) {
-
-        return ResponseEntity.ok().body(userNotificationService.getNotificationsBySearchRequest(pageable, principal,
-                locale.getLanguage(), projectName, searchRequest, viewed));
-
+            @RequestParam(name = "project-name", required = false) ProjectName projectName,
+            @RequestParam(name = "search-request") String searchRequest) {
+        return ResponseEntity.ok().body(userNotificationService.getAllNotificationsForUserBySearchRequest(pageable, principal, locale,
+                projectName, searchRequest));
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public interface UserNotificationService {
@@ -212,9 +213,7 @@ public interface UserNotificationService {
      */
     void checkLastDayOfHabitPrimaryDurationToMessage();
 
-    List<NotificationType> getNotificationTypesForGreenCity(String language, String searchText);
-
-    PageableAdvancedDto<NotificationDto> getNotificationsBySearchRequest(Pageable page, Principal principal,
-                                                                               String language, ProjectName projectName,
-                                                                               String searchRequest, Boolean viewed);
+    PageableAdvancedDto<NotificationDto> getAllNotificationsForUserBySearchRequest(Pageable page, Principal principal,
+                                                                                   Locale locale, ProjectName projectName,
+                                                                                   String searchRequest);
 }

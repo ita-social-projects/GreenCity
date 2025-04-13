@@ -123,7 +123,7 @@ class RestClientTest {
 
         PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
             principal,
-            pageable);
+            pageable, Optional.empty());
 
         verify(restTemplate).exchange(
             eq(expectedUrl),
@@ -158,7 +158,7 @@ class RestClientTest {
 
         PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
             principal,
-            pageable);
+            pageable, Optional.empty());
 
         verify(restTemplate).exchange(
             eq(expectedUrl),

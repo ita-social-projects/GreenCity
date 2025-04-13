@@ -96,19 +96,20 @@ public class RestClient {
     }
 
     public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(Principal principal,
-        Pageable pageable) {
+        Pageable pageable, Optional<String> languageOptional) {
         HttpHeaders httpHeaders = setHeader();
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         String userEmail = principal.getName();
 
         UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromHttpUrl(
-            greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS);
+                greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
+                .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
+                .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
+                .queryParam(USER_EMAIL_QUERY_PARAM, userEmail);
 
-        String url = ubsNotificationsUrlBuilder
-            .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
-            .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
-            .queryParam(USER_EMAIL_QUERY_PARAM, userEmail)
-            .toUriString();
+        languageOptional.ifPresent(lang -> ubsNotificationsUrlBuilder.queryParam("lang", lang));
+
+        String url = ubsNotificationsUrlBuilder.toUriString();
 
         ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications;
         try {
