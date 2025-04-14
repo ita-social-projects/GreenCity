@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
@@ -53,6 +54,8 @@ public class UserServiceImpl implements UserService {
     @Value("300000")
     private long timeAfterLastActivity;
 
+    private final UserRemoteClient userRemoteClient;
+
     /**
      * {@inheritDoc}
      */
@@ -86,7 +89,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        Optional<User> notDeactivatedByEmail = userRepo.findNotDeactivatedByEmail(email);
+        Optional<UserVO> notDeactivatedByEmail = userRemoteClient.findNotDeactivatedByEmail(email);
         return Optional.of(modelMapper.map(notDeactivatedByEmail, UserVO.class));
     }
 
@@ -117,7 +120,13 @@ public class UserServiceImpl implements UserService {
         accessForUpdateUserStatus(id, email);
         UserVO userVO = findById(id);
         userVO.setUserStatus(userStatus);
-        userRepo.updateUserStatus(id, String.valueOf(userStatus));
+
+        UserStatusDto userStatusDto = UserStatusDto.builder()
+                        .id(id)
+                        .userStatus(userStatus)
+                        .build();
+
+        userRemoteClient.updateUserStatus(userStatusDto);
         return modelMapper.map(userVO, UserStatusDto.class);
     }
 
