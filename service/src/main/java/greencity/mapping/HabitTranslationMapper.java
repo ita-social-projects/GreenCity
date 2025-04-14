@@ -1,12 +1,13 @@
 package greencity.mapping;
 
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component
 public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDto, HabitTranslation> {
@@ -28,7 +29,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      * @author Lilia Mokhnatska
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList) {
-        return dtoList.stream().map(this::convert).collect(Collectors.toList());
+        return dtoList.stream().map(this::convert).toList();
     }
 
     /**
@@ -44,6 +45,31 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, String language) {
         return dtoList.stream().filter(dto -> Objects.equals(language, dto.getLanguageCode()))
-            .map(this::convert).collect(Collectors.toList());
+            .map(this::convert).toList();
+    }
+
+    /**
+     * Method that builds {@link List} of {@link HabitTranslation} from {@link List}
+     * of {@link HabitTranslationDto}, {@link Language} language and {@link Habit}
+     * habit.
+     *
+     * @param dtoList  {@link List} of {@link HabitTranslationDto}
+     * @param language {@link Language}
+     * @param habit    {@link Habit}
+     *
+     * @return {@link List} of {@link HabitTranslation}
+     *
+     * @author Bulhakova Oleksandra
+     */
+    public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, Language language, Habit habit) {
+        return dtoList.stream()
+            .filter(dto -> Objects.equals(language.getCode(), dto.getLanguageCode()))
+            .map(dto -> {
+                HabitTranslation habitTranslation = convert(dto);
+                habitTranslation.setLanguage(language);
+                habitTranslation.setHabit(habit);
+                return habitTranslation;
+            })
+            .toList();
     }
 }

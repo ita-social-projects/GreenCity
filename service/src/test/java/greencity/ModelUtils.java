@@ -3589,4 +3589,13 @@ public class ModelUtils {
             .countComments(0)
             .build();
     }
+
+    public static HabitTranslationDto getHabitTranslationDtoUk() {
+        return HabitTranslationDto.builder()
+            .description(habitTranslationDescriptionUk)
+            .habitItem(habitItemUk)
+            .name(habitTranslationNameUk)
+            .languageCode("ua")
+            .build();
+    }
 }
