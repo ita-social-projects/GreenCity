@@ -3,6 +3,8 @@ package greencity.mapping;
 import greencity.dto.comment.CommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
+import greencity.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -14,9 +16,16 @@ import java.util.stream.Collectors;
  */
 
 @Component
+@RequiredArgsConstructor
 public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
+
+    private final ModelMapper modelMapper;
+
     @Override
     public CommentVO convert(Comment comment) {
+        User commentUser = comment.getUser();
+        UserVO commentUserVO = modelMapper.map(commentUser, UserVO.class);
+
         return CommentVO.builder()
             .id(comment.getId())
             .text(comment.getText())
@@ -28,9 +37,9 @@ public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
                 .id(comment.getParentComment().getId())
                 .build() : null)
             .user(UserVO.builder()
-                .id(comment.getUser().getId())
-                .role(comment.getUser().getRole())
-                .name(comment.getUser().getName())
+                .id(commentUser.getId())
+                .role(commentUserVO.getRole())
+                .name(commentUserVO.getName())
                 .build())
             .currentUserLiked(comment.isCurrentUserLiked())
             .usersLiked(comment.getUsersLiked() != null ? comment.getUsersLiked().stream()
