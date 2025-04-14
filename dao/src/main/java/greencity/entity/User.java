@@ -187,7 +187,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-@Table(name = "users")
+@Table(name = "greencity_users")
 @EqualsAndHashCode(
     exclude = {"emailPreference", "favoriteHabits", "language", "userLocation", "verifyEmail", "ownSecurity",
         "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
@@ -203,104 +203,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
-    private String name;
-
     @Column(unique = true, nullable = false, length = 50)
     private String email;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
-
-    @Enumerated(value = EnumType.ORDINAL)
-    @JdbcType(IntegerJdbcType.class)
-    private UserStatus userStatus;
-
-    @Column(nullable = false)
-    private LocalDateTime dateOfRegistration;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private OwnSecurity ownSecurity;
-
-    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private VerifyEmail verifyEmail;
-
-    @OneToOne(mappedBy = "user")
-    private RestorePasswordEmail restorePasswordEmail;
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<Estimate> estimates = new ArrayList<>();
 
-    @Enumerated(value = EnumType.ORDINAL)
-    @JdbcType(IntegerJdbcType.class)
-    private EmailNotification emailNotification;
-
-    @Column(name = "refresh_token_key", nullable = false)
-    private String refreshTokenKey;
-
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CustomToDoListItem> customToDoListItems = new ArrayList<>();
 
-    @Column(name = "profile_picture")
-    private String profilePicturePath;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_location")
-    private UserLocation userLocation;
-
     @ManyToMany(mappedBy = "usersLikedNews")
     private Set<EcoNews> ecoNewsLiked;
 
-    @OneToMany
-    @Builder.Default
-    @JoinTable(name = "users_friends",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
-    private List<User> userFriends = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserAchievement> userAchievements = new ArrayList<>();
-
-    @Column(name = "rating")
-    private Double rating;
-
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "user_credo")
-    private String userCredo;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
-    private List<SocialNetwork> socialNetworks;
-
-    @Column(name = "show_location")
-    @Enumerated(value = EnumType.STRING)
-    private ProfilePrivacyPolicy showLocation = ProfilePrivacyPolicy.PUBLIC;
-
-    @Column(name = "show_eco_place")
-    @Enumerated(value = EnumType.STRING)
-    private ProfilePrivacyPolicy showEcoPlace = ProfilePrivacyPolicy.PUBLIC;
-
-    @Column(name = "show_to_do_list")
-    @Enumerated(value = EnumType.STRING)
-    private ProfilePrivacyPolicy showToDoList = ProfilePrivacyPolicy.PUBLIC;
-
-    @Column(name = "last_activity_time")
-    private LocalDateTime lastActivityTime;
-
     @Column(name = "event_organizer_rating")
     private Double eventOrganizerRating;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Language language;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserAction> userActions = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -317,10 +235,6 @@ public class User {
 
     @ManyToMany(mappedBy = "attenders", fetch = FetchType.LAZY)
     private Set<Event> subscribedEvents;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<UserNotificationPreference> emailPreference = new HashSet<>();
 
     @ManyToMany(mappedBy = "requesters", fetch = FetchType.LAZY)
     private Set<Event> requestedEvents;
