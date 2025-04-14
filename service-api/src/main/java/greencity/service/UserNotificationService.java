@@ -213,6 +213,21 @@ public interface UserNotificationService {
      */
     void checkLastDayOfHabitPrimaryDurationToMessage();
 
+    /**
+     * Method to get all notifications for the current user by the search request sorted by
+     * the date in the descending order. If a specific project name is provided, only notifications
+     * for that project are returned.
+     * If {@code projectName} is {@code null}, notifications from both projects are included.
+     * from the both projects.
+     * <p>
+     * @param page is pageable without a sorting parameter
+     * @param principal is the current user
+     * @param locale is the language
+     * @param projectName is a project name: GREENCITY, or PICKUP, or {@code null}
+     * @param searchRequest is a search request that the user enters into the search field
+     * @return {@link PageableAdvancedDto} of {@link NotificationDto}
+     * @author Oleksandra Bulhakova
+     */
     PageableAdvancedDto<NotificationDto> getAllNotificationsForUserBySearchRequest(Pageable page, Principal principal,
                                                                                    Locale locale, ProjectName projectName,
                                                                                    String searchRequest);

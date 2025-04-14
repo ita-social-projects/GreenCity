@@ -192,7 +192,23 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
     Optional<Notification> findByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalseAndSecondMessageId(
         Long targetUserId, NotificationType notificationType, Long targetId, Long secondMessageId);
 
+    /**
+     * Retrieves all {@link Notification} entities where the target user's ID matches the provided ID.
+     *
+     * @param targetUserId the ID of the user for whom to retrieve notifications
+     * @return a list of {@link Notification} associated with the specified user
+     * @author Oleksandra Bulhakova
+     */
     List<Notification> findAllByTargetUser_Id(Long targetUserId);
 
+    /**
+     * Retrieves a {@link Page} of {@link Notification} entities with the specified IDs,
+     * using the provided {@link Pageable} for pagination and sorting.
+     *
+     * @param ids the list of notification IDs to retrieve
+     * @param pageable the pagination and sorting information
+     * @return a {@link Page} of {@link Notification} entities matching the given IDs
+     * @author Oleksandra Bulhakova
+     */
     Page<Notification> findAllByIdIn(List<Long> ids, Pageable pageable);
 }

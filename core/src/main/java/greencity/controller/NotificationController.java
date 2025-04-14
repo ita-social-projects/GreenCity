@@ -127,6 +127,19 @@ public class NotificationController {
         userNotificationService.notificationSocket(user);
     }
 
+    /**
+     * Endpoint to retrieve a paginated list of {@link NotificationDto} for the current user
+     * based on the provided search request. Results are filtered by project name (if specified)
+     * and sorted by date in descending order.
+     *
+     * @param pageable pagination information (without sorting)
+     * @param principal the authenticated user
+     * @param locale the current language setting
+     * @param projectName the name of the project (GREENCITY, PICKUP, or null to search in both)
+     * @param searchRequest the search query to filter notifications
+     * @return {@link ResponseEntity} containing {@link PageableAdvancedDto} of {@link NotificationDto}
+     * @author Oleksandra Bulhakova
+     */
     @Operation(summary = "Get page of notifications found by searchRequest filtered and sorted.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK),

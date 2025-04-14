@@ -675,6 +675,22 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         return bodyText;
     }
 
+    /**
+     * Retrieves all notifications for the current user in the GreenCity project
+     * that match the provided search request. The results are sorted by date
+     * in descending order and returned as a pageable DTO.
+     * <p>
+     * The search is case-insensitive and checks for matches in the notification's title,
+     * body, message, second message, and action user text.
+     *
+     * @param page         the pagination information without sorting
+     * @param principal    the current authenticated user
+     * @param locale       the current language used for localization
+     * @param searchRequest the keyword entered by the user to filter notifications
+     * @return {@link PageableAdvancedDto} of {@link NotificationDto} containing
+     *         matching notifications from the GreenCity project
+     * @author Oleksandra Bulhakova
+     */
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCityBySearchRequest(Pageable page, Principal principal,
                                                                                 Locale locale,
                                                                                 String searchRequest) {
@@ -710,6 +726,19 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         return buildPageableAdvancedDto(notificationRepo.findAllByIdIn(ids, newPageableWithSorting), locale.getLanguage());
     }
 
+    /**
+     * Retrieves all UBS notifications for the current user that match the given search request.
+     * The notifications are fetched from an external UBS service, filtered by the search term
+     * (case-insensitive) in the title or body, and returned as a paginated DTO.
+     *
+     * @param principal     the current authenticated user
+     * @param pageable      pagination information without sorting
+     * @param searchRequest the keyword entered by the user to filter notifications
+     * @param locale        the current language used for localization
+     * @return {@link PageableAdvancedDto} of {@link NotificationDto} containing
+     *         matching UBS notifications for the user
+     * @author Oleksandra Bulhakova
+     */
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromUbsBySearchRequest(Principal principal,
                                                                                       Pageable pageable, String searchRequest, Locale locale) {
         PageableAdvancedDto<UbsNotificationDto> ubsNotificationDtos = restClient.findAllNotificationsForUserFromUbs(principal, pageable, Optional.ofNullable(locale.getLanguage()));
@@ -726,6 +755,17 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .map(ubsDto -> modelMapper.map(ubsDto, NotificationDto.class)).toList(), pageable);
     }
 
+    /**
+     * Builds a {@link PageableAdvancedDto} from a given list of {@link NotificationDto} based on the provided
+     * {@link Pageable} parameters. Handles manual pagination logic including calculating total pages, current page,
+     * and slicing the content list to fit the page.
+     *
+     * @param notificationDtos the full list of {@link NotificationDto} to paginate
+     * @param pageable         the pagination information (page number and page size)
+     * @return a paginated {@link PageableAdvancedDto} containing only the content for the requested page,
+     *         along with metadata such as total elements, total pages, and flags for page navigation
+     * @author Oleksandra Bulhakova
+     */
     private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDtoFromNotificationDto(List<NotificationDto> notificationDtos, Pageable pageable) {
         int totalElements = notificationDtos.size();
         int pageSize = pageable.getPageSize();
@@ -751,6 +791,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<NotificationDto> getAllNotificationsForUserBySearchRequest(Pageable page, Principal principal,
                                                                                    Locale locale, ProjectName projectName,
