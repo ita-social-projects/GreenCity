@@ -228,17 +228,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdateUserLastActivityTime() {
-        Date date = new Date();
-
-        doNothing().when(userRepo).updateUserLastActivityTime(1L, date);
-
-        userService.updateUserLastActivityTime(1L, date);
-
-        verify(userRepo).updateUserLastActivityTime(1L, date);
-    }
-
-    @Test
     void testUpdateStatus() {
         when(userRepo.findByEmail(testEmail2)).thenReturn(Optional.ofNullable(testUser));
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);

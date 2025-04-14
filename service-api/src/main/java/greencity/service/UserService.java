@@ -43,14 +43,6 @@ public interface UserService {
     Long findIdByEmail(String email);
 
     /**
-     * Updates last activity time for a given user.
-     *
-     * @param userId               - {@link UserVO}'s id
-     * @param userLastActivityTime - new {@link UserVO}'s last activity time
-     */
-    void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
-
-    /**
      * Method that allow you to find {@link UserVO} by id.
      *
      * @param id a value of {@link Long}

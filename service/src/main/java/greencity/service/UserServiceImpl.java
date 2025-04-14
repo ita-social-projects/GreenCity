@@ -107,14 +107,6 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void updateUserLastActivityTime(Long userId, Date userLastActivityTime) {
-        userRepo.updateUserLastActivityTime(userId, userLastActivityTime);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
         checkUpdatableUser(id, email);
         accessForUpdateUserStatus(id, email);
