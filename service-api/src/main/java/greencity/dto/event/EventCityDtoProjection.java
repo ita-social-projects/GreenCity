@@ -3,7 +3,7 @@ package greencity.dto.event;
 public interface EventCityDtoProjection {
     String getCityNameEn();
 
-    String getCityNameUa();
+    String getCityNameUk();
 
     Long getAmountOfEvents();
 }

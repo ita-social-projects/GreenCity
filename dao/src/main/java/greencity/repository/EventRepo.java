@@ -266,7 +266,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
     @Query(nativeQuery = true, value = """
         SELECT * FROM (
                 (
-                    SELECT city_en AS cityNameEn, city_uk AS cityNameUa, COUNT(*) AS amountOfEvents, 0 as priority
+                    SELECT city_en AS cityNameEn, city_uk AS cityNameUk, COUNT(*) AS amountOfEvents, 0 as priority
                     FROM events_dates_locations
                     WHERE city_en = ?1 OR city_uk = ?1
                     GROUP BY city_en, city_uk
@@ -274,7 +274,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                 )
                 UNION
                 (
-                    SELECT city_en AS cityNameEn, city_uk AS cityNameUa, COUNT(*) AS amountOfEvents, 1 as priority
+                    SELECT city_en AS cityNameEn, city_uk AS cityNameUk, COUNT(*) AS amountOfEvents, 1 as priority
                     FROM events_dates_locations
                     WHERE NOT (city_en = ?1 OR city_uk = ?1)
                     GROUP BY city_en, city_uk

@@ -2560,7 +2560,7 @@ class EventServiceImplTest {
             }
 
             @Override
-            public String getCityNameUa() {
+            public String getCityNameUk() {
                 return cityUa;
             }
 

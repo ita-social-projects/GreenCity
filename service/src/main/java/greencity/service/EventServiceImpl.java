@@ -1170,7 +1170,7 @@ public class EventServiceImpl implements EventService {
         return eventRepo.findRelevantCitiesForUser(userCity).stream()
             .map(eventCityDtoProjection -> EventCityDto.builder()
                 .cityNameEn(eventCityDtoProjection.getCityNameEn())
-                .cityNameUa(eventCityDtoProjection.getCityNameUa())
+                .cityNameUk(eventCityDtoProjection.getCityNameUk())
                 .amountOfEvents(eventCityDtoProjection.getAmountOfEvents())
                 .build())
             .toList();
