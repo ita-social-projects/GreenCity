@@ -132,7 +132,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Optional.ofNullable(registeredUsers.get(subscriber.getEmail()))
             .ifPresent(user -> {
                 subscriber.setName(user.getName());
-                subscriber.setLanguage(user.getLanguageVO().getCode());
+                subscriber.setLanguage(user.getLanguage().getCode());
             });
         return subscriber;
     }

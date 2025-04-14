@@ -561,7 +561,7 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
-            .languageVO(getLanguageVO())
+            .language(getLanguageVO())
             .userLocationDto(
                 UserLocationDto.builder()
                     .latitude(1d)
@@ -579,7 +579,7 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
-            .languageVO(getLanguageVO())
+            .language(getLanguageVO())
             .build();
     }
 
@@ -592,7 +592,7 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
-            .languageVO(getLanguageVO())
+            .language(getLanguageVO())
             .build();
     }
 
@@ -689,7 +689,7 @@ public class ModelUtils {
                     .id(13L)
                     .build())
                 .build()))
-            .languageVO(LanguageVO.builder()
+            .language(LanguageVO.builder()
                 .id(1L)
                 .code("ua")
                 .build())

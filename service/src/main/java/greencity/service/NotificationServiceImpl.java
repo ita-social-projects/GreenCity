@@ -1,19 +1,24 @@
 package greencity.service;
 
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.NotificationRepo;
@@ -52,6 +57,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
+    private final UserRemoteClient userRemoteClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
     private final UserService userService;
@@ -211,8 +217,14 @@ public class NotificationServiceImpl implements NotificationService {
                     .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
                     .map(notification -> notification.setEmailSent(true))
                     .forEach(notification -> {
+
+                        User targetUser = notification.getTargetUser();
+                        String userEmail = targetUser.getEmail();
+                        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
+                                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-                            notification.getTargetUser().getLanguage().getCode());
+                                userVO.getLanguage().getCode());
                         restClient.sendScheduledEmailNotification(message);
                     });
                 notificationRepo.saveAll(notifications);
@@ -248,7 +260,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
-        LanguageVO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguageVO();
+        LanguageVO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguage();
         ScheduledEmailMessage message = createScheduledEmailMessage(notification, userLanguage.getCode());
         List<NotificationType> likes = List.of(
             NotificationType.ECONEWS_COMMENT_LIKE,

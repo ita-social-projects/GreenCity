@@ -82,7 +82,9 @@ public class UserVO {
     @Builder.Default
     private List<UserActionVO> userActions = new ArrayList<>();
 
-    private LanguageVO languageVO;
+    private String uuid;
+
+    private LanguageVO language;
 
     private UserLocationDto userLocationDto;
 }

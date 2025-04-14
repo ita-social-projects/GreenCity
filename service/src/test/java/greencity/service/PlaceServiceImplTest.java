@@ -156,7 +156,7 @@ class PlaceServiceImplTest {
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
-            .languageVO(languageVO)
+            .language(languageVO)
             .build();
     private final UserVO userVOAdmin =
         UserVO.builder()
@@ -167,7 +167,7 @@ class PlaceServiceImplTest {
             .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
-            .languageVO(languageVO)
+            .language(languageVO)
             .build();
     Place genericEntity1 = Place.builder()
         .id(1L)
