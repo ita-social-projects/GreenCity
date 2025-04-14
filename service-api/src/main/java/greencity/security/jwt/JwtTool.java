@@ -10,7 +10,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -44,8 +48,30 @@ public class JwtTool {
      * @param role  this is role of user.
      */
     public String createAccessToken(String email, Role role) {
+        Set<String> roleNames = Collections.singleton(role.name());
+        return createAccessToken(email, roleNames);
+    }
+
+    /**
+     * Method for creating access token.
+     *
+     * @param email this is email of user.
+     * @param roles this is list of roles of user.
+     */
+    public String createAccessToken(String email, List<Role> roles) {
+        Set<String> roleNames = roles.stream().map(Role::name).collect(Collectors.toSet());
+        return createAccessToken(email, roleNames);
+    }
+
+    /**
+     * Method for creating access token.
+     *
+     * @param email this is email of user.
+     * @param roleNames this is list of role names of user.
+     */
+    private String createAccessToken(String email, Set<String> roleNames) {
         ClaimsBuilder claims = Jwts.claims().subject(email);
-        claims.add(ROLE, Collections.singleton(role.name()));
+        claims.add(ROLE, roleNames);
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
