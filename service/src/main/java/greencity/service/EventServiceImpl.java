@@ -3,6 +3,7 @@ package greencity.service;
 import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -44,6 +45,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
@@ -132,6 +134,7 @@ public class EventServiceImpl implements EventService {
     private final GoogleApiService googleApiService;
     private final UserService userService;
     private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
@@ -462,7 +465,10 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateOrganizerPermissions(User organizer, Event toUpdate) {
-        if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
+        String organizerEmail = organizer.getEmail();
+        UserVO organizerVO = userRemoteClient.findNotDeactivatedByEmail(organizerEmail)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + organizerEmail));
+        if (organizerVO.getRole() != Role.ROLE_ADMIN && organizerVO.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
