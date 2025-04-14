@@ -1,10 +1,12 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -15,6 +17,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import java.util.Collections;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
     private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
     private final NotificationService notificationService;
@@ -191,7 +195,11 @@ public class FriendServiceImpl implements FriendService {
         } else if (type == RecommendedFriendsType.HABITS) {
             mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
         } else if (type == RecommendedFriendsType.CITY) {
-            UserLocation userLocation = user.getUserLocation();
+            String userEmail = user.getEmail();
+            UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
+                    .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+
+            UserLocationDto userLocation = userVO.getUserLocation();
             if (userLocation != null && userLocation.getCityUk() != null) {
                 mutualFriends = userRepo.findRecommendedFriendsByCity(userId, userLocation.getCityUk(), pageable);
             } else {

@@ -71,6 +71,8 @@ public class UserVO {
 
     private String firstName;
 
+    private UserLocationDto userLocation;
+
     private ProfilePrivacyPolicy showLocation;
 
     private ProfilePrivacyPolicy showEcoPlace;
@@ -87,4 +89,6 @@ public class UserVO {
     private LanguageVO language;
 
     private UserLocationDto userLocationDto;
+
+
 }
