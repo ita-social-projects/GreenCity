@@ -82,24 +82,25 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
     @Query(nativeQuery = true,
         value = """
                 WITH sampled_habits AS (
-                   SELECT *
-                   FROM habits
-                            TABLESAMPLE SYSTEM(15)
-                   WHERE is_deleted = false
-                   LIMIT 1
-               ),
+                    SELECT *
+                    FROM habits
+                    TABLESAMPLE SYSTEM(15)
+                    WHERE is_deleted = false
+                    LIMIT 1
+                ),
                 fallback_habit AS (
                     SELECT *
                     FROM habits
                     WHERE is_deleted = false
+                    ORDER BY RANDOM()
                     LIMIT 1
                 )
-               SELECT *
-               FROM sampled_habits
-               UNION ALL
-               SELECT *
-               FROM fallback_habit
-               LIMIT 1;
+                SELECT *
+                FROM sampled_habits
+                UNION ALL
+                SELECT *
+                FROM fallback_habit
+                LIMIT 1;
             """)
     Habit findRandomHabit();
 
