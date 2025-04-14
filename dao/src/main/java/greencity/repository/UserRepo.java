@@ -45,17 +45,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<User> findAllByEmailIn(List<String> emails);
 
     /**
-     * Find all {@link UserManagementVO}.
-     *
-     * @param filter   filter parameters
-     * @param pageable pagination
-     * @return list of all {@link UserManagementVO}
-     */
-    @Query(" SELECT new greencity.dto.user.UserManagementVO(u.id, u.name, u.email, u.userCredo, u.role, u.userStatus) "
-        + " FROM User u ")
-    Page<UserManagementVO> findAllManagementVo(Specification<User> filter, Pageable pageable);
-
-    /**
      * Find all {@link User}.
      *
      * @param filter   filter parameters
@@ -68,15 +57,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> findAll(@NonNull Specification<User> filter, @NonNull Pageable pageable);
 
     /**
-     * Find not 'DEACTIVATED' {@link User} by email.
-     *
-     * @param email - {@link User}'s email
-     * @return found {@link User}
-     */
-    @Query("FROM User WHERE email=:email AND userStatus <> 1")
-    Optional<User> findNotDeactivatedByEmail(String email);
-
-    /**
      * Find id by email.
      *
      * @param email - User email
@@ -84,34 +64,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query("SELECT id FROM User WHERE email=:email")
     Optional<Long> findIdByEmail(String email);
-
-    /**
-     * Updates last activity time for a given user.
-     *
-     * @param userId               - {@link User}'s id
-     * @param userLastActivityTime - new {@link User}'s last activity time
-     */
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE User u SET u.lastActivityTime=:userLastActivityTime WHERE u.id=:userId")
-    void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
-
-    /**
-     * Updates user status for a given user.
-     *
-     * @param userId     - {@link User}'s id
-     * @param userStatus {@link String} - string value of user status to set
-     */
-    @Modifying
-    @Transactional
-    @Query("UPDATE User SET userStatus = CASE "
-        + "WHEN (:userStatus = 'DEACTIVATED') THEN 1 "
-        + "WHEN (:userStatus = 'ACTIVATED') THEN 2 "
-        + "WHEN (:userStatus = 'CREATED') THEN 3 "
-        + "WHEN (:userStatus = 'BLOCKED') THEN 4 "
-        + "ELSE 0 END "
-        + "WHERE id = :userId")
-    void updateUserStatus(Long userId, String userStatus);
 
     /**
      * Find the last activity time by {@link User}'s id.
@@ -813,105 +765,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         @Param("startDate") LocalDateTime startDate,
         @Param("endDate") LocalDateTime endDate,
         @Param("granularity") String granularity);
-
-    /**
-     * Retrieves the distribution of user roles for active users.
-     *
-     * @return A list of UserRoleStatisticDto objects containing the role and the
-     *         count of users with that role.
-     */
-    @Query("""
-        SELECT new greencity.dto.user.UserRoleStatisticDto(u.role, COUNT(u.id))
-        FROM User u
-        WHERE u.userStatus = 2
-        GROUP BY u.role
-        """)
-    List<UserRoleStatisticDto> getUserRolesDistribution();
-
-    /**
-     * Retrieves the distribution of user statuses across all users.
-     *
-     * @return A list of UserStatusStatisticDto objects containing the status and
-     *         the count of users with that status.
-     */
-    @Query("""
-        SELECT new greencity.dto.user.UserStatusStatisticDto(u.userStatus, COUNT(u.id))
-        FROM User u
-        GROUP BY u.userStatus
-        """)
-    List<UserStatusStatisticDto> getUserStatusesDistribution();
-
-    /**
-     * Retrieves the distribution of users by city.
-     *
-     * @return A list of UserLocationStatisticDto objects containing the city name
-     *         and the count of users in that city.
-     */
-    @Query("""
-        SELECT new greencity.dto.user.UserLocationStatisticDto(
-               COALESCE(ul.cityEn, 'No Location'), COUNT(u.id))
-        FROM User u
-        LEFT JOIN u.userLocation ul
-        WHERE u.userStatus = 2
-        GROUP BY ul.cityEn
-        """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCity();
-
-    /**
-     * Retrieves the distribution of users by region.
-     *
-     * @return A list of UserLocationStatisticDto objects containing the region name
-     *         and the count of users in that region.
-     */
-    @Query("""
-        SELECT new greencity.dto.user.UserLocationStatisticDto(
-               COALESCE(ul.regionEn, 'No Location'), COUNT(u.id))
-        FROM User u
-        LEFT JOIN u.userLocation ul
-        WHERE u.userStatus = 2
-        GROUP BY ul.regionEn
-        """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion();
-
-    /**
-     * Retrieves the distribution of users by country.
-     *
-     * @return A list of UserLocationStatisticDto objects containing the country
-     *         name and the count of users in that country.
-     */
-    @Query("""
-        SELECT new greencity.dto.user.UserLocationStatisticDto(
-               COALESCE(ul.countryEn, 'No Location'), COUNT(u.id))
-        FROM User u
-        LEFT JOIN u.userLocation ul
-        WHERE u.userStatus = 2
-        GROUP BY ul.countryEn
-        """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
-
-    /**
-     * Retrieves the distribution of user email preferences and their periodicity.
-     *
-     * @return A list of UserEmailPreferencesStatisticDto objects containing the
-     *         email preference, periodicity, and the count of users with that
-     *         combination.
-     */
-    @Query("""
-             SELECT new greencity.dto.user.UserEmailPreferencesStatisticDto(
-                 uep.emailPreference, uep.periodicity, COUNT(uep.id)
-             )
-             FROM UserNotificationPreference uep
-             LEFT JOIN User u
-             WHERE u.userStatus = 2
-             GROUP BY uep.emailPreference, uep.periodicity
-        """)
-    List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution();
-
-    /**
-     * Count total active users in the system.
-     */
-    @Query("SELECT COUNT(u) FROM User u WHERE u.userStatus IN (greencity.enums.UserStatus.ACTIVATED) ")
-    Long countActiveUsers();
 
     /**
      * Method for getting all users who made request for joining the event.
