@@ -374,7 +374,12 @@ public class NotificationServiceImpl implements NotificationService {
         if (actionUsersSize > 1) {
             actionUserText = actionUsersSize + " " + bundle.getString("USERS");
         } else if (actionUsersSize == 1) {
-            actionUserText = notification.getActionUsers().getFirst().getName();
+            User firstActionUser = notification.getActionUsers().getFirst();
+            String firstActionUserEmail = firstActionUser.getEmail();
+            UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(firstActionUserEmail)
+                    .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + firstActionUserEmail));
+
+            actionUserText = userVO.getName();
         } else {
             actionUserText = "";
         }
@@ -393,9 +398,14 @@ public class NotificationServiceImpl implements NotificationService {
             .replace("{secondMessage}", secondMessage)
             .replace("{times}", times);
 
+        User targetUser = notification.getTargetUser();
+        String targetUserEmail = targetUser.getEmail();
+        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(targetUserEmail)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + targetUserEmail));
+
         return ScheduledEmailMessage.builder()
             .email(notification.getTargetUser().getEmail())
-            .username(notification.getTargetUser().getName())
+            .username(userVO.getName())
             .baseLink(createBaseLink(notification))
             .subject(subject)
             .body(body)
