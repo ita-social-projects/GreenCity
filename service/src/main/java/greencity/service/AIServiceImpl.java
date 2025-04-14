@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import static greencity.constant.OpenAIRequest.*;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.habit.DurationHabitDto;
 import greencity.entity.localization.TagTranslation;
 import static greencity.constant.OpenAIConstants.*;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.entity.*;
 import static greencity.enums.Role.ROLE_USER;
@@ -32,6 +32,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -47,6 +48,7 @@ public class AIServiceImpl implements AIService {
     private final ModelMapper modelMapper;
     private LocalDate lastGeneratedDate = LocalDate.now().minusWeeks(1);
 
+    @Transactional
     @Override
     public String getForecast(Long userId, String language) {
         validateInputs(userId, language);
@@ -61,7 +63,7 @@ public class AIServiceImpl implements AIService {
         }
 
         try {
-            forecastResponse = grammarChecker.checkGrammar(forecastResponse);
+            forecastResponse = String.valueOf(grammarChecker.checkGrammar(forecastResponse));
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -76,7 +78,7 @@ public class AIServiceImpl implements AIService {
         String adviceResponse = fetchAdvice(language, habit);
 
         try {
-            adviceResponse = grammarChecker.checkGrammar(adviceResponse);
+            adviceResponse = String.valueOf(grammarChecker.checkGrammar(adviceResponse));
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -90,7 +92,7 @@ public class AIServiceImpl implements AIService {
         String newResponse = extractContentFromJson(jsonResponse);
 
         try {
-            newResponse = grammarChecker.checkGrammar(newResponse);
+            newResponse = String.valueOf(grammarChecker.checkGrammar(newResponse));
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -111,7 +113,7 @@ public class AIServiceImpl implements AIService {
         String ecoNewsText = ecoNews.getText();
 
         try {
-            ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
+            ecoNewsText = String.valueOf(grammarChecker.checkGrammar(ecoNewsText));
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }

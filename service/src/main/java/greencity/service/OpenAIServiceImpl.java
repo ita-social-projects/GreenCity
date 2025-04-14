@@ -1,7 +1,7 @@
 package greencity.service;
 
-import static greencity.log.OpenAILogMessages.*;
 import static greencity.constant.OpenAIConstants.*;
+import java.util.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,11 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Setter
 @Slf4j
@@ -35,11 +30,8 @@ public class OpenAIServiceImpl implements OpenAIService {
     @SuppressWarnings("checkstyle:WhitespaceAround")
     @Override
     public String makeRequest(String prompt) {
-        log.info(OPENAI_REQUEST_INITIATED, prompt);
-
         String validationError = validateRequestParameters(prompt);
         if (validationError != null) {
-            log.error(OPENAI_REQUEST_VALIDATION_FAILED, validationError);
             return validationError;
         }
 
@@ -52,31 +44,38 @@ public class OpenAIServiceImpl implements OpenAIService {
     private String sendRequest(HttpHeaders headers, Map<String, Object> body) {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
         try {
-            log.debug(OPENAI_SENDING_REQUEST, apiUrl, body);
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 apiUrl,
                 HttpMethod.POST,
                 request,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
             );
 
-            log.info(OPENAI_RESPONSE_RECEIVED, response.getBody());
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody == null) {
+                return ERROR_INVALID_OPENAI_RESPONSE;
+            }
 
-            return Optional.ofNullable(response.getBody())
-                .map(responseBody ->    (List<Map<String, Object>>) responseBody.get(RESPONSE_CHOICES_KEY))
-                .filter(choices -> !choices.isEmpty())
-                .map(choices -> (Map<String, Object>) choices.getFirst().get(RESPONSE_MESSAGE_KEY))
-                .map(message -> (String) message.get(RESPONSE_JSON_CONTENT_KEY))
-                .filter(content -> !content.isEmpty())
+            return Optional.ofNullable(responseBody.get(RESPONSE_CHOICES_KEY))
+                .filter(choices -> choices instanceof List<?> && !((List<?>) choices).isEmpty())
+                .map(choices -> (List<?>) choices)
+                .flatMap(choices -> Optional.ofNullable(choices.getFirst()))
+                .filter(choice -> choice instanceof Map<?, ?>)
+                .map(choice -> (Map<?, ?>) choice)
+                .flatMap(choice -> Optional.ofNullable(choice.get(RESPONSE_MESSAGE_KEY)))
+                .filter(message -> message instanceof Map<?, ?>)
+                .map(message -> (Map<?, ?>) message)
+                .flatMap(message -> Optional.ofNullable(message.get(RESPONSE_JSON_CONTENT_KEY)))
+                .filter(content -> content instanceof String && !((String) content).isEmpty())
+                .map(content -> (String) content)
                 .orElse(ERROR_INVALID_OPENAI_RESPONSE);
         } catch (Exception e) {
-            log.error(OPENAI_REQUEST_FAILED, e);
             return ERROR_NO_OPENAI_RESPONSE;
         }
     }
 
     private Map<String, Object> createRequestBody(String prompt) {
-        log.debug(OPENAI_REQUEST_BODY_CREATION, prompt);
         Map<String, Object> body = new HashMap<>();
         body.put(REQUEST_MODEL_KEY, OPENAI_MODEL_NAME);
 
@@ -91,7 +90,6 @@ public class OpenAIServiceImpl implements OpenAIService {
     }
 
     private HttpHeaders createHttpHeaders() {
-        log.debug(OPENAI_HTTP_HEADERS_SETUP);
         HttpHeaders headers = new HttpHeaders();
         headers.add(OPENAI_AUTH_HEADER, OPENAI_BEARER_PREFIX + apiKey);
         headers.add(OPENAI_CONTENT_TYPE_HEADER, OPENAI_APPLICATION_JSON);
@@ -99,19 +97,17 @@ public class OpenAIServiceImpl implements OpenAIService {
     }
 
     private String validateRequestParameters(String prompt) {
-        log.debug(OPENAI_REQUEST_PARAMETER_VALIDATION);
-        if (apiKey == null || apiKey.isEmpty()) {
-            log.error(ERROR_API_KEY_MISSING);
-            return ERROR_API_KEY_MISSING;
-        }
-        if (apiUrl == null || apiUrl.isEmpty()) {
-            log.error(ERROR_API_URL_MISSING);
-            return ERROR_API_URL_MISSING;
-        }
-        if (prompt == null || prompt.isEmpty()) {
-            log.error(ERROR_PROMPT_MISSING);
-            return ERROR_PROMPT_MISSING;
-        }
-        return null;
+        Map<Object, String> validationResults = Map.of(
+            apiKey, ERROR_API_KEY_MISSING,
+            apiUrl, ERROR_API_URL_MISSING,
+            prompt, ERROR_PROMPT_MISSING
+        );
+        return validationResults.entrySet().stream()
+            .filter(entry -> Objects.isNull(entry.getKey()) ||
+                entry.getKey().toString().isEmpty())
+            .map(Map.Entry::getValue)
+            .findFirst()
+            .orElse(null);
     }
+
 }

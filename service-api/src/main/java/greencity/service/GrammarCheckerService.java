@@ -1,9 +1,10 @@
 package greencity.service;
 
+import greencity.dto.grammar.GrammarCheckResult;
 import java.io.IOException;
 
 public interface GrammarCheckerService {
-    String checkGrammar(String text) throws IOException;
+    GrammarCheckResult checkGrammar(String text) throws IOException;
 
     void clearCache(String text);
 }

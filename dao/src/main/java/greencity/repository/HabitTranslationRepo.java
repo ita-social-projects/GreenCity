@@ -9,12 +9,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 /**
  * Provides an interface to manage {@link HabitTranslation} entity.
  *
  * @author Volodymyr Turko
  */
+@Repository
 public interface HabitTranslationRepo
     extends JpaRepository<HabitTranslation, Long>, JpaSpecificationExecutor<HabitTranslation> {
     /**

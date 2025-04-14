@@ -1,5 +1,8 @@
 package greencity.service;
 
+import greencity.dto.grammar.GrammarCheckResult;
+import greencity.dto.grammar.GrammarError;
+import java.util.ArrayList;
 import java.util.Objects;
 import org.springframework.cache.Cache;
 import static greencity.constant.GrammarCheckConstants.*;
@@ -78,27 +81,35 @@ public class GrammarChecker implements GrammarCheckerService {
      * the `languageCache`. If available, it returns the cached value. If not, it proceeds with grammar checking
      * using the appropriate language tool, applies the necessary corrections, caches the result, and returns it.</p>
      */
-    @Override
     @Cacheable(value = "languageCache", key = "#text")
-    public String checkGrammar(String text) throws IOException {
+    public GrammarCheckResult checkGrammar(String text) throws IOException {
         try {
-            String cachedGrammarResult = getCacheValue(text);
-            if (Objects.nonNull(cachedGrammarResult)) {
-                return cachedGrammarResult;
-            }
-
             String detectedLanguage = detectLanguage(text);
             JLanguageTool languageTool = getLanguageTool(detectedLanguage);
 
             List<RuleMatch> matches = languageTool.check(text);
-            String correctedText = (matches.isEmpty()) ? text : applyCorrections(text, matches);
+            List<GrammarError> errors = new ArrayList<>();
+            String correctedText = text;
 
-            putCacheValue(text, correctedText);
-            return correctedText;
+            if (!matches.isEmpty()) {
+                correctedText = applyCorrections(text, matches);
+
+                for (RuleMatch match : matches) {
+                    String wrong = text.substring(match.getFromPos(), match.getToPos());
+                    String suggestion = match.getSuggestedReplacements().isEmpty()
+                        ? EMPTY_STRING
+                        : match.getSuggestedReplacements().getFirst();
+                    errors.add(new GrammarError(wrong, suggestion, match.getMessage(), match.getFromPos()));
+                }
+            }
+
+            return new GrammarCheckResult(errors, (long) text.length(), correctedText);
+
         } catch (Exception e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECKING_MESSAGE, e);
         }
     }
+
 
     /**
      * Clears the cache for the provided text.
@@ -120,8 +131,6 @@ public class GrammarChecker implements GrammarCheckerService {
     public void clearCache(String text) {
         evictCache(LANGUAGE_CACHE_NAME, text);
         evictCache(GRAMMAR_CACHE_NAME, text);
-
-        log.info(CACHE_CLEARED_LOG_MESSAGE, text);
     }
 
     /**
@@ -143,7 +152,6 @@ public class GrammarChecker implements GrammarCheckerService {
 
         try (InputStream modelIn = getClass().getResourceAsStream(LANG_DETECT_MODEL_PATH)) {
             if (Objects.isNull(modelIn)) {
-                log.error(ERROR_LANG_DETECT_MODEL_NOT_FOUND);
                 return DEFAULT_LANGUAGE_CODE;
             }
             LanguageDetectorModel model = new LanguageDetectorModel(modelIn);
@@ -154,7 +162,6 @@ public class GrammarChecker implements GrammarCheckerService {
             putCacheValue(text, detectedLanguage);
             return detectedLanguage;
         } catch (IOException e) {
-            log.error(ERROR_GRAMMAR_CHECKING_MESSAGE, e);
             return DEFAULT_LANGUAGE_CODE;
         }
     }
@@ -225,7 +232,6 @@ public class GrammarChecker implements GrammarCheckerService {
     private String getCacheValue(String key) {
         Cache cache = cacheManager.getCache(LANGUAGE_CACHE_NAME);
         if (Objects.isNull(cache)) {
-            logCacheError(LANGUAGE_CACHE_NAME);
             return null;
         }
         return cache.get(key, String.class);
@@ -266,22 +272,6 @@ public class GrammarChecker implements GrammarCheckerService {
         Cache cache = cacheManager.getCache(cacheName);
         if (Objects.nonNull(cache)) {
             cache.evict(key);
-        } else {
-            logCacheError(cacheName);
         }
-    }
-
-    /**
-     * Logs an error message when a cache is not found.
-     *
-     * <p>This method is called when an attempt to access or modify a cache fails because the cache is not available.</p>
-     *
-     * @param cacheName the name of the cache that was not found.
-     *
-     * <p>The method logs a message with the name of the missing cache to aid in debugging and to provide
-     * visibility into cache-related issues.</p>
-     */
-    private void logCacheError(String cacheName) {
-        log.error(CACHE_NOT_FOUND_LOG_MESSAGE, cacheName);
     }
 }
