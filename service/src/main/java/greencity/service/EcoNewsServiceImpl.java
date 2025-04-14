@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -32,6 +33,7 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.rating.constant.RatingPointsNames;
 import greencity.repository.RatingPointsRepo;
 import greencity.exception.exceptions.BadRequestException;
@@ -83,6 +85,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
     private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
     private final CommentService commentService;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
@@ -566,7 +569,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags, Long currentUserId) {
         User author = ecoNews.getAuthor();
-        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
+        String authorEmail = author.getEmail();
+        UserVO authorVO = userRemoteClient.findNotDeactivatedByEmail(authorEmail)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + authorEmail));
+        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), authorVO.getName());
 
         int countOfComments = commentService.countCommentsForEcoNews(ecoNews.getId());
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
@@ -598,8 +604,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsDto getEcoNewsDto(EcoNews ecoNews, List<String> list) {
         User author = ecoNews.getAuthor();
+        String authorEmail = author.getEmail();
+        UserVO authorVO = userRemoteClient.findNotDeactivatedByEmail(authorEmail)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + authorEmail));
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
-            author.getName());
+            authorVO.getName());
 
         return EcoNewsDto.builder()
             .id(ecoNews.getId())
