@@ -3,6 +3,7 @@ package greencity.service;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.PlacesSearchResult;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -101,6 +102,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final CategoryRepo categoryRepo;
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
     private final FavoritePlaceRepo favoritePlaceRepo;
     private final FileService fileService;
     private final UserNotificationService userNotificationService;
@@ -553,7 +555,11 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
         User user = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
+
+        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(email)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
