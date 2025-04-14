@@ -10,13 +10,14 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewContentSourceDto;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -153,7 +154,7 @@ public class EcoNewsController {
         if (!ecoNewsId.equals(updateEcoNewsDto.getId())) {
             throw new WrongIdException(ErrorMessage.ECO_NEWS_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.update(updateEcoNewsDto, image, user));
+        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, user));
     }
 
     /**
@@ -218,6 +219,8 @@ public class EcoNewsController {
     @Operation(summary = "Delete eco news.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
@@ -239,7 +242,9 @@ public class EcoNewsController {
      */
     @Operation(summary = "Get three recommended eco news.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
     @GetMapping("/{ecoNewsId}/recommended")
     public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(
@@ -287,9 +292,9 @@ public class EcoNewsController {
     }
 
     /**
-     * Method to like EcoNews.
+     * Method to like/remove like on EcoNews.
      */
-    @Operation(summary = "Like eco news")
+    @Operation(summary = "Like/remove like on eco news")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -305,9 +310,9 @@ public class EcoNewsController {
     }
 
     /**
-     * Method to dislike EcoNews.
+     * Method to dislike/remove dislike on EcoNews.
      */
-    @Operation(description = "Dislike eco news")
+    @Operation(description = "Dislike/remove dislike on eco news")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -396,5 +401,65 @@ public class EcoNewsController {
     @GetMapping("/{ecoNewsId}/summary")
     public ResponseEntity<EcoNewContentSourceDto> getContentAndSourceForEcoNewsById(@PathVariable Long ecoNewsId) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
+    }
+
+    /**
+     * Method to like/remove like on EcoNews and get an instance of EcoNews with
+     * updated data.
+     */
+    @Operation(summary = "Adds like/removes like on EcoNews and get an instance of EcoNews with updated data")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PostMapping("/{ecoNewsId}/likeV2")
+    public ResponseEntity<EcoNewsDto> likeV2(
+        @PathVariable Long ecoNewsId,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        return ResponseEntity.ok(ecoNewsService.likeV2(user, ecoNewsId));
+    }
+
+    /**
+     * Method to dislike/remove dislike on EcoNews.
+     */
+    @Operation(description = "Adds dislike/removes dislike on EcoNews and get an instance of EcoNews with updated data")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @PostMapping("/{ecoNewsId}/dislikeV2")
+    public ResponseEntity<EcoNewsDto> dislikeV2(
+        @PathVariable Long ecoNewsId,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        return ResponseEntity.ok(ecoNewsService.dislikeV2(user, ecoNewsId));
+    }
+
+    /**
+     * Method for getting eco news by id.
+     *
+     * @return {@link EcoNewsGroupedTagsDto} instance.
+     */
+    @Operation(summary = "Get eco news by id.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @ApiLocale
+    @GetMapping("/{ecoNewsId}/v2")
+    public ResponseEntity<EcoNewsGroupedTagsDto> getEcoNewsByIdV2(
+        @PathVariable Long ecoNewsId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsService.findDtoById(ecoNewsId));
     }
 }

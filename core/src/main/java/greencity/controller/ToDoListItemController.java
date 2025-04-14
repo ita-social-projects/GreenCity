@@ -197,8 +197,6 @@ public class ToDoListItemController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = Long.class))),
-        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER,
-            content = @Content(examples = @ExampleObject(HttpStatuses.SEE_OTHER))),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,

@@ -162,31 +162,27 @@
                         [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
-
+                        <li class="page-item" th:classappend="${pageable.first} ? 'disabled'">
+                            <a class="page-link" rel="tooltip"
+                               th:href="${pageable.first} ? '#' : @{/management/achievement(page=${pageable.number - 1}, sortBy=${sortBy}, sortDir=${sortDir})}">
+                                <i class="arrow fas fa-chevron-left"></i>
+                            </a>
+                        </li>
                         <li class="page-item"
-                            th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
-                               th:href="@{/management/achievement?page={id}(id=${0}, query=${query})}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
+                            th:each="pageNumber : ${#numbers.sequence(0, pageable.totalPages - 1)}"
+                            th:classappend="${pageNumber == pageable.number} ? ''">
+                            <a class="page-link"
+                               th:href="@{/management/achievement(page=${pageNumber}, sortBy=${sortBy}, sortDir=${sortDir})}">
+                                [[${pageNumber + 1}]]
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${pageable.last} ? 'disabled'">
+                            <a class="page-link" rel="tooltip"
+                               th:href="${pageable.last} ? '#' : @{/management/achievement(page=${pageable.number + 1}, sortBy=${sortBy}, sortDir=${sortDir})}">
+                                <i class="arrow fas fa-chevron-right"></i>
+                            </a>
                         </li>
 
-                        <li class="page-item"
-                            th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
-                            th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
-                            th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
-                            <a class="page-link" th:href="@{/management/achievement?page={id}(id=${pageNumber}, query=${query})}">[[${pageNumber}+1]]</a>
-                        </li>
-
-                        <li class="page-item"
-                            th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                               th:href="@{/management/achievement?page={id}(id=${pageable.getTotalPages()-1}, query=${query})}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -304,7 +300,8 @@
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
                                th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}"
+                        <input type="submit" class="btn btn-success btn-primary"
+                               th:value="#{greenCity.pages.popup.save.}"
                                id="submitEditBtn">
                     </div>
                 </form>

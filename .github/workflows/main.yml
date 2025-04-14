@@ -6,11 +6,11 @@ name: CI/CD GreenCity
 concurrency: Testing
 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push or pull request events but only for the dev branch
   push:
-    branches: [ prod, dev ]
+    branches: [ dev ]
   pull_request:
-    branches: [ prod, dev ]
+    branches: [ dev ]
   workflow_dispatch:
 
 env:
@@ -46,7 +46,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           git fetch --unshallow
-          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.coverage.exclusions=**/config/*,**/entity/*,**/entity/**,**/exceptions/*,**/exception/*,**/SearchCriteria.java,**/EcoNewsSearchRepo.java,**/EventSearchRepoImpl.java,**/DatabaseBackupServiceImpl.java,**/HabitTranslationFilter.java,**/CustomNotificationRepoImpl.java,**/PlaceFilter.java,**/PlaceSearchRepoImpl.java,**/EcoNewsSearchRepoImpl.java
+
 
       - name: Test Reporter
         uses: dorny/test-reporter@v1.5.0

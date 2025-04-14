@@ -1,9 +1,9 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
@@ -112,4 +112,16 @@ public interface AchievementService {
      */
     Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
         Long achievementCategoryId);
+
+    /**
+     * Prepares a Pageable object with the specified sorting parameters.
+     *
+     * @param pageable The original Pageable object containing pagination details.
+     * @param sortBy   The field by which the results should be sorted.
+     * @param sortDir  The direction of sorting, either "ASC" (ascending) or "DESC"
+     *                 (descending).
+     * @return Pageable Returns a new Pageable object with the applied sorting
+     *         parameters.
+     */
+    Pageable preparePageable(Pageable pageable, String sortBy, String sortDir);
 }

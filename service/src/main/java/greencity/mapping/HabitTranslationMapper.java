@@ -1,13 +1,13 @@
 package greencity.mapping;
 
-import greencity.constant.AppConstant;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import org.apache.commons.lang3.ObjectUtils;
+import greencity.entity.Language;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Component
 public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDto, HabitTranslation> {
@@ -21,28 +21,6 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
     }
 
     /**
-     * Additional method that build {@link HabitTranslation} from
-     * {@link HabitTranslationDto} but from nameUa, descriptionUa, habitItemUa
-     * fields if they not null.
-     *
-     * @param habitTranslationDto {@link HabitTranslationDto}
-     * @return {@link HabitTranslation}
-     *
-     * @author Chernenko Vitaliy
-     */
-    public HabitTranslation convertUa(HabitTranslationDto habitTranslationDto) {
-        HabitTranslation habitTranslation = new HabitTranslation();
-        habitTranslation
-            .setName(ObjectUtils.defaultIfNull(habitTranslationDto.getNameUa(), habitTranslationDto.getName()));
-        habitTranslation.setDescription(
-            ObjectUtils.defaultIfNull(habitTranslationDto.getDescriptionUa(), habitTranslationDto.getDescription()));
-        habitTranslation.setHabitItem(
-            ObjectUtils.defaultIfNull(habitTranslationDto.getHabitItemUa(), habitTranslationDto.getHabitItem()));
-
-        return habitTranslation;
-    }
-
-    /**
      * Method that build {@link List} of {@link HabitTranslation} from {@link List}
      * of {@link HabitTranslationDto}.
      *
@@ -51,7 +29,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      * @author Lilia Mokhnatska
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList) {
-        return dtoList.stream().map(this::convert).collect(Collectors.toList());
+        return dtoList.stream().map(this::convert).toList();
     }
 
     /**
@@ -66,9 +44,32 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      * @author Chernenko Vitaliy
      */
     public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, String language) {
-        if (AppConstant.LANGUAGE_CODE_UA.equals(language)) {
-            return dtoList.stream().map(this::convertUa).collect(Collectors.toList());
-        }
-        return dtoList.stream().map(this::convert).collect(Collectors.toList());
+        return dtoList.stream().filter(dto -> Objects.equals(language, dto.getLanguageCode()))
+            .map(this::convert).toList();
+    }
+
+    /**
+     * Method that builds {@link List} of {@link HabitTranslation} from {@link List}
+     * of {@link HabitTranslationDto}, {@link Language} language and {@link Habit}
+     * habit.
+     *
+     * @param dtoList  {@link List} of {@link HabitTranslationDto}
+     * @param language {@link Language}
+     * @param habit    {@link Habit}
+     *
+     * @return {@link List} of {@link HabitTranslation}
+     *
+     * @author Bulhakova Oleksandra
+     */
+    public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, Language language, Habit habit) {
+        return dtoList.stream()
+            .filter(dto -> Objects.equals(language.getCode(), dto.getLanguageCode()))
+            .map(dto -> {
+                HabitTranslation habitTranslation = convert(dto);
+                habitTranslation.setLanguage(language);
+                habitTranslation.setHabit(habit);
+                return habitTranslation;
+            })
+            .toList();
     }
 }

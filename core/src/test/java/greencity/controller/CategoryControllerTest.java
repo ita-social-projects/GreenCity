@@ -44,12 +44,12 @@ class CategoryControllerTest {
 
     @Test
     void saveCategory() throws Exception {
-        CategoryDto categoryDto = CategoryDto.builder().name("content").build();
+        CategoryDto categoryDto = CategoryDto.builder().nameEn("content").build();
         mockMvc.perform(post(categoryLink)
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                     {
-                      "name": "content"
+                      "nameEn": "content"
                     }
                 """))
             .andExpect(status().isCreated());

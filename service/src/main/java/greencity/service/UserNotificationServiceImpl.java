@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
@@ -8,6 +9,7 @@ import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
+import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.entity.User;
@@ -34,6 +36,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Comparator;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 import static greencity.constant.AppConstant.LANGUAGE_CODE_UA;
 import static greencity.constant.AppConstant.THREE_OR_MORE_USERS;
 import static greencity.constant.AppConstant.TIMES_PLACEHOLDER;
@@ -61,6 +68,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private static final String TOPIC = "/topic/";
     private static final String NOTIFICATION = "/notification";
     private final HabitAssignRepo habitAssignRepo;
+    private final RestClient restClient;
+
+    private final Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator
+        .comparing(NotificationDto::getTime).reversed();
 
     /**
      * {@inheritDoc}
@@ -68,10 +79,73 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
         String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed) {
-        Long userId = userService.findByEmail(principal.getName()).getId();
-        Page<Notification> notifications =
-            notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
-        return buildPageableAdvancedDto(notifications, language);
+        return switch (projectName) {
+            case null -> {
+                long notificationSourcesCount = 2L;
+
+                PageableAdvancedDto<NotificationDto> notificationsFromGreenCity;
+                PageableAdvancedDto<NotificationDto> notificationsFromUbs;
+                try (ExecutorService executorService = Executors.newFixedThreadPool((int) notificationSourcesCount)) {
+                    CompletableFuture<PageableAdvancedDto<NotificationDto>> notificationsFromGreenCityFuture =
+                        getNotificationsForUserFromGreenCity(
+                            executorService,
+                            page,
+                            principal,
+                            language,
+                            projectName,
+                            notificationTypes,
+                            viewed);
+                    CompletableFuture<PageableAdvancedDto<NotificationDto>> notificationsFromUbsFuture =
+                        getNotificationsForUserFromUbs(
+                            executorService,
+                            principal,
+                            page);
+
+                    notificationsFromGreenCity = notificationsFromGreenCityFuture.join();
+                    notificationsFromUbs = notificationsFromUbsFuture.join();
+                }
+
+                long mergedPageSize = notificationSourcesCount * page.getPageSize();
+
+                List<NotificationDto> mergedNotifications = Stream
+                    .concat(
+                        notificationsFromGreenCity.getPage().stream(),
+                        notificationsFromUbs.getPage().stream())
+                    .sorted(sortByRecentNotificationsComparator)
+                    .limit(mergedPageSize)
+                    .toList();
+
+                long totalElements =
+                    notificationsFromGreenCity.getTotalElements() + notificationsFromUbs.getTotalElements();
+
+                int totalPages = (int) Math.ceilDiv(totalElements, page.getPageSize());
+                int pageNumber = page.getPageNumber();
+                boolean hasPrevious = pageNumber > 0;
+                boolean hasNext = (pageNumber + 1) < totalPages;
+                boolean isFirst = pageNumber == 0;
+                boolean isLast = !hasNext;
+
+                yield PageableAdvancedDto.<NotificationDto>builder()
+                    .page(mergedNotifications)
+                    .totalElements(totalElements)
+                    .currentPage(pageNumber)
+                    .totalPages(totalPages)
+                    .number(pageNumber)
+                    .hasPrevious(hasPrevious)
+                    .hasNext(hasNext)
+                    .first(isFirst)
+                    .last(isLast)
+                    .build();
+            }
+            case GREENCITY -> getNotificationsForUserFromGreenCity(
+                page,
+                principal,
+                language,
+                projectName,
+                notificationTypes,
+                viewed);
+            case PICKUP -> getNotificationsForUserFromUbs(principal, page);
+        };
     }
 
     /**
@@ -445,6 +519,55 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         notificationService.sendEmailNotification(
             modelMapper.map(notificationRepo.save(notification), EmailNotificationDto.class));
         sendNotification(notification.getTargetUser().getId());
+    }
+
+    private CompletableFuture<PageableAdvancedDto<NotificationDto>> getNotificationsForUserFromGreenCity(
+        ExecutorService executorService, Pageable page,
+        Principal principal, String language, ProjectName projectName, List<NotificationType> notificationTypes,
+        Boolean viewed) {
+        return CompletableFuture.supplyAsync(
+            () -> getNotificationsForUserFromGreenCity(page, principal, language, projectName, notificationTypes,
+                viewed),
+            executorService);
+    }
+
+    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable page,
+        Principal principal, String language, ProjectName projectName, List<NotificationType> notificationTypes,
+        Boolean viewed) {
+        UserVO user = userService.findByEmail(principal.getName());
+        Long userId = user.getId();
+
+        Page<Notification> notificationsFromGreenCityPage =
+            notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
+
+        return buildPageableAdvancedDto(notificationsFromGreenCityPage, language);
+    }
+
+    private CompletableFuture<PageableAdvancedDto<NotificationDto>> getNotificationsForUserFromUbs(
+        ExecutorService executorService, Principal principal, Pageable page) {
+        return CompletableFuture.supplyAsync(
+            () -> getNotificationsForUserFromUbs(principal, page),
+            executorService);
+    }
+
+    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromUbs(Principal principal, Pageable page) {
+        PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs =
+            restClient.findAllNotificationsForUserFromUbs(principal, page);
+        List<NotificationDto> mappedNotificationsFromUbsList = notificationsFromUbs.getPage()
+            .stream()
+            .map(ubsNotificationDto -> modelMapper.map(ubsNotificationDto, NotificationDto.class)).toList();
+
+        return PageableAdvancedDto.<NotificationDto>builder()
+            .page(mappedNotificationsFromUbsList)
+            .totalElements(notificationsFromUbs.getTotalElements())
+            .currentPage(notificationsFromUbs.getCurrentPage())
+            .totalPages(notificationsFromUbs.getTotalPages())
+            .number(notificationsFromUbs.getNumber())
+            .hasPrevious(notificationsFromUbs.isHasPrevious())
+            .hasNext(notificationsFromUbs.isHasNext())
+            .first(notificationsFromUbs.isFirst())
+            .last(notificationsFromUbs.isLast())
+            .build();
     }
 
     private Notification buildNotification(NotificationType notificationType, UserVO targetUserVO, Long targetId,

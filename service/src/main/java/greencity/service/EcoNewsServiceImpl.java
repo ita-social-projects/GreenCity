@@ -6,15 +6,16 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.EcoNewContentSourceDto;
 import greencity.dto.econews.EcoNewsGenericDto;
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
@@ -428,28 +429,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public void like(UserVO userVO, Long id) {
-        EcoNews ecoNews = findEcoNewsById(id);
-        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
-        if (isAuthor) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        if (removeLikeIfExists(ecoNews, userVO, ecoNews.getAuthor())) {
-            return;
-        }
-
-        removeDislikeIfExists(ecoNews, userVO);
-
-        ecoNews.getUsersLikedNews().add(modelMapper.map(userVO, User.class));
-        achievementCalculation.calculateAchievement(userVO,
-            AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
-
-        boolean isLiked = ecoNews.getUsersLikedNews().stream()
-            .anyMatch(u -> u.getId().equals(userVO.getId()));
-
-        sendNotification(ecoNews, userVO, !isLiked);
-        ecoNewsRepo.save(modelMapper.map(ecoNews, EcoNews.class));
+        likeHelper(userVO, id);
     }
 
     private void sendNotification(EcoNews ecoNews, UserVO actionUser, boolean isLike) {
@@ -478,23 +458,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public void dislike(UserVO userVO, Long id) {
-        EcoNews ecoNews = findEcoNewsById(id);
-        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
-
-        if (isAuthor) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
-        }
-
-        removeLikeIfExists(ecoNews, userVO, ecoNews.getAuthor());
-
-        if (removeDislikeIfExists(ecoNews, userVO)) {
-            ecoNewsRepo.save(ecoNews);
-            return;
-        }
-
-        ecoNews.getUsersDislikedNews().add(modelMapper.map(userVO, User.class));
-
-        ecoNewsRepo.save(ecoNews);
+        dislikeHelper(userVO, id);
     }
 
     /**
@@ -614,7 +578,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .imagePath(ecoNews.getImagePath())
             .author(ecoNewsAuthorDto)
             .tagsEn(tags.stream().filter(tag -> tag.matches("^([A-Za-z-])+$")).collect(Collectors.toList()))
-            .tagsUa(tags.stream().filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$")).collect(Collectors.toList()))
+            .tagsUk(tags.stream().filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$")).collect(Collectors.toList()))
             .shortInfo(ecoNews.getShortInfo())
             .content(ecoNews.getText())
             .title(ecoNews.getTitle())
@@ -642,8 +606,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .imagePath(ecoNews.getImagePath())
             .author(ecoNewsAuthorDto)
             .likes(ecoNews.getUsersLikedNews().size())
-            .tags(list.stream().filter(tag -> tag.matches("^([A-Za-z-])+$")).collect(Collectors.toList()))
-            .tagsUa(list.stream().filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$")).collect(Collectors.toList()))
+            .tagsEn(list.stream().filter(tag -> tag.matches("^([A-Za-z-])+$")).collect(Collectors.toList()))
+            .tagsUk(list.stream().filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$")).collect(Collectors.toList()))
             .shortInfo(ecoNews.getShortInfo())
             .content(ecoNews.getText())
             .title(ecoNews.getTitle())
@@ -816,5 +780,84 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * This helper method provides liking logic, similar both to like and likeV2.
+     *
+     * @param userVO    - current user
+     * @param ecoNewsId - id of a comment to like
+     */
+    private EcoNewsDto likeHelper(UserVO userVO, Long ecoNewsId) {
+        EcoNews ecoNews = findEcoNewsById(ecoNewsId);
+        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        if (removeLikeIfExists(ecoNews, userVO, ecoNews.getAuthor())) {
+            return modelMapper.map(ecoNews, EcoNewsDto.class);
+        }
+
+        removeDislikeIfExists(ecoNews, userVO);
+
+        ecoNews.getUsersLikedNews().add(modelMapper.map(userVO, User.class));
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
+
+        boolean isLiked = ecoNews.getUsersLikedNews().stream()
+            .noneMatch(u -> u.getId().equals(userVO.getId()));
+
+        sendNotification(ecoNews, userVO, isLiked);
+        return modelMapper.map(ecoNews, EcoNewsDto.class);
+    }
+
+    /**
+     * This helper method provides liking logic, similar both to like and likeV2.
+     *
+     * @param userVO    - current user
+     * @param ecoNewsId - id of a comment to like
+     */
+    private EcoNewsDto dislikeHelper(UserVO userVO, Long ecoNewsId) {
+        EcoNews ecoNews = findEcoNewsById(ecoNewsId);
+        boolean isAuthor = ecoNews.getAuthor().getId().equals(userVO.getId());
+
+        if (isAuthor) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        removeLikeIfExists(ecoNews, userVO, ecoNews.getAuthor());
+
+        if (removeDislikeIfExists(ecoNews, userVO)) {
+            return modelMapper.map(ecoNews, EcoNewsDto.class);
+        }
+        ecoNews.getUsersDislikedNews().add(modelMapper.map(userVO, User.class));
+        return modelMapper.map(ecoNewsRepo.save(ecoNews), EcoNewsDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EcoNewsDto likeV2(UserVO user, Long id) {
+        return likeHelper(user, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EcoNewsDto dislikeV2(UserVO user, Long id) {
+        return dislikeHelper(user, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EcoNewsGroupedTagsDto findDtoById(Long id) {
+        EcoNews ecoNews = findEcoNewsById(id);
+        return modelMapper.map(ecoNews, EcoNewsGroupedTagsDto.class);
     }
 }

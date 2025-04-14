@@ -8,6 +8,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
-import jakarta.validation.Valid;
 import java.util.List;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -45,15 +45,24 @@ public class ManagementAchievementController {
      * @author Orest Mamchuk
      */
     @GetMapping
-    public String getAllAchievement(@RequestParam(required = false, name = "query") String query, Pageable pageable,
+    public String getAllAchievement(
+        @RequestParam(required = false, name = "query") String query,
+        @RequestParam(defaultValue = "id") String sortBy,
+        @RequestParam(defaultValue = "asc") String sortDir,
+        Pageable pageable,
         Model model) {
-        PageableAdvancedDto<AchievementVO> allAchievements = query == null || query.isEmpty()
-            ? achievementService.findAll(pageable)
-            : achievementService.searchAchievementBy(pageable, query);
+        Pageable actualPageable = achievementService.preparePageable(pageable, sortBy, sortDir);
+        PageableAdvancedDto<AchievementVO> allAchievements = (query == null || query.isEmpty())
+            ? achievementService.findAll(actualPageable)
+            : achievementService.searchAchievementBy(actualPageable, query);
+
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAllForManagement());
         model.addAttribute("languages", languageService.getAllLanguages());
         model.addAttribute("query", query);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+
         return "core/management_achievement";
     }
 

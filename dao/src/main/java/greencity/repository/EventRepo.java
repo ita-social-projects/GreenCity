@@ -108,9 +108,9 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
         SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
                tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
                e.title_image, e.creation_date, start_date, finish_date, online_link,
-               latitude, longitude, street_en, street_ua, house_number, city_en, city_ua,
-               region_en, region_ua, country_en, country_ua, formatted_address_en,
-               formatted_address_ua, e.type,
+               latitude, longitude, street_en, street_uk, house_number, city_en, city_uk,
+               region_en, region_uk, country_en, country_uk, formatted_address_en,
+               formatted_address_uk, e.type,
                (CURRENT_DATE <= edl_max.latest_finish_date) AS isRelevant,
                COUNT(DISTINCT eul) AS likes,
                COUNT(DISTINCT eud) AS dislikes,
@@ -156,9 +156,9 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
                    tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
                    e.title_image, e.creation_date, start_date, finish_date, online_link,
-                   latitude, longitude, street_en, street_ua, house_number, city_en, city_ua,
-                   region_en, region_ua, country_en, country_ua, formatted_address_en,
-                   formatted_address_ua, e.type,
+                   latitude, longitude, street_en, street_uk, house_number, city_en, city_uk,
+                   region_en, region_uk, country_en, country_uk, formatted_address_en,
+                   formatted_address_uk, e.type,
                    (CURRENT_DATE <= edl_max.latest_finish_date) AS isRelevant,
                    COUNT(DISTINCT eul)                               AS likes,
                    COUNT(DISTINCT eud)                               AS dislikes,
@@ -234,4 +234,23 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             WHERE e.id = :eventId
         """)
     Page<UserProfilePictureDto> getUsersDislikedEventProfilePicturesPage(Long eventId, Pageable pageable);
+
+    /**
+     * Retrieves all events where the user is either the organizer or an attender.
+     *
+     * @param userId The ID of the user to find events for.
+     * @return A list of events where the user is either the organizer or an
+     *         attender.
+     */
+    @Query("SELECT DISTINCT e FROM Event e LEFT JOIN e.attenders a WHERE e.organizer.id = :userId OR a.id = :userId")
+    List<Event> findAllUserEventsByUserId(Long userId);
+
+    /**
+     * Retrieves all events attended by the specified user.
+     *
+     * @param userId The ID of the user whose attended events are to be retrieved.
+     * @return A list of events attended by the user.
+     */
+    @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
+    List<Event> findAllAttendedEventsByUserId(Long userId);
 }
