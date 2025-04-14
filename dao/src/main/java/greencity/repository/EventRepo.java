@@ -278,7 +278,6 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                     FROM events_dates_locations
                     WHERE NOT (city_en = ?1 OR city_uk = ?1)
                     GROUP BY city_en, city_uk
-                    ORDER BY COUNT(*) DESC
                     LIMIT 3
                 )
             ) AS combined
