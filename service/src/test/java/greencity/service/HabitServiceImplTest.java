@@ -660,7 +660,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN), "en");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN),
+            Optional.of(languageEn).get(), habit);
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
@@ -733,7 +734,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN), "en");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN),
+            Optional.of(languageEn).get(), habit);
         verify(habitTranslationMapper, times(0)).mapAllToList(List.of(habitTranslationDtoEN), "ua");
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
@@ -806,7 +808,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN), "en");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN),
+            Optional.of(languageEn).get(), habit);
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
@@ -880,7 +883,8 @@ class HabitServiceImplTest {
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN), "en");
+        verify(habitTranslationMapper, times(1)).mapAllToList(List.of(habitTranslationDtoEN),
+            Optional.of(languageEn).get(), habit);
         verify(customToDoListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
         verify(customToDoListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);

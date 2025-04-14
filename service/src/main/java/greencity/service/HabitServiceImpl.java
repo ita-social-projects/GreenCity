@@ -15,12 +15,13 @@ import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.Tag;
+import greencity.entity.HabitAssign;
+import greencity.entity.CustomToDoListItem;
+import greencity.entity.Language;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
@@ -509,14 +510,12 @@ public class HabitServiceImpl implements HabitService {
                 }
                 return true;
             })
-            .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, dto.getLanguageCode()))
+            .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(habitDto,
+                languageRepo.findByCode(dto.getLanguageCode())
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.SELECT_CORRECT_LANGUAGE)),
+                habit))
             .flatMap(Collection::stream).toList();
         habit.setHabitTranslations(habitTranslations);
-    }
-
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,
-        String language) {
-        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language);
     }
 
     private void setTagsIdsToHabit(CustomHabitDtoRequest habitDto, Habit habit) {
@@ -787,5 +786,11 @@ public class HabitServiceImpl implements HabitService {
                 .build())
             .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, dtoList.size());
+    }
+
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(
+        CustomHabitDtoRequest habitDto,
+        Language language, Habit habit) {
+        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language, habit);
     }
 }
