@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -87,6 +88,7 @@ public class HabitServiceImpl implements HabitService {
     private final CustomToDoListItemRepo customToDoListItemRepo;
     private final LanguageRepo languageRepo;
     private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
     private final TagsRepo tagsRepo;
     private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
@@ -518,14 +520,22 @@ public class HabitServiceImpl implements HabitService {
             List<Long> friendsIds = addCustomHabitDtoRequest.getFriendsToInvite().stream()
                 .map(UserFriendDto::getId)
                 .collect(Collectors.toList());
+            String userEmail = user.getEmail();
+            UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
+                    .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
                 modelMapper.map(user, UserVO.class), friendsIds, habit.getId(),
-                Locale.of(user.getLanguage().getCode()));
+                Locale.of(userVO.getLanguage().getCode()));
         }
     }
 
     private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {
-        if (user.getRole() != Role.ROLE_ADMIN && user.getRole() != Role.ROLE_MODERATOR
+        String userEmail = user.getEmail();
+        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
+                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+
+        if (userVO.getRole() != Role.ROLE_ADMIN && userVO.getRole() != Role.ROLE_MODERATOR
             && !user.getId().equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
