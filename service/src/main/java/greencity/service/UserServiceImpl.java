@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -134,12 +135,9 @@ public class UserServiceImpl implements UserService {
     @Deprecated
     @Override
     public UserRoleDto updateRole(Long id, Role role, String email) {
-        checkUpdatableUser(id, email);
-        User user = userRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        user.setRole(role);
-        userRepo.save(user);
-        return modelMapper.map(user, UserRoleDto.class);
+        Map<String, String> body = Map.of("role", role.name());
+        return userRemoteClient.updateUserRole(id, body)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
     /**

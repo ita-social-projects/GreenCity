@@ -2,14 +2,16 @@ package greencity.client;
 
 import greencity.client.config.UserRemoteClientFallbackFactory;
 import greencity.client.config.UserRemoteClientInterceptor;
+import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import java.util.Map;
 import java.util.Optional;
 
 @FeignClient(
@@ -33,5 +35,11 @@ public interface UserRemoteClient {
 
     @PatchMapping("/user/status")
     Optional<UserStatusDto> updateUserStatus(@RequestBody UserStatusDto userStatusDto);
+
+    @PatchMapping("/user/{id}/role")
+    Optional<UserRoleDto> updateUserRole(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+    );
 
 }
