@@ -1,8 +1,5 @@
 package greencity.service;
 
-import greencity.dto.grammar.GrammarCheckResult;
-import greencity.dto.grammar.GrammarError;
-import java.util.ArrayList;
 import java.util.Objects;
 import org.springframework.cache.Cache;
 import static greencity.constant.GrammarCheckConstants.*;
@@ -82,29 +79,17 @@ public class GrammarChecker implements GrammarCheckerService {
      * using the appropriate language tool, applies the necessary corrections, caches the result, and returns it.</p>
      */
     @Cacheable(value = "languageCache", key = "#text")
-    public GrammarCheckResult checkGrammar(String text) throws IOException {
+    @Override
+    public String checkGrammar(String text) throws IOException {
         try {
             String detectedLanguage = detectLanguage(text);
             JLanguageTool languageTool = getLanguageTool(detectedLanguage);
 
             List<RuleMatch> matches = languageTool.check(text);
-            List<GrammarError> errors = new ArrayList<>();
-            String correctedText = text;
-
-            if (!matches.isEmpty()) {
-                correctedText = applyCorrections(text, matches);
-
-                for (RuleMatch match : matches) {
-                    String wrong = text.substring(match.getFromPos(), match.getToPos());
-                    String suggestion = match.getSuggestedReplacements().isEmpty()
-                        ? EMPTY_STRING
-                        : match.getSuggestedReplacements().getFirst();
-                    errors.add(new GrammarError(wrong, suggestion, match.getMessage(), match.getFromPos()));
-                }
+            if (matches.isEmpty()) {
+                return text;
             }
-
-            return new GrammarCheckResult(errors, (long) text.length(), correctedText);
-
+            return applyCorrections(text, matches);
         } catch (Exception e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECKING_MESSAGE, e);
         }
