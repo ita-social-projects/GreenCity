@@ -6,6 +6,7 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import java.util.Optional;
         configuration = UserRemoteClientInterceptor.class,
         fallbackFactory = UserRemoteClientFallbackFactory.class
 )
+@Component
 public interface UserRemoteClient {
 
     String EMAIL = "email";
