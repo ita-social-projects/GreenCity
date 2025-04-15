@@ -5,12 +5,11 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import java.util.stream.Collectors;
-
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,10 +17,14 @@ import org.springframework.stereotype.Component;
  * {@link AddEcoNewsDtoResponse}.
  */
 @Component
-@RequiredArgsConstructor
 public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddEcoNewsDtoResponse> {
 
     private final ModelMapper modelMapper;
+
+    @Lazy
+    public AddEcoNewsDtoResponseMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * Method for converting {@link EcoNews} into {@link AddEcoNewsDtoResponse}.

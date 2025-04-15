@@ -6,9 +6,9 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.CommentImages;
 import greencity.entity.User;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,10 +16,14 @@ import org.springframework.stereotype.Component;
  * {@link CommentDto}.
  */
 @Component
-@RequiredArgsConstructor
 public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
 
     private final ModelMapper modelMapper;
+
+    @Lazy
+    public CommentDtoMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * Method for converting {@link Comment} into {@link CommentDto}.

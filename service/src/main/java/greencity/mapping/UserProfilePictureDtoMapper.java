@@ -3,16 +3,20 @@ package greencity.mapping;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class UserProfilePictureDtoMapper extends AbstractConverter<User, UserProfilePictureDto> {
 
     private final ModelMapper modelMapper;
+
+    @Lazy
+    public UserProfilePictureDtoMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     protected UserProfilePictureDto convert(User user) {

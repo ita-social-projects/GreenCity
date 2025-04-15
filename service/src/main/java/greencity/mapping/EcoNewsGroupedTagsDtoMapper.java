@@ -26,7 +26,7 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EcoNewsGroupedTagsDtoMapper(@Lazy CommentService commentService, ModelMapper modelMapper) {
+    public EcoNewsGroupedTagsDtoMapper(@Lazy CommentService commentService, @Lazy ModelMapper modelMapper) {
         this.commentService = commentService;
         this.modelMapper = modelMapper;
     }

@@ -4,9 +4,9 @@ import greencity.dto.comment.CommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.User;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
@@ -16,10 +16,14 @@ import java.util.stream.Collectors;
  */
 
 @Component
-@RequiredArgsConstructor
 public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
 
     private final ModelMapper modelMapper;
+
+    @Lazy
+    public CommentVOMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public CommentVO convert(Comment comment) {

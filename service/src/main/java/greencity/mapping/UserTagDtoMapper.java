@@ -3,16 +3,20 @@ package greencity.mapping;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class UserTagDtoMapper extends AbstractConverter<User, UserTagDto> {
 
     private final ModelMapper modelMapper;
+
+    @Lazy
+    public UserTagDtoMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     protected UserTagDto convert(User user) {

@@ -6,7 +6,6 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import java.util.stream.Collectors;
-
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
@@ -26,7 +25,7 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EcoNewsDtoMapper(@Lazy CommentService commentService, ModelMapper modelMapper) {
+    public EcoNewsDtoMapper(@Lazy CommentService commentService, @Lazy ModelMapper modelMapper) {
         this.commentService = commentService;
         this.modelMapper = modelMapper;
     }

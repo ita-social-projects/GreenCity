@@ -9,9 +9,9 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
@@ -21,10 +21,14 @@ import java.util.Objects;
  * {@link HabitAssignPreviewDto}.
  */
 @Component
-@RequiredArgsConstructor
 public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, HabitAssignPreviewDto> {
 
     private final ModelMapper modelMapper;
+
+    @Lazy
+    public HabitAssignPreviewDtoMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * Method convert {@link HabitAssign} to {@link HabitAssignPreviewDto}.

@@ -5,17 +5,21 @@ import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class UserVOAchievementMapper extends AbstractConverter<User, UserVOAchievement> {
 
     private final ModelMapper modelMapper;
+
+    @Lazy
+    public UserVOAchievementMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     protected UserVOAchievement convert(User user) {

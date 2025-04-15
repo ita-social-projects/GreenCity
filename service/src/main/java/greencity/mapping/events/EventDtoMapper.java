@@ -32,7 +32,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EventDtoMapper(@Lazy CommentService commentService, ModelMapper modelMapper) {
+    public EventDtoMapper(@Lazy CommentService commentService, @Lazy ModelMapper modelMapper) {
         this.commentService = commentService;
         this.modelMapper = modelMapper;
     }

@@ -34,7 +34,7 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EventResponseDtoMapper(@Lazy CommentService commentService, ModelMapper modelMapper) {
+    public EventResponseDtoMapper(@Lazy CommentService commentService, @Lazy ModelMapper modelMapper) {
         this.commentService = commentService;
         this.modelMapper = modelMapper;
     }
