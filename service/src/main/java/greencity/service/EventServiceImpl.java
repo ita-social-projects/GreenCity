@@ -1163,7 +1163,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO) {
-        String userLocale = userVO.getLanguageVO().getCode();
+        String userLocale = userVO.getLanguage().getCode();
         String userCity = AppConstant.EMPTY_STRING;
         UserLocationDto locationDto = userVO.getUserLocationDto();
         if (locationDto != null) {
