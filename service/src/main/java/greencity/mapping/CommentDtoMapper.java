@@ -2,8 +2,11 @@ package greencity.mapping;
 
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.CommentImages;
+import greencity.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -13,7 +16,11 @@ import org.springframework.stereotype.Component;
  * {@link CommentDto}.
  */
 @Component
+@RequiredArgsConstructor
 public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
+
+    private final ModelMapper modelMapper;
+
     /**
      * Method for converting {@link Comment} into {@link CommentDto}.
      *
@@ -38,11 +45,14 @@ public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
         commentDto.setCurrentUserDisliked(comment.isCurrentUserDisliked());
         commentDto.setLikes(comment.getUsersLiked().size());
         commentDto.setDislikes(comment.getUsersDisliked().size());
+        User commentUser = comment.getUser();
+        UserVO commentUserVO = modelMapper.map(commentUser, UserVO.class);
+
         commentDto.setAuthor(
             CommentAuthorDto.builder()
-                .id(comment.getUser().getId())
-                .name(comment.getUser().getName())
-                .profilePicturePath(comment.getUser().getProfilePicturePath()).build());
+                .id(commentUser.getId())
+                .name(commentUserVO.getName())
+                .profilePicturePath(commentUserVO.getProfilePicturePath()).build());
         return commentDto;
     }
 }
