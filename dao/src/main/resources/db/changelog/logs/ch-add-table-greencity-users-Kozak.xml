@@ -8,12 +8,16 @@
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="email" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="event_organizer_rating" type="DOUBLE" />
         </createTable>
     </changeSet>
     <changeSet id="fill-greencity-user-table" author="Maksym Kozak">
         <sql>
             INSERT INTO greencity_users
-            SELECT id, email, eventOrganizerRating FROM users;
+            SELECT id, email, event_organizer_rating FROM users;
         </sql>
     </changeSet>
 </databaseChangeLog>

@@ -264,5 +264,5 @@
     <include file="db/changelog/logs/ch-insert-into-empolyee-authority-Haliara.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-Bulhakova.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-positions-Bulhakova.xml"/>
-
+    <include file="db/changelog/logs/ch-add-table-greencity-users-Kozak.xml"/>
 </databaseChangeLog>
