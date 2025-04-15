@@ -446,10 +446,15 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     /**
      * Group HabitAssign records by status and count occurrences.
      */
-    @Query("""
+    /*@Query("""
             SELECT new greencity.dto.habitstatistic.HabitStatusCount(ha.status, COUNT(ha))
             FROM HabitAssign ha
             WHERE ha.user.userStatus IN (greencity.enums.UserStatus.ACTIVATED)
+            GROUP BY ha.status
+        """)*/
+    @Query("""
+            SELECT new greencity.dto.habitstatistic.HabitStatusCount(ha.status, COUNT(ha))
+            FROM HabitAssign ha
             GROUP BY ha.status
         """)
     List<HabitStatusCount> countHabitAssignsByStatus();

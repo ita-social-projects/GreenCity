@@ -139,7 +139,7 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
      *
      * @return a page of EcoNews author statistics.
      */
-    @Query(value = """
+    /*@Query(value = """
         SELECT new greencity.dto.econews.EcoNewsAuthorStatisticDto(
             ROW_NUMBER() OVER (ORDER BY COUNT(e) DESC),
             u.id,
@@ -149,6 +149,17 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
         FROM EcoNews e
         JOIN e.author u
         GROUP BY u.id, u.name
+        """)*/
+    @Query(value = """
+        SELECT new greencity.dto.econews.EcoNewsAuthorStatisticDto(
+            ROW_NUMBER() OVER (ORDER BY COUNT(e) DESC),
+            u.id,
+            u.email,
+            COUNT(e.id)
+        )
+        FROM EcoNews e
+        JOIN e.author u
+        GROUP BY u.id, u.email
         """)
     Page<EcoNewsAuthorStatisticDto> getEcoNewsAuthorStatistic(Pageable pageable);
 
