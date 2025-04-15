@@ -5,6 +5,7 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
@@ -28,10 +29,12 @@ import java.util.stream.Collectors;
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
     private final CommentService commentService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public EventDtoMapper(@Lazy CommentService commentService) {
+    public EventDtoMapper(@Lazy CommentService commentService, ModelMapper modelMapper) {
         this.commentService = commentService;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -53,10 +56,12 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setIsRelevant(EventUtils.isRelevant(event.getDates()));
         eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
+        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
+
         eventDto.setOrganizer(
             EventAuthorDto.builder()
                 .id(organizer.getId())
-                .name(organizer.getName())
+                .name(organizerVO.getName())
                 .email(organizer.getEmail())
                 .organizerRating(organizer.getEventOrganizerRating())
                 .build());
