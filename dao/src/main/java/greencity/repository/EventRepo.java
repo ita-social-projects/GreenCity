@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventCityDtoProjection;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.User;
 import greencity.entity.event.Address;
@@ -253,4 +254,33 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      */
     @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
     List<Event> findAllAttendedEventsByUserId(Long userId);
+
+    /**
+     * Retrieves cities relevant to the user, such as the user's own city (if
+     * available) and the top three cities with the highest number of events.
+     *
+     * @param userCity {@link String} - represents user's city or empty string if
+     *                 user does not have one.
+     * @author Andrii Danylenko
+     */
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM (
+                (
+                    SELECT city_en AS cityNameEn, city_uk AS cityNameUk, COUNT(*) AS amountOfEvents, 0 as priority
+                    FROM events_dates_locations
+                    WHERE city_en = ?1 OR city_uk = ?1
+                    GROUP BY city_en, city_uk
+                    LIMIT 1
+                )
+                UNION
+                (
+                    SELECT city_en AS cityNameEn, city_uk AS cityNameUk, COUNT(*) AS amountOfEvents, 1 as priority
+                    FROM events_dates_locations
+                    WHERE NOT (city_en = ?1 OR city_uk = ?1)
+                    GROUP BY city_en, city_uk
+                    LIMIT 3
+                )
+            ) AS combined
+            ORDER BY priority, amountOfEvents DESC""")
+    List<EventCityDtoProjection> findRelevantCitiesForUser(String userCity);
 }
