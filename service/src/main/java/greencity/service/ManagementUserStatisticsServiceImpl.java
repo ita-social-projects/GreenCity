@@ -1,10 +1,13 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import lombok.AllArgsConstructor;
@@ -17,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ManagementUserStatisticsServiceImpl implements ManagementUserStatisticsService {
     private UserRepo userRepo;
+    private UserRemoteClient userRemoteClient;
 
     @Override
     public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate,
@@ -34,7 +38,8 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserRoleStatisticDto> getUserRolesDistribution() {
-        return userRepo.getUserRolesDistribution();
+        return userRemoteClient.getUserRolesDistribution()
+                .orElseThrow(() -> new NotFoundException());
     }
 
     /**
@@ -42,7 +47,8 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserStatusStatisticDto> getUserStatusesDistribution() {
-        return userRepo.getUserStatusesDistribution();
+        return userRemoteClient.getUserStatusesDistribution()
+                .orElseThrow(() -> new NotFoundException());
     }
 
     /**
@@ -50,12 +56,8 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserLocationStatisticDto> getUserLocationsDistribution(String groupBy) {
-        return switch (groupBy) {
-            case "city" -> userRepo.getUserLocationsDistributionByCity();
-            case "region" -> userRepo.getUserLocationsDistributionByRegion();
-            case "country" -> userRepo.getUserLocationsDistributionByCountry();
-            default -> userRepo.getUserLocationsDistributionByCity();
-        };
+        return userRemoteClient.getUserLocationsDistribution(groupBy)
+                .orElseThrow(() -> new NotFoundException());
     }
 
     /**
@@ -63,6 +65,7 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution() {
-        return userRepo.getUserEmailPreferencesDistribution();
+        return userRemoteClient.getUserEmailPreferencesDistribution()
+                .orElseThrow(() -> new NotFoundException());
     }
 }

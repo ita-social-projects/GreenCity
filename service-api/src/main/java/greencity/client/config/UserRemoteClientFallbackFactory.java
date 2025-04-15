@@ -3,14 +3,16 @@ package greencity.client.config;
 import feign.hystrix.FallbackFactory;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
+import greencity.dto.user.UserEmailPreferencesStatisticDto;
+import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,6 +36,30 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
 
             @Override
             public Optional<UserRoleDto> updateUserRole(Long id, Map<String, String> body) {
+                //TODO: log
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<List<UserRoleStatisticDto>> getUserRolesDistribution() {
+                //TODO: log
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<List<UserStatusStatisticDto>> getUserStatusesDistribution() {
+                //TODO: log
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<List<UserLocationStatisticDto>> getUserLocationsDistribution(String groupBy) {
+                //TODO: log
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<List<UserEmailPreferencesStatisticDto>> getUserEmailPreferencesDistribution() {
                 //TODO: log
                 return Optional.empty();
             }
