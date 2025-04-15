@@ -4,8 +4,10 @@ import greencity.constant.AppConstant;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
 import org.modelmapper.AbstractConverter;
@@ -21,10 +23,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoNewsGroupedTagsDto> {
     private final CommentService commentService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public EcoNewsGroupedTagsDtoMapper(@Lazy CommentService commentService) {
+    public EcoNewsGroupedTagsDtoMapper(@Lazy CommentService commentService, ModelMapper modelMapper) {
         this.commentService = commentService;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -38,10 +42,13 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
         if (ecoNews == null) {
             throw new NullPointerException("EcoNews cannot be null");
         }
+        User author = ecoNews.getAuthor();
+        UserVO authorVO = modelMapper.map(author, UserVO.class);
+
         return EcoNewsGroupedTagsDto.builder()
             .author(EcoNewsAuthorDto.builder()
-                .id(ecoNews.getAuthor().getId())
-                .name(ecoNews.getAuthor().getName())
+                .id(author.getId())
+                .name(authorVO.getName())
                 .build())
             .id(ecoNews.getId())
             .content(ecoNews.getText())
