@@ -10,7 +10,6 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.entity.UserLocation;
 import greencity.enums.NotificationType;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
