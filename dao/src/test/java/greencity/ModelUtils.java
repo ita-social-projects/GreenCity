@@ -5,11 +5,14 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUkEnDto;
+import greencity.entity.Notification;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.*;
 import java.util.List;
@@ -98,5 +101,43 @@ public class ModelUtils {
                 .description("123")
                 .type(EventType.ONLINE)
                 .build());
+    }
+
+    public static List<Notification> getNotificationsForUser(User user) {
+        Notification notification1 = new Notification();
+        notification1.setTargetUser(user);
+        notification1.setCustomMessage("First Notification");
+
+        Notification notification2 = new Notification();
+        notification2.setTargetUser(user);
+        notification2.setCustomMessage("Second Notification");
+
+        return List.of(notification1, notification2);
+    }
+
+    public static User getUserWithToken() {
+        VerifyEmail verifyEmail = new VerifyEmail();
+        verifyEmail.setToken("some-token");
+        verifyEmail.setId(1L);
+
+        User user = User.builder()
+                .id(7L)
+                .email("sasha@gmail.com")
+                .name("Sasha")
+                .role(Role.ROLE_USER)
+                .userStatus(UserStatus.ACTIVATED)
+                .lastActivityTime(LocalDateTime.now())
+                .verifyEmail(verifyEmail)
+                .dateOfRegistration(LocalDateTime.now())
+                .refreshTokenKey("refresh-token-key")
+                .build();
+
+        verifyEmail.setUser(user);
+
+        return user;
+    }
+
+    public static Pageable getPageable() {
+        return PageRequest.of(0, 10);
     }
 }
