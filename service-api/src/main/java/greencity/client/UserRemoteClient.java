@@ -62,4 +62,7 @@ public interface UserRemoteClient {
 
     @GetMapping("/user/email-preferences-distribution")
     Optional<List<UserEmailPreferencesStatisticDto>> getUserEmailPreferencesDistribution();
+
+    @GetMapping("/user/count-active-users")
+    Optional<Long> countActiveUsers();
 }

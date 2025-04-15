@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
@@ -51,6 +52,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final DateService dateService;
     private final ModelMapper modelMapper;
     private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -200,7 +202,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateUserInterest() {
-        Long totalActiveUsers = userRepo.countActiveUsers();
+        Long totalActiveUsers = userRemoteClient.countActiveUsers().orElseThrow();
         List<Long> creators = habitRepo.countActiveHabitCreators();
         List<Long> followers = habitRepo.countActiveHabitFollowers();
         Set<Long> participatingUsers = new HashSet<>(followers);

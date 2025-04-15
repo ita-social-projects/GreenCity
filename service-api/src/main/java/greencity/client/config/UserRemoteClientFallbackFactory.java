@@ -63,6 +63,12 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
                 //TODO: log
                 return Optional.empty();
             }
+
+            @Override
+            public Optional<Long> countActiveUsers() {
+                //TODO: log
+                return Optional.empty();
+            }
         };
     }
 }
