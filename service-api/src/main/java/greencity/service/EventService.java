@@ -5,6 +5,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventCityDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
@@ -378,4 +379,15 @@ public interface EventService {
      *         user, or an empty list if none are found.
      */
     List<EventDto> getAllEventsAttendedByUser(Long userId);
+
+    /**
+     * Returns a list of cities relevant to the user, including the user's city (if
+     * available) and the top three cities with the most events.
+     *
+     * @param userVO {@link UserVO} - represents the current user.
+     * @return {@link List} of {@link EventCityDto} containing cities sorted in
+     *         descending order based on the number of events.
+     * @author Andrii Danylenko
+     */
+    List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO);
 }
