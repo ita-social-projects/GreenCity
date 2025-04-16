@@ -23,7 +23,6 @@ public class OpenAIConstants {
     public static final String ROLE_SYSTEM = "system";
     public static final String ROLE_USER = "user";
 
-
     public static final String ERROR_JSON_VALIDATION_FAILURE = "An unexpected error occurred while validating the structure of the JSON response.";
     public static final String ERROR_GRAMMAR_CHECK_FAILURE = "An error occurred while checking grammar for the generated EcoNews content.";
     public static final String ERROR_API_KEY_MISSING = "OpenAI API key is missing!";
@@ -67,6 +66,9 @@ public class OpenAIConstants {
     public static final String QUOTES_REPLACEMENT = "\"";
     public static final String OPENING_CURLY_BRACE = "{";
     public static final String CLOSING_CURLY_BRACE = "}";
+    public static final String REGEX_MD_HEADERS = "(^|\\s)#{1,6}(\\s|$)";
+    public static final String REGEX_ASTERISKS = "\\*";
+    public static final String REGEX_MARKDOWN_ASTERISKS = "\\*+";
 
     public static final String AI_USER_NAME = "AI Generated";
     public static final String AI_USER_EMAIL = "ai.generated@example.com";
