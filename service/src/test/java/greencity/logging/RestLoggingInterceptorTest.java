@@ -195,9 +195,10 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertTrue(logEvent.getFormattedMessage()
-            .startsWith("Response - Endpoint: POST /api/test, Status: 400, Error: Failed to execute request in"));
-        assertTrue(logEvent.getFormattedMessage().contains("Unknown error"));
+        assertEquals(
+            "Response - Endpoint: POST /api/test, Status: 400, Duration: " + (System.currentTimeMillis() - startTime)
+                + " ms",
+            logEvent.getFormattedMessage());
     }
 
     @Test
@@ -214,9 +215,10 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertTrue(logEvent.getFormattedMessage()
-            .startsWith("Response - Endpoint: POST /api/test, Status: 200, Error: Failed to execute request in"));
-        assertTrue(logEvent.getFormattedMessage().contains("RuntimeException: Test error"));
+        assertEquals(
+            "Response - Endpoint: POST /api/test, Status: 200, Duration: " + (System.currentTimeMillis() - startTime)
+                + " ms",
+            logEvent.getFormattedMessage());
     }
 
     @Test
@@ -389,8 +391,7 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertEquals(
-            "Response - Endpoint: POST /api/test, Status: 400, Error: Failed to execute request in 100 ms: Unknown error, Duration: 100 ms",
+        assertEquals("Response - Endpoint: POST /api/test, Status: 400, Duration: 100 ms",
             logEvent.getFormattedMessage());
     }
 
@@ -406,8 +407,7 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertEquals(
-            "Response - Endpoint: POST /api/test, Status: 200, Error: Failed to execute request in 100 ms: RuntimeException: Test error, Duration: 100 ms",
+        assertEquals("Response - Endpoint: POST /api/test, Status: 200, Duration: 100 ms",
             logEvent.getFormattedMessage());
     }
 

@@ -19,8 +19,7 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
     private static final String REQUEST_LOG_FORMAT = "Request - Endpoint: {}, Request Body: {}";
     private static final String RESPONSE_LOG_FORMAT =
         "Response - Endpoint: {}, Status: {}, Response: {}, Duration: {} ms";
-    private static final String ERROR_LOG_FORMAT =
-        "Response - Endpoint: {}, Status: {}, Error: Failed to execute request in {} ms: {}, Duration: {} ms";
+    private static final String ERROR_LOG_FORMAT = "Response - Endpoint: {}, Status: {}, Duration: {} ms";
     private static final String START_TIME_ATTRIBUTE = "startTime";
     private static final String ENDPOINT_ATTRIBUTE = "endpoint";
     private static final String REQUEST_BODY_ATTRIBUTE = "requestBody";
@@ -67,41 +66,65 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
         }
 
         if (request instanceof ContentCachingRequestWrapper wrapper) {
-            byte[] content = wrapper.getContentAsByteArray();
-            if (content.length > 0) {
-                try {
-                    return new String(content, wrapper.getCharacterEncoding());
-                } catch (Exception e) {
-                    if (logger.isWarnEnabled()) {
-                        logger.warn("Failed to read request body: {}", sanitize(e.getMessage()));
-                    }
-                }
-            }
+            return extractContentFromWrapper(wrapper, "request body");
         }
         return DEFAULT_BODY_VALUE;
     }
 
     private String extractResponseBody(HttpServletResponse response) {
         if (response instanceof ContentCachingResponseWrapper wrapper) {
-            byte[] responseContent = wrapper.getContentAsByteArray();
-            if (responseContent.length > 0) {
-                try {
-                    return new String(responseContent, wrapper.getCharacterEncoding());
-                } catch (Exception e) {
-                    if (logger.isWarnEnabled()) {
-                        logger.warn("Failed to read response body: {}", sanitize(e.getMessage()));
-                    }
-                }
-            }
+            return extractContentFromWrapper(wrapper, "response body");
         }
         return DEFAULT_BODY_VALUE;
     }
 
+    private String extractContentFromWrapper(Object wrapper, String logMessagePrefix) {
+        if (!(wrapper instanceof ContentCachingRequestWrapper || wrapper instanceof ContentCachingResponseWrapper)) {
+            return DEFAULT_BODY_VALUE;
+        }
+
+        byte[] content = getContentBytes(wrapper);
+        if (content == null || content.length == 0) {
+            return DEFAULT_BODY_VALUE;
+        }
+
+        return processContentWithEncoding(content, wrapper, logMessagePrefix);
+    }
+
+    private byte[] getContentBytes(Object wrapper) {
+        if (wrapper instanceof ContentCachingRequestWrapper requestWrapper) {
+            return requestWrapper.getContentAsByteArray();
+        } else if (wrapper instanceof ContentCachingResponseWrapper responseWrapper) {
+            return responseWrapper.getContentAsByteArray();
+        }
+        return null;
+    }
+
+    private String processContentWithEncoding(byte[] content, Object wrapper, String logMessagePrefix) {
+        try {
+            String encoding = getEncoding(wrapper);
+            return new String(content, encoding != null ? encoding : "UTF-8");
+        } catch (Exception e) {
+            if (logger.isWarnEnabled()) {
+                logger.warn("Failed to read {}: {}", logMessagePrefix, sanitize(e.getMessage()));
+            }
+            return DEFAULT_BODY_VALUE;
+        }
+    }
+
+    private String getEncoding(Object wrapper) {
+        if (wrapper instanceof ContentCachingRequestWrapper requestWrapper) {
+            return requestWrapper.getCharacterEncoding();
+        } else if (wrapper instanceof ContentCachingResponseWrapper responseWrapper) {
+            return responseWrapper.getCharacterEncoding();
+        }
+        return null;
+    }
+
     private void logResponse(String endpoint, int status, long duration, String responseBody, Exception ex) {
         if (status >= 400 || ex != null) {
-            String errorMessage = ex != null ? ex.getClass().getSimpleName() + ": " + ex.getMessage() : "Unknown error";
             if (logger.isInfoEnabled()) {
-                logger.info(ERROR_LOG_FORMAT, sanitize(endpoint), status, duration, sanitize(errorMessage), duration);
+                logger.info(ERROR_LOG_FORMAT, sanitize(endpoint), status, duration);
             }
         } else {
             if (logger.isInfoEnabled()) {
