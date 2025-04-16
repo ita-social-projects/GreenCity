@@ -277,7 +277,7 @@ class TagsServiceImplTest {
 
     @Test
     void findByTypeTest() {
-        List<NewTagDto> tags = List.of(NewTagDto.builder().id(1L).nameEn("News").nameUk("Новини").build());
+        List<NewTagDto> tags = List.of(NewTagDto.builder().id(1L).name("News").nameUa("Новини").build());
 
         when(tagRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(ModelUtils.getTags());
         when(modelMapper.map(ModelUtils.getTags(), new TypeToken<List<NewTagDto>>() {

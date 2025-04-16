@@ -132,7 +132,7 @@ public class ManagementEventController {
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
         model.addAttribute(CITIES,
             eventService.getAllEventsAddresses().stream()
-                .map(e -> "en".equals(locale.getLanguage()) ? e.getCityEn() : e.getCityUk())
+                .map(e -> "en".equals(locale.getLanguage()) ? e.getCityEn() : e.getCityUa())
                 .distinct()
                 .toList());
 

@@ -3,7 +3,6 @@ package greencity.client;
 import greencity.annotations.CheckEmailPreference;
 import greencity.constant.AppConstant;
 import greencity.dto.econews.InterestingEcoNewsDto;
-import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
@@ -14,9 +13,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.Role;
-import java.security.Principal;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +36,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -55,16 +51,10 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 public class RestClient {
     private final RestTemplate restTemplate;
     private final String greenCityUserServerAddress;
-    private final String greenCityUbsServerAddress;
 
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
     private final String systemEmail;
-    private static final String PAGE_QUERY_PARAM = "page";
-    private static final String PAGE_SIZE_QUERY_PARAM = "size";
-    private static final String USER_EMAIL_QUERY_PARAM = "email";
-    private static final String UNABLE_TO_REACH_TO_UBS_WARN_MESSAGE =
-        "Exception occurred while trying to reach to UBS: {}";
 
     /**
      * Constructs a new instance of the RestClient class.
@@ -72,7 +62,6 @@ public class RestClient {
      * @param restTemplate               The RestTemplate to be used for making HTTP
      *                                   requests to GreenCityUser.
      * @param greenCityUserServerAddress The address of the GreenCityUser server.
-     * @param greenCityUbsServerAddress  The address of the GreenCityUBS server.
      * @param httpServletRequest         The HttpServletRequest object contains data
      *                                   related to the current http request.
      * @param jwtTool                    The JwtTool is used to create JWT tokens
@@ -83,7 +72,6 @@ public class RestClient {
      */
     public RestClient(RestTemplate restTemplate,
         @Value("${greencityuser.server.address}") String greenCityUserServerAddress,
-        @Value("${greencityubs.server.address}") String greenCityUbsServerAddress,
         HttpServletRequest httpServletRequest,
         JwtTool jwtTool,
         @Value("${spring.liquibase.parameters.service-email}") String systemEmail) {
@@ -92,40 +80,6 @@ public class RestClient {
         this.httpServletRequest = httpServletRequest;
         this.jwtTool = jwtTool;
         this.systemEmail = systemEmail;
-        this.greenCityUbsServerAddress = greenCityUbsServerAddress;
-    }
-
-    public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(Principal principal,
-        Pageable pageable) {
-        HttpHeaders httpHeaders = setHeader();
-        HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
-        String userEmail = principal.getName();
-
-        UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromHttpUrl(
-            greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS);
-
-        String url = ubsNotificationsUrlBuilder
-            .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
-            .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
-            .queryParam(USER_EMAIL_QUERY_PARAM, userEmail)
-            .toUriString();
-
-        ResponseEntity<PageableAdvancedDto<UbsNotificationDto>> notifications;
-        try {
-            notifications = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                httpEntity,
-                new ParameterizedTypeReference<>() {
-                });
-        } catch (RestClientException e) {
-            log.warn(UNABLE_TO_REACH_TO_UBS_WARN_MESSAGE, e.getMessage());
-            return PageableAdvancedDto.<UbsNotificationDto>builder()
-                .page(Collections.emptyList())
-                .build();
-        }
-
-        return notifications.getBody();
     }
 
     /**
@@ -180,7 +134,7 @@ public class RestClient {
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
+            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam("email", email);
         return restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();
     }
@@ -367,7 +321,7 @@ public class RestClient {
     public Long findIdByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
+            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam("email", email);
         return restTemplate.exchange(url.toUriString(), HttpMethod.GET, entity, Long.class).getBody();
     }
 

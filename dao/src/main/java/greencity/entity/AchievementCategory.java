@@ -25,8 +25,8 @@ public class AchievementCategory {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    @Column(nullable = false, unique = true, name = "title_uk")
-    private String titleUk;
+    @Column(nullable = false, unique = true)
+    private String title;
 
     @Column(nullable = false, unique = true)
     private String titleEn;

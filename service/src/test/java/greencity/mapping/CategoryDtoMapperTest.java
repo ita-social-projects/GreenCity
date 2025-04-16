@@ -18,10 +18,10 @@ class CategoryDtoMapperTest {
     @Test
     void convert() {
         CategoryDto categoryDto = CategoryDto.builder()
-            .nameEn("categoryDtoName")
+            .name("categoryDtoName")
             .build();
         Category expected = Category.builder()
-            .nameEn(categoryDto.getNameEn())
+            .name(categoryDto.getName())
             .build();
         assertEquals(expected, categoryDtoMapper.convert(categoryDto));
     }

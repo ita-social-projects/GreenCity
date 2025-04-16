@@ -12,7 +12,7 @@ public class AchievementCategoryTranslationDtoMapper
     protected AchievementCategoryTranslationDto convert(AchievementCategory achievementCategory) {
         return AchievementCategoryTranslationDto.builder()
             .id(achievementCategory.getId())
-            .titleUk(achievementCategory.getTitleUk())
+            .title(achievementCategory.getTitle())
             .titleEn(achievementCategory.getTitleEn())
             .build();
     }

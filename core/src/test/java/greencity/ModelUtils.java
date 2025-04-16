@@ -16,7 +16,6 @@ import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
@@ -27,8 +26,6 @@ import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.exportsettings.EnvironmentDto;
-import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -47,18 +44,15 @@ import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.exportsettings.TableRowsDto;
-import greencity.dto.exportsettings.TablesMetadataDto;
-import greencity.dto.tag.TagUkEnNamesDto;
-import greencity.dto.tag.TagUkEnDto;
-import greencity.dto.tag.TagVO;
-import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagPostDto;
-import greencity.dto.tag.TagViewDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
@@ -88,8 +82,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.LinkedList;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -153,21 +145,8 @@ public class ModelUtils {
     }
 
     public static EcoNewsDto getEcoNewsDto() {
-        return EcoNewsDto.builder()
-            .creationDate(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()))
-            .imagePath(null)
-            .id(1L)
-            .title("title")
-            .content("text")
-            .shortInfo("shortInfo")
-            .author(getEcoNewsAuthorDto())
-            .tagsEn(null)
-            .tagsUk(null)
-            .likes(12)
-            .dislikes(12)
-            .countComments(12)
-            .hidden(false)
-            .build();
+        return new EcoNewsDto(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()), null, 1L,
+            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12, false);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
@@ -440,9 +419,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUkEnDto.builder()
+                .tags(List.of(TagUaEnDto.builder()
                     .id(2L)
-                    .nameUk("Соціальний1")
+                    .nameUa("Соціальний1")
                     .nameEn("Social1")
                     .build()))
                 .titleImage("image.png")
@@ -473,9 +452,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUkEnDto.builder()
+                .tags(List.of(TagUaEnDto.builder()
                     .id(1L)
-                    .nameUk("Соціальний")
+                    .nameUa("Соціальний")
                     .nameEn("Social")
                     .build()))
                 .titleImage("image.png")
@@ -524,9 +503,9 @@ public class ModelUtils {
 
     public static List<AddressDto> getAddressesDtoList() {
         return List.of(
-            AddressDto.builder().cityUk("Дніпро").cityEn("Dnipro").build(),
-            AddressDto.builder().cityUk("Дніпро").cityEn("Dnipro").build(),
-            AddressDto.builder().cityUk("Львів").cityEn("Lviv").build());
+            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUa("Дніпро").cityEn("Dnipro").build(),
+            AddressDto.builder().cityUa("Львів").cityEn("Lviv").build());
     }
 
     public static FilterPlaceDto getFilterPlaceDto() {
@@ -636,9 +615,9 @@ public class ModelUtils {
             new EventInformationDto(
                 "Test Event",
                 "New Test Event",
-                List.of(TagUkEnDto.builder()
+                List.of(TagUaEnDto.builder()
                     .id(2L)
-                    .nameUk("Соціальний")
+                    .nameUa("Соціальний")
                     .nameEn("Social")
                     .build())),
             EventAuthorDto.builder()
@@ -672,41 +651,16 @@ public class ModelUtils {
         return AddressDto.builder()
             .latitude(50.4567236)
             .longitude(30.2354469)
-            .streetUk("Вулиця")
+            .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUk("Київ")
+            .cityUa("Київ")
             .cityEn("Kyiv")
-            .regionUk("Область")
+            .regionUa("Область")
             .regionEn("Oblast")
-            .countryUk("Країна")
+            .countryUa("Країна")
             .countryEn("Country")
             .build();
-    }
-
-    public static TablesMetadataDto getTablesMetadataDto() {
-        Map<String, List<String>> tables = new HashMap<>();
-        List<String> columns = List.of("id", "name", "email");
-        tables.put("users", columns);
-
-        return new TablesMetadataDto(tables);
-    }
-
-    public static TableRowsDto getTableRowsDto() {
-        List<Map<String, String>> tableData = new LinkedList<>();
-        Map<String, String> row = new LinkedHashMap<>();
-        row.put("id", "1");
-        row.put("date_of_registration", "1970-01-01 00:00:00");
-        row.put("email", "someemail@some.com");
-        row.put("name", "Name");
-        row.put("role", "ROLE_ADMIN");
-        tableData.add(row);
-
-        return new TableRowsDto("users", tableData);
-    }
-
-    public static TableParamsRequestDto tableParamsRequestDto() {
-        return new TableParamsRequestDto("users", 10, 1);
     }
 
     public static MockMultipartFile getCreateJsonFile(Object dto, String fieldName) throws Exception {
@@ -716,28 +670,5 @@ public class ModelUtils {
             "",
             "application/json",
             objectMapper.writeValueAsBytes(dto));
-    }
-
-    public static EnvironmentDto getEnvironmentDto() {
-        Map<String, String> env = new HashMap<>();
-        env.put("TEST_ENV_NAME", "TEST_ENV_VALUE");
-        return new EnvironmentDto(env);
-    }
-
-    public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
-        return EcoNewsGroupedTagsDto.builder()
-            .tags(List.of(TagUkEnNamesDto.builder().nameUk("Новини").nameEn("News").build()))
-            .author(getEcoNewsAuthorDto())
-            .creationDate(ZonedDateTime.now())
-            .imagePath(TestConst.SITE)
-            .shortInfo("shortInfo")
-            .title("title")
-            .content("text")
-            .hidden(false)
-            .id(1L)
-            .likes(0)
-            .dislikes(0)
-            .countComments(0)
-            .build();
     }
 }

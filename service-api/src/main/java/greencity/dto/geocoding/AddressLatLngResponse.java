@@ -17,5 +17,5 @@ public class AddressLatLngResponse {
     private Double latitude;
     private Double longitude;
     private AddressResponse addressEn;
-    private AddressResponse addressUk;
+    private AddressResponse addressUa;
 }

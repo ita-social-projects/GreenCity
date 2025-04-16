@@ -36,12 +36,12 @@ class PlaceResponseMapperTest {
             .location(Location.builder()
                 .lat(32.3)
                 .lng(32.2)
-                .addressEn("test")
-                .addressUk("test")
+                .address("test")
+                .addressUa("test")
                 .build())
             .category(Category.builder()
-                .nameUk("Test")
-                .nameEn("category")
+                .nameUa("Test")
+                .name("category")
                 .build())
             .build();
 

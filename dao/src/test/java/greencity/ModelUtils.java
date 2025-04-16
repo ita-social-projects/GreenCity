@@ -4,7 +4,7 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.User;
 import greencity.entity.VerifyEmail;
 import greencity.enums.EventType;
@@ -46,9 +46,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUkEnDto.builder()
+                .tags(List.of(TagUaEnDto.builder()
                     .id(2L)
-                    .nameUk("Соціальний1")
+                    .nameUa("Соціальний1")
                     .nameEn("Social1")
                     .build()))
                 .titleImage("image.png")
@@ -81,9 +81,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUkEnDto.builder()
+                .tags(List.of(TagUaEnDto.builder()
                     .id(1L)
-                    .nameUk("Соціальний")
+                    .nameUa("Соціальний")
                     .nameEn("Social")
                     .build()))
                 .titleImage("image.png")

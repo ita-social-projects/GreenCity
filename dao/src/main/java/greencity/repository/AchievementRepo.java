@@ -12,8 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
-    Page<Achievement> findAll(Pageable pageable);
-
     /**
      * Retrieves a list of achievements that a specific user hasn't achieved yet
      * within a specified achievement category. The method identifies unachieved
@@ -147,10 +145,10 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      *
      * @return List of {@link StatisticsDto} with achievement names and user counts
      */
-    @Query("SELECT new greencity.dto.achievement.StatisticsDto(a.nameEn, COUNT(ua.user))"
+    @Query("SELECT new greencity.dto.achievement.StatisticsDto(a.nameEng, COUNT(ua.user))"
         + "FROM Achievement a "
         + "JOIN UserAchievement ua ON ua.achievement = a "
-        + "GROUP BY a.nameEn ")
+        + "GROUP BY a.nameEng ")
     List<StatisticsDto> getStatisticsUsersWithAchievements();
 
     /**

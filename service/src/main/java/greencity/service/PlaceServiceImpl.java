@@ -143,7 +143,7 @@ public class PlaceServiceImpl implements PlaceService {
             proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
         }
         Place place = modelMapper.map(placeVO, Place.class);
-        place.setCategory(categoryRepo.findByNameEn(dto.getCategory().getNameEn()));
+        place.setCategory(categoryRepo.findByName(dto.getCategory().getName()));
         place.getOpeningHoursList().forEach(openingHours -> openingHours.setPlace(place));
 
         return modelMapper.map(placeRepo.save(place), PlaceVO.class);
@@ -297,7 +297,7 @@ public class PlaceServiceImpl implements PlaceService {
             List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
                 EmailPreferencePeriodicity.IMMEDIATELY);
             userNotificationService.createNewNotificationForPlaceAdded(usersId, updatable.getId(),
-                updatable.getCategory().getNameEn(), updatable.getName());
+                updatable.getCategory().getName(), updatable.getName());
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
             userNotificationService.createNewNotification(modelMapper.map(updatable.getAuthor(), UserVO.class),
@@ -591,8 +591,8 @@ public class PlaceServiceImpl implements PlaceService {
         GeocodingResult ukrLang = geocodingResults.getFirst();
         GeocodingResult engLang = geocodingResults.get(1);
         return AddPlaceLocation.builder()
-            .addressUk(ukrLang.formattedAddress)
-            .addressEn(engLang.formattedAddress)
+            .address(ukrLang.formattedAddress)
+            .addressEng(engLang.formattedAddress)
             .lat(ukrLang.geometry.location.lat)
             .lng(ukrLang.geometry.location.lng)
             .build();
@@ -690,14 +690,14 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     void updateLocation(PlaceUpdateDto dto, Place updatedPlace, LocationVO updatable) {
-        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddressEn());
+        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddress());
 
         LocationAddressAndGeoForUpdateDto sourceDto = geoDetails != null
             ? new LocationAddressAndGeoForUpdateDto(
-                geoDetails.getAddressEn(),
+                geoDetails.getAddressEng(),
                 geoDetails.getLat(),
                 geoDetails.getLng(),
-                geoDetails.getAddressUk())
+                geoDetails.getAddress())
             : dto.getLocation();
 
         LocationVO updatedLocation = createLocationVO(updatable.getId(), sourceDto);
@@ -708,10 +708,10 @@ public class PlaceServiceImpl implements PlaceService {
     private LocationVO createLocationVO(Long id, LocationAddressAndGeoForUpdateDto dto) {
         return LocationVO.builder()
             .id(id)
-            .addressEn(dto.getAddressEn())
+            .address(dto.getAddress())
             .lat(dto.getLat())
             .lng(dto.getLng())
-            .addressUk(dto.getAddressUk())
+            .addressUa(dto.getAddressUa())
             .build();
     }
 
@@ -728,7 +728,7 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceVO update(PlaceUpdateDto dto) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
         Category updatedCategory = modelMapper.map(
-            categoryService.findByName(dto.getCategory().getNameEn()), Category.class);
+            categoryService.findByName(dto.getCategory().getName()), Category.class);
         Place updatedPlace = findPlaceById(dto.getId());
         LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
         updateLocation(dto, updatedPlace, updatable);
@@ -741,7 +741,7 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
         Category updatedCategory = modelMapper.map(
-            categoryService.findByName(dto.getCategory().getNameEn()), Category.class);
+            categoryService.findByName(dto.getCategory().getName()), Category.class);
         Place updatedPlace = findPlaceById(dto.getId());
         LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
         updateLocation(dto, updatedPlace, updatable);

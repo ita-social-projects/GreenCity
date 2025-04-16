@@ -5,7 +5,7 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
-import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventImages;
@@ -47,9 +47,9 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
             event.getTitle(),
             event.getDescription(),
             event.getTags().stream()
-                .map(tag -> TagUkEnDto.builder()
+                .map(tag -> TagUaEnDto.builder()
                     .id(tag.getId())
-                    .nameUk(tag.getTagTranslations().stream()
+                    .nameUa(tag.getTagTranslations().stream()
                         .filter(tt -> LANGUAGE_UA.equals(tt.getLanguage().getCode()))
                         .findFirst()
                         .map(TagTranslation::getName)
@@ -72,16 +72,16 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                         .latitude(address.getLatitude())
                         .longitude(address.getLongitude())
                         .streetEn(address.getStreetEn())
-                        .streetUk(address.getStreetUk())
+                        .streetUa(address.getStreetUa())
                         .houseNumber(address.getHouseNumber())
                         .cityEn(address.getCityEn())
-                        .cityUk(address.getCityUk())
+                        .cityUa(address.getCityUa())
                         .regionEn(address.getRegionEn())
-                        .regionUk(address.getRegionUk())
+                        .regionUa(address.getRegionUa())
                         .countryEn(address.getCountryEn())
-                        .countryUk(address.getCountryUk())
+                        .countryUa(address.getCountryUa())
                         .formattedAddressEn(address.getFormattedAddressEn())
-                        .formattedAddressUk(address.getFormattedAddressUk())
+                        .formattedAddressUa(address.getFormattedAddressUa())
                         .build())
                     .orElse(null),
                 date.getStartDate(),

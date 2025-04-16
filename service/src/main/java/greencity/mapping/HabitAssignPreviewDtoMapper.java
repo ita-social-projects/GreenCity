@@ -6,12 +6,9 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.exception.exceptions.NotFoundException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link HabitAssign} into
@@ -27,20 +24,28 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
     @Override
     protected HabitAssignPreviewDto convert(HabitAssign habitAssign) {
         Habit habit = habitAssign.getHabit();
-        List<HabitTranslation> habitTranslations = habitAssign.getHabit().getHabitTranslations();
-        HabitTranslationDto habitTranslationDto = habitTranslations.stream()
-            .filter(tr -> Objects.equals(tr.getLanguage().getCode(), habitAssign.getUser().getLanguage().getCode()))
-            .findFirst().map(tr -> HabitTranslationDto.builder()
-                .name(tr.getName())
-                .description(tr.getDescription())
-                .habitItem(tr.getHabitItem())
-                .build())
-            .orElseThrow(NotFoundException::new);
-        HabitPreviewDto habitPreviewDto = HabitPreviewDto.builder()
-            .id(habit.getId())
-            .image(habit.getImage())
-            .habitTranslation(habitTranslationDto)
-            .build();
+        HabitTranslation habitTranslationUa = habit.getHabitTranslations().stream()
+            .filter(translation -> translation.getLanguage().getCode().equalsIgnoreCase("ua"))
+            .findFirst().orElse(null);
+        HabitTranslation habitTranslation = habit.getHabitTranslations().stream()
+            .filter(translation -> !translation.getLanguage().getCode().equalsIgnoreCase("en"))
+            .findFirst().orElse(null);
+        HabitPreviewDto habitPreviewDto = null;
+        if (habitTranslation != null && habitTranslationUa != null) {
+            HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
+                .name(habitTranslation.getName())
+                .nameUa(habitTranslationUa.getName())
+                .habitItem(habitTranslation.getHabitItem())
+                .habitItemUa(habitTranslationUa.getHabitItem())
+                .description(habitTranslation.getDescription())
+                .descriptionUa(habitTranslationUa.getDescription())
+                .build();
+            habitPreviewDto = HabitPreviewDto.builder()
+                .id(habit.getId())
+                .image(habit.getImage())
+                .habitTranslation(habitTranslationDto)
+                .build();
+        }
         return HabitAssignPreviewDto.builder()
             .id(habitAssign.getId())
             .status(habitAssign.getStatus())

@@ -10,7 +10,7 @@ public class CategoryDtoMapper extends AbstractConverter<CategoryDto, Category> 
     @Override
     protected Category convert(CategoryDto categoryDto) {
         return Category.builder()
-            .nameEn(categoryDto.getNameEn())
+            .name(categoryDto.getName())
             .build();
     }
 }

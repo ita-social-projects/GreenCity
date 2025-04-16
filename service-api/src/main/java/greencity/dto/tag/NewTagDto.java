@@ -17,6 +17,6 @@ import lombok.ToString;
 @ToString
 public class NewTagDto {
     private Long id;
-    private String nameEn;
-    private String nameUk;
+    private String name;
+    private String nameUa;
 }

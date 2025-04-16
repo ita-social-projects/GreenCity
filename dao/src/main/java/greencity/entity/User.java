@@ -107,11 +107,11 @@ import java.util.Set;
                     u.rating,
                     ul.id AS ulId,
                     ul.city_en AS cityEn,
-                    ul.city_uk AS cityUa,
+                    ul.city_ua AS cityUa,
                     ul.region_en AS regionEn,
-                    ul.region_uk AS regionUa,
+                    ul.region_ua AS regionUa,
                     ul.country_en AS countryEn,
-                    ul.country_uk AS countryUa,
+                    ul.country_ua AS countryUa,
                     ul.latitude,
                     ul.longitude,
                     (
@@ -189,13 +189,11 @@ import java.util.Set;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"emailPreference", "favoriteHabits", "language", "userLocation", "verifyEmail", "ownSecurity",
-        "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
+    exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
         "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
         "subscribedEvents"})
 @ToString(
-    exclude = {"emailPreference", "favoriteHabits", "language", "userLocation", "verifyEmail", "ownSecurity",
-        "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
+    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
         "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
         "subscribedEvents"})
 public class User {

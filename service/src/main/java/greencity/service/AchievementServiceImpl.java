@@ -7,35 +7,42 @@ import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.habit.HabitVO;
-import greencity.entity.*;
+import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitTranslation;
+import greencity.entity.UserAchievement;
+import greencity.entity.UserAction;
 import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.repository.*;
+import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitTranslationRepo;
+import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserActionRepo;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @EnableCaching
-@Slf4j
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
     private final ModelMapper modelMapper;
@@ -78,22 +85,10 @@ public class AchievementServiceImpl implements AchievementService {
     /**
      * {@inheritDoc}
      */
-
     @Override
-    public PageableAdvancedDto<AchievementVO> findAll(Pageable pageable) {
-        Page<Achievement> pages = achievementRepo.findAll(pageable);
+    public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
+        Page<Achievement> pages = achievementRepo.findAll(page);
         return createPageable(pages);
-    }
-
-    public Pageable preparePageable(Pageable pageable, String sortBy, String sortDir) {
-        Sort sort = (sortDir == null || sortDir.isEmpty() || sortDir.equalsIgnoreCase("asc"))
-            ? Sort.by(sortBy).ascending()
-            : Sort.by(sortBy).descending();
-
-        int pageNumber = Math.max(pageable.getPageNumber(), 0);
-        int pageSize = 21;
-
-        return PageRequest.of(pageNumber, pageSize, sort);
     }
 
     /**
@@ -198,8 +193,8 @@ public class AchievementServiceImpl implements AchievementService {
     private void populateAchievement(Achievement achievement, AchievementPostDto achievementPostDto,
         AchievementCategory achievementCategory) {
         achievement.setTitle(achievementPostDto.getTitle());
-        achievement.setNameUk(achievementPostDto.getNameUk());
-        achievement.setNameEn(achievementPostDto.getNameEn());
+        achievement.setName(achievementPostDto.getName());
+        achievement.setNameEng(achievementPostDto.getNameEng());
         achievement.setAchievementCategory(achievementCategory);
         achievement.setCondition(achievementPostDto.getCondition());
     }
@@ -230,8 +225,8 @@ public class AchievementServiceImpl implements AchievementService {
                     HabitTranslation translationEn =
                         habitTranslationRepo.getHabitTranslationByEnLanguage(userAchievement.getHabit().getId());
                     achievementVO.setHabit(mapHabitToVO(userAchievement.getHabit()));
-                    achievementVO.setNameUk(achievementVO.getNameUk() + " " + translationUa.getName());
-                    achievementVO.setNameEn(achievementVO.getNameEn() + " " + translationEn.getName());
+                    achievementVO.setName(achievementVO.getName() + " " + translationUa.getName());
+                    achievementVO.setNameEng(achievementVO.getName() + " " + translationEn.getName());
                 }
                 return achievementVO;
             })
@@ -285,8 +280,8 @@ public class AchievementServiceImpl implements AchievementService {
                 AchievementVO achievementByHabit = AchievementVO.builder()
                     .id(achievementByDuration.getId())
                     .title(achievementByDuration.getTitle())
-                    .nameUk(achievementByDuration.getNameUk() + " " + translationUa.getName())
-                    .nameEn(achievementByDuration.getNameEn() + " " + translationEn.getName())
+                    .name(achievementByDuration.getName() + " " + translationUa.getName())
+                    .nameEng(achievementByDuration.getNameEng() + " " + translationEn.getName())
                     .achievementCategory(achievementByDuration.getAchievementCategory())
                     .condition(achievementByDuration.getCondition())
                     .habit(mapHabitToVO(habitAssign.getHabit()))

@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.dto.achievement.ActionDto;
 import greencity.service.UserNotificationService;
+import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
-
-import java.security.Principal;
 
 import static greencity.ModelUtils.getActionDto;
 import static greencity.ModelUtils.getPrincipal;
@@ -50,7 +49,6 @@ class NotificationControllerTest {
     @Test
     void getNotificationsFilteredTest() throws Exception {
         var pageable = PageRequest.of(0, 20);
-
         mockMvc.perform(get(notificationLink).principal(principal))
             .andExpect(status().isOk());
         verify(userNotificationService).getNotificationsFiltered(pageable, principal, "en", null, null, null);

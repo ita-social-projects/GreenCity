@@ -12,7 +12,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -44,7 +43,6 @@ public class CustomNotificationRepoImpl implements CustomNotificationRepo {
         List<NotificationType> notificationTypes, Boolean viewed, Pageable pageable) {
         CriteriaQuery<Notification> criteria = criteriaBuilder.createQuery(Notification.class);
         Root<Notification> notificationRoot = criteria.from(Notification.class);
-        notificationRoot.fetch("actionUsers", JoinType.LEFT);
 
         criteria.select(notificationRoot)
             .where(getPredicate(targetUserId, projectName, notificationTypes, viewed, notificationRoot))

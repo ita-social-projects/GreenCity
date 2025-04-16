@@ -132,8 +132,6 @@ public class HabitCommentController {
     @Operation(summary = "Count comments.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
@@ -224,8 +222,9 @@ public class HabitCommentController {
     })
     @PostMapping("/comments/dislike")
     public void dislike(@RequestParam("commentId") Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        commentService.dislike(commentId, user);
+        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        commentService.dislike(commentId, user, locale);
     }
 
     /**

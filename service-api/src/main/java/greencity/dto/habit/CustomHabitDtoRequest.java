@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"friendsToInvite", "tagIds", "customToDoListItemDto"})
 public class CustomHabitDtoRequest {
     @Min(value = 1, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)

@@ -28,15 +28,4 @@
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
     </changeSet>
-    <changeSet id="comment_users_dislikes3" author="Andrii Danylenko">
-        <dropForeignKeyConstraint
-                baseTableName="comments_users_dislikes"
-                constraintName="fk_comments_users_dislikes_comment"/>
-        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="comments_users_dislikes"
-                                 constraintName="fk_comments_users_dislikes_comment"
-                                 onDelete="CASCADE"
-                                 onUpdate="CASCADE"
-                                 referencedColumnNames="id"
-                                 referencedTableName="comments"/>
-    </changeSet>
 </databaseChangeLog>

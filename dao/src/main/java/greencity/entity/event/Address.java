@@ -22,8 +22,8 @@ public final class Address {
     @Column
     private String streetEn;
 
-    @Column(name = "street_uk")
-    private String streetUk;
+    @Column
+    private String streetUa;
 
     @Column
     private String houseNumber;
@@ -31,24 +31,24 @@ public final class Address {
     @Column
     private String cityEn;
 
-    @Column(name = "city_uk")
-    private String cityUk;
+    @Column
+    private String cityUa;
 
     @Column
     private String regionEn;
 
-    @Column(name = "region_uk")
-    private String regionUk;
+    @Column
+    private String regionUa;
 
     @Column
     private String countryEn;
 
-    @Column(name = "country_uk")
-    private String countryUk;
+    @Column
+    private String countryUa;
 
     @Column
     private String formattedAddressEn;
 
-    @Column(name = "formatted_address_uk")
-    private String formattedAddressUk;
+    @Column
+    private String formattedAddressUa;
 }

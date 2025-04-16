@@ -163,11 +163,11 @@ public class GoogleApiService {
             .longitude(searchCoordinates.lng)
             .build();
 
-        AddressResponse addressUk = getAddressResponseByLocaleAndCoordinates(searchCoordinates, UKRAINIAN);
-        if (addressUk == null) {
+        AddressResponse addressUa = getAddressResponseByLocaleAndCoordinates(searchCoordinates, UKRAINIAN);
+        if (addressUa == null) {
             throw new BadRequestException("Address with ukrainian is required!");
         }
-        addressLatLngResponse.setAddressUk(addressUk);
+        addressLatLngResponse.setAddressUa(addressUa);
         addressLatLngResponse
             .setAddressEn(getAddressResponseByLocaleAndCoordinates(searchCoordinates, ENGLISH));
         return addressLatLngResponse;

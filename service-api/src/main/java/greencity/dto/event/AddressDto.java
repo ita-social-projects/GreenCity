@@ -13,14 +13,14 @@ import lombok.experimental.SuperBuilder;
 @Data
 public class AddressDto extends UpdateAddressDto {
     private String streetEn;
-    private String streetUk;
+    private String streetUa;
     private String houseNumber;
     private String cityEn;
-    private String cityUk;
+    private String cityUa;
     private String regionEn;
-    private String regionUk;
+    private String regionUa;
     private String countryEn;
-    private String countryUk;
+    private String countryUa;
     private String formattedAddressEn;
-    private String formattedAddressUk;
+    private String formattedAddressUa;
 }

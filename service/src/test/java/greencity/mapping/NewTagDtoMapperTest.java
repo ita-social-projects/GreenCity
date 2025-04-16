@@ -22,8 +22,8 @@ class NewTagDtoMapperTest {
 
         NewTagDto expected = NewTagDto.builder()
             .id(1L)
-            .nameUk("Новини")
-            .nameEn("News")
+            .nameUa("Новини")
+            .name("News")
             .build();
 
         assertEquals(expected, newTagDtoMapper.convert(tag));

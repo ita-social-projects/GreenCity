@@ -29,16 +29,15 @@ import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.EcoNewsGroupedTagsDto;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.ShortEcoNewsDto;
-import greencity.dto.econews.EcoNewsGenericDto;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.ShortEcoNewsDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -53,7 +52,6 @@ import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -113,16 +111,6 @@ import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
-import greencity.dto.exportsettings.TableRowsDto;
-import greencity.dto.exportsettings.TablesMetadataDto;
-import greencity.dto.tag.TagUkEnNamesDto;
-import greencity.dto.tag.TagUkEnDto;
-import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagVO;
-import greencity.dto.tag.TagPostDto;
-import greencity.dto.tag.TagTranslationDto;
-import greencity.dto.tag.TagDto;
-import greencity.dto.tag.TagViewDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
@@ -130,6 +118,13 @@ import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
+import greencity.dto.tag.TagDto;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationDto;
+import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserFilterDto;
@@ -235,10 +230,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -246,10 +237,10 @@ import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
 import static greencity.constant.EventTupleConstant.cityEn;
-import static greencity.constant.EventTupleConstant.cityUk;
+import static greencity.constant.EventTupleConstant.cityUa;
 import static greencity.constant.EventTupleConstant.countComments;
 import static greencity.constant.EventTupleConstant.countryEn;
-import static greencity.constant.EventTupleConstant.countryUk;
+import static greencity.constant.EventTupleConstant.countryUa;
 import static greencity.constant.EventTupleConstant.creationDate;
 import static greencity.constant.EventTupleConstant.currentUserGrade;
 import static greencity.constant.EventTupleConstant.description;
@@ -257,7 +248,7 @@ import static greencity.constant.EventTupleConstant.dislikes;
 import static greencity.constant.EventTupleConstant.eventId;
 import static greencity.constant.EventTupleConstant.finishDate;
 import static greencity.constant.EventTupleConstant.formattedAddressEn;
-import static greencity.constant.EventTupleConstant.formattedAddressUk;
+import static greencity.constant.EventTupleConstant.formattedAddressUa;
 import static greencity.constant.EventTupleConstant.grade;
 import static greencity.constant.EventTupleConstant.houseNumber;
 import static greencity.constant.EventTupleConstant.isFavorite;
@@ -273,10 +264,10 @@ import static greencity.constant.EventTupleConstant.onlineLink;
 import static greencity.constant.EventTupleConstant.organizerId;
 import static greencity.constant.EventTupleConstant.organizerName;
 import static greencity.constant.EventTupleConstant.regionEn;
-import static greencity.constant.EventTupleConstant.regionUk;
+import static greencity.constant.EventTupleConstant.regionUa;
 import static greencity.constant.EventTupleConstant.startDate;
 import static greencity.constant.EventTupleConstant.streetEn;
-import static greencity.constant.EventTupleConstant.streetUk;
+import static greencity.constant.EventTupleConstant.streetUa;
 import static greencity.constant.EventTupleConstant.tagId;
 import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
@@ -300,13 +291,13 @@ public class ModelUtils {
     public static HabitAssign habitAssignInProgress = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
-    public static String habitTranslationNameEn = "use shopper";
-    public static String habitTranslationNameUk = "Назва звички українською";
-    public static String habitTranslationDescriptionEn = "Description";
-    public static String habitTranslationDescriptionUk = "Опис звички українською";
+    public static String habitTranslationName = "use shopper";
+    public static String habitTranslationNameUa = "Назва звички українською";
+    public static String habitTranslationDescription = "Description";
+    public static String habitTranslationDescriptionUa = "Опис звички українською";
     public static String toDoListText = "buy a shopper";
-    public static String habitItemEn = "Item";
-    public static String habitItemUk = "Айтем звички українською";
+    public static String habitItem = "Item";
+    public static String habitItemUa = "Айтем звички українською";
     public static String habitDefaultImage = "img/habit-default.png";
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
@@ -332,7 +323,7 @@ public class ModelUtils {
         .title("Title")
         .tags(List.of("Social"))
         .build();
-    public static AddEventDtoRequest addEventDtoRequestWithNullRegionUk = AddEventDtoRequest.builder()
+    public static AddEventDtoRequest addEventDtoRequestWithNullRegionUa = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
             .id(1L)
             .event(null)
@@ -344,7 +335,7 @@ public class ModelUtils {
         .title("Title")
         .tags(List.of("Social"))
         .build();
-    public static AddEventDtoRequest addEventDtoRequestWithNullCountryUk = AddEventDtoRequest.builder()
+    public static AddEventDtoRequest addEventDtoRequestWithNullCountryUa = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
             .id(1L)
             .event(null)
@@ -1147,7 +1138,7 @@ public class ModelUtils {
     public static Category getCategory() {
         return Category.builder()
             .id(12L)
-            .nameEn("category")
+            .name("category")
             .build();
     }
 
@@ -1188,7 +1179,7 @@ public class ModelUtils {
         PlaceAddDto placeAddDto = new PlaceAddDto();
         placeAddDto.setName("Test");
         CategoryDto category = new CategoryDto();
-        category.setNameEn("category");
+        category.setName("category");
         placeAddDto.setCategory(category);
         placeAddDto.setLocation(getLocationAddressAndGeoDto());
         HashSet<OpeningHoursDto> openingHoursDtos = new HashSet<>();
@@ -1403,8 +1394,8 @@ public class ModelUtils {
 
     public static Location getLocation() {
         return Location.builder()
-            .addressEn("address")
-            .addressUk("test")
+            .address("address")
+            .addressUa("test")
             .lng(12.12d)
             .lat(12.12d)
             .build();
@@ -1584,8 +1575,8 @@ public class ModelUtils {
         return AchievementManagementDto.builder()
             .id(1L)
             .title("ACQUIRED_HABIT_14_DAYS")
-            .nameUk("Набуття звички протягом 14 днів")
-            .nameEn("Acquired habit 14 days")
+            .name("Набуття звички протягом 14 днів")
+            .nameEng("Acquired habit 14 days")
             .achievementCategory(getAchievementCategoryDto())
             .condition(1)
             .build();
@@ -1604,29 +1595,16 @@ public class ModelUtils {
     }
 
     public static EcoNewsDto getEcoNewsDto() {
-        return EcoNewsDto.builder()
-            .creationDate(ZonedDateTime.now())
-            .imagePath("imagePath")
-            .id(1L)
-            .title("title")
-            .content("content")
-            .shortInfo("text")
-            .author(getEcoNewsAuthorDto())
-            .tagsEn(Collections.singletonList("tag"))
-            .tagsUk(Collections.singletonList("тег"))
-            .likes(1)
-            .dislikes(0)
-            .countComments(0)
-            .hidden(false)
-            .build();
+        return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false);
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
         String[] tagsEn = {"News"};
-        String[] tagsUk = {"Новини"};
+        String[] tagsUa = {"Новини"};
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
-            List.of(tagsUk), List.of(tagsEn), 0, 1, 0, false);
+            List.of(tagsUa), List.of(tagsEn), 0, 1, 0, false);
     }
 
     public static ShortEcoNewsDto getShortEcoNewsDto() {
@@ -1639,21 +1617,9 @@ public class ModelUtils {
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
-        return EcoNewsDto.builder()
-            .creationDate(null)
-            .imagePath(TestConst.SITE)
-            .id(1L)
-            .title("title")
-            .content("text")
-            .shortInfo("shortInfo")
-            .author(getEcoNewsAuthorDto())
-            .tagsEn(Collections.singletonList("News"))
-            .tagsUk(Collections.singletonList("Новини"))
-            .likes(0)
-            .dislikes(0)
-            .countComments(0)
-            .hidden(false)
-            .build();
+        return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
+            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0,
+            false);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
@@ -1984,14 +1950,14 @@ public class ModelUtils {
         return AddressDto.builder()
             .latitude(13.4567236)
             .longitude(98.2354469)
-            .streetUk("Вулиця")
+            .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUk("Місто")
+            .cityUa("Місто")
             .cityEn("City")
-            .regionUk(null)
+            .regionUa(null)
             .regionEn("Oblast")
-            .countryUk("Країна")
+            .countryUa("Країна")
             .countryEn("Country")
             .build();
     }
@@ -2000,14 +1966,14 @@ public class ModelUtils {
         return AddressDto.builder()
             .latitude(13.4567236)
             .longitude(98.2354469)
-            .streetUk("Вулиця")
+            .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUk("Місто")
+            .cityUa("Місто")
             .cityEn("City")
-            .regionUk("Область")
+            .regionUa("Область")
             .regionEn("Oblast")
-            .countryUk(null)
+            .countryUa(null)
             .countryEn("Country")
             .build();
     }
@@ -2016,14 +1982,14 @@ public class ModelUtils {
         return AddressDto.builder()
             .latitude(50.4567236)
             .longitude(30.2354469)
-            .streetUk("Вулиця")
+            .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUk("Київ")
+            .cityUa("Київ")
             .cityEn("Kyiv")
-            .regionUk("Область")
+            .regionUa("Область")
             .regionEn("Oblast")
-            .countryUk("Країна")
+            .countryUa("Країна")
             .countryEn("Country")
             .build();
     }
@@ -2057,8 +2023,8 @@ public class ModelUtils {
                 .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
                 .onlineLink(null)
                 .coordinates(null).build()))
-            .tags(List.of(TagUkEnDto.builder().id(1L).nameEn("Social")
-                .nameUk("Соціальний").build()))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
             .build();
     }
 
@@ -2080,8 +2046,8 @@ public class ModelUtils {
                 .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
                 .onlineLink("/url")
                 .coordinates(getAddressDtoCorrect()).build()))
-            .tags(List.of(TagUkEnDto.builder().id(1L).nameEn("Social")
-                .nameUk("Соціальний").build()))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
             .isFavorite(false)
             .isSubscribed(false)
             .build();
@@ -2105,15 +2071,15 @@ public class ModelUtils {
                 .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
                 .onlineLink("/url")
                 .coordinates(AddressDto.builder().build()).build()))
-            .tags(List.of(TagUkEnDto.builder().id(1L).nameEn("Social")
-                .nameUk("Соціальний").build()))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
             .build();
     }
 
     public static FilterPlaceCategory getFilterPlaceCategory() {
         return FilterPlaceCategory.builder()
-            .nameEn("category")
-            .nameUk("Категорії")
+            .name("category")
+            .nameUa("Категорії")
             .build();
     }
 
@@ -2133,14 +2099,14 @@ public class ModelUtils {
     public static PlaceResponse getPlaceResponse() {
         return PlaceResponse.builder()
             .category(CategoryDto.builder()
-                .nameEn("category")
-                .nameUk("Test")
+                .name("category")
+                .nameUa("Test")
                 .build())
             .locationAddressAndGeoDto(AddPlaceLocation.builder()
                 .lng(32.2)
                 .lat(32.3)
-                .addressEn("test")
-                .addressUk("test")
+                .addressEng("test")
+                .address("test")
                 .build())
             .openingHoursList(Set.of(OpeningHoursDto.builder()
                 .weekDay(DayOfWeek.MONDAY)
@@ -2312,7 +2278,7 @@ public class ModelUtils {
                 .country("fake country")
                 .formattedAddress("Full formatted address")
                 .build())
-            .addressUk(AddressResponse
+            .addressUa(AddressResponse
                 .builder()
                 .street("вулиця")
                 .houseNumber("13")
@@ -2326,8 +2292,8 @@ public class ModelUtils {
 
     public static AddPlaceLocation getAddPlaceLocation() {
         return AddPlaceLocation.builder()
-            .addressUk("test")
-            .addressEn("address")
+            .address("test")
+            .addressEng("address")
             .lat(12.12)
             .lng(12.12)
             .build();
@@ -2367,8 +2333,8 @@ public class ModelUtils {
         return List.of("Social");
     }
 
-    public static List<TagUkEnDto> getUpdatedEventTagUaEn() {
-        return List.of(TagUkEnDto.builder().nameEn("Social").nameUk("Соціальний").build());
+    public static List<TagUaEnDto> getUpdatedEventTagUaEn() {
+        return List.of(TagUaEnDto.builder().nameEn("Social").nameUa("Сщціальний").build());
     }
 
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
@@ -2421,17 +2387,17 @@ public class ModelUtils {
         return Address.builder()
             .latitude(13.4567236)
             .longitude(98.2354469)
-            .streetUk("Вулиця")
+            .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUk("Місто")
+            .cityUa("Місто")
             .cityEn("City")
-            .regionUk("Область")
+            .regionUa("Область")
             .regionEn("Oblast")
-            .countryUk("Країна")
+            .countryUa("Країна")
             .countryEn("Country")
             .formattedAddressEn("Full formatted address")
-            .formattedAddressUk("Повна відформатована адреса")
+            .formattedAddressUa("Повна відформатована адреса")
             .build();
     }
 
@@ -2439,17 +2405,17 @@ public class ModelUtils {
         return Address.builder()
             .latitude(50.4567236)
             .longitude(30.2354469)
-            .streetUk("Вулиця")
+            .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUk("Київ")
+            .cityUa("Київ")
             .cityEn("Kyiv")
-            .regionUk("Область")
+            .regionUa("Область")
             .regionEn("Oblast")
-            .countryUk("Країна")
+            .countryUa("Країна")
             .countryEn("Country")
             .formattedAddressEn("Full formatted address")
-            .formattedAddressUk("Повна відформатована адреса")
+            .formattedAddressUa("Повна відформатована адреса")
             .build();
     }
 
@@ -2467,17 +2433,17 @@ public class ModelUtils {
         return AddressDto.builder()
             .latitude(13.4567236)
             .longitude(98.2354469)
-            .streetUk("Вулиця")
+            .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUk("Місто")
+            .cityUa("Місто")
             .cityEn("City")
-            .regionUk("Область")
+            .regionUa("Область")
             .regionEn("Oblast")
-            .countryUk("Країна")
+            .countryUa("Країна")
             .countryEn("Country")
             .formattedAddressEn("Full formatted address")
-            .formattedAddressUk("Повна відформатована адреса")
+            .formattedAddressUa("Повна відформатована адреса")
             .countryEn("Country")
             .build();
     }
@@ -2637,19 +2603,30 @@ public class ModelUtils {
 
     public static HabitTranslationDto getHabitTranslationDto() {
         return HabitTranslationDto.builder()
-            .description(habitTranslationDescriptionEn)
-            .habitItem(habitItemEn)
-            .name(habitTranslationNameEn)
-            .languageCode("en")
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
             .build();
     }
 
-    public static HabitTranslation getHabitTranslationForServiceTestUk() {
+    public static HabitTranslationDto getHabitTranslationDtoEnAndUa() {
+        return HabitTranslationDto.builder()
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
+            .languageCode("en")
+            .nameUa(habitTranslationNameUa)
+            .descriptionUa(habitTranslationDescriptionUa)
+            .habitItemUa(habitItemUa)
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslationForServiceTest() {
         return HabitTranslation.builder()
             .id(1L)
-            .description(habitTranslationDescriptionUk)
-            .habitItem(habitItemUk)
-            .name(habitTranslationNameUk)
+            .description(habitTranslationDescription)
+            .habitItem(habitItem)
+            .name(habitTranslationName)
             .habit(getCustomHabitForServiceTest())
             .build();
     }
@@ -2666,10 +2643,10 @@ public class ModelUtils {
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description(habitTranslationDescriptionEn)
-                    .habitItem(habitItemEn)
-                    .languageCode("en")
-                    .name(habitTranslationNameEn)
+                    .description(habitTranslationDescription)
+                    .habitItem(habitItem)
+                    .languageCode("ua")
+                    .name(habitTranslationName)
                     .build()))
             .tagIds(Set.of(20L))
             .friendsToInvite(new HashSet<>())
@@ -2696,7 +2673,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getCustomHabitDtoRequestWithComplexityAndDuration() {
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithComplexityAndDuration() {
         return CustomHabitDtoRequest.builder()
             .complexity(2)
             .defaultDuration(7)
@@ -2716,10 +2693,10 @@ public class ModelUtils {
             .image(habitDefaultImage)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description(habitTranslationDescriptionEn)
-                    .habitItem(habitItemEn)
+                    .description(habitTranslationDescription)
+                    .habitItem(habitItem)
                     .languageCode("ua")
-                    .name(habitTranslationNameEn)
+                    .name(habitTranslationName)
                     .build()))
             .tagIds(Set.of(20L))
             .build();
@@ -2738,17 +2715,17 @@ public class ModelUtils {
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description(habitTranslationDescriptionEn)
-                    .habitItem(habitItemEn)
+                    .description(habitTranslationDescription)
+                    .habitItem(habitItem)
                     .languageCode("ua")
-                    .name(habitTranslationNameEn)
+                    .name(habitTranslationName)
                     .build(),
 
                     HabitTranslationDto.builder()
-                        .description(habitTranslationDescriptionEn)
-                        .habitItem(habitItemEn)
+                        .description(habitTranslationDescription)
+                        .habitItem(habitItem)
                         .languageCode("en")
-                        .name(habitTranslationNameEn)
+                        .name(habitTranslationName)
                         .build()))
             .tagIds(Set.of(20L))
             .build();
@@ -2927,9 +2904,9 @@ public class ModelUtils {
         TupleMetadata tupleMetadata = new TupleMetadata(
             elements, new String[] {eventId, title, description, tagId, languageCode, tagName,
                 isOpen, type, organizerId, organizerName, titleImage, creationDate, startDate,
-                finishDate, onlineLink, latitude, longitude, streetEn, streetUk, houseNumber,
-                cityEn, cityUk, regionEn, regionUk, countryEn, countryUk, formattedAddressEn,
-                formattedAddressUk, isRelevant, likes, dislikes, countComments, grade, currentUserGrade,
+                finishDate, onlineLink, latitude, longitude, streetEn, streetUa, houseNumber,
+                cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, formattedAddressEn,
+                formattedAddressUa, isRelevant, likes, dislikes, countComments, grade, currentUserGrade,
                 isOrganizedByFriend,
                 isSubscribed,
                 isFavorite});
@@ -2984,16 +2961,16 @@ public class ModelUtils {
             new TupleElementImpl<>(Double.class, latitude),
             new TupleElementImpl<>(Double.class, longitude),
             new TupleElementImpl<>(String.class, streetEn),
-            new TupleElementImpl<>(String.class, streetUk),
+            new TupleElementImpl<>(String.class, streetUa),
             new TupleElementImpl<>(String.class, houseNumber),
             new TupleElementImpl<>(String.class, cityEn),
-            new TupleElementImpl<>(String.class, cityUk),
+            new TupleElementImpl<>(String.class, cityUa),
             new TupleElementImpl<>(String.class, regionEn),
-            new TupleElementImpl<>(String.class, regionUk),
+            new TupleElementImpl<>(String.class, regionUa),
             new TupleElementImpl<>(String.class, countryEn),
-            new TupleElementImpl<>(String.class, countryUk),
+            new TupleElementImpl<>(String.class, countryUa),
             new TupleElementImpl<>(String.class, formattedAddressEn),
-            new TupleElementImpl<>(String.class, formattedAddressUk),
+            new TupleElementImpl<>(String.class, formattedAddressUa),
             new TupleElementImpl<>(Boolean.class, isRelevant),
             new TupleElementImpl<>(Long.class, likes),
             new TupleElementImpl<>(Long.class, dislikes),
@@ -3027,9 +3004,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUkEnDto.builder()
+                .tags(List.of(TagUaEnDto.builder()
                     .id(2L)
-                    .nameUk("Соціальний1")
+                    .nameUa("Соціальний1")
                     .nameEn("Social1")
                     .build()))
                 .titleImage("image.png")
@@ -3063,9 +3040,9 @@ public class ModelUtils {
                             .cityEn("Kyiv")
                             .build())
                         .build()))
-                .tags(List.of(TagUkEnDto.builder()
+                .tags(List.of(TagUaEnDto.builder()
                     .id(1L)
-                    .nameUk("Соціальний")
+                    .nameUa("Соціальний")
                     .nameEn("Social")
                     .build()))
                 .titleImage("image.png")
@@ -3502,9 +3479,9 @@ public class ModelUtils {
             new EventInformationDto(
                 "Title",
                 "New Test Event",
-                List.of(TagUkEnDto.builder()
+                List.of(TagUaEnDto.builder()
                     .id(2L)
-                    .nameUk("Соціальний")
+                    .nameUa("Соціальний")
                     .nameEn("Social")
                     .build())),
             EventAuthorDto.builder()
@@ -3546,56 +3523,5 @@ public class ModelUtils {
             new ByteSizeRange(0, 1000),
             null,
             null);
-    }
-
-    public static TablesMetadataDto getTablesMetadataDto() {
-        Map<String, List<String>> tables = new HashMap<>();
-        List<String> columns = List.of("id", "name", "email");
-        tables.put("users", columns);
-
-        return new TablesMetadataDto(tables);
-    }
-
-    public static TableRowsDto getTableRowsDto() {
-        List<Map<String, String>> tableData = new LinkedList<>();
-        Map<String, String> row = new LinkedHashMap<>();
-        row.put("id", "1");
-        row.put("date_of_registration", "1970-01-01 00:00:00");
-        row.put("email", "someemail@some.com");
-        row.put("name", "Name");
-        row.put("role", "ROLE_ADMIN");
-        tableData.add(row);
-
-        return new TableRowsDto("users", tableData);
-    }
-
-    public static TableParamsRequestDto tableParamsRequestDto() {
-        return new TableParamsRequestDto("users", 10, 1);
-    }
-
-    public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
-        return EcoNewsGroupedTagsDto.builder()
-            .tags(List.of(TagUkEnNamesDto.builder().nameUk("Новини").nameEn("News").build()))
-            .author(getEcoNewsAuthorDto())
-            .creationDate(zonedDateTime)
-            .imagePath(TestConst.SITE)
-            .shortInfo("shortInfo")
-            .title("title")
-            .content("text")
-            .hidden(false)
-            .id(1L)
-            .likes(0)
-            .dislikes(0)
-            .countComments(0)
-            .build();
-    }
-
-    public static HabitTranslationDto getHabitTranslationDtoUk() {
-        return HabitTranslationDto.builder()
-            .description(habitTranslationDescriptionUk)
-            .habitItem(habitItemUk)
-            .name(habitTranslationNameUk)
-            .languageCode("ua")
-            .build();
     }
 }

@@ -10,8 +10,8 @@ public class AddPlaceLocationMapper extends AbstractConverter<AddPlaceLocation, 
     @Override
     protected Location convert(AddPlaceLocation source) {
         return Location.builder()
-            .addressUk(source.getAddressUk())
-            .addressEn(source.getAddressEn())
+            .addressUa(source.getAddress())
+            .address(source.getAddressEng())
             .lng(source.getLng())
             .lat(source.getLat())
             .build();

@@ -14,13 +14,13 @@ public class AddressLatLngResponseMapper extends AbstractConverter<AddressLatLng
             .latitude(addressLatLngResponse.getLatitude())
             .longitude(addressLatLngResponse.getLongitude())
             .build();
-        if (addressLatLngResponse.getAddressUk() != null) {
-            addressDto.setStreetUk(addressLatLngResponse.getAddressUk().getStreet());
-            addressDto.setHouseNumber(addressLatLngResponse.getAddressUk().getHouseNumber());
-            addressDto.setCityUk(addressLatLngResponse.getAddressUk().getCity());
-            addressDto.setRegionUk(addressLatLngResponse.getAddressUk().getRegion());
-            addressDto.setCountryUk(addressLatLngResponse.getAddressUk().getCountry());
-            addressDto.setFormattedAddressUk(addressLatLngResponse.getAddressUk().getFormattedAddress());
+        if (addressLatLngResponse.getAddressUa() != null) {
+            addressDto.setStreetUa(addressLatLngResponse.getAddressUa().getStreet());
+            addressDto.setHouseNumber(addressLatLngResponse.getAddressUa().getHouseNumber());
+            addressDto.setCityUa(addressLatLngResponse.getAddressUa().getCity());
+            addressDto.setRegionUa(addressLatLngResponse.getAddressUa().getRegion());
+            addressDto.setCountryUa(addressLatLngResponse.getAddressUa().getCountry());
+            addressDto.setFormattedAddressUa(addressLatLngResponse.getAddressUa().getFormattedAddress());
         }
         if (addressLatLngResponse.getAddressEn() != null) {
             addressDto.setStreetEn(addressLatLngResponse.getAddressEn().getStreet());

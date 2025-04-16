@@ -113,8 +113,8 @@ $(document).ready(function () {
 
         var payload = {
             "title": formData.title,
-            "nameUk": formData.nameUk,
-            "nameEn": formData.nameEn,
+            "name": formData.name,
+            "nameEng": formData.nameEng,
             "achievementCategory": {
                 "name": formData.achievementCategory
             },
@@ -152,15 +152,15 @@ $(document).ready(function () {
 
         var achievementId = $row.find('td:nth-child(2)').text();
         var title = $row.find('td:nth-child(3)').text();
-        var nameUk = $row.find('td:nth-child(4) span:nth-child(1)').text();
-        var nameEn = $row.find('td:nth-child(4) span:nth-child(3)').text();
+        var nameUa = $row.find('td:nth-child(4) span:nth-child(1)').text();
+        var nameEng = $row.find('td:nth-child(4) span:nth-child(3)').text();
         var achievementCategory = $row.find('td:nth-child(5)').text();
         var condition = $row.find('td:nth-child(6)').text();
 
         $('#id').val(achievementId);
         $('input[name="title"]').val(title);
-        $('input[name="nameUk"]').val(nameUk);
-        $('input[name="nameEn"]').val(nameEn);
+        $('input[name="name"]').val(nameUa);
+        $('input[name="nameEng"]').val(nameEng);
         $('input[name="condition"]').val(condition);
         $('select[name="achievementCategory"]').val(achievementCategory.trim());
     });
@@ -177,8 +177,8 @@ $(document).ready(function () {
         var payload = {
             "id": formData.id,
             "title": formData.title,
-            "nameUk": formData.nameUk,
-            "nameEn": formData.nameEn,
+            "name": formData.name,
+            "nameEng": formData.nameEng,
             "achievementCategory": {
                 "name": formData.achievementCategory
             },
@@ -251,7 +251,7 @@ function orderByField(fieldName = null, sortOrder = null) {
     const fieldMapping = {
         'id': ['id-icon-asc', 'id-icon-desc'],
         'title': ['title-icon-asc', 'title-icon-desc'],
-        'nameUk': ['name-icon-asc', 'name-icon-desc'],
+        'name': ['name-icon-asc', 'name-icon-desc'],
         'achievementCategory.name': ['category-icon-asc', 'category-icon-desc'],
         'condition': ['condition-icon-asc', 'condition-icon-desc']
     };

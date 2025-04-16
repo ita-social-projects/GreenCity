@@ -12,8 +12,8 @@ import lombok.experimental.SuperBuilder;
 @Data
 public class AchievementPostDto {
     private String title;
-    private String nameUk;
-    private String nameEn;
+    private String name;
+    private String nameEng;
     private AchievementCategoryDto achievementCategory;
     private Integer condition;
 }

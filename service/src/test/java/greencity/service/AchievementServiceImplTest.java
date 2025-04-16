@@ -189,56 +189,6 @@ class AchievementServiceImplTest {
     }
 
     @Test
-    void preparePageable_ShouldReturnPageableWithAscendingSort_WhenSortDirIsAsc() {
-        Pageable pageable = PageRequest.of(1, 10);
-        String sortBy = "name";
-        String sortDir = "asc";
-
-        Pageable result = achievementService.preparePageable(pageable, sortBy, sortDir);
-
-        assertEquals(1, result.getPageNumber());
-        assertEquals(21, result.getPageSize());
-        assertTrue(result.getSort().getOrderFor(sortBy).isAscending());
-    }
-
-    @Test
-    void preparePageable_ShouldReturnPageableWithDescendingSort_WhenSortDirIsDesc() {
-        Pageable pageable = PageRequest.of(2, 10);
-        String sortBy = "createdDate";
-        String sortDir = "desc";
-
-        Pageable result = achievementService.preparePageable(pageable, sortBy, sortDir);
-
-        assertEquals(2, result.getPageNumber());
-        assertEquals(21, result.getPageSize());
-        assertTrue(result.getSort().getOrderFor(sortBy).isDescending());
-    }
-
-    @Test
-    void preparePageable_ShouldUseDefaultAscendingSort_WhenSortDirIsNullOrEmpty() {
-        Pageable pageable = PageRequest.of(0, 10);
-        String sortBy = "id";
-
-        Pageable resultWithNull = achievementService.preparePageable(pageable, sortBy, null);
-        Pageable resultWithEmpty = achievementService.preparePageable(pageable, sortBy, "");
-
-        assertTrue(resultWithNull.getSort().getOrderFor(sortBy).isAscending());
-        assertTrue(resultWithEmpty.getSort().getOrderFor(sortBy).isAscending());
-    }
-
-    @Test
-    void preparePageable_ShouldReturnFirstPage_WhenPageNumberIsNegative() {
-        Pageable pageable = PageRequest.of(0, 10);
-        String sortBy = "title";
-        String sortDir = "asc";
-
-        Pageable result = achievementService.preparePageable(pageable, sortBy, sortDir);
-
-        assertEquals(0, result.getPageNumber());
-        assertEquals(21, result.getPageSize());
-    }
-
-    @Test
     void findAllACHIEVEDWithCategoryIdInRepoTest() {
         Achievement achievement = getAchievement();
         AchievementCategory achievementCategory = getAchievementCategory();

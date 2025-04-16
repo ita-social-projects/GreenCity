@@ -24,7 +24,7 @@ public class FavoritePlaceWithLocationMapper extends AbstractConverter<FavoriteP
         location.setId(entity.getPlace().getLocation().getId());
         location.setLng(entity.getPlace().getLocation().getLng());
         location.setLat(entity.getPlace().getLocation().getLat());
-        location.setAddress(entity.getPlace().getLocation().getAddressEn());
+        location.setAddress(entity.getPlace().getLocation().getAddress());
         placeByBoundsDto.setLocation(location);
         return placeByBoundsDto;
     }

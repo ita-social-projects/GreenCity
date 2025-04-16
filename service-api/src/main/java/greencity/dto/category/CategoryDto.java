@@ -19,9 +19,9 @@ public class CategoryDto {
         min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,
         max = ServiceValidationConstants.CATEGORY_NAME_MAX_LENGTH)
     @NotBlank
-    private String nameEn;
+    private String name;
 
-    private String nameUk;
+    private String nameUa;
 
     private Long parentCategoryId;
 }

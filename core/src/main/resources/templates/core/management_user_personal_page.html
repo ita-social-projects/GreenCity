@@ -290,7 +290,7 @@
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
                                         <td class="pr">
-                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.nameEn}" > </span></a>
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
                                         </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
@@ -379,7 +379,7 @@
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
                                         <td class="pr">
-                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.nameEn}" > </span></a>
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
                                         </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
@@ -467,7 +467,7 @@
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
                                         <td class="pr">
-                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.nameEn}" > </span></a>
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
                                         </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
@@ -556,7 +556,7 @@
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
                                         <td class="pr">
-                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.nameEn}" > </span></a>
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
                                         </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td>
@@ -694,106 +694,17 @@
                                         <td>
                                             <img class="center" src="/img/location_icon_dark.svg" alt="location-icon">
                                         </td>
-                                        <td th:text="${ecoPlace.name + ', ' + ecoPlace.location.addressEn}"></td>
+                                        <td th:text="${ecoPlace.name + ', ' + ecoPlace.location.address}"></td>
                                     </tr>
                                 </th:block>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- Organized Events table -->
-                    <div>
-                        <div class="table-header">
-                            <h3>[[#{greenCity.personal.page.organizedEventsH}]]
-                                <span th:text="${organizedEvents != null} ? ${organizedEvents.size()} : 0"></span>
-                            </h3>
-                            <div class="hide-button">
-                                <button id="button8" value="hide" onclick="hideTable(this.id)">
-                                    <span>hide</span>
-                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
-                                </button>
-                            </div>
-                        </div>
 
-                        <div class="table-responsive userpage">
-                            <table class="table table-bordered" style="table-layout: fixed; width: 946px;">
-                                <thead>
-                                <tr class="table-primary">
-                                    <th style="width: 75px; min-width: 75px; max-width: 75px;">[[#{greenCity.pages.table.id}]]</th>
-                                    <th style="width: 495px; min-width: 495px; max-width: 495px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">[[#{greenCity.pages.table.name}]]</th>
-                                    <th style="width: 113px; min-width: 113px; max-width: 113px;">[[#{greenCity.pages.table.creationDate}]]</th>
-                                    <th style="width: 113px; min-width: 113px; max-width: 113px;">[[#{greenCity.pages.table.isOpen}]]</th>
-                                    <th style="width: 150px; min-width: 150px; max-width: 150px;">[[#{greenCity.pages.table.type}]]</th>
-                                </tr>
-                                </thead>
-
-                                <tbody id="table8">
-                                <th:block th:if="${organizedEvents != null and !organizedEvents.isEmpty()}">
-                                    <th:block class="list-of" th:each="event, iterStatus :${organizedEvents}">
-                                        <tr>
-                                            <td style="width: 75px; min-width: 75px; max-width: 75px;" th:text="${event.id}"></td>
-                                            <td style="width: 495px; min-width: 495px; max-width: 495px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${event.title}"></td>
-                                            <td style="width: 113px; min-width: 113px; max-width: 113px;" th:text="${event.creationDate != null} ? ${#temporals.format(event.creationDate, 'dd.MM.yy')} : '-'"></td>
-                                            <td style="width: 113px; min-width: 113px; max-width: 113px;" th:text="${event.isOpen != null and event.isOpen} ? #{greenCity.pages.table.open} : #{greenCity.pages.table.closed}"></td>
-                                            <td style="width: 150px; min-width: 150px; max-width: 150px;" th:text="${event.type}"></td>
-                                        </tr>
-                                    </th:block>
-                                </th:block>
-                                <tr th:if="${organizedEvents == null or organizedEvents.isEmpty()}">
-                                    <td colspan="5" style="text-align: center;">No organized events available.</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Attended Events table -->
-                    <div>
-                        <div class="table-header">
-                            <h3>
-                                [[#{greenCity.personal.page.attendedEventsH}]]
-                                <span th:text="${attendedEvents != null} ? ${attendedEvents.size()} : 0"></span>
-                            </h3>
-                            <div class="hide-button">
-                                <button id="button9" value="hide" onclick="hideTable(this.id)">
-                                    <span>hide</span>
-                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive userpage">
-                            <table class="table table-bordered" style="table-layout: fixed; width: 946px;">
-                                <thead>
-                                <tr class="table-primary">
-                                    <th style="width: 75px; min-width: 75px; max-width: 75px;">[[#{greenCity.pages.table.id}]]</th>
-                                    <th style="width: 495px; min-width: 495px; max-width: 495px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">[[#{greenCity.pages.table.name}]]</th>
-                                    <th style="width: 113px; min-width: 113px; max-width: 113px;">[[#{greenCity.pages.table.creationDate}]]</th>
-                                    <th style="width: 113px; min-width: 113px; max-width: 113px;">[[#{greenCity.pages.table.isOpen}]]</th>
-                                    <th style="width: 150px; min-width: 150px; max-width: 150px;">[[#{greenCity.pages.table.type}]]</th>
-                                </tr>
-                                </thead>
-                                <tbody id="table9">
-                                <th:block th:if="${attendedEvents != null and !attendedEvents.isEmpty()}">
-                                    <th:block class="list-of" th:each="event, iterStatus :${attendedEvents}">
-                                        <tr>
-                                            <td style="width: 75px; min-width: 75px; max-width: 75px;" th:text="${event.id}"></td>
-                                            <td style="width: 495px; min-width: 495px; max-width: 495px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" th:text="${event.title}"></td>
-                                            <td style="width: 113px; min-width: 113px; max-width: 113px;" th:text="${event.creationDate != null} ? ${#temporals.format(event.creationDate, 'dd.MM.yy')} : '-'"></td>
-                                            <td style="width: 113px; min-width: 113px; max-width: 113px;" th:text="${event.isOpen != null and event.isOpen} ? #{greenCity.pages.table.open} : #{greenCity.pages.table.closed}"></td>
-                                            <td style="width: 150px; min-width: 150px; max-width: 150px;" th:text="${event.type}"></td>
-                                        </tr>
-                                    </th:block>
-                                </th:block>
-                                <tr th:if="${attendedEvents == null or attendedEvents.isEmpty()}">
-                                    <td colspan="5" style="text-align: center;">No attended events available.</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

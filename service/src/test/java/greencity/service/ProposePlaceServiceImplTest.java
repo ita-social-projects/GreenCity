@@ -45,7 +45,7 @@ class ProposePlaceServiceImplTest {
     @Test
     void checkLocationValues() {
         LocationVO location = LocationVO.builder()
-            .addressEn("address")
+            .address("address")
             .lng(12.12d)
             .lat(12.12d)
             .build();

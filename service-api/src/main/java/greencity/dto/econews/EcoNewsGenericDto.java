@@ -44,7 +44,7 @@ public class EcoNewsGenericDto {
     private String source;
 
     @NotEmpty
-    private List<String> tagsUk;
+    private List<String> tagsUa;
 
     @NotEmpty
     private List<String> tagsEn;

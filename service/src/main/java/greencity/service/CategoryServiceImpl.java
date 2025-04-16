@@ -36,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDtoResponse save(CategoryDto dto) {
         log.info(LogMessage.IN_SAVE);
 
-        Category category = categoryRepo.findByNameEn(dto.getNameEn());
+        Category category = categoryRepo.findByName(dto.getName());
 
         if (category != null) {
             throw new BadCategoryRequestException(
@@ -88,7 +88,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDtoResponse update(Long id, String name) {
         Category category = modelMapper.map(findById(id), Category.class);
-        category.setNameEn(name);
+        category.setName(name);
         return modelMapper.map(categoryRepo.save(category), CategoryDtoResponse.class);
     }
 
@@ -113,7 +113,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public CategoryDtoResponse findByName(String name) {
-        Category category = categoryRepo.findByNameEn(name);
+        Category category = categoryRepo.findByName(name);
         if (category == null) {
             throw new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME + name);
         }

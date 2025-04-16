@@ -3,14 +3,12 @@ package greencity.client;
 import static greencity.ModelUtils.getEntity;
 import static greencity.TestConst.ACCESS_TOKEN;
 import static greencity.TestConst.GREEN_CITY_USER_ADDRESS;
-import static greencity.TestConst.GREEN_CITY_UBS_ADDRESS;
 import static greencity.TestConst.SYSTEM_EMAIL;
 import static greencity.TestConst.TOKEN;
 import static greencity.TestConst.UPDATE_STATUS_URL;
 import static greencity.TestConst.USER_ID;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.dto.econews.InterestingEcoNewsDto;
-import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -31,7 +29,6 @@ import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +41,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
@@ -56,13 +52,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -89,91 +83,10 @@ class RestClientTest {
     @Mock
     private JwtTool jwtTool;
 
-    private static final String USER_EMAIL = "email";
-
     @BeforeEach
     void init() {
-        restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, GREEN_CITY_UBS_ADDRESS, httpServletRequest,
-            jwtTool, SYSTEM_EMAIL);
+        restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, httpServletRequest, jwtTool, SYSTEM_EMAIL);
         RequestContextHolder.setRequestAttributes(requestAttributes);
-    }
-
-    @Test
-    void findAllNotificationsForUserFromUbsTest() {
-        Principal principal = Mockito.mock(Principal.class);
-        Pageable pageable = Mockito.mock(Pageable.class);
-        int pageNumber = 0;
-        int pageSize = 10;
-        String expectedUrl =
-            GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize
-                + "&email=" + USER_EMAIL;
-        PageableAdvancedDto<UbsNotificationDto> expectedResult = Mockito.mock(PageableAdvancedDto.class);
-
-        when(principal.getName())
-            .thenReturn(USER_EMAIL);
-        when(pageable.getPageNumber())
-            .thenReturn(pageNumber);
-        when(pageable.getPageSize())
-            .thenReturn(pageSize);
-        when(restTemplate.exchange(
-            eq(expectedUrl),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            any(ParameterizedTypeReference.class))).thenReturn(ResponseEntity.ok(expectedResult));
-
-        PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
-            principal,
-            pageable);
-
-        verify(restTemplate).exchange(
-            eq(expectedUrl),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            any(ParameterizedTypeReference.class));
-        assertEquals(expectedResult, actualResult);
-    }
-
-    @Test
-    void findAllNotificationsForUserFromUbsTestWhenRestTemplateThrowsException() {
-        Principal principal = Mockito.mock(Principal.class);
-        Pageable pageable = Mockito.mock(Pageable.class);
-        int pageNumber = 0;
-        int pageSize = 10;
-        String expectedUrl =
-            GREEN_CITY_UBS_ADDRESS + RestTemplateLinks.NOTIFICATIONS + "?page=" + pageNumber + "&size=" + pageSize
-                + "&email=" + USER_EMAIL;
-        String exceptionMessage = "exceptionMessage";
-
-        when(principal.getName())
-            .thenReturn(USER_EMAIL);
-        when(pageable.getPageNumber())
-            .thenReturn(pageNumber);
-        when(pageable.getPageSize())
-            .thenReturn(pageSize);
-        when(restTemplate.exchange(
-            eq(expectedUrl),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            any(ParameterizedTypeReference.class))).thenThrow(new RestClientException(exceptionMessage));
-
-        PageableAdvancedDto<UbsNotificationDto> actualResult = restClient.findAllNotificationsForUserFromUbs(
-            principal,
-            pageable);
-
-        verify(restTemplate).exchange(
-            eq(expectedUrl),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            any(ParameterizedTypeReference.class));
-        assertEquals(Collections.emptyList(), actualResult.getPage());
-        assertEquals(0, actualResult.getTotalElements());
-        assertEquals(0, actualResult.getCurrentPage());
-        assertEquals(0, actualResult.getTotalPages());
-        assertEquals(0, actualResult.getNumber());
-        assertFalse(actualResult.isHasPrevious());
-        assertFalse(actualResult.isHasNext());
-        assertFalse(actualResult.isFirst());
-        assertFalse(actualResult.isLast());
     }
 
     @Test

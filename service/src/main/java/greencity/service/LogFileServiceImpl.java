@@ -11,6 +11,7 @@ import greencity.exception.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import java.util.stream.Stream;
 @Service
 @Lazy
 @RequiredArgsConstructor
+@Profile({"dev", "test"})
 public class LogFileServiceImpl implements LogFileService {
     private static final String LOGS_DIRECTORY =
         System.getProperty("user.dir") + File.separator + "logs" + File.separator;

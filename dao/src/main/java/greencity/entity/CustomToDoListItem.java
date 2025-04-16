@@ -18,7 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"user", "dateCompleted", "habit"})
+@ToString(exclude = {"user", "dateCompleted"})
 @Table(name = "custom_to_do_list_items")
 @Builder
 public class CustomToDoListItem {

@@ -5,7 +5,6 @@ import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.FunctionalityNotAvailableException;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvException;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -14,12 +13,6 @@ import org.springframework.context.annotation.Lazy;
 @Lazy
 public class DotenvConfig {
     @Bean
-    public Dotenv fallbackDotenv() {
-        return Dotenv.configure().ignoreIfMissing().load();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(Dotenv.class)
     Dotenv dotenv() {
         try {
             return Dotenv.configure()

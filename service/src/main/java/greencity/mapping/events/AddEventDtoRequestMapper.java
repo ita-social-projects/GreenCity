@@ -61,6 +61,6 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
     }
 
     private boolean addressIsNotValid(AddressDto dto) {
-        return dto.getRegionUk() == null || dto.getCountryUk() == null;
+        return dto.getRegionUa() == null || dto.getCountryUa() == null;
     }
 }

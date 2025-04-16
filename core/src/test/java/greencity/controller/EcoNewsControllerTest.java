@@ -2,15 +2,11 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static greencity.ModelUtils.getEcoNewsDto;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 
-import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
@@ -20,8 +16,6 @@ import greencity.service.UserService;
 
 import java.security.Principal;
 
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +39,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -65,17 +58,12 @@ class EcoNewsControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    @Mock
+    private ObjectMapper objectMapper;
 
     private final Principal principal = getPrincipal();
 
     private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
-
-    @BeforeAll
-    static void setup() {
-        OBJECT_MAPPER.findAndRegisterModules();
-    }
 
     @BeforeEach
     public void setUp() {
@@ -83,7 +71,7 @@ class EcoNewsControllerTest {
             .standaloneSetup(ecoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
-            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, OBJECT_MAPPER, null))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, null))
             .build();
     }
 
@@ -349,57 +337,5 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk());
 
         verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
-    }
-
-    @Test
-    @SneakyThrows
-    void checkLikeV2WithValidDataReturnsCorrectBody() {
-        long ecoNewsId = 1L;
-        UserVO userVO = getUserVO();
-        EcoNewsDto ecoNewsDto = getEcoNewsDto();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(ecoNewsService.likeV2(userVO, ecoNewsId)).thenReturn(ecoNewsDto);
-        String expectedResponse = OBJECT_MAPPER.writeValueAsString(ecoNewsDto);
-        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/likeV2", ecoNewsId)
-            .principal(principal)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(expectedResponse));
-        verify(ecoNewsService, times(1)).likeV2(userVO, ecoNewsId);
-    }
-
-    @Test
-    @SneakyThrows
-    void checkDislikeV2WithValidDataReturnsCorrectBody() {
-        long ecoNewsId = 1L;
-        UserVO userVO = getUserVO();
-        EcoNewsDto ecoNewsDto = getEcoNewsDto();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(ecoNewsService.dislikeV2(userVO, ecoNewsId)).thenReturn(ecoNewsDto);
-        String expectedResponse = OBJECT_MAPPER.writeValueAsString(ecoNewsDto);
-        mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/dislikeV2", ecoNewsId)
-            .principal(principal)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(expectedResponse));
-        verify(ecoNewsService, times(1)).dislikeV2(userVO, ecoNewsId);
-    }
-
-    @Test
-    void getEcoNewsByIdV2Test() throws Exception {
-        when(ecoNewsService.findDtoById(anyLong())).thenReturn(getEcoNewsGroupedTagsDto());
-        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getEcoNewsByIdV2NotFoundTest() throws Exception {
-        when(ecoNewsService.findDtoById(1L)).thenThrow(new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L));
-        mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
     }
 }

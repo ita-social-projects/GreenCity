@@ -378,7 +378,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                                        '_', '\\_'),
                                                '#', '\\#'), '%')
                                                      )
-                              OR LOWER(ul.city_uk) LIKE LOWER(
+                              OR LOWER(ul.city_ua) LIKE LOWER(
                                     CONCAT('%',
                                            REPLACE(REPLACE(
                                                            REPLACE(REPLACE(:filteringName, '&', '\\&'),
@@ -446,7 +446,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                                      '_', '\\_'),
                                              '#', '\\#'), '%')
                                                    )
-                            OR LOWER(ul.city_uk) LIKE LOWER(
+                            OR LOWER(ul.city_ua) LIKE LOWER(
                                   CONCAT('%',
                                          REPLACE(REPLACE(
                                                          REPLACE(REPLACE(:filteringName, '&', '\\&'),
@@ -490,8 +490,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                     SELECT 1
                     FROM user_location ul
                     WHERE ul.id = u.user_location
-                      AND ul.city_uk IN (
-                        SELECT ul2.city_uk FROM user_location ul2
+                      AND ul.city_ua IN (
+                        SELECT ul2.city_ua FROM user_location ul2
                                                     JOIN users u2 ON ul2.id = u2.user_location
                         WHERE u2.id = :userId
                     )
@@ -566,7 +566,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                                   '_', '\\_'),
                                           '#', '\\#'), '%')
                                                 )
-                         OR LOWER(ul.city_uk) LIKE LOWER(
+                         OR LOWER(ul.city_ua) LIKE LOWER(
                                CONCAT('%',
                                       REPLACE(REPLACE(
                                                       REPLACE(REPLACE(:filteringName, '&', '\\&'),
@@ -583,8 +583,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                      SELECT 1
                      FROM user_location ul
                      WHERE ul.id = u.user_location
-                       AND ul.city_uk IN (
-                         SELECT ul2.city_uk FROM user_location ul2
+                       AND ul.city_ua IN (
+                         SELECT ul2.city_ua FROM user_location ul2
                                                      JOIN users u2 ON ul2.id = u2.user_location
                          WHERE u2.id = :userId
                      )
@@ -652,8 +652,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                              SELECT 1
                              FROM user_location ul
                              WHERE ul.id = u.user_location
-                               AND ul.city_uk IN (
-                                 SELECT ul2.city_uk FROM user_location ul2
+                               AND ul.city_ua IN (
+                                 SELECT ul2.city_ua FROM user_location ul2
                                                              JOIN users u2 ON ul2.id = u2.user_location
                                  WHERE u2.id = :userId
                              )
@@ -724,7 +724,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true, value = "SELECT users.* FROM users "
         + "JOIN user_location ON users.user_location = user_location.id "
-        + "WHERE user_location.city_uk = :city AND users.id !=:userId")
+        + "WHERE user_location.city_ua = :city AND users.id !=:userId")
     Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
 
     /**

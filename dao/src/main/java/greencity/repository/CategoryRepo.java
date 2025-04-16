@@ -16,7 +16,7 @@ public interface CategoryRepo extends JpaRepository<Category, Long> {
      * @param name to find by.
      * @return a category by name.
      */
-    Category findByNameEn(String name);
+    Category findByName(String name);
 
     /**
      * Find category by name or nameUa.
@@ -25,7 +25,7 @@ public interface CategoryRepo extends JpaRepository<Category, Long> {
      * @return a category by name.
      */
     @Query(nativeQuery = true, value = "select * from categories c "
-        + "where lower(c.name_en) like lower(concat('%', :name, '%')) "
-        + "OR lower(c.name_uk) like lower(concat('%', :name, '%'))")
+        + "where lower(c.name) like lower(concat('%', :name, '%')) "
+        + "OR lower(c.name_ua) like lower(concat('%', :name, '%'))")
     Category findCategoryByName(String name);
 }

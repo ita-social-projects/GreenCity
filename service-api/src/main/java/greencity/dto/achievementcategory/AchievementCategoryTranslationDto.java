@@ -20,7 +20,7 @@ public class AchievementCategoryTranslationDto {
     private Long id;
 
     @NotBlank
-    private String titleUk;
+    private String title;
 
     @NotBlank
     private String titleEn;

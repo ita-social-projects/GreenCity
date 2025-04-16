@@ -8,15 +8,14 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsGroupedTagsDto;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchNewsDto;
@@ -977,20 +976,5 @@ class EcoNewsServiceImplTest {
         assertEquals(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
         verify(userRepo).findByEmail(TestConst.EMAIL);
-    }
-
-    @Test
-    void findDtoByIdTest() {
-        EcoNews ecoNewsExisting = ModelUtils.getEcoNews();
-        EcoNewsGroupedTagsDto expected = ModelUtils.getEcoNewsGroupedTagsDto();
-        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNewsExisting));
-        when(modelMapper.map(ecoNews, EcoNewsGroupedTagsDto.class)).thenReturn(expected);
-        assertEquals(expected, ecoNewsService.findDtoById(1L));
-    }
-
-    @Test
-    void findDtoByIdNoNewsFoundTest() {
-        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> ecoNewsService.findDtoById(1L));
     }
 }

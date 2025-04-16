@@ -22,7 +22,7 @@ class FavoritePlaceWithLocationMapperTest {
         location.setId(favoritePlace.getPlace().getLocation().getId());
         location.setLng(favoritePlace.getPlace().getLocation().getLng());
         location.setLat(favoritePlace.getPlace().getLocation().getLat());
-        location.setAddress(favoritePlace.getPlace().getLocation().getAddressEn());
+        location.setAddress(favoritePlace.getPlace().getLocation().getAddress());
 
         PlaceByBoundsDto expected = new PlaceByBoundsDto(favoritePlace.getId(), favoritePlace.getName(), location);
 

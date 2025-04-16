@@ -32,7 +32,7 @@ class PlaceInfoDtoMapperTest {
             .id(place.getLocation().getId())
             .lat(place.getLocation().getLat())
             .lng(place.getLocation().getLng())
-            .address(place.getLocation().getAddressEn()).build();
+            .address(place.getLocation().getAddress()).build();
 
         PlaceInfoDto placeInfoDto = new PlaceInfoDto();
         placeInfoDto.setId(1L);
