@@ -23,7 +23,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
@@ -34,7 +33,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AIServiceImpl implements AIService {
@@ -277,10 +275,11 @@ public class AIServiceImpl implements AIService {
             sanitizedResponse = sanitizedResponse
                 .replace(FORMAT_JSON_CODE_BLOCK_START, FORMAT_EMPTY_STRING)
                 .replace(FORMAT_JSON_CODE_BLOCK_END, FORMAT_EMPTY_STRING)
-                .replace("Title: ", "")
-                .replace("\\*\\*", "")
-                .replace("\\*", "")
-                .replaceAll("\\*+", "")
+                .replace(FORMAT_TITLE_PREFIX, FORMAT_EMPTY_STRING)
+                .replace(FORMAT_ASTERISKS_ESCAPE, FORMAT_EMPTY_STRING)
+                .replace(REGEX_ASTERISKS, FORMAT_EMPTY_STRING)
+                .replace(REGEX_MARKDOWN_ASTERISKS, FORMAT_EMPTY_STRING)
+                .replace(REGEX_MD_HEADERS, FORMAT_EMPTY_STRING)
                 .trim();
 
             ObjectMapper objectMapper = new ObjectMapper();
