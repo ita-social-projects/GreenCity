@@ -28,7 +28,7 @@ class ProposePlaceMapperTest {
         OpeningHoursDto openingHours = ModelUtils.getOpeningHoursDto();
 
         CategoryDto category = CategoryDto.builder()
-            .name("category")
+            .nameEn("category")
             .build();
 
         PhotoAddDto photo = new PhotoAddDto();
@@ -59,7 +59,7 @@ class ProposePlaceMapperTest {
         place.setName("place");
         place.setLocation(ModelUtils.getLocation());
         place.setCategory(Category.builder()
-            .name("category")
+            .nameEn("category")
             .build());
         place.setOpeningHoursList(Collections.singleton(openingHours1));
         place.setDiscountValues(Collections.singleton(discountValue1));

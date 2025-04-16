@@ -16,7 +16,7 @@ public class LocationVO {
     private Long id;
     private Double lat;
     private Double lng;
-    private String address;
+    private String addressEn;
     private PlaceVO place;
-    private String addressUa;
+    private String addressUk;
 }

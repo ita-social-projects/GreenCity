@@ -16,9 +16,9 @@ import lombok.ToString;
 @ToString
 @Builder
 public class AddPlaceLocation {
-    private String address;
+    private String addressUk;
 
-    private String addressEng;
+    private String addressEn;
 
     private Double lat;
 

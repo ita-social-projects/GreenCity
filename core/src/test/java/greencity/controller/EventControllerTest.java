@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import static greencity.ModelUtils.getCreateJsonFile;
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
@@ -724,14 +725,14 @@ class EventControllerTest {
               "dates": [
                 {
                     "coordinates": {
-                    "streetUa": "string",
+                    "streetUk": "string",
                     "streetEn": "string",
                     "houseNumber": "string",
-                    "cityUa": "string",
+                    "cityUk": "string",
                     "cityEn": "string",
-                    "regionUa": "string",
+                    "regionUk": "string",
                     "regionEn": "string",
-                    "countryUa": "string",
+                    "countryUk": "string",
                     "countryEn": "string",
                     "latitude": 0,
                     "longitude": 0
@@ -756,7 +757,7 @@ class EventControllerTest {
                 {
                   "id": 0,
                   "nameEn": "string",
-                  "nameUa": "string"
+                  "nameUk": "string"
                 }
               ],
               "title": "string",
@@ -890,5 +891,16 @@ class EventControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest()))
             .hasCause(new WrongIdException(ErrorMessage.EVENT_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL));
+    }
+
+    @Test
+    @SneakyThrows
+    void getRelevantAddressesTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses/get-relevant")
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService, times(1)).getAllRelevantEventsCityByUser(userVO);
     }
 }

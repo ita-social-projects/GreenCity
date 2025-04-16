@@ -5,6 +5,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventCityDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
@@ -350,4 +351,43 @@ public interface EventService {
      *         users who disliked the event
      */
     Page<UserProfilePictureDto> getUsersDislikedEventPage(Long eventId, Pageable pageable);
+
+    /**
+     * Retrieves a list of events organized by the user with the specified ID. This
+     * method fetches all events where the user, identified by the given
+     * {@code userId}, is the organizer. The events are returned as a list of
+     * {@link EventDto} objects. If the user has not organized any events, an empty
+     * list is returned.
+     *
+     * @param userId {@link Long} the ID of the user whose organized events are to
+     *               be retrieved.
+     * @return {@link List}&lt;{@link EventDto}&gt; a list of events organized by
+     *         the user, or an empty list if none are found.
+     */
+    List<EventDto> getAllEventsOrganizedByUser(Long userId);
+
+    /**
+     * Retrieves a list of events attended by the user with the specified ID. This
+     * method fetches all events where the user, identified by the given
+     * {@code userId}, is an attender. The events are returned as a list of
+     * {@link EventDto} objects. If the user has not attended any events, an empty
+     * list is returned.
+     *
+     * @param userId {@link Long} the ID of the user whose attended events are to be
+     *               retrieved.
+     * @return {@link List}&lt;{@link EventDto}&gt; a list of events attended by the
+     *         user, or an empty list if none are found.
+     */
+    List<EventDto> getAllEventsAttendedByUser(Long userId);
+
+    /**
+     * Returns a list of cities relevant to the user, including the user's city (if
+     * available) and the top three cities with the most events.
+     *
+     * @param userVO {@link UserVO} - represents the current user.
+     * @return {@link List} of {@link EventCityDto} containing cities sorted in
+     *         descending order based on the number of events.
+     * @author Andrii Danylenko
+     */
+    List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO);
 }

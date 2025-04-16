@@ -23,11 +23,11 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
-    private String name;
+    @Column(nullable = false, unique = true, length = 100, name = "name_en")
+    private String nameEn;
 
-    @Column(unique = true, length = 100)
-    private String nameUa;
+    @Column(unique = true, length = 100, name = "name_uk")
+    private String nameUk;
 
     @ManyToOne
     private Category parentCategory;

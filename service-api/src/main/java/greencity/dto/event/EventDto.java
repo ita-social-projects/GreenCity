@@ -1,7 +1,7 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagUkEnDto;
 import greencity.enums.EventType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
@@ -33,7 +33,7 @@ public class EventDto {
     private List<EventDateLocationDto> dates;
 
     @NotEmpty
-    private List<TagUaEnDto> tags;
+    private List<TagUkEnDto> tags;
 
     @Nullable
     private String titleImage;

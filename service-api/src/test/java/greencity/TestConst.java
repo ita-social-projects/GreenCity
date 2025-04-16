@@ -8,6 +8,7 @@ public final class TestConst {
     public static final String UPDATE_STATUS_URL = "/status";
     public static final String ACCESS_TOKEN = "Bearer token";
     public static final String GREEN_CITY_USER_ADDRESS = "https://www.greencity.com.ua";
+    public static final String GREEN_CITY_UBS_ADDRESS = "https://greencity-ubs.greencity.cx.ua";
     public static final String SYSTEM_EMAIL = "test-service-mail@greencity.ua";
     public static final String TOKEN = "token";
 }

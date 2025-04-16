@@ -16,8 +16,8 @@ public class AchievementVO {
     private Long id;
     private String title;
 
-    private String name;
-    private String nameEng;
+    private String nameUk;
+    private String nameEn;
     @NotEmpty
     private AchievementCategoryVO achievementCategory;
 
