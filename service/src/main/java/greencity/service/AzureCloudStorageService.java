@@ -91,4 +91,12 @@ public class AzureCloudStorageService implements FileService {
             client.delete();
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteAll(List<String> paths) {
+        paths.forEach(this::delete);
+    }
 }

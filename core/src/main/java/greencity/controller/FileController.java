@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,5 +44,22 @@ public class FileController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<String>> uploadFile(@RequestPart @NonNull List<MultipartFile> files) {
         return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(files));
+    }
+
+    /**
+     * Method for deleting files.
+     *
+     * @param paths urls of files to delete.
+     */
+    @Operation(summary = "Delete files.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+                    content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @DeleteMapping
+    public void deleteAll(@RequestBody @NonNull List<String> paths) {
+        fileService.deleteAll(paths);
     }
 }

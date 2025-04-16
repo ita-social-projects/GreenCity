@@ -34,4 +34,11 @@ public interface FileService {
      * @param path public file url.
      */
     void delete(String path);
+
+    /**
+     * Delete files from Azure Cloud Storage.
+     *
+     * @param paths public file urls.
+     */
+    void deleteAll(List<String> paths);
 }
