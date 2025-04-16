@@ -46,6 +46,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.logs.filter.LogFileFilterDto;
+import greencity.dto.notification.NotificationDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
@@ -739,5 +740,46 @@ public class ModelUtils {
             .dislikes(0)
             .countComments(0)
             .build();
+    }
+
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvanceDtoOfNotificationDtos(List<NotificationDto> notificationDtos,
+                                                                                               Pageable pageable) {
+        int totalElements = notificationDtos.size();
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+        int fromIndex = currentPage * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+
+        List<NotificationDto> pageContent = fromIndex < totalElements
+                ? notificationDtos.subList(fromIndex, toIndex)
+                : List.of();
+
+        return new PageableAdvancedDto<>(
+                pageContent,
+                totalElements,
+                currentPage,
+                totalPages,
+                currentPage,
+                currentPage > 0,
+                currentPage < totalPages - 1,
+                currentPage == 0,
+                currentPage == totalPages - 1
+        );
+    }
+
+    public static List<NotificationDto> getNotificationDtos() {
+        NotificationDto notificationDto1 = NotificationDto.builder()
+                .notificationId(2L)
+                .notificationType("Type one")
+                .message("Message one - unpaid")
+                .build();
+        NotificationDto notificationDto2 = NotificationDto.builder()
+                .notificationId(3L)
+                .notificationType("Type two")
+                .message("Message two - paid")
+                .build();
+
+        return List.of(notificationDto1, notificationDto2);
     }
 }
