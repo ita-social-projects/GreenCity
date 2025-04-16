@@ -36,7 +36,9 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
         request.setAttribute(ENDPOINT_ATTRIBUTE, endpoint);
         request.setAttribute(REQUEST_BODY_ATTRIBUTE, requestBody);
 
-        logger.info(REQUEST_LOG_FORMAT, endpoint, requestBody);
+        if (logger.isInfoEnabled()) {
+            logger.info(REQUEST_LOG_FORMAT, sanitize(endpoint), sanitize(requestBody));
+        }
         return true;
     }
 
@@ -70,7 +72,9 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
                 try {
                     return new String(content, wrapper.getCharacterEncoding());
                 } catch (Exception e) {
-                    logger.warn("Failed to read request body: {}", e.getMessage());
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Failed to read request body: {}", sanitize(e.getMessage()));
+                    }
                 }
             }
         }
@@ -84,7 +88,9 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
                 try {
                     return new String(responseContent, wrapper.getCharacterEncoding());
                 } catch (Exception e) {
-                    logger.warn("Failed to read response body: {}", e.getMessage());
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("Failed to read response body: {}", sanitize(e.getMessage()));
+                    }
                 }
             }
         }
@@ -94,9 +100,20 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
     private void logResponse(String endpoint, int status, long duration, String responseBody, Exception ex) {
         if (status >= 400 || ex != null) {
             String errorMessage = ex != null ? ex.getClass().getSimpleName() + ": " + ex.getMessage() : "Unknown error";
-            logger.info(ERROR_LOG_FORMAT, endpoint, status, duration, errorMessage, duration);
+            if (logger.isInfoEnabled()) {
+                logger.info(ERROR_LOG_FORMAT, sanitize(endpoint), status, duration, sanitize(errorMessage), duration);
+            }
         } else {
-            logger.info(RESPONSE_LOG_FORMAT, endpoint, status, responseBody, duration);
+            if (logger.isInfoEnabled()) {
+                logger.info(RESPONSE_LOG_FORMAT, sanitize(endpoint), status, sanitize(responseBody), duration);
+            }
         }
+    }
+
+    private String sanitize(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replaceAll("[<>\"&'\\n\\r]", "_");
     }
 }
