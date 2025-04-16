@@ -29,12 +29,12 @@ public class FileController {
     private final FileService fileService;
 
     /**
-     * Method for uploading a files.
+     * Method for uploading files.
      *
      * @param files files to save.
      * @return urls of the saved files.
      */
-    @Operation(summary = "Upload a files.")
+    @Operation(summary = "Upload files.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = List.class))),
@@ -42,8 +42,26 @@ public class FileController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<String>> uploadFile(@RequestPart @NonNull List<MultipartFile> files) {
+    public ResponseEntity<List<String>> uploadAll(@RequestPart @NonNull List<MultipartFile> files) {
         return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(files));
+    }
+
+    /**
+     * Method for uploading a file.
+     *
+     * @param file file to save.
+     * @return url of the saved file.
+     */
+    @Operation(summary = "Upload file.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+                    content = @Content(schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @PostMapping(path = "/single", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> upload(@RequestPart @NonNull MultipartFile file) {
+        return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(file));
     }
 
     /**
