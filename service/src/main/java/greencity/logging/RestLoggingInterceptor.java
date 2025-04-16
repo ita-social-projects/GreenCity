@@ -19,7 +19,7 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
     private static final String REQUEST_LOG_FORMAT = "Request - Endpoint: {}, Request Body: {}";
     private static final String RESPONSE_LOG_FORMAT =
         "Response - Endpoint: {}, Status: {}, Response: {}, Duration: {} ms";
-    private static final String ERROR_LOG_FORMAT = "Response - Endpoint: {}, Status: {}, Duration: {} ms";
+    private static final String ERROR_LOG_FORMAT = "Response - Endpoint: {}, Status: {}, Error: {}, Duration: {} ms";
     private static final String START_TIME_ATTRIBUTE = "startTime";
     private static final String ENDPOINT_ATTRIBUTE = "endpoint";
     private static final String REQUEST_BODY_ATTRIBUTE = "requestBody";
@@ -73,7 +73,15 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
 
     private String extractResponseBody(HttpServletResponse response) {
         if (response instanceof ContentCachingResponseWrapper wrapper) {
-            return extractContentFromWrapper(wrapper, "response body");
+            String responseBody = extractContentFromWrapper(wrapper, "response body");
+            try {
+                wrapper.copyBodyToResponse();
+            } catch (Exception e) {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Failed to copy response body: {}", sanitize(e.getMessage()));
+                }
+            }
+            return responseBody;
         }
         return DEFAULT_BODY_VALUE;
     }
@@ -84,7 +92,7 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
         }
 
         byte[] content = getContentBytes(wrapper);
-        if (content == null || content.length == 0) {
+        if (content.length == 0) {
             return DEFAULT_BODY_VALUE;
         }
 
@@ -97,7 +105,7 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
         } else if (wrapper instanceof ContentCachingResponseWrapper responseWrapper) {
             return responseWrapper.getContentAsByteArray();
         }
-        return null;
+        return new byte[0];
     }
 
     private String processContentWithEncoding(byte[] content, Object wrapper, String logMessagePrefix) {
@@ -123,8 +131,9 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
 
     private void logResponse(String endpoint, int status, long duration, String responseBody, Exception ex) {
         if (status >= 400 || ex != null) {
+            String errorMessage = ex != null ? ex.getMessage() : (responseBody != null ? responseBody : "");
             if (logger.isInfoEnabled()) {
-                logger.info(ERROR_LOG_FORMAT, sanitize(endpoint), status, duration);
+                logger.info(ERROR_LOG_FORMAT, sanitize(endpoint), status, sanitize(errorMessage), duration);
             }
         } else {
             if (logger.isInfoEnabled()) {

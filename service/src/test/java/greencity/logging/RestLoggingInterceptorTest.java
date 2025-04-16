@@ -195,10 +195,9 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertEquals(
-            "Response - Endpoint: POST /api/test, Status: 400, Duration: " + (System.currentTimeMillis() - startTime)
-                + " ms",
-            logEvent.getFormattedMessage());
+        String expectedPrefix = "Response - Endpoint: POST /api/test, Status: 400, Error: errorResponse, Duration: ";
+        assertTrue(logEvent.getFormattedMessage().startsWith(expectedPrefix),
+            "Log message should start with: " + expectedPrefix);
     }
 
     @Test
@@ -215,10 +214,10 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertEquals(
-            "Response - Endpoint: POST /api/test, Status: 200, Duration: " + (System.currentTimeMillis() - startTime)
-                + " ms",
-            logEvent.getFormattedMessage());
+
+        String expectedPrefix = "Response - Endpoint: POST /api/test, Status: 200, Error: Test error, Duration: ";
+        assertTrue(logEvent.getFormattedMessage().startsWith(expectedPrefix),
+            "Log message should start with: " + expectedPrefix);
     }
 
     @Test
@@ -391,8 +390,10 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertEquals("Response - Endpoint: POST /api/test, Status: 400, Duration: 100 ms",
-            logEvent.getFormattedMessage());
+
+        String expectedPrefix =
+            "Response - Endpoint: POST /api/test, Status: 400, Error: errorResponse, Duration: 100 ms";
+        assertEquals(expectedPrefix, logEvent.getFormattedMessage());
     }
 
     @Test
@@ -407,8 +408,10 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertEquals("Response - Endpoint: POST /api/test, Status: 200, Duration: 100 ms",
-            logEvent.getFormattedMessage());
+
+        String expectedMessage =
+            "Response - Endpoint: POST /api/test, Status: 200, Error: Test error, Duration: 100 ms";
+        assertEquals(expectedMessage, logEvent.getFormattedMessage());
     }
 
     private String invokePrivateMethod(String methodName, Class<?>[] parameterTypes, Object arg) throws Exception {
