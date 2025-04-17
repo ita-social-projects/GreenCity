@@ -2,7 +2,10 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageVO;
+import greencity.entity.Language;
 import greencity.exception.exceptions.LanguageNotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.LanguageRepo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +47,23 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public List<String> findAllLanguageCodes() {
         return languageRepo.findAllLanguageCodes();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LanguageVO findById(Long id) {
+        Language language = languageRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException());
+        return modelMapper.map(language, LanguageVO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean existsById(Long id) {
+        return languageRepo.existsById(id);
     }
 }
