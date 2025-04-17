@@ -6,6 +6,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -23,7 +24,6 @@ import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
-import greencity.repository.UserNotificationPreferenceRepo;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -59,7 +59,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final RestClient restClient;
     private final UserRemoteClient userRemoteClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-    private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
     private final UserService userService;
     @Value("${client.address}")
     private String clientAddress;
@@ -233,22 +232,22 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference, LocalDateTime now) {
-        boolean timeToSend = userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(userId,
-            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+        boolean timeToSend = userRemoteClient.searchUserNotificationPreference(new EmailPreferenceDto(userId,
+            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY));
         if (now.getHour() < 12) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.DAILY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                    EmailPreferencePeriodicity.DAILY));
         }
         if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.WEEKLY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                    EmailPreferencePeriodicity.WEEKLY));
         }
         if (now.getDayOfMonth() == 1) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.MONTHLY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                    EmailPreferencePeriodicity.MONTHLY));
         }
         return timeToSend;
     }
