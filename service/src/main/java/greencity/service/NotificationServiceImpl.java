@@ -218,9 +218,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .forEach(notification -> {
 
                         User targetUser = notification.getTargetUser();
-                        String userEmail = targetUser.getEmail();
-                        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
-                                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+                        UserVO userVO = modelMapper.map(targetUser, UserVO.class);
 
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
                                 userVO.getLanguage().getCode());
@@ -374,9 +372,7 @@ public class NotificationServiceImpl implements NotificationService {
             actionUserText = actionUsersSize + " " + bundle.getString("USERS");
         } else if (actionUsersSize == 1) {
             User firstActionUser = notification.getActionUsers().getFirst();
-            String firstActionUserEmail = firstActionUser.getEmail();
-            UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(firstActionUserEmail)
-                    .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + firstActionUserEmail));
+            UserVO userVO = modelMapper.map(firstActionUser, UserVO.class);
 
             actionUserText = userVO.getName();
         } else {
@@ -398,9 +394,7 @@ public class NotificationServiceImpl implements NotificationService {
             .replace("{times}", times);
 
         User targetUser = notification.getTargetUser();
-        String targetUserEmail = targetUser.getEmail();
-        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(targetUserEmail)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + targetUserEmail));
+        UserVO userVO = modelMapper.map(targetUser, UserVO.class);
 
         return ScheduledEmailMessage.builder()
             .email(notification.getTargetUser().getEmail())

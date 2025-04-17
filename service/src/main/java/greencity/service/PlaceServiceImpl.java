@@ -102,7 +102,6 @@ public class PlaceServiceImpl implements PlaceService {
     private final CategoryRepo categoryRepo;
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
-    private final UserRemoteClient userRemoteClient;
     private final FavoritePlaceRepo favoritePlaceRepo;
     private final FileService fileService;
     private final UserNotificationService userNotificationService;
@@ -555,9 +554,7 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
         User user = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-
-        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(email)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        UserVO userVO = modelMapper.map(user, UserVO.class);
 
         if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);

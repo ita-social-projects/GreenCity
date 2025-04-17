@@ -134,7 +134,6 @@ public class EventServiceImpl implements EventService {
     private final GoogleApiService googleApiService;
     private final UserService userService;
     private final UserRepo userRepo;
-    private final UserRemoteClient userRemoteClient;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
@@ -465,9 +464,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateOrganizerPermissions(User organizer, Event toUpdate) {
-        String organizerEmail = organizer.getEmail();
-        UserVO organizerVO = userRemoteClient.findNotDeactivatedByEmail(organizerEmail)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + organizerEmail));
+        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
         if (organizerVO.getRole() != Role.ROLE_ADMIN && organizerVO.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);

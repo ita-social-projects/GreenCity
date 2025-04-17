@@ -63,7 +63,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
     private final UserService userService;
-    private final UserRemoteClient userRemoteClient;
     private final NotificationService notificationService;
     private final HabitInvitationService habitInvitationService;
     private final NotificationFriendService notificationFriendService;
@@ -633,9 +632,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private void setActionUserDetails(NotificationDto dto, Notification notification) {
         List<User> uniqueUsers = notification.getActionUsers().stream().distinct().toList();
         dto.setActionUserText(uniqueUsers.stream().map(user -> {
-            String userEmail = user.getEmail();
-            UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
-                    .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+            UserVO userVO = modelMapper.map(user, UserVO.class);
             return userVO.getName();
         }).toList());
         dto.setActionUserId(uniqueUsers.stream().map(User::getId).toList());

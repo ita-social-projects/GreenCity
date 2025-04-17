@@ -1,28 +1,27 @@
 package greencity.mapping;
 
-import greencity.client.UserRemoteClient;
-import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.WrongEmailException;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class UserManagementVOMapper extends AbstractConverter<User, UserManagementVO> {
 
-    private final UserRemoteClient userRemoteClient;
+    private final ModelMapper modelMapper;
+
+    @Lazy
+    public UserManagementVOMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     protected UserManagementVO convert(User user) {
-        String userEmail = user.getEmail();
-        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        UserVO userVO = modelMapper.map(user, UserVO.class);
 
         return UserManagementVO.builder()
             .id(user.getId())

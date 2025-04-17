@@ -88,7 +88,6 @@ public class HabitServiceImpl implements HabitService {
     private final CustomToDoListItemRepo customToDoListItemRepo;
     private final LanguageRepo languageRepo;
     private final UserRepo userRepo;
-    private final UserRemoteClient userRemoteClient;
     private final TagsRepo tagsRepo;
     private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
@@ -520,9 +519,7 @@ public class HabitServiceImpl implements HabitService {
             List<Long> friendsIds = addCustomHabitDtoRequest.getFriendsToInvite().stream()
                 .map(UserFriendDto::getId)
                 .collect(Collectors.toList());
-            String userEmail = user.getEmail();
-            UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
-                    .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+            UserVO userVO = modelMapper.map(user, UserVO.class);
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
                 modelMapper.map(user, UserVO.class), friendsIds, habit.getId(),
@@ -531,9 +528,7 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {
-        String userEmail = user.getEmail();
-        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(userEmail)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        UserVO userVO = modelMapper.map(user, UserVO.class);
 
         if (userVO.getRole() != Role.ROLE_ADMIN && userVO.getRole() != Role.ROLE_MODERATOR
             && !user.getId().equals(habit.getUserId())) {
