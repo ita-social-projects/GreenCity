@@ -1,12 +1,13 @@
 package greencity.aspects;
 
 import greencity.annotations.CheckEmailPreference;
+import greencity.client.UserRemoteClient;
+import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.EmailMessage;
-import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EmailPreferenceAspect {
-    private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
+    private final UserRemoteClient userRemoteClient;
     private final UserServiceImpl userServiceImpl;
 
     @Around("@annotation(checkEmailPreference)")
@@ -31,9 +32,13 @@ public class EmailPreferenceAspect {
         String email = extractEmailFromArgs(args);
         UserVO user = userServiceImpl.findByEmail(email);
 
-        boolean hasPreference =
-            userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(), emailPreference,
-                EmailPreferencePeriodicity.IMMEDIATELY);
+        EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(
+                user.getId(),
+                emailPreference,
+                EmailPreferencePeriodicity.IMMEDIATELY
+        );
+
+        boolean hasPreference = userRemoteClient.searchUserNotificationPreference(emailPreferenceDto);
 
         if (hasPreference) {
             return proceedingJoinPoint.proceed();
