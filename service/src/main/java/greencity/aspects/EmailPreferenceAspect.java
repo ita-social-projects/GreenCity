@@ -5,6 +5,7 @@ import greencity.client.UserRemoteClient;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
+import greencity.entity.User;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.EmailMessage;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Component;
 public class EmailPreferenceAspect {
     private final UserRemoteClient userRemoteClient;
     private final UserServiceImpl userServiceImpl;
+    private final ModelMapper modelMapper;
 
     @Around("@annotation(checkEmailPreference)")
     public Object checkEmailPreference(ProceedingJoinPoint proceedingJoinPoint,
@@ -47,11 +50,13 @@ public class EmailPreferenceAspect {
         }
     }
 
-    public static String extractEmail(Object message) {
+    private String extractEmail(Object message) {
         if (message instanceof EmailMessage) {
             return ((EmailMessage) message).getEmail();
         } else if (message instanceof Notification) {
-            return ((Notification) message).getTargetUser().getEmail();
+            User user = ((Notification) message).getTargetUser();
+            UserVO userVO = modelMapper.map(user, UserVO.class);
+            return userVO.getEmail();
         }
         return null;
     }
