@@ -6,6 +6,7 @@ import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
@@ -19,7 +20,16 @@ public interface AchievementService {
      *               achievements.
      * @return A list of UserAchievement objects related to the specified user ID.
      */
-    List<UserAchievementVO> findAllByUserId(Long userId);
+    List<UserAchievementVO> findAllUserAchievementsByUserId(Long userId);
+
+    /**
+     * Retrieves a list of UserAction objects associated with a given user ID.
+     *
+     * @param userId The unique identifier of the user for whom to fetch the
+     *               user actions.
+     * @return A list of UserActionVO objects related to the specified user ID.
+     */
+    List<UserActionVO> findAllUserActionsByUserId(Long userId);
 
     /**
      * Method for finding all the achievements.

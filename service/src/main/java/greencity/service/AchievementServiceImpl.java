@@ -8,6 +8,7 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.BadCategoryRequestException;
@@ -53,9 +54,19 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserAchievementVO> findAllByUserId(Long userId) {
+    public List<UserAchievementVO> findAllUserAchievementsByUserId(Long userId) {
         return userAchievementRepo.getUserAchievementByUserId(userId).stream()
                 .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserActionVO> findAllUserActionsByUserId(Long userId) {
+        return userActionRepo.findAllByUserId(userId).stream()
+                .map(userAction -> modelMapper.map(userAction, UserActionVO.class))
                 .toList();
     }
 
