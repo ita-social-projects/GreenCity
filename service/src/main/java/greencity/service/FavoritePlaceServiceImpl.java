@@ -46,7 +46,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
                 ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS.formatted(favoritePlaceDto.getPlaceId(), userEmail));
         }
         favoritePlace
-            .setUser(User.builder().email(userEmail).id(restClient.findIdByEmail(userEmail)).build());
+            .setUser(User.builder().id(restClient.findIdByEmail(userEmail)).build());
         return modelMapper.map(favoritePlaceRepo.save(favoritePlace), FavoritePlaceDto.class);
     }
 
