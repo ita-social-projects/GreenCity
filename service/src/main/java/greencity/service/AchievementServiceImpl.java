@@ -51,6 +51,15 @@ public class AchievementServiceImpl implements AchievementService {
     /**
      * {@inheritDoc}
      */
+    public List<AchievementVO> findAll() {
+        return achievementRepo.findAll().stream()
+                .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void achieve(ActionDto user) {

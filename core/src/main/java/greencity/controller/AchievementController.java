@@ -88,4 +88,22 @@ public class AchievementController {
         return ResponseEntity.ok().body(achievementService.findAchievementCountByTypeAndCategory(principal.getName(),
             achievementStatus, achievementCategoryId));
     }
+
+    /**
+     * Method returns all achievements
+     *
+     * @return list of {@link AchievementVO}
+     */
+    @Operation(summary = "Get all achievements by type and category.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/all")
+    public ResponseEntity<List<AchievementVO>> findAll() {
+        return ResponseEntity.ok().body(achievementService.findAll());
+    }
 }
