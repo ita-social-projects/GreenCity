@@ -11,13 +11,7 @@ import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -49,6 +43,15 @@ public interface UserRemoteClient {
      */
     @GetMapping("/user/findNotDeactivatedByEmail")
     Optional<UserVO> findNotDeactivatedByEmail(@RequestParam(EMAIL) String email);
+
+    /**
+     * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by id.
+     *
+     * @param id - {@link UserVO}'s id
+     * @return {@link Optional} of found {@link UserVO}.
+     */
+    @GetMapping("/user/findNotDeactivatedById")
+    Optional<UserVO> findNotDeactivatedById(@RequestParam Long id);
 
     @PatchMapping("/user/status")
     Optional<UserStatusDto> updateUserStatus(@RequestBody UserStatusDto userStatusDto);

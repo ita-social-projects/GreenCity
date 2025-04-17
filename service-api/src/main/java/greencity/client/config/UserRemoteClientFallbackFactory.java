@@ -31,6 +31,11 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
+            public Optional<UserVO> findNotDeactivatedById(Long id) {
+                throw new RuntimeException("not implemented");
+            }
+
+            @Override
             public Optional<UserStatusDto> updateUserStatus(UserStatusDto userStatusDto) {
                 //TODO: log
                 return Optional.empty();
