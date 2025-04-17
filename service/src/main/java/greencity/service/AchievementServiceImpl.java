@@ -6,6 +6,7 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.habit.HabitVO;
 import greencity.entity.*;
 import greencity.enums.AchievementStatus;
@@ -47,6 +48,16 @@ public class AchievementServiceImpl implements AchievementService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final RatingPointsService ratingPointsService;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserAchievementVO> findAllByUserId(Long userId) {
+        return userAchievementRepo.getUserAchievementByUserId(userId).stream()
+                .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
+                .toList();
+    }
 
     /**
      * {@inheritDoc}
