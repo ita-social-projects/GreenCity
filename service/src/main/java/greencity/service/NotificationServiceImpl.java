@@ -397,7 +397,7 @@ public class NotificationServiceImpl implements NotificationService {
         UserVO userVO = modelMapper.map(targetUser, UserVO.class);
 
         return ScheduledEmailMessage.builder()
-            .email(notification.getTargetUser().getEmail())
+            .email(userVO.getEmail())
             .username(userVO.getName())
             .baseLink(createBaseLink(notification))
             .subject(subject)
