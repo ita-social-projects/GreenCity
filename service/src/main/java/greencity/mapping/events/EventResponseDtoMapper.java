@@ -102,7 +102,7 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                 organizer.getId(),
                 organizerVO.getName(),
                 organizer.getEventOrganizerRating(),
-                organizer.getEmail()),
+                organizerVO.getEmail()),
             event.getCreationDate(),
             event.isOpen(),
             dateInformation,
