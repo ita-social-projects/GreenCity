@@ -2,14 +2,22 @@ package greencity.client;
 
 import greencity.client.config.UserRemoteClientFallbackFactory;
 import greencity.client.config.UserRemoteClientInterceptor;
+import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserLocationStatisticDto;
+import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -65,4 +73,20 @@ public interface UserRemoteClient {
 
     @GetMapping("/user/count-active-users")
     Optional<Long> countActiveUsers();
+
+    /**
+     * Get user notification preferences by user id.
+     *
+     * @return list of {@link UserNotificationPreferenceVO}
+     */
+    @GetMapping("/user-notification-preference")
+    List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(@RequestParam Long userId);
+
+    /**
+     * Check is user notification preference exists by params in EmailPreferenceDto
+     *
+     * @return boolean of whether UserNotificationPreference exists
+     */
+    @GetMapping("/user-notification-preference/search")
+    Boolean searchUserNotificationPreference(@RequestBody EmailPreferenceDto emailPreferenceDto);
 }

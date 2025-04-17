@@ -3,8 +3,10 @@ package greencity.client.config;
 import feign.hystrix.FallbackFactory;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
+import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserLocationStatisticDto;
+import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
@@ -68,6 +70,16 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             public Optional<Long> countActiveUsers() {
                 //TODO: log
                 return Optional.empty();
+            }
+
+            @Override
+            public List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(Long userId) {
+                throw new RuntimeException("not implemented");
+            }
+
+            @Override
+            public Boolean searchUserNotificationPreference(EmailPreferenceDto emailPreferenceDto) {
+                throw new RuntimeException("not implemeneted");
             }
         };
     }
