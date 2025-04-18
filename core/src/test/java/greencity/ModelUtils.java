@@ -133,9 +133,9 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(Role.ROLE_USER)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
+            // .role(Role.ROLE_USER)
+            // .lastActivityTime(LocalDateTime.now())
+            // .dateOfRegistration(LocalDateTime.now())
             .build();
     }
 

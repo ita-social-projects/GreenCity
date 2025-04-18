@@ -30,7 +30,7 @@ class EcoNewsVOMapperTest {
                 .name(ecoNews.getAuthor().getName())
                 .email(ecoNews.getAuthor().getEmail())
                 .userStatus(ecoNews.getAuthor().getUserStatus())
-                .role(ecoNews.getAuthor().getRole())
+                //.role(ecoNews.getAuthor().getRole())
                 .build())
             .creationDate(ecoNews.getCreationDate())
             .imagePath(ecoNews.getImagePath())

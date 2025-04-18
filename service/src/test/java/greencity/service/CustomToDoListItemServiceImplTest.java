@@ -77,11 +77,11 @@ class CustomToDoListItemServiceImplTest {
             .id(1L)
             .name("Test Testing")
             .email("test@gmail.com")
-            .role(Role.ROLE_USER)
+            //.role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .emailNotification(EmailNotification.DISABLED)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
+            //.emailNotification(EmailNotification.DISABLED)
+            //.lastActivityTime(LocalDateTime.now())
+            //.dateOfRegistration(LocalDateTime.now())
             .customToDoListItems(new ArrayList<>())
             .build();
 
