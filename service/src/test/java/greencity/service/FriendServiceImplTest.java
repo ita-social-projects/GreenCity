@@ -8,7 +8,6 @@ import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
-import greencity.entity.UserLocation;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -792,9 +791,9 @@ class FriendServiceImplTest {
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
 
         User userWithLocation = new User();
-        UserLocation userLocation = new UserLocation();
+        /*UserLocation userLocation = new UserLocation();
         userLocation.setCityUk("testCity");
-        userWithLocation.setUserLocation(userLocation);
+        userWithLocation.setUserLocation(userLocation);*/
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.findById(userId)).thenReturn(Optional.of(userWithLocation));
@@ -848,9 +847,9 @@ class FriendServiceImplTest {
         int page = 0;
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
-        UserLocation userLocation = new UserLocation();
+//        UserLocation userLocation = new UserLocation();
         User userWithNullCity = new User();
-        userWithNullCity.setUserLocation(userLocation);
+//        userWithNullCity.setUserLocation(userLocation);
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(userWithNullCity));
         when(userRepo.existsById(userId)).thenReturn(true);

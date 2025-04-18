@@ -5,8 +5,13 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitDateCount;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.HabitStatusCount;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
@@ -17,11 +22,15 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
-import greencity.dto.habitstatistic.GetHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -32,15 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import greencity.repository.UserRepo;
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @EnableCaching
@@ -51,7 +51,6 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitRepo habitRepo;
     private final DateService dateService;
     private final ModelMapper modelMapper;
-    private final UserRepo userRepo;
     private final UserRemoteClient userRemoteClient;
 
     /**
@@ -202,7 +201,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateUserInterest() {
-        Long totalActiveUsers = userRemoteClient.countActiveUsers().orElseThrow();
+        Long totalActiveUsers = userRemoteClient.countActiveUsers();
         List<Long> creators = habitRepo.countActiveHabitCreators();
         List<Long> followers = habitRepo.countActiveHabitFollowers();
         Set<Long> participatingUsers = new HashSet<>(followers);

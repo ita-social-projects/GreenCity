@@ -6,7 +6,6 @@ import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.entity.User;
-import greencity.entity.VerifyEmail;
 import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -20,11 +19,7 @@ public class ModelUtils {
             .id(1L)
             .email("danylo@gmail.com")
             .name("Taras")
-            .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .lastActivityTime(LocalDateTime.now())
-            .verifyEmail(new VerifyEmail())
-            .dateOfRegistration(LocalDateTime.now())
             .build();
     }
 

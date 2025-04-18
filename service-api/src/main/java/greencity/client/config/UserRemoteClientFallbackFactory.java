@@ -48,15 +48,13 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
-            public Optional<List<UserRoleStatisticDto>> getUserRolesDistribution() {
-                //TODO: log
-                return Optional.empty();
+            public List<UserRoleStatisticDto> getUserRolesDistribution() {
+                throw new RuntimeException("not implemented");
             }
 
             @Override
-            public Optional<List<UserStatusStatisticDto>> getUserStatusesDistribution() {
-                //TODO: log
-                return Optional.empty();
+            public List<UserStatusStatisticDto> getUserStatusesDistribution() {
+                throw new RuntimeException("not implemented");
             }
 
             @Override
@@ -66,15 +64,13 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
-            public Optional<List<UserEmailPreferencesStatisticDto>> getUserEmailPreferencesDistribution() {
-                //TODO: log
-                return Optional.empty();
+            public List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution() {
+                throw new RuntimeException("not implemented");
             }
 
             @Override
-            public Optional<Long> countActiveUsers() {
-                //TODO: log
-                return Optional.empty();
+            public Long countActiveUsers() {
+                throw new RuntimeException("not implemented");
             }
 
             @Override

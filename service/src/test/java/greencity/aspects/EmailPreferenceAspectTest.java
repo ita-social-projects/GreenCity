@@ -2,11 +2,12 @@ package greencity.aspects;
 
 import greencity.ModelUtils;
 import greencity.annotations.CheckEmailPreference;
+import greencity.client.UserRemoteClient;
+import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.ScheduledEmailMessage;
-import greencity.repository.UserNotificationPreferenceRepo;
 import greencity.service.UserServiceImpl;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class EmailPreferenceAspectTest {
     @Mock
-    private UserNotificationPreferenceRepo userNotificationPreferenceRepo;
+    private UserRemoteClient userRemoteClient;
     @Mock
     private UserServiceImpl userServiceImpl;
     @Mock
@@ -44,10 +45,10 @@ class EmailPreferenceAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
+        EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(),
-            emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
+        when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(true);
 
         Object expectedResult = new Object();
@@ -70,11 +71,11 @@ class EmailPreferenceAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
+        EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
 
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
-        when(userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(user.getId(),
-            emailPreference, EmailPreferencePeriodicity.IMMEDIATELY))
+        when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(false);
 
         Object result = emailPreferenceAspect.checkEmailPreference(proceedingJoinPoint, checkEmailPreference);

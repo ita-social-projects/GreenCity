@@ -1003,7 +1003,7 @@ class HabitServiceImplTest {
     @Test
     void updateCustomHabitTest() throws IOException {
         User user = ModelUtils.getUser();
-        user.setRole(Role.ROLE_ADMIN);
+        // user.setRole(Role.ROLE_ADMIN);
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Language languageEn = ModelUtils.getLanguage();
@@ -1083,7 +1083,7 @@ class HabitServiceImplTest {
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
         User user = ModelUtils.getUser();
         String email = user.getEmail();
-        user.setRole(Role.ROLE_USER);
+        // user.setRole(Role.ROLE_USER);
 
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
 
@@ -1100,7 +1100,7 @@ class HabitServiceImplTest {
     @Test
     void updateCustomHabitWithNewCustomToDoListItemToUpdateTest() throws IOException {
         User user = ModelUtils.getTestUser();
-        user.setRole(Role.ROLE_ADMIN);
+        // user.setRole(Role.ROLE_ADMIN);
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
@@ -1139,7 +1139,7 @@ class HabitServiceImplTest {
     @Test
     void updateCustomHabitWithComplexityToUpdateTest() throws IOException {
         User user = ModelUtils.getTestUser();
-        user.setRole(Role.ROLE_ADMIN);
+        // user.setRole(Role.ROLE_ADMIN);
 
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
@@ -1174,7 +1174,7 @@ class HabitServiceImplTest {
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
         User user = ModelUtils.getTestUser();
         String email = user.getEmail();
-        user.setRole(Role.ROLE_USER);
+        // user.setRole(Role.ROLE_USER);
 
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         habit.setUserId(1L);

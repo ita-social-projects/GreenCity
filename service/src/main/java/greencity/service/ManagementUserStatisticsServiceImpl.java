@@ -38,8 +38,7 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserRoleStatisticDto> getUserRolesDistribution() {
-        return userRemoteClient.getUserRolesDistribution()
-                .orElseThrow(() -> new NotFoundException());
+        return userRemoteClient.getUserRolesDistribution();
     }
 
     /**
@@ -47,8 +46,7 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserStatusStatisticDto> getUserStatusesDistribution() {
-        return userRemoteClient.getUserStatusesDistribution()
-                .orElseThrow(() -> new NotFoundException());
+        return userRemoteClient.getUserStatusesDistribution();
     }
 
     /**
@@ -65,7 +63,6 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution() {
-        return userRemoteClient.getUserEmailPreferencesDistribution()
-                .orElseThrow(() -> new NotFoundException());
+        return userRemoteClient.getUserEmailPreferencesDistribution();
     }
 }

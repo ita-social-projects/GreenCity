@@ -172,7 +172,6 @@ import greencity.entity.Photo;
 import greencity.entity.Place;
 import greencity.entity.PlaceComment;
 import greencity.entity.RatingPoints;
-import greencity.entity.SocialNetworkImage;
 import greencity.entity.Specification;
 import greencity.entity.Tag;
 import greencity.entity.ToDoListItem;
@@ -180,7 +179,6 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserToDoListItem;
-import greencity.entity.VerifyEmail;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -458,15 +456,10 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .lastActivityTime(localDateTime)
-            .verifyEmail(new VerifyEmail())
-            .dateOfRegistration(localDateTime)
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
-            .language(getLanguage())
             .build();
     }
 
@@ -475,15 +468,10 @@ public class ModelUtils {
             .id(2L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .lastActivityTime(localDateTime)
-            .verifyEmail(new VerifyEmail())
-            .dateOfRegistration(localDateTime)
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
-            .language(getLanguage())
             .build();
     }
 
@@ -492,11 +480,7 @@ public class ModelUtils {
             .id(2L)
             .email("danylo@gmail.com")
             .name("Danylo")
-            .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .lastActivityTime(localDateTime)
-            .verifyEmail(new VerifyEmail())
-            .dateOfRegistration(localDateTime)
             .build();
     }
 
@@ -511,7 +495,6 @@ public class ModelUtils {
     public static User getTestUser() {
         return User.builder()
             .id(2L)
-            .role(Role.ROLE_USER)
             .email("user@email.com")
             .build();
     }
@@ -519,35 +502,27 @@ public class ModelUtils {
     public static List<User> getFriendsList() {
         User friend1 = User.builder()
             .id(10L)
-            .rating(10.0)
             .build();
         User friend2 = User.builder()
             .id(2L)
-            .rating(20.0)
             .build();
         User friend3 = User.builder()
             .id(3L)
-            .rating(30.0)
             .build();
         User friend4 = User.builder()
             .id(4L)
-            .rating(40.0)
             .build();
         User friend5 = User.builder()
             .id(5L)
-            .rating(50.0)
             .build();
         User friend6 = User.builder()
             .id(6L)
-            .rating(60.0)
             .build();
         User friend7 = User.builder()
             .id(7L)
-            .rating(70.0)
             .build();
         User friend8 = User.builder()
             .id(8L)
-            .rating(80.0)
             .build();
         return List.of(friend1, friend2, friend3, friend4, friend5, friend6, friend7, friend8);
     }
@@ -1798,7 +1773,6 @@ public class ModelUtils {
     private static User createUserRoleUser() {
         return User.builder()
             .id(2L)
-            .role(Role.ROLE_USER)
             .email("test2@mail.com")
             .build();
     }
@@ -1814,7 +1788,6 @@ public class ModelUtils {
     private static User createUser() {
         return User.builder()
             .id(1L)
-            .role(Role.ROLE_MODERATOR)
             .email("test@mail.com")
             .build();
     }
@@ -3277,30 +3250,6 @@ public class ModelUtils {
 
     public static Page<User> getUserPage() {
         return new PageImpl<>(List.of(getUser()), getSortedPageable(), 1);
-    }
-
-    public static SocialNetworkImage getSocialNetworkImage() {
-        return SocialNetworkImage.builder()
-            .id(1L)
-            .hostPath("hostPath")
-            .imagePath("imagePath")
-            .build();
-    }
-
-    public static SocialNetworkImage getSocialNetworkImageId2() {
-        return SocialNetworkImage.builder()
-            .id(2L)
-            .hostPath("hostPath2")
-            .imagePath("imagePath2")
-            .build();
-    }
-
-    public static SocialNetworkImage getSocialNetworkImageId3() {
-        return SocialNetworkImage.builder()
-            .id(3L)
-            .hostPath("hostPath3")
-            .imagePath("imagePath3")
-            .build();
     }
 
     public static UserFilterDto getUserFilterDto() {

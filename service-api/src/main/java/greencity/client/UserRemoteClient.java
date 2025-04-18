@@ -63,19 +63,19 @@ public interface UserRemoteClient {
     );
 
     @GetMapping("/user/roles-distribution")
-    Optional<List<UserRoleStatisticDto>> getUserRolesDistribution();
+    List<UserRoleStatisticDto> getUserRolesDistribution();
 
     @GetMapping("/user/statuses-distribution")
-    Optional<List<UserStatusStatisticDto>> getUserStatusesDistribution();
+    List<UserStatusStatisticDto> getUserStatusesDistribution();
 
     @GetMapping("/user/locations-distribution")
     Optional<List<UserLocationStatisticDto>> getUserLocationsDistribution(@RequestParam(GROUP_BY) String groupBy);
 
     @GetMapping("/user/email-preferences-distribution")
-    Optional<List<UserEmailPreferencesStatisticDto>> getUserEmailPreferencesDistribution();
+    List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution();
 
     @GetMapping("/user/count-active-users")
-    Optional<Long> countActiveUsers();
+    Long countActiveUsers();
 
     /**
      * Get user notification preferences by user id.

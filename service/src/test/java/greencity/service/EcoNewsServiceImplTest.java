@@ -25,7 +25,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.VerifyEmail;
 import greencity.entity.RatingPoints;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
@@ -802,11 +801,7 @@ class EcoNewsServiceImplTest {
             .id(2L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .lastActivityTime(LocalDateTime.now())
-            .verifyEmail(new VerifyEmail())
-            .dateOfRegistration(LocalDateTime.now())
             .subscribedEvents(new HashSet<>())
             .favoriteEvents(new HashSet<>())
             .build();

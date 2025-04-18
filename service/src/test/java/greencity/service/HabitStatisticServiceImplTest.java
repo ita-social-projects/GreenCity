@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.*;
@@ -59,7 +60,7 @@ class HabitStatisticServiceImplTest {
     @InjectMocks
     private HabitStatisticServiceImpl habitStatisticService;
     @Mock
-    private UserRepo userRepo;
+    private UserRemoteClient userRemoteClient;
 
     private ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -237,7 +238,7 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void testCalculateUserInterest() {
-        when(userRepo.countActiveUsers()).thenReturn(100L);
+        when(userRemoteClient.countActiveUsers()).thenReturn(100L);
         when(habitRepo.countActiveHabitCreators()).thenReturn(List.of(1L, 2L, 3L));
         when(habitRepo.countActiveHabitFollowers()).thenReturn(List.of(4L, 5L));
 
