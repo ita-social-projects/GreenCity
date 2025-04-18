@@ -12,6 +12,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventCityDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventRequestDto;
@@ -732,5 +733,23 @@ public class EventController {
         @Parameter(hidden = true) Principal principal) {
         eventService.declineRequest(eventId, principal.getName(), userId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Retrieves cities relevant to the user, such as the user's own city (if
+     * available) and the top three cities with the highest number of events.
+     *
+     * @author Andrii Danylenko
+     */
+    @Operation(summary = "Retrieves cities relevant to the user, such as the user's own city "
+        + "(if available) and the top three cities with the highest number of events.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/addresses/get-relevant")
+    public ResponseEntity<List<EventCityDto>> getRelevantAddresses(
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok(eventService.getAllRelevantEventsCityByUser(userVO));
     }
 }

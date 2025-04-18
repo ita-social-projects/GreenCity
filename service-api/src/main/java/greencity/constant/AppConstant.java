@@ -38,4 +38,5 @@ public class AppConstant {
     public static final Set<String> supportedLanguages = Set.of(
         DEFAULT_LANGUAGE_CODE,
         LANGUAGE_CODE_UA);
+    public static final String EMPTY_STRING = "";
 }

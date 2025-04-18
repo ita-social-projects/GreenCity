@@ -3760,4 +3760,13 @@ public class ModelUtils {
             .secondMessageId(2L)
             .build();
     }
+
+    public static HabitTranslationDto getHabitTranslationDtoUk() {
+        return HabitTranslationDto.builder()
+            .description(habitTranslationDescriptionUk)
+            .habitItem(habitItemUk)
+            .name(habitTranslationNameUk)
+            .languageCode("ua")
+            .build();
+    }
 }

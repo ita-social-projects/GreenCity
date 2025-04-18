@@ -17,28 +17,22 @@ import java.io.InputStream;
 public class ExportSettingsServiceImpl implements ExportSettingsService {
     private final ExportSettingsRepo exportSettingsRepo;
     private final ExportToFileService exportToFileService;
-    private final DotenvService dotenvService;
 
     @Override
-    public TablesMetadataDto getTablesMetadata(String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
-
+    public TablesMetadataDto getTablesMetadata() {
         return exportSettingsRepo.getTablesMetadata();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public TableRowsDto selectFromTable(TableParamsRequestDto tableParams, String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
-
+    public TableRowsDto selectFromTable(TableParamsRequestDto tableParams) {
         return exportSettingsRepo.selectPortionFromTable(tableParams.tableName(), tableParams.limit(),
             tableParams.offset());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public InputStream getExcelFileAsResource(TableParamsRequestDto tableParams, String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
+    public InputStream getExcelFileAsResource(TableParamsRequestDto tableParams) {
         TableRowsDto data = exportSettingsRepo.selectPortionFromTable(tableParams.tableName(), tableParams.limit(),
             tableParams.offset());
 
@@ -46,9 +40,7 @@ public class ExportSettingsServiceImpl implements ExportSettingsService {
     }
 
     @Override
-    public EnvironmentDto getEnvironmentVariables(String secretKey) {
-        dotenvService.validateSecretKey(secretKey);
-
+    public EnvironmentDto getEnvironmentVariables() {
         return new EnvironmentDto(System.getenv());
     }
 }
