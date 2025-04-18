@@ -102,10 +102,10 @@ public class RestClient {
         String userEmail = principal.getName();
 
         UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromHttpUrl(
-                greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
-                .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
-                .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
-                .queryParam(USER_EMAIL_QUERY_PARAM, userEmail);
+            greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS)
+            .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
+            .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
+            .queryParam(USER_EMAIL_QUERY_PARAM, userEmail);
 
         languageOptional.ifPresent(lang -> ubsNotificationsUrlBuilder.queryParam("lang", lang));
 
