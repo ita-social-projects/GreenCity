@@ -212,42 +212,24 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             + "WHERE e.id = :eventId")
     List<String> findAllImagesLinksByEventId(Long eventId);
 
-    /*@Query("""
-            SELECT new greencity.dto.event.EventAttenderDto(u.id, u.name, u.profilePicturePath)
-            FROM Event e
-            JOIN e.attenders u
-            WHERE e.id = :eventId
-        """)*/
     @Query("""
-            SELECT new greencity.dto.event.EventAttenderDto(u.id, "aboba", "aboba")
+            SELECT new greencity.dto.event.EventAttenderDto(u.id, u.name, u.profilePicturePath)
             FROM Event e
             JOIN e.attenders u
             WHERE e.id = :eventId
         """)
     Page<EventAttenderDto> getAttendersPageByEventId(Long eventId, Pageable pageable);
 
-    /*@Query("""
-            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, u.name, u.profilePicturePath)
-            FROM Event e
-            JOIN e.usersLikedEvents u
-            WHERE e.id = :eventId
-        """)*/
     @Query("""
-            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, "aboba", "aboba")
+            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, u.name, u.profilePicturePath)
             FROM Event e
             JOIN e.usersLikedEvents u
             WHERE e.id = :eventId
         """)
     Page<UserProfilePictureDto> getUsersLikedEventProfilePicturesPage(Long eventId, Pageable pageable);
 
-    /*@Query("""
-            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, u.name, u.profilePicturePath)
-            FROM Event e
-            JOIN e.usersDislikedEvents u
-            WHERE e.id = :eventId
-        """)*/
     @Query("""
-            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, "aboba", "aboba")
+            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, u.name, u.profilePicturePath)
             FROM Event e
             JOIN e.usersDislikedEvents u
             WHERE e.id = :eventId

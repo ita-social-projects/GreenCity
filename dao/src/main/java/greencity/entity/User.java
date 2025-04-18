@@ -203,6 +203,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false, length = 50)
+    private String email;
+
+    @Column(nullable = false, length = 30)
+    private String name;
+
+    @Enumerated(value = EnumType.ORDINAL)
+    @JdbcType(IntegerJdbcType.class)
+    private UserStatus userStatus;
+
+    @Column(name = "profile_picture")
+    private String profilePicturePath;
+
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<Estimate> estimates = new ArrayList<>();
