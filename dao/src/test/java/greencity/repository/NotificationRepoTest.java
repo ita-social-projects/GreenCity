@@ -29,11 +29,6 @@ public class NotificationRepoTest extends PostgresInitializer {
     @Autowired
     private EntityManager entityManager;
 
-    @BeforeAll
-    static void startContainer() {
-        postgreSQLContainer.start();
-    }
-
     @AfterEach
     void teardown() {
         entityManager.createNativeQuery("TRUNCATE TABLE notifications RESTART IDENTITY CASCADE").executeUpdate();

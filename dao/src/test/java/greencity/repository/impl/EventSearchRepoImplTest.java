@@ -42,16 +42,6 @@ class EventSearchRepoImplTest extends PostgresInitializer {
         this.builder = entityManager.getCriteriaBuilder();
     }
 
-    @BeforeAll
-    static void startContainer() {
-        postgreSQLContainer.start();
-    }
-
-    @AfterAll
-    static void stopContainer() {
-        postgreSQLContainer.stop();
-    }
-
     @BeforeEach
     void setup() {
         ModelUtils.getListEventDto().forEach(dto -> {

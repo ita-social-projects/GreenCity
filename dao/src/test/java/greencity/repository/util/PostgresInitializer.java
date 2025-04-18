@@ -5,7 +5,12 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public abstract class PostgresInitializer {
-    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17.2-alpine");
+    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:17.2-alpine")
+        .withReuse(true);
+
+    static {
+        postgreSQLContainer.start();
+    }
 
     @DynamicPropertySource
     public static void configureProperties(DynamicPropertyRegistry registry) {
