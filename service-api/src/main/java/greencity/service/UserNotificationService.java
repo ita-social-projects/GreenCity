@@ -221,6 +221,7 @@ public interface UserNotificationService {
      * included. from the both projects.
      *
      * <p>
+     *
      * @param page          is pageable without a sorting parameter
      * @param principal     is the current user
      * @param locale        is the language
