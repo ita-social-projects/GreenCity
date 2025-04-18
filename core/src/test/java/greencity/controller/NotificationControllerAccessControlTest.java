@@ -45,13 +45,13 @@ public class NotificationControllerAccessControlTest {
     @Test
     void getNotificationsBySearchRequestFiltered401Test() throws Exception {
         mockMvc.perform(get("/notifications"))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(username = "testUser")
     void getNotificationsBySearchRequestFiltered200Test() throws Exception {
         mockMvc.perform(get("/notifications"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
 }

@@ -128,33 +128,36 @@ public class NotificationController {
     }
 
     /**
-     * Endpoint to retrieve a paginated list of {@link NotificationDto} for the current user
-     * based on the provided search request. Results are filtered by project name (if specified)
-     * and sorted by date in descending order.
+     * Endpoint to retrieve a paginated list of {@link NotificationDto} for the
+     * current user based on the provided search request. Results are filtered by
+     * project name (if specified) and sorted by date in descending order.
      *
-     * @param pageable pagination information (without sorting)
-     * @param principal the authenticated user
-     * @param locale the current language setting
-     * @param projectName the name of the project (GREENCITY, PICKUP, or null to search in both)
+     * @param pageable      pagination information (without sorting)
+     * @param principal     the authenticated user
+     * @param locale        the current language setting
+     * @param projectName   the name of the project (GREENCITY, PICKUP, or null to
+     *                      search in both)
      * @param searchRequest the search query to filter notifications
-     * @return {@link ResponseEntity} containing {@link PageableAdvancedDto} of {@link NotificationDto}
+     * @return {@link ResponseEntity} containing {@link PageableAdvancedDto} of
+     *         {@link NotificationDto}
      * @author Oleksandra Bulhakova
      */
     @Operation(summary = "Get page of notifications found by searchRequest filtered and sorted.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @ApiPageableWithoutSort
     @GetMapping("/search")
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getNotificationsBySearchRequestFiltered(
-            @Parameter(hidden = true) Pageable pageable,
-            @Parameter(hidden = true) Principal principal,
-            @Parameter(hidden = true) @ValidLanguage Locale locale,
-            @RequestParam(name = "project-name", required = false) ProjectName projectName,
-            @RequestParam(name = "search-request") String searchRequest) {
-        return ResponseEntity.ok().body(userNotificationService.getAllNotificationsForUserBySearchRequest(pageable, principal, locale,
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @ValidLanguage Locale locale,
+        @RequestParam(name = "project-name", required = false) ProjectName projectName,
+        @RequestParam(name = "search-request") String searchRequest) {
+        return ResponseEntity.ok()
+            .body(userNotificationService.getAllNotificationsForUserBySearchRequest(pageable, principal, locale,
                 projectName, searchRequest));
     }
 }

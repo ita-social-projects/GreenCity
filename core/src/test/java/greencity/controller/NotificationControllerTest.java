@@ -107,21 +107,23 @@ class NotificationControllerTest {
         String searchRequest = "paid";
 
         PageableAdvancedDto<NotificationDto> result = ModelUtils
-                .getPageableAdvanceDtoOfNotificationDtos(ModelUtils.getNotificationDtos(), pageable);
+            .getPageableAdvanceDtoOfNotificationDtos(ModelUtils.getNotificationDtos(), pageable);
 
-        when(userNotificationService.getAllNotificationsForUserBySearchRequest(pageable, principal, locale, projectName, searchRequest))
-                .thenReturn(result);
+        when(userNotificationService.getAllNotificationsForUserBySearchRequest(pageable, principal, locale, projectName,
+            searchRequest))
+            .thenReturn(result);
 
         mockMvc.perform(get(notificationLink + "/search" + "?search-request=" + searchRequest
-                        + "&locale=" + language + "&project-name=" + projectName)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk());
+            + "&locale=" + language + "&project-name=" + projectName)
+            .accept(MediaType.APPLICATION_JSON)
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(status().isOk());
 
-        verify(userNotificationService).getAllNotificationsForUserBySearchRequest(pageable, principal, locale, projectName, searchRequest);
+        verify(userNotificationService).getAllNotificationsForUserBySearchRequest(pageable, principal, locale,
+            projectName, searchRequest);
         assertEquals(2, result.getTotalElements());
         assertEquals(ModelUtils.getNotificationDtos().getFirst(), result.getPage().getFirst());
     }
@@ -134,14 +136,15 @@ class NotificationControllerTest {
         ProjectName projectName = ProjectName.GREENCITY;
 
         mockMvc.perform(get(notificationLink + "/search"
-                        + "?locale=" + language + "&project-name=" + projectName)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isBadRequest());
+            + "?locale=" + language + "&project-name=" + projectName)
+            .accept(MediaType.APPLICATION_JSON)
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(status().isBadRequest());
 
-        verify(userNotificationService, never()).getAllNotificationsForUserBySearchRequest(eq(pageable), eq(principal), eq(locale), eq(projectName), anyString());
+        verify(userNotificationService, never()).getAllNotificationsForUserBySearchRequest(eq(pageable), eq(principal),
+            eq(locale), eq(projectName), anyString());
     }
 }

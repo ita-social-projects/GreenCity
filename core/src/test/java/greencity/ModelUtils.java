@@ -742,8 +742,9 @@ public class ModelUtils {
             .build();
     }
 
-    public static PageableAdvancedDto<NotificationDto> getPageableAdvanceDtoOfNotificationDtos(List<NotificationDto> notificationDtos,
-                                                                                               Pageable pageable) {
+    public static PageableAdvancedDto<NotificationDto> getPageableAdvanceDtoOfNotificationDtos(
+        List<NotificationDto> notificationDtos,
+        Pageable pageable) {
         int totalElements = notificationDtos.size();
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
@@ -752,33 +753,32 @@ public class ModelUtils {
         int toIndex = Math.min(fromIndex + pageSize, totalElements);
 
         List<NotificationDto> pageContent = fromIndex < totalElements
-                ? notificationDtos.subList(fromIndex, toIndex)
-                : List.of();
+            ? notificationDtos.subList(fromIndex, toIndex)
+            : List.of();
 
         return new PageableAdvancedDto<>(
-                pageContent,
-                totalElements,
-                currentPage,
-                totalPages,
-                currentPage,
-                currentPage > 0,
-                currentPage < totalPages - 1,
-                currentPage == 0,
-                currentPage == totalPages - 1
-        );
+            pageContent,
+            totalElements,
+            currentPage,
+            totalPages,
+            currentPage,
+            currentPage > 0,
+            currentPage < totalPages - 1,
+            currentPage == 0,
+            currentPage == totalPages - 1);
     }
 
     public static List<NotificationDto> getNotificationDtos() {
         NotificationDto notificationDto1 = NotificationDto.builder()
-                .notificationId(2L)
-                .notificationType("Type one")
-                .message("Message one - unpaid")
-                .build();
+            .notificationId(2L)
+            .notificationType("Type one")
+            .message("Message one - unpaid")
+            .build();
         NotificationDto notificationDto2 = NotificationDto.builder()
-                .notificationId(3L)
-                .notificationType("Type two")
-                .message("Message two - paid")
-                .build();
+            .notificationId(3L)
+            .notificationType("Type two")
+            .message("Message two - paid")
+            .build();
 
         return List.of(notificationDto1, notificationDto2);
     }
