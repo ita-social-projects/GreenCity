@@ -56,13 +56,12 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setIsRelevant(EventUtils.isRelevant(event.getDates()));
         eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
-        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
 
         eventDto.setOrganizer(
             EventAuthorDto.builder()
                 .id(organizer.getId())
-                .name(organizerVO.getName())
-                .email(organizerVO.getEmail())
+                .name(organizer.getName())
+                .email(organizer.getEmail())
                 .organizerRating(organizer.getEventOrganizerRating())
                 .build());
         eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));

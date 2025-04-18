@@ -394,11 +394,10 @@ public class NotificationServiceImpl implements NotificationService {
             .replace("{times}", times);
 
         User targetUser = notification.getTargetUser();
-        UserVO userVO = modelMapper.map(targetUser, UserVO.class);
 
         return ScheduledEmailMessage.builder()
-            .email(userVO.getEmail())
-            .username(userVO.getName())
+            .email(targetUser.getEmail())
+            .username(targetUser.getName())
             .baseLink(createBaseLink(notification))
             .subject(subject)
             .body(body)

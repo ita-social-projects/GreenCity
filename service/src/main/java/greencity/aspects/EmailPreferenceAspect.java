@@ -54,9 +54,7 @@ public class EmailPreferenceAspect {
         if (message instanceof EmailMessage) {
             return ((EmailMessage) message).getEmail();
         } else if (message instanceof Notification) {
-            User user = ((Notification) message).getTargetUser();
-            UserVO userVO = modelMapper.map(user, UserVO.class);
-            return userVO.getEmail();
+            return ((Notification) message).getTargetUser().getEmail();
         }
         return null;
     }

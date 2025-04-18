@@ -93,16 +93,14 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                 date.getOnlineLink()))
             .toList();
 
-        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
-
         return new EventResponseDto(
             event.getId(),
             eventInformation,
             new EventAuthorDto(
                 organizer.getId(),
-                organizerVO.getName(),
+                organizer.getName(),
                 organizer.getEventOrganizerRating(),
-                organizerVO.getEmail()),
+                organizer.getEmail()),
             event.getCreationDate(),
             event.isOpen(),
             dateInformation,
