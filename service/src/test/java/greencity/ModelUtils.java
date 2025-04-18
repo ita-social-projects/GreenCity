@@ -98,6 +98,7 @@ import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
+import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
@@ -287,6 +288,7 @@ import static greencity.enums.EventTime.PAST;
 import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
 import static greencity.enums.NotificationType.EVENT_CREATED;
 import static greencity.enums.ProjectName.GREENCITY;
+import static greencity.enums.ProjectName.PICKUP;
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
@@ -308,6 +310,7 @@ public class ModelUtils {
     public static String habitItemEn = "Item";
     public static String habitItemUk = "Айтем звички українською";
     public static String habitDefaultImage = "img/habit-default.png";
+    public static String ubsNotificationType = "UNPAID_ORDER";
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(EventDateLocationDto.builder()
             .id(1L)
@@ -3588,5 +3591,175 @@ public class ModelUtils {
             .dislikes(0)
             .countComments(0)
             .build();
+    }
+
+    public static List<Notification> getListOfNotifications() {
+        Notification notification1 = Notification.builder()
+                .id(1L)
+                .customMessage("Message one")
+                .targetId(1L)
+                .secondMessage("Second message one")
+                .secondMessageId(2L)
+                .notificationType(EVENT_CREATED)
+                .projectName(GREENCITY)
+                .viewed(true)
+                .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+                .actionUsers(List.of(getUser()))
+                .emailSent(true)
+                .build();
+
+        Notification notification2 = Notification.builder()
+                .id(2L)
+                .customMessage("Message one test")
+                .targetId(1L)
+                .secondMessage("Second message two")
+                .secondMessageId(2L)
+                .notificationType(EVENT_CREATED)
+                .projectName(GREENCITY)
+                .viewed(true)
+                .time(ZonedDateTime.of(2099, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+                .actionUsers(List.of(getUser()))
+                .emailSent(true)
+                .build();
+
+        return List.of(notification1, notification2);
+    }
+
+    public static Page<Notification> getPageOfNotifications(Pageable pageable) {
+        List <Notification> notifications = List.of(getListOfNotifications().getLast());
+        return new PageImpl<>(notifications, pageable, notifications.size());
+    }
+
+    public static Page<Notification> getEmptyPageOfNotifications(Pageable pageable) {
+        List <Notification> notifications = List.of();
+        return new PageImpl<>(notifications, pageable, 0);
+    }
+
+    public static Pageable getPageableSortedByTime() {
+        return PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "time"));
+    }
+
+    public static NotificationDto getNotificationDtoMatching() {
+        return NotificationDto.builder()
+                .notificationId(2L)
+                .projectName(String.valueOf(GREENCITY))
+                .notificationType(String.valueOf(EVENT_CREATED))
+                .time(ZonedDateTime.of(2099, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+                .viewed(true)
+                .titleText("You have created event")
+                .bodyText("You successfully created event {message}.")
+                .actionUserId(Collections.singletonList(1L))
+                .actionUserText(Collections.singletonList("Taras"))
+                .targetId(1L)
+                .message("Message one test")
+                .secondMessage("Second message two")
+                .secondMessageId(2L)
+                .build();
+    }
+
+    public static NotificationDto getNotificationDtoNotMatching() {
+        return NotificationDto.builder()
+                .notificationId(1L)
+                .projectName(String.valueOf(GREENCITY))
+                .notificationType(String.valueOf(EVENT_CREATED))
+                .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+                .viewed(true)
+                .titleText("You have created event")
+                .bodyText("You successfully created event {message}.")
+                .actionUserId(Collections.singletonList(1L))
+                .actionUserText(Collections.singletonList("Taras"))
+                .targetId(1L)
+                .message("Message one")
+                .secondMessage("Second message one")
+                .secondMessageId(2L)
+                .build();
+    }
+
+    public static List<UbsNotificationDto> getListOfUbsNotificationDtos() {
+        UbsNotificationDto ubsNotificationDto1 = new UbsNotificationDto (5L, 4L, false,
+                "Title one test", "Body one", LocalDateTime.of(2025, 3, 12, 8, 30));
+
+        UbsNotificationDto ubsNotificationDto2 = new UbsNotificationDto (6L, 5L, false,
+                "Title two", "Body two", LocalDateTime.of(2025, 4, 12, 8, 30));
+
+        return List.of(ubsNotificationDto1, ubsNotificationDto2);
+    }
+
+    public static PageableAdvancedDto<UbsNotificationDto> buildPageableAdvancedDtoOfUbsNotificationDtos() {
+        List<UbsNotificationDto> ubsNotificationDtos = getListOfUbsNotificationDtos();
+
+        int pageSize = 10;
+        int currentPage = 0;
+        int totalElements = ubsNotificationDtos.size();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        int fromIndex = 0;
+        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+        List<UbsNotificationDto> page = ubsNotificationDtos.subList(fromIndex, toIndex);
+
+        boolean hasPrevious = false;
+        boolean hasNext = currentPage < totalPages - 1;
+        boolean first = true;
+        boolean last = currentPage == totalPages - 1;
+
+        return new PageableAdvancedDto<>(
+                page,
+                totalElements,
+                currentPage,
+                totalPages,
+                currentPage,
+                hasPrevious,
+                hasNext,
+                first,
+                last
+        );
+    }
+
+    public static PageableAdvancedDto<UbsNotificationDto> buildEmptyPageableAdvancedDtoOfUbsNotificationDtos() {
+        List<UbsNotificationDto> ubsNotificationDtos = List.of();
+
+        int pageSize = 10;
+        int currentPage = 0;
+        int totalElements = 0;
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        int fromIndex = 0;
+        int toIndex = 0;
+        List<UbsNotificationDto> page = ubsNotificationDtos.subList(fromIndex, toIndex);
+
+        boolean hasPrevious = false;
+        boolean hasNext = currentPage < totalPages - 1;
+        boolean first = true;
+        boolean last = currentPage == totalPages - 1;
+
+        return new PageableAdvancedDto<>(
+                page,
+                totalElements,
+                currentPage,
+                totalPages,
+                currentPage,
+                hasPrevious,
+                hasNext,
+                first,
+                last
+        );
+    }
+
+    public static NotificationDto getNotificationDtoUbsMatching() {
+        return NotificationDto.builder()
+                .notificationId(5L)
+                .projectName(String.valueOf(PICKUP))
+                .notificationType(String.valueOf(ubsNotificationType))
+                .time(ZonedDateTime.of(2098, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+                .viewed(false)
+                .titleText("You have an unpaid order")
+                .bodyText("Don't forget")
+                .actionUserId(Collections.singletonList(1L))
+                .actionUserText(Collections.singletonList("Sasha"))
+                .targetId(1L)
+                .message("Message one test")
+                .secondMessage("Second message two")
+                .secondMessageId(2L)
+                .build();
     }
 }

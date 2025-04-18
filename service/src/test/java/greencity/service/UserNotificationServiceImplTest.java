@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static greencity.ModelUtils.getActionDto;
@@ -67,12 +68,23 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.testUser;
 import static greencity.ModelUtils.testUserVo;
+import static greencity.ModelUtils.getListOfNotifications;
+import static greencity.ModelUtils.getUnSortedPageable;
+import static greencity.ModelUtils.getPageableSortedByTime;
+import static greencity.ModelUtils.getPageOfNotifications;
+import static greencity.ModelUtils.getNotificationDtoNotMatching;
+import static greencity.ModelUtils.getNotificationDtoMatching;
+import static greencity.ModelUtils.buildPageableAdvancedDtoOfUbsNotificationDtos;
+import static greencity.ModelUtils.getNotificationDtoUbsMatching;
+import static greencity.ModelUtils.buildEmptyPageableAdvancedDtoOfUbsNotificationDtos;
+import static greencity.ModelUtils.getEmptyPageOfNotifications;
 import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
 import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.ProjectName.PICKUP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -879,4 +891,139 @@ class UserNotificationServiceImplTest {
             .convertAndSend(TOPIC + user.getId() + NOTIFICATION, 1L);
     }
 
+    @Test
+    void getAllNotificationsForUserBySearchRequest_ForGreenCityTest() {
+        Pageable pageableUnsorted = getUnSortedPageable();
+        Principal principal = getPrincipal();
+        Locale locale = Locale.of("en");
+        String searchRequest = "test";
+        Pageable pageableSorted = getPageableSortedByTime();
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        List<Notification> allNotificationsForUser = getListOfNotifications();
+        when(notificationRepo.findAllByTargetUser_Id(userVO.getId())).thenReturn(allNotificationsForUser);
+        when(modelMapper.map(allNotificationsForUser.getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoNotMatching());
+        when(modelMapper.map(allNotificationsForUser.getLast(), NotificationDto.class)).thenReturn(getNotificationDtoMatching());
+
+        List<Long> ids = List.of(2L);
+        Page<Notification> notificationsForUserInGreenCity = getPageOfNotifications(pageableUnsorted);
+        when(notificationRepo.findAllByIdIn(ids, pageableSorted)).thenReturn(notificationsForUserInGreenCity);
+
+        PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
+                locale, GREENCITY, searchRequest);
+
+        assertNotNull(result);
+        assertEquals(1, result.getPage().size());
+        assertEquals("You have created event", result.getPage().get(0).getTitleText());
+        assertEquals(GREENCITY.toString(), result.getPage().getFirst().getProjectName());
+        assertTrue(result.getPage().get(0).getMessage().toLowerCase().contains("test"));
+    }
+
+    @Test
+    void getAllNotificationsForUserBySearchRequest_ForUbsTest() {
+        Pageable pageableUnsorted = getUnSortedPageable();
+        Principal principal = getPrincipal();
+        Locale locale = Locale.of("en");
+        String searchRequest = "test";
+
+        PageableAdvancedDto<UbsNotificationDto> pageableAdvancedDto = buildPageableAdvancedDtoOfUbsNotificationDtos();
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted, Optional.ofNullable(locale.getLanguage())))
+                .thenReturn(pageableAdvancedDto);
+
+        when(modelMapper.map(pageableAdvancedDto.getPage().getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoUbsMatching());
+
+        PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
+                locale, PICKUP, searchRequest);
+
+        assertNotNull(result);
+        assertEquals(1, result.getPage().size());
+        assertEquals("You have an unpaid order", result.getPage().get(0).getTitleText());
+        assertEquals(PICKUP.toString(), result.getPage().getFirst().getProjectName());
+        assertTrue(result.getPage().get(0).getMessage().toLowerCase().contains("test"));
+    }
+
+    @Test
+    void getAllNotificationsForUserBySearchRequest_ForGreenCityAndUbsTest() {
+        Pageable pageableUnsorted = getUnSortedPageable();
+        Principal principal = getPrincipal();
+        Locale locale = Locale.of("en");
+        String searchRequest = "test";
+        Pageable pageableSorted = getPageableSortedByTime();
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        List<Notification> allNotificationsForUser = getListOfNotifications();
+        when(notificationRepo.findAllByTargetUser_Id(userVO.getId())).thenReturn(allNotificationsForUser);
+        when(modelMapper.map(allNotificationsForUser.getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoNotMatching());
+        when(modelMapper.map(allNotificationsForUser.getLast(), NotificationDto.class)).thenReturn(getNotificationDtoMatching());
+
+        List<Long> ids = List.of(2L);
+        Page<Notification> notificationsForUserInGreenCity = getPageOfNotifications(pageableUnsorted);
+        when(notificationRepo.findAllByIdIn(ids, pageableSorted)).thenReturn(notificationsForUserInGreenCity);
+
+        PageableAdvancedDto<UbsNotificationDto> pageableAdvancedDto = buildPageableAdvancedDtoOfUbsNotificationDtos();
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted, Optional.ofNullable(locale.getLanguage())))
+                .thenReturn(pageableAdvancedDto);
+
+        when(modelMapper.map(pageableAdvancedDto.getPage().getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoUbsMatching());
+
+        PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
+                locale, null, searchRequest);
+
+        assertNotNull(result);
+        assertEquals(2, result.getPage().size());
+        assertEquals("You have created event", result.getPage().get(0).getTitleText());
+        assertEquals("You have an unpaid order", result.getPage().get(1).getTitleText());
+        assertEquals(GREENCITY.toString(), result.getPage().getFirst().getProjectName());
+        assertEquals(PICKUP.toString(), result.getPage().getLast().getProjectName());
+        assertTrue(result.getPage().getFirst().getMessage().toLowerCase().contains("test"));
+        assertTrue(result.getPage().getLast().getMessage().toLowerCase().contains("test"));
+    }
+
+    @Test
+    void getAllNotificationsForUserBySearchRequest_WrongProjectNameTest() {
+        Pageable pageableUnsorted = getUnSortedPageable();
+        Principal principal = getPrincipal();
+        Locale locale = Locale.of("en");
+        String searchRequest = "test";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userNotificationService.getAllNotificationsForUserBySearchRequest(
+                    pageableUnsorted, principal, locale, ProjectName.valueOf("UNKNOWN"), searchRequest);
+        });
+    }
+
+    @Test
+    void getAllNotificationsForUserBySearchRequest_NoMatchingNotificationsFoundTest() {
+        Pageable pageableUnsorted = getUnSortedPageable();
+        Principal principal = getPrincipal();
+        Locale locale = Locale.of("en");
+        String searchRequest = "unknown";
+        Pageable pageableSorted = getPageableSortedByTime();
+
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        List<Notification> allNotificationsForUser = getListOfNotifications();
+        when(notificationRepo.findAllByTargetUser_Id(userVO.getId())).thenReturn(allNotificationsForUser);
+        when(modelMapper.map(any(Notification.class), eq(NotificationDto.class))).thenReturn(getNotificationDtoNotMatching());
+
+        List<Long> ids = List.of();
+        Page<Notification> notificationsForUserInGreenCity = getEmptyPageOfNotifications(pageableUnsorted);
+        when(notificationRepo.findAllByIdIn(ids, pageableSorted)).thenReturn(notificationsForUserInGreenCity);
+
+        PageableAdvancedDto<UbsNotificationDto> pageableAdvancedDto = buildEmptyPageableAdvancedDtoOfUbsNotificationDtos();
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted, Optional.ofNullable(locale.getLanguage())))
+                .thenReturn(pageableAdvancedDto);
+
+        PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(
+                pageableUnsorted, principal, locale, null, searchRequest);
+
+        assertNotNull(result);
+        assertTrue(result.getPage().isEmpty());
+        assertEquals(0, result.getTotalElements());
+    }
 }
