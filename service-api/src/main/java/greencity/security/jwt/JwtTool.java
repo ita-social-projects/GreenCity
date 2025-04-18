@@ -3,6 +3,7 @@ package greencity.security.jwt;
 import static greencity.constant.AppConstant.ROLE;
 import greencity.enums.Role;
 import io.jsonwebtoken.ClaimsBuilder;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,5 +81,21 @@ public class JwtTool {
             .filter(authHeader -> authHeader.startsWith("Bearer "))
             .map(token -> token.substring(7))
             .orElse(null);
+    }
+
+    /**
+     * Extracts the email (subject) from the provided JWT access token.
+     *
+     * @param token the JWT access token.
+     * @return the email (subject) extracted from the token.
+     * @throws JwtException if the token is invalid or cannot be parsed.
+     */
+    public String getEmailOutOfAccessToken(String token) {
+        return Jwts.parser()
+            .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes(StandardCharsets.UTF_8)))
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .getSubject();
     }
 }
