@@ -219,8 +219,8 @@ public interface UserNotificationService {
      * provided, only notifications for that project are returned. If
      * {@code projectName} is {@code null}, notifications from both projects are
      * included. from the both projects.
-     * <p>
      *
+     * <p>
      * @param page          is pageable without a sorting parameter
      * @param principal     is the current user
      * @param locale        is the language
