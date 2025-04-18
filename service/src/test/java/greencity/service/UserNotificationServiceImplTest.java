@@ -904,14 +904,17 @@ class UserNotificationServiceImplTest {
 
         List<Notification> allNotificationsForUser = getListOfNotifications();
         when(notificationRepo.findAllByTargetUser_Id(userVO.getId())).thenReturn(allNotificationsForUser);
-        when(modelMapper.map(allNotificationsForUser.getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoNotMatching());
-        when(modelMapper.map(allNotificationsForUser.getLast(), NotificationDto.class)).thenReturn(getNotificationDtoMatching());
+        when(modelMapper.map(allNotificationsForUser.getFirst(), NotificationDto.class))
+            .thenReturn(getNotificationDtoNotMatching());
+        when(modelMapper.map(allNotificationsForUser.getLast(), NotificationDto.class))
+            .thenReturn(getNotificationDtoMatching());
 
         List<Long> ids = List.of(2L);
         Page<Notification> notificationsForUserInGreenCity = getPageOfNotifications(pageableUnsorted);
         when(notificationRepo.findAllByIdIn(ids, pageableSorted)).thenReturn(notificationsForUserInGreenCity);
 
-        PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
+        PageableAdvancedDto<NotificationDto> result =
+            userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
                 locale, GREENCITY, searchRequest);
 
         assertNotNull(result);
@@ -929,12 +932,15 @@ class UserNotificationServiceImplTest {
         String searchRequest = "test";
 
         PageableAdvancedDto<UbsNotificationDto> pageableAdvancedDto = buildPageableAdvancedDtoOfUbsNotificationDtos();
-        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted, Optional.ofNullable(locale.getLanguage())))
-                .thenReturn(pageableAdvancedDto);
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted,
+            Optional.ofNullable(locale.getLanguage())))
+            .thenReturn(pageableAdvancedDto);
 
-        when(modelMapper.map(pageableAdvancedDto.getPage().getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoUbsMatching());
+        when(modelMapper.map(pageableAdvancedDto.getPage().getFirst(), NotificationDto.class))
+            .thenReturn(getNotificationDtoUbsMatching());
 
-        PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
+        PageableAdvancedDto<NotificationDto> result =
+            userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
                 locale, PICKUP, searchRequest);
 
         assertNotNull(result);
@@ -957,20 +963,25 @@ class UserNotificationServiceImplTest {
 
         List<Notification> allNotificationsForUser = getListOfNotifications();
         when(notificationRepo.findAllByTargetUser_Id(userVO.getId())).thenReturn(allNotificationsForUser);
-        when(modelMapper.map(allNotificationsForUser.getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoNotMatching());
-        when(modelMapper.map(allNotificationsForUser.getLast(), NotificationDto.class)).thenReturn(getNotificationDtoMatching());
+        when(modelMapper.map(allNotificationsForUser.getFirst(), NotificationDto.class))
+            .thenReturn(getNotificationDtoNotMatching());
+        when(modelMapper.map(allNotificationsForUser.getLast(), NotificationDto.class))
+            .thenReturn(getNotificationDtoMatching());
 
         List<Long> ids = List.of(2L);
         Page<Notification> notificationsForUserInGreenCity = getPageOfNotifications(pageableUnsorted);
         when(notificationRepo.findAllByIdIn(ids, pageableSorted)).thenReturn(notificationsForUserInGreenCity);
 
         PageableAdvancedDto<UbsNotificationDto> pageableAdvancedDto = buildPageableAdvancedDtoOfUbsNotificationDtos();
-        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted, Optional.ofNullable(locale.getLanguage())))
-                .thenReturn(pageableAdvancedDto);
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted,
+            Optional.ofNullable(locale.getLanguage())))
+            .thenReturn(pageableAdvancedDto);
 
-        when(modelMapper.map(pageableAdvancedDto.getPage().getFirst(), NotificationDto.class)).thenReturn(getNotificationDtoUbsMatching());
+        when(modelMapper.map(pageableAdvancedDto.getPage().getFirst(), NotificationDto.class))
+            .thenReturn(getNotificationDtoUbsMatching());
 
-        PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
+        PageableAdvancedDto<NotificationDto> result =
+            userNotificationService.getAllNotificationsForUserBySearchRequest(pageableUnsorted, principal,
                 locale, null, searchRequest);
 
         assertNotNull(result);
@@ -992,7 +1003,7 @@ class UserNotificationServiceImplTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             userNotificationService.getAllNotificationsForUserBySearchRequest(
-                    pageableUnsorted, principal, locale, ProjectName.valueOf("UNKNOWN"), searchRequest);
+                pageableUnsorted, principal, locale, ProjectName.valueOf("UNKNOWN"), searchRequest);
         });
     }
 
@@ -1009,18 +1020,21 @@ class UserNotificationServiceImplTest {
 
         List<Notification> allNotificationsForUser = getListOfNotifications();
         when(notificationRepo.findAllByTargetUser_Id(userVO.getId())).thenReturn(allNotificationsForUser);
-        when(modelMapper.map(any(Notification.class), eq(NotificationDto.class))).thenReturn(getNotificationDtoNotMatching());
+        when(modelMapper.map(any(Notification.class), eq(NotificationDto.class)))
+            .thenReturn(getNotificationDtoNotMatching());
 
         List<Long> ids = List.of();
         Page<Notification> notificationsForUserInGreenCity = getEmptyPageOfNotifications(pageableUnsorted);
         when(notificationRepo.findAllByIdIn(ids, pageableSorted)).thenReturn(notificationsForUserInGreenCity);
 
-        PageableAdvancedDto<UbsNotificationDto> pageableAdvancedDto = buildEmptyPageableAdvancedDtoOfUbsNotificationDtos();
-        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted, Optional.ofNullable(locale.getLanguage())))
-                .thenReturn(pageableAdvancedDto);
+        PageableAdvancedDto<UbsNotificationDto> pageableAdvancedDto =
+            buildEmptyPageableAdvancedDtoOfUbsNotificationDtos();
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageableUnsorted,
+            Optional.ofNullable(locale.getLanguage())))
+            .thenReturn(pageableAdvancedDto);
 
         PageableAdvancedDto<NotificationDto> result = userNotificationService.getAllNotificationsForUserBySearchRequest(
-                pageableUnsorted, principal, locale, null, searchRequest);
+            pageableUnsorted, principal, locale, null, searchRequest);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());

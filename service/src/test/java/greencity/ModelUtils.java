@@ -3595,43 +3595,43 @@ public class ModelUtils {
 
     public static List<Notification> getListOfNotifications() {
         Notification notification1 = Notification.builder()
-                .id(1L)
-                .customMessage("Message one")
-                .targetId(1L)
-                .secondMessage("Second message one")
-                .secondMessageId(2L)
-                .notificationType(EVENT_CREATED)
-                .projectName(GREENCITY)
-                .viewed(true)
-                .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
-                .actionUsers(List.of(getUser()))
-                .emailSent(true)
-                .build();
+            .id(1L)
+            .customMessage("Message one")
+            .targetId(1L)
+            .secondMessage("Second message one")
+            .secondMessageId(2L)
+            .notificationType(EVENT_CREATED)
+            .projectName(GREENCITY)
+            .viewed(true)
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .actionUsers(List.of(getUser()))
+            .emailSent(true)
+            .build();
 
         Notification notification2 = Notification.builder()
-                .id(2L)
-                .customMessage("Message one test")
-                .targetId(1L)
-                .secondMessage("Second message two")
-                .secondMessageId(2L)
-                .notificationType(EVENT_CREATED)
-                .projectName(GREENCITY)
-                .viewed(true)
-                .time(ZonedDateTime.of(2099, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
-                .actionUsers(List.of(getUser()))
-                .emailSent(true)
-                .build();
+            .id(2L)
+            .customMessage("Message one test")
+            .targetId(1L)
+            .secondMessage("Second message two")
+            .secondMessageId(2L)
+            .notificationType(EVENT_CREATED)
+            .projectName(GREENCITY)
+            .viewed(true)
+            .time(ZonedDateTime.of(2099, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .actionUsers(List.of(getUser()))
+            .emailSent(true)
+            .build();
 
         return List.of(notification1, notification2);
     }
 
     public static Page<Notification> getPageOfNotifications(Pageable pageable) {
-        List <Notification> notifications = List.of(getListOfNotifications().getLast());
+        List<Notification> notifications = List.of(getListOfNotifications().getLast());
         return new PageImpl<>(notifications, pageable, notifications.size());
     }
 
     public static Page<Notification> getEmptyPageOfNotifications(Pageable pageable) {
-        List <Notification> notifications = List.of();
+        List<Notification> notifications = List.of();
         return new PageImpl<>(notifications, pageable, 0);
     }
 
@@ -3641,46 +3641,46 @@ public class ModelUtils {
 
     public static NotificationDto getNotificationDtoMatching() {
         return NotificationDto.builder()
-                .notificationId(2L)
-                .projectName(String.valueOf(GREENCITY))
-                .notificationType(String.valueOf(EVENT_CREATED))
-                .time(ZonedDateTime.of(2099, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
-                .viewed(true)
-                .titleText("You have created event")
-                .bodyText("You successfully created event {message}.")
-                .actionUserId(Collections.singletonList(1L))
-                .actionUserText(Collections.singletonList("Taras"))
-                .targetId(1L)
-                .message("Message one test")
-                .secondMessage("Second message two")
-                .secondMessageId(2L)
-                .build();
+            .notificationId(2L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(String.valueOf(EVENT_CREATED))
+            .time(ZonedDateTime.of(2099, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .titleText("You have created event")
+            .bodyText("You successfully created event {message}.")
+            .actionUserId(Collections.singletonList(1L))
+            .actionUserText(Collections.singletonList("Taras"))
+            .targetId(1L)
+            .message("Message one test")
+            .secondMessage("Second message two")
+            .secondMessageId(2L)
+            .build();
     }
 
     public static NotificationDto getNotificationDtoNotMatching() {
         return NotificationDto.builder()
-                .notificationId(1L)
-                .projectName(String.valueOf(GREENCITY))
-                .notificationType(String.valueOf(EVENT_CREATED))
-                .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
-                .viewed(true)
-                .titleText("You have created event")
-                .bodyText("You successfully created event {message}.")
-                .actionUserId(Collections.singletonList(1L))
-                .actionUserText(Collections.singletonList("Taras"))
-                .targetId(1L)
-                .message("Message one")
-                .secondMessage("Second message one")
-                .secondMessageId(2L)
-                .build();
+            .notificationId(1L)
+            .projectName(String.valueOf(GREENCITY))
+            .notificationType(String.valueOf(EVENT_CREATED))
+            .time(ZonedDateTime.of(2100, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(true)
+            .titleText("You have created event")
+            .bodyText("You successfully created event {message}.")
+            .actionUserId(Collections.singletonList(1L))
+            .actionUserText(Collections.singletonList("Taras"))
+            .targetId(1L)
+            .message("Message one")
+            .secondMessage("Second message one")
+            .secondMessageId(2L)
+            .build();
     }
 
     public static List<UbsNotificationDto> getListOfUbsNotificationDtos() {
-        UbsNotificationDto ubsNotificationDto1 = new UbsNotificationDto (5L, 4L, false,
-                "Title one test", "Body one", LocalDateTime.of(2025, 3, 12, 8, 30));
+        UbsNotificationDto ubsNotificationDto1 = new UbsNotificationDto(5L, 4L, false,
+            "Title one test", "Body one", LocalDateTime.of(2025, 3, 12, 8, 30));
 
-        UbsNotificationDto ubsNotificationDto2 = new UbsNotificationDto (6L, 5L, false,
-                "Title two", "Body two", LocalDateTime.of(2025, 4, 12, 8, 30));
+        UbsNotificationDto ubsNotificationDto2 = new UbsNotificationDto(6L, 5L, false,
+            "Title two", "Body two", LocalDateTime.of(2025, 4, 12, 8, 30));
 
         return List.of(ubsNotificationDto1, ubsNotificationDto2);
     }
@@ -3703,16 +3703,15 @@ public class ModelUtils {
         boolean last = currentPage == totalPages - 1;
 
         return new PageableAdvancedDto<>(
-                page,
-                totalElements,
-                currentPage,
-                totalPages,
-                currentPage,
-                hasPrevious,
-                hasNext,
-                first,
-                last
-        );
+            page,
+            totalElements,
+            currentPage,
+            totalPages,
+            currentPage,
+            hasPrevious,
+            hasNext,
+            first,
+            last);
     }
 
     public static PageableAdvancedDto<UbsNotificationDto> buildEmptyPageableAdvancedDtoOfUbsNotificationDtos() {
@@ -3733,33 +3732,32 @@ public class ModelUtils {
         boolean last = currentPage == totalPages - 1;
 
         return new PageableAdvancedDto<>(
-                page,
-                totalElements,
-                currentPage,
-                totalPages,
-                currentPage,
-                hasPrevious,
-                hasNext,
-                first,
-                last
-        );
+            page,
+            totalElements,
+            currentPage,
+            totalPages,
+            currentPage,
+            hasPrevious,
+            hasNext,
+            first,
+            last);
     }
 
     public static NotificationDto getNotificationDtoUbsMatching() {
         return NotificationDto.builder()
-                .notificationId(5L)
-                .projectName(String.valueOf(PICKUP))
-                .notificationType(String.valueOf(ubsNotificationType))
-                .time(ZonedDateTime.of(2098, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
-                .viewed(false)
-                .titleText("You have an unpaid order")
-                .bodyText("Don't forget")
-                .actionUserId(Collections.singletonList(1L))
-                .actionUserText(Collections.singletonList("Sasha"))
-                .targetId(1L)
-                .message("Message one test")
-                .secondMessage("Second message two")
-                .secondMessageId(2L)
-                .build();
+            .notificationId(5L)
+            .projectName(String.valueOf(PICKUP))
+            .notificationType(String.valueOf(ubsNotificationType))
+            .time(ZonedDateTime.of(2098, 1, 31, 12, 0, 0, 0, ZoneId.of("UTC")))
+            .viewed(false)
+            .titleText("You have an unpaid order")
+            .bodyText("Don't forget")
+            .actionUserId(Collections.singletonList(1L))
+            .actionUserText(Collections.singletonList("Sasha"))
+            .targetId(1L)
+            .message("Message one test")
+            .secondMessage("Second message two")
+            .secondMessageId(2L)
+            .build();
     }
 }

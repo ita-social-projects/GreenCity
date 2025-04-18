@@ -677,59 +677,62 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     /**
      * Retrieves all notifications for the current user in the GreenCity project
-     * that match the provided search request. The results are sorted by date
-     * in descending order and returned as a pageable DTO.
+     * that match the provided search request. The results are sorted by date in
+     * descending order and returned as a pageable DTO.
      * <p>
-     * The search is case-insensitive and checks for matches in the notification's title,
-     * body, message, second message, and action user text.
+     * The search is case-insensitive and checks for matches in the notification's
+     * title, body, message, second message, and action user text.
      *
-     * @param page         the pagination information without sorting
-     * @param principal    the current authenticated user
-     * @param locale       the current language used for localization
+     * @param page          the pagination information without sorting
+     * @param principal     the current authenticated user
+     * @param locale        the current language used for localization
      * @param searchRequest the keyword entered by the user to filter notifications
      * @return {@link PageableAdvancedDto} of {@link NotificationDto} containing
      *         matching notifications from the GreenCity project
      * @author Oleksandra Bulhakova
      */
-    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCityBySearchRequest(Pageable page, Principal principal,
-                                                                                Locale locale,
-                                                                                String searchRequest) {
+    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCityBySearchRequest(Pageable page,
+        Principal principal,
+        Locale locale,
+        String searchRequest) {
         UserVO user = userService.findByEmail(principal.getName());
         List<Notification> notificationsForUserInGreenCity = notificationRepo.findAllByTargetUser_Id(user.getId());
         List<NotificationDto> allNotificationDtosForGreenCityUser = notificationsForUserInGreenCity.stream()
-                .map(notification -> createNotificationDto(notification, locale.getLanguage()))
-                .toList();
+            .map(notification -> createNotificationDto(notification, locale.getLanguage()))
+            .toList();
 
-        List<NotificationDto> notificationDtosForGreenCityMatchSearchRequest = allNotificationDtosForGreenCityUser.stream()
+        List<NotificationDto> notificationDtosForGreenCityMatchSearchRequest =
+            allNotificationDtosForGreenCityUser.stream()
                 .filter(dto -> {
                     String search = searchRequest.toLowerCase();
                     return (dto.getTitleText() != null && dto.getTitleText().toLowerCase().contains(search)) ||
-                            (dto.getBodyText() != null && dto.getBodyText().toLowerCase().contains(search)) ||
-                            (dto.getMessage() != null && dto.getMessage().toLowerCase().contains(search)) ||
-                            (dto.getSecondMessage() != null && dto.getSecondMessage().toLowerCase().contains(search)) ||
-                            (dto.getActionUserText() != null && dto.getActionUserText().stream()
-                                    .filter(Objects::nonNull)
-                                    .anyMatch(text -> text.toLowerCase().contains(search)));
+                        (dto.getBodyText() != null && dto.getBodyText().toLowerCase().contains(search)) ||
+                        (dto.getMessage() != null && dto.getMessage().toLowerCase().contains(search)) ||
+                        (dto.getSecondMessage() != null && dto.getSecondMessage().toLowerCase().contains(search)) ||
+                        (dto.getActionUserText() != null && dto.getActionUserText().stream()
+                            .filter(Objects::nonNull)
+                            .anyMatch(text -> text.toLowerCase().contains(search)));
                 })
                 .toList();
 
         List<Long> ids = notificationDtosForGreenCityMatchSearchRequest.stream()
-                .map(NotificationDto::getNotificationId)
-                .toList();
+            .map(NotificationDto::getNotificationId)
+            .toList();
 
         Pageable newPageableWithSorting = PageRequest.of(
-                page.getPageNumber(),
-                page.getPageSize(),
-                Sort.by(Sort.Order.desc("time"))
-                );
+            page.getPageNumber(),
+            page.getPageSize(),
+            Sort.by(Sort.Order.desc("time")));
 
-        return buildPageableAdvancedDto(notificationRepo.findAllByIdIn(ids, newPageableWithSorting), locale.getLanguage());
+        return buildPageableAdvancedDto(notificationRepo.findAllByIdIn(ids, newPageableWithSorting),
+            locale.getLanguage());
     }
 
     /**
-     * Retrieves all UBS notifications for the current user that match the given search request.
-     * The notifications are fetched from an external UBS service, filtered by the search term
-     * (case-insensitive) in the title or body, and returned as a paginated DTO.
+     * Retrieves all UBS notifications for the current user that match the given
+     * search request. The notifications are fetched from an external UBS service,
+     * filtered by the search term (case-insensitive) in the title or body, and
+     * returned as a paginated DTO.
      *
      * @param principal     the current authenticated user
      * @param pageable      pagination information without sorting
@@ -740,33 +743,38 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * @author Oleksandra Bulhakova
      */
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromUbsBySearchRequest(Principal principal,
-                                                                                      Pageable pageable, String searchRequest, Locale locale) {
-        PageableAdvancedDto<UbsNotificationDto> ubsNotificationDtos = restClient.findAllNotificationsForUserFromUbs(principal, pageable, Optional.ofNullable(locale.getLanguage()));
+        Pageable pageable, String searchRequest, Locale locale) {
+        PageableAdvancedDto<UbsNotificationDto> ubsNotificationDtos = restClient
+            .findAllNotificationsForUserFromUbs(principal, pageable, Optional.ofNullable(locale.getLanguage()));
 
         List<UbsNotificationDto> filteredNotifications = ubsNotificationDtos.getPage().stream()
-                .filter(dto -> {
-                    String search = searchRequest.toLowerCase();
-                    return (dto.title() != null && dto.title().toLowerCase().contains(search)) ||
-                            (dto.body() != null && dto.body().toLowerCase().contains(search));
-                })
-                .toList();
+            .filter(dto -> {
+                String search = searchRequest.toLowerCase();
+                return (dto.title() != null && dto.title().toLowerCase().contains(search)) ||
+                    (dto.body() != null && dto.body().toLowerCase().contains(search));
+            })
+            .toList();
 
         return buildPageableAdvancedDtoFromNotificationDto(filteredNotifications.stream()
-                .map(ubsDto -> modelMapper.map(ubsDto, NotificationDto.class)).toList(), pageable);
+            .map(ubsDto -> modelMapper.map(ubsDto, NotificationDto.class)).toList(), pageable);
     }
 
     /**
-     * Builds a {@link PageableAdvancedDto} from a given list of {@link NotificationDto} based on the provided
-     * {@link Pageable} parameters. Handles manual pagination logic including calculating total pages, current page,
-     * and slicing the content list to fit the page.
+     * Builds a {@link PageableAdvancedDto} from a given list of
+     * {@link NotificationDto} based on the provided {@link Pageable} parameters.
+     * Handles manual pagination logic including calculating total pages, current
+     * page, and slicing the content list to fit the page.
      *
      * @param notificationDtos the full list of {@link NotificationDto} to paginate
-     * @param pageable         the pagination information (page number and page size)
-     * @return a paginated {@link PageableAdvancedDto} containing only the content for the requested page,
-     *         along with metadata such as total elements, total pages, and flags for page navigation
+     * @param pageable         the pagination information (page number and page
+     *                         size)
+     * @return a paginated {@link PageableAdvancedDto} containing only the content
+     *         for the requested page, along with metadata such as total elements,
+     *         total pages, and flags for page navigation
      * @author Oleksandra Bulhakova
      */
-    private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDtoFromNotificationDto(List<NotificationDto> notificationDtos, Pageable pageable) {
+    private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDtoFromNotificationDto(
+        List<NotificationDto> notificationDtos, Pageable pageable) {
         int totalElements = notificationDtos.size();
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
@@ -775,36 +783,38 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         int toIndex = Math.min(fromIndex + pageSize, totalElements);
 
         List<NotificationDto> pageContent = fromIndex < totalElements
-                ? notificationDtos.subList(fromIndex, toIndex)
-                : List.of();
+            ? notificationDtos.subList(fromIndex, toIndex)
+            : List.of();
 
         return new PageableAdvancedDto<>(
-                pageContent,
-                totalElements,
-                currentPage,
-                totalPages,
-                currentPage,
-                currentPage > 0,
-                currentPage < totalPages - 1,
-                currentPage == 0,
-                currentPage == totalPages - 1
-        );
+            pageContent,
+            totalElements,
+            currentPage,
+            totalPages,
+            currentPage,
+            currentPage > 0,
+            currentPage < totalPages - 1,
+            currentPage == 0,
+            currentPage == totalPages - 1);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<NotificationDto> getAllNotificationsForUserBySearchRequest(Pageable page, Principal principal,
-                                                                                   Locale locale, ProjectName projectName,
-                                                                                   String searchRequest) {
+    public PageableAdvancedDto<NotificationDto> getAllNotificationsForUserBySearchRequest(Pageable page,
+        Principal principal,
+        Locale locale, ProjectName projectName,
+        String searchRequest) {
         if (projectName != null && projectName.equals(ProjectName.GREENCITY)) {
             return getNotificationsForUserFromGreenCityBySearchRequest(page, principal, locale, searchRequest);
         } else if (projectName != null && projectName.equals(ProjectName.PICKUP)) {
             return getNotificationsForUserFromUbsBySearchRequest(principal, page, searchRequest, locale);
         } else {
-            List<NotificationDto> greenCityNotifications = getNotificationsForUserFromGreenCityBySearchRequest(page, principal, locale, searchRequest).getPage();
-            List<NotificationDto> ubsNotifications = getNotificationsForUserFromUbsBySearchRequest(principal, page, searchRequest, locale).getPage();
+            List<NotificationDto> greenCityNotifications =
+                getNotificationsForUserFromGreenCityBySearchRequest(page, principal, locale, searchRequest).getPage();
+            List<NotificationDto> ubsNotifications =
+                getNotificationsForUserFromUbsBySearchRequest(principal, page, searchRequest, locale).getPage();
 
             List<NotificationDto> allNotifications = new ArrayList<>();
             allNotifications.addAll(greenCityNotifications);
