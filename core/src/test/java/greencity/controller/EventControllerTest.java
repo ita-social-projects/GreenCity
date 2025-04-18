@@ -895,7 +895,7 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
-    void getAllUserAssignedReturnsResponseWhenUserIsValid() {
+    void getAllUserAssignedReturnsPaginatedUserAssignedEventsForValidUser() {
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/user-data/getAllUserAssigned")
