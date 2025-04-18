@@ -262,7 +262,7 @@ public class SecurityConfig {
                     "/user/{userId}/friends/",
                     "/user/{userId}/friendRequests/",
                     "/chat",
-                    EVENTS + "/getAllUserAssigned",
+                    EVENTS + "/user-data/getAllUserAssigned",
                     EVENTS + ATTENDERS + COUNT,
                     EVENTS + ORGANIZERS + COUNT,
                     EVENTS + EVENT_ID + LIKES,
@@ -457,7 +457,7 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))
             .logout(logout -> logout.logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))
+                .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies("accessToken")

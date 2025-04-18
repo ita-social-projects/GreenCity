@@ -749,10 +749,10 @@ public class EventController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
     })
     @ApiPageableWithoutSort
-    @GetMapping("/getAllUserAssigned")
+    @GetMapping("/user-data/getAllUserAssigned")
     public ResponseEntity<Page<EventResponseDto>> getAllUserAssigned(
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @NotNull @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId()));
     }
 }

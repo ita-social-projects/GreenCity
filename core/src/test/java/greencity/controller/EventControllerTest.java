@@ -14,11 +14,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.service.EventService;
 import greencity.service.UserService;
-
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import java.security.Principal;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
@@ -41,6 +36,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static greencity.ModelUtils.getCreateJsonFile;
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
@@ -898,7 +898,7 @@ class EventControllerTest {
     void getAllUserAssignedReturnsResponseWhenUserIsValid() {
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllUserAssigned")
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/user-data/getAllUserAssigned")
             .principal(principal)
             .param("page", "0")
             .param("size", "2"))
