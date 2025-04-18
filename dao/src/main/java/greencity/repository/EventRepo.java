@@ -219,7 +219,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             WHERE e.id = :eventId
         """)*/
     @Query("""
-            SELECT new greencity.dto.event.EventAttenderDto(u.id, u.email, u.email)
+            SELECT new greencity.dto.event.EventAttenderDto(u.id, "aboba", "aboba")
             FROM Event e
             JOIN e.attenders u
             WHERE e.id = :eventId
@@ -233,7 +233,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             WHERE e.id = :eventId
         """)*/
     @Query("""
-            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, u.email, u.email)
+            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, "aboba", "aboba")
             FROM Event e
             JOIN e.usersLikedEvents u
             WHERE e.id = :eventId
@@ -247,7 +247,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             WHERE e.id = :eventId
         """)*/
     @Query("""
-            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, u.email, u.email)
+            SELECT new greencity.dto.user.UserProfilePictureDto(u.id, "aboba", "aboba")
             FROM Event e
             JOIN e.usersDislikedEvents u
             WHERE e.id = :eventId

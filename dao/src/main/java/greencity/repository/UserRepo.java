@@ -34,6 +34,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param email user email.
      * @return {@link User}
      */
+    //TODO
+    @Query("SELECT id FROM User WHERE id=:email")
     Optional<User> findByEmail(String email);
 
     /**
@@ -42,6 +44,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param emails user emails.
      * @return list of {@link User}.
      */
+    //TODO
+    @Query("SELECT id FROM User WHERE id IN :emails")
     List<User> findAllByEmailIn(List<String> emails);
 
     /**
@@ -62,7 +66,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param email - User email
      * @return User id
      */
-    @Query("SELECT id FROM User WHERE email=:email")
+    //TODO
+    //@Query("SELECT id FROM User WHERE email=:email")
+    @Query("SELECT id FROM User WHERE id=:email")
     Optional<Long> findIdByEmail(String email);
 
     /**

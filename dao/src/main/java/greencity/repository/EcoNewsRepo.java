@@ -154,12 +154,12 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
         SELECT new greencity.dto.econews.EcoNewsAuthorStatisticDto(
             ROW_NUMBER() OVER (ORDER BY COUNT(e) DESC),
             u.id,
-            u.email,
+            "aboba",
             COUNT(e.id)
         )
         FROM EcoNews e
         JOIN e.author u
-        GROUP BY u.id, u.email
+        GROUP BY u.id, u.id
         """)
     Page<EcoNewsAuthorStatisticDto> getEcoNewsAuthorStatistic(Pageable pageable);
 
