@@ -677,10 +677,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     /**
      * Retrieves all notifications for the current user in the GreenCity project
      * that match the provided search request. The results are sorted by date in
-     * descending order and returned as a pageable DTO.
-     *
-     * <p>The search is case-insensitive and checks for matches in the notification's
-     * title, body, message, second message, and action user text.
+     * descending order and returned as a pageable DTO. The search is
+     * case-insensitive and checks for matches in the notification's title, body,
+     * message, second message, and action user text.
      *
      * @param page          the pagination information without sorting
      * @param principal     the current authenticated user
