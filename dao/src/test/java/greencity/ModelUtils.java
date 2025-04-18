@@ -121,16 +121,16 @@ public class ModelUtils {
         verifyEmail.setId(1L);
 
         User user = User.builder()
-                .id(7L)
-                .email("sasha@gmail.com")
-                .name("Sasha")
-                .role(Role.ROLE_USER)
-                .userStatus(UserStatus.ACTIVATED)
-                .lastActivityTime(LocalDateTime.now())
-                .verifyEmail(verifyEmail)
-                .dateOfRegistration(LocalDateTime.now())
-                .refreshTokenKey("refresh-token-key")
-                .build();
+            .id(7L)
+            .email("sasha@gmail.com")
+            .name("Sasha")
+            .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastActivityTime(LocalDateTime.now())
+            .verifyEmail(verifyEmail)
+            .dateOfRegistration(LocalDateTime.now())
+            .refreshTokenKey("refresh-token-key")
+            .build();
 
         verifyEmail.setUser(user);
 

@@ -19,10 +19,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class NotificationRepoTest extends PostgresInitializer{
+public class NotificationRepoTest extends PostgresInitializer {
 
     @Autowired
     private NotificationRepo notificationRepo;
