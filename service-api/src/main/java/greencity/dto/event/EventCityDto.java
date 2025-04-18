@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class EventCityDto {
-    private String nameEn;
-    private String nameUk;
+    private String cityEn;
+    private String cityUk;
     private Long amountOfEvents;
 }
