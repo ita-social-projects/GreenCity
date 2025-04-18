@@ -82,6 +82,11 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             public Boolean searchUserNotificationPreference(EmailPreferenceDto emailPreferenceDto) {
                 throw new RuntimeException("not implemeneted");
             }
+
+            @Override
+            public List<UserVO> getSixFriendsWithTheHighestRating(Long userId) {
+                throw new RuntimeException("not implemeneted");
+            }
         };
     }
 }

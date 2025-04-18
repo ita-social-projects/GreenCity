@@ -76,15 +76,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Optional<Timestamp> findLastActivityTimeById(Long userId);
 
     /**
-     * Get six friends with the highest rating {@link User}.
-     */
-    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE users.id IN ( "
-        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND') "
-        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND')) "
-        + "ORDER BY users.rating DESC LIMIT 6;")
-    List<User> getSixFriendsWithTheHighestRating(Long userId);
-
-    /**
      * Updates user rating as event organizer.
      *
      * @param userId {@link User}'s id
