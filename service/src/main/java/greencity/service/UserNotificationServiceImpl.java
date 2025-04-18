@@ -679,7 +679,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * that match the provided search request. The results are sorted by date in
      * descending order and returned as a pageable DTO.
      *
-     * <p>The search is case-insensitive and checks for matches in the notification's
+     * <p>
+     * The search is case-insensitive and checks for matches in the notification's
      * title, body, message, second message, and action user text.
      *
      * @param page          the pagination information without sorting
@@ -705,10 +706,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .filter(dto -> {
                     String search = searchRequest.toLowerCase();
                     return (dto.getTitleText() != null && dto.getTitleText().toLowerCase().contains(search))
-                            || (dto.getBodyText() != null && dto.getBodyText().toLowerCase().contains(search))
-                            || (dto.getMessage() != null && dto.getMessage().toLowerCase().contains(search))
-                            || (dto.getSecondMessage() != null && dto.getSecondMessage().toLowerCase().contains(search))
-                            || (dto.getActionUserText() != null && dto.getActionUserText().stream()
+                        || (dto.getBodyText() != null && dto.getBodyText().toLowerCase().contains(search))
+                        || (dto.getMessage() != null && dto.getMessage().toLowerCase().contains(search))
+                        || (dto.getSecondMessage() != null && dto.getSecondMessage().toLowerCase().contains(search))
+                        || (dto.getActionUserText() != null && dto.getActionUserText().stream()
                             .filter(Objects::nonNull)
                             .anyMatch(text -> text.toLowerCase().contains(search)));
                 })
@@ -750,7 +751,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .filter(dto -> {
                 String search = searchRequest.toLowerCase();
                 return (dto.title() != null && dto.title().toLowerCase().contains(search))
-                        || (dto.body() != null && dto.body().toLowerCase().contains(search));
+                    || (dto.body() != null && dto.body().toLowerCase().contains(search));
             })
             .toList();
 
