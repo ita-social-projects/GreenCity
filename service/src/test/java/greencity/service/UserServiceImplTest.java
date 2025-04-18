@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
@@ -69,6 +70,8 @@ import static org.mockito.Mockito.when;
 class UserServiceImplTest {
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private UserRemoteClient userRemoteClient;
     @InjectMocks
     private UserServiceImpl userService;
     @Mock
@@ -139,19 +142,17 @@ class UserServiceImplTest {
     @Test
     void getSixFriendsWithTheHighestRatingTest() {
         List<User> friendsList = ModelUtils.getFriendsList();
+        List<UserVO> friendsListVO = friendsList.stream()
+                .map(friend -> modelMapper.map(friend, UserVO.class))
+                .toList();
         User user = User.builder()
             .id(1L)
-            .userFriends(friendsList)
+            // .userFriends(friendsList)
             .build();
 
-        userVO.setUserFriends(friendsList.stream()
-            .map(friend -> modelMapper.map(friend, UserVO.class))
-            .collect(Collectors.toList()));
+        userVO.setUserFriends(friendsListVO);
 
-        when(userRepo.getSixFriendsWithTheHighestRating(user.getId())).thenReturn(user.getUserFriends().stream()
-            .sorted((f1, f2) -> f2.getRating().compareTo(f1.getRating()))
-            .limit(6)
-            .collect(Collectors.toList()));
+        when(userRemoteClient.getSixFriendsWithTheHighestRating(user.getId())).thenReturn(friendsListVO);
 
         assertEquals(userVO.getUserFriends().subList(2, 8),
             userService.getSixFriendsWithTheHighestRating(user.getId()));
@@ -200,10 +201,8 @@ class UserServiceImplTest {
 
     @Test
     void testFindNotDeactivatedByEmail() {
-        when(userRepo.findNotDeactivatedByEmail(testEmail))
-            .thenReturn(Optional.of(testUser));
-        when(modelMapper.map(Optional.of(testUser), UserVO.class))
-            .thenReturn(testUserVo);
+        when(userRemoteClient.findNotDeactivatedByEmail(testEmail))
+            .thenReturn(Optional.of(testUserVo));
 
         Optional<UserVO> actual = userService.findNotDeactivatedByEmail(testEmail);
 
@@ -229,11 +228,16 @@ class UserServiceImplTest {
 
     @Test
     void testUpdateStatus() {
+        UserStatusDto userStatusDto = UserStatusDto.builder()
+                .id(2L)
+                .userStatus(UserStatus.CREATED)
+                .build();
+
         when(userRepo.findByEmail(testEmail2)).thenReturn(Optional.ofNullable(testUser));
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUserRoleUser));
         when(modelMapper.map(testUserRoleUser, UserVO.class)).thenReturn(userVORoleUser);
-        doNothing().when(userRepo).updateUserStatus(2L, String.valueOf(UserStatus.CREATED));
+        doNothing().when(userRemoteClient).updateUserStatus(userStatusDto);
         when(modelMapper.map(userVORoleUser, UserStatusDto.class)).thenReturn(testUserStatusDto);
 
         UserStatusDto actual = userService.updateStatus(2L, CREATED, testEmail2);
@@ -243,7 +247,7 @@ class UserServiceImplTest {
         verify(userRepo, times(2)).findByEmail(anyString());
         verify(modelMapper, times(4)).map(any(User.class), eq(UserVO.class));
         verify(userRepo, times(2)).findById(anyLong());
-        verify(userRepo).updateUserStatus(2L, String.valueOf(CREATED));
+        verify(userRemoteClient).updateUserStatus(userStatusDto);
         verify(modelMapper).map(userVORoleUser, UserStatusDto.class);
     }
 

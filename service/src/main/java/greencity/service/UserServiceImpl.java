@@ -22,16 +22,6 @@ import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserRepo;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +33,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -90,10 +90,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        User user = userRepo.findByEmail(email)
+        UserVO user = userRemoteClient.findNotDeactivatedByEmail(email)
                 .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-        UserVO userVO = modelMapper.map(user, UserVO.class);
-        return Optional.of(userVO);
+        return Optional.of(user);
     }
 
     /**
@@ -214,9 +213,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserVO> getSixFriendsWithTheHighestRating(Long userId) {
-        return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
-            .map(user -> modelMapper.map(user, UserVO.class))
-            .collect(Collectors.toList());
+        return userRemoteClient.getSixFriendsWithTheHighestRating(userId);
     }
 
     /**
