@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(NotificationController.class)
 @ContextConfiguration(classes = GreenCityApplication.class)
-public class NotificationControllerAccessControlTest {
+class NotificationControllerAccessControlTest {
     @Autowired
     private MockMvc mockMvc;
 

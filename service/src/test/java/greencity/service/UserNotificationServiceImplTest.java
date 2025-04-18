@@ -996,15 +996,7 @@ class UserNotificationServiceImplTest {
 
     @Test
     void getAllNotificationsForUserBySearchRequest_WrongProjectNameTest() {
-        Pageable pageableUnsorted = getUnSortedPageable();
-        Principal principal = getPrincipal();
-        Locale locale = Locale.of("en");
-        String searchRequest = "test";
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            userNotificationService.getAllNotificationsForUserBySearchRequest(
-                pageableUnsorted, principal, locale, ProjectName.valueOf("UNKNOWN"), searchRequest);
-        });
+        assertThrows(IllegalArgumentException.class, () -> ProjectName.valueOf("UNKNOWN"));
     }
 
     @Test

@@ -6,7 +6,6 @@ import greencity.entity.User;
 import greencity.repository.util.PostgresInitializer;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class NotificationRepoTest extends PostgresInitializer {
+class NotificationRepoTest extends PostgresInitializer {
 
     @Autowired
     private NotificationRepo notificationRepo;

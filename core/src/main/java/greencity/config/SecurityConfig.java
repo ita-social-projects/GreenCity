@@ -293,7 +293,7 @@ public class SecurityConfig {
                     FRIENDS + "/user-data-as-friend/{friendId}",
                     FRIENDS,
                     NOTIFICATIONS,
-                    NOTIFICATIONS + "/search",
+                    NOTIFICATIONS + SEARCH,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
                     "/ai/**")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
