@@ -23,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @RequiredArgsConstructor
 @RestController
@@ -48,8 +47,8 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @GetMapping(value = "/tables", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TablesMetadataDto> getTablesInfo(@RequestHeader String secretKey) {
-        return ResponseEntity.ok(exportSettingsService.getTablesMetadata(secretKey));
+    public ResponseEntity<TablesMetadataDto> getTablesInfo() {
+        return ResponseEntity.ok(exportSettingsService.getTablesMetadata());
     }
 
     /**
@@ -69,9 +68,8 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @GetMapping("/select")
-    public ResponseEntity<TableRowsDto> selectFromTable(@Valid TableParamsRequestDto tableParams,
-        @RequestHeader String secretKey) {
-        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableParams, secretKey));
+    public ResponseEntity<TableRowsDto> selectFromTable(@Valid TableParamsRequestDto tableParams) {
+        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableParams));
     }
 
     /**
@@ -92,8 +90,7 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @GetMapping("/download-table-data")
-    public ResponseEntity<InputStreamResource> exportTableRowsAsExcel(@Valid TableParamsRequestDto tableParams,
-        @RequestHeader String secretKey) {
+    public ResponseEntity<InputStreamResource> exportTableRowsAsExcel(@Valid TableParamsRequestDto tableParams) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION,
             String.format("attachment; filename= %s(%d - %d).xlsx", tableParams.tableName(), tableParams.offset(),
@@ -103,7 +100,7 @@ public class ExportSettingsController {
         return ResponseEntity.ok()
             .headers(headers)
             .body(new InputStreamResource(
-                exportSettingsService.getExcelFileAsResource(tableParams, secretKey)));
+                exportSettingsService.getExcelFileAsResource(tableParams)));
     }
 
     /**
@@ -121,7 +118,7 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @GetMapping("/env")
-    public ResponseEntity<EnvironmentDto> getEnvVariables(@RequestHeader String secretKey) {
-        return ResponseEntity.ok(exportSettingsService.getEnvironmentVariables(secretKey));
+    public ResponseEntity<EnvironmentDto> getEnvVariables() {
+        return ResponseEntity.ok(exportSettingsService.getEnvironmentVariables());
     }
 }

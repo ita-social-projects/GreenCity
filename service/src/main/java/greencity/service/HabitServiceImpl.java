@@ -15,12 +15,13 @@ import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.Tag;
+import greencity.entity.HabitAssign;
+import greencity.entity.CustomToDoListItem;
+import greencity.entity.Language;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
@@ -249,10 +250,8 @@ public class HabitServiceImpl implements HabitService {
             .complexities(complexities.orElse(new ArrayList<>()))
             .isCustom(isCustomHabit.orElse(null))
             .build();
-
         Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
         Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
-
         return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO.getId());
     }
 
@@ -274,27 +273,11 @@ public class HabitServiceImpl implements HabitService {
         List<HabitDto> habits = habitTranslationsPage.stream()
             .map(habitTranslation -> {
                 HabitDto habitDto = modelMapper.map(habitTranslation, HabitDto.class);
-                HabitTranslation habitTranslationByUaLanguage =
-                    habitTranslationRepo.getHabitTranslationByUaLanguage(habitTranslation.getHabit().getId());
-                habitDto.getHabitTranslation()
-                    .setDescription(habitTranslationByUaLanguage.getDescription() != null
-                        ? habitTranslationByUaLanguage.getDescription()
-                        : "");
-                habitDto.getHabitTranslation().setName(
-                    habitTranslationByUaLanguage.getName() != null ? habitTranslationByUaLanguage.getName() : "");
-                habitDto.getHabitTranslation()
-                    .setHabitItem(habitTranslationByUaLanguage.getHabitItem() != null
-                        ? habitTranslationByUaLanguage.getHabitItem()
-                        : "");
-                boolean isFavorite = isCurrentUserFollower(habitTranslation.getHabit(), userId);
-                habitDto.setIsFavorite(isFavorite);
+                habitDto.setIsFavorite(isCurrentUserFollower(habitTranslation.getHabit(), userId));
                 return habitDto;
-            })
-            .collect(Collectors.toList());
-        habits.forEach(
-            habitDto -> habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId())));
-
+            }).toList();
         for (HabitDto habitDto : habits) {
+            habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
             Habit habit = habitRepo.findById(habitDto.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitDto.getId()));
             List<HabitAssign> habitAssigns =
@@ -307,10 +290,8 @@ public class HabitServiceImpl implements HabitService {
             if (isCustomHabit) {
                 habitDto.setUsersIdWhoCreatedCustomHabit(habit.getUserId());
             }
-
-            if (userId.equals(friendId)) {
-                boolean isAssigned = habitDto.getHabitAssignStatus() == HabitAssignStatus.INPROGRESS;
-                habitDto.setIsAssigned(isAssigned);
+            if (Objects.equals(userId, friendId)) {
+                habitDto.setIsAssigned(HabitAssignStatus.INPROGRESS.equals(habitDto.getHabitAssignStatus()));
             } else {
                 habitDto.setIsAssigned(isHabitAssign(userId, habit.getId()));
             }
@@ -509,14 +490,12 @@ public class HabitServiceImpl implements HabitService {
                 }
                 return true;
             })
-            .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto, dto.getLanguageCode()))
+            .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(habitDto,
+                languageRepo.findByCode(dto.getLanguageCode())
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.SELECT_CORRECT_LANGUAGE)),
+                habit))
             .flatMap(Collection::stream).toList();
         habit.setHabitTranslations(habitTranslations);
-    }
-
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto,
-        String language) {
-        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language);
     }
 
     private void setTagsIdsToHabit(CustomHabitDtoRequest habitDto, Habit habit) {
@@ -787,5 +766,11 @@ public class HabitServiceImpl implements HabitService {
                 .build())
             .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, dtoList.size());
+    }
+
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(
+        CustomHabitDtoRequest habitDto,
+        Language language, Habit habit) {
+        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language, habit);
     }
 }

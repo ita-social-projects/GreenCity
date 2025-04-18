@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import static greencity.ModelUtils.getAuthorVO;
 import static greencity.ModelUtils.getEvent;
 import static greencity.ModelUtils.getEventPreviewDtos;
@@ -83,6 +84,7 @@ import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -2336,9 +2338,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(userEvents);
         when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenThrow(new RuntimeException("Mapping error"));
 
-        assertThrows(RuntimeException.class, () -> {
-            eventService.getAllEventsOrganizedByUser(userId);
-        });
+        assertThrows(RuntimeException.class, () -> eventService.getAllEventsOrganizedByUser(userId));
 
         verify(eventRepo).findAllUserEventsByUserId(userId);
         verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
