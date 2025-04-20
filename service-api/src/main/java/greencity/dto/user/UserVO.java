@@ -1,13 +1,11 @@
 package greencity.dto.user;
 
-import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
-import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
-import greencity.dto.useraction.UserActionVO;
+import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.ProfilePrivacyPolicy;
@@ -17,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,14 +77,9 @@ public class UserVO {
 
     private LocalDateTime lastActivityTime;
 
-    @Builder.Default
-    private List<UserActionVO> userActions = new ArrayList<>();
-
     private String uuid;
 
     private LanguageVO language;
 
     private UserLocationDto userLocationDto;
-
-
 }
