@@ -45,7 +45,6 @@ class RatingCalculationTest {
             .points(5)
             .build();
         User user = ModelUtils.getUser();
-        // user.setRating(1D);
         UserVO userVO = ModelUtils.getUserVO();
         userVO.setRating(1D);
         ZonedDateTime now = ZonedDateTime.now();

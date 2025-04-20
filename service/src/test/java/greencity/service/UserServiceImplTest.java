@@ -135,22 +135,17 @@ class UserServiceImplTest {
     @Test
     void getSixFriendsWithTheHighestRatingTest() {
         List<User> friendsList = ModelUtils.getFriendsList();
-        List<UserVO> friendsListVO = friendsList.stream()
+        List<UserVO> expectedResult = friendsList.stream()
             .map(friend -> modelMapper.map(friend, UserVO.class))
             .toList();
-        User user = User.builder()
-            .id(1L)
-            // .userFriends(friendsList)
-            .build();
+        Long userId = 1L;
 
-        // userVO.setUserFriends(friendsListVO);
+        when(userRemoteClient.getSixFriendsWithTheHighestRating(userId))
+            .thenReturn(expectedResult);
 
-        when(userRemoteClient.getSixFriendsWithTheHighestRating(user.getId())).thenReturn(friendsListVO);
+        List<UserVO> actualResult = userService.getSixFriendsWithTheHighestRating(userId);
 
-        /*
-         * assertEquals(userVO.getUserFriends().subList(2, 8),
-         * userService.getSixFriendsWithTheHighestRating(user.getId()));
-         */
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
