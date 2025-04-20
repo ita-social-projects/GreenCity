@@ -10,6 +10,7 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
@@ -52,6 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -101,73 +103,81 @@ import static org.mockito.Mockito.when;
 class HabitServiceImplTest {
 
     @InjectMocks
-    private HabitServiceImpl habitService;
+    HabitServiceImpl habitService;
 
     @Mock
-    private HabitRepo habitRepo;
+    HabitRepo habitRepo;
 
     @Mock
-    private HabitTranslationRepo habitTranslationRepo;
+    HabitTranslationRepo habitTranslationRepo;
 
     @Mock
-    private ModelMapper modelMapper;
+    ModelMapper modelMapper;
 
     @Mock
-    private CustomHabitMapper customHabitMapper;
+    CustomHabitMapper customHabitMapper;
 
     @Mock
-    private HabitTranslationMapper habitTranslationMapper;
+    HabitTranslationMapper habitTranslationMapper;
 
     @Mock
-    private CustomToDoListMapper customToDoListMapper;
+    CustomToDoListMapper customToDoListMapper;
 
     @Mock
-    private CustomToDoListResponseDtoMapper customToDoListResponseDtoMapper;
+    CustomToDoListResponseDtoMapper customToDoListResponseDtoMapper;
 
     @Mock
-    private HabitTranslationDtoMapper habitTranslationDtoMapper;
+    HabitTranslationDtoMapper habitTranslationDtoMapper;
 
     @Mock
     FileService fileService;
 
     @Mock
-    private ToDoListItemTranslationRepo toDoListItemTranslationRepo;
-    @Mock
-    private HabitAssignRepo habitAssignRepo;
+    ToDoListItemTranslationRepo toDoListItemTranslationRepo;
 
     @Mock
-    private UserRepo userRepo;
+    HabitAssignRepo habitAssignRepo;
 
     @Mock
-    private TagsRepo tagsRepo;
+    UserRepo userRepo;
 
     @Mock
-    private LanguageRepo languageRepo;
+    TagsRepo tagsRepo;
 
     @Mock
-    private CustomToDoListItemRepo customToDoListItemRepo;
-    @Mock
-    private RatingPointsRepo ratingPointsRepo;
+    LanguageRepo languageRepo;
 
     @Mock
-    private HabitAssignService habitAssignService;
+    CustomToDoListItemRepo customToDoListItemRepo;
 
     @Mock
-    private HabitInvitationService habitInvitationService;
-    @Mock
-    private RatingCalculation ratingCalculation;
-    @Mock
-    private AchievementCalculation achievementCalculation;
-    @Mock
-    private UserNotificationServiceImpl userNotificationService;
+    RatingPointsRepo ratingPointsRepo;
 
     @Mock
-    private HabitInvitationRepo habitInvitationRepo;
+    HabitAssignService habitAssignService;
 
     @Mock
-    private FriendService friendService;
+    HabitInvitationService habitInvitationService;
 
-    private static final CustomHabitDtoResponse RESPONSE = new CustomHabitDtoResponse();
+    @Mock
+    RatingCalculation ratingCalculation;
+
+    @Mock
+    AchievementCalculation achievementCalculation;
+
+    @Mock
+    UserNotificationServiceImpl userNotificationService;
+
+    @Mock
+    HabitInvitationRepo habitInvitationRepo;
+
+    @Mock
+    FriendService friendService;
+
+    @Mock
+    LanguageService languageService;
+
+    static final CustomHabitDtoResponse RESPONSE = new CustomHabitDtoResponse();
 
     @Test
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -816,6 +826,9 @@ class HabitServiceImplTest {
         CustomToDoListItemResponseDto customToDoListItemResponseDto =
             ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
+        UserVO userVO = mock(UserVO.class);
+        Long languageId = 1L;
+        LanguageVO languageVO = ModelUtils.getLanguageVO();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
@@ -836,6 +849,9 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguage(languageUa));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getLanguageId()).thenReturn(languageId);
+        when(languageService.findById(languageId)).thenReturn(languageVO);
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoUA), "ua"))
@@ -1003,7 +1019,7 @@ class HabitServiceImplTest {
     @Test
     void updateCustomHabitTest() throws IOException {
         User user = ModelUtils.getUser();
-        // user.setRole(Role.ROLE_ADMIN);
+        Role role = Role.ROLE_ADMIN;
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Language languageEn = ModelUtils.getLanguage();
@@ -1016,6 +1032,7 @@ class HabitServiceImplTest {
         CustomToDoListItemResponseDto customToDoListItemResponseDto =
             ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
+        UserVO userVO = mock(UserVO.class);
 
         CustomHabitDtoRequest customHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
@@ -1034,6 +1051,8 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguage(languageUa));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitRepo.save(customHabitMapper.convert(customHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
@@ -1083,10 +1102,12 @@ class HabitServiceImplTest {
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
         User user = ModelUtils.getUser();
         String email = user.getEmail();
-        // user.setRole(Role.ROLE_USER);
-
+        Role role = Role.ROLE_USER;
+        UserVO userVO = mock(UserVO.class);
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
 
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
@@ -1100,7 +1121,8 @@ class HabitServiceImplTest {
     @Test
     void updateCustomHabitWithNewCustomToDoListItemToUpdateTest() throws IOException {
         User user = ModelUtils.getTestUser();
-        // user.setRole(Role.ROLE_ADMIN);
+        Role role = Role.ROLE_ADMIN;
+        UserVO userVO = mock(UserVO.class);
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
@@ -1117,6 +1139,8 @@ class HabitServiceImplTest {
             .thenReturn(List.of(newItem));
         when(customToDoListItemRepo.save(any())).thenReturn(ModelUtils.getCustomToDoListItemForUpdate());
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitRepo.save(habit)).thenReturn(habit);
@@ -1139,7 +1163,8 @@ class HabitServiceImplTest {
     @Test
     void updateCustomHabitWithComplexityToUpdateTest() throws IOException {
         User user = ModelUtils.getTestUser();
-        // user.setRole(Role.ROLE_ADMIN);
+        Role role = Role.ROLE_ADMIN;
+        UserVO userVO = mock(UserVO.class);
 
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
@@ -1153,6 +1178,8 @@ class HabitServiceImplTest {
         CustomHabitDtoResponse customHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitRepo.save(customHabitMapper.convert(customHabitDtoRequest))).thenReturn(habit);
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(customHabitDtoResponse);
@@ -1174,13 +1201,16 @@ class HabitServiceImplTest {
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
         User user = ModelUtils.getTestUser();
         String email = user.getEmail();
-        // user.setRole(Role.ROLE_USER);
+        Role role = Role.ROLE_USER;
+        UserVO userVO = mock(UserVO.class);
 
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         habit.setUserId(1L);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(role);
 
         assertThrows(UserHasNoPermissionToAccessException.class,
             () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, email, null));
