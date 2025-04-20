@@ -4,25 +4,40 @@ import greencity.ModelUtils;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import java.util.List;
+import greencity.service.LanguageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignPreviewDtoMapperTest {
+
+    @Mock
+    ModelMapper modelMapper;
+
+    @Mock
+    LanguageService languageService;
+
     @InjectMocks
-    private HabitAssignPreviewDtoMapper habitAssignPreviewDtoMapper;
+    HabitAssignPreviewDtoMapper habitAssignPreviewDtoMapper;
 
     @Test
     void convertTest() {
+        UserVO userVO = mock(UserVO.class);
+        Long languageId = 2L;
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getHabit().setHabitTranslations(List.of(
             HabitTranslation.builder()
@@ -64,6 +79,13 @@ class HabitAssignPreviewDtoMapperTest {
             .workingDays(habitAssign.getWorkingDays())
             .habit(habitPreviewDto)
             .build();
+
+        when(modelMapper.map(habitAssign.getUser(), UserVO.class))
+                .thenReturn(userVO);
+        when(userVO.getLanguageId())
+                .thenReturn(languageId);
+        when(languageService.findById(languageId))
+                .thenReturn(ModelUtils.getLanguageVO());
 
         HabitAssignPreviewDto actual = habitAssignPreviewDtoMapper.convert(habitAssign);
 
