@@ -25,8 +25,8 @@ public class UserManagementVOMapper extends AbstractConverter<User, UserManageme
 
         return UserManagementVO.builder()
             .id(user.getId())
-            .name(userVO.getName())
-            .email(userVO.getEmail())
+            .name(user.getName())
+            .email(user.getEmail())
             .userCredo(userVO.getUserCredo())
             .role(userVO.getRole())
             .userStatus(userVO.getUserStatus())

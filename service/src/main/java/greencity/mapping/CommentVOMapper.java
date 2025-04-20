@@ -43,7 +43,7 @@ public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
             .user(UserVO.builder()
                 .id(commentUser.getId())
                 .role(commentUserVO.getRole())
-                .name(commentUserVO.getName())
+                .name(commentUser.getName())
                 .build())
             .currentUserLiked(comment.isCurrentUserLiked())
             .usersLiked(comment.getUsersLiked() != null ? comment.getUsersLiked().stream()

@@ -24,7 +24,7 @@ public class UserTagDtoMapper extends AbstractConverter<User, UserTagDto> {
 
         return UserTagDto.builder()
             .userId(user.getId())
-            .userName(userVO.getName())
+            .userName(user.getName())
             .profilePicture(userVO.getProfilePicturePath())
             .build();
     }

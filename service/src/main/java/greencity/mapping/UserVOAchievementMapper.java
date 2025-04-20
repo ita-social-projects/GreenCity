@@ -27,7 +27,7 @@ public class UserVOAchievementMapper extends AbstractConverter<User, UserVOAchie
 
         return UserVOAchievement.builder()
             .id(user.getId())
-            .name(userVO.getName())
+            .name(user.getName())
             .userAchievements(userVO.getUserAchievements() != null ? userVO.getUserAchievements()
                 .stream().map(userAchievement -> UserAchievementVO.builder()
                     .id(userAchievement.getId())

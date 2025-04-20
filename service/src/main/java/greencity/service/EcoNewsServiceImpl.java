@@ -2,21 +2,20 @@ package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
-import greencity.client.UserRemoteClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsGroupedTagsDto;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
@@ -33,28 +32,20 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.rating.constant.RatingPointsNames;
-import greencity.repository.RatingPointsRepo;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
+import greencity.rating.constant.RatingPointsNames;
 import greencity.repository.EcoNewsRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +60,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @EnableCaching
@@ -568,8 +566,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags, Long currentUserId) {
         User author = ecoNews.getAuthor();
-        UserVO authorVO = modelMapper.map(author, UserVO.class);
-        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), authorVO.getName());
+        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
 
         int countOfComments = commentService.countCommentsForEcoNews(ecoNews.getId());
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
@@ -601,9 +598,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsDto getEcoNewsDto(EcoNews ecoNews, List<String> list) {
         User author = ecoNews.getAuthor();
-        UserVO authorVO = modelMapper.map(author, UserVO.class);
-        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
-            authorVO.getName());
+        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
 
         return EcoNewsDto.builder()
             .id(ecoNews.getId())

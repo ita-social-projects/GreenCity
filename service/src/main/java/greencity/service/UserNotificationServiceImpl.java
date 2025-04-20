@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.client.RestClient;
-import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
@@ -18,7 +17,6 @@ import greencity.enums.InvitationStatus;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.WrongEmailException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.NotificationRepo;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Comparator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,10 +46,10 @@ import static greencity.constant.AppConstant.THREE_OR_MORE_USERS;
 import static greencity.constant.AppConstant.TIMES_PLACEHOLDER;
 import static greencity.constant.AppConstant.TWO_USERS;
 import static greencity.constant.AppConstant.USER_PLACEHOLDER;
-import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
-import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
 import static greencity.utils.NotificationUtils.localizeMessage;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 
 /**
  * Implementation of {@link UserNotificationService}.
@@ -631,10 +629,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     private void setActionUserDetails(NotificationDto dto, Notification notification) {
         List<User> uniqueUsers = notification.getActionUsers().stream().distinct().toList();
-        dto.setActionUserText(uniqueUsers.stream().map(user -> {
-            UserVO userVO = modelMapper.map(user, UserVO.class);
-            return userVO.getName();
-        }).toList());
+        dto.setActionUserText(uniqueUsers.stream().map(User::getName).toList());
         dto.setActionUserId(uniqueUsers.stream().map(User::getId).toList());
     }
 

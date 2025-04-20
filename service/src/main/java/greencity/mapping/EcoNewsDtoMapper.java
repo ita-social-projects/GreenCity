@@ -3,9 +3,7 @@ package greencity.mapping;
 import greencity.constant.AppConstant;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
-import java.util.stream.Collectors;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
@@ -22,12 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
     private final CommentService commentService;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public EcoNewsDtoMapper(@Lazy CommentService commentService, @Lazy ModelMapper modelMapper) {
+    public EcoNewsDtoMapper(@Lazy CommentService commentService) {
         this.commentService = commentService;
-        this.modelMapper = modelMapper;
     }
 
     /**
@@ -39,12 +35,11 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
     @Override
     public EcoNewsDto convert(EcoNews ecoNews) {
         User author = ecoNews.getAuthor();
-        UserVO authorVO = modelMapper.map(author, UserVO.class);
 
         return EcoNewsDto.builder()
             .author(EcoNewsAuthorDto.builder()
                 .id(author.getId())
-                .name(authorVO.getName())
+                .name(author.getName())
                 .build())
             .id(ecoNews.getId())
             .content(ecoNews.getText())
@@ -55,11 +50,11 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
             .tagsEn(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+                .map(TagTranslation::getName).toList())
             .tagsUk(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals("ua"))
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+                .map(TagTranslation::getName).toList())
             .likes(ecoNews.getUsersLikedNews().size())
             .dislikes(ecoNews.getUsersDislikedNews().size())
             .title(ecoNews.getTitle())

@@ -24,7 +24,7 @@ public class UserProfilePictureDtoMapper extends AbstractConverter<User, UserPro
 
         return UserProfilePictureDto.builder()
             .id(user.getId())
-            .name(userVO.getName())
+            .name(user.getName())
             .profilePicturePath(userVO.getProfilePicturePath())
             .build();
     }

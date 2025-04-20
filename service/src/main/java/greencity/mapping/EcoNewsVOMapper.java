@@ -11,7 +11,6 @@ import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
 import java.util.stream.Collectors;
 
 @Component
@@ -33,8 +32,8 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
             .id(ecoNews.getId())
             .author(UserVO.builder()
                 .id(author.getId())
-                .name(authorVO.getName())
-                .email(authorVO.getEmail())
+                .name(author.getName())
+                .email(author.getEmail())
                 .userStatus(authorVO.getUserStatus())
                 .role(authorVO.getRole())
                 .build())
@@ -55,9 +54,9 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                                 .id(tagTranslation.getId())
                                 .build())
                             .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                     .build())
-                .collect(Collectors.toList()))
+                .toList())
             .usersLikedNews(ecoNews.getUsersLikedNews().stream()
                 .map(user -> UserVO.builder()
                     .id(user.getId())

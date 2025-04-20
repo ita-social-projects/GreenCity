@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
-import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
@@ -19,11 +18,17 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
-import greencity.exception.exceptions.WrongEmailException;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,17 +40,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
-import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
 import static greencity.utils.NotificationUtils.localizeMessage;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 
 @Slf4j
 @Service
@@ -372,9 +370,7 @@ public class NotificationServiceImpl implements NotificationService {
             actionUserText = actionUsersSize + " " + bundle.getString("USERS");
         } else if (actionUsersSize == 1) {
             User firstActionUser = notification.getActionUsers().getFirst();
-            UserVO userVO = modelMapper.map(firstActionUser, UserVO.class);
-
-            actionUserText = userVO.getName();
+            actionUserText = firstActionUser.getName();
         } else {
             actionUserText = "";
         }

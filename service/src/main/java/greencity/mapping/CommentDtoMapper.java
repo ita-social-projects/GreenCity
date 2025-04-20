@@ -55,7 +55,7 @@ public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
         commentDto.setAuthor(
             CommentAuthorDto.builder()
                 .id(commentUser.getId())
-                .name(commentUserVO.getName())
+                .name(commentUser.getName())
                 .profilePicturePath(commentUserVO.getProfilePicturePath()).build());
         return commentDto;
     }

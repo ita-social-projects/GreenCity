@@ -27,6 +27,6 @@ public class EventAttenderMapper extends AbstractConverter<User, EventAttenderDt
         UserVO userVO = modelMapper.map(user, UserVO.class);
 
         return EventAttenderDto.builder().id(user.getId()).imagePath(userVO.getProfilePicturePath())
-            .name(userVO.getName()).build();
+            .name(user.getName()).build();
     }
 }

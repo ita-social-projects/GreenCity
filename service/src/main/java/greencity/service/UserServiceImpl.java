@@ -33,7 +33,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -196,12 +195,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public String getInitialsById(Long userId) {
-        Optional<User> optionalUser = userRepo.findById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
-        }
-        UserVO userVO = modelMapper.map(optionalUser.get(), UserVO.class);
-        String name = userVO.getName();
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+        String name = user.getName();
         String initials = name.contains(" ") ? String.valueOf(name.charAt(0))
             .concat(String.valueOf(name.charAt(name.indexOf(" ") + 1)))
             : String.valueOf(name.charAt(0));
