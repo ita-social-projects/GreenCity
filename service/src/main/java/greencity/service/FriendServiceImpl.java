@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
@@ -16,7 +15,6 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
-import greencity.exception.exceptions.WrongEmailException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import java.util.Collections;
