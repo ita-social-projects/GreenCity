@@ -1164,7 +1164,7 @@ public class EventServiceImpl implements EventService {
         LanguageVO language = languageService.findById(languageId);
         String userLocale = language.getCode();
         String userCity = AppConstant.EMPTY_STRING;
-        UserLocationDto locationDto = userVO.getUserLocationDto();
+        UserLocationDto locationDto = userVO.getUserLocation();
         if (locationDto != null) {
             if (AppConstant.DEFAULT_LANGUAGE_CODE.equals(userLocale)) {
                 userCity = locationDto.getCityEn() != null ? locationDto.getCityEn() : userCity;
