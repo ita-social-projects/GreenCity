@@ -58,9 +58,6 @@ public class UserVO {
     @Builder.Default
     private List<UserVO> userFriends = new ArrayList<>();
 
-    @Builder.Default
-    private List<UserAchievementVO> userAchievements = new ArrayList<>();
-
     private String refreshTokenKey;
 
     private OwnSecurityVO ownSecurity;
