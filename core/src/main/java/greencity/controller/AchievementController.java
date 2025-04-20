@@ -93,17 +93,17 @@ public class AchievementController {
     }
 
     /**
-     * Method returns all achievements
+     * Method returns all achievements.
      *
      * @return list of {@link AchievementVO}
      */
     @Operation(summary = "Get all achievements by type and category.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/all")
     public ResponseEntity<List<AchievementVO>> findAll() {
@@ -111,7 +111,7 @@ public class AchievementController {
     }
 
     /**
-     * Method returns all user achievements by user id
+     * Method returns all user achievements by user id.
      *
      * @param userId id of the user
      *
@@ -119,11 +119,11 @@ public class AchievementController {
      */
     @Operation(summary = "Get all user achievements by user id.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/user-achievements/{userId}")
     public ResponseEntity<List<UserAchievementVO>> findAllUserAchievementsByUserId(@PathVariable Long userId) {
@@ -131,7 +131,7 @@ public class AchievementController {
     }
 
     /**
-     * Method returns all user actions by user id
+     * Method returns all user actions by user id.
      *
      * @param userId id of the user
      *
@@ -139,11 +139,11 @@ public class AchievementController {
      */
     @Operation(summary = "Get all user actions by user id.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/user-actions/{userId}")
     public ResponseEntity<List<UserActionVO>> findAllUserActionsByUserId(@PathVariable Long userId) {

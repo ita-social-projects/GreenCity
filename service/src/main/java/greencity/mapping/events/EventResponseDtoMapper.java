@@ -6,7 +6,6 @@ import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.tag.TagUkEnDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventImages;
@@ -14,7 +13,6 @@ import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
 import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -31,12 +29,10 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
     private static final int MAX_ADDITIONAL_IMAGES = 4;
 
     private final CommentService commentService;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public EventResponseDtoMapper(@Lazy CommentService commentService, @Lazy ModelMapper modelMapper) {
+    public EventResponseDtoMapper(@Lazy CommentService commentService) {
         this.commentService = commentService;
-        this.modelMapper = modelMapper;
     }
 
     /**

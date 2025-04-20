@@ -56,8 +56,8 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public List<UserAchievementVO> findAllUserAchievementsByUserId(Long userId) {
         return userAchievementRepo.getUserAchievementByUserId(userId).stream()
-                .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
-                .toList();
+            .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
+            .toList();
     }
 
     /**
@@ -66,17 +66,27 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public List<UserActionVO> findAllUserActionsByUserId(Long userId) {
         return userActionRepo.findAllByUserId(userId).stream()
-                .map(userAction -> modelMapper.map(userAction, UserActionVO.class))
-                .toList();
+            .map(userAction -> modelMapper.map(userAction, UserActionVO.class))
+            .toList();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<AchievementVO> findAll() {
         return achievementRepo.findAll().stream()
-                .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
-                .toList();
+            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableAdvancedDto<AchievementVO> findAll(Pageable pageable) {
+        Page<Achievement> pages = achievementRepo.findAll(pageable);
+        return createPageable(pages);
     }
 
     /**
@@ -104,16 +114,6 @@ public class AchievementServiceImpl implements AchievementService {
         populateAchievement(achievement, achievementPostDto, achievementCategory);
         ratingPointsService.createRatingPoints(achievement.getTitle());
         return mapToVO(achievementRepo.save(achievement));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-
-    @Override
-    public PageableAdvancedDto<AchievementVO> findAll(Pageable pageable) {
-        Page<Achievement> pages = achievementRepo.findAll(pageable);
-        return createPageable(pages);
     }
 
     public Pageable preparePageable(Pageable pageable, String sortBy, String sortDir) {

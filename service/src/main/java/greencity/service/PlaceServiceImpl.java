@@ -3,7 +3,6 @@ package greencity.service;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.PlacesSearchResult;
 import greencity.client.RestClient;
-import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;

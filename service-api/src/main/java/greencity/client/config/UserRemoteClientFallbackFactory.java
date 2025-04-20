@@ -2,7 +2,6 @@ package greencity.client.config;
 
 import feign.hystrix.FallbackFactory;
 import greencity.client.UserRemoteClient;
-import greencity.constant.ErrorMessage;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserLocationStatisticDto;
@@ -26,7 +25,8 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
         return new UserRemoteClient() {
             @Override
             public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-                // log.error(ErrorMessage.USER_WITH_THIS_EMAIL_DOES_NOT_EXIST + "{}", email, throwable);
+                // log.error(ErrorMessage.USER_WITH_THIS_EMAIL_DOES_NOT_EXIST + "{}", email,
+                // throwable);
                 return Optional.empty();
             }
 
@@ -37,13 +37,13 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
 
             @Override
             public Optional<UserStatusDto> updateUserStatus(UserStatusDto userStatusDto) {
-                //TODO: log
+                // TODO: log
                 return Optional.empty();
             }
 
             @Override
             public Optional<UserRoleDto> updateUserRole(Long id, Map<String, String> body) {
-                //TODO: log
+                // TODO: log
                 return Optional.empty();
             }
 
@@ -59,7 +59,7 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
 
             @Override
             public Optional<List<UserLocationStatisticDto>> getUserLocationsDistribution(String groupBy) {
-                //TODO: log
+                // TODO: log
                 return Optional.empty();
             }
 

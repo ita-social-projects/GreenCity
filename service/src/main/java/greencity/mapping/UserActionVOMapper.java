@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserActionVOMapper extends AbstractConverter<UserAction, UserActionVO> {
-
     private final ModelMapper modelMapper;
 
     @Lazy
@@ -30,10 +29,10 @@ public class UserActionVOMapper extends AbstractConverter<UserAction, UserAction
         AchievementCategoryVO achievementCategoryVO = modelMapper.map(achievementCategory, AchievementCategoryVO.class);
 
         return UserActionVO.builder()
-                .id(userAction.getId())
-                .user(userVO)
-                .achievementCategory(achievementCategoryVO)
-                .count(userAction.getCount())
-                .build();
+            .id(userAction.getId())
+            .user(userVO)
+            .achievementCategory(achievementCategoryVO)
+            .count(userAction.getCount())
+            .build();
     }
 }

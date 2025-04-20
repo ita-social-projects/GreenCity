@@ -4,8 +4,7 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 
 public record EmailPreferenceDto(
-        Long userId,
-        EmailPreference emailPreference,
-        EmailPreferencePeriodicity emailPreferencePeriodicity
-) {
+    Long userId,
+    EmailPreference emailPreference,
+    EmailPreferencePeriodicity emailPreferencePeriodicity) {
 }

@@ -141,11 +141,11 @@ class PlaceServiceImplTest {
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
-            //.role(Role.ROLE_USER)
+            // .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            //.lastActivityTime(LocalDateTime.now())
-            //.dateOfRegistration(LocalDateTime.now())
-            //.language(language)
+            // .lastActivityTime(LocalDateTime.now())
+            // .dateOfRegistration(LocalDateTime.now())
+            // .language(language)
             .build();
     private final UserVO userVO =
         UserVO.builder()

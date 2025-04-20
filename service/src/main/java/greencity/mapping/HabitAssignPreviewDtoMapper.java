@@ -24,7 +24,6 @@ import java.util.Objects;
  */
 @Component
 public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, HabitAssignPreviewDto> {
-
     private final ModelMapper modelMapper;
     private final LanguageService languageService;
 

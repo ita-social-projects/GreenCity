@@ -11,7 +11,6 @@ import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

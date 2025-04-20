@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserManagementVOMapper extends AbstractConverter<User, UserManagementVO> {
-
     private final ModelMapper modelMapper;
 
     @Lazy

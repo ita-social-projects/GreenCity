@@ -136,8 +136,8 @@ class UserServiceImplTest {
     void getSixFriendsWithTheHighestRatingTest() {
         List<User> friendsList = ModelUtils.getFriendsList();
         List<UserVO> friendsListVO = friendsList.stream()
-                .map(friend -> modelMapper.map(friend, UserVO.class))
-                .toList();
+            .map(friend -> modelMapper.map(friend, UserVO.class))
+            .toList();
         User user = User.builder()
             .id(1L)
             // .userFriends(friendsList)
@@ -147,8 +147,10 @@ class UserServiceImplTest {
 
         when(userRemoteClient.getSixFriendsWithTheHighestRating(user.getId())).thenReturn(friendsListVO);
 
-        /*assertEquals(userVO.getUserFriends().subList(2, 8),
-            userService.getSixFriendsWithTheHighestRating(user.getId()));*/
+        /*
+         * assertEquals(userVO.getUserFriends().subList(2, 8),
+         * userService.getSixFriendsWithTheHighestRating(user.getId()));
+         */
     }
 
     @Test
@@ -167,7 +169,7 @@ class UserServiceImplTest {
         User user = Mockito.mock(User.class);
         when(userRepo.findById(id)).thenReturn(Optional.of(user));
         when(user.getName())
-                .thenReturn("Taras Tarasovich", "Taras");
+            .thenReturn("Taras Tarasovich", "Taras");
 
         assertEquals("TT", userService.getInitialsById(id));
         assertEquals("T", userService.getInitialsById(id));
@@ -225,9 +227,9 @@ class UserServiceImplTest {
     @Test
     void testUpdateStatus() {
         UserStatusDto userStatusDto = UserStatusDto.builder()
-                .id(2L)
-                .userStatus(UserStatus.CREATED)
-                .build();
+            .id(2L)
+            .userStatus(UserStatus.CREATED)
+            .build();
 
         when(userRepo.findByEmail(testEmail2)).thenReturn(Optional.ofNullable(testUser));
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);

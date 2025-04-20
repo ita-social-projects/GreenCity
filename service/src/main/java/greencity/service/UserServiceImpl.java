@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
         UserVO user = userRemoteClient.findNotDeactivatedByEmail(email)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         return Optional.of(user);
     }
 
@@ -115,9 +115,9 @@ public class UserServiceImpl implements UserService {
         userVO.setUserStatus(userStatus);
 
         UserStatusDto userStatusDto = UserStatusDto.builder()
-                        .id(id)
-                        .userStatus(userStatus)
-                        .build();
+            .id(id)
+            .userStatus(userStatus)
+            .build();
 
         userRemoteClient.updateUserStatus(userStatusDto);
         return modelMapper.map(userVO, UserStatusDto.class);
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
     public UserRoleDto updateRole(Long id, Role role, String email) {
         Map<String, String> body = Map.of("role", role.name());
         return userRemoteClient.updateUserRole(id, body)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -196,7 +196,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getInitialsById(Long userId) {
         User user = userRepo.findById(userId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         String name = user.getName();
         String initials = name.contains(" ") ? String.valueOf(name.charAt(0))
             .concat(String.valueOf(name.charAt(name.indexOf(" ") + 1)))

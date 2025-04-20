@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserTagDtoMapper extends AbstractConverter<User, UserTagDto> {
-
     private final ModelMapper modelMapper;
 
     @Lazy

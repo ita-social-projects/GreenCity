@@ -5,7 +5,6 @@ import greencity.client.UserRemoteClient;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
-import greencity.entity.User;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.EmailMessage;
@@ -36,10 +35,9 @@ public class EmailPreferenceAspect {
         UserVO user = userServiceImpl.findByEmail(email);
 
         EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(
-                user.getId(),
-                emailPreference,
-                EmailPreferencePeriodicity.IMMEDIATELY
-        );
+            user.getId(),
+            emailPreference,
+            EmailPreferencePeriodicity.IMMEDIATELY);
 
         boolean hasPreference = userRemoteClient.searchUserNotificationPreference(emailPreferenceDto);
 

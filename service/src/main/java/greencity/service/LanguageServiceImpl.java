@@ -55,7 +55,7 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public LanguageVO findById(Long id) {
         Language language = languageRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException());
+            .orElseThrow(() -> new NotFoundException());
         return modelMapper.map(language, LanguageVO.class);
     }
 

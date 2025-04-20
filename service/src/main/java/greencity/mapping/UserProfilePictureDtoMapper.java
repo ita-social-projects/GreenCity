@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserProfilePictureDtoMapper extends AbstractConverter<User, UserProfilePictureDto> {
-
     private final ModelMapper modelMapper;
 
     @Lazy

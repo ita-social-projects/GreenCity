@@ -31,9 +31,9 @@ class UserTagDtoMapperTest {
         UserVO userVO = mock(UserVO.class);
 
         when(modelMapper.map(user, UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getProfilePicturePath())
-                .thenReturn(expected.getProfilePicture());
+            .thenReturn(expected.getProfilePicture());
 
         UserTagDto actual = mapper.convert(user);
         assertEquals(expected, actual);

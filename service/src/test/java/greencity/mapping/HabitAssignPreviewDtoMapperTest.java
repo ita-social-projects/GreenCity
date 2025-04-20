@@ -81,11 +81,11 @@ class HabitAssignPreviewDtoMapperTest {
             .build();
 
         when(modelMapper.map(habitAssign.getUser(), UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getLanguageId())
-                .thenReturn(languageId);
+            .thenReturn(languageId);
         when(languageService.findById(languageId))
-                .thenReturn(ModelUtils.getLanguageVO());
+            .thenReturn(ModelUtils.getLanguageVO());
 
         HabitAssignPreviewDto actual = habitAssignPreviewDtoMapper.convert(habitAssign);
 

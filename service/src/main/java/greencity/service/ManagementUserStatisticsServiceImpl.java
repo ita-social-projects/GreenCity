@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.client.UserRemoteClient;
-import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
@@ -55,7 +54,7 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
     @Override
     public List<UserLocationStatisticDto> getUserLocationsDistribution(String groupBy) {
         return userRemoteClient.getUserLocationsDistribution(groupBy)
-                .orElseThrow(() -> new NotFoundException());
+            .orElseThrow(() -> new NotFoundException());
     }
 
     /**

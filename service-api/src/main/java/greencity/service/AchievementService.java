@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface AchievementService {
-
     /**
      * Retrieves a list of UserAchievement objects associated with a given user ID.
      *
@@ -25,8 +24,8 @@ public interface AchievementService {
     /**
      * Retrieves a list of UserAction objects associated with a given user ID.
      *
-     * @param userId The unique identifier of the user for whom to fetch the
-     *               user actions.
+     * @param userId The unique identifier of the user for whom to fetch the user
+     *               actions.
      * @return A list of UserActionVO objects related to the specified user ID.
      */
     List<UserActionVO> findAllUserActionsByUserId(Long userId);

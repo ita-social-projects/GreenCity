@@ -360,7 +360,7 @@ class HabitAssignServiceImplTest {
 
         UserVO userVO1 = UserVO.builder().id(1L).build();
 
-        //User user1 = User.builder().id(1L).userFriends(List.of(userFriend1)).build();
+        // User user1 = User.builder().id(1L).userFriends(List.of(userFriend1)).build();
         User user1 = User.builder().id(1L).build();
 
         HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =

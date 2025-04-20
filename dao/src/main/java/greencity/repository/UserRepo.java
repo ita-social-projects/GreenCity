@@ -1,11 +1,6 @@
 package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
-import greencity.dto.user.UserEmailPreferencesStatisticDto;
-import greencity.dto.user.UserLocationStatisticDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserRoleStatisticDto;
-import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import jakarta.persistence.Tuple;

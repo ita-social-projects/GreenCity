@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
-
     private final ModelMapper modelMapper;
 
     @Lazy

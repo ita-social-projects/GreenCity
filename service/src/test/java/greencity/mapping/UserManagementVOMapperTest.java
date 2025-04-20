@@ -38,13 +38,13 @@ class UserManagementVOMapperTest {
         UserVO userVO = mock(UserVO.class);
 
         when(modelMapper.map(user, UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getUserCredo())
-                .thenReturn(userManagementVO.getUserCredo());
+            .thenReturn(userManagementVO.getUserCredo());
         when(userVO.getRole())
-                .thenReturn(userManagementVO.getRole());
+            .thenReturn(userManagementVO.getRole());
         when(userVO.getUserStatus())
-                .thenReturn(userManagementVO.getUserStatus());
+            .thenReturn(userManagementVO.getUserStatus());
 
         UserManagementVO result = userManagementVOMapper.convert(user);
         assertEquals(userManagementVO, result);
@@ -62,13 +62,13 @@ class UserManagementVOMapperTest {
             UserManagementVO userManagementVO = expected.getContent().get(i);
 
             when(modelMapper.map(user, UserVO.class))
-                    .thenReturn(userVO);
+                .thenReturn(userVO);
             when(userVO.getUserCredo())
-                    .thenReturn(userManagementVO.getUserCredo());
+                .thenReturn(userManagementVO.getUserCredo());
             when(userVO.getRole())
-                    .thenReturn(userManagementVO.getRole());
+                .thenReturn(userManagementVO.getRole());
             when(userVO.getUserStatus())
-                    .thenReturn(userManagementVO.getUserStatus());
+                .thenReturn(userManagementVO.getUserStatus());
         }
 
         Page<UserManagementVO> result = userManagementVOMapper.mapAllToPage(userPage);

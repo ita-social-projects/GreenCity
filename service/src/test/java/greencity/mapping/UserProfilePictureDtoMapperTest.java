@@ -30,15 +30,15 @@ class UserProfilePictureDtoMapperTest {
         User user = ModelUtils.getUser();
         UserVO userVO = mock(UserVO.class);
         UserProfilePictureDto expected = UserProfilePictureDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .profilePicturePath(user.getProfilePicturePath())
-                .build();
+            .id(user.getId())
+            .name(user.getName())
+            .profilePicturePath(user.getProfilePicturePath())
+            .build();
 
         when(modelMapper.map(user, UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getProfilePicturePath())
-                .thenReturn(expected.getProfilePicturePath());
+            .thenReturn(expected.getProfilePicturePath());
 
         assertEquals(expected, mapper.convert(user));
     }

@@ -221,7 +221,7 @@ public class NotificationServiceImpl implements NotificationService {
                         LanguageVO language = languageService.findById(languageId);
 
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-                                language.getCode());
+                            language.getCode());
                         restClient.sendScheduledEmailNotification(message);
                     });
                 notificationRepo.saveAll(notifications);

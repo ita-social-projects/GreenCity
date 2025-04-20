@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EcoNewsAuthorDtoMapper extends AbstractConverter<User, EcoNewsAuthorDto> {
-
     /**
      * Method for converting {@link User} into {@link EcoNewsAuthorDto}.
      *

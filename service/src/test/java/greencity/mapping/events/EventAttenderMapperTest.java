@@ -32,9 +32,9 @@ class EventAttenderMapperTest {
         EventAttenderDto expected = ModelUtils.getEventAttenderDto();
 
         when(modelMapper.map(user, UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getProfilePicturePath())
-                .thenReturn(expected.getImagePath());
+            .thenReturn(expected.getImagePath());
 
         assertEquals(expected, mapper.convert(user));
     }

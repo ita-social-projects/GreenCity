@@ -34,9 +34,9 @@ class EventCommentDtoMapperTest {
         String profilePicturePath = "profile picture path";
 
         when(modelMapper.map(commentUser, UserVO.class))
-                .thenReturn(commentUserVO);
+            .thenReturn(commentUserVO);
         when(commentUserVO.getProfilePicturePath())
-                .thenReturn(profilePicturePath);
+            .thenReturn(profilePicturePath);
 
         CommentDto actual = commentDtoMapper.convert(comment);
 

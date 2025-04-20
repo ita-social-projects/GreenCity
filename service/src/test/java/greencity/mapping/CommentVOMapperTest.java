@@ -39,9 +39,9 @@ class CommentVOMapperTest {
         Role role = Role.ROLE_USER;
 
         when(modelMapper.map(commentUser, UserVO.class))
-                .thenReturn(commnetUserVO);
+            .thenReturn(commnetUserVO);
         when(commnetUserVO.getRole())
-                .thenReturn(role);
+            .thenReturn(role);
 
         CommentVO actual = commentVOMapper.convert(comment);
         Set<UserVO> usersLiked = comment.getUsersLiked().stream()
@@ -76,9 +76,9 @@ class CommentVOMapperTest {
         Role role = Role.ROLE_USER;
 
         when(modelMapper.map(commentUser, UserVO.class))
-                .thenReturn(commnetUserVO);
+            .thenReturn(commnetUserVO);
         when(commnetUserVO.getRole())
-                .thenReturn(role);
+            .thenReturn(role);
 
         CommentVO actual = commentVOMapper.convert(comment);
 

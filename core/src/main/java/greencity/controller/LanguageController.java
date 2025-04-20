@@ -43,13 +43,13 @@ public class LanguageController {
      */
     @Operation(summary = "Find language by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{id}")
     public ResponseEntity<LanguageVO> findById(@PathVariable Long id) {
@@ -63,11 +63,11 @@ public class LanguageController {
      */
     @Operation(summary = "Check whether language exists by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/{id}/exists")
     public ResponseEntity<Boolean> existsById(@PathVariable Long id) {

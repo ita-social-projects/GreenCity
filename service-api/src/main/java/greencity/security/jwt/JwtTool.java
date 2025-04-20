@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -66,7 +65,7 @@ public class JwtTool {
     /**
      * Method for creating access token.
      *
-     * @param email this is email of user.
+     * @param email     this is email of user.
      * @param roleNames this is list of role names of user.
      */
     private String createAccessToken(String email, Set<String> roleNames) {

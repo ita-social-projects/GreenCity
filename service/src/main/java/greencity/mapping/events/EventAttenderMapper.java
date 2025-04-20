@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EventAttenderMapper extends AbstractConverter<User, EventAttenderDto> {
-
     private final ModelMapper modelMapper;
 
     @Lazy

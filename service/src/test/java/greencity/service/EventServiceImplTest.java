@@ -604,7 +604,7 @@ class EventServiceImplTest {
         return Stream.of(
             Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()),
             Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(1L),
-                //ModelUtils.getUser().setRole(Role.ROLE_ADMIN).setId(1L)));
+                // ModelUtils.getUser().setRole(Role.ROLE_ADMIN).setId(1L)));
                 ModelUtils.getUser().setId(1L)));
     }
 
@@ -2548,7 +2548,7 @@ class EventServiceImplTest {
         userVO.setLanguageId(languageId);
 
         when(languageService.findById(languageId))
-                .thenReturn(languageVO);
+            .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
@@ -2569,7 +2569,7 @@ class EventServiceImplTest {
         userVO.getUserLocation().setCityEn(userCity);
 
         when(languageService.findById(languageId))
-                .thenReturn(languageVO);
+            .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
 
@@ -2589,7 +2589,7 @@ class EventServiceImplTest {
             getProjection("Uzhhorod", "Ужгород", 1L));
 
         when(languageService.findById(languageId))
-                .thenReturn(languageVO);
+            .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(anyString()))
             .thenReturn(eventCityDtoProjections);
 

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
-
     private final ModelMapper modelMapper;
 
     @Lazy

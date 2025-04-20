@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddEcoNewsDtoResponse> {
-
     /**
      * Method for converting {@link EcoNews} into {@link AddEcoNewsDtoResponse}.
      *

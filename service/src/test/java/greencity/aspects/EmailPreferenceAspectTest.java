@@ -45,7 +45,8 @@ class EmailPreferenceAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
-        EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
+        EmailPreferenceDto emailPreferenceDto =
+            new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
         when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
@@ -71,7 +72,8 @@ class EmailPreferenceAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         UserVO user = ModelUtils.getUserVO();
-        EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
+        EmailPreferenceDto emailPreferenceDto =
+            new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
 
         when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 

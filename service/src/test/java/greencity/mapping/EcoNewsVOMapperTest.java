@@ -69,11 +69,11 @@ class EcoNewsVOMapperTest {
             .build();
 
         when(modelMapper.map(author, UserVO.class))
-                .thenReturn(authorVO);
+            .thenReturn(authorVO);
         when(authorVO.getUserStatus())
-                .thenReturn(userStatus);
+            .thenReturn(userStatus);
         when(authorVO.getRole())
-                .thenReturn(role);
+            .thenReturn(role);
 
         assertEquals(expected, ecoNewsVOMapper.convert(ecoNews));
     }

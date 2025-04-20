@@ -18,20 +18,17 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @FeignClient(
-        name = "user-remote-client",
-        url = "${greencityuser.server.address}",
-        configuration = UserRemoteClientInterceptor.class,
-        fallbackFactory = UserRemoteClientFallbackFactory.class
-)
+    name = "user-remote-client",
+    url = "${greencityuser.server.address}",
+    configuration = UserRemoteClientInterceptor.class,
+    fallbackFactory = UserRemoteClientFallbackFactory.class)
 @Component
 public interface UserRemoteClient {
-
     String EMAIL = "email";
     String GROUP_BY = "group-by";
 
@@ -58,9 +55,8 @@ public interface UserRemoteClient {
 
     @PatchMapping("/user/{id}/role")
     Optional<UserRoleDto> updateUserRole(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> body
-    );
+        @PathVariable Long id,
+        @RequestBody Map<String, String> body);
 
     @GetMapping("/user/roles-distribution")
     List<UserRoleStatisticDto> getUserRolesDistribution();
@@ -86,7 +82,7 @@ public interface UserRemoteClient {
     List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(@RequestParam Long userId);
 
     /**
-     * Check is user notification preference exists by params in EmailPreferenceDto
+     * Check is user notification preference exists by params in EmailPreferenceDto.
      *
      * @return boolean of whether UserNotificationPreference exists
      */

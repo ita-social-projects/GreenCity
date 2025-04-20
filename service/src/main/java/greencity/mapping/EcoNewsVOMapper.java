@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
-
     private final ModelMapper modelMapper;
 
     @Lazy
