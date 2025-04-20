@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -12,22 +11,23 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitTranslation;
-import greencity.entity.User;
-import greencity.entity.Tag;
-import greencity.entity.HabitAssign;
 import greencity.entity.CustomToDoListItem;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.Role;
-import greencity.enums.AchievementCategoryType;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.HabitAssignStatus;
 import greencity.enums.NotificationType;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
@@ -39,25 +39,19 @@ import greencity.mapping.CustomToDoListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
 import greencity.rating.RatingCalculation;
+import greencity.repository.CustomToDoListItemRepo;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.repository.ToDoListItemTranslationRepo;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.RatingPointsRepo;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.LanguageRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.TagsRepo;
+import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
 import jakarta.persistence.Tuple;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -67,7 +61,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
@@ -98,8 +98,8 @@ public class HabitServiceImpl implements HabitService {
     private final AchievementCalculation achievementCalculation;
     private final RatingPointsRepo ratingPointsRepo;
     private final HabitInvitationService habitInvitationService;
-    private final FriendService friendService;
     private final HabitInvitationRepo habitInvitationRepo;
+    private final LanguageService languageService;
 
     /**
      * Method returns Habit by its id.
@@ -520,10 +520,12 @@ public class HabitServiceImpl implements HabitService {
                 .map(UserFriendDto::getId)
                 .collect(Collectors.toList());
             UserVO userVO = modelMapper.map(user, UserVO.class);
+            Long languageId = userVO.getLanguageId();
+            LanguageVO language = languageService.findById(languageId);
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
-                modelMapper.map(user, UserVO.class), friendsIds, habit.getId(),
-                Locale.of(userVO.getLanguage().getCode()));
+                userVO, friendsIds, habit.getId(),
+                Locale.of(language.getCode()));
         }
     }
 

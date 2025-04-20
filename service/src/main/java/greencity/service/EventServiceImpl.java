@@ -3,7 +3,6 @@ package greencity.service;
 import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
-import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -21,6 +20,7 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
@@ -45,7 +45,6 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
@@ -78,8 +77,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUk;
@@ -138,6 +137,7 @@ public class EventServiceImpl implements EventService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
+    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -1160,7 +1160,9 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO) {
-        String userLocale = userVO.getLanguage().getCode();
+        Long languageId = userVO.getLanguageId();
+        LanguageVO language = languageService.findById(languageId);
+        String userLocale = language.getCode();
         String userCity = AppConstant.EMPTY_STRING;
         UserLocationDto locationDto = userVO.getUserLocationDto();
         if (locationDto != null) {

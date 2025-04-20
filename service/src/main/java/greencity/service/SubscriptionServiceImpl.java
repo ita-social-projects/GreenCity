@@ -5,6 +5,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.econews.ShortEcoNewsDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.subscription.SubscriptionRequestDto;
 import greencity.dto.subscription.SubscriptionResponseDto;
 import greencity.dto.user.SubscriberDto;
@@ -37,6 +38,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final UserService userService;
     private final RestClient restClient;
     private final ModelMapper modelMapper;
+    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -131,8 +133,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private SubscriberDto addSubscriberInfo(SubscriberDto subscriber, Map<String, UserVO> registeredUsers) {
         Optional.ofNullable(registeredUsers.get(subscriber.getEmail()))
             .ifPresent(user -> {
+                Long languageId = user.getLanguageId();
+                LanguageVO languageVO = languageService.findById(languageId);
+
                 subscriber.setName(user.getName());
-                subscriber.setLanguage(user.getLanguage().getCode());
+                subscriber.setLanguage(languageVO.getCode());
             });
         return subscriber;
     }

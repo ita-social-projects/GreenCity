@@ -58,6 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserRemoteClient userRemoteClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     private final UserService userService;
+    private final LanguageService languageService;
     @Value("${client.address}")
     private String clientAddress;
 
@@ -217,9 +218,11 @@ public class NotificationServiceImpl implements NotificationService {
 
                         User targetUser = notification.getTargetUser();
                         UserVO userVO = modelMapper.map(targetUser, UserVO.class);
+                        Long languageId = userVO.getLanguageId();
+                        LanguageVO language = languageService.findById(languageId);
 
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-                                userVO.getLanguage().getCode());
+                                language.getCode());
                         restClient.sendScheduledEmailNotification(message);
                     });
                 notificationRepo.saveAll(notifications);
@@ -255,7 +258,8 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
-        LanguageVO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguage();
+        Long languageId = userService.findById(notification.getTargetUser().getId()).getLanguageId();
+        LanguageVO userLanguage = languageService.findById(languageId);
         ScheduledEmailMessage message = createScheduledEmailMessage(notification, userLanguage.getCode());
         List<NotificationType> likes = List.of(
             NotificationType.ECONEWS_COMMENT_LIKE,

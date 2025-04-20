@@ -1,7 +1,6 @@
 package greencity.dto.user;
 
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -79,7 +78,7 @@ public class UserVO {
 
     private String uuid;
 
-    private LanguageVO language;
+    private Long languageId;
 
     private UserLocationDto userLocationDto;
 }
