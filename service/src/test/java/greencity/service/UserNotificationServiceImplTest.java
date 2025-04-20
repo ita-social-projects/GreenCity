@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
@@ -79,6 +80,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -108,6 +110,8 @@ class UserNotificationServiceImplTest {
     private HabitAssignRepo habitAssignRepo;
     @Mock
     private RestClient restClient;
+    @Mock
+    private LanguageService languageService;
 
     @Test
     void getNotificationsFilteredTestWhenProjectNameIsNull() {
@@ -860,13 +864,16 @@ class UserNotificationServiceImplTest {
     void checkLastDayOfHabitPrimaryDurationToMessageShouldSendNotification() {
         Habit habit = getHabit().setHabitTranslations(List.of(getHabitTranslation()));
         User user = getUser().setId(2L);
-        UserVO userVO = getUserVO().setId(2L);
+        UserVO userVO = spy(getUserVO().setId(2L));
         HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS).setUser(user).setHabit(habit);
+        Long languageId = 1L;
 
         when(habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage())
             .thenReturn(List.of(habitAssign));
         when(modelMapper.map(getLanguage(), LanguageVO.class)).thenReturn(getLanguageVO());
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getLanguageId()).thenReturn(languageId);
+        when(languageService.findById(languageId)).thenReturn(ModelUtils.getLanguageVO());
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(notificationRepo.countByTargetUserIdAndViewedIsFalse(user.getId())).thenReturn(1L);
         userNotificationService.checkLastDayOfHabitPrimaryDurationToMessage();
