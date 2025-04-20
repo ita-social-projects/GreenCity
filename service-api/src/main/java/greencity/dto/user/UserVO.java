@@ -1,10 +1,8 @@
 package greencity.dto.user;
 
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
-import greencity.dto.todolistitem.CustomToDoListItemVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.ProfilePrivacyPolicy;
@@ -14,11 +12,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,12 +32,6 @@ public class UserVO {
     private String userCredo;
 
     private UserStatus userStatus;
-
-    @Builder.Default
-    private List<UserToDoListItemVO> userToDoListItemVOS = new ArrayList<>();
-
-    @Builder.Default
-    private List<CustomToDoListItemVO> customToDoListItemVOS = new ArrayList<>();
 
     private VerifyEmailVO verifyEmail;
 
@@ -61,8 +51,6 @@ public class UserVO {
     private OwnSecurityVO ownSecurity;
 
     private String profilePicturePath;
-
-    private Set<EcoNewsVO> ecoNewsLiked;
 
     private String firstName;
 
