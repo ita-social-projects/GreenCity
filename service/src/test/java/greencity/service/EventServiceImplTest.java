@@ -18,6 +18,7 @@ import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
@@ -53,6 +54,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataAccessException;
@@ -99,6 +101,7 @@ import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -134,20 +137,29 @@ class EventServiceImplTest {
     @Mock
     UserRepo userRepo;
 
+    @Mock
+    LanguageService languageService;
+
+    @Mock
+    AchievementCalculation achievementCalculation;
+
+    @Mock
+    RatingCalculation ratingCalculation;
+
+    @Mock
+    SimpMessagingTemplate messagingTemplate;
+
+    @Mock
+    AchievementCategoryRepo achievementCategoryRepo;
+
+    @Mock
+    UserNotificationService userNotificationService;
+
+    @Mock
+    RatingPointsRepo ratingPointsRepo;
+
     @InjectMocks
     EventServiceImpl eventService;
-    @Mock
-    private AchievementCalculation achievementCalculation;
-    @Mock
-    private RatingCalculation ratingCalculation;
-    @Mock
-    private SimpMessagingTemplate messagingTemplate;
-    @Mock
-    private AchievementCategoryRepo achievementCategoryRepo;
-    @Mock
-    private UserNotificationService userNotificationService;
-    @Mock
-    private RatingPointsRepo ratingPointsRepo;
 
     @Test
     void save() {
@@ -303,10 +315,13 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        UserVO userVO = mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
@@ -333,10 +348,13 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        UserVO userVO = Mockito.mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventResponseDto.class)).thenReturn(eventResponseDto);
@@ -366,6 +384,7 @@ class EventServiceImplTest {
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
 
@@ -385,10 +404,14 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
         String userEmail = ModelUtils.getUser().getEmail();
+        User organizer = actualEvent.getOrganizer();
+        UserVO organizerVO = mock(UserVO.class);
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
         when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(organizer, UserVO.class)).thenReturn(organizerVO);
+        when(organizerVO.getRole()).thenReturn(Role.ROLE_USER);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
 
         assertThrows(BadRequestException.class,
@@ -514,9 +537,12 @@ class EventServiceImplTest {
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        UserVO userVO = mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
@@ -2509,13 +2535,20 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityEnExists() {
         UserVO userVO = ModelUtils.getUserVO();
+        Long languageId = 4L;
+        LanguageVO languageVO = ModelUtils.getLanguageVO();
         String userCity = "Kyiv";
-        userVO.getUserLocation().setCityEn(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection(userCity, "Київ", 1L),
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
+
+        userVO.getUserLocation().setCityEn(userCity);
+        userVO.setLanguageId(languageId);
+
+        when(languageService.findById(languageId))
+                .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
@@ -2525,16 +2558,21 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityUaExists() {
         UserVO userVO = ModelUtils.getUserVO();
-        // userVO.getLanguageVO().setCode("ua");
-        String userCity = "Київ";
-        userVO.getUserLocation().setCityUk(userCity);
+        Long languageId = userVO.getLanguageId();
+        LanguageVO languageVO = ModelUtils.getLanguageVO();
+        String userCity = "Kyiv";
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Kyiv", userCity, 1L),
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
+        userVO.getUserLocation().setCityEn(userCity);
+
+        when(languageService.findById(languageId))
+                .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
+
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(userCity);
     }
@@ -2543,12 +2581,18 @@ class EventServiceImplTest {
     void getAllRelevantEventsCityByUserDoesNotThrowAnExceptionIfUserLocationIsNull() {
         UserVO userVO = ModelUtils.getUserVO();
         userVO.setUserLocation(null);
+        Long languageId = userVO.getLanguageId();
+        LanguageVO languageVO = ModelUtils.getLanguageVO();
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
+
+        when(languageService.findById(languageId))
+                .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(anyString()))
             .thenReturn(eventCityDtoProjections);
+
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(anyString());
     }
