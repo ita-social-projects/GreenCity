@@ -215,7 +215,6 @@ public class NotificationServiceImpl implements NotificationService {
                     .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
                     .map(notification -> notification.setEmailSent(true))
                     .forEach(notification -> {
-
                         User targetUser = notification.getTargetUser();
                         UserVO userVO = modelMapper.map(targetUser, UserVO.class);
                         Long languageId = userVO.getLanguageId();
