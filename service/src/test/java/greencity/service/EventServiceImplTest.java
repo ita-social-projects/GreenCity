@@ -2510,7 +2510,7 @@ class EventServiceImplTest {
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityEnExists() {
         UserVO userVO = ModelUtils.getUserVO();
         String userCity = "Kyiv";
-        userVO.getUserLocationDto().setCityEn(userCity);
+        userVO.getUserLocation().setCityEn(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection(userCity, "Київ", 1L),
             getProjection("Dnipro", "Дніпро", 3L),
@@ -2527,7 +2527,7 @@ class EventServiceImplTest {
         UserVO userVO = ModelUtils.getUserVO();
         // userVO.getLanguageVO().setCode("ua");
         String userCity = "Київ";
-        userVO.getUserLocationDto().setCityUk(userCity);
+        userVO.getUserLocation().setCityUk(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Kyiv", userCity, 1L),
             getProjection("Dnipro", "Дніпро", 3L),
@@ -2542,7 +2542,7 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserDoesNotThrowAnExceptionIfUserLocationIsNull() {
         UserVO userVO = ModelUtils.getUserVO();
-        userVO.setUserLocationDto(null);
+        userVO.setUserLocation(null);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),

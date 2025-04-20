@@ -153,10 +153,8 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
-            .language(languageVO)
+            .languageId(languageVO.getId())
             .build();
     private final UserVO userVOAdmin =
         UserVO.builder()
@@ -164,10 +162,8 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_ADMIN)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
-            .language(languageVO)
+            .languageId(languageVO.getId())
             .build();
     Place genericEntity1 = Place.builder()
         .id(1L)

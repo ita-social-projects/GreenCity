@@ -48,9 +48,6 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
-            .lastActivityTime(LocalDateTime.now())
-            .verifyEmail(new VerifyEmailVO())
-            .dateOfRegistration(LocalDateTime.now())
             .build();
     }
 
