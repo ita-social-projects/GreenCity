@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.client.UserRemoteClient;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
-import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
@@ -29,13 +28,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ManagementUserStatisticsServiceImplTest {
     @Mock
-    private UserRepo userRepo;
+    UserRepo userRepo;
 
     @Mock
-    private UserRemoteClient userRemoteClient;
+    UserRemoteClient userRemoteClient;
 
     @InjectMocks
-    private ManagementUserStatisticsServiceImpl managementUserStatisticsServiceImpl;
+    ManagementUserStatisticsServiceImpl managementUserStatisticsServiceImpl;
 
     @Test
     void testGetUserRegistrationsByDateRange() {
@@ -81,44 +80,6 @@ class ManagementUserStatisticsServiceImplTest {
         assertEquals(mockResult, result);
         verify(userRemoteClient, times(1)).getUserStatusesDistribution();
     }
-
-    /*
-     * @Test void testGetUserLocationsDistributionCity() {
-     * List<UserLocationStatisticDto> mockResult = List.of(new
-     * UserLocationStatisticDto("City", 50L));
-     * when(userRemoteClient.getUserLocationsDistributionByCity()).thenReturn(
-     * mockResult);
-     *
-     * List<UserLocationStatisticDto> result =
-     * managementUserStatisticsServiceImpl.getUserLocationsDistribution("city");
-     *
-     * assertEquals(mockResult, result); verify(userRemoteClient,
-     * times(1)).getUserLocationsDistributionByCity(); }
-     *
-     * @Test void testGetUserLocationsDistributionRegion() {
-     * List<UserLocationStatisticDto> mockResult = List.of(new
-     * UserLocationStatisticDto("Dnipropetrovsk", 30L));
-     * when(userRemoteClient.getUserLocationsDistributionByRegion()).thenReturn(
-     * mockResult);
-     *
-     * List<UserLocationStatisticDto> result =
-     * managementUserStatisticsServiceImpl.getUserLocationsDistribution("region");
-     *
-     * assertEquals(mockResult, result); verify(userRemoteClient,
-     * times(1)).getUserLocationsDistributionByRegion(); }
-     *
-     * @Test void testGetUserLocationsDistributionCountry() {
-     * List<UserLocationStatisticDto> mockResult = List.of(new
-     * UserLocationStatisticDto("Ukraine", 70L));
-     * when(userRemoteClient.getUserLocationsDistributionByCountry()).thenReturn(
-     * mockResult);
-     *
-     * List<UserLocationStatisticDto> result =
-     * managementUserStatisticsServiceImpl.getUserLocationsDistribution("country");
-     *
-     * assertEquals(mockResult, result); verify(userRemoteClient,
-     * times(1)).getUserLocationsDistributionByCountry(); }
-     */
 
     @Test
     void testGetUserEmailPreferencesDistribution() {
