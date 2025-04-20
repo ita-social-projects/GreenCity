@@ -392,7 +392,7 @@ public class ModelUtils {
         .build();
 
     public static EventAttenderDto getEventAttenderDto() {
-        return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
+        return EventAttenderDto.builder().id(1L).name(TestConst.NAME).imagePath("image path").build();
     }
 
     public static Tag getTag() {
