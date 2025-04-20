@@ -9,7 +9,6 @@ import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.LowRoleLevelException;
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +31,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import static greencity.ModelUtils.getListUserManagementVO;
 import static greencity.ModelUtils.getSortedPageable;
 import static greencity.ModelUtils.getUnSortedPageable;
@@ -166,11 +163,14 @@ class UserServiceImplTest {
 
     @Test
     void getInitialsByIdTest() {
-        when(userRepo.findById(any())).thenReturn(Optional.of(getUser()));
-        when(modelMapper.map(any(), any())).thenReturn(userVO);
-        assertEquals("TT", userService.getInitialsById(12L));
-        userVO.setName("Taras");
-        assertEquals("T", userService.getInitialsById(12L));
+        Long id = 12L;
+        User user = Mockito.mock(User.class);
+        when(userRepo.findById(id)).thenReturn(Optional.of(user));
+        when(user.getName())
+                .thenReturn("Taras Tarasovich", "Taras");
+
+        assertEquals("TT", userService.getInitialsById(id));
+        assertEquals("T", userService.getInitialsById(id));
     }
 
     @Test
@@ -233,7 +233,6 @@ class UserServiceImplTest {
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUserRoleUser));
         when(modelMapper.map(testUserRoleUser, UserVO.class)).thenReturn(userVORoleUser);
-        doNothing().when(userRemoteClient).updateUserStatus(userStatusDto);
         when(modelMapper.map(userVORoleUser, UserStatusDto.class)).thenReturn(testUserStatusDto);
 
         UserStatusDto actual = userService.updateStatus(2L, CREATED, testEmail2);
