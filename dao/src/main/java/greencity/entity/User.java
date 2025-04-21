@@ -209,6 +209,9 @@ public class User {
     @Column(name = "profile_picture")
     private String profilePicturePath;
 
+    @Column(name = "user_credo")
+    private String userCredo;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_location")
     private UserLocation userLocation;
