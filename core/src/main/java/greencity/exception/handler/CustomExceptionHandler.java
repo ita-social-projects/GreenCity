@@ -3,6 +3,7 @@ package greencity.exception.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.exception.exceptions.BadCategoryRequestException;
@@ -484,6 +485,43 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor exception {@link GoogleApiException}.
+     *
+     * @param googleApiException Exception witch should be intercepted
+     * @return ResponseEntity witch contain http status and body with message of
+     *         exception.
+     */
+    @ExceptionHandler(GoogleApiException.class)
+    public ResponseEntity<Object> handleGoogleApiException(GoogleApiException googleApiException) {
+        ValidationExceptionDto validationExceptionDto =
+                new ValidationExceptionDto(AppConstant.GOOGLE_API, googleApiException.getMessage());
+        if (googleApiException.getMessage() != null
+                && googleApiException.getMessage().contains("Geocoding result was not found")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(validationExceptionDto);
+        } else {
+            validationExceptionDto.setMessage(googleApiException.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationExceptionDto);
+        }
+    }
+
+    /**
+     * Exception handler for InsufficientLocationDataException.
+     *
+     * @param exception which is being intercepted
+     * @param request   contains details about occurred exception
+     * @return ResponseEntity which contains details about exception and 400 status
+     *         code
+     */
+    @ExceptionHandler(InsufficientLocationDataException.class)
+    public final ResponseEntity<Object> handleInsufficientLocationDataException(
+            InsufficientLocationDataException exception, WebRequest request) {
+        log.error(exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 

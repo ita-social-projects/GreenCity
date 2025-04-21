@@ -38,4 +38,5 @@ public class AppConstant {
         DEFAULT_LANGUAGE_CODE,
         LANGUAGE_CODE_UA);
     public static final String EMPTY_STRING = "";
+    public static final String GOOGLE_API = "Google API";
 }
