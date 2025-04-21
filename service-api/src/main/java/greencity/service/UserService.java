@@ -5,6 +5,7 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -152,6 +153,14 @@ public interface UserService {
      * @return {@link UserLocationDto}
      **/
     UserLocationDto findUserLocationDtoByUserId(Long userId);
+
+    /**
+     * Set user location by coordinates from {@link UserProfileDtoRequest}
+     *
+     * @param userId id of the user whose location will be updated
+     * @param userProfileDtoRequest contains location data
+     */
+    void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest);
 
     /**
      * Find list of {@link UserVO}'s by emails.

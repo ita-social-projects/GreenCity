@@ -301,11 +301,12 @@ public class UserServiceImpl implements UserService {
             .toList();
     }
 
-
-
-
-
-    private void setLocationForUser(User user, UserProfileDtoRequest userProfileDtoRequest) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest) {
+        User user = findUserById(userId);
         if (shouldSkipLocationUpdate(user, userProfileDtoRequest)) {
             return;
         }
@@ -359,7 +360,28 @@ public class UserServiceImpl implements UserService {
             userLocation.setLongitude(userProfileDtoRequest.getCoordinates().getLongitude());
             userLocation = userLocationRepo.save(userLocation);
             user.setUserLocation(userLocation);
+            userRepo.save(user);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserCityDto findAllUsersCities(Long userId) {
+        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+        return modelMapper.map(userLocation, UserCityDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserLocationDto findUserLocationDtoByUserId(Long userId) {
+        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+        return modelMapper.map(userLocation, UserLocationDto.class);
     }
 
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
@@ -400,43 +422,10 @@ public class UserServiceImpl implements UserService {
                 AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1, userLocation::setRegionUk);
     }
 
-
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public UserCityDto findAllUsersCities(Long userId) {
-        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
-        return modelMapper.map(userLocation, UserCityDto.class);
+    private User findUserById(Long id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public UserLocationDto findUserLocationDtoByUserId(Long userId) {
-        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
-        return modelMapper.map(userLocation, UserLocationDto.class);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private Pageable applyDefaultSorting(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) {
