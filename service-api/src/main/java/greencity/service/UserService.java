@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
@@ -139,9 +140,18 @@ public interface UserService {
     /**
      * Find and return city and coordinates .
      *
+     * @param userId id of the user
      * @return {@link UserCityDto}
      **/
     UserCityDto findAllUsersCities(Long userId);
+
+    /**
+     * Find and return user location by user id.
+     *
+     * @param userId id of the user
+     * @return {@link UserLocationDto}
+     **/
+    UserLocationDto findUserLocationDtoByUserId(Long userId);
 
     /**
      * Find list of {@link UserVO}'s by emails.

@@ -414,6 +414,16 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userLocation, UserCityDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserLocationDto findUserLocationDtoByUserId(Long userId) {
+        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+        return modelMapper.map(userLocation, UserLocationDto.class);
+    }
+
 
 
 
