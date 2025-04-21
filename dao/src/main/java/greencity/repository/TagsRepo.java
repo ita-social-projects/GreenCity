@@ -138,7 +138,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
             + "INNER JOIN habits_tags ht ON t.id = ht.tag_id "
             + "INNER JOIN habits h ON ht.habit_id = h.id "
             + "INNER JOIN habit_assign ha ON h.id = ha.habit_id "
-            + "INNER JOIN users u ON ha.user_id = u.id AND ha.status = 'INPROGRESS' "
+            + "INNER JOIN greencity_users u ON ha.user_id = u.id AND ha.status = 'INPROGRESS' "
             + "WHERE u.email = :email")
     Set<Long> findTagsIdByUserHabitsInProgress(String email);
 }

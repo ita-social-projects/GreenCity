@@ -66,7 +66,7 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
                    u.name,
                    u.email,
                    u.profile_picture
-            FROM users u
+            FROM greencity_users u
             WHERE u.id IN (SELECT id FROM friends)
               AND (:name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')))
         ),

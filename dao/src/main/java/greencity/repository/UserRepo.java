@@ -89,7 +89,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param friendId {@link Long} friend id
      * @return {@link Optional} of {@link User}
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT * FROM users AS u "
+    @Query(nativeQuery = true, value = "SELECT DISTINCT * FROM greencity_users AS u "
         + "WHERE u.id = "
         + "((SELECT user_id FROM users_friends "
         + "WHERE user_id = :userId AND friend_id = :friendId AND status = 'FRIEND') "
@@ -114,7 +114,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT friend_id FROM users_friends AS uf "
         + "WHERE uf.user_id = :userId AND uf.status = 'FRIEND' AND "
         + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.friend_id "
-        + "AND ha.status = 'INPROGRESS') = 1)) as ui JOIN users as u ON user_id = u.id")
+        + "AND ha.status = 'INPROGRESS') = 1)) as ui JOIN greencity_users as u ON user_id = u.id")
     List<User> getFriendsAssignedToHabit(Long userId, Long habitId);
 
     /**
@@ -236,7 +236,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true, value = ""
         + "SELECT u.* "
-        + "FROM users u "
+        + "FROM greencity_users u "
         + "LEFT JOIN user_location ul ON ul.id = u.user_location "
         + "RIGHT JOIN ("
         + " SELECT friends.id, (SELECT count(*)"
@@ -258,7 +258,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id IN ( "
+    @Query(nativeQuery = true, value = "SELECT * FROM greencity_users WHERE id IN ( "
         + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
         + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'))")
     Page<User> getAllUserFriendsPage(Pageable pageable, Long userId);
@@ -274,7 +274,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true,
         value = """
             SELECT *
-            FROM users u
+            FROM greencity_users u
             WHERE u.id != :userId
               AND u.id NOT IN (
                   SELECT user_id AS id
@@ -343,7 +343,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true,
         value = """
                                 SELECT *
-            FROM users u
+            FROM greencity_users u
             WHERE u.id != :userId
               AND u.id NOT IN (
                 SELECT user_id AS id
@@ -450,7 +450,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT u.* FROM users  u "
+    @Query(nativeQuery = true, value = "SELECT u.* FROM greencity_users  u "
         + "WHERE u.id != :userId"
         + " AND u.id IN ("
         + "    SELECT user_id FROM users_friends"
@@ -471,7 +471,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true,
         value = """
                 SELECT *
-                FROM users u
+                FROM greencity_users u
                 INNER JOIN users_friends
                 ON u.id = users_friends.user_id
                 WHERE users_friends.friend_id = :userId
@@ -524,7 +524,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                      WHERE ul.id = u.user_location
                        AND ul.city_uk IN (
                          SELECT ul2.city_uk FROM user_location ul2
-                                                     JOIN users u2 ON ul2.id = u2.user_location
+                                                     JOIN greencity_users u2 ON ul2.id = u2.user_location
                          WHERE u2.id = :userId
                      )
                  )
@@ -543,7 +543,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true,
         value = """
                       SELECT *
-               FROM users u
+               FROM greencity_users u
                WHERE u.id != :userId
                    AND u.id IN (
                        SELECT user_id AS id
@@ -593,7 +593,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                              WHERE ul.id = u.user_location
                                AND ul.city_uk IN (
                                  SELECT ul2.city_uk FROM user_location ul2
-                                                             JOIN users u2 ON ul2.id = u2.user_location
+                                                             JOIN greencity_users u2 ON ul2.id = u2.user_location
                                  WHERE u2.id = :userId
                              )
                          )
@@ -609,7 +609,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users u"
+    @Query(nativeQuery = true, value = "SELECT * FROM greencity_users u"
         + " WHERE u.id IN ("
         + "       SELECT friend_id FROM users_friends WHERE user_id = :userId"
         + "       UNION "
@@ -637,7 +637,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+    @Query(nativeQuery = true, value = "SELECT * FROM greencity_users u "
         + "WHERE u.id != :userId AND u.id IN("
         + "SELECT user_id FROM habit_assign WHERE status = 'ACQUIRED' OR status = 'INPROGRESS')")
     Page<User> findRecommendedFriendsByHabits(long userId, Pageable pageable);
@@ -649,7 +649,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return list of {@link User} users.
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM users u WHERE (:searchQuery = '' OR LOWER(u.name) "
+        value = "SELECT * FROM greencity_users u WHERE (:searchQuery = '' OR LOWER(u.name) "
             + "LIKE LOWER(CONCAT('%', :searchQuery, '%'))) LIMIT 10")
     List<User> searchUsers(String searchQuery);
 
@@ -661,9 +661,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable current page.
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT users.* FROM users "
-        + "JOIN user_location ON users.user_location = user_location.id "
-        + "WHERE user_location.city_uk = :city AND users.id !=:userId")
+    @Query(nativeQuery = true, value = "SELECT greencity_users.* FROM greencity_users "
+        + "JOIN user_location ON greencity_users.user_location = user_location.id "
+        + "WHERE user_location.city_uk = :city AND greencity_users.id !=:userId")
     Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
 
     /**
@@ -760,8 +760,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable
      *
      */
-    @Query(nativeQuery = true, value = "SELECT users.* FROM users "
-        + "JOIN events_requesters ON users.id = events_requesters.user_id "
+    @Query(nativeQuery = true, value = "SELECT greencity_users.* FROM greencity_users "
+        + "JOIN events_requesters ON greencity_users.id = events_requesters.user_id "
         + "WHERE events_requesters.event_id = :eventId")
     Page<User> findUsersByRequestedEvents(Long eventId, Pageable pageable);
 

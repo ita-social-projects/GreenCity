@@ -27,7 +27,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
     @Query(nativeQuery = true,
         value = "SELECT DISTINCT e.* "
             + "FROM events e "
-            + "JOIN users u on u.id = e.organizer_id "
+            + "JOIN greencity_users u on u.id = e.organizer_id "
             + "JOIN events_tags ent on e.id = ent.event_id "
             + "JOIN events_dates_locations edl on e.id = edl.event_id "
             + "JOIN tag_translations tt on tt.tag_id = ent.tag_id "
@@ -136,7 +136,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                  LEFT JOIN events_tags et ON e.id = et.event_id
                  LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
                  LEFT JOIN languages l ON tt.language_id = l.id
-                 LEFT JOIN users u ON e.organizer_id = u.id
+                 LEFT JOIN greencity_users u ON e.organizer_id = u.id
         WHERE (e.id IN (:ids))
         GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id, edl_max.latest_finish_date;""")
     List<Tuple> loadEventDataByIds(List<Long> ids);
@@ -187,7 +187,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                      LEFT JOIN events_tags et ON e.id = et.event_id
                      LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
                      LEFT JOIN languages l ON tt.language_id = l.id
-                     LEFT JOIN users u ON e.organizer_id = u.id
+                     LEFT JOIN greencity_users u ON e.organizer_id = u.id
                      LEFT JOIN users_friends uf ON
                          uf.user_id = :userId AND uf.friend_id=e.organizer_id AND uf.status='FRIEND'
                      LEFT JOIN events_followers ef ON e.id = ef.event_id AND ef.user_id = :userId
