@@ -9,6 +9,7 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.enums.NotificationType;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
@@ -191,9 +192,7 @@ public class FriendServiceImpl implements FriendService {
         } else if (type == RecommendedFriendsType.HABITS) {
             mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
         } else if (type == RecommendedFriendsType.CITY) {
-            UserVO userVO = modelMapper.map(user, UserVO.class);
-
-            UserLocationDto userLocation = userVO.getUserLocation();
+            UserLocation userLocation = user.getUserLocation();
             if (userLocation != null && userLocation.getCityUk() != null) {
                 mutualFriends = userRepo.findRecommendedFriendsByCity(userId, userLocation.getCityUk(), pageable);
             } else {

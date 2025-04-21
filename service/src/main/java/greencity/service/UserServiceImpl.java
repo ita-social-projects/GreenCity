@@ -8,6 +8,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
@@ -93,7 +94,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findByEmail(String email) {
         return userRepo.findByEmail(email)
-            .map(user -> modelMapper.map(user, UserVO.class))
+            .map(user -> {
+                UserVO userVO = modelMapper.map(user, UserVO.class);
+                UserLocation userLocation = user.getUserLocation();
+                UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                userVO.setUserLocation(userLocationDto);
+                return userVO;
+            })
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
