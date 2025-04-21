@@ -6,7 +6,6 @@ import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
-import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import lombok.AllArgsConstructor;
@@ -53,8 +52,12 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserLocationStatisticDto> getUserLocationsDistribution(String groupBy) {
-        return userRemoteClient.getUserLocationsDistribution(groupBy)
-            .orElseThrow(() -> new NotFoundException());
+        return switch (groupBy) {
+            case "city" -> userRepo.getUserLocationsDistributionByCity();
+            case "region" -> userRepo.getUserLocationsDistributionByRegion();
+            case "country" -> userRepo.getUserLocationsDistributionByCountry();
+            default -> userRepo.getUserLocationsDistributionByCity();
+        };
     }
 
     /**

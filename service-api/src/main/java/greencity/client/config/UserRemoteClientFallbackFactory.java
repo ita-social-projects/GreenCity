@@ -58,12 +58,6 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
-            public Optional<List<UserLocationStatisticDto>> getUserLocationsDistribution(String groupBy) {
-                // TODO: log
-                return Optional.empty();
-            }
-
-            @Override
             public List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution() {
                 throw new RuntimeException("not implemented");
             }
