@@ -64,7 +64,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testPreHandle_SuccessfulGetRequestWithQueryString() {
+    void preHandleSuccessfulGetRequestWithQueryStringTest() {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn("param=value");
@@ -83,7 +83,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testPreHandle_SuccessfulGetRequestWithoutQueryString() {
+    void preHandleSuccessfulGetRequestWithoutQueryStringTest() {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn(null);
@@ -102,7 +102,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testPreHandle_PostRequestWithBody() {
+    void preHandlePostRequestWithBodyTest() {
         when(requestWrapper.getMethod()).thenReturn("POST");
         when(requestWrapper.getRequestURI()).thenReturn("/api/test");
         when(requestWrapper.getQueryString()).thenReturn(null);
@@ -123,7 +123,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testPreHandle_PostRequestWithEmptyBody() {
+    void preHandlePostRequestWithEmptyBodyTest() {
         when(requestWrapper.getMethod()).thenReturn("POST");
         when(requestWrapper.getRequestURI()).thenReturn("/api/test");
         when(requestWrapper.getQueryString()).thenReturn(null);
@@ -143,7 +143,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testPreHandle_PostRequestWithException() {
+    void preHandlePostRequestWithExceptionTest() {
         when(requestWrapper.getMethod()).thenReturn("POST");
         when(requestWrapper.getRequestURI()).thenReturn("/api/test");
         when(requestWrapper.getQueryString()).thenReturn(null);
@@ -166,7 +166,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testAfterCompletion_SuccessfulResponse() {
+    void afterCompletionSuccessfulResponseTest() {
         long startTime = System.currentTimeMillis();
         when(request.getAttribute("startTime")).thenReturn(startTime);
         when(request.getAttribute("endpoint")).thenReturn("POST /api/test");
@@ -183,7 +183,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testAfterCompletion_ErrorResponseWithoutException() {
+    void afterCompletionErrorResponseWithoutExceptionTest() {
         long startTime = System.currentTimeMillis();
         when(request.getAttribute("startTime")).thenReturn(startTime);
         when(request.getAttribute("endpoint")).thenReturn("POST /api/test");
@@ -201,7 +201,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testAfterCompletion_ErrorResponseWithException() {
+    void afterCompletionErrorResponseWithExceptionTest() {
         long startTime = System.currentTimeMillis();
         when(request.getAttribute("startTime")).thenReturn(startTime);
         when(request.getAttribute("endpoint")).thenReturn("POST /api/test");
@@ -221,7 +221,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testAfterCompletion_ResponseWithEmptyBody() {
+    void afterCompletionResponseWithEmptyBodyTest() {
         long startTime = System.currentTimeMillis();
         when(request.getAttribute("startTime")).thenReturn(startTime);
         when(request.getAttribute("endpoint")).thenReturn("POST /api/test");
@@ -237,7 +237,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testAfterCompletion_ResponseWithException() {
+    void afterCompletionResponseWithExceptionTest() {
         long startTime = System.currentTimeMillis();
         when(request.getAttribute("startTime")).thenReturn(startTime);
         when(request.getAttribute("endpoint")).thenReturn("POST /api/test");
@@ -256,7 +256,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testBuildEndpoint_WithQueryString() throws Exception {
+    void buildEndpointWithQueryStringTest() throws Exception {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn("param=value");
@@ -267,7 +267,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testBuildEndpoint_WithoutQueryString() throws Exception {
+    void buildEndpointWithoutQueryStringTest() throws Exception {
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn(null);
@@ -278,7 +278,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractRequestBody_GetWithQueryString() throws Exception {
+    void extractRequestBodyGetWithQueryStringTest() throws Exception {
         when(request.getMethod()).thenReturn("GET");
         when(request.getQueryString()).thenReturn("param=value");
 
@@ -288,7 +288,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractRequestBody_GetWithoutQueryString() throws Exception {
+    void extractRequestBodyGetWithoutQueryStringTest() throws Exception {
         when(request.getMethod()).thenReturn("GET");
         when(request.getQueryString()).thenReturn(null);
 
@@ -298,7 +298,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractRequestBody_PostWithBody() throws Exception {
+    void extractRequestBodyPostWithBodyTest() throws Exception {
         when(requestWrapper.getMethod()).thenReturn("POST");
         when(requestWrapper.getContentAsByteArray()).thenReturn("requestBody".getBytes(StandardCharsets.UTF_8));
         when(requestWrapper.getCharacterEncoding()).thenReturn("UTF-8");
@@ -309,7 +309,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractRequestBody_PostWithEmptyBody() throws Exception {
+    void extractRequestBodyPostWithEmptyBodyTest() throws Exception {
         when(requestWrapper.getMethod()).thenReturn("POST");
         when(requestWrapper.getContentAsByteArray()).thenReturn(new byte[0]);
 
@@ -319,7 +319,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractRequestBody_PostWithException() throws Exception {
+    void extractRequestBodyPostWithExceptionTest() throws Exception {
         when(requestWrapper.getMethod()).thenReturn("POST");
         when(requestWrapper.getContentAsByteArray()).thenReturn("requestBody".getBytes(StandardCharsets.UTF_8));
         when(requestWrapper.getCharacterEncoding()).thenThrow(new RuntimeException("Invalid encoding"));
@@ -333,7 +333,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractResponseBody_WithBody() throws Exception {
+    void extractResponseBodyWithBodyTest() throws Exception {
         when(responseWrapper.getContentAsByteArray()).thenReturn("responseBody".getBytes(StandardCharsets.UTF_8));
         when(responseWrapper.getCharacterEncoding()).thenReturn("UTF-8");
 
@@ -343,7 +343,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractResponseBody_WithEmptyBody() throws Exception {
+    void extractResponseBodyWithEmptyBodyTest() throws Exception {
         when(responseWrapper.getContentAsByteArray()).thenReturn(new byte[0]);
 
         String result = invokePrivateMethod("extractResponseBody", new Class<?>[]{HttpServletResponse.class}, responseWrapper);
@@ -352,7 +352,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testExtractResponseBody_WithException() throws Exception {
+    void extractResponseBodyWithExceptionTest() throws Exception {
         when(responseWrapper.getContentAsByteArray()).thenReturn("responseBody".getBytes(StandardCharsets.UTF_8));
         when(responseWrapper.getCharacterEncoding()).thenThrow(new RuntimeException("Invalid encoding"));
 
@@ -365,7 +365,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testLogResponse_SuccessfulResponse() throws Exception {
+    void logResponseSuccessfulResponseTest() throws Exception {
         String endpoint = "POST /api/test";
         int status = 200;
         long duration = 100L;
@@ -380,7 +380,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testLogResponse_ErrorResponseWithoutException() throws Exception {
+    void logResponseErrorResponseWithoutExceptionTest() throws Exception {
         String endpoint = "POST /api/test";
         int status = 400;
         long duration = 100L;
@@ -397,7 +397,7 @@ class RestLoggingInterceptorTest {
     }
 
     @Test
-    void testLogResponse_ErrorResponseWithException() throws Exception {
+    void logResponseErrorResponseWithExceptionTest() throws Exception {
         String endpoint = "POST /api/test";
         int status = 200;
         long duration = 100L;

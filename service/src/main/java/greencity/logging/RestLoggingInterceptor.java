@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -131,7 +132,7 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
 
     private void logResponse(String endpoint, int status, long duration, String responseBody, Exception ex) {
         if (status >= 400 || ex != null) {
-            String errorMessage = ex != null ? ex.getMessage() : (responseBody != null ? responseBody : "");
+            String errorMessage = Objects.requireNonNullElse(ex != null ? ex.getMessage() : responseBody, "");
             if (logger.isInfoEnabled()) {
                 logger.info(ERROR_LOG_FORMAT, sanitize(endpoint), status, sanitize(errorMessage), duration);
             }
