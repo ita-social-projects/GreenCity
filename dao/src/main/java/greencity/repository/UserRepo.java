@@ -431,7 +431,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                     WHERE ul.id = u.user_location
                       AND ul.city_uk IN (
                         SELECT ul2.city_uk FROM user_location ul2
-                                                    JOIN users u2 ON ul2.id = u2.user_location
+                                                    JOIN greencity_users u2 ON ul2.id = u2.user_location
                         WHERE u2.id = :userId
                     )
                 )
