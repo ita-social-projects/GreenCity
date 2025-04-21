@@ -109,10 +109,9 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
     @Query("""
             SELECT DISTINCT h.userId
             FROM Habit h
-            JOIN User u ON h.userId = u.id
-            WHERE h.isDeleted = false AND u.userStatus IN (greencity.enums.UserStatus.ACTIVATED)
+            WHERE h.isDeleted = false AND h.userId IN :activatedUserIds
         """)
-    List<Long> countActiveHabitCreators();
+    List<Long> countActiveHabitCreators(@Param("activatedUserIds") List<Long> activatedUserIds);
 
     /**
      * Count distinct users who are followers of non-deleted habits and are active.
@@ -121,9 +120,9 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
             SELECT DISTINCT f.id
             FROM Habit h
             JOIN h.followers f
-            WHERE h.isDeleted = false AND f.userStatus IN (greencity.enums.UserStatus.ACTIVATED)
+            WHERE h.isDeleted = false AND f.id IN :activatedUserIds
         """)
-    List<Long> countActiveHabitFollowers();
+    List<Long> countActiveHabitFollowers(@Param("activatedUserIds") List<Long> activatedUserIds);
 
     /**
      * Counts the number of habit creations (habits) for a given date range. This

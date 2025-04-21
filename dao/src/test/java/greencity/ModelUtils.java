@@ -19,7 +19,6 @@ public class ModelUtils {
             .id(1L)
             .email("danylo@gmail.com")
             .name("Taras")
-            .userStatus(UserStatus.ACTIVATED)
             .build();
     }
 

@@ -34,7 +34,6 @@ class EcoNewsVOMapperTest {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         User author = ecoNews.getAuthor();
         UserVO authorVO = mock(UserVO.class);
-        UserStatus userStatus = ecoNews.getAuthor().getUserStatus();
         Role role = Role.ROLE_USER;
 
         EcoNewsVO expected = EcoNewsVO.builder()
@@ -43,7 +42,6 @@ class EcoNewsVOMapperTest {
                 .id(ecoNews.getAuthor().getId())
                 .name(ecoNews.getAuthor().getName())
                 .email(ecoNews.getAuthor().getEmail())
-                .userStatus(ecoNews.getAuthor().getUserStatus())
                 .role(role)
                 .build())
             .creationDate(ecoNews.getCreationDate())
@@ -70,8 +68,6 @@ class EcoNewsVOMapperTest {
 
         when(modelMapper.map(author, UserVO.class))
             .thenReturn(authorVO);
-        when(authorVO.getUserStatus())
-            .thenReturn(userStatus);
         when(authorVO.getRole())
             .thenReturn(role);
 

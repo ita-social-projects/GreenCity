@@ -456,7 +456,6 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .userStatus(UserStatus.ACTIVATED)
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
@@ -468,7 +467,6 @@ public class ModelUtils {
             .id(2L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .userStatus(UserStatus.ACTIVATED)
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
@@ -480,7 +478,6 @@ public class ModelUtils {
             .id(2L)
             .email("danylo@gmail.com")
             .name("Danylo")
-            .userStatus(UserStatus.ACTIVATED)
             .build();
     }
 

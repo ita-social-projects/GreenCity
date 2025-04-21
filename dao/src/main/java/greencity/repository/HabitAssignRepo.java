@@ -449,8 +449,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query("""
             SELECT new greencity.dto.habitstatistic.HabitStatusCount(ha.status, COUNT(ha))
             FROM HabitAssign ha
-            WHERE ha.user.userStatus IN (greencity.enums.UserStatus.ACTIVATED)
+            WHERE ha.user.id IN :activatedUserIds
             GROUP BY ha.status
         """)
-    List<HabitStatusCount> countHabitAssignsByStatus();
+    List<HabitStatusCount> countHabitAssignsByStatus(@Param("activatedUserIds") List<Long> activatedUserIds);
 }

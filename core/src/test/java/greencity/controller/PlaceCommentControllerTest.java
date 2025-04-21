@@ -70,7 +70,6 @@ class PlaceCommentControllerTest {
         User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
 
-        user.setUserStatus(UserStatus.ACTIVATED);
         userVO.setUserStatus(UserStatus.ACTIVATED);
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +

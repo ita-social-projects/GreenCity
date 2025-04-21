@@ -801,7 +801,6 @@ class EcoNewsServiceImplTest {
             .id(2L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .userStatus(UserStatus.ACTIVATED)
             .subscribedEvents(new HashSet<>())
             .favoriteEvents(new HashSet<>())
             .build();

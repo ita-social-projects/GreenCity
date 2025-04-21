@@ -141,7 +141,6 @@ class PlaceServiceImplTest {
             .id(1L)
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
-            .userStatus(UserStatus.ACTIVATED)
             .build();
     private final UserVO userVO =
         UserVO.builder()
@@ -789,7 +788,6 @@ class PlaceServiceImplTest {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         User user = ModelUtils.getUser();
-        user.setUserStatus(UserStatus.BLOCKED);
         String email = user.getEmail();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);

@@ -91,4 +91,13 @@ public interface UserRemoteClient {
      */
     @GetMapping("/user/{userId}/sixFriends/")
     List<UserVO> getSixFriendsWithTheHighestRating(@PathVariable Long userId);
+
+
+    /**
+     * Retrieves the list of IDs of all users who have the user status set to {@code ACTIVATED}.
+     *
+     * @return a list of {@code Long} values representing the IDs of all activated users
+     */
+    @GetMapping("/user/activated-ids")
+    List<Long> getActivatedUsersIds();
 }
