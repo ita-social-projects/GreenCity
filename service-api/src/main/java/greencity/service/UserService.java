@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
+import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
@@ -134,6 +135,13 @@ public interface UserService {
      * @param rating rating.
      */
     void updateUserRating(Long userId, Double rating);
+
+    /**
+     * Find and return city and coordinates .
+     *
+     * @return {@link UserCityDto}
+     **/
+    UserCityDto findAllUsersCities(Long userId);
 
     /**
      * Find list of {@link UserVO}'s by emails.

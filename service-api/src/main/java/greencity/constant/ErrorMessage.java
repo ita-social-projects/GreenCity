@@ -252,4 +252,8 @@ public class ErrorMessage {
     public static final String EMPTY_TABLE = "Table '%s' doesn't contain any row";
     public static final String INVALID_TABLE_NAME = "Table name must contain only lowercase letters "
         + "and single underscores between words. Cannot start or end with an underscore.";
+    public static final String NOT_FOUND_ADDRESS_BY_COORDINATES = "Not found address with such coordinates: ";
+    public static final String INSUFFICIENT_LOCATION_DATA_FOUND =
+            "Insufficient location data found for the provided coordinates.";
+    public static final String USER_DID_NOT_SET_ANY_CITY = "User did not set any city";
 }

@@ -1,26 +1,34 @@
 package greencity.service;
 
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.AddressType;
+import com.google.maps.model.GeocodingResult;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
+import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.InsufficientLocationDataException;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.UserManagementVOMapper;
+import greencity.repository.UserLocationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +45,11 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -51,10 +61,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
     private final UserManagementVOMapper userManagementVOMapper;
+    private final UserRemoteClient userRemoteClient;
+    private final UserLocationRepo userLocationRepo;
+    private final GoogleApiService googleApiService;
+
     @Value("300000")
     private long timeAfterLastActivity;
 
-    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -280,6 +293,133 @@ public class UserServiceImpl implements UserService {
             .map(u -> modelMapper.map(u, UserVO.class))
             .toList();
     }
+
+
+
+
+
+    private void setLocationForUser(User user, UserProfileDtoRequest userProfileDtoRequest) {
+        if (shouldSkipLocationUpdate(user, userProfileDtoRequest)) {
+            return;
+        }
+
+        if (user.getUserLocation() != null && (userProfileDtoRequest.getCoordinates().getLatitude() == null
+                || userProfileDtoRequest.getCoordinates().getLongitude() == null)) {
+            UserLocation old = user.getUserLocation();
+            old.getUsers().remove(user);
+            user.setUserLocation(null);
+        } else {
+            final AddressType[] addressTypes =
+                    {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
+
+            GeocodingResult resultsUk = googleApiService.getLocationByCoordinates(
+                    userProfileDtoRequest.getCoordinates().getLatitude(),
+                    userProfileDtoRequest.getCoordinates().getLongitude(),
+                    "uk", addressTypes);
+            GeocodingResult resultsEn = googleApiService.getLocationByCoordinates(
+                    userProfileDtoRequest.getCoordinates().getLatitude(),
+                    userProfileDtoRequest.getCoordinates().getLongitude(),
+                    "en", addressTypes);
+            UserLocation userLocation = userLocationRepo.getUserLocationByLatitudeAndLongitude(
+                    userProfileDtoRequest.getCoordinates().getLatitude(),
+                    userProfileDtoRequest.getCoordinates().getLongitude()).orElse(new UserLocation());
+
+            /*
+             * check if user already has a location and if he is the only one assigned to
+             * this location. If user do not have a location check if such location is in
+             * database, if true then assign it to user, if not - add new location to
+             * database and assign it to user. If user has a location and this location
+             * belongs only to him, modify this location. If user has a location but there
+             * are more users assigned to this location, then create a new location for this
+             * user. If user inserted same location get his location and do not change
+             * anything.
+             */
+            if (user.getUserLocation() != null && user.getUserLocation().getUsers().size() == 1) {
+                if (userLocation.getId() != null && user.getUserLocation() != userLocation) {
+                    UserLocation deleteLocation = user.getUserLocation();
+                    user.setUserLocation(userLocation);
+                    userLocationRepo.delete(deleteLocation);
+                } else {
+                    userLocation = user.getUserLocation();
+                }
+            } else if (user.getUserLocation() != null && user.getUserLocation().getUsers().size() > 1) {
+                UserLocation old = user.getUserLocation();
+                old.getUsers().remove(user);
+            }
+            initializeGeoCodingResults(initializeUkrainianGeoCodingResult(userLocation), resultsUk);
+            initializeGeoCodingResults(initializeEnglishGeoCodingResult(userLocation), resultsEn);
+            userLocation.setLatitude(userProfileDtoRequest.getCoordinates().getLatitude());
+            userLocation.setLongitude(userProfileDtoRequest.getCoordinates().getLongitude());
+            userLocation = userLocationRepo.save(userLocation);
+            user.setUserLocation(userLocation);
+        }
+    }
+
+    private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
+        return user.getUserLocation() == null
+                && (userProfileDtoRequest.getCoordinates().getLatitude() == null
+                || userProfileDtoRequest.getCoordinates().getLongitude() == null);
+    }
+
+    private void initializeGeoCodingResults(Map<AddressComponentType, Consumer<String>> initializedMap,
+                                            GeocodingResult geocodingResult) {
+        checkGeocodingResultContainsAllInformation(geocodingResult, initializedMap.size());
+        initializedMap
+                .forEach((key, value) -> Arrays.stream(geocodingResult.addressComponents)
+                        .forEach(addressComponent -> Arrays.stream(addressComponent.types)
+                                .filter(componentType -> componentType.equals(key))
+                                .forEach(componentType -> value.accept(addressComponent.longName))));
+    }
+
+    private void checkGeocodingResultContainsAllInformation(GeocodingResult geocodingResult, int size) {
+        if (geocodingResult.addressComponents.length < size) {
+            throw new InsufficientLocationDataException(ErrorMessage.INSUFFICIENT_LOCATION_DATA_FOUND);
+        }
+    }
+
+    private Map<AddressComponentType, Consumer<String>> initializeEnglishGeoCodingResult(
+            UserLocation userLocation) {
+        return Map.of(
+                AddressComponentType.LOCALITY, userLocation::setCityEn,
+                AddressComponentType.COUNTRY, userLocation::setCountryEn,
+                AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1, userLocation::setRegionEn);
+    }
+
+    private Map<AddressComponentType, Consumer<String>> initializeUkrainianGeoCodingResult(
+            UserLocation userLocation) {
+        return Map.of(
+                AddressComponentType.LOCALITY, userLocation::setCityUk,
+                AddressComponentType.COUNTRY, userLocation::setCountryUk,
+                AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1, userLocation::setRegionUk);
+    }
+
+
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserCityDto findAllUsersCities(Long userId) {
+        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+        return modelMapper.map(userLocation, UserCityDto.class);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private Pageable applyDefaultSorting(Pageable pageable) {
         if (pageable.getSort().isUnsorted()) {
