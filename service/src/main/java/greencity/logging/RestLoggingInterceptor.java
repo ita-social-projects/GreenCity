@@ -24,6 +24,7 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
     private static final String START_TIME_ATTRIBUTE = "startTime";
     private static final String ENDPOINT_ATTRIBUTE = "endpoint";
     private static final String REQUEST_BODY_ATTRIBUTE = "requestBody";
+    private static final int MAX_LOG_STRING_LENGTH = 1000;
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -147,6 +148,10 @@ public class RestLoggingInterceptor implements HandlerInterceptor {
         if (input == null) {
             return null;
         }
-        return input.replaceAll("[<>\"&'\\n\\r]", "_");
+        String truncated = input;
+        if (input.length() > MAX_LOG_STRING_LENGTH) {
+            truncated = input.substring(0, MAX_LOG_STRING_LENGTH - 3) + "...";
+        }
+        return truncated.replaceAll("[<>\"&'\\n\\r]", "_");
     }
 }
