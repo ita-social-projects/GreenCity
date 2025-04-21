@@ -5,6 +5,7 @@ import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.event.Event;
 import greencity.enums.UserStatus;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -211,6 +212,13 @@ public class User {
 
     @Column(name = "user_credo")
     private String userCredo;
+
+    @Builder.Default
+    @OneToMany
+    @JoinTable(name = "users_friends",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
+    private List<User> userFriends = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_location")
