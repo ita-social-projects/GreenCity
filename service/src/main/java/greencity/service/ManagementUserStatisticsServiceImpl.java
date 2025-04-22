@@ -6,6 +6,7 @@ import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
+import greencity.enums.DateGranularity;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import lombok.AllArgsConstructor;
@@ -22,8 +23,9 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
 
     @Override
     public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate,
-        LocalDateTime endDate, String granularity) {
-        List<Tuple> results = userRepo.countUsersByRegistrationDateBetween(startDate, endDate, granularity);
+        LocalDateTime endDate, DateGranularity granularity) {
+        String granularityStr = granularity.toString();
+        List<Tuple> results = userRepo.countUsersByRegistrationDateBetween(startDate, endDate, granularityStr);
         return results.stream()
             .map(tuple -> new UserRegistrationStatisticDto(
                 ((Timestamp) tuple.get(0)).toLocalDateTime(),

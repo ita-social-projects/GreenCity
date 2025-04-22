@@ -701,21 +701,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param startDate   The start date of the range to consider (inclusive).
      * @param endDate     The end date of the range to consider (inclusive).
-     * @param granularity The time unit for grouping results ('hour', 'day', 'week',
-     *                    'month', or 'year').
+     * @param granularity The time unit for grouping results {@link greencity.enums.DateGranularity}
      * @return A list of tuples containing the date group and the count of users
      *         registered in that group.
      */
     @Query(value = """
             SELECT
-                CASE
-                    WHEN :granularity = 'hour' THEN DATE_TRUNC('hour', u.date_of_registration)
-                    WHEN :granularity = 'day' THEN DATE_TRUNC('day', u.date_of_registration)
-                    WHEN :granularity = 'week' THEN DATE_TRUNC('week', u.date_of_registration)
-                    WHEN :granularity = 'month' THEN DATE_TRUNC('month', u.date_of_registration)
-                    WHEN :granularity = 'year' THEN DATE_TRUNC('year', u.date_of_registration)
-                    ELSE DATE_TRUNC('day', u.date_of_registration) -- Default to day
-                END as dateGroup,
+                DATE_TRUNC(:granularity, u.date_of_registration) as dateGroup,
                 COUNT(u.id) as count
             FROM users u
             WHERE u.date_of_registration >= :startDate
