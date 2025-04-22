@@ -47,8 +47,31 @@ public interface AIService {
      */
     String generateEcoNewsBasedOnHabits(String language);
 
+    /**
+     Retrieves relevant eco-news for a user based on filters.
+
+     @param userId User ID.
+     @param language Preferred language.
+     @param tags Tags to filter by.
+     @param title Title to filter by.
+     @param authorId Author ID to filter by.
+     @param favorite Filter by user's favorites.
+     @return List of relevant eco-news.
+     **/
     List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language, List<String> tags, String title, Long authorId, boolean favorite);
 
+    /**
+     * Retrieves a paginated list of eco-news for a user based on filters.
+     *
+     * @param userId   User ID.
+     * @param language Preferred language.
+     * @param pageable Pagination information.
+     * @param tags     Tags to filter by.
+     * @param title    Title to filter by.
+     * @param authorId Author ID to filter by.
+     * @param favorite Filter by user's favorites.
+     * @return Paginated list of eco-news.
+     **/
     Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(Long userId, String language, Pageable pageable, List<String> tags, String title, Long authorId, boolean favorite);
 
 }

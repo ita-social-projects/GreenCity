@@ -69,7 +69,7 @@ public class AIServiceImpl implements AIService {
         }
 
         try {
-            forecastResponse = String.valueOf(grammarChecker.checkGrammar(forecastResponse));
+            forecastResponse = grammarChecker.checkGrammar(forecastResponse);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -92,7 +92,7 @@ public class AIServiceImpl implements AIService {
         String adviceResponse = fetchAdvice(language, habit);
 
         try {
-            adviceResponse = String.valueOf(grammarChecker.checkGrammar(adviceResponse));
+            adviceResponse = grammarChecker.checkGrammar(adviceResponse);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -114,7 +114,7 @@ public class AIServiceImpl implements AIService {
         String newResponse = extractContentFromJson(jsonResponse);
 
         try {
-            newResponse = String.valueOf(grammarChecker.checkGrammar(newResponse));
+            newResponse = grammarChecker.checkGrammar(newResponse);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -346,10 +346,10 @@ public class AIServiceImpl implements AIService {
      * @return a string containing the forecast.
      */
     private String fetchForecast(String language, List<HabitAssign> habitAssigns) {
-        List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
+        List<DurationHabitDto> durationHabitDto = habitAssigns.stream()
             .map(this::mapToDurationHabitDto)
             .toList();
-        return openAIService.makeRequest(language + FORECAST + durationHabitDtos);
+        return openAIService.makeRequest(language + FORECAST + durationHabitDto);
     }
 
     /**
