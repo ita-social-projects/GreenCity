@@ -86,6 +86,11 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             public Boolean checkIfTheUserIsOnline(Long userId) {
                 throw new RuntimeException("not implemeneted");
             }
+
+            @Override
+            public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(String emailPreference, String periodicity) {
+                throw new RuntimeException("not implemeneted");
+            }
         };
     }
 }

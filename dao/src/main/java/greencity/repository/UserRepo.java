@@ -696,21 +696,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Long findIdOfPrivateChatOfUsers(Long userId, Long friendId);
 
     /**
-     * Method that finds user ids by emailPreference and periodicity.
-     *
-     * @param emailPreference of user.
-     * @param periodicity     of notification.
-     * @return list of user ids.
-     */
-    @Query(nativeQuery = true, value = """
-            SELECT u.*
-            FROM users u
-            LEFT JOIN user_email_preferences uep ON u.id = uep.user_id
-            WHERE uep.email_preference = :emailPreference AND uep.periodicity = :periodicity
-        """)
-    List<User> findAllByEmailPreferenceAndEmailPeriodicity(String emailPreference, String periodicity);
-
-    /**
      * Counts users grouped by their registration date within a specified date range
      * and granularity.
      *

@@ -285,9 +285,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserVO> getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference emailPreference,
         EmailPreferencePeriodicity periodicity) {
-        return userRepo.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference.name(), periodicity.name()).stream()
-            .map(u -> modelMapper.map(u, UserVO.class))
-            .toList();
+        return userRemoteClient.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference.name(), periodicity.name());
     }
 
     /**

@@ -100,4 +100,17 @@ public interface UserRemoteClient {
      */
     @GetMapping("/user/isOnline/{userId}/")
     Boolean checkIfTheUserIsOnline(@PathVariable Long userId);
+
+    /**
+     * Find users by email preference and email periodicity.
+     *
+     * @param emailPreference user's email preference.
+     * @param periodicity     email periodicity.
+     * @return list of {@link UserVO}
+     */
+    @GetMapping("/user/email")
+    List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
+            @RequestParam("email-preference") String emailPreference,
+            @RequestParam("email-periodicity") String periodicity
+    );
 }
