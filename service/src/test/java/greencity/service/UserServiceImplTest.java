@@ -4,11 +4,13 @@ import greencity.ModelUtils;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.LowRoleLevelException;
@@ -153,10 +155,17 @@ class UserServiceImplTest {
 
     @Test
     void checkUpdatableUserTest() {
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(getUser()));
-        when(modelMapper.map(any(), any())).thenReturn(userVO);
+        Long userId = 1L;
+        String email = "email";
+        User user = getUser();
+        UserLocation userLocation = user.getUserLocation();
+        UserLocationDto userLocationDto = new UserLocationDto();
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(modelMapper.map(userLocation, UserLocationDto.class)).thenReturn(userLocationDto);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
-            userService.checkUpdatableUser(1L, "email");
+            userService.checkUpdatableUser(userId, email);
         });
         assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
     }
