@@ -48,7 +48,7 @@ stages:
         echo "    </server>" >> $(Build.SourcesDirectory)/settings.xml
         echo "  </servers>" >> $(Build.SourcesDirectory)/settings.xml
         echo "</settings>" >> $(Build.SourcesDirectory)/settings.xml
-        displayName: "Create temporary settings.xml"
+      displayName: "Create temporary settings.xml"
 
     - task: Maven@3
       displayName: Maven package
@@ -64,7 +64,7 @@ stages:
 
     - script: |
         rm -f $(Build.SourcesDirectory)/settings.xml
-        displayName: "Delete temporary settings.xml"
+      displayName: "Delete temporary settings.xml"
 
     - task: CopyFiles@2
       displayName: Copy Files
