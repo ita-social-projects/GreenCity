@@ -84,7 +84,6 @@ import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -2507,14 +2506,19 @@ class EventServiceImplTest {
     @Test
     void getPageableAllEventsAttendedByUserTest() {
         UserVO userVO = ModelUtils.getUserVO();
-        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getEvent(), ModelUtils.getEvent());
-        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
         Pageable pageable = PageRequest.of(0, 5);
-        when(eventRepo.findAllAttendedEventsByUserIdPageable(pageable, userVO.getId())).thenReturn(events);
+        List<Event> eventsList = List.of(ModelUtils.getEvent(), ModelUtils.getEvent(), ModelUtils.getEvent());
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+        when(eventRepo.findAllAttendedEventsByUserIdPageable(pageable, userVO.getId())).thenReturn(eventsList);
         when(modelMapper.map(any(Event.class), eq(EventResponseDto.class))).thenReturn(eventResponseDto);
         Page<EventResponseDto> eventResponseDtoPage =
             eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId());
-        verify(modelMapper, times(events.size())).map(any(Event.class), eq(EventResponseDto.class));
+        verify(modelMapper, times(eventsList.size())).map(any(Event.class), eq(EventResponseDto.class));
+        verify(eventRepo).findAllAttendedEventsByUserIdPageable(pageable, userVO.getId());
+        assertEquals(0, eventResponseDtoPage.getNumber());
+        assertEquals(1, eventResponseDtoPage.getTotalPages());
+        assertTrue(eventResponseDtoPage.isFirst());
+        assertTrue(eventResponseDtoPage.isLast());
         assertEquals(3, eventResponseDtoPage.getTotalElements());
     }
 }

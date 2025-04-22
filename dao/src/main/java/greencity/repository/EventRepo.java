@@ -257,7 +257,9 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
     /**
      * Retrieves all events attended by the specified user.
      *
-     * @param userId The ID of the user whose attended events are to be retrieved.
+     * @param userId   - the ID of the user whose attended events are to be
+     *                 retrieved.
+     * @param pageable {@link Pageable} - required pagination settings.
      * @return A list of events attended by the user.
      */
     @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
