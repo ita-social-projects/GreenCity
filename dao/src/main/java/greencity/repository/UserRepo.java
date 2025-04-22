@@ -2,14 +2,9 @@ package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserLocationStatisticDto;
-import greencity.dto.user.UserRegistrationDateGroupDto;
-import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import jakarta.persistence.Tuple;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
@@ -698,31 +693,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Long findIdOfPrivateChatOfUsers(Long userId, Long friendId);
 
     /**
-     * Counts users grouped by their registration date within a specified date range
-     * and granularity.
-     *
-     * @param startDate   The start date of the range to consider (inclusive).
-     * @param endDate     The end date of the range to consider (inclusive).
-     * @param granularity The time unit for grouping results {@link greencity.enums.DateGranularity}
-     * @return A list of tuples containing the date group and the count of users
-     *         registered in that group.
-     */
-    @Query(value = """
-            SELECT new greencity.dto.user.UserRegistrationStatisticDto(
-                FUNCTION('DATE_TRUNC', :granularity, u.date_of_registration) as dateGroup,
-                COUNT(u.id) as count)
-            FROM User u
-            WHERE u.date_of_registration >= :startDate
-            AND u.date_of_registration <= :endDate
-            GROUP BY FUNCTION('DATE_TRUNC', :granularity, u.date_of_registration)
-            ORDER BY FUNCTION('DATE_TRUNC', :granularity, u.date_of_registration)
-        """)
-    List<UserRegistrationStatisticDto> countUsersByRegistrationDateBetween(
-        @Param("startDate") LocalDateTime startDate,
-        @Param("endDate") LocalDateTime endDate,
-        @Param("granularity") String granularity);
-
-    /**
      * Method for getting all users who made request for joining the event.
      *
      * @param eventId  - id of the event
@@ -733,16 +703,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "JOIN events_requesters ON greencity_users.id = events_requesters.user_id "
         + "WHERE events_requesters.event_id = :eventId")
     Page<User> findUsersByRequestedEvents(Long eventId, Pageable pageable);
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Retrieves the distribution of users by city.
@@ -791,8 +751,4 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         GROUP BY ul.countryEn
         """)
     List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
-
-
-
-
 }

@@ -17,7 +17,7 @@ public interface ManagementUserStatisticsService {
      *
      * @param startDate   {@code LocalDateTime} startDate.
      * @param endDate     {@code LocalDateTime} endDate.
-     * @param granularity {@code String} (eg. day, week, month, year).
+     * @param granularity {@link DateGranularity} (eg. day, week, month, year).
      * @return {@link List} of {@link UserRegistrationStatisticDto}.
      */
     List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate, LocalDateTime endDate,

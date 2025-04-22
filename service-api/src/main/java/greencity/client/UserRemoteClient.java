@@ -5,11 +5,13 @@ import greencity.client.config.UserRemoteClientInterceptor;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserNotificationPreferenceVO;
+import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.DateGranularity;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -112,5 +116,20 @@ public interface UserRemoteClient {
     List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
             @RequestParam("email-preference") String emailPreference,
             @RequestParam("email-periodicity") String periodicity
+    );
+
+    /**
+     * Method to get list of dates and counts of registered users.
+     *
+     * @param startDate   {@code LocalDateTime} startDate.
+     * @param endDate     {@code LocalDateTime} endDate.
+     * @param granularity {@link DateGranularity} (eg. day, week, month, year).
+     * @return {@link List} of {@link UserRegistrationStatisticDto}.
+     */
+    @GetMapping("/user/registration-statistics")
+    List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(
+            @RequestParam("start-date") LocalDateTime startDate,
+            @RequestParam("end-date") LocalDateTime endDate,
+            @RequestParam("granularity") DateGranularity granularity
     );
 }

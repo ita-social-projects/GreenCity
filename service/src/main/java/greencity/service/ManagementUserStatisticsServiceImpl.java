@@ -8,10 +8,8 @@ import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
 import greencity.enums.DateGranularity;
 import greencity.repository.UserRepo;
-import jakarta.persistence.Tuple;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,11 +19,13 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
     private UserRepo userRepo;
     private UserRemoteClient userRemoteClient;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate,
         LocalDateTime endDate, DateGranularity granularity) {
-        String granularityStr = granularity.toString();
-        return userRepo.countUsersByRegistrationDateBetween(startDate, endDate, granularityStr);
+        return userRemoteClient.getUserRegistrationsByDateRange(startDate, endDate, granularity);
     }
 
     /**
