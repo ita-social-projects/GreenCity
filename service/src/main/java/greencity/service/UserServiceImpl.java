@@ -196,18 +196,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean checkIfTheUserIsOnline(Long userId) {
-        if (userRepo.findById(userId).isEmpty()) {
-            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
-        }
-        Optional<Timestamp> lastActivityTime = userRepo.findLastActivityTimeById(userId);
-        if (lastActivityTime.isPresent()) {
-            LocalDateTime userLastActivityTime = lastActivityTime.get().toLocalDateTime();
-            ZonedDateTime now = ZonedDateTime.now();
-            ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
-            long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
-            return result <= timeAfterLastActivity;
-        }
-        return false;
+        return userRemoteClient.checkIfTheUserIsOnline(userId);
     }
 
     /**

@@ -62,16 +62,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Optional<Long> findIdByEmail(String email);
 
     /**
-     * Find the last activity time by {@link User}'s id.
-     *
-     * @param userId - {@link User}'s id
-     * @return {@link Date}
-     */
-    @Query(nativeQuery = true,
-        value = "SELECT last_activity_time FROM users WHERE id=:userId")
-    Optional<Timestamp> findLastActivityTimeById(Long userId);
-
-    /**
      * Updates user rating as event organizer.
      *
      * @param userId {@link User}'s id

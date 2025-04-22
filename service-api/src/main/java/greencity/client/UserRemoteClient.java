@@ -91,4 +91,13 @@ public interface UserRemoteClient {
      */
     @GetMapping("/user/{userId}/sixFriends/")
     List<UserVO> getSixFriendsWithTheHighestRating(@PathVariable Long userId);
+
+    /**
+     * The method checks by id if a {@link UserVO} is online.
+     *
+     * @param userId id of the user
+     * @return boolean of whether user by that id is online.
+     */
+    @GetMapping("/user/isOnline/{userId}/")
+    Boolean checkIfTheUserIsOnline(@PathVariable Long userId);
 }
