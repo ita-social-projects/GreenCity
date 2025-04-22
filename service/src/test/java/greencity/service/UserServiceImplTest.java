@@ -151,7 +151,7 @@ class UserServiceImplTest {
     @Test
     void checkUpdatableUserTest() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(getUser()));
-        when(modelMapper.map(any(), any())).thenReturn(userVO);
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
             userService.checkUpdatableUser(1L, "email");
         });

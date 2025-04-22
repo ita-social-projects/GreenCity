@@ -202,10 +202,6 @@ public class User {
     @Column(nullable = false, length = 30)
     private String name;
 
-//    @Enumerated(value = EnumType.ORDINAL)
-//    @JdbcType(IntegerJdbcType.class)
-//    private UserStatus userStatus;
-
     @Column(name = "profile_picture")
     private String profilePicturePath;
 

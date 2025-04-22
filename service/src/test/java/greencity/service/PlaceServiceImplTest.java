@@ -749,9 +749,11 @@ class PlaceServiceImplTest {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         Place place = getPlace();
+        User user = ModelUtils.getUser();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
         when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
         when(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class))
@@ -790,8 +792,9 @@ class PlaceServiceImplTest {
         User user = ModelUtils.getUser();
         String email = user.getEmail();
 
-        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getBlockedUserVO());
+        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
 
         assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
 
@@ -805,6 +808,7 @@ class PlaceServiceImplTest {
         String email = user.getEmail();
 
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
 

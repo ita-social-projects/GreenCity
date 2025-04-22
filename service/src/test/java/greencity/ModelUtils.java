@@ -286,6 +286,7 @@ import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
 import static greencity.enums.NotificationType.EVENT_CREATED;
 import static greencity.enums.ProjectName.GREENCITY;
 import static greencity.enums.UserStatus.ACTIVATED;
+import static greencity.enums.UserStatus.BLOCKED;
 
 public class ModelUtils {
     public static User testUser = createUser();
@@ -531,6 +532,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
             .languageId(getLanguageVO().getId())
+                .userStatus(ACTIVATED)
             .userLocation(
                 UserLocationDto.builder()
                     .latitude(1d)
@@ -3459,5 +3461,21 @@ public class ModelUtils {
             .name(habitTranslationNameUk)
             .languageCode("ua")
             .build();
+    }
+
+    public static UserVO getBlockedUserVO() {
+        return UserVO.builder()
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .role(Role.ROLE_USER)
+                .languageId(getLanguageVO().getId())
+                .userStatus(BLOCKED)
+                .userLocation(
+                        UserLocationDto.builder()
+                                .latitude(1d)
+                                .longitude(1d)
+                                .build())
+                .build();
     }
 }
