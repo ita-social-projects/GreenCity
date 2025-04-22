@@ -659,7 +659,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId {@link Long} current user's id.
      * @return {@link String}.
      */
-    @Query(value = "SELECT l.code FROM users AS u "
+    @Query(value = "SELECT l.code FROM greencity_users AS u "
         + "JOIN languages AS l "
         + "ON u.language_id = l.id "
         + "WHERE u.id = :userId", nativeQuery = true)
