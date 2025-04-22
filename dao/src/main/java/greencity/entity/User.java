@@ -216,16 +216,22 @@ public class User {
     @Column(name = "rating")
     private Double rating;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_location")
+    private UserLocation userLocation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Language language;
+
+    @Column(name = "event_organizer_rating")
+    private Double eventOrganizerRating;
+
     @Builder.Default
     @OneToMany
     @JoinTable(name = "users_friends",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
     private List<User> userFriends = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_location")
-    private UserLocation userLocation;
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
@@ -237,12 +243,6 @@ public class User {
 
     @ManyToMany(mappedBy = "usersLikedNews")
     private Set<EcoNews> ecoNewsLiked;
-
-    @Column(name = "event_organizer_rating")
-    private Double eventOrganizerRating;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Language language;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
