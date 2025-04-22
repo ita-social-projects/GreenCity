@@ -458,6 +458,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .userStatus(UserStatus.ACTIVATED)
             .rating(10.)
+            .profilePicturePath("image path")
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
