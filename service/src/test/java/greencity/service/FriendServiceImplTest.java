@@ -10,6 +10,7 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -793,14 +794,12 @@ class FriendServiceImplTest {
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
         User user = new User();
-        UserVO userVO = Mockito.mock(UserVO.class);
-        UserLocationDto userLocation = new UserLocationDto();
+        UserLocation userLocation = new UserLocation();
         userLocation.setCityUk("testCity");
+        user.setUserLocation(userLocation);
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getUserLocation()).thenReturn(userLocation);
         when(userRepo.findRecommendedFriendsByCity(userId, "testCity", pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
@@ -829,12 +828,10 @@ class FriendServiceImplTest {
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
         User user = new User();
-        UserVO userVO = Mockito.mock(UserVO.class);
-        UserLocationDto nullLocation = null;
+        UserLocation nullLocation = null;
+        user.setUserLocation(nullLocation);
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getUserLocation()).thenReturn(nullLocation);
         when(userRepo.existsById(userId)).thenReturn(true);
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);
@@ -855,13 +852,11 @@ class FriendServiceImplTest {
         int page = 0;
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
-        UserLocationDto nullCityUserLocation = new UserLocationDto();
+        UserLocation nullCityUserLocation = new UserLocation();
         User user = new User();
-        UserVO userVO = Mockito.mock(UserVO.class);
+        user.setUserLocation(nullCityUserLocation);
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getUserLocation()).thenReturn(nullCityUserLocation);
         when(userRepo.existsById(userId)).thenReturn(true);
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);
