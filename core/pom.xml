@@ -30,7 +30,16 @@
         <test.containers.version>1.19.3</test.containers.version>
         <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
         <apache.commons.version>3.13.0</apache.commons.version>
+        <ldm.version>0.21.8-SNAPSHOT</ldm.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Repository</name>
+            <url>https://maven.pkg.github.com/Warded120/LDM-spring-boot-starter</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -261,6 +270,11 @@
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.18.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ivan.softserve</groupId>
+            <artifactId>ldm-spring-boot-starter</artifactId>
+            <version>${ldm.version}</version>
         </dependency>
     </dependencies>
     <build>
