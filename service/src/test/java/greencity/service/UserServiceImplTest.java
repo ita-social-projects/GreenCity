@@ -111,25 +111,28 @@ class UserServiceImplTest {
 
     @Test
     void checkIfTheUserIsOnlineEqualsTrueTest() {
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-        User user = getUser();
+        Long userId = 4L;
+        boolean isOnline = true;
 
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+        when(userRemoteClient.checkIfTheUserIsOnline(userId))
+                .thenReturn(isOnline);
 
-        assertTrue(userService.checkIfTheUserIsOnline(1L));
+        boolean actualResult = userService.checkIfTheUserIsOnline(userId);
+
+        assertEquals(isOnline, actualResult);
     }
 
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        User user = getUser();
+        Long userId = 3L;
+        boolean isOnline = false;
 
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.empty());
+        when(userRemoteClient.checkIfTheUserIsOnline(userId))
+                .thenReturn(isOnline);
 
-        assertFalse(userService.checkIfTheUserIsOnline(1L));
+        boolean actualResult = userService.checkIfTheUserIsOnline(userId);
+
+        assertEquals(isOnline, actualResult);
     }
 
     @Test
@@ -140,8 +143,8 @@ class UserServiceImplTest {
             .toList();
         Long userId = 1L;
 
-        when(userRemoteClient.getSixFriendsWithTheHighestRating(userId))
-            .thenReturn(expectedResult);
+        when(userRepo.getSixFriendsWithTheHighestRating(userId))
+            .thenReturn(friendsList);
 
         List<UserVO> actualResult = userService.getSixFriendsWithTheHighestRating(userId);
 

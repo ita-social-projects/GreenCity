@@ -457,6 +457,7 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .userStatus(UserStatus.ACTIVATED)
+            .rating(10.)
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
@@ -579,7 +580,6 @@ public class ModelUtils {
             .role(Role.ROLE_USER)
             .userCredo("save the world")
             .userStatus(ACTIVATED)
-            .rating(13.4)
             .userLocation(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))

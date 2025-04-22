@@ -5,6 +5,7 @@ import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
+import greencity.enums.DateGranularity;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
@@ -65,12 +66,12 @@ class ManagementUserStatisticsControllerTest {
     void getRegistrationStatisticReturnsDataWhenDataExists() {
         LocalDateTime startDate = LocalDateTime.now().minusDays(7);
         LocalDateTime endDate = LocalDateTime.now();
-        String granularity = "day";
+        String granularity = "DAY";
 
         UserRegistrationStatisticDto dto1 = new UserRegistrationStatisticDto(LocalDateTime.now(), 5L);
         UserRegistrationStatisticDto dto2 = new UserRegistrationStatisticDto(LocalDateTime.now().minusDays(1), 3L);
 
-        when(managementUserStatisticsService.getUserRegistrationsByDateRange(any(), any(), anyString()))
+        when(managementUserStatisticsService.getUserRegistrationsByDateRange(any(), any(), any(DateGranularity.class)))
             .thenReturn(Arrays.asList(dto1, dto2));
 
         mockMvc.perform(get("/management/user/statistics/registration")
@@ -84,13 +85,15 @@ class ManagementUserStatisticsControllerTest {
     @Test
     @SneakyThrows
     void getRegistrationStatisticReturnsNoContentWhenNoData() {
-        when(managementUserStatisticsService.getUserRegistrationsByDateRange(any(), any(), anyString()))
+        String granularity = "DAY";
+
+        when(managementUserStatisticsService.getUserRegistrationsByDateRange(any(), any(), any(DateGranularity.class)))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/management/user/statistics/registration")
                         .param("startDate", LocalDateTime.now().minusDays(7).toString())
                         .param("endDate", LocalDateTime.now().toString())
-                        .param("granularity", "day"))
+                        .param("granularity", granularity))
                 .andExpect(status().isNoContent());
     }
 
