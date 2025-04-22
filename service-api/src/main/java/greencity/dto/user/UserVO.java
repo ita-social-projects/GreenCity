@@ -25,8 +25,6 @@ public class UserVO {
 
     private UserStatus userStatus;
 
-    private Double rating;
-
     private String profilePicturePath;
 
     private UserLocationDto userLocation;
