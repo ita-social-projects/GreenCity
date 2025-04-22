@@ -39,8 +39,6 @@ class UserManagementVOMapperTest {
 
         when(modelMapper.map(user, UserVO.class))
             .thenReturn(userVO);
-        when(userVO.getUserCredo())
-            .thenReturn(userManagementVO.getUserCredo());
         when(userVO.getRole())
             .thenReturn(userManagementVO.getRole());
         when(userVO.getUserStatus())
@@ -63,8 +61,6 @@ class UserManagementVOMapperTest {
 
             when(modelMapper.map(user, UserVO.class))
                 .thenReturn(userVO);
-            when(userVO.getUserCredo())
-                .thenReturn(userManagementVO.getUserCredo());
             when(userVO.getRole())
                 .thenReturn(userManagementVO.getRole());
             when(userVO.getUserStatus())

@@ -459,6 +459,7 @@ public class ModelUtils {
             .userStatus(UserStatus.ACTIVATED)
             .rating(10.)
             .profilePicturePath("image path")
+            .userCredo("user credo")
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
@@ -570,6 +571,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
             .userStatus(ACTIVATED)
+            .userCredo("user credo")
             .role(Role.ROLE_USER).build();
     }
 
@@ -3158,6 +3160,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
             .userStatus(ACTIVATED)
+            .userCredo("user credo")
             .role(Role.ROLE_USER).build());
     }
 
