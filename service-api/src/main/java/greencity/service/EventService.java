@@ -5,7 +5,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventCityDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.EventVO;
@@ -381,13 +380,17 @@ public interface EventService {
     List<EventDto> getAllEventsAttendedByUser(Long userId);
 
     /**
-     * Returns a list of cities relevant to the user, including the user's city (if
-     * available) and the top three cities with the most events.
+     * Retrieves a list of events attended by the user with the specified ID. This
+     * method fetches all events where the user, identified by the given
+     * {@code userId}, is an attender. The events are returned as a page of
+     * {@link EventResponseDto} objects. If the user has not attended any events, an
+     * empty list is returned.
      *
-     * @param userVO {@link UserVO} - represents the current user.
-     * @return {@link List} of {@link EventCityDto} containing cities sorted in
-     *         descending order based on the number of events.
-     * @author Andrii Danylenko
+     * @param userId   {@link Long} the id of the user whose attended events are to
+     *                 be retrieved.
+     * @param pageable {@link Pageable} pageable preferences.
+     * @return {@link Page} {@link EventResponseDto} a page of events attended by
+     *         the user, or an empty pageable if none are found.
      */
-    List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO);
+    Page<EventResponseDto> getPageableAllEventsAttendedByUser(Pageable pageable, Long userId);
 }
