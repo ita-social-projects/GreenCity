@@ -88,13 +88,13 @@ class ManagementUserStatisticsControllerTest {
         String granularity = "DAY";
 
         when(managementUserStatisticsService.getUserRegistrationsByDateRange(any(), any(), any(DateGranularity.class)))
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/management/user/statistics/registration")
-                        .param("startDate", LocalDateTime.now().minusDays(7).toString())
-                        .param("endDate", LocalDateTime.now().toString())
-                        .param("granularity", granularity))
-                .andExpect(status().isNoContent());
+            .param("startDate", LocalDateTime.now().minusDays(7).toString())
+            .param("endDate", LocalDateTime.now().toString())
+            .param("granularity", granularity))
+            .andExpect(status().isNoContent());
     }
 
     @Test

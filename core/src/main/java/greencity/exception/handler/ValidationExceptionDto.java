@@ -28,7 +28,7 @@ public class ValidationExceptionDto implements Serializable {
     /**
      * Constructs a new ValidationExceptionDto using the provided FieldError.
      *
-     * @param name exception name
+     * @param name    exception name
      * @param message exception message
      */
     public ValidationExceptionDto(String name, String message) {

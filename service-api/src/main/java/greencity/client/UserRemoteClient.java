@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -106,9 +105,8 @@ public interface UserRemoteClient {
      */
     @GetMapping("/user/email")
     List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
-            @RequestParam("email-preference") String emailPreference,
-            @RequestParam("email-periodicity") String periodicity
-    );
+        @RequestParam("email-preference") String emailPreference,
+        @RequestParam("email-periodicity") String periodicity);
 
     /**
      * Method to get list of dates and counts of registered users.
@@ -120,8 +118,7 @@ public interface UserRemoteClient {
      */
     @GetMapping("/user/registration-statistics")
     List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(
-            @RequestParam("start-date") LocalDateTime startDate,
-            @RequestParam("end-date") LocalDateTime endDate,
-            @RequestParam("granularity") DateGranularity granularity
-    );
+        @RequestParam("start-date") LocalDateTime startDate,
+        @RequestParam("end-date") LocalDateTime endDate,
+        @RequestParam("granularity") DateGranularity granularity);
 }

@@ -42,10 +42,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +64,6 @@ public class UserServiceImpl implements UserService {
 
     @Value("300000")
     private long timeAfterLastActivity;
-
 
     /**
      * {@inheritDoc}
@@ -223,8 +218,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserVO> getSixFriendsWithTheHighestRating(Long userId) {
         return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
-                .map(user -> modelMapper.map(user, UserVO.class))
-                .toList();
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .toList();
     }
 
     /**
@@ -316,8 +311,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Long> getSixFriendsIdsWithTheHighestRating(Long userId) {
         return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
-                .map(User::getId)
-                .toList();
+            .map(User::getId)
+            .toList();
     }
 
     /**
@@ -331,25 +326,25 @@ public class UserServiceImpl implements UserService {
         }
 
         if (user.getUserLocation() != null && (userProfileDtoRequest.getCoordinates().getLatitude() == null
-                || userProfileDtoRequest.getCoordinates().getLongitude() == null)) {
+            || userProfileDtoRequest.getCoordinates().getLongitude() == null)) {
             UserLocation old = user.getUserLocation();
             old.getUsers().remove(user);
             user.setUserLocation(null);
         } else {
             final AddressType[] addressTypes =
-                    {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
+                {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
 
             GeocodingResult resultsUk = googleApiService.getLocationByCoordinates(
-                    userProfileDtoRequest.getCoordinates().getLatitude(),
-                    userProfileDtoRequest.getCoordinates().getLongitude(),
-                    "uk", addressTypes);
+                userProfileDtoRequest.getCoordinates().getLatitude(),
+                userProfileDtoRequest.getCoordinates().getLongitude(),
+                "uk", addressTypes);
             GeocodingResult resultsEn = googleApiService.getLocationByCoordinates(
-                    userProfileDtoRequest.getCoordinates().getLatitude(),
-                    userProfileDtoRequest.getCoordinates().getLongitude(),
-                    "en", addressTypes);
+                userProfileDtoRequest.getCoordinates().getLatitude(),
+                userProfileDtoRequest.getCoordinates().getLongitude(),
+                "en", addressTypes);
             UserLocation userLocation = userLocationRepo.getUserLocationByLatitudeAndLongitude(
-                    userProfileDtoRequest.getCoordinates().getLatitude(),
-                    userProfileDtoRequest.getCoordinates().getLongitude()).orElse(new UserLocation());
+                userProfileDtoRequest.getCoordinates().getLatitude(),
+                userProfileDtoRequest.getCoordinates().getLongitude()).orElse(new UserLocation());
 
             /*
              * check if user already has a location and if he is the only one assigned to
@@ -389,7 +384,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserCityDto findAllUsersCities(Long userId) {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
         return modelMapper.map(userLocation, UserCityDto.class);
     }
 
@@ -399,24 +394,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserLocationDto findUserLocationDtoByUserId(Long userId) {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
         return modelMapper.map(userLocation, UserLocationDto.class);
     }
 
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
         return user.getUserLocation() == null
-                && (userProfileDtoRequest.getCoordinates().getLatitude() == null
+            && (userProfileDtoRequest.getCoordinates().getLatitude() == null
                 || userProfileDtoRequest.getCoordinates().getLongitude() == null);
     }
 
     private void initializeGeoCodingResults(Map<AddressComponentType, Consumer<String>> initializedMap,
-                                            GeocodingResult geocodingResult) {
+        GeocodingResult geocodingResult) {
         checkGeocodingResultContainsAllInformation(geocodingResult, initializedMap.size());
         initializedMap
-                .forEach((key, value) -> Arrays.stream(geocodingResult.addressComponents)
-                        .forEach(addressComponent -> Arrays.stream(addressComponent.types)
-                                .filter(componentType -> componentType.equals(key))
-                                .forEach(componentType -> value.accept(addressComponent.longName))));
+            .forEach((key, value) -> Arrays.stream(geocodingResult.addressComponents)
+                .forEach(addressComponent -> Arrays.stream(addressComponent.types)
+                    .filter(componentType -> componentType.equals(key))
+                    .forEach(componentType -> value.accept(addressComponent.longName))));
     }
 
     private void checkGeocodingResultContainsAllInformation(GeocodingResult geocodingResult, int size) {
@@ -426,24 +421,24 @@ public class UserServiceImpl implements UserService {
     }
 
     private Map<AddressComponentType, Consumer<String>> initializeEnglishGeoCodingResult(
-            UserLocation userLocation) {
+        UserLocation userLocation) {
         return Map.of(
-                AddressComponentType.LOCALITY, userLocation::setCityEn,
-                AddressComponentType.COUNTRY, userLocation::setCountryEn,
-                AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1, userLocation::setRegionEn);
+            AddressComponentType.LOCALITY, userLocation::setCityEn,
+            AddressComponentType.COUNTRY, userLocation::setCountryEn,
+            AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1, userLocation::setRegionEn);
     }
 
     private Map<AddressComponentType, Consumer<String>> initializeUkrainianGeoCodingResult(
-            UserLocation userLocation) {
+        UserLocation userLocation) {
         return Map.of(
-                AddressComponentType.LOCALITY, userLocation::setCityUk,
-                AddressComponentType.COUNTRY, userLocation::setCountryUk,
-                AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1, userLocation::setRegionUk);
+            AddressComponentType.LOCALITY, userLocation::setCityUk,
+            AddressComponentType.COUNTRY, userLocation::setCountryUk,
+            AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1, userLocation::setRegionUk);
     }
 
     private User findUserById(Long id) {
         return userRepo.findById(id)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
     private Pageable applyDefaultSorting(Pageable pageable) {

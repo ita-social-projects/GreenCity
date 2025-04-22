@@ -156,9 +156,9 @@ public interface UserService {
     UserLocationDto findUserLocationDtoByUserId(Long userId);
 
     /**
-     * Set user location by coordinates from {@link UserProfileDtoRequest}
+     * Set user location by coordinates from {@link UserProfileDtoRequest}.
      *
-     * @param userId id of the user whose location will be updated
+     * @param userId                id of the user whose location will be updated
      * @param userProfileDtoRequest contains location data
      */
     void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest);
@@ -192,7 +192,7 @@ public interface UserService {
     /**
      * Get all user friends ids as a page.
      *
-     * @param userId id of the user.
+     * @param userId   id of the user.
      * @param pageable pageable configuration.
      * @return {@link Page}
      */

@@ -4,7 +4,6 @@ import feign.hystrix.FallbackFactory;
 import greencity.client.UserRemoteClient;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
-import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
@@ -15,7 +14,6 @@ import greencity.dto.user.UserVO;
 import greencity.enums.DateGranularity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -87,12 +85,14 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
-            public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(String emailPreference, String periodicity) {
+            public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(String emailPreference,
+                String periodicity) {
                 throw new RuntimeException("not implemeneted");
             }
 
             @Override
-            public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate, LocalDateTime endDate, DateGranularity granularity) {
+            public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate,
+                LocalDateTime endDate, DateGranularity granularity) {
                 throw new RuntimeException("not implemeneted");
             }
         };

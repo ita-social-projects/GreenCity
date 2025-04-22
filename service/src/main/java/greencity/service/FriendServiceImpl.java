@@ -5,7 +5,6 @@ import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;

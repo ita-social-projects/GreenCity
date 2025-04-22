@@ -117,7 +117,7 @@ class UserServiceImplTest {
         boolean isOnline = true;
 
         when(userRemoteClient.checkIfTheUserIsOnline(userId))
-                .thenReturn(isOnline);
+            .thenReturn(isOnline);
 
         boolean actualResult = userService.checkIfTheUserIsOnline(userId);
 
@@ -130,7 +130,7 @@ class UserServiceImplTest {
         boolean isOnline = false;
 
         when(userRemoteClient.checkIfTheUserIsOnline(userId))
-                .thenReturn(isOnline);
+            .thenReturn(isOnline);
 
         boolean actualResult = userService.checkIfTheUserIsOnline(userId);
 

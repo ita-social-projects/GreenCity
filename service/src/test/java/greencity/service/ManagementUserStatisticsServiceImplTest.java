@@ -46,9 +46,10 @@ class ManagementUserStatisticsServiceImplTest {
         List<UserRegistrationStatisticDto> expectedResult = mock(List.class);
 
         when(userRemoteClient.getUserRegistrationsByDateRange(startDate, endDate, dateGranularity))
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
-        List<UserRegistrationStatisticDto> actualResult = managementUserStatisticsServiceImpl.getUserRegistrationsByDateRange(startDate, endDate, dateGranularity);
+        List<UserRegistrationStatisticDto> actualResult =
+            managementUserStatisticsServiceImpl.getUserRegistrationsByDateRange(startDate, endDate, dateGranularity);
 
         assertEquals(expectedResult, actualResult);
     }
