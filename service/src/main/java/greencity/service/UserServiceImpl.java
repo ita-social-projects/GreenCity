@@ -196,6 +196,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean checkIfTheUserIsOnline(Long userId) {
+        if (userId == null) {
+            throw new WrongIdException(ErrorMessage.USER_ID_NULL);
+        }
+
         return userRemoteClient.checkIfTheUserIsOnline(userId);
     }
 
