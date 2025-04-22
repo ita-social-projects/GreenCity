@@ -614,7 +614,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param rating rating.
      */
     @Modifying
-    @Query(nativeQuery = true, value = "UPDATE users SET rating = :rating WHERE id = :userId")
+    @Query(nativeQuery = true, value = "UPDATE greencity_users SET rating = :rating WHERE id = :userId")
     void updateUserRating(Long userId, Double rating);
 
     /**
@@ -751,4 +751,40 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         GROUP BY ul.countryEn
         """)
     List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
+
+    /**
+     * Get all user friends{@link User}.
+     *
+     * @return list of {@link User}.
+     */
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM greencity_users WHERE greencity_users.id IN ( \
+        (SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')\
+        UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));\
+        """)
+    List<User> getAllUserFriends(Long userId);
+
+    /**
+     * Get all user friends{@link User}. by page.
+     *
+     * @param pageable pageable configuration.
+     * @return {@link Page}
+     */
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM greencity_users WHERE greencity_users.id IN ( \
+        (SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND') \
+        UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'))\
+        """)
+    Page<User> getAllUserFriends(Long userId, Pageable pageable);
+
+    /**
+     * Get six friends with the highest rating {@link User}.
+     */
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM greencity_users WHERE greencity_users.id IN ( \
+        (SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND') \
+        UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND')) \
+        ORDER BY greencity_users.rating DESC LIMIT 6;\
+        """)
+    List<User> getSixFriendsWithTheHighestRating(Long userId);
 }

@@ -89,14 +89,6 @@ public interface UserRemoteClient {
     Boolean searchUserNotificationPreference(@RequestBody EmailPreferenceDto emailPreferenceDto);
 
     /**
-     * Method returns six user friends sorted by rating.
-     *
-     * @return list of {@link UserVO}.
-     */
-    @GetMapping("/user/{userId}/sixFriends/")
-    List<UserVO> getSixFriendsWithTheHighestRating(@PathVariable Long userId);
-
-    /**
      * The method checks by id if a {@link UserVO} is online.
      *
      * @param userId id of the user

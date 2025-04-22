@@ -82,11 +82,6 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
-            public List<UserVO> getSixFriendsWithTheHighestRating(Long userId) {
-                throw new RuntimeException("not implemeneted");
-            }
-
-            @Override
             public Boolean checkIfTheUserIsOnline(Long userId) {
                 throw new RuntimeException("not implemeneted");
             }

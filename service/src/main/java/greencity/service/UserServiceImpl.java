@@ -218,7 +218,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserVO> getSixFriendsWithTheHighestRating(Long userId) {
-        return userRemoteClient.getSixFriendsWithTheHighestRating(userId);
+        return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
+                .map(user -> modelMapper.map(user, UserVO.class))
+                .toList();
     }
 
     /**
