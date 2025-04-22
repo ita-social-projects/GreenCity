@@ -25,12 +25,7 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
     public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate,
         LocalDateTime endDate, DateGranularity granularity) {
         String granularityStr = granularity.toString();
-        List<Tuple> results = userRepo.countUsersByRegistrationDateBetween(startDate, endDate, granularityStr);
-        return results.stream()
-            .map(tuple -> new UserRegistrationStatisticDto(
-                ((Timestamp) tuple.get(0)).toLocalDateTime(),
-                tuple.get(1, Long.class)))
-            .toList();
+        return userRepo.countUsersByRegistrationDateBetween(startDate, endDate, granularityStr);
     }
 
     /**

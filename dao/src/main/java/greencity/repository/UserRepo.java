@@ -2,6 +2,8 @@ package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserLocationStatisticDto;
+import greencity.dto.user.UserRegistrationDateGroupDto;
+import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import jakarta.persistence.Tuple;
@@ -706,16 +708,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *         registered in that group.
      */
     @Query(value = """
-            SELECT
-                DATE_TRUNC(:granularity, u.date_of_registration) as dateGroup,
-                COUNT(u.id) as count
-            FROM users u
+            SELECT new greencity.dto.user.UserRegistrationStatisticDto(
+                FUNCTION('DATE_TRUNC', :granularity, u.date_of_registration) as dateGroup,
+                COUNT(u.id) as count)
+            FROM User u
             WHERE u.date_of_registration >= :startDate
             AND u.date_of_registration <= :endDate
-            GROUP BY dateGroup
-            ORDER BY dateGroup
-        """, nativeQuery = true)
-    List<Tuple> countUsersByRegistrationDateBetween(
+            GROUP BY FUNCTION('DATE_TRUNC', :granularity, u.date_of_registration)
+            ORDER BY FUNCTION('DATE_TRUNC', :granularity, u.date_of_registration)
+        """)
+    List<UserRegistrationStatisticDto> countUsersByRegistrationDateBetween(
         @Param("startDate") LocalDateTime startDate,
         @Param("endDate") LocalDateTime endDate,
         @Param("granularity") String granularity);
