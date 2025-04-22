@@ -758,11 +758,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return list of {@link User}.
      */
     @Query(nativeQuery = true, value = """
-        SELECT * FROM greencity_users WHERE greencity_users.id IN ( \
+        SELECT id FROM greencity_users WHERE greencity_users.id IN ( \
         (SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')\
         UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));\
         """)
-    List<User> getAllUserFriends(Long userId);
+    List<Long> getAllUserFriendsIds(Long userId);
 
     /**
      * Get all user friends{@link User}. by page.
@@ -771,11 +771,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link Page}
      */
     @Query(nativeQuery = true, value = """
-        SELECT * FROM greencity_users WHERE greencity_users.id IN ( \
+        SELECT id FROM greencity_users WHERE greencity_users.id IN ( \
         (SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND') \
         UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'))\
         """)
-    Page<User> getAllUserFriends(Long userId, Pageable pageable);
+    Page<Long> getAllUserFriendsIds(Long userId, Pageable pageable);
 
     /**
      * Get six friends with the highest rating {@link User}.

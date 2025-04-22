@@ -294,6 +294,32 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public List<Long> getAllUserFriendsIds(Long userId) {
+        return userRepo.getAllUserFriendsIds(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<Long> getAllUserFriendsIds(Long userId, Pageable pageable) {
+        return userRepo.getAllUserFriendsIds(userId, pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Long> getSixFriendsIdsWithTheHighestRating(Long userId) {
+        return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
+                .map(User::getId)
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest) {
         User user = findUserById(userId);
         if (shouldSkipLocationUpdate(user, userProfileDtoRequest)) {
