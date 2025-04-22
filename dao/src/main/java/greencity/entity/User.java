@@ -213,6 +213,9 @@ public class User {
     @Column(name = "user_credo")
     private String userCredo;
 
+    @Column(name = "rating")
+    private Double rating;
+
     @Builder.Default
     @OneToMany
     @JoinTable(name = "users_friends",

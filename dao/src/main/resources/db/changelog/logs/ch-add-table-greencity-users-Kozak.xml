@@ -22,6 +22,7 @@
                 <constraints nullable="true" />
             </column>
             <column name="user_credo" type="varchar(255)" />
+            <column name="rating" type="double" />
         </createTable>
 
         <addForeignKeyConstraint baseTableName="users"
@@ -33,7 +34,7 @@
     <changeSet id="fill-greencity-user-table" author="Maksym Kozak">
         <sql>
             INSERT INTO greencity_users
-            SELECT id, email, name, user_status, profile_picture, event_organizer_rating, language_id, user_location, user_credo FROM users;
+            SELECT id, email, name, user_status, rating, profile_picture, event_organizer_rating, language_id, user_location, user_credo FROM users;
         </sql>
     </changeSet>
 </databaseChangeLog>
