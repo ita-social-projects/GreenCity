@@ -187,14 +187,14 @@ public class GoogleApiService {
      * @return {@link GeocodingResult}
      */
     public GeocodingResult getLocationByCoordinates(Double latitude, Double longitude, String lang,
-                                                    AddressType[] addressTypes) {
+        AddressType[] addressTypes) {
         try {
             return Arrays.stream(GeocodingApi.newRequest(context).latlng(new LatLng(latitude, longitude))
-                            .language(lang)
-                            .resultType(addressTypes)
-                            .await())
-                    .max(Comparator.comparingInt(a -> a.addressComponents.length))
-                    .orElseThrow(() -> new GoogleApiException("Geocoding result was not found"));
+                .language(lang)
+                .resultType(addressTypes)
+                .await())
+                .max(Comparator.comparingInt(a -> a.addressComponents.length))
+                .orElseThrow(() -> new GoogleApiException("Geocoding result was not found"));
         } catch (InvalidRequestException e) {
             String formattedCoords = "%.8f,%.8f".formatted(latitude, longitude);
             throw new NotFoundException(ErrorMessage.NOT_FOUND_ADDRESS_BY_COORDINATES + formattedCoords);

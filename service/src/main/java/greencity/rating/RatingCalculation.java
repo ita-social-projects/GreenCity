@@ -26,12 +26,12 @@ public class RatingCalculation {
      */
     public void ratingCalculation(RatingPoints rating, UserVO userVo) {
         User user = modelMapper.map(userVo, User.class);
-        double newRating = userVo.getRating() + rating.getPoints();
-        userVo.setRating(newRating > 0 ? newRating : 0);
-        userService.updateUserRating(user.getId(), userVo.getRating());
+        double newRating = user.getRating() + rating.getPoints();
+        user.setRating(newRating > 0 ? newRating : 0);
+        userService.updateUserRating(user.getId(), user.getRating());
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()
-            .rating(userVo.getRating())
+            .rating(user.getRating())
             .ratingPoints(rating)
             .user(user)
             .pointsChanged(rating.getPoints())

@@ -13,6 +13,7 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
@@ -155,9 +156,9 @@ public interface UserService {
     UserLocationDto findUserLocationDtoByUserId(Long userId);
 
     /**
-     * Set user location by coordinates from {@link UserProfileDtoRequest}
+     * Set user location by coordinates from {@link UserProfileDtoRequest}.
      *
-     * @param userId id of the user whose location will be updated
+     * @param userId                id of the user whose location will be updated
      * @param userProfileDtoRequest contains location data
      */
     void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest);
@@ -179,4 +180,29 @@ public interface UserService {
      */
     List<UserVO> getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference emailPreference,
         EmailPreferencePeriodicity periodicity);
+
+    /**
+     * Get all user's friends ids by user id.
+     *
+     * @param userId id of the user.
+     * @return list of friends ids.
+     */
+    List<Long> getAllUserFriendsIds(Long userId);
+
+    /**
+     * Get all user friends ids as a page.
+     *
+     * @param userId   id of the user.
+     * @param pageable pageable configuration.
+     * @return {@link Page}
+     */
+    Page<Long> getAllUserFriendsIds(Long userId, Pageable pageable);
+
+    /**
+     * Get top 6 friends ids with the highest rating.
+     *
+     * @param userId - {@link UserVO}'s id
+     * @return {@link List} of friends ids
+     */
+    List<Long> getSixFriendsIdsWithTheHighestRating(Long userId);
 }

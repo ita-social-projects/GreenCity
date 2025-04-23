@@ -4,6 +4,7 @@ import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.event.Event;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -207,9 +208,25 @@ public class User {
     @Column(name = "user_credo")
     private String userCredo;
 
+    @Column(name = "rating")
+    private Double rating;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_location")
     private UserLocation userLocation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Language language;
+
+    @Column(name = "event_organizer_rating")
+    private Double eventOrganizerRating;
+
+    @Builder.Default
+    @OneToMany
+    @JoinTable(name = "users_friends",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
+    private List<User> userFriends = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     @Builder.Default
@@ -221,9 +238,6 @@ public class User {
 
     @ManyToMany(mappedBy = "usersLikedNews")
     private Set<EcoNews> ecoNewsLiked;
-
-    @Column(name = "event_organizer_rating")
-    private Double eventOrganizerRating;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

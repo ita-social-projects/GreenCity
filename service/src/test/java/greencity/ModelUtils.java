@@ -457,6 +457,9 @@ public class ModelUtils {
             .id(1L)
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
+            .rating(10.)
+            .profilePicturePath("image path")
+            .userCredo("user credo")
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
@@ -567,6 +570,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
             .userStatus(ACTIVATED)
+            .userCredo("user credo")
             .role(Role.ROLE_USER).build();
     }
 
@@ -578,7 +582,6 @@ public class ModelUtils {
             .role(Role.ROLE_USER)
             .userCredo("save the world")
             .userStatus(ACTIVATED)
-            .rating(13.4)
             .userLocation(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))

@@ -4,11 +4,13 @@ import greencity.ModelUtils;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.LowRoleLevelException;
@@ -111,25 +113,28 @@ class UserServiceImplTest {
 
     @Test
     void checkIfTheUserIsOnlineEqualsTrueTest() {
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-        User user = getUser();
+        Long userId = 4L;
+        boolean isOnline = true;
 
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
+        when(userRemoteClient.checkIfTheUserIsOnline(userId))
+            .thenReturn(isOnline);
 
-        assertTrue(userService.checkIfTheUserIsOnline(1L));
+        boolean actualResult = userService.checkIfTheUserIsOnline(userId);
+
+        assertEquals(isOnline, actualResult);
     }
 
     @Test
     void checkIfTheUserIsOnlineEqualsFalseTest() {
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        User user = getUser();
+        Long userId = 3L;
+        boolean isOnline = false;
 
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.empty());
+        when(userRemoteClient.checkIfTheUserIsOnline(userId))
+            .thenReturn(isOnline);
 
-        assertFalse(userService.checkIfTheUserIsOnline(1L));
+        boolean actualResult = userService.checkIfTheUserIsOnline(userId);
+
+        assertEquals(isOnline, actualResult);
     }
 
     @Test
@@ -140,8 +145,8 @@ class UserServiceImplTest {
             .toList();
         Long userId = 1L;
 
-        when(userRemoteClient.getSixFriendsWithTheHighestRating(userId))
-            .thenReturn(expectedResult);
+        when(userRepo.getSixFriendsWithTheHighestRating(userId))
+            .thenReturn(friendsList);
 
         List<UserVO> actualResult = userService.getSixFriendsWithTheHighestRating(userId);
 
@@ -150,10 +155,17 @@ class UserServiceImplTest {
 
     @Test
     void checkUpdatableUserTest() {
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(getUser()));
-        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        Long userId = 1L;
+        String email = "email";
+        User user = getUser();
+        UserLocation userLocation = user.getUserLocation();
+        UserLocationDto userLocationDto = new UserLocationDto();
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(modelMapper.map(userLocation, UserLocationDto.class)).thenReturn(userLocationDto);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
-            userService.checkUpdatableUser(1L, "email");
+            userService.checkUpdatableUser(userId, email);
         });
         assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
     }

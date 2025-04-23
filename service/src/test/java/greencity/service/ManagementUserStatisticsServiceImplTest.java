@@ -5,6 +5,7 @@ import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
+import greencity.enums.DateGranularity;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
@@ -40,23 +41,17 @@ class ManagementUserStatisticsServiceImplTest {
     void testGetUserRegistrationsByDateRange() {
         LocalDateTime startDate = LocalDateTime.now().minusDays(30);
         LocalDateTime endDate = LocalDateTime.now();
-        String granularity = "day";
+        DateGranularity dateGranularity = DateGranularity.DAY;
 
-        Tuple mockTuple = mock(Tuple.class);
-        when(mockTuple.get(0)).thenReturn(Timestamp.valueOf(startDate));
-        when(mockTuple.get(1, Long.class)).thenReturn(10L);
+        List<UserRegistrationStatisticDto> expectedResult = mock(List.class);
 
-        when(userRepo.countUsersByRegistrationDateBetween(startDate, endDate, granularity))
-            .thenReturn(List.of(mockTuple));
+        when(userRemoteClient.getUserRegistrationsByDateRange(startDate, endDate, dateGranularity))
+            .thenReturn(expectedResult);
 
-        List<UserRegistrationStatisticDto> result =
-            managementUserStatisticsServiceImpl.getUserRegistrationsByDateRange(startDate, endDate, granularity);
+        List<UserRegistrationStatisticDto> actualResult =
+            managementUserStatisticsServiceImpl.getUserRegistrationsByDateRange(startDate, endDate, dateGranularity);
 
-        assertEquals(1, result.size());
-        assertEquals(startDate, result.getFirst().getDate());
-        assertEquals(10L, result.getFirst().getCount());
-
-        verify(userRepo, times(1)).countUsersByRegistrationDateBetween(startDate, endDate, granularity);
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test

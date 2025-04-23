@@ -5,6 +5,7 @@ import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
+import greencity.enums.DateGranularity;
 import greencity.service.ManagementUserStatisticsService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +37,7 @@ public class ManagementUserStatisticsController {
     public ResponseEntity<List<UserRegistrationStatisticDto>> getRegistrationStatistic(
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime startDate,
         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime endDate,
-        @RequestParam("granularity") @NotBlank @NotNull String granularity) {
+        @RequestParam("granularity") @NotBlank @NotNull DateGranularity granularity) {
         List<UserRegistrationStatisticDto> registrationStats =
             managementUserStatisticsService.getUserRegistrationsByDateRange(startDate, endDate, granularity);
         if (registrationStats.isEmpty()) {

@@ -828,6 +828,8 @@ class FriendServiceImplTest {
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
         User user = new User();
+        UserLocation nullLocation = null;
+        user.setUserLocation(nullLocation);
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.existsById(userId)).thenReturn(true);
@@ -850,10 +852,9 @@ class FriendServiceImplTest {
         int page = 0;
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
+        UserLocation nullCityUserLocation = new UserLocation();
         User user = new User();
-        UserLocation userLocation = new UserLocation();
-        userLocation.setCityUk(null);
-        user.setUserLocation(userLocation);
+        user.setUserLocation(nullCityUserLocation);
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.existsById(userId)).thenReturn(true);

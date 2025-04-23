@@ -45,12 +45,13 @@ class RatingCalculationTest {
             .points(5)
             .build();
         User user = ModelUtils.getUser();
+
         UserVO userVO = ModelUtils.getUserVO();
-        userVO.setRating(1D);
+        user.setRating(1D);
         ZonedDateTime now = ZonedDateTime.now();
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()
-            .rating(userVO.getRating() + rating.getPoints())
+            .rating(user.getRating() + rating.getPoints())
             .ratingPoints(rating)
             .user(user)
             .pointsChanged(rating.getPoints())
@@ -58,7 +59,7 @@ class RatingCalculationTest {
 
         RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO.builder()
             .id(1L)
-            .rating(userVO.getRating())
+            .rating(user.getRating())
             .ratingPoints(RatingPointsDto.builder()
                 .id(rating.getId())
                 .name(rating.getName())

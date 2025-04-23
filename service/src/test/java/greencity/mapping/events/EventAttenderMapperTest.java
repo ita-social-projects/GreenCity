@@ -19,22 +19,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 class EventAttenderMapperTest {
 
-    @Mock
-    ModelMapper modelMapper;
-
     @InjectMocks
     EventAttenderMapper mapper;
 
     @Test
     void convertTest() {
-        UserVO userVO = mock(UserVO.class);
         User user = ModelUtils.getUser();
         EventAttenderDto expected = ModelUtils.getEventAttenderDto();
-
-        when(modelMapper.map(user, UserVO.class))
-            .thenReturn(userVO);
-        when(userVO.getProfilePicturePath())
-            .thenReturn(expected.getImagePath());
 
         assertEquals(expected, mapper.convert(user));
     }

@@ -5,6 +5,7 @@ import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
+import greencity.enums.DateGranularity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,11 +17,11 @@ public interface ManagementUserStatisticsService {
      *
      * @param startDate   {@code LocalDateTime} startDate.
      * @param endDate     {@code LocalDateTime} endDate.
-     * @param granularity {@code String} (eg. day, week, month, year).
+     * @param granularity {@link DateGranularity} (eg. day, week, month, year).
      * @return {@link List} of {@link UserRegistrationStatisticDto}.
      */
     List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(LocalDateTime startDate, LocalDateTime endDate,
-        String granularity);
+        DateGranularity granularity);
 
     /**
      * Method to get List of {@link UserRoleStatisticDto} to show distribution of
