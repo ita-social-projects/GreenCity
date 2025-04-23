@@ -30,13 +30,13 @@ class UserManagementDtoMapperTest {
         UserVO userVO = ModelUtils.getUserVO();
 
         UserManagementDto expected = UserManagementDto.builder()
-                .id(userVO.getId())
-                .name(userVO.getName())
-                .email(userVO.getEmail())
-                .userCredo(userVO.getUserCredo())
-                .role(userVO.getRole())
-                .userStatus(userVO.getUserStatus())
-                .build();
+            .id(userVO.getId())
+            .name(userVO.getName())
+            .email(userVO.getEmail())
+            .userCredo(userVO.getUserCredo())
+            .role(userVO.getRole())
+            .userStatus(userVO.getUserStatus())
+            .build();
 
         when(userRemoteClient.findNotDeactivatedById(user.getId())).thenReturn(Optional.of(userVO));
 

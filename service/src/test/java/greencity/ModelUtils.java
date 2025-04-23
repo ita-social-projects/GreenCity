@@ -535,7 +535,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
             .languageId(getLanguageVO().getId())
-                .userStatus(ACTIVATED)
+            .userStatus(ACTIVATED)
             .userLocation(
                 UserLocationDto.builder()
                     .latitude(1d)
@@ -3159,7 +3159,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
             .userStatus(ACTIVATED)
-                .userCredo("user credo")
+            .userCredo("user credo")
             .role(Role.ROLE_USER).build());
     }
 
@@ -3469,17 +3469,17 @@ public class ModelUtils {
 
     public static UserVO getBlockedUserVO() {
         return UserVO.builder()
-                .id(1L)
-                .email(TestConst.EMAIL)
-                .name(TestConst.NAME)
-                .role(Role.ROLE_USER)
-                .languageId(getLanguageVO().getId())
-                .userStatus(BLOCKED)
-                .userLocation(
-                        UserLocationDto.builder()
-                                .latitude(1d)
-                                .longitude(1d)
-                                .build())
-                .build();
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .role(Role.ROLE_USER)
+            .languageId(getLanguageVO().getId())
+            .userStatus(BLOCKED)
+            .userLocation(
+                UserLocationDto.builder()
+                    .latitude(1d)
+                    .longitude(1d)
+                    .build())
+            .build();
     }
 }

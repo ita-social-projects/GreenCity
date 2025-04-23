@@ -30,14 +30,14 @@ class UserForListDtoMapperTest {
         UserVO userVO = ModelUtils.getUserVO();
 
         UserForListDto expected = UserForListDto.builder()
-                .id(userVO.getId())
-                .name(userVO.getName())
-                .dateOfRegistration(userVO.getDateOfRegistration())
-                .email(userVO.getEmail())
-                .userStatus(userVO.getUserStatus())
-                .role(userVO.getRole())
-                .userCredo(userVO.getUserCredo())
-                .build();
+            .id(userVO.getId())
+            .name(userVO.getName())
+            .dateOfRegistration(userVO.getDateOfRegistration())
+            .email(userVO.getEmail())
+            .userStatus(userVO.getUserStatus())
+            .role(userVO.getRole())
+            .userCredo(userVO.getUserCredo())
+            .build();
 
         when(userRemoteClient.findNotDeactivatedById(user.getId())).thenReturn(Optional.of(userVO));
 

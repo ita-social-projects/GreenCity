@@ -19,15 +19,15 @@ public class UserManagementDtoMapper extends AbstractConverter<User, UserManagem
     protected UserManagementDto convert(User user) {
         Long userId = user.getId();
         UserVO userVO = userRemoteClient.findNotDeactivatedById(userId)
-                .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         return UserManagementDto.builder()
-                .id(userVO.getId())
-                .name(userVO.getName())
-                .email(userVO.getEmail())
-                .userCredo(userVO.getUserCredo())
-                .role(userVO.getRole())
-                .userStatus(userVO.getUserStatus())
-                .build();
+            .id(userVO.getId())
+            .name(userVO.getName())
+            .email(userVO.getEmail())
+            .userCredo(userVO.getUserCredo())
+            .role(userVO.getRole())
+            .userStatus(userVO.getUserStatus())
+            .build();
     }
 }
