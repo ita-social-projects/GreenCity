@@ -3159,6 +3159,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
             .userStatus(ACTIVATED)
+                .userCredo("user credo")
             .role(Role.ROLE_USER).build());
     }
 
