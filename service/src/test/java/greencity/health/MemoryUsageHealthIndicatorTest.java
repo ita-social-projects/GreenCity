@@ -68,7 +68,7 @@ class MemoryUsageHealthIndicatorTest {
         assertEquals(usedHeapMemory + usedNonHeapMemory, health.getDetails().get("usedMemoryBytes"));
 
         verify(meterRegistry).gauge("app_memory_usage_health", 1);
-        verify(memoryMXBean, times(2)).getHeapMemoryUsage(); // Очікуємо 2 виклики
+        verify(memoryMXBean, times(2)).getHeapMemoryUsage();
         verify(memoryMXBean).getNonHeapMemoryUsage();
     }
 
@@ -77,7 +77,7 @@ class MemoryUsageHealthIndicatorTest {
         long usedHeapMemory = 700L;
         long usedNonHeapMemory = 200L;
         long maxMemory = 1000L;
-        double expectedMemoryUsagePercentage = (double) (usedHeapMemory + usedNonHeapMemory) / maxMemory * 100; // 90%
+        double expectedMemoryUsagePercentage = (double) (usedHeapMemory + usedNonHeapMemory) / maxMemory * 100;
 
         when(memoryMXBean.getHeapMemoryUsage()).thenReturn(heapMemoryUsage);
         when(memoryMXBean.getNonHeapMemoryUsage()).thenReturn(nonHeapMemoryUsage);
