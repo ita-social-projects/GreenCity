@@ -719,7 +719,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         WHERE u.id IN :activatedUserIds
         GROUP BY ul.cityEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCity(@Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCity(
+        @Param("activatedUserIds") List<Long> activatedUserIds);
 
     /**
      * Retrieves the distribution of users by region.
@@ -736,7 +737,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         WHERE u.id IN :activatedUserIds
         GROUP BY ul.regionEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion(@Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion(
+        @Param("activatedUserIds") List<Long> activatedUserIds);
 
     /**
      * Retrieves the distribution of users by country.
@@ -753,7 +755,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         WHERE u.id IN :activatedUserIds
         GROUP BY ul.countryEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry(@Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry(
+        @Param("activatedUserIds") List<Long> activatedUserIds);
 
     /**
      * Get all user friends{@link User}.
