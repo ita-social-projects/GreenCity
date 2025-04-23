@@ -907,4 +907,15 @@ class EventControllerTest {
         verify(eventService, times(1))
             .getPageableAllEventsAttendedByUser(PageRequest.of(0, 2), userVO.getId());
     }
+
+    @Test
+    @SneakyThrows
+    void getRelevantAddressesTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses/get-relevant")
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService, times(1)).getAllRelevantEventsCityByUser(userVO);
+    }
 }
