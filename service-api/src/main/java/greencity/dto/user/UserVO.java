@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -32,4 +34,6 @@ public class UserVO {
     private UserLocationDto userLocation;
 
     private Long languageId;
+
+    private LocalDateTime dateOfRegistration;
 }
