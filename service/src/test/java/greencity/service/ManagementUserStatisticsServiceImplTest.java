@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.client.UserRemoteClient;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
+import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusStatisticDto;
@@ -87,5 +88,41 @@ class ManagementUserStatisticsServiceImplTest {
 
         assertEquals(mockResult, result);
         verify(userRemoteClient, times(1)).getUserEmailPreferencesDistribution();
+    }
+
+    @Test
+    void testGetUserLocationsDistributionCity() {
+        List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("City", 50L));
+        when(userRepo.getUserLocationsDistributionByCity()).thenReturn(mockResult);
+
+        List<UserLocationStatisticDto> result =
+                managementUserStatisticsServiceImpl.getUserLocationsDistribution("city");
+
+        assertEquals(mockResult, result);
+        verify(userRepo).getUserLocationsDistributionByCity();
+    }
+
+    @Test
+    void testGetUserLocationsDistributionRegion() {
+        List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("Dnipropetrovsk", 30L));
+        when(userRepo.getUserLocationsDistributionByRegion()).thenReturn(mockResult);
+
+        List<UserLocationStatisticDto> result =
+                managementUserStatisticsServiceImpl.getUserLocationsDistribution("region");
+
+        assertEquals(mockResult, result);
+        verify(userRepo).getUserLocationsDistributionByRegion();
+    }
+
+    @Test
+    void testGetUserLocationsDistributionCountry() {
+        List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("Ukraine", 70L));
+        when(userRepo.getUserLocationsDistributionByCountry()).thenReturn(mockResult);
+
+        List<UserLocationStatisticDto> result =
+                managementUserStatisticsServiceImpl.getUserLocationsDistribution("country");
+
+        assertEquals(mockResult, result);
+        verify(userRepo).getUserLocationsDistributionByCountry();
     }
 }

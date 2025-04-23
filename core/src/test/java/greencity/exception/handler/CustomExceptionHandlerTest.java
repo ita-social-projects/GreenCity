@@ -234,4 +234,32 @@ class CustomExceptionHandlerTest {
         assertEquals(customExceptionHandler.handleConversionFailedException(mismatchException, webRequest),
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
     }
+
+    @Test
+    void handleGoogleApiException() {
+        GoogleApiException actual = new GoogleApiException("Geocoding result was not found");
+        ValidationExceptionDto validationDto = new ValidationExceptionDto("Google API", actual.getMessage());
+        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.NOT_FOUND);
+        ResponseEntity<Object> body = status.body(validationDto);
+        assertEquals(customExceptionHandler.handleGoogleApiException(actual), body);
+    }
+
+    @Test
+    void handleGoogleApiException_GeocodingResultBadRequest_ReturnsBadRequest() {
+        GoogleApiException actual = new GoogleApiException("Some string");
+        ValidationExceptionDto validationDto = new ValidationExceptionDto("Google API", actual.getMessage());
+        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.BAD_REQUEST);
+        ResponseEntity<Object> body = status.body(validationDto);
+        assertEquals(customExceptionHandler.handleGoogleApiException(actual), body);
+    }
+
+    @Test
+    void handleInsufficientLocationDataExceptionTest() {
+        InsufficientLocationDataException actual = new InsufficientLocationDataException("Some string");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        Mockito.when(errorAttributes.getErrorAttributes(eq(webRequest),
+                any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+        assertEquals(customExceptionHandler.handleInsufficientLocationDataException(actual, webRequest),
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
 }
