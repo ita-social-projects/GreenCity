@@ -35,6 +35,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>greencity</groupId>
             <artifactId>service-api</artifactId>
             <version>${project.version}</version>
