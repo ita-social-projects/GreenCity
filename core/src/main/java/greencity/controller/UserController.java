@@ -156,16 +156,16 @@ public class UserController {
      */
     @Operation(summary = "Increase user rating")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @PatchMapping("/rating")
-    public ResponseEntity<Void> updateUserRating(
-            @RequestBody UserAddRatingDto userAddRatingDto) {
-        userService.updateUserRating(userAddRatingDto);
+    public ResponseEntity<Void> increaseUserRating(
+        @RequestBody UserAddRatingDto userAddRatingDto) {
+        userService.increaseUserRating(userAddRatingDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

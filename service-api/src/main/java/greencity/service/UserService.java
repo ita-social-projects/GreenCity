@@ -169,7 +169,7 @@ public interface UserService {
      *
      * @param userAddRatingDto contains rating data.
      */
-    void updateUserRating(UserAddRatingDto userAddRatingDto);
+    void increaseUserRating(UserAddRatingDto userAddRatingDto);
 
     /**
      * Find list of {@link UserVO}'s by emails.

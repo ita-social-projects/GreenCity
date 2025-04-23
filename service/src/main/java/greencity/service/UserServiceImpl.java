@@ -383,7 +383,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void updateUserRating(UserAddRatingDto userAddRatingDto) {
+    public void increaseUserRating(UserAddRatingDto userAddRatingDto) {
         User user = findUserById(userAddRatingDto.getId());
         user.setRating(user.getRating() + userAddRatingDto.getRating());
         userRepo.save(user);

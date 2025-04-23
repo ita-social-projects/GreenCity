@@ -96,7 +96,7 @@ class ManagementUserStatisticsServiceImplTest {
         when(userRepo.getUserLocationsDistributionByCity()).thenReturn(mockResult);
 
         List<UserLocationStatisticDto> result =
-                managementUserStatisticsServiceImpl.getUserLocationsDistribution("city");
+            managementUserStatisticsServiceImpl.getUserLocationsDistribution("city");
 
         assertEquals(mockResult, result);
         verify(userRepo).getUserLocationsDistributionByCity();
@@ -108,7 +108,7 @@ class ManagementUserStatisticsServiceImplTest {
         when(userRepo.getUserLocationsDistributionByRegion()).thenReturn(mockResult);
 
         List<UserLocationStatisticDto> result =
-                managementUserStatisticsServiceImpl.getUserLocationsDistribution("region");
+            managementUserStatisticsServiceImpl.getUserLocationsDistribution("region");
 
         assertEquals(mockResult, result);
         verify(userRepo).getUserLocationsDistributionByRegion();
@@ -120,7 +120,7 @@ class ManagementUserStatisticsServiceImplTest {
         when(userRepo.getUserLocationsDistributionByCountry()).thenReturn(mockResult);
 
         List<UserLocationStatisticDto> result =
-                managementUserStatisticsServiceImpl.getUserLocationsDistribution("country");
+            managementUserStatisticsServiceImpl.getUserLocationsDistribution("country");
 
         assertEquals(mockResult, result);
         verify(userRepo).getUserLocationsDistributionByCountry();

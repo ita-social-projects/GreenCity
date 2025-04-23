@@ -258,8 +258,8 @@ class CustomExceptionHandlerTest {
         InsufficientLocationDataException actual = new InsufficientLocationDataException("Some string");
         ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
         Mockito.when(errorAttributes.getErrorAttributes(eq(webRequest),
-                any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
         assertEquals(customExceptionHandler.handleInsufficientLocationDataException(actual, webRequest),
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
     }
 }

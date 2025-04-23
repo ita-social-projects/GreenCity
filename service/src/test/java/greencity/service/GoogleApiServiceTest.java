@@ -53,7 +53,7 @@ class GoogleApiServiceTest {
     GoogleApiService googleApiService;
 
     private final AddressType[] addressTypes =
-            {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
+        {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
     private final String languageUa = "uk";
     private final LatLng coordinates = new LatLng(20.000000, 20.000000);
 
@@ -329,15 +329,15 @@ class GoogleApiServiceTest {
     void getLocationByCoordinatesTest() {
         try (MockedStatic<GeocodingApi> utilities = Mockito.mockStatic(GeocodingApi.class)) {
             utilities.when(() -> GeocodingApi.newRequest(context))
-                    .thenReturn(request);
+                .thenReturn(request);
 
             when(request.latlng(coordinates)).thenReturn(request);
             when(request.language(languageUa)).thenReturn(request);
             when(request.resultType(addressTypes)).thenReturn(request);
             when(request.await()).thenReturn(ModelUtils.getGeocodingResult().toArray(GeocodingResult[]::new));
             assertDoesNotThrow(
-                    () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
-                            addressTypes));
+                () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
+                    addressTypes));
             verify(request).latlng(coordinates);
             verify(request).language(languageUa);
             verify(request).await();
@@ -349,7 +349,7 @@ class GoogleApiServiceTest {
     void getLocationByCoordinatesThrowsNotFoundExceptionTest() {
         try (MockedStatic<GeocodingApi> utilities = Mockito.mockStatic(GeocodingApi.class)) {
             utilities.when(() -> GeocodingApi.newRequest(context))
-                    .thenReturn(request);
+                .thenReturn(request);
 
             when(request.language(languageUa)).thenReturn(request);
             when(request.latlng(coordinates)).thenReturn(request);
@@ -357,9 +357,9 @@ class GoogleApiServiceTest {
             when(request.await()).thenThrow(new InvalidRequestException("message"));
             String formattedCoordinates = "%.8f,%.8f".formatted(coordinates.lat, coordinates.lng);
             NotFoundException exception =
-                    assertThrows(NotFoundException.class,
-                            () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
-                                    addressTypes));
+                assertThrows(NotFoundException.class,
+                    () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
+                        addressTypes));
 
             assertEquals(ErrorMessage.NOT_FOUND_ADDRESS_BY_COORDINATES + formattedCoordinates, exception.getMessage());
             verify(request).language(languageUa);
@@ -373,7 +373,7 @@ class GoogleApiServiceTest {
     void getLocationByCoordinatesThrowsGoogleApiExceptionTest() {
         try (MockedStatic<GeocodingApi> utilities = Mockito.mockStatic(GeocodingApi.class)) {
             utilities.when(() -> GeocodingApi.newRequest(context))
-                    .thenReturn(request);
+                .thenReturn(request);
 
             when(request.language(languageUa)).thenReturn(request);
             when(request.resultType(addressTypes)).thenReturn(request);
@@ -381,8 +381,8 @@ class GoogleApiServiceTest {
             when(request.latlng(coordinates)).thenReturn(request);
 
             assertThrows(GoogleApiException.class,
-                    () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
-                            addressTypes));
+                () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
+                    addressTypes));
             verify(request).language(languageUa);
             verify(request).latlng(coordinates);
             verify(request).await();
@@ -394,7 +394,7 @@ class GoogleApiServiceTest {
     void getLocationByCoordinatesThrowsInterruptedExceptionTest() {
         try (MockedStatic<GeocodingApi> utilities = Mockito.mockStatic(GeocodingApi.class)) {
             utilities.when(() -> GeocodingApi.newRequest(context))
-                    .thenReturn(request);
+                .thenReturn(request);
 
             when(request.language(languageUa)).thenReturn(request);
             when(request.resultType(addressTypes)).thenReturn(request);
@@ -402,8 +402,8 @@ class GoogleApiServiceTest {
             when(request.latlng(coordinates)).thenReturn(request);
 
             assertThrows(GoogleApiException.class,
-                    () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
-                            addressTypes));
+                () -> googleApiService.getLocationByCoordinates(coordinates.lat, coordinates.lng, languageUa,
+                    addressTypes));
             verify(request).language(languageUa);
             verify(request).latlng(coordinates);
             verify(request).await();
