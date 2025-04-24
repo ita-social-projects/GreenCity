@@ -97,7 +97,7 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
-            public List<Long> getActivatedUsersIds() {
+            public List<Long> getActivatedUsersIds(List<Long> ids) {
                 throw new RuntimeException("not implemeneted");
             }
         };

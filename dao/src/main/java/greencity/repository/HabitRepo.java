@@ -104,25 +104,25 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
     Habit findRandomHabit();
 
     /**
-     * Count distinct users who have created habits (non-deleted) and are active.
+     * Count distinct users who have created habits (non-deleted).
      */
     @Query("""
             SELECT DISTINCT h.userId
             FROM Habit h
-            WHERE h.isDeleted = false AND h.userId IN :activatedUserIds
+            WHERE h.isDeleted = false
         """)
-    List<Long> countActiveHabitCreators(@Param("activatedUserIds") List<Long> activatedUserIds);
+    List<Long> countHabitCreators();
 
     /**
-     * Count distinct users who are followers of non-deleted habits and are active.
+     * Count distinct users who are followers of non-deleted habits.
      */
     @Query("""
             SELECT DISTINCT f.id
             FROM Habit h
             JOIN h.followers f
-            WHERE h.isDeleted = false AND f.id IN :activatedUserIds
+            WHERE h.isDeleted = false
         """)
-    List<Long> countActiveHabitFollowers(@Param("activatedUserIds") List<Long> activatedUserIds);
+    List<Long> countHabitFollowers();
 
     /**
      * Counts the number of habit creations (habits) for a given date range. This

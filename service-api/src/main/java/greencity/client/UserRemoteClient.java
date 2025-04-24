@@ -123,12 +123,12 @@ public interface UserRemoteClient {
         @RequestParam("granularity") DateGranularity granularity);
 
     /**
-     * Retrieves the list of IDs of all users who have the user status set to
+     * Retrieves the list of IDs of users who have the user status set to
      * {@code ACTIVATED}.
      *
-     * @return a list of {@code Long} values representing the IDs of all activated
-     *         users
+     * @param ids a list of user IDs to check; may be {@code null} or empty to indicate all users
+     * @return a list of {@code Long} values representing the IDs of all activated users
      */
     @GetMapping("/user/activated-ids")
-    List<Long> getActivatedUsersIds();
+    List<Long> getActivatedUsersIds(@RequestParam(value = "ids", required = false) List<Long> ids);
 }

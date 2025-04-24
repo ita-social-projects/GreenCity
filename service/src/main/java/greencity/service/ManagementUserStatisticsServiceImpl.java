@@ -49,7 +49,7 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserLocationStatisticDto> getUserLocationsDistribution(String groupBy) {
-        List<Long> activatedUserIds = userRemoteClient.getActivatedUsersIds();
+        List<Long> activatedUserIds = userRemoteClient.getActivatedUsersIds(null);
         return switch (groupBy) {
             case "city" -> userRepo.getUserLocationsDistributionByCity(activatedUserIds);
             case "region" -> userRepo.getUserLocationsDistributionByRegion(activatedUserIds);
