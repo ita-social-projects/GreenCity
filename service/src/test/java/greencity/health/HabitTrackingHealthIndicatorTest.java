@@ -40,7 +40,8 @@ class HabitTrackingHealthIndicatorTest {
         habitTrackingHealthIndicator = new HabitTrackingHealthIndicator(meterRegistry, 10);
 
         try {
-            java.lang.reflect.Field entityManagerField = HabitTrackingHealthIndicator.class.getDeclaredField("entityManager");
+            java.lang.reflect.Field entityManagerField =
+                HabitTrackingHealthIndicator.class.getDeclaredField("entityManager");
             entityManagerField.setAccessible(true);
             entityManagerField.set(habitTrackingHealthIndicator, entityManager);
         } catch (Exception e) {

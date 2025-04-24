@@ -26,32 +26,33 @@ public class MemoryUsageHealthIndicator implements HealthIndicator {
     @Override
     public Health health() {
         try {
-            long usedMemory = memoryMXBean.getHeapMemoryUsage().getUsed() + memoryMXBean.getNonHeapMemoryUsage().getUsed();
+            long usedMemory =
+                memoryMXBean.getHeapMemoryUsage().getUsed() + memoryMXBean.getNonHeapMemoryUsage().getUsed();
             long maxMemory = memoryMXBean.getHeapMemoryUsage().getMax();
             double memoryUsagePercentage = (double) usedMemory / maxMemory * 100;
 
             if (memoryUsagePercentage <= MAX_MEMORY_USAGE_PERCENTAGE) {
                 meterRegistry.gauge("app_memory_usage_health", 1);
                 return Health.up()
-                        .withDetail("memoryUsage", "Memory usage is within safe limits")
-                        .withDetail("memoryUsagePercentage", memoryUsagePercentage)
-                        .withDetail("usedMemoryBytes", usedMemory)
-                        .build();
+                    .withDetail("memoryUsage", "Memory usage is within safe limits")
+                    .withDetail("memoryUsagePercentage", memoryUsagePercentage)
+                    .withDetail("usedMemoryBytes", usedMemory)
+                    .build();
             } else {
                 meterRegistry.gauge("app_memory_usage_health", 0);
                 return Health.down()
-                        .withDetail("memoryUsage", "High memory usage detected")
-                        .withDetail("memoryUsagePercentage", memoryUsagePercentage)
-                        .withDetail("usedMemoryBytes", usedMemory)
-                        .build();
+                    .withDetail("memoryUsage", "High memory usage detected")
+                    .withDetail("memoryUsagePercentage", memoryUsagePercentage)
+                    .withDetail("usedMemoryBytes", usedMemory)
+                    .build();
             }
         } catch (Exception e) {
             logger.error("Memory usage health check failed: {}", e.getMessage());
             meterRegistry.gauge("app_memory_usage_health", 0);
             return Health.down()
-                    .withDetail("memoryUsage", "Error checking memory usage")
-                    .withDetail("error", e.getMessage())
-                    .build();
+                .withDetail("memoryUsage", "Error checking memory usage")
+                .withDetail("error", e.getMessage())
+                .build();
         }
     }
 }

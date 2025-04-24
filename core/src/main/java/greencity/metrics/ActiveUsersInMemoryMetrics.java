@@ -1,6 +1,5 @@
 package greencity.metrics;
 
-import greencity.constant.ErrorMessage;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.FilterChain;
@@ -35,25 +34,19 @@ public class ActiveUsersInMemoryMetrics extends OncePerRequestFilter {
         this.meterRegistry = meterRegistry;
 
         Gauge.builder("app_active_users", this::getActiveUsersCount)
-                .description("Number of active users on the site")
-                .baseUnit("users")
-                .register(meterRegistry);
+            .description("Number of active users on the site")
+            .baseUnit("users")
+            .register(meterRegistry);
 
         Gauge.builder("app_user_logins_per_3h", this::getUserLoginsCount)
-                .description("Number of unique user logins in the last 3 hours")
-                .baseUnit("users")
-                .register(meterRegistry);
+            .description("Number of unique user logins in the last 3 hours")
+            .baseUnit("users")
+            .register(meterRegistry);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        if (request == null || response == null || filterChain == null) {
-            logger.error("Invalid parameters in doFilterInternal: request={}, response={}, filterChain={}",
-                    request, response, filterChain);
-            throw new ServletException(ErrorMessage.NULL_REQUEST_RESPONSE);
-        }
-
+        throws ServletException, IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
             String username = auth.getName();
@@ -76,12 +69,10 @@ public class ActiveUsersInMemoryMetrics extends OncePerRequestFilter {
     private void removeInactiveUsers() {
         Instant now = Instant.now();
         activeUsers.entrySet()
-                .removeIf(entry -> now.getEpochSecond() - entry.getValue().getEpochSecond() > INACTIVITY_TIMEOUT_SECONDS);
+            .removeIf(entry -> now.getEpochSecond() - entry.getValue().getEpochSecond() > INACTIVITY_TIMEOUT_SECONDS);
 
-        userLogins.entrySet().forEach(entry -> {
-            List<Instant> logins = entry.getValue();
-            logins.removeIf(login -> now.getEpochSecond() - login.getEpochSecond() > LOGIN_WINDOW_SECONDS);
-        });
+        userLogins.forEach((key, logins) -> logins
+            .removeIf(login -> now.getEpochSecond() - login.getEpochSecond() > LOGIN_WINDOW_SECONDS));
         userLogins.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 

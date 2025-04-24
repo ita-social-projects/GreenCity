@@ -26,8 +26,8 @@ public class HabitTrackingHealthIndicator implements HealthIndicator {
 
     @Autowired
     public HabitTrackingHealthIndicator(
-            MeterRegistry meterRegistry,
-            @Value("${habit.tracking.min.threshold:10}") int minHabitUpdates) {
+        MeterRegistry meterRegistry,
+        @Value("${habit.tracking.min.threshold:10}") int minHabitUpdates) {
         this.meterRegistry = meterRegistry;
         this.minHabitUpdates = minHabitUpdates;
     }
@@ -39,14 +39,12 @@ public class HabitTrackingHealthIndicator implements HealthIndicator {
             ZonedDateTime zonedLast24Hours = last24Hours.atZone(ZoneId.systemDefault());
 
             Query newHabitsQuery = entityManager.createNativeQuery(
-                    "SELECT COUNT(*) FROM habits WHERE created_at >= :last24Hours"
-            );
+                "SELECT COUNT(*) FROM habits WHERE created_at >= :last24Hours");
             newHabitsQuery.setParameter("last24Hours", last24Hours);
             long newHabitsCount = ((Number) newHabitsQuery.getSingleResult()).longValue();
 
             Query newAssignsQuery = entityManager.createNativeQuery(
-                    "SELECT COUNT(*) FROM habit_assign WHERE create_date >= :last24Hours"
-            );
+                "SELECT COUNT(*) FROM habit_assign WHERE create_date >= :last24Hours");
             newAssignsQuery.setParameter("last24Hours", zonedLast24Hours);
             long newAssignsCount = ((Number) newAssignsQuery.getSingleResult()).longValue();
 
@@ -55,28 +53,28 @@ public class HabitTrackingHealthIndicator implements HealthIndicator {
             if (totalActivityCount >= minHabitUpdates) {
                 meterRegistry.gauge("app_habit_tracking_health", 1);
                 return Health.up()
-                        .withDetail("habitTracking", "Habit tracking is active")
-                        .withDetail("newHabitsLast24h", newHabitsCount)
-                        .withDetail("newAssignsLast24h", newAssignsCount)
-                        .withDetail("totalActivityLast24h", totalActivityCount)
-                        .build();
+                    .withDetail("habitTracking", "Habit tracking is active")
+                    .withDetail("newHabitsLast24h", newHabitsCount)
+                    .withDetail("newAssignsLast24h", newAssignsCount)
+                    .withDetail("totalActivityLast24h", totalActivityCount)
+                    .build();
             } else {
                 meterRegistry.gauge("app_habit_tracking_health", 0);
                 return Health.outOfService()
-                        .withDetail("habitTracking", "Low habit tracking activity")
-                        .withDetail("newHabitsLast24h", newHabitsCount)
-                        .withDetail("newAssignsLast24h", newAssignsCount)
-                        .withDetail("totalActivityLast24h", totalActivityCount)
-                        .withDetail("minThreshold", minHabitUpdates)
-                        .build();
+                    .withDetail("habitTracking", "Low habit tracking activity")
+                    .withDetail("newHabitsLast24h", newHabitsCount)
+                    .withDetail("newAssignsLast24h", newAssignsCount)
+                    .withDetail("totalActivityLast24h", totalActivityCount)
+                    .withDetail("minThreshold", minHabitUpdates)
+                    .build();
             }
         } catch (Exception e) {
             logger.error("Habit tracking health check failed: {}", e.getMessage());
             meterRegistry.gauge("app_habit_tracking_health", 0);
             return Health.down()
-                    .withDetail("habitTracking", "Error checking habit tracking")
-                    .withDetail("error", e.getMessage())
-                    .build();
+                .withDetail("habitTracking", "Error checking habit tracking")
+                .withDetail("error", e.getMessage())
+                .build();
         }
     }
 }

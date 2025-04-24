@@ -91,7 +91,8 @@ class ResponseTimeMetricsTest {
 
         Timer timer = meterRegistry.get("app_response_time").timer();
         assertEquals(3, timer.count(), "Exactly three requests should be recorded in Timer");
-        assertTrue(timer.totalTime(TimeUnit.MILLISECONDS) >= 450, "Total response time in Timer should be at least 450ms");
+        assertTrue(timer.totalTime(TimeUnit.MILLISECONDS) >= 450,
+            "Total response time in Timer should be at least 450ms");
 
         verify(filterChain, times(3)).doFilter(request, response);
     }
@@ -144,9 +145,12 @@ class ResponseTimeMetricsTest {
 
         assertEquals(1, filter.getRequestCount(), "Request count should be 1");
         assertTrue(filter.getTotalResponseTime() >= 0, "Total response time should be greater than or equal to 0");
-        assertTrue(meterRegistry.get("app_response_time_min").gauge().value() >= 0, "Minimum response time should be greater than or equal to 0");
-        assertTrue(meterRegistry.get("app_response_time_max").gauge().value() >= 0, "Maximum response time should be greater than or equal to 0");
-        assertTrue(meterRegistry.get("app_response_time_avg").gauge().value() >= 0, "Average response time should be greater than or equal to 0");
+        assertTrue(meterRegistry.get("app_response_time_min").gauge().value() >= 0,
+            "Minimum response time should be greater than or equal to 0");
+        assertTrue(meterRegistry.get("app_response_time_max").gauge().value() >= 0,
+            "Maximum response time should be greater than or equal to 0");
+        assertTrue(meterRegistry.get("app_response_time_avg").gauge().value() >= 0,
+            "Average response time should be greater than or equal to 0");
 
         verify(filterChain).doFilter(request, response);
     }

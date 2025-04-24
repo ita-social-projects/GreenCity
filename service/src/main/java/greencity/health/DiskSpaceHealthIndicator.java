@@ -36,25 +36,25 @@ public class DiskSpaceHealthIndicator implements HealthIndicator {
             if (freeSpacePercentage >= MIN_FREE_SPACE_PERCENTAGE) {
                 meterRegistry.gauge("app_disk_space_health", 1);
                 return Health.up()
-                        .withDetail("diskSpace", "Sufficient disk space available")
-                        .withDetail("freeSpacePercentage", freeSpacePercentage)
-                        .withDetail("freeSpaceBytes", freeSpace)
-                        .build();
+                    .withDetail("diskSpace", "Sufficient disk space available")
+                    .withDetail("freeSpacePercentage", freeSpacePercentage)
+                    .withDetail("freeSpaceBytes", freeSpace)
+                    .build();
             } else {
                 meterRegistry.gauge("app_disk_space_health", 0);
                 return Health.down()
-                        .withDetail("diskSpace", "Low disk space detected")
-                        .withDetail("freeSpacePercentage", freeSpacePercentage)
-                        .withDetail("freeSpaceBytes", freeSpace)
-                        .build();
+                    .withDetail("diskSpace", "Low disk space detected")
+                    .withDetail("freeSpacePercentage", freeSpacePercentage)
+                    .withDetail("freeSpaceBytes", freeSpace)
+                    .build();
             }
         } catch (Exception e) {
             logger.error("Disk space health check failed: {}", e.getMessage());
             meterRegistry.gauge("app_disk_space_health", 0);
             return Health.down()
-                    .withDetail("diskSpace", "Error checking disk space")
-                    .withDetail("error", e.getMessage())
-                    .build();
+                .withDetail("diskSpace", "Error checking disk space")
+                .withDetail("error", e.getMessage())
+                .build();
         }
     }
 }

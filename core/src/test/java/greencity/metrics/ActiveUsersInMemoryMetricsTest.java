@@ -1,6 +1,5 @@
 package greencity.metrics;
 
-import greencity.constant.ErrorMessage;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.FilterChain;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,24 +84,6 @@ class ActiveUsersInMemoryMetricsTest {
     }
 
     @Test
-    void doFilterInternal_nullParameters_throwsServletException() {
-        ServletException exception = assertThrows(ServletException.class, () -> {
-            filter.doFilterInternal(null, response, filterChain);
-        });
-        assertEquals(ErrorMessage.NULL_REQUEST_RESPONSE, exception.getMessage());
-
-        exception = assertThrows(ServletException.class, () -> {
-            filter.doFilterInternal(request, null, filterChain);
-        });
-        assertEquals(ErrorMessage.NULL_REQUEST_RESPONSE, exception.getMessage());
-
-        exception = assertThrows(ServletException.class, () -> {
-            filter.doFilterInternal(request, response, null);
-        });
-        assertEquals(ErrorMessage.NULL_REQUEST_RESPONSE, exception.getMessage());
-    }
-
-    @Test
     void recordLogin_newLogin_addsToUserLogins() {
         String email = "user@example.com";
         long loginTime = System.currentTimeMillis();
@@ -134,7 +114,8 @@ class ActiveUsersInMemoryMetricsTest {
         filter.recordLogin(email, loginTime1);
         filter.recordLogin(email, loginTime2);
 
-        assertEquals(1.0, meterRegistry.get("app_user_logins_per_3h").gauge().value(), "Metric should show 1 login since the old one is removed");
+        assertEquals(1.0, meterRegistry.get("app_user_logins_per_3h").gauge().value(),
+            "Metric should show 1 login since the old one is removed");
     }
 
     @Test
@@ -160,7 +141,8 @@ class ActiveUsersInMemoryMetricsTest {
         when(authentication.getName()).thenReturn("newUser");
         filter.doFilterInternal(request, response, filterChain);
 
-        assertEquals(1.0, meterRegistry.get("app_active_users").gauge().value(), "Metric should show 1 active user (old one removed)");
+        assertEquals(1.0, meterRegistry.get("app_active_users").gauge().value(),
+            "Metric should show 1 active user (old one removed)");
         verify(filterChain).doFilter(request, response);
     }
 
@@ -173,7 +155,8 @@ class ActiveUsersInMemoryMetricsTest {
         filter.recordLogin(email, loginTime1);
         filter.recordLogin(email, loginTime2);
 
-        assertEquals(1.0, meterRegistry.get("app_user_logins_per_3h").gauge().value(), "Metric should show 1 login (old one removed)");
+        assertEquals(1.0, meterRegistry.get("app_user_logins_per_3h").gauge().value(),
+            "Metric should show 1 login (old one removed)");
     }
 
     @Test

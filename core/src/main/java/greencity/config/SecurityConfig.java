@@ -145,7 +145,7 @@ public class SecurityConfig {
                     "/swagger-ui/**",
                     "/swagger-resources/**",
                     "/webjars/**",
-                        "/metrics/recordLogin")
+                    "/metrics/recordLogin")
                 .permitAll()
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
                 .requestMatchers("/css/**", "/img/**").permitAll()

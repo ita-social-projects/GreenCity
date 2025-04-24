@@ -16,8 +16,10 @@ public class GarbageCollectionMetrics {
     private static final long TIME_WINDOW_SECONDS = 3600;
     private final MeterRegistry meterRegistry;
     private final List<GarbageCollectorMXBean> gcBeans;
-    private final Map<GarbageCollectorMXBean, ConcurrentLinkedQueue<GCTimeRecord>> gcTimeHistory = new ConcurrentHashMap<>();
-    private final Map<GarbageCollectorMXBean, ConcurrentLinkedQueue<GCCountRecord>> gcCountHistory = new ConcurrentHashMap<>();
+    private final Map<GarbageCollectorMXBean, ConcurrentLinkedQueue<GCTimeRecord>> gcTimeHistory =
+        new ConcurrentHashMap<>();
+    private final Map<GarbageCollectorMXBean, ConcurrentLinkedQueue<GCCountRecord>> gcCountHistory =
+        new ConcurrentHashMap<>();
 
     public GarbageCollectionMetrics(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
@@ -32,25 +34,21 @@ public class GarbageCollectionMetrics {
     private void registerGauges() {
         for (GarbageCollectorMXBean gcBean : gcBeans) {
             Gauge.builder("app_gc_time_ms_per_hour", this, metrics -> getGCTimePerHour(gcBean))
-                    .description("Time spent in garbage collection per hour in milliseconds")
-                    .baseUnit("milliseconds")
-                    .tag("collector", gcBean.getName())
-                    .register(meterRegistry);
+                .description("Time spent in garbage collection per hour in milliseconds")
+                .baseUnit("milliseconds")
+                .tag("collector", gcBean.getName())
+                .register(meterRegistry);
 
             Gauge.builder("app_gc_count_per_hour", this, metrics -> getGCCountPerHour(gcBean))
-                    .description("Number of garbage collection cycles per hour")
-                    .baseUnit("cycles")
-                    .tag("collector", gcBean.getName())
-                    .register(meterRegistry);
+                .description("Number of garbage collection cycles per hour")
+                .baseUnit("cycles")
+                .tag("collector", gcBean.getName())
+                .register(meterRegistry);
         }
     }
 
     private double getGCTimePerHour(GarbageCollectorMXBean gcBean) {
         return getGCTimePerHour(gcBean, Instant.now());
-    }
-
-    private double getGCCountPerHour(GarbageCollectorMXBean gcBean) {
-        return getGCCountPerHour(gcBean, Instant.now());
     }
 
     double getGCTimePerHour(GarbageCollectorMXBean gcBean, Instant now) {
@@ -67,6 +65,10 @@ public class GarbageCollectionMetrics {
         GCTimeRecord oldest = history.peek();
         long timeDiff = currentGCTime - oldest.gcTime;
         return timeDiff >= 0 ? timeDiff : 0.0;
+    }
+
+    private double getGCCountPerHour(GarbageCollectorMXBean gcBean) {
+        return getGCCountPerHour(gcBean, Instant.now());
     }
 
     double getGCCountPerHour(GarbageCollectorMXBean gcBean, Instant now) {

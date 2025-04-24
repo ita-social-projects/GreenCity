@@ -49,8 +49,8 @@ class GarbageCollectionMetricsTest {
     @Test
     void testMetricsInitialized() {
         try (MockedStatic<Instant> instantMock = mockStatic(Instant.class);
-             MockedStatic<Gauge> gaugeStaticMock = mockStatic(Gauge.class);
-             MockedStatic<ManagementFactory> managementFactoryMock = mockStatic(ManagementFactory.class)) {
+            MockedStatic<Gauge> gaugeStaticMock = mockStatic(Gauge.class);
+            MockedStatic<ManagementFactory> managementFactoryMock = mockStatic(ManagementFactory.class)) {
             Instant now = Instant.parse("2025-04-08T10:00:00Z");
             instantMock.when(Instant::now).thenReturn(now);
 
@@ -58,7 +58,7 @@ class GarbageCollectionMetricsTest {
             managementFactoryMock.when(ManagementFactory::getGarbageCollectorMXBeans).thenReturn(gcBeans);
 
             gaugeStaticMock.when(() -> Gauge.builder(anyString(), any(), any()))
-                    .thenReturn(gaugeBuilder);
+                .thenReturn(gaugeBuilder);
             when(gaugeBuilder.description(anyString())).thenReturn(gaugeBuilder);
             when(gaugeBuilder.baseUnit(anyString())).thenReturn(gaugeBuilder);
             when(gaugeBuilder.tag(anyString(), anyString())).thenReturn(gaugeBuilder);
@@ -87,17 +87,23 @@ class GarbageCollectionMetricsTest {
             when(gcBean1.getCollectionTime()).thenReturn(100L, 300L);
             when(gcBean2.getCollectionTime()).thenReturn(200L, 500L);
 
-            Method getGCTimePerHourMethod = GarbageCollectionMetrics.class.getDeclaredMethod("getGCTimePerHour", GarbageCollectorMXBean.class, Instant.class);
+            Method getGCTimePerHourMethod = GarbageCollectionMetrics.class.getDeclaredMethod("getGCTimePerHour",
+                GarbageCollectorMXBean.class, Instant.class);
             getGCTimePerHourMethod.setAccessible(true);
 
-            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, now), "First call should return 0 (not enough data)");
-            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean2, now), "First call should return 0 (not enough data)");
+            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, now),
+                "First call should return 0 (not enough data)");
+            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean2, now),
+                "First call should return 0 (not enough data)");
 
-            assertEquals(200.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, now), "GC time for G1 Young Generation should be 200ms (300-100)");
-            assertEquals(300.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean2, now), "GC time for G1 Old Generation should be 300ms (500-200)");
+            assertEquals(200.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, now),
+                "GC time for G1 Young Generation should be 200ms (300-100)");
+            assertEquals(300.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean2, now),
+                "GC time for G1 Old Generation should be 300ms (500-200)");
 
             when(gcBean1.getCollectionTime()).thenReturn(-1L);
-            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, now), "GC time should be 0 if not supported");
+            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, now),
+                "GC time should be 0 if not supported");
         }
     }
 
@@ -114,14 +120,19 @@ class GarbageCollectionMetricsTest {
             when(gcBean1.getCollectionCount()).thenReturn(5L, 8L);
             when(gcBean2.getCollectionCount()).thenReturn(3L, 7L);
 
-            Method getGCCountPerHourMethod = GarbageCollectionMetrics.class.getDeclaredMethod("getGCCountPerHour", GarbageCollectorMXBean.class, Instant.class);
+            Method getGCCountPerHourMethod = GarbageCollectionMetrics.class.getDeclaredMethod("getGCCountPerHour",
+                GarbageCollectorMXBean.class, Instant.class);
             getGCCountPerHourMethod.setAccessible(true);
 
-            assertEquals(0.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean1, now), "First call should return 0 (not enough data)");
-            assertEquals(0.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean2, now), "First call should return 0 (not enough data)");
+            assertEquals(0.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean1, now),
+                "First call should return 0 (not enough data)");
+            assertEquals(0.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean2, now),
+                "First call should return 0 (not enough data)");
 
-            assertEquals(3.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean1, now), "GC count for G1 Young Generation should be 3 (8-5)");
-            assertEquals(4.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean2, now), "GC count for G1 Old Generation should be 4 (7-3)");
+            assertEquals(3.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean1, now),
+                "GC count for G1 Young Generation should be 3 (8-5)");
+            assertEquals(4.0, (double) getGCCountPerHourMethod.invoke(gcMetrics, gcBean2, now),
+                "GC count for G1 Old Generation should be 4 (7-3)");
         }
     }
 
@@ -138,17 +149,20 @@ class GarbageCollectionMetricsTest {
 
             when(gcBean1.getCollectionTime()).thenReturn(100L, 300L);
 
-            Method cleanupGCTimeMethod = GarbageCollectionMetrics.class.getDeclaredMethod("cleanupOldGCTimeRecords", GarbageCollectorMXBean.class, Instant.class);
+            Method cleanupGCTimeMethod = GarbageCollectionMetrics.class.getDeclaredMethod("cleanupOldGCTimeRecords",
+                GarbageCollectorMXBean.class, Instant.class);
             cleanupGCTimeMethod.setAccessible(true);
 
-            Method getGCTimePerHourMethod = GarbageCollectionMetrics.class.getDeclaredMethod("getGCTimePerHour", GarbageCollectorMXBean.class, Instant.class);
+            Method getGCTimePerHourMethod = GarbageCollectionMetrics.class.getDeclaredMethod("getGCTimePerHour",
+                GarbageCollectorMXBean.class, Instant.class);
             getGCTimePerHourMethod.setAccessible(true);
 
             getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, now);
 
             cleanupGCTimeMethod.invoke(gcMetrics, gcBean1, twoHoursLater);
 
-            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, twoHoursLater), "After cleanup, should return 0 (no data in window)");
+            assertEquals(0.0, (double) getGCTimePerHourMethod.invoke(gcMetrics, gcBean1, twoHoursLater),
+                "After cleanup, should return 0 (no data in window)");
         }
     }
 }

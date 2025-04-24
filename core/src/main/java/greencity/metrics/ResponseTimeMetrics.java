@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.DoubleAdder;
 
 @Component
 public class ResponseTimeMetrics extends OncePerRequestFilter {
+    @Getter
     private final Timer responseTimer;
     private final MeterRegistry meterRegistry;
     private final AtomicLong minResponseTime = new AtomicLong(Long.MAX_VALUE);
@@ -27,29 +29,29 @@ public class ResponseTimeMetrics extends OncePerRequestFilter {
     public ResponseTimeMetrics(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
         this.responseTimer = Timer.builder("app_response_time")
-                .description("Time taken to process requests")
-                .publishPercentiles(0.5, 0.95, 0.99)
-                .register(meterRegistry);
+            .description("Time taken to process requests")
+            .publishPercentiles(0.5, 0.95, 0.99)
+            .register(meterRegistry);
 
         Gauge.builder("app_response_time_min", this::getMinResponseTime)
-                .description("Minimum response time in milliseconds")
-                .baseUnit("milliseconds")
-                .register(meterRegistry);
+            .description("Minimum response time in milliseconds")
+            .baseUnit("milliseconds")
+            .register(meterRegistry);
 
         Gauge.builder("app_response_time_max", this::getMaxResponseTime)
-                .description("Maximum response time in milliseconds")
-                .baseUnit("milliseconds")
-                .register(meterRegistry);
+            .description("Maximum response time in milliseconds")
+            .baseUnit("milliseconds")
+            .register(meterRegistry);
 
         Gauge.builder("app_response_time_avg", this::getAvgResponseTime)
-                .description("Average response time in milliseconds")
-                .baseUnit("milliseconds")
-                .register(meterRegistry);
+            .description("Average response time in milliseconds")
+            .baseUnit("milliseconds")
+            .register(meterRegistry);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         validateParameters(request, response, filterChain);
 
         long startTime = System.nanoTime();
@@ -62,7 +64,7 @@ public class ResponseTimeMetrics extends OncePerRequestFilter {
     }
 
     private void validateParameters(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException {
+        throws ServletException {
         if (request == null || response == null || filterChain == null) {
             throw new ServletException(ErrorMessage.NULL_REQUEST_RESPONSE);
         }
@@ -112,10 +114,6 @@ public class ResponseTimeMetrics extends OncePerRequestFilter {
     private double getAvgResponseTime() {
         long count = requestCount.get();
         return count == 0 ? 0 : totalResponseTime.sum() / count;
-    }
-
-    public Timer getResponseTimer() {
-        return responseTimer;
     }
 
     public long getRequestCount() {

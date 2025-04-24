@@ -62,7 +62,7 @@ class RequestCountMetricsTest {
     void setUp() {
         gaugeStaticMock = mockStatic(Gauge.class);
         gaugeStaticMock.when(() -> Gauge.builder(anyString(), any()))
-                .thenReturn(gaugeBuilder);
+            .thenReturn(gaugeBuilder);
         when(gaugeBuilder.description(anyString())).thenReturn(gaugeBuilder);
         when(gaugeBuilder.baseUnit(anyString())).thenReturn(gaugeBuilder);
         when(gaugeBuilder.register(any(MeterRegistry.class))).thenReturn(mock(Gauge.class));
@@ -83,7 +83,8 @@ class RequestCountMetricsTest {
         return (String) requestIdHeaderField.get(null);
     }
 
-    private ConcurrentHashMap<String, Boolean> getProcessedRequests() throws NoSuchFieldException, IllegalAccessException {
+    private ConcurrentHashMap<String, Boolean> getProcessedRequests()
+        throws NoSuchFieldException, IllegalAccessException {
         Field processedRequestsField = RequestCountMetrics.class.getDeclaredField("processedRequests");
         processedRequestsField.setAccessible(true);
         return (ConcurrentHashMap<String, Boolean>) processedRequestsField.get(requestCountMetrics);
@@ -140,7 +141,8 @@ class RequestCountMetricsTest {
     }
 
     @Test
-    void testRequestAlreadyProcessed() throws ServletException, IOException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    void testRequestAlreadyProcessed() throws ServletException, IOException, NoSuchFieldException,
+        IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         String requestId = "test-id";
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getHeader(getRequestIdHeader())).thenReturn(requestId);
@@ -157,7 +159,8 @@ class RequestCountMetricsTest {
     }
 
     @Test
-    void testSuccessfulRequest() throws ServletException, IOException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    void testSuccessfulRequest() throws ServletException, IOException, NoSuchFieldException, IllegalAccessException,
+        NoSuchMethodException, InvocationTargetException {
         String requestId = "test-id";
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getHeader(getRequestIdHeader())).thenReturn(null);

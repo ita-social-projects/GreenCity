@@ -36,17 +36,21 @@ public class RequestCountMetrics extends OncePerRequestFilter {
 
     public RequestCountMetrics(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
-        this.totalRequests = new RequestMetric("http_requests_total_per_hour", "Total number of HTTP requests per hour");
-        this.successfulRequests = new RequestMetric("http_requests_successful_per_hour", "Total number of successful HTTP requests per hour");
-        this.failedRequests = new RequestMetric("http_requests_failed_per_hour", "Total number of failed HTTP requests (4xx and 5xx) per hour");
-        this.prometheusRequests = new RequestMetric("http_requests_prometheus_per_hour", "Total number of HTTP requests from Prometheus per hour");
+        this.totalRequests =
+            new RequestMetric("http_requests_total_per_hour", "Total number of HTTP requests per hour");
+        this.successfulRequests =
+            new RequestMetric("http_requests_successful_per_hour", "Total number of successful HTTP requests per hour");
+        this.failedRequests = new RequestMetric("http_requests_failed_per_hour",
+            "Total number of failed HTTP requests (4xx and 5xx) per hour");
+        this.prometheusRequests = new RequestMetric("http_requests_prometheus_per_hour",
+            "Total number of HTTP requests from Prometheus per hour");
 
         registerGauges();
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         String requestId = ensureRequestId(request, response);
         String requestUri = request.getRequestURI();
 
@@ -82,7 +86,7 @@ public class RequestCountMetrics extends OncePerRequestFilter {
     }
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain,
-                                String requestId, String requestUri) throws ServletException, IOException {
+        String requestId, String requestUri) throws ServletException, IOException {
         Instant now = Instant.now();
         StatusCapturingResponseWrapper responseWrapper = new StatusCapturingResponseWrapper(response);
 
@@ -98,7 +102,7 @@ public class RequestCountMetrics extends OncePerRequestFilter {
     }
 
     private void updateMetrics(HttpServletRequest request, StatusCapturingResponseWrapper responseWrapper,
-                               Instant timestamp, String requestId, String requestUri) {
+        Instant timestamp, String requestId, String requestUri) {
         int status = responseWrapper.getStatus();
 
         totalRequests.increment(timestamp);
@@ -125,7 +129,8 @@ public class RequestCountMetrics extends OncePerRequestFilter {
 
     private boolean isFailedStatus(int status) {
         return (status >= HttpServletResponse.SC_BAD_REQUEST && status < HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-                || (status >= HttpServletResponse.SC_INTERNAL_SERVER_ERROR && status < HttpServletResponse.SC_HTTP_VERSION_NOT_SUPPORTED);
+            || (status >= HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+                && status < HttpServletResponse.SC_HTTP_VERSION_NOT_SUPPORTED);
     }
 
     private void cleanupProcessedRequests() {
@@ -142,9 +147,9 @@ public class RequestCountMetrics extends OncePerRequestFilter {
         prometheusRequests.registerGauge(meterRegistry);
 
         Gauge.builder("app_error_rate_per_hour", this::getErrorRate)
-                .description("Percentage of failed HTTP requests per hour")
-                .baseUnit("percent")
-                .register(meterRegistry);
+            .description("Percentage of failed HTTP requests per hour")
+            .baseUnit("percent")
+            .register(meterRegistry);
     }
 
     private double getErrorRate() {
@@ -172,9 +177,9 @@ public class RequestCountMetrics extends OncePerRequestFilter {
 
         void registerGauge(MeterRegistry registry) {
             Gauge.builder(name, count::get)
-                    .description(description)
-                    .baseUnit("requests")
-                    .register(registry);
+                .description(description)
+                .baseUnit("requests")
+                .register(registry);
         }
 
         private void cleanupOldTimestamps(Instant now) {
@@ -230,5 +235,4 @@ public class RequestCountMetrics extends OncePerRequestFilter {
             return status != 0 ? status : super.getStatus();
         }
     }
-
 }
