@@ -9,6 +9,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
@@ -376,6 +377,16 @@ public class UserServiceImpl implements UserService {
             user.setUserLocation(userLocation);
             userRepo.save(user);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void increaseUserRating(UserAddRatingDto userAddRatingDto) {
+        User user = findUserById(userAddRatingDto.getId());
+        user.setRating(user.getRating() + userAddRatingDto.getRating());
+        userRepo.save(user);
     }
 
     /**

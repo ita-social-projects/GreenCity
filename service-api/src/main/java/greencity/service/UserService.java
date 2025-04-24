@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
@@ -162,6 +163,13 @@ public interface UserService {
      * @param userProfileDtoRequest contains location data
      */
     void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest);
+
+    /**
+     * Increase user rating by amount specified in {@link UserAddRatingDto}.
+     *
+     * @param userAddRatingDto contains rating data.
+     */
+    void increaseUserRating(UserAddRatingDto userAddRatingDto);
 
     /**
      * Find list of {@link UserVO}'s by emails.

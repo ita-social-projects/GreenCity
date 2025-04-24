@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserVO;
@@ -146,5 +147,25 @@ public class UserController {
     @GetMapping("/{id}/top-friends")
     public ResponseEntity<List<Long>> getSixFriendsIdsWithTheHighestRating(@PathVariable("id") Long userId) {
         return ResponseEntity.ok(userService.getSixFriendsIdsWithTheHighestRating(userId));
+    }
+
+    /**
+     * Increase user rating by amount specified in {@link UserAddRatingDto}.
+     *
+     * @param userAddRatingDto contains rating data.
+     */
+    @Operation(summary = "Increase user rating")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @PatchMapping("/rating")
+    public ResponseEntity<Void> increaseUserRating(
+        @RequestBody UserAddRatingDto userAddRatingDto) {
+        userService.increaseUserRating(userAddRatingDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
