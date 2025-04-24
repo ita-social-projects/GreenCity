@@ -92,37 +92,46 @@ class ManagementUserStatisticsServiceImplTest {
 
     @Test
     void testGetUserLocationsDistributionCity() {
+        List<Long> activatedUserIds = List.of(1L, 2L, 3L, 7L, 9L, 10L);
+        when(userRemoteClient.getActivatedUsersIds(null)).thenReturn(activatedUserIds);
+
         List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("City", 50L));
-        when(userRepo.getUserLocationsDistributionByCity()).thenReturn(mockResult);
+        when(userRepo.getUserLocationsDistributionByCity(activatedUserIds)).thenReturn(mockResult);
 
         List<UserLocationStatisticDto> result =
             managementUserStatisticsServiceImpl.getUserLocationsDistribution("city");
 
         assertEquals(mockResult, result);
-        verify(userRepo).getUserLocationsDistributionByCity();
+        verify(userRepo).getUserLocationsDistributionByCity(activatedUserIds);
     }
 
     @Test
     void testGetUserLocationsDistributionRegion() {
+        List<Long> activatedUserIds = List.of(1L, 2L, 3L, 7L, 9L, 10L);
+        when(userRemoteClient.getActivatedUsersIds(null)).thenReturn(activatedUserIds);
+
         List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("Dnipropetrovsk", 30L));
-        when(userRepo.getUserLocationsDistributionByRegion()).thenReturn(mockResult);
+        when(userRepo.getUserLocationsDistributionByRegion(activatedUserIds)).thenReturn(mockResult);
 
         List<UserLocationStatisticDto> result =
             managementUserStatisticsServiceImpl.getUserLocationsDistribution("region");
 
         assertEquals(mockResult, result);
-        verify(userRepo).getUserLocationsDistributionByRegion();
+        verify(userRepo).getUserLocationsDistributionByRegion(activatedUserIds);
     }
 
     @Test
     void testGetUserLocationsDistributionCountry() {
+        List<Long> activatedUserIds = List.of(1L, 2L, 3L, 7L, 9L, 10L);
+        when(userRemoteClient.getActivatedUsersIds(null)).thenReturn(activatedUserIds);
+
         List<UserLocationStatisticDto> mockResult = List.of(new UserLocationStatisticDto("Ukraine", 70L));
-        when(userRepo.getUserLocationsDistributionByCountry()).thenReturn(mockResult);
+        when(userRepo.getUserLocationsDistributionByCountry(activatedUserIds)).thenReturn(mockResult);
 
         List<UserLocationStatisticDto> result =
             managementUserStatisticsServiceImpl.getUserLocationsDistribution("country");
 
         assertEquals(mockResult, result);
-        verify(userRepo).getUserLocationsDistributionByCountry();
+        verify(userRepo).getUserLocationsDistributionByCountry(activatedUserIds);
     }
 }
