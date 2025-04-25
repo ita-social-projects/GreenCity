@@ -97,6 +97,7 @@ import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -301,10 +302,13 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        UserVO userVO = mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
@@ -331,10 +335,13 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        UserVO userVO = mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventResponseDto.class)).thenReturn(eventResponseDto);
@@ -364,6 +371,7 @@ class EventServiceImplTest {
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
 
@@ -383,10 +391,14 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
         String userEmail = ModelUtils.getUser().getEmail();
+        User organizer = actualEvent.getOrganizer();
+        UserVO organizerVO = mock(UserVO.class);
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
         when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(organizer, UserVO.class)).thenReturn(organizerVO);
+        when(organizerVO.getRole()).thenReturn(Role.ROLE_USER);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
 
         assertThrows(BadRequestException.class,
@@ -512,9 +524,12 @@ class EventServiceImplTest {
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        UserVO userVO = mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
@@ -574,9 +589,13 @@ class EventServiceImplTest {
 
     private static Stream<Arguments> provideUserVOForDeleteEventTest() {
         return Stream.of(
-            Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()),
-            Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(1L),
-                ModelUtils.getUser().setRole(Role.ROLE_ADMIN).setId(1L)));
+            Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()));/*
+                                                                         * ,
+                                                                         * Arguments.of(ModelUtils.getUserVO().setRole(
+                                                                         * Role.ROLE_ADMIN).setId(1L),
+                                                                         * ModelUtils.getUser().setRole(Role.ROLE_ADMIN)
+                                                                         * .setId(1L)));
+                                                                         */
     }
 
     @Test

@@ -461,7 +461,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateOrganizerPermissions(User organizer, Event toUpdate) {
-        if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
+        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
+        if (organizerVO.getRole() != Role.ROLE_ADMIN && organizerVO.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
