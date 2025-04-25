@@ -11,14 +11,12 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventCityDtoProjection;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
@@ -54,7 +52,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataAccessException;
@@ -87,7 +84,6 @@ import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getUsersHashSet;
 import static greencity.ModelUtils.testUserVo;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -101,7 +97,6 @@ import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -137,29 +132,20 @@ class EventServiceImplTest {
     @Mock
     UserRepo userRepo;
 
-    @Mock
-    LanguageService languageService;
-
-    @Mock
-    AchievementCalculation achievementCalculation;
-
-    @Mock
-    RatingCalculation ratingCalculation;
-
-    @Mock
-    SimpMessagingTemplate messagingTemplate;
-
-    @Mock
-    AchievementCategoryRepo achievementCategoryRepo;
-
-    @Mock
-    UserNotificationService userNotificationService;
-
-    @Mock
-    RatingPointsRepo ratingPointsRepo;
-
     @InjectMocks
     EventServiceImpl eventService;
+    @Mock
+    private AchievementCalculation achievementCalculation;
+    @Mock
+    private RatingCalculation ratingCalculation;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
+    @Mock
+    private UserNotificationService userNotificationService;
+    @Mock
+    private RatingPointsRepo ratingPointsRepo;
 
     @Test
     void save() {
@@ -315,13 +301,10 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
-        UserVO userVO = mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
@@ -348,13 +331,10 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
-        UserVO userVO = Mockito.mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventResponseDto.class)).thenReturn(eventResponseDto);
@@ -384,7 +364,6 @@ class EventServiceImplTest {
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
 
@@ -404,14 +383,10 @@ class EventServiceImplTest {
         UpdateEventRequestDto eventToUpdateDto = ModelUtils.getUpdateEventRequestDto();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
         String userEmail = ModelUtils.getUser().getEmail();
-        User organizer = actualEvent.getOrganizer();
-        UserVO organizerVO = mock(UserVO.class);
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
         when(modelMapper.map(eventToUpdateDto, UpdateEventDto.class)).thenReturn(updateEventDto);
         when(modelMapper.map(testUserVo, User.class)).thenReturn(ModelUtils.getUser());
-        when(modelMapper.map(organizer, UserVO.class)).thenReturn(organizerVO);
-        when(organizerVO.getRole()).thenReturn(Role.ROLE_USER);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
 
         assertThrows(BadRequestException.class,
@@ -537,12 +512,9 @@ class EventServiceImplTest {
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
-        UserVO userVO = mock(UserVO.class);
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
@@ -604,7 +576,7 @@ class EventServiceImplTest {
         return Stream.of(
             Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()),
             Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(1L),
-                ModelUtils.getUser().setId(1L)));
+                ModelUtils.getUser().setRole(Role.ROLE_ADMIN).setId(1L)));
     }
 
     @Test
@@ -2532,86 +2504,21 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityEnExists() {
+    void getPageableAllEventsAttendedByUserTest() {
         UserVO userVO = ModelUtils.getUserVO();
-        Long languageId = 4L;
-        LanguageVO languageVO = ModelUtils.getLanguageVO();
-        String userCity = "Kyiv";
-        List<EventCityDtoProjection> eventCityDtoProjections = List.of(
-            getProjection(userCity, "Київ", 1L),
-            getProjection("Dnipro", "Дніпро", 3L),
-            getProjection("Lviv", "Львів", 2L),
-            getProjection("Uzhhorod", "Ужгород", 1L));
-
-        userVO.getUserLocation().setCityEn(userCity);
-        userVO.setLanguageId(languageId);
-
-        when(languageService.findById(languageId))
-            .thenReturn(languageVO);
-        when(eventRepo.findRelevantCitiesForUser(userCity))
-            .thenReturn(eventCityDtoProjections);
-        assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
-        verify(eventRepo, times(1)).findRelevantCitiesForUser(userCity);
-    }
-
-    @Test
-    void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityUaExists() {
-        UserVO userVO = ModelUtils.getUserVO();
-        Long languageId = userVO.getLanguageId();
-        LanguageVO languageVO = ModelUtils.getLanguageVO();
-        String userCity = "Kyiv";
-        List<EventCityDtoProjection> eventCityDtoProjections = List.of(
-            getProjection("Kyiv", userCity, 1L),
-            getProjection("Dnipro", "Дніпро", 3L),
-            getProjection("Lviv", "Львів", 2L),
-            getProjection("Uzhhorod", "Ужгород", 1L));
-        userVO.getUserLocation().setCityEn(userCity);
-
-        when(languageService.findById(languageId))
-            .thenReturn(languageVO);
-        when(eventRepo.findRelevantCitiesForUser(userCity))
-            .thenReturn(eventCityDtoProjections);
-
-        assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
-        verify(eventRepo, times(1)).findRelevantCitiesForUser(userCity);
-    }
-
-    @Test
-    void getAllRelevantEventsCityByUserDoesNotThrowAnExceptionIfUserLocationIsNull() {
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setUserLocation(null);
-        Long languageId = userVO.getLanguageId();
-        LanguageVO languageVO = ModelUtils.getLanguageVO();
-        List<EventCityDtoProjection> eventCityDtoProjections = List.of(
-            getProjection("Dnipro", "Дніпро", 3L),
-            getProjection("Lviv", "Львів", 2L),
-            getProjection("Uzhhorod", "Ужгород", 1L));
-
-        when(languageService.findById(languageId))
-            .thenReturn(languageVO);
-        when(eventRepo.findRelevantCitiesForUser(anyString()))
-            .thenReturn(eventCityDtoProjections);
-
-        assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
-        verify(eventRepo, times(1)).findRelevantCitiesForUser(anyString());
-    }
-
-    private EventCityDtoProjection getProjection(String cityEn, String cityUa, Long amountOfEvents) {
-        return new EventCityDtoProjection() {
-            @Override
-            public String getCityNameEn() {
-                return cityEn;
-            }
-
-            @Override
-            public String getCityNameUk() {
-                return cityUa;
-            }
-
-            @Override
-            public Long getAmountOfEvents() {
-                return amountOfEvents;
-            }
-        };
+        Pageable pageable = PageRequest.of(0, 5);
+        List<Event> eventsList = List.of(ModelUtils.getEvent(), ModelUtils.getEvent(), ModelUtils.getEvent());
+        EventResponseDto eventResponseDto = ModelUtils.getEventResponseDto();
+        when(eventRepo.findAllAttendedEventsByUserIdPageable(pageable, userVO.getId())).thenReturn(eventsList);
+        when(modelMapper.map(any(Event.class), eq(EventResponseDto.class))).thenReturn(eventResponseDto);
+        Page<EventResponseDto> eventResponseDtoPage =
+            eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId());
+        verify(modelMapper, times(eventsList.size())).map(any(Event.class), eq(EventResponseDto.class));
+        verify(eventRepo).findAllAttendedEventsByUserIdPageable(pageable, userVO.getId());
+        assertEquals(0, eventResponseDtoPage.getNumber());
+        assertEquals(1, eventResponseDtoPage.getTotalPages());
+        assertTrue(eventResponseDtoPage.isFirst());
+        assertTrue(eventResponseDtoPage.isLast());
+        assertEquals(3, eventResponseDtoPage.getTotalElements());
     }
 }

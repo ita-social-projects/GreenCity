@@ -11,7 +11,6 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
-import greencity.dto.event.EventCityDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
@@ -20,8 +19,6 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
-import greencity.dto.language.LanguageVO;
-import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagDto;
@@ -58,6 +55,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,8 +75,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUk;
@@ -137,7 +135,6 @@ public class EventServiceImpl implements EventService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
-    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -464,8 +461,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateOrganizerPermissions(User organizer, Event toUpdate) {
-        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
-        if (organizerVO.getRole() != Role.ROLE_ADMIN && organizerVO.getRole() != Role.ROLE_MODERATOR
+        if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
@@ -1155,32 +1151,6 @@ public class EventServiceImpl implements EventService {
             .toList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO) {
-        Long languageId = userVO.getLanguageId();
-        LanguageVO language = languageService.findById(languageId);
-        String userLocale = language.getCode();
-        String userCity = AppConstant.EMPTY_STRING;
-        UserLocationDto locationDto = userVO.getUserLocation();
-        if (locationDto != null) {
-            if (AppConstant.DEFAULT_LANGUAGE_CODE.equals(userLocale)) {
-                userCity = locationDto.getCityEn() != null ? locationDto.getCityEn() : userCity;
-            } else {
-                userCity = locationDto.getCityUk() != null ? locationDto.getCityUk() : userCity;
-            }
-        }
-        return eventRepo.findRelevantCitiesForUser(userCity).stream()
-            .map(eventCityDtoProjection -> EventCityDto.builder()
-                .cityEn(eventCityDtoProjection.getCityNameEn())
-                .cityUk(eventCityDtoProjection.getCityNameUk())
-                .amountOfEvents(eventCityDtoProjection.getAmountOfEvents())
-                .build())
-            .toList();
-    }
-
     private void checkUserIdNotNull(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException(ErrorMessage.USER_ID_NULL);
@@ -1429,5 +1399,11 @@ public class EventServiceImpl implements EventService {
         event.getUsersDislikedEvents().add(modelMapper.map(user, User.class));
         eventRepo.save(event);
         return modelMapper.map(event, EventDto.class);
+    }
+
+    public Page<EventResponseDto> getPageableAllEventsAttendedByUser(Pageable pageable, Long userId) {
+        List<EventResponseDto> eventResponseDtoList = eventRepo.findAllAttendedEventsByUserIdPageable(pageable, userId)
+            .stream().map(event -> modelMapper.map(event, EventResponseDto.class)).toList();
+        return new PageImpl<>(eventResponseDtoList);
     }
 }

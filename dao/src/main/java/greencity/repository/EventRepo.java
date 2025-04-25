@@ -1,7 +1,6 @@
 package greencity.repository;
 
 import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventCityDtoProjection;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.User;
 import greencity.entity.event.Address;
@@ -27,7 +26,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
     @Query(nativeQuery = true,
         value = "SELECT DISTINCT e.* "
             + "FROM events e "
-            + "JOIN greencity_users u on u.id = e.organizer_id "
+            + "JOIN users u on u.id = e.organizer_id "
             + "JOIN events_tags ent on e.id = ent.event_id "
             + "JOIN events_dates_locations edl on e.id = edl.event_id "
             + "JOIN tag_translations tt on tt.tag_id = ent.tag_id "
@@ -136,7 +135,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                  LEFT JOIN events_tags et ON e.id = et.event_id
                  LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
                  LEFT JOIN languages l ON tt.language_id = l.id
-                 LEFT JOIN greencity_users u ON e.organizer_id = u.id
+                 LEFT JOIN users u ON e.organizer_id = u.id
         WHERE (e.id IN (:ids))
         GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id, edl_max.latest_finish_date;""")
     List<Tuple> loadEventDataByIds(List<Long> ids);
@@ -187,7 +186,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                      LEFT JOIN events_tags et ON e.id = et.event_id
                      LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
                      LEFT JOIN languages l ON tt.language_id = l.id
-                     LEFT JOIN greencity_users u ON e.organizer_id = u.id
+                     LEFT JOIN users u ON e.organizer_id = u.id
                      LEFT JOIN users_friends uf ON
                          uf.user_id = :userId AND uf.friend_id=e.organizer_id AND uf.status='FRIEND'
                      LEFT JOIN events_followers ef ON e.id = ef.event_id AND ef.user_id = :userId
@@ -256,31 +255,13 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
     List<Event> findAllAttendedEventsByUserId(Long userId);
 
     /**
-     * Retrieves cities relevant to the user, such as the user's own city (if
-     * available) and the top three cities with the highest number of events.
+     * Retrieves all events attended by the specified user.
      *
-     * @param userCity {@link String} - represents user's city or empty string if
-     *                 user does not have one.
-     * @author Andrii Danylenko
+     * @param userId   - the ID of the user whose attended events are to be
+     *                 retrieved.
+     * @param pageable {@link Pageable} - required pagination settings.
+     * @return A list of events attended by the user.
      */
-    @Query(nativeQuery = true, value = """
-        SELECT * FROM (
-                (
-                    SELECT city_en AS cityNameEn, city_uk AS cityNameUk, COUNT(*) AS amountOfEvents, 0 as priority
-                    FROM events_dates_locations
-                    WHERE city_en = ?1 OR city_uk = ?1
-                    GROUP BY city_en, city_uk
-                    LIMIT 1
-                )
-                UNION
-                (
-                    SELECT city_en AS cityNameEn, city_uk AS cityNameUk, COUNT(*) AS amountOfEvents, 1 as priority
-                    FROM events_dates_locations
-                    WHERE NOT (city_en = ?1 OR city_uk = ?1)
-                    GROUP BY city_en, city_uk
-                    LIMIT 3
-                )
-            ) AS combined
-            ORDER BY priority, amountOfEvents DESC""")
-    List<EventCityDtoProjection> findRelevantCitiesForUser(String userCity);
+    @Query("SELECT e FROM Event e JOIN e.attenders a WHERE a.id = :userId")
+    List<Event> findAllAttendedEventsByUserIdPageable(Pageable pageable, Long userId);
 }
