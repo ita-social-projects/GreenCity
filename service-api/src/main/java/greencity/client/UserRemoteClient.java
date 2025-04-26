@@ -11,6 +11,7 @@ import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -133,4 +134,13 @@ public interface UserRemoteClient {
      */
     @GetMapping("/user/activated-ids")
     List<Long> getActivatedUsersIds(@RequestParam(value = "ids", required = false) List<Long> ids);
+
+    /**
+     * Finds {@link UserVOAdvancedDto} that is not 'DEACTIVATED' by {@link UserVOAdvancedDto}'s Email.
+     *
+     * @param email {@link UserVOAdvancedDto}'s Email.
+     * @return {@link Optional} of {@link UserVOAdvancedDto}.
+     */
+    @GetMapping("/user/findNotDeactivatedByEmail")
+    Optional<UserVOAdvancedDto> findNotDeactivatedByEmailAdvanced(@RequestParam(EMAIL) String email);
 }

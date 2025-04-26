@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
 import greencity.exception.exceptions.WrongEmailException;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +17,9 @@ public class UserForListDtoMapper extends AbstractConverter<User, UserForListDto
 
     @Override
     protected UserForListDto convert(User user) {
-        Long userId = user.getId();
-        UserVO userVO = userRemoteClient.findNotDeactivatedById(userId)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+        String email = user.getEmail();
+        UserVOAdvancedDto userVO = userRemoteClient.findNotDeactivatedByEmailAdvanced(email)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
         return UserForListDto.builder()
             .id(userVO.getId())

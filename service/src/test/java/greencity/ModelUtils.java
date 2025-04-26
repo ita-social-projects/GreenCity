@@ -15,7 +15,6 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
@@ -99,7 +98,6 @@ import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
@@ -127,7 +125,6 @@ import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
 import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
-import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
 import greencity.dto.user.EcoNewsAuthorDto;
@@ -143,8 +140,8 @@ import greencity.dto.user.UserToDoListItemVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.dto.useraction.UserActionVO;
-import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.BreakTime;
@@ -187,13 +184,11 @@ import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.InvitationStatus;
 import greencity.enums.PlaceStatus;
-import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.enums.ToDoListItemStatus;
@@ -3481,5 +3476,25 @@ public class ModelUtils {
                     .longitude(1d)
                     .build())
             .build();
+    }
+
+    public static UserVOAdvancedDto getUserVOAdvancedDto() {
+        UserVOAdvancedDto advancedDto = new UserVOAdvancedDto();
+
+        advancedDto.setFirstName(TestConst.NAME);
+        advancedDto.setDateOfRegistration(LocalDateTime.of(2025, 4, 20, 13, 30));
+        advancedDto.setId(1L);
+        advancedDto.setName(TestConst.NAME);
+        advancedDto.setEmail(TestConst.EMAIL);
+        advancedDto.setRole(Role.ROLE_USER);
+        advancedDto.setUserCredo(TestConst.CREDO);
+        advancedDto.setUserStatus(ACTIVATED);
+        advancedDto.setUserLocation(UserLocationDto.builder()
+                .latitude(1d)
+                .longitude(1d)
+                .build());
+        advancedDto.setLanguageId(getLanguageVO().getId());
+
+        return advancedDto;
     }
 }

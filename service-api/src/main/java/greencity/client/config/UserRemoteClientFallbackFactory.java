@@ -11,6 +11,7 @@ import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -99,6 +100,11 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             @Override
             public List<Long> getActivatedUsersIds(List<Long> ids) {
                 throw new RuntimeException("not implemeneted");
+            }
+
+            @Override
+            public Optional<UserVOAdvancedDto> findNotDeactivatedByEmailAdvanced(String email) {
+                throw new RuntimeException("not implemented");
             }
         };
     }
