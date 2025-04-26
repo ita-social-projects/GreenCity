@@ -77,7 +77,6 @@ class CustomToDoListItemServiceImplTest {
             .id(1L)
             .name("Test Testing")
             .email("test@gmail.com")
-            .userStatus(UserStatus.ACTIVATED)
             .customToDoListItems(new ArrayList<>())
             .build();
 

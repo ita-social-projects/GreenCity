@@ -14,7 +14,6 @@
             <column name="name" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_status" type="int" />
             <column name="profile_picture" type="VARCHAR(300)" />
             <column name="user_credo" type="varchar(255)" />
             <column name="rating" type="double" />
@@ -34,7 +33,7 @@
     <changeSet id="fill-greencity-user-table" author="Maksym Kozak">
         <sql>
             INSERT INTO greencity_users
-            SELECT id, email, name, user_status, profile_picture, user_credo, rating, user_location, language_id, event_organizer_rating FROM users;
+            SELECT id, email, name, profile_picture, user_credo, rating, user_location, language_id, event_organizer_rating FROM users;
         </sql>
     </changeSet>
 </databaseChangeLog>

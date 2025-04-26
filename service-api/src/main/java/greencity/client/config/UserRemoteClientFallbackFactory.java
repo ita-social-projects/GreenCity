@@ -95,6 +95,11 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
                 LocalDateTime endDate, DateGranularity granularity) {
                 throw new RuntimeException("not implemeneted");
             }
+
+            @Override
+            public List<Long> getActivatedUsersIds(List<Long> ids) {
+                throw new RuntimeException("not implemeneted");
+            }
         };
     }
 }

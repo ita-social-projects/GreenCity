@@ -3,7 +3,6 @@ package greencity.entity;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.event.Event;
-import greencity.enums.UserStatus;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
@@ -19,8 +18,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ColumnResult;
 import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,8 +29,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.type.descriptor.jdbc.IntegerJdbcType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -202,10 +197,6 @@ public class User {
 
     @Column(nullable = false, length = 30)
     private String name;
-
-    @Enumerated(value = EnumType.ORDINAL)
-    @JdbcType(IntegerJdbcType.class)
-    private UserStatus userStatus;
 
     @Column(name = "profile_picture")
     private String profilePicturePath;

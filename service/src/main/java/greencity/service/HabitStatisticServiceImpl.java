@@ -201,8 +201,10 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     @Override
     public Map<String, Long> calculateUserInterest() {
         Long totalActiveUsers = userRemoteClient.countActiveUsers();
-        List<Long> creators = habitRepo.countActiveHabitCreators();
-        List<Long> followers = habitRepo.countActiveHabitFollowers();
+        List<Long> creatorsWithExistingHabits = habitRepo.countHabitCreators();
+        List<Long> creators = userRemoteClient.getActivatedUsersIds(creatorsWithExistingHabits);
+        List<Long> followersWithExistingHabits = habitRepo.countHabitFollowers();
+        List<Long> followers = userRemoteClient.getActivatedUsersIds(followersWithExistingHabits);
         Set<Long> participatingUsers = new HashSet<>(followers);
         participatingUsers.addAll(creators);
 
@@ -218,7 +220,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateHabitBehaviorStatistic() {
-        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus();
+        List<Long> activatedUserIds = userRemoteClient.getActivatedUsersIds(null);
+        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus(activatedUserIds);
         Map<HabitAssignStatus, Long> counts = habitStatusCounts.stream()
             .collect(Collectors.toMap(
                 HabitStatusCount::status,
