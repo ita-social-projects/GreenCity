@@ -2561,7 +2561,7 @@ class EventServiceImplTest {
             getProjection("Uzhhorod", "Ужгород", 1L));
 
         when(languageService.findById(languageId))
-                .thenReturn(languageVO);
+            .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
 
@@ -2584,7 +2584,7 @@ class EventServiceImplTest {
             getProjection("Uzhhorod", "Ужгород", 1L));
 
         when(languageService.findById(languageId))
-                .thenReturn(languageVO);
+            .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
 
@@ -2604,7 +2604,7 @@ class EventServiceImplTest {
             getProjection("Uzhhorod", "Ужгород", 1L));
 
         when(languageService.findById(languageId))
-                .thenReturn(languageVO);
+            .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(anyString()))
             .thenReturn(eventCityDtoProjections);
 
