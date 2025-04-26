@@ -268,6 +268,7 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + LIKES + COUNT,
                     EVENTS + EVENT_ID + DISLIKES + COUNT,
                     EVENTS + EVENT_ID + "/requested-users",
+                    EVENTS + "/addresses/get-relevant",
                     "/user/to-do-list-items/{userId}/get-all-inprogress",
                     "/habit/assign/{habitAssignId}/allUserAndCustomList",
                     "/habit/assign/allUserAndCustomToDoListsInprogress",
