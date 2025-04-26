@@ -39,7 +39,7 @@ public class UserRemoteClientInterceptor implements RequestInterceptor {
         ServletRequestAttributes servletRequestAttributes =
             ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
 
-        String accessToken = servletRequestAttributes != null
+        String accessToken = servletRequestAttributes.getRequest().getHeader(AUTHORIZATION_HEADER) != null
             ? servletRequestAttributes.getRequest().getHeader(AUTHORIZATION_HEADER)
             : createAccessTokenForService();
 

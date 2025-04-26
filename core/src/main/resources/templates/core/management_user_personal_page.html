@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="user-info-text" style="text-align: center"
-                     th:text="${user.userLocationDto != null ? user.userLocationDto.getCityEn() + ', Ukraine' : 'Location is not specified.'}">
+                     th:text="${user.userLocation != null ? user.userLocation.getCityEn() + ', Ukraine' : 'Location is not specified.'}">
                 </div>
 
                 <div class="block-green"
@@ -290,7 +290,7 @@
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
                                         <td class="pr">
-                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.nameEn}" > </span></a>
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
                                         </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
@@ -467,7 +467,7 @@
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
                                         <td class="pr">
-                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.nameEn}" > </span></a>
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
                                         </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
@@ -556,7 +556,7 @@
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
                                         <td class="pr">
-                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.nameEn}" > </span></a>
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
                                         </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td>
