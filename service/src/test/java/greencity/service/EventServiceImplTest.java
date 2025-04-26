@@ -18,6 +18,7 @@ import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
@@ -134,6 +135,9 @@ class EventServiceImplTest {
 
     @Mock
     UserRepo userRepo;
+
+    @Mock
+    LanguageService languageService;
 
     @InjectMocks
     EventServiceImpl eventService;
@@ -2547,14 +2551,20 @@ class EventServiceImplTest {
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityEnExists() {
         UserVO userVO = ModelUtils.getUserVO();
         String userCity = "Kyiv";
-        userVO.getUserLocationDto().setCityEn(userCity);
+        userVO.getUserLocation().setCityEn(userCity);
+        Long languageId = userVO.getLanguageId();
+        LanguageVO languageVO = ModelUtils.getLanguageVO();
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection(userCity, "Київ", 1L),
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
+
+        when(languageService.findById(languageId))
+                .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
+
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(userCity);
     }
@@ -2562,16 +2572,22 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityUaExists() {
         UserVO userVO = ModelUtils.getUserVO();
-        userVO.getLanguageVO().setCode("ua");
+        Long languageId = 1L;
+        userVO.setLanguageId(languageId);
         String userCity = "Київ";
-        userVO.getUserLocationDto().setCityUk(userCity);
+        LanguageVO languageVO = LanguageVO.builder().id(languageId).code("ua").build();
+        userVO.getUserLocation().setCityUk(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Kyiv", userCity, 1L),
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
+
+        when(languageService.findById(languageId))
+                .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
+
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(userCity);
     }
@@ -2579,13 +2595,19 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserDoesNotThrowAnExceptionIfUserLocationIsNull() {
         UserVO userVO = ModelUtils.getUserVO();
-        userVO.setUserLocationDto(null);
+        userVO.setUserLocation(null);
+        Long languageId = userVO.getLanguageId();
+        LanguageVO languageVO = ModelUtils.getLanguageVO();
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
+
+        when(languageService.findById(languageId))
+                .thenReturn(languageVO);
         when(eventRepo.findRelevantCitiesForUser(anyString()))
             .thenReturn(eventCityDtoProjections);
+
         assertDoesNotThrow(() -> eventService.getAllRelevantEventsCityByUser(userVO));
         verify(eventRepo, times(1)).findRelevantCitiesForUser(anyString());
     }

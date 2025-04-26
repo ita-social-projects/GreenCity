@@ -20,6 +20,7 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
@@ -137,6 +138,7 @@ public class EventServiceImpl implements EventService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
+    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -1415,9 +1417,12 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO) {
-        String userLocale = userVO.getLanguageVO().getCode();
+        Long languageId = userVO.getLanguageId();
+        LanguageVO languageVO = languageService.findById(languageId);
+
+        String userLocale = languageVO.getCode();
         String userCity = AppConstant.EMPTY_STRING;
-        UserLocationDto locationDto = userVO.getUserLocationDto();
+        UserLocationDto locationDto = userVO.getUserLocation();
         if (locationDto != null) {
             if (AppConstant.DEFAULT_LANGUAGE_CODE.equals(userLocale)) {
                 userCity = locationDto.getCityEn() != null ? locationDto.getCityEn() : userCity;
