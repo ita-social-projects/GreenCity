@@ -17,9 +17,9 @@ public class UserForListDtoMapper extends AbstractConverter<User, UserForListDto
 
     @Override
     protected UserForListDto convert(User user) {
-        String email = user.getEmail();
-        UserVOAdvancedDto userVO = userRemoteClient.findNotDeactivatedByEmailAdvanced(email)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        Long id = user.getId();
+        UserVOAdvancedDto userVO = userRemoteClient.findNotDeactivatedByIdAdvanced(id)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
 
         return UserForListDto.builder()
             .id(userVO.getId())
