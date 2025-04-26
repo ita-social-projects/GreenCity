@@ -136,11 +136,12 @@ public interface UserRemoteClient {
     List<Long> getActivatedUsersIds(@RequestParam(value = "ids", required = false) List<Long> ids);
 
     /**
-     * Finds {@link UserVOAdvancedDto} that is not 'DEACTIVATED' by {@link UserVOAdvancedDto}'s Email.
+     * Finds {@link UserVOAdvancedDto} that is not 'DEACTIVATED' by
+     * {@link UserVOAdvancedDto}'s id.
      *
-     * @param email {@link UserVOAdvancedDto}'s Email.
+     * @param id {@link UserVOAdvancedDto}'s id.
      * @return {@link Optional} of {@link UserVOAdvancedDto}.
      */
-    @GetMapping("/user/findNotDeactivatedByEmail")
-    Optional<UserVOAdvancedDto> findNotDeactivatedByEmailAdvanced(@RequestParam(EMAIL) String email);
+    @GetMapping("/user/findNotDeactivatedById")
+    Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(@RequestParam Long id);
 }

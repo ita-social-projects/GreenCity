@@ -103,7 +103,7 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             }
 
             @Override
-            public Optional<UserVOAdvancedDto> findNotDeactivatedByEmailAdvanced(String email) {
+            public Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(Long id) {
                 throw new RuntimeException("not implemented");
             }
         };

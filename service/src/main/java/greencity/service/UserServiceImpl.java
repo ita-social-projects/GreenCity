@@ -17,6 +17,7 @@ import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
@@ -476,5 +477,21 @@ public class UserServiceImpl implements UserService {
         List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
 
         return new PageInfoDto(currentPage, totalPages, pageNumbers);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserVOAdvancedDto findByIdAdvanced(Long id) {
+        return userRepo.findById(id)
+                .map(user -> {
+                    UserVOAdvancedDto userVOAdvancedDto = modelMapper.map(user, UserVOAdvancedDto.class);
+                    UserLocation userLocation = user.getUserLocation();
+                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                    userVOAdvancedDto.setUserLocation(userLocationDto);
+                    return userVOAdvancedDto;
+                })
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 }

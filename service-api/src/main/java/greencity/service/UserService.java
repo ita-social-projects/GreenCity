@@ -10,6 +10,7 @@ import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
@@ -213,4 +214,12 @@ public interface UserService {
      * @return {@link List} of friends ids
      */
     List<Long> getSixFriendsIdsWithTheHighestRating(Long userId);
+
+    /**
+     * Method that allows to find {@link UserVOAdvancedDto} by id.
+     *
+     * @param id a value of {@link Long}
+     * @return {@link UserVOAdvancedDto} with this id.
+     */
+    UserVOAdvancedDto findByIdAdvanced(Long id);
 }

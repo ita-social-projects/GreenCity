@@ -3490,9 +3490,9 @@ public class ModelUtils {
         advancedDto.setUserCredo(TestConst.CREDO);
         advancedDto.setUserStatus(ACTIVATED);
         advancedDto.setUserLocation(UserLocationDto.builder()
-                .latitude(1d)
-                .longitude(1d)
-                .build());
+            .latitude(1d)
+            .longitude(1d)
+            .build());
         advancedDto.setLanguageId(getLanguageVO().getId());
 
         return advancedDto;
