@@ -111,7 +111,8 @@ class OpenAIServiceImplTest {
 
     @Test
     void makeRequest_returnsErrorMessage_whenResponseContainsChoiceWithNoMessage() {
-        Map<String, Object> mockResponseBody = Collections.singletonMap("choices", List.of(Collections.singletonMap("message", null)));
+        Map<String, Object> mockResponseBody =
+            Collections.singletonMap("choices", List.of(Collections.singletonMap("message", null)));
 
         when(restTemplate.exchange(
             eq(apiUrl),
@@ -180,7 +181,6 @@ class OpenAIServiceImplTest {
             Arguments.of(
                 Map.of("choices",
                     List.of(Collections.singletonMap("message", Map.of("content", "")))),
-                "Could not get a valid response from OpenAI.")
-        );
+                "Could not get a valid response from OpenAI."));
     }
 }

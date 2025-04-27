@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,8 @@ public class JwtTokenActivityLoggingAspect {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Pointcut("execution(* greencity.security.utils.TokenUtilService.*(..))")
-    public void tokenUtilMethods() {}
+    public void tokenUtilMethods() {
+    }
 
     @Around("tokenUtilMethods()")
     public Object logAroundTokenUtilMethods(ProceedingJoinPoint joinPoint) throws Throwable {

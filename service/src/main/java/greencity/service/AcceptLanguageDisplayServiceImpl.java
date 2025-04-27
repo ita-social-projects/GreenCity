@@ -10,20 +10,29 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
- * Service implementation for determining the user's preferred language based on the `Accept-Language` HTTP header.
+ * Service implementation for determining the user's preferred language based on
+ * the `Accept-Language` HTTP header.
  *
- * <p>This service uses the {@link greencity.utils.LanguageResolverUtil} to parse the language
- * and map it to a supported language defined in {@link greencity.enums.Language}.</p>
+ * <p>
+ * This service uses the {@link greencity.utils.LanguageResolverUtil} to parse
+ * the language and map it to a supported language defined in
+ * {@link greencity.enums.Language}.
+ * </p>
  *
- * <p>If the `Accept-Language` header is missing or invalid, the service defaults to English.</p>
+ * <p>
+ * If the `Accept-Language` header is missing or invalid, the service defaults
+ * to English.
+ * </p>
  */
 @Service
 public class AcceptLanguageDisplayServiceImpl implements AcceptLanguageDisplayService {
     /**
-     * Resolves the user's preferred language based on the `Accept-Language` HTTP header.
+     * Resolves the user's preferred language based on the `Accept-Language` HTTP
+     * header.
      *
-     * @return the display name of the resolved language, as defined in {@link greencity.enums.Language}.
-     *         Defaults to English if the header is missing or invalid.
+     * @return the display name of the resolved language, as defined in
+     *         {@link greencity.enums.Language}. Defaults to English if the header
+     *         is missing or invalid.
      */
     @Override
     public String resolveLanguage() {
@@ -35,4 +44,3 @@ public class AcceptLanguageDisplayServiceImpl implements AcceptLanguageDisplaySe
         return parseLanguage(request.getHeader(ACCEPT_LANGUAGE_HEADER));
     }
 }
-

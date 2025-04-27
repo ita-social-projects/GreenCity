@@ -20,44 +20,43 @@ public class OpenAIRequest {
         Use real-world examples and persuasive language to encourage adoption.
         The response should be clear, concise, and informative.
         """;
-
     public static final String NEWS_BY_QUERY = """
         Generate a detailed and structured eco-news article.
         The response **must** be in **valid JSON format**.
-        
+
         JSON Structure:
         {
             "title": "string (max 100 characters)",
             "content": "string (5-10 paragraphs, each 3+ sentences)"
         }
-    
+
         Ensure:
         - The response is a properly formatted JSON object.
         - "title" is compelling and engaging (max 100 characters).
         - "content" is fact-based, engaging, and informative.
         - Keep total content length within 2000 characters.
-        
+
         Topic:
         """;
+    public static final String NEWS_WITHOUT_QUERY =
+        """
+             Generate a relevant and up-to-date eco-news article on a trending environmental topic.
+             The response **must** be in **valid JSON format**.
 
-    public static final String NEWS_WITHOUT_QUERY = """
-        Generate a relevant and up-to-date eco-news article on a trending environmental topic.
-        The response **must** be in **valid JSON format**.
+             JSON Structure:
+             {
+                 "title": "string (max 100 characters)",
+                 "content": "string (5-10 paragraphs, each 10+ sentences)"
+             }
 
-        JSON Structure:
-        {
-            "title": "string (max 100 characters)",
-            "content": "string (5-10 paragraphs, each 10+ sentences)"
-        }
-
-        Ensure:
-        - The response is a properly formatted JSON object.
-        - "title" is compelling and engaging (max 100 characters).
-        - "content" provides a balanced and well-structured analysis, covering the key aspects of the topic, its global impact, and potential solutions or innovations.
-        - Keep total content length within 2000 characters.
-        - Use real-world statistics and references where possible.
-        """;
-
+             Ensure:
+             - The response is a properly formatted JSON object.
+             - "title" is compelling and engaging (max 100 characters).
+             - "content" provides a balanced and well-structured analysis, \s
+             covering the key aspects of the topic, its global impact, and potential solutions or innovations.
+             - Keep total content length within 2000 characters.
+             - Use real-world statistics and references where possible.
+            \s""";
     public static final String OPENAI_SIMILARITY_PROMPT = """
         I want you to act as an expert in environmental news and sustainable development.
         Your task is to analyze the semantic meaning and context of two provided topics

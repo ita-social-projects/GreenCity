@@ -28,7 +28,6 @@ public class AIController {
     private final AIService aiService;
     private final AcceptLanguageDisplayService acceptLanguageDisplayService;
 
-
     @Operation(summary = "Makes predictions about the environmental impact of the current user")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
@@ -45,7 +44,6 @@ public class AIController {
         String forecast = aiService.getForecast(userVO.getId(), language);
         return ResponseEntity.ok(forecast);
     }
-
 
     @Operation(summary = "Generates news content based on the specified language and query")
     @ApiResponses(value = {

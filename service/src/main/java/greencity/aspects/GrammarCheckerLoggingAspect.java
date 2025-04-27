@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 public class GrammarCheckerLoggingAspect {
     @Around("execution(* greencity.service.GrammarChecker.checkGrammar(..)) && args(text)")
     public Object logGrammarCheck(ProceedingJoinPoint joinPoint, String text) throws Throwable {
-        long startTime = System.currentTimeMillis();
         log.info(CHECK_GRAMMAR_LOG_MESSAGE, text, LocalDateTime.now());
         log.debug(CHECK_GRAMMAR_DEBUG_LOG, text);
         log.trace(START_PROCESSING_LOG);
 
         Object result;
+        long startTime = System.currentTimeMillis();
         try {
             result = joinPoint.proceed();
             if (result instanceof GrammarCheckResult grammarCheckResult) {
@@ -40,12 +40,10 @@ public class GrammarCheckerLoggingAspect {
                 log.info(GRAMMAR_CHECK_COMPLETED_LOG, grammarCheckResult.getCorrectedText().length());
                 log.trace(FINAL_CORRECTED_TEXT_LOG, grammarCheckResult.getCorrectedText());
             }
-
         } catch (Exception e) {
             log.error(GRAMMAR_CHECK_ERROR_LOG, text, e.getMessage(), e);
             throw e;
         }
-
         long duration = System.currentTimeMillis() - startTime;
         log.debug(METHOD_EXECUTION_DURATION_LOG, duration);
 

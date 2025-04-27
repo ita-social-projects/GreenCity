@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class OpenAIServiceLoggingAspect {
-
     @Before("execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..)) && args(prompt)")
     public void logBeforeMakeRequest(String prompt) {
         log.info(OPENAI_REQUEST_INITIATED, prompt);
@@ -19,14 +18,16 @@ public class OpenAIServiceLoggingAspect {
         log.trace(START_REQUEST_PARAMETER_VALIDATION, prompt);
     }
 
-    @AfterReturning(value = "execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..))", returning = "response")
+    @AfterReturning(value = "execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..))",
+        returning = "response")
     public void logAfterMakeRequest(String response) {
         log.info(OPENAI_RESPONSE_RECEIVED, response);
         log.debug(RESPONSE_DETAILS, response);
         log.trace(FULL_RESPONSE_FROM_OPENAI, response);
     }
 
-    @AfterThrowing(value = "execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..))", throwing = "exception")
+    @AfterThrowing(value = "execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..))",
+        throwing = "exception")
     public void logErrorInMakeRequest(Exception exception) {
         log.error(OPENAI_REQUEST_FAILED, exception);
         log.debug(STACK_TRACE_OF_THE_ERROR, exception.getMessage(), exception);

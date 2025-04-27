@@ -153,19 +153,18 @@ public class AIServiceImpl implements AIService {
     /**
      * Retrieves relevant eco news for a user based on their habits and filters.
      *
-     * @param userId    the ID of the user.
-     * @param language  the language in which the news should be fetched.
-     * @param tags      the tags to filter news.
-     * @param title     the title to filter news.
-     * @param authorId  the ID of the author to filter news.
-     * @param favorite  whether to filter by favorite news.
+     * @param userId   the ID of the user.
+     * @param language the language in which the news should be fetched.
+     * @param tags     the tags to filter news.
+     * @param title    the title to filter news.
+     * @param authorId the ID of the author to filter news.
+     * @param favorite whether to filter by favorite news.
      * @return a list of {@link EcoNewsDto} containing relevant eco news.
      */
     @Override
     public List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language,
-                                                      List<String> tags, String title,
-                                                      Long authorId, boolean favorite)
-    {
+        List<String> tags, String title,
+        Long authorId, boolean favorite) {
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
         ecoNewsList = ecoNewsList.stream()
             .filter(ecoNews -> filterByTags(ecoNews, tags))
@@ -188,23 +187,24 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Combines relevant and general eco news for a user and returns a paginated result.
+     * Combines relevant and general eco news for a user and returns a paginated
+     * result.
      *
-     * @param userId    the ID of the user.
-     * @param language  the language in which the news should be fetched.
-     * @param pageable  the pagination information.
-     * @param tags      the tags to filter news.
-     * @param title     the title to filter news.
-     * @param authorId  the ID of the author to filter news.
-     * @param favorite  whether to filter by favorite news.
-     * @return a {@link Page} of {@link EcoNewsGenericDto} containing combined eco news.
+     * @param userId   the ID of the user.
+     * @param language the language in which the news should be fetched.
+     * @param pageable the pagination information.
+     * @param tags     the tags to filter news.
+     * @param title    the title to filter news.
+     * @param authorId the ID of the author to filter news.
+     * @param favorite whether to filter by favorite news.
+     * @return a {@link Page} of {@link EcoNewsGenericDto} containing combined eco
+     *         news.
      */
     @Override
     public Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(Long userId, String language,
-                                                             Pageable pageable, List<String> tags,
-                                                             String title, Long authorId,
-                                                             boolean favorite)
-    {
+        Pageable pageable, List<String> tags,
+        String title, Long authorId,
+        boolean favorite) {
         List<EcoNewsDto> combinedNews;
         if (userId == null) {
             combinedNews = getGeneralEcoNews(tags, title, authorId);
@@ -232,15 +232,21 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Retrieves a list of general eco news based on optional filters: tags, title, and author ID.
+     * Retrieves a list of general eco news based on optional filters: tags, title,
+     * and author ID.
      *
-     * <p>This method fetches all eco news from the repository and applies filtering:</p>
+     * <p>
+     * This method fetches all eco news from the repository and applies filtering:
+     * </p>
      * <ul>
-     *     <li>By tags, if provided</li>
-     *     <li>By title, if provided</li>
-     *     <li>By author ID, if provided</li>
+     * <li>By tags, if provided</li>
+     * <li>By title, if provided</li>
+     * <li>By author ID, if provided</li>
      * </ul>
-     * <p>Then maps the filtered {@link EcoNews} entities to {@link EcoNewsDto} objects using ModelMapper.</p>
+     * <p>
+     * Then maps the filtered {@link EcoNews} entities to {@link EcoNewsDto} objects
+     * using ModelMapper.
+     * </p>
      *
      * @param tags     list of tag names to filter by (nullable).
      * @param title    title or part of the title to match (nullable).
@@ -248,9 +254,8 @@ public class AIServiceImpl implements AIService {
      * @return a list of {@link EcoNewsDto} matching the filter criteria.
      */
     private List<EcoNewsDto> getGeneralEcoNews(List<String> tags,
-                                               String title,
-                                               Long authorId)
-    {
+        String title,
+        Long authorId) {
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
         ecoNewsList = ecoNewsList.stream()
             .filter(ecoNews -> filterByTags(ecoNews, tags))
@@ -286,7 +291,8 @@ public class AIServiceImpl implements AIService {
      * @param topic1 the first topic.
      * @param topic2 the second topic.
      * @return the relevance score between 0 and 1.
-     * @throws OpenAIRelevanceException if the relevance score is invalid or cannot be parsed.
+     * @throws OpenAIRelevanceException if the relevance score is invalid or cannot
+     *                                  be parsed.
      */
     private double analyzeRelevance(String topic1, String topic2) {
         String prompt = String.format(OPENAI_SIMILARITY_PROMPT, topic1, topic2);
@@ -341,8 +347,8 @@ public class AIServiceImpl implements AIService {
     /**
      * Fetches a forecast string based on language and habit assignments.
      *
-     * @param language      the language in which the forecast should be generated.
-     * @param habitAssigns  the list of habit assignments to include in the forecast.
+     * @param language     the language in which the forecast should be generated.
+     * @param habitAssigns the list of habit assignments to include in the forecast.
      * @return a string containing the forecast.
      */
     private String fetchForecast(String language, List<HabitAssign> habitAssigns) {
@@ -439,7 +445,8 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Converts a sanitized response string into a JSON ObjectNode containing title and content fields.
+     * Converts a sanitized response string into a JSON ObjectNode containing title
+     * and content fields.
      *
      * @param sanitizedResponse cleaned response string from an AI or other service.
      * @return an {@link ObjectNode} with extracted "title" and "content".
@@ -468,7 +475,8 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Splits a response string using a predefined new line format into title and content parts.
+     * Splits a response string using a predefined new line format into title and
+     * content parts.
      *
      * @param response the response string to split.
      * @return String array: first element is title, second (optional) is content.
@@ -501,7 +509,8 @@ public class AIServiceImpl implements AIService {
      * Constructs an {@link EcoNews} instance from a raw JSON response.
      *
      * @param jsonResponse the raw JSON response string.
-     * @return a new {@link EcoNews} object populated with parsed content and metadata.
+     * @return a new {@link EcoNews} object populated with parsed content and
+     *         metadata.
      */
     private EcoNews createEcoNewsInstance(String jsonResponse) {
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
@@ -519,7 +528,8 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Fetches an AI-generated user from the database or creates a new one if not found.
+     * Fetches an AI-generated user from the database or creates a new one if not
+     * found.
      *
      * @return {@link User} representing the AI system.
      */
@@ -551,17 +561,16 @@ public class AIServiceImpl implements AIService {
     /**
      * Constructs and returns an {@link EcoNews} entity with provided metadata.
      *
-     * @param title   the news title.
-     * @param content the news content.
+     * @param title           the news title.
+     * @param content         the news content.
      * @param aiGeneratedUser the AI-generated author user.
-     * @param tag     the tag to assign to this news.
+     * @param tag             the tag to assign to this news.
      * @return a populated {@link EcoNews} instance.
      */
     private EcoNews buildEcoNews(String title,
-                                 String content,
-                                 User aiGeneratedUser,
-                                 Tag tag)
-    {
+        String content,
+        User aiGeneratedUser,
+        Tag tag) {
         return EcoNews.builder()
             .creationDate(ZonedDateTime.now())
             .author(aiGeneratedUser)
@@ -588,7 +597,8 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Sanitizes a raw JSON response string by removing or replacing unwanted formatting characters.
+     * Sanitizes a raw JSON response string by removing or replacing unwanted
+     * formatting characters.
      *
      * @param jsonResponse the raw response to sanitize.
      * @return cleaned and standardized JSON string.
@@ -604,18 +614,19 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Validates if a given JSON string contains both required "title" and "content" fields.
+     * Validates if a given JSON string contains both required "title" and "content"
+     * fields.
      *
      * @param jsonResponse the JSON response string to check.
-     * @return true if both keys are present and contain textual values, false otherwise.
+     * @return true if both keys are present and contain textual values, false
+     *         otherwise.
      * @throws InvalidJsonFormatException if JSON parsing fails.
      */
     private boolean isJsonResponseComplete(String jsonResponse) {
         try {
             jsonResponse = jsonResponse.trim();
-            if (!jsonResponse.startsWith(OPENING_CURLY_BRACE) ||
-                !jsonResponse.endsWith(CLOSING_CURLY_BRACE))
-            {
+            if (!jsonResponse.startsWith(OPENING_CURLY_BRACE)
+                || !jsonResponse.endsWith(CLOSING_CURLY_BRACE)) {
                 jsonResponse = OPENING_CURLY_BRACE + jsonResponse + CLOSING_CURLY_BRACE;
             }
             ObjectMapper objectMapper = new ObjectMapper();
@@ -633,11 +644,13 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Attempts to extract content from a JSON response string with retries if the response is incomplete.
+     * Attempts to extract content from a JSON response string with retries if the
+     * response is incomplete.
      *
      * @param jsonResponse the raw JSON string to parse.
      * @return the "content" value if parsing is successful.
-     * @throws JsonResponseParseException if maximum retry attempts are exceeded or parsing fails.
+     * @throws JsonResponseParseException if maximum retry attempts are exceeded or
+     *                                    parsing fails.
      */
 
     private String extractContentFromJson(String jsonResponse) {
@@ -674,7 +687,8 @@ public class AIServiceImpl implements AIService {
      *
      * @param jsonResponse sanitized JSON string.
      * @return extracted content string.
-     * @throws JsonResponseParseException if parsing fails or content key is missing.
+     * @throws JsonResponseParseException if parsing fails or content key is
+     *                                    missing.
      */
     private String parseContentFromJson(String jsonResponse) {
         try {
@@ -707,9 +721,9 @@ public class AIServiceImpl implements AIService {
      * @return true if the eco news matches the tags, false otherwise.
      */
     private boolean filterByTags(EcoNews ecoNews, List<String> tags) {
-        return tags == null ||
-            tags.isEmpty() ||
-            ecoNews.getTags()
+        return tags == null
+            || tags.isEmpty()
+            || ecoNews.getTags()
                 .stream()
                 .flatMap(tag -> tag.getTagTranslations().stream())
                 .map(TagTranslation::getName)
@@ -724,9 +738,9 @@ public class AIServiceImpl implements AIService {
      * @return true if the eco news matches the title, false otherwise.
      */
     private boolean filterByTitle(EcoNews ecoNews, String title) {
-        return title == null ||
-            title.isEmpty() ||
-            ecoNews.getTitle()
+        return title == null
+            || title.isEmpty()
+            || ecoNews.getTitle()
                 .toLowerCase()
                 .contains(title.toLowerCase());
     }
@@ -739,9 +753,9 @@ public class AIServiceImpl implements AIService {
      * @return true if the eco news matches the author ID, false otherwise.
      */
     private boolean filterByAuthor(EcoNews ecoNews, Long authorId) {
-        return authorId == null ||
-            ecoNews.getAuthor() == null ||
-            ecoNews.getAuthor()
+        return authorId == null
+            || ecoNews.getAuthor() == null
+            || ecoNews.getAuthor()
                 .getId().equals(authorId);
     }
 

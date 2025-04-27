@@ -17,8 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 /**
- * Facade class for eco news-related operations.
- * Handles user authentication, filters application, and formatting of the paged response.
+ * Facade class for eco news-related operations. Handles user authentication,
+ * filters application, and formatting of the paged response.
  */
 @RequiredArgsConstructor
 @Component
@@ -30,21 +30,21 @@ public class EcoNewsFacade {
     /**
      * Retrieves filtered eco news for the authenticated user.
      *
-     * @param request   HTTP request containing the authorization token.
-     * @param page      pagination information.
-     * @param tags      list of tags to filter by (optional).
-     * @param title     title to filter by (optional).
-     * @param authorId  ID of the news author to filter by (optional).
-     * @param favorite  flag indicating whether to return only favorite news.
-     * @param language  user-selected language for content.
-     * @return          paged list of {@link EcoNewsGenericDto}, wrapped in {@link ResponseEntity}.
+     * @param request  HTTP request containing the authorization token.
+     * @param page     pagination information.
+     * @param tags     list of tags to filter by (optional).
+     * @param title    title to filter by (optional).
+     * @param authorId ID of the news author to filter by (optional).
+     * @param favorite flag indicating whether to return only favorite news.
+     * @param language user-selected language for content.
+     * @return paged list of {@link EcoNewsGenericDto}, wrapped in
+     *         {@link ResponseEntity}.
      */
     public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> getFilteredEcoNews(
         HttpServletRequest request, Pageable page,
         List<String> tags, String title,
         Long authorId, boolean favorite,
-        String language)
-    {
+        String language) {
         Optional<Long> userOpt = tokenUtilService.getUserIdFromRequest(request);
 
         if (userOpt.isEmpty()) {

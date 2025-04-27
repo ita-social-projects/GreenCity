@@ -1596,7 +1596,8 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false, 0.0);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false,
+            0.0);
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {

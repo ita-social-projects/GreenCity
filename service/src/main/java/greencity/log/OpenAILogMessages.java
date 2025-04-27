@@ -2,7 +2,6 @@ package greencity.log;
 
 import lombok.experimental.UtilityClass;
 
-
 @UtilityClass
 public class OpenAILogMessages {
     public static final String OPENAI_REQUEST_INITIATED = "Making request to OpenAI with prompt: {}";
@@ -17,7 +16,6 @@ public class OpenAILogMessages {
     public static final String STACK_TRACE_OF_THE_ERROR = "Stack trace of the error: {}";
     public static final String RESPONSE_DETAILS = "Response details: {}";
     public static final String FULL_RESPONSE_FROM_OPENAI = "Full response from OpenAI API: {}";
-    public static final String START_REQUEST_PARAMETER_VALIDATION = "Start request parameter validation for prompt: \"{}\"";
+    public static final String START_REQUEST_PARAMETER_VALIDATION =
+        "Start request parameter validation for prompt: \"{}\"";
 }
-
-

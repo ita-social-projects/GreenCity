@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
  * Utility service for extracting user-related information from JWT tokens.
  * <p>
  * This service is responsible for parsing JWT tokens found in HTTP requests,
- * extracting user emails, and retrieving corresponding user IDs from the database.
+ * extracting user emails, and retrieving corresponding user IDs from the
+ * database.
  * </p>
  */
 @Slf4j
@@ -28,15 +29,17 @@ public class TokenUtilService {
      * <p>
      * The method will:
      * <ul>
-     *     <li>Retrieve the token from the request header</li>
-     *     <li>Parse the token to extract the email</li>
-     *     <li>Look up the user by email</li>
-     *     <li>Return the user's ID if found</li>
+     * <li>Retrieve the token from the request header</li>
+     * <li>Parse the token to extract the email</li>
+     * <li>Look up the user by email</li>
+     * <li>Return the user's ID if found</li>
      * </ul>
      * </p>
      *
-     * @param request the {@link HttpServletRequest} containing the Authorization header
-     * @return an {@link Optional} containing the user ID if present and valid, otherwise {@link Optional#empty()}
+     * @param request the {@link HttpServletRequest} containing the Authorization
+     *                header
+     * @return an {@link Optional} containing the user ID if present and valid,
+     *         otherwise {@link Optional#empty()}
      */
     public Optional<Long> getUserIdFromRequest(HttpServletRequest request) {
         String token = jwtTool.getTokenFromHttpServletRequest(request);

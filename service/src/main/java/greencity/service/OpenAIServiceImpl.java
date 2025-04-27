@@ -49,8 +49,7 @@ public class OpenAIServiceImpl implements OpenAIService {
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<>() {
-                }
-            );
+                });
 
             Map<String, Object> responseBody = response.getBody();
             if (responseBody == null) {
@@ -100,14 +99,12 @@ public class OpenAIServiceImpl implements OpenAIService {
         Map<Object, String> validationResults = Map.of(
             apiKey, ERROR_API_KEY_MISSING,
             apiUrl, ERROR_API_URL_MISSING,
-            prompt, ERROR_PROMPT_MISSING
-        );
+            prompt, ERROR_PROMPT_MISSING);
         return validationResults.entrySet().stream()
-            .filter(entry -> Objects.isNull(entry.getKey()) ||
-                entry.getKey().toString().isEmpty())
+            .filter(entry -> Objects.isNull(entry.getKey())
+                || entry.getKey().toString().isEmpty())
             .map(Map.Entry::getValue)
             .findFirst()
             .orElse(null);
     }
-
 }
