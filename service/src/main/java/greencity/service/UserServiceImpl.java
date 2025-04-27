@@ -94,8 +94,10 @@ public class UserServiceImpl implements UserService {
             .map(user -> {
                 UserVO userVO = modelMapper.map(user, UserVO.class);
                 UserLocation userLocation = user.getUserLocation();
-                UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
-                userVO.setUserLocation(userLocationDto);
+                if (userLocation != null) {
+                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                    userVO.setUserLocation(userLocationDto);
+                }
                 return userVO;
             })
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -488,8 +490,10 @@ public class UserServiceImpl implements UserService {
                 .map(user -> {
                     UserVOAdvancedDto userVOAdvancedDto = modelMapper.map(user, UserVOAdvancedDto.class);
                     UserLocation userLocation = user.getUserLocation();
-                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
-                    userVOAdvancedDto.setUserLocation(userLocationDto);
+                    if (userLocation != null ) {
+                        UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                        userVOAdvancedDto.setUserLocation(userLocationDto);
+                    }
                     return userVOAdvancedDto;
                 })
                 .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
