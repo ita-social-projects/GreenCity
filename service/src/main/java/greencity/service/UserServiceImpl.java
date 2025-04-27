@@ -9,6 +9,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -497,5 +498,17 @@ public class UserServiceImpl implements UserService {
                     return userVOAdvancedDto;
                 })
                 .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName) {
+        return socialNetworks.stream()
+                .map(SocialNetworkVO::getUrl)
+                .filter(url -> url.contains(socialNetworkName))
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -222,4 +223,13 @@ public interface UserService {
      * @return {@link UserVOAdvancedDto} with this id.
      */
     UserVOAdvancedDto findByIdAdvanced(Long id);
+
+    /**
+     * Method for getting user's social network url by social network name.
+     *
+     * @param socialNetworks    - {@link List} of user's {@link SocialNetworkVO}
+     *                          instances.
+     * @param socialNetworkName - name of {@link SocialNetworkVO}.
+     */
+    String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
 }

@@ -108,11 +108,11 @@
                 </div>
 
                 <div class="social-networks"
-                     th:with="facebookUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.facebook')},
-                    instagramUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.instagram')},
-                    linkedinUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.linkedin')},
-                    twitterUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.twitter')},
-                    greencityUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.greencity')}">
+                     th:with="facebookUrl=${@userServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.facebook')},
+                    instagramUrl=${@userServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.instagram')},
+                    linkedinUrl=${@userServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.linkedin')},
+                    twitterUrl=${@userServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.twitter')},
+                    greencityUrl=${@userServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.greencity')}">
                     <div th:if="${facebookUrl}">
                         <a th:href="${facebookUrl}">
                             <img src="/img/facebook-icon.svg" alt="facebook-icon">
