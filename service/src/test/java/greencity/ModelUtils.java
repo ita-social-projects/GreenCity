@@ -724,13 +724,13 @@ public class ModelUtils {
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", false, Collections.singletonList(tag), Collections.emptySet(),
-            Collections.emptySet(), Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet(), 0.0);
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", false, Collections.singletonList(getTag()), Collections.emptySet(),
-            Collections.emptySet(), Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet(), 0.0);
     }
 
     public static EcoNewsVO getEcoNewsVO() {
@@ -1596,7 +1596,7 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0, 0, false, 0.0);
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
@@ -1619,7 +1619,7 @@ public class ModelUtils {
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
             getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0, 0,
-            false);
+            false, 0.0);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
