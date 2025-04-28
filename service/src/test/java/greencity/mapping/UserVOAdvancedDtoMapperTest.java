@@ -27,19 +27,20 @@ class UserVOAdvancedDtoMapperTest {
     @Test
     void convertTest() {
         User userToConvert = User.builder()
-                .id(1L)
-                .userAchievements(List.of(ModelUtils.getUserAchievement()))
-                .userFriends(ModelUtils.getUserFriends().stream()
-                        .map(u -> User.builder()
-                                .id(u.getId())
-                                .name(u.getName())
-                                .build()).toList())
-                .build();
+            .id(1L)
+            .userAchievements(List.of(ModelUtils.getUserAchievement()))
+            .userFriends(ModelUtils.getUserFriends().stream()
+                .map(u -> User.builder()
+                    .id(u.getId())
+                    .name(u.getName())
+                    .build())
+                .toList())
+            .build();
 
         UserVOAdvancedDto expected = ModelUtils.getUserVOAdvancedDto();
         UserVOAdvancedDto toConvert = ModelUtils.getUserVOAdvancedDtoToConvert();
         when(userRemoteClient.findNotDeactivatedByIdAdvanced(userToConvert.getId()))
-                .thenReturn(Optional.of(toConvert));
+            .thenReturn(Optional.of(toConvert));
 
         assertEquals(expected, mapper.convert(userToConvert));
     }

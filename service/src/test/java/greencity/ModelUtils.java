@@ -3509,49 +3509,49 @@ public class ModelUtils {
 
     public static List<UserVO> getUserFriends() {
         UserVO firstFriend = UserVO.builder()
-                .id(3L)
-                .name("Sasha")
-                .build();
+            .id(3L)
+            .name("Sasha")
+            .build();
 
         UserVO secondFriend = UserVO.builder()
-                .id(4L)
-                .name("Masha")
-                .build();
+            .id(4L)
+            .name("Masha")
+            .build();
 
         return List.of(firstFriend, secondFriend);
     }
 
     public static List<SocialNetworkVO> getSocialNetworkVOs() {
         SocialNetworkVO socialNetworkVO1 = SocialNetworkVO.builder()
-                .id(9L)
-                .url("http://test.com.ua")
-                .user(getUserVoShort())
-                .socialNetworkImage(getOneSocialNetworkImageVO())
-                .build();
+            .id(9L)
+            .url("http://test.com.ua")
+            .user(getUserVoShort())
+            .socialNetworkImage(getOneSocialNetworkImageVO())
+            .build();
 
         SocialNetworkVO socialNetworkVO2 = SocialNetworkVO.builder()
-                .id(10L)
-                .url("http://test-test.com.ua")
-                .user(getUserVoShort())
-                .socialNetworkImage(getOneSocialNetworkImageVO())
-                .build();
+            .id(10L)
+            .url("http://test-test.com.ua")
+            .user(getUserVoShort())
+            .socialNetworkImage(getOneSocialNetworkImageVO())
+            .build();
 
         return List.of(socialNetworkVO1, socialNetworkVO2);
     }
 
     public static SocialNetworkImageVO getOneSocialNetworkImageVO() {
         return SocialNetworkImageVO.builder()
-                .id(13L)
-                .imagePath("http://test-test.com.ua")
-                .hostPath("hostPath2")
-                .build();
+            .id(13L)
+            .imagePath("http://test-test.com.ua")
+            .hostPath("hostPath2")
+            .build();
     }
 
     public static UserVO getUserVoShort() {
         return UserVO.builder()
-                .id(1L)
-                .email("taras@gmail.com")
-                .build();
+            .id(1L)
+            .email("taras@gmail.com")
+            .build();
     }
 
     public static UserVOAdvancedDto getUserVOAdvancedDtoToConvert() {
@@ -3566,9 +3566,9 @@ public class ModelUtils {
         advancedDto.setUserCredo(TestConst.CREDO);
         advancedDto.setUserStatus(ACTIVATED);
         advancedDto.setUserLocation(UserLocationDto.builder()
-                .latitude(1d)
-                .longitude(1d)
-                .build());
+            .latitude(1d)
+            .longitude(1d)
+            .build());
         advancedDto.setLanguageId(getLanguageVO().getId());
         advancedDto.setSocialNetworks(getSocialNetworkVOs());
 
@@ -3577,7 +3577,7 @@ public class ModelUtils {
 
     public static AchievementVO getAchievementVOWithAchievementCategory() {
         return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
-                "Acquired habit 14 days", new AchievementCategoryVO(1L, "CREATE_NEWS"), null,
-                null, null);
+            "Acquired habit 14 days", new AchievementCategoryVO(1L, "CREATE_NEWS"), null,
+            null, null);
     }
 }

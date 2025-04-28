@@ -488,16 +488,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVOAdvancedDto findByIdAdvanced(Long id) {
         return userRepo.findById(id)
-                .map(user -> {
-                    UserVOAdvancedDto userVOAdvancedDto = modelMapper.map(user, UserVOAdvancedDto.class);
-                    UserLocation userLocation = user.getUserLocation();
-                    if (userLocation != null ) {
-                        UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
-                        userVOAdvancedDto.setUserLocation(userLocationDto);
-                    }
-                    return userVOAdvancedDto;
-                })
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .map(user -> {
+                UserVOAdvancedDto userVOAdvancedDto = modelMapper.map(user, UserVOAdvancedDto.class);
+                UserLocation userLocation = user.getUserLocation();
+                if (userLocation != null) {
+                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                    userVOAdvancedDto.setUserLocation(userLocationDto);
+                }
+                return userVOAdvancedDto;
+            })
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
     /**
@@ -506,9 +506,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName) {
         return socialNetworks.stream()
-                .map(SocialNetworkVO::getUrl)
-                .filter(url -> url.contains(socialNetworkName))
-                .findFirst()
-                .orElse(null);
+            .map(SocialNetworkVO::getUrl)
+            .filter(url -> url.contains(socialNetworkName))
+            .findFirst()
+            .orElse(null);
     }
 }
