@@ -4,6 +4,8 @@ import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.category.CategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
@@ -31,9 +33,15 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
                         .id(userAchievement.getId())
                         .user(UserVO.builder()
                                 .id(userAchievement.getUser().getId())
+                                .email(userAchievement.getUser().getEmail())
                                 .build())
                         .achievement(AchievementVO.builder()
                                 .id(userAchievement.getAchievement().getId())
+                                .title(userAchievement.getAchievement().getTitle())
+                                .nameEn(userAchievement.getAchievement().getNameEn())
+                                .nameUk(userAchievement.getAchievement().getNameUk())
+                                .achievementCategory(new AchievementCategoryVO(userAchievement.getAchievement().getAchievementCategory().getId(),
+                                        userAchievement.getAchievement().getAchievementCategory().getName()))
                                 .build())
                         .build())
                 .toList() : new ArrayList<>());
