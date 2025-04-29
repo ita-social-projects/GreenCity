@@ -52,6 +52,8 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
                 .build())
             .toList() : null);
 
+        userVOAdvancedDto.setRating(user.getRating());
+
         return userVOAdvancedDto;
     }
 }

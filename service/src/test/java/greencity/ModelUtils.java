@@ -3499,6 +3499,7 @@ public class ModelUtils {
         advancedDto.setUserAchievements(List.of(getUserAchievementVO()));
         advancedDto.setUserFriends(getUserFriends());
         advancedDto.setSocialNetworks(getSocialNetworkVOs());
+        advancedDto.setRating(10.0);
 
         return advancedDto;
     }

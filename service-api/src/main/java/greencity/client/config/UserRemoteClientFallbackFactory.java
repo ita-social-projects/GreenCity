@@ -2,7 +2,9 @@ package greencity.client.config;
 
 import feign.hystrix.FallbackFactory;
 import greencity.client.UserRemoteClient;
+import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
@@ -14,7 +16,11 @@ import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +112,37 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
             public Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(Long id) {
                 throw new RuntimeException("not implemented");
             }
+
+            @Override
+            public PageableDto<SocialNetworkImageResponseDTO> getAllSocialNetworkImagesRemote(Pageable pageable) {
+                throw new RuntimeException("not implemented");
+            }
+
+//            @Override
+//            public void saveSocialImageRemote(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile file) {
+//                throw new RuntimeException("not implemented");
+//            }
+
+            @Override
+            public Long deleteSocialImage(Long id) {
+                throw new RuntimeException("not implemented");
+            }
+
+            @Override
+            public List<Long> deleteAllImages(@RequestBody List<Long> listId) {
+                throw new RuntimeException("not implemented");
+            }
+
+            @Override
+            public SocialNetworkImageResponseDTO getEcoNewsById(@RequestParam("id") Long id) {
+                throw new RuntimeException("not implemented");
+            }
+
+//            @Override
+//            public void updateSocialImage(@RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+//                                          @RequestPart(required = false, name = "file") MultipartFile file) {
+//                throw new RuntimeException("not implemented");
+//            }
         };
     }
 }
