@@ -35,7 +35,6 @@ public class UserRemoteClientConfig {
     @Value("${webclient.response-timeout-millis}")
     private Integer responseTimeoutMillis;
 
-
     private final JwtTool jwtTool;
 
     @Bean
