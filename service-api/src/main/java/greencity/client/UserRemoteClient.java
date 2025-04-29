@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
@@ -84,7 +85,7 @@ public interface UserRemoteClient {
      *
      * @return boolean of whether UserNotificationPreference exists
      */
-    @GetMapping("/user-notification-preference/search")
+    @PostMapping("/user-notification-preference/search")
     Boolean searchUserNotificationPreference(@RequestBody EmailPreferenceDto emailPreferenceDto);
 
     /**
