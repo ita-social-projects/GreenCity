@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserDto;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserProfileDtoRequest;
@@ -167,5 +168,23 @@ public class UserController {
         @RequestBody UserAddRatingDto userAddRatingDto) {
         userService.increaseUserRating(userAddRatingDto);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to synchronize GreenCity user entity with GreenCityUser entity.
+     * Used by {@link greencity.client.UserRemoteClient} as remote endpoint.
+     *
+     */
+    @Operation(summary = "Updates common GreenCity and GreenCityUser common users' fields.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @PatchMapping("/update")
+    public ResponseEntity<Boolean> updateUser(@RequestBody UpdateUserDto updateUserDto) {
+        return ResponseEntity.ok(userService.update(updateUserDto));
     }
 }

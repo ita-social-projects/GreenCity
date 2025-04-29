@@ -87,6 +87,7 @@ public class SecurityConfig {
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
     public static final String LOGS = "/logs/**";
+    public static final String USERS = "/users";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -389,7 +390,8 @@ public class SecurityConfig {
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend",
-                    HABIT_INVITE + INVITATION_ID + "/accept")
+                    HABIT_INVITE + INVITATION_ID + "/accept",
+                    USERS + "/update")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,

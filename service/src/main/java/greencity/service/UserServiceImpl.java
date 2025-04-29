@@ -9,6 +9,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserDto;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -23,12 +24,14 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import greencity.enums.UserUpdateType;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.InsufficientLocationDataException;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.mapping.UpdateUserDtoUserMapper;
 import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserLocationRepo;
 import greencity.repository.UserRepo;
@@ -46,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -62,6 +66,7 @@ public class UserServiceImpl implements UserService {
     private final UserRemoteClient userRemoteClient;
     private final UserLocationRepo userLocationRepo;
     private final GoogleApiService googleApiService;
+    private final UpdateUserDtoUserMapper updateUserDtoUserMapper;
 
     @Value("300000")
     private long timeAfterLastActivity;
@@ -93,8 +98,10 @@ public class UserServiceImpl implements UserService {
             .map(user -> {
                 UserVO userVO = modelMapper.map(user, UserVO.class);
                 UserLocation userLocation = user.getUserLocation();
-                UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
-                userVO.setUserLocation(userLocationDto);
+                if (userLocation != null) {
+                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                    userVO.setUserLocation(userLocationDto);
+                }
                 return userVO;
             })
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -476,5 +483,31 @@ public class UserServiceImpl implements UserService {
         List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
 
         return new PageInfoDto(currentPage, totalPages, pageNumbers);
+    }
+
+    /***
+     * {@inheritDoc}
+     */
+    public boolean update(UpdateUserDto updateUserDto) {
+        User user;
+        System.out.println(updateUserDto.getUserUpdateType());
+        if (!Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.CREATE)) {
+            user = userRepo.findByEmail(updateUserDto.getEmail()).orElseThrow(() ->
+                    new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
+            updateUserDtoUserMapper.merge(updateUserDto, user);
+        }
+        else {
+            UserVO userVO = UserVO.builder()
+                    .userLocation(updateUserDto.getUserLocation())
+                    .email(updateUserDto.getEmail())
+                    .name(updateUserDto.getName())
+                    .userCredo(updateUserDto.getUserCredo())
+                    .languageId(updateUserDto.getLanguage().getId())
+                    .profilePicturePath(updateUserDto.getProfilePicturePath())
+                    .build();
+            user = updateUserDtoUserMapper.merge(updateUserDto, modelMapper.map(userVO, User.class));
+        }
+        userRepo.save(user);
+        return true;
     }
 }
