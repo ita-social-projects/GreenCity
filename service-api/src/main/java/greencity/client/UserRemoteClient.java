@@ -252,7 +252,7 @@ public class UserRemoteClient {
             .uri(uriBuilder -> uriBuilder.path(path)
                 .queryParam("start-date", startDate)
                 .queryParam("end-date", endDate)
-                .queryParam("granularity", granularity)
+                .queryParam("granularity", granularity.name())
                 .build())
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<UserRegistrationStatisticDto>>() {
@@ -293,7 +293,7 @@ public class UserRemoteClient {
      * @return {@link Optional} of {@link UserVOAdvancedDto}.
      */
     public Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(Long id) {
-        String path = "/user/findNotDeactivatedById";
+        String path = "/user/findNotDeactivatedByIdAdvanced";
 
         UserVOAdvancedDto userVO = webClient.get()
             .uri(uriBuilder -> uriBuilder.path(path)
