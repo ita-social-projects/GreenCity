@@ -24,19 +24,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@FeignClient(
-    name = "user-remote-client",
-    url = "${greencityuser.server.address}",
-    configuration = UserRemoteClientInterceptor.class,
-    fallbackFactory = UserRemoteClientFallbackFactory.class)
-@Component
-public interface UserRemoteClient {
-    String EMAIL = "email";
+@Service
+@RequiredArgsConstructor
+public class UserRemoteClient {
+
+    private final WebClient webClient;
+
+    private static final String PAGE_QUERY_PARAM = "page";
+    private static final String PAGE_SIZE_QUERY_PARAM = "size";
+    private static final String USER_EMAIL_QUERY_PARAM = "email";
+    private static final String ID_QUERY_PARAM = "id";
 
     /**
      * Finds {@link UserVO} that is not 'DEACTIVATED' by {@link UserVO}'s Email.
@@ -44,8 +51,19 @@ public interface UserRemoteClient {
      * @param email {@link UserVO}'s Email.
      * @return {@link Optional} of {@link UserVO}.
      */
-    @GetMapping("/user/findNotDeactivatedByEmail")
-    Optional<UserVO> findNotDeactivatedByEmail(@RequestParam(EMAIL) String email);
+    public Optional<UserVO> findNotDeactivatedByEmail(String email) {
+        String path = "/user/findNotDeactivatedByEmail";
+        UserVO userVO = webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam(USER_EMAIL_QUERY_PARAM, email)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(UserVO.class)
+                .block();
+        return Optional.ofNullable(userVO);
+    }
 
     /**
      * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by id.
@@ -53,44 +71,145 @@ public interface UserRemoteClient {
      * @param id - {@link UserVO}'s id
      * @return {@link Optional} of found {@link UserVO}.
      */
-    @GetMapping("/user/findNotDeactivatedById")
-    Optional<UserVO> findNotDeactivatedById(@RequestParam Long id);
+    public Optional<UserVO> findNotDeactivatedById(Long id) {
+        String path = "/user/findNotDeactivatedById";
+        UserVO userVO = webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam(ID_QUERY_PARAM, id)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(UserVO.class)
+                .block();
+        return Optional.ofNullable(userVO);
+    }
 
-    @PatchMapping("/user/status")
-    Optional<UserStatusDto> updateUserStatus(@RequestBody UserStatusDto userStatusDto);
+    /**
+     * Updates user status.
+     *
+     * @param userStatusDto user status data
+     * @return {@link Optional} of updated {@link UserStatusDto}
+     */
+    public Optional<UserStatusDto> updateUserStatus(UserStatusDto userStatusDto) {
+        String path = "/user/status";
+        UserStatusDto updatedStatus = webClient.patch()
+                .uri(path)
+                .bodyValue(userStatusDto)
+                .retrieve()
+                .bodyToMono(UserStatusDto.class)
+                .block();
+        return Optional.ofNullable(updatedStatus);
+    }
 
-    @PatchMapping("/user/{id}/role")
-    Optional<UserRoleDto> updateUserRole(
-        @PathVariable Long id,
-        @RequestBody Map<String, String> body);
+    /**
+     * Updates user role.
+     *
+     * @param id   user id
+     * @param body map containing role information
+     * @return {@link Optional} of updated {@link UserRoleDto}
+     */
+    public Optional<UserRoleDto> updateUserRole(Long id, Map<String, String> body) {
+        String path = "/user/{id}/role";
+        UserRoleDto updatedRole = webClient.patch()
+                .uri(uriBuilder -> uriBuilder.path(path).build(id))
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(UserRoleDto.class)
+                .block();
+        return Optional.ofNullable(updatedRole);
+    }
 
-    @GetMapping("/user/roles-distribution")
-    List<UserRoleStatisticDto> getUserRolesDistribution();
+    /**
+     * Gets user roles distribution.
+     *
+     * @return List of {@link UserRoleStatisticDto}
+     */
+    public List<UserRoleStatisticDto> getUserRolesDistribution() {
+        String path = "/user/roles-distribution";
+        return webClient.get()
+                .uri(path)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserRoleStatisticDto>>() {})
+                .block();
+    }
 
-    @GetMapping("/user/statuses-distribution")
-    List<UserStatusStatisticDto> getUserStatusesDistribution();
+    /**
+     * Gets user statuses distribution.
+     *
+     * @return List of {@link UserStatusStatisticDto}
+     */
+    public List<UserStatusStatisticDto> getUserStatusesDistribution() {
+        String path = "/user/statuses-distribution";
+        return webClient.get()
+                .uri(path)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserStatusStatisticDto>>() {})
+                .block();
+    }
 
-    @GetMapping("/user/email-preferences-distribution")
-    List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution();
+    /**
+     * Gets user email preferences distribution.
+     *
+     * @return List of {@link UserEmailPreferencesStatisticDto}
+     */
+    public List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution() {
+        String path = "/user/email-preferences-distribution";
+        return webClient.get()
+                .uri(path)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserEmailPreferencesStatisticDto>>() {})
+                .block();
+    }
 
-    @GetMapping("/user/count-active-users")
-    Long countActiveUsers();
+    /**
+     * Counts active users.
+     *
+     * @return count of active users
+     */
+    public Long countActiveUsers() {
+        String path = "/user/count-active-users";
+        return webClient.get()
+                .uri(path)
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
+    }
 
     /**
      * Get user notification preferences by user id.
      *
+     * @param id user id
      * @return list of {@link UserNotificationPreferenceVO}
      */
-    @GetMapping("/user-notification-preference")
-    List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(@RequestParam Long userId);
+    public List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(Long id) {
+        String path = "/user-notification-preference";
+        return webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam(ID_QUERY_PARAM, id)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserNotificationPreferenceVO>>() {})
+                .block();
+    }
 
     /**
      * Check is user notification preference exists by params in EmailPreferenceDto.
      *
+     * @param emailPreferenceDto email preference data
      * @return boolean of whether UserNotificationPreference exists
      */
-    @GetMapping("/user-notification-preference/search")
-    Boolean searchUserNotificationPreference(@RequestBody EmailPreferenceDto emailPreferenceDto);
+    public Boolean searchUserNotificationPreference(EmailPreferenceDto emailPreferenceDto) {
+        String path = "/user-notification-preference/search";
+        return webClient.post()
+                .uri(path)
+                .bodyValue(emailPreferenceDto)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+    }
 
     /**
      * The method checks by id if a {@link UserVO} is online.
@@ -98,8 +217,14 @@ public interface UserRemoteClient {
      * @param userId id of the user
      * @return boolean of whether user by that id is online.
      */
-    @GetMapping("/user/isOnline/{userId}/")
-    Boolean checkIfTheUserIsOnline(@PathVariable Long userId);
+    public Boolean checkIfTheUserIsOnline(Long userId) {
+        String path = "/user/isOnline/{userId}/";
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(path).build(userId))
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+    }
 
     /**
      * Find users by email preference and email periodicity.
@@ -108,10 +233,20 @@ public interface UserRemoteClient {
      * @param periodicity     email periodicity.
      * @return list of {@link UserVO}
      */
-    @GetMapping("/user/email")
-    List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
-        @RequestParam("email-preference") String emailPreference,
-        @RequestParam("email-periodicity") String periodicity);
+    public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
+            String emailPreference, String periodicity) {
+        String path = "/user/email";
+        return webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam("email-preference", emailPreference)
+                                .queryParam("email-periodicity", periodicity)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {})
+                .block();
+    }
 
     /**
      * Method to get list of dates and counts of registered users.
@@ -121,11 +256,21 @@ public interface UserRemoteClient {
      * @param granularity {@link DateGranularity} (eg. day, week, month, year).
      * @return {@link List} of {@link UserRegistrationStatisticDto}.
      */
-    @GetMapping("/user/registration-statistics")
-    List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(
-        @RequestParam("start-date") LocalDateTime startDate,
-        @RequestParam("end-date") LocalDateTime endDate,
-        @RequestParam("granularity") DateGranularity granularity);
+    public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(
+            LocalDateTime startDate, LocalDateTime endDate, DateGranularity granularity) {
+        String path = "/user/registration-statistics";
+        return webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam("start-date", startDate)
+                                .queryParam("end-date", endDate)
+                                .queryParam("granularity", granularity)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserRegistrationStatisticDto>>() {})
+                .block();
+    }
 
     /**
      * Retrieves the list of IDs of users who have the user status set to
@@ -136,8 +281,20 @@ public interface UserRemoteClient {
      * @return a list of {@code Long} values representing the IDs of all activated
      *         users
      */
-    @GetMapping("/user/activated-ids")
-    List<Long> getActivatedUsersIds(@RequestParam(value = "ids", required = false) List<Long> ids);
+    public List<Long> getActivatedUsersIds(List<Long> ids) {
+        String path = "/user/activated-ids";
+        return webClient.get()
+                .uri(uriBuilder -> {
+                    uriBuilder = uriBuilder.path(path);
+                    if (ids != null && !ids.isEmpty()) {
+                        uriBuilder = uriBuilder.queryParam("ids", ids);
+                    }
+                    return uriBuilder.build();
+                })
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .block();
+    }
 
     /**
      * Finds {@link UserVOAdvancedDto} that is not 'DEACTIVATED' by
