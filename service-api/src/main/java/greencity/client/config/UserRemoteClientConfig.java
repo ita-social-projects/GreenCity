@@ -21,7 +21,7 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class UserRemoteWebClientConfig {
+public class UserRemoteClientConfig {
 
     @Value("${greencityuser.server.address}")
     private String greenCityUserBaseUrl;
