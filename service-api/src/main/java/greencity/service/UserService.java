@@ -220,7 +220,8 @@ public interface UserService {
     /**
      * Method to synchronize GreenCity user entity with GreenCityUser entity.
      *
-     * @param updateUserDto {@link UpdateUserDto} - represents new values for user {@link UserVO} entity.
+     * @param updateUserDto {@link UpdateUserDto} - represents new values for user
+     *                      {@link UserVO} entity.
      * @return {@link Boolean} - represents update state.
      */
     boolean update(UpdateUserDto updateUserDto);

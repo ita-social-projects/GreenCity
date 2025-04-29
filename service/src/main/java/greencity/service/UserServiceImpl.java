@@ -494,18 +494,18 @@ public class UserServiceImpl implements UserService {
         User user;
         System.out.println(updateUserDto.getUserUpdateType());
         if (!Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.CREATE)) {
-            user = userRepo.findByEmail(updateUserDto.getEmail()).orElseThrow(() ->
-                    new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
+            user = userRepo.findByEmail(updateUserDto.getEmail()).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
             UserVO userVO = UserVO.builder()
-                    .userLocation(updateUserDto.getUserLocation())
-                    .email(updateUserDto.getEmail())
-                    .name(updateUserDto.getName())
-                    .userCredo(updateUserDto.getUserCredo())
-                    .languageId(updateUserDto.getLanguage().getId())
-                    .profilePicturePath(updateUserDto.getProfilePicturePath())
-                    .build();
+                .userLocation(updateUserDto.getUserLocation())
+                .email(updateUserDto.getEmail())
+                .name(updateUserDto.getName())
+                .userCredo(updateUserDto.getUserCredo())
+                .languageId(updateUserDto.getLanguage().getId())
+                .profilePicturePath(updateUserDto.getProfilePicturePath())
+                .build();
             user = updateUserDtoUserMapper.merge(updateUserDto, modelMapper.map(userVO, User.class));
         }
         userRepo.save(user);

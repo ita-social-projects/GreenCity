@@ -1,6 +1,5 @@
 package greencity.dto.user;
 
-
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.UserLocationDto;
 import greencity.enums.UserUpdateType;
@@ -8,7 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
- * This class represents common fields for GreenCity and GreenCityUser user {@link UserVO} entity
+ * This class represents common fields for GreenCity and GreenCityUser user.
+ * {@link UserVO} entity
  */
 @Data
 public class UpdateUserDto {

@@ -8,7 +8,6 @@ import greencity.enums.UserUpdateType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
 import java.util.Objects;
 
 @Component
@@ -36,13 +35,10 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getLanguage() != null) {
                 user.setLanguage(null);
             }
-
-        }
-        else {
+        } else {
             if (updateUserDto.getUserLocation() != null) {
                 user.setUserLocation(
-                        modelMapper.map(updateUserDto.getUserLocation(), UserLocation.class)
-                );
+                    modelMapper.map(updateUserDto.getUserLocation(), UserLocation.class));
             }
             if (updateUserDto.getUserCredo() != null) {
                 user.setUserCredo(updateUserDto.getUserCredo());
@@ -58,9 +54,9 @@ public class UpdateUserDtoUserMapper {
             }
             if (updateUserDto.getLanguage() != null) {
                 user.setLanguage(Language.builder()
-                        .id(updateUserDto.getLanguage().getId())
-                        .code(updateUserDto.getLanguage().getCode())
-                        .build());
+                    .id(updateUserDto.getLanguage().getId())
+                    .code(updateUserDto.getLanguage().getCode())
+                    .build());
             }
         }
         return user;
