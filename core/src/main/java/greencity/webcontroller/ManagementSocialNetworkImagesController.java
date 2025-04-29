@@ -25,7 +25,8 @@ public class ManagementSocialNetworkImagesController {
     private final SocialNetworkImageService socialNetworkImageService;
 
     /**
-     * Method that returns management page with all {@link SocialNetworkImageResponseDTO}.
+     * Method that returns management page with all
+     * {@link SocialNetworkImageResponseDTO}.
      *
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
@@ -34,36 +35,39 @@ public class ManagementSocialNetworkImagesController {
      */
     @GetMapping
     public String getAllSocialNetworkImages(Model model,
-                                            @Parameter(hidden = true) Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable) {
         PageableDto<SocialNetworkImageResponseDTO> socialNetworkImages = socialNetworkImageService.findAll(pageable);
         model.addAttribute("pageable", socialNetworkImages);
         return "core/management_social_network_images";
     }
 
-//    /**
-//     * Method for creating SocialNetworkImage.
-//     *
-//     * @param socialNetworkImageRequestDTO dto for SocialNetworkImage
-//     * entity.
-//     * @param file                         of {@link MultipartFile}
-//     * @return {@link GenericResponseDto} with of operation and errors fields.
-//     */
-//    @Operation(summary = "Save SocialNetworkImages.")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-//                    content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
-//            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
-//    })
-//    @ResponseBody
-//    @PostMapping("/")
-//    public GenericResponseDto save(@Valid @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-//                                   BindingResult bindingResult,
-//                                   @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
-//        if (!bindingResult.hasErrors()) {
-//            socialNetworkImageService.save(socialNetworkImageRequestDTO, file);
-//        }
-//        return buildGenericResponseDto(bindingResult);
-//    }
+    // /**
+    // * Method for creating SocialNetworkImage.
+    // *
+    // * @param socialNetworkImageRequestDTO dto for SocialNetworkImage
+    // * entity.
+    // * @param file of {@link MultipartFile}
+    // * @return {@link GenericResponseDto} with of operation and errors fields.
+    // */
+    // @Operation(summary = "Save SocialNetworkImages.")
+    // @ApiResponses(value = {
+    // @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+    // content = @Content(schema = @Schema(implementation =
+    // GenericResponseDto.class))),
+    // @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    // })
+    // @ResponseBody
+    // @PostMapping("/")
+    // public GenericResponseDto save(@Valid @RequestPart
+    // SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+    // BindingResult bindingResult,
+    // @ImageValidation @RequestParam(required = false, name = "file") MultipartFile
+    // file) {
+    // if (!bindingResult.hasErrors()) {
+    // socialNetworkImageService.save(socialNetworkImageRequestDTO, file);
+    // }
+    // return buildGenericResponseDto(bindingResult);
+    // }
 
     /**
      * Method which deteles SocialNetworkImage by given id.
@@ -100,27 +104,29 @@ public class ManagementSocialNetworkImagesController {
         return ResponseEntity.status(HttpStatus.OK).body(socialNetworkImageService.findDtoById(id));
     }
 
-//    /**
-//     * Method which updates {@link SocialNetworkImageVO}.
-//     *
-//     * @param socialNetworkImageResponseDTO of
-//     *                                      {@link SocialNetworkImageResponseDTO}.
-//     * @param file                          of {@link MultipartFile}.
-//     * @return {@link GenericResponseDto} with of operation and errors fields.
-//     */
-//    @Operation(summary = "Update Econews.")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-//            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
-//    })
-//    @ResponseBody
-//    @PutMapping("/")
-//    public GenericResponseDto update(@Valid @RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-//                                     BindingResult bindingResult,
-//                                     @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
-//        if (!bindingResult.hasErrors()) {
-//            socialNetworkImageService.update(socialNetworkImageResponseDTO, file);
-//        }
-//        return buildGenericResponseDto(bindingResult);
-//    }
+    // /**
+    // * Method which updates {@link SocialNetworkImageVO}.
+    // *
+    // * @param socialNetworkImageResponseDTO of
+    // * {@link SocialNetworkImageResponseDTO}.
+    // * @param file of {@link MultipartFile}.
+    // * @return {@link GenericResponseDto} with of operation and errors fields.
+    // */
+    // @Operation(summary = "Update Econews.")
+    // @ApiResponses(value = {
+    // @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+    // @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    // })
+    // @ResponseBody
+    // @PutMapping("/")
+    // public GenericResponseDto update(@Valid @RequestPart
+    // SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+    // BindingResult bindingResult,
+    // @ImageValidation @RequestPart(required = false, name = "file") MultipartFile
+    // file) {
+    // if (!bindingResult.hasErrors()) {
+    // socialNetworkImageService.update(socialNetworkImageResponseDTO, file);
+    // }
+    // return buildGenericResponseDto(bindingResult);
+    // }
 }

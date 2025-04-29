@@ -35,7 +35,7 @@ class UserVOAdvancedDtoMapperTest {
                     .name(u.getName())
                     .build())
                 .toList())
-                .rating(10.0)
+            .rating(10.0)
             .build();
 
         UserVOAdvancedDto expected = ModelUtils.getUserVOAdvancedDto();

@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -159,19 +158,21 @@ public interface UserRemoteClient {
     @GetMapping("/management/socialnetworkimages/get-all-remote")
     PageableDto<SocialNetworkImageResponseDTO> getAllSocialNetworkImagesRemote(Pageable pageable);
 
-//    /**
-//     * Method for creating SocialNetworkImageVO.
-//     *
-//     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
-//     *                                     entity.
-//     * @param file                         of {@link MultipartFile}
-//     */
-//    @PostMapping(
-//            value = "/management/socialnetworkimages/save-remote",
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-//    )
-//    void saveSocialImageRemote(@Valid @RequestPart("socialNetworkImageRequestDTO") SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-//                               @RequestPart(required = false, name = "file") MultipartFile file);
+    // /**
+    // * Method for creating SocialNetworkImageVO.
+    // *
+    // * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
+    // * entity.
+    // * @param file of {@link MultipartFile}
+    // */
+
+    // * @PostMapping( value = "/management/socialnetworkimages/save-remote",
+    // consumes
+    // * = MediaType.MULTIPART_FORM_DATA_VALUE ) void
+    // * saveSocialImageRemote(@Valid @RequestPart("socialNetworkImageRequestDTO")
+    // * SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+    // *
+    // * @RequestPart(required = false, name = "file") MultipartFile file);
 
     /**
      * Method which deletes SocialNetworkImageVO by given id.
@@ -200,14 +201,17 @@ public interface UserRemoteClient {
     @GetMapping("/management/socialnetworkimages/find")
     SocialNetworkImageResponseDTO getEcoNewsById(@RequestParam("id") Long id);
 
-//    /**
-//     * Method which updates SocialNetworkImage.
-//     *
-//     * @param socialNetworkImageResponseDTO of
-//     *                                      {@link SocialNetworkImageResponseDTO}.
-//     * @param file                          of {@link MultipartFile}.
-//     */
-//    @PutMapping("/management/socialnetworkimages/")
-//    void updateSocialImage(@Valid @RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-//                                     @RequestPart(required = false, name = "file") MultipartFile file);
+    // /**
+    // * Method which updates SocialNetworkImage.
+    // *
+    // * @param socialNetworkImageResponseDTO of
+    // * {@link SocialNetworkImageResponseDTO}.
+    // * @param file of {@link MultipartFile}.
+    // */
+
+    // * @PutMapping("/management/socialnetworkimages/") void
+    // * updateSocialImage(@Valid @RequestPart SocialNetworkImageResponseDTO
+    // * socialNetworkImageResponseDTO,
+    // *
+    // * @RequestPart(required = false, name = "file") MultipartFile file);
 }

@@ -35,14 +35,15 @@ public interface SocialNetworkImageService {
      */
     void deleteAll(List<Long> listId);
 
-//    /**
-//     * Method for creating {@link SocialNetworkImageVO} instance.
-//     *
-//     * @param socialNetworkImageRequestDTO - dto with
-//     *                                     {@link SocialNetworkImageRequestDTO}
-//     *                                     title, text, image path.
-//     */
-//    void save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile image);
+    // /**
+    // * Method for creating {@link SocialNetworkImageVO} instance.
+    // *
+    // * @param socialNetworkImageRequestDTO - dto with
+    // * {@link SocialNetworkImageRequestDTO}
+    // * title, text, image path.
+    // */
+    // void save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+    // MultipartFile image);
 
     /**
      * Method for getting the {@link SocialNetworkImageResponseDTO} instance by its
@@ -53,11 +54,12 @@ public interface SocialNetworkImageService {
      */
     SocialNetworkImageResponseDTO findDtoById(Long id);
 
-//    /**
-//     * Method for updating {@link SocialNetworkImageVO} instance.
-//     *
-//     * @param socialNetworkImageResponseDTO - instance of
-//     *                                      {@link SocialNetworkImageVO}.
-//     */
-//    void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile multipartFile);
+    // /**
+    // * Method for updating {@link SocialNetworkImageVO} instance.
+    // *
+    // * @param socialNetworkImageResponseDTO - instance of
+    // * {@link SocialNetworkImageVO}.
+    // */
+    // void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+    // MultipartFile multipartFile);
 }

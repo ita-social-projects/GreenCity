@@ -28,14 +28,13 @@ public class SocialNetworkImageServiceImplTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         List<SocialNetworkImageResponseDTO> expectedDTOs =
-                List.of(new SocialNetworkImageResponseDTO(1L, "http://somepath.ua", "http://somehostpath.ua"));
+            List.of(new SocialNetworkImageResponseDTO(1L, "http://somepath.ua", "http://somehostpath.ua"));
 
         when(userRemoteClient.getAllSocialNetworkImagesRemote(pageable)).thenReturn(new PageableDto<>(
-                expectedDTOs,
-                expectedDTOs.size(),
-                0,
-                1
-        ));
+            expectedDTOs,
+            expectedDTOs.size(),
+            0,
+            1));
 
         PageableDto<SocialNetworkImageResponseDTO> result = socialNetworkImageService.findAll(pageable);
 
@@ -63,7 +62,8 @@ public class SocialNetworkImageServiceImplTest {
     @Test
     void findDtoByIdTest() {
         Long toSearch = 2L;
-        SocialNetworkImageResponseDTO expected = new SocialNetworkImageResponseDTO(1L, "http://somepath.ua", "http://somehostpath.ua");
+        SocialNetworkImageResponseDTO expected =
+            new SocialNetworkImageResponseDTO(1L, "http://somepath.ua", "http://somehostpath.ua");
         when(userRemoteClient.getEcoNewsById(toSearch)).thenReturn(expected);
 
         SocialNetworkImageResponseDTO result = socialNetworkImageService.findDtoById(toSearch);

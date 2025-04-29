@@ -33,7 +33,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     /**
      * Method for deleting SocialNetworkImage by its id.
      *
-     * @param id SocialNetworkImage id instance on the user microservice which will be deleted.
+     * @param id SocialNetworkImage id instance on the user microservice which will
+     *           be deleted.
      */
     @Override
     public void delete(Long id) {
@@ -50,11 +51,11 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         userRemoteClient.deleteAllImages(listId);
     }
 
-//    @Override
-//    public void save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-//                                              MultipartFile image) {
-//        userRemoteClient.saveSocialImageRemote(socialNetworkImageRequestDTO, image);
-//    }
+    // @Override
+    // public void save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+    // MultipartFile image) {
+    // userRemoteClient.saveSocialImageRemote(socialNetworkImageRequestDTO, image);
+    // }
 
     /**
      * {@inheritDoc} Method for finding {@link SocialNetworkImageResponseDTO} by id
@@ -67,14 +68,15 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         return userRemoteClient.getEcoNewsById(id);
     }
 
-//    /**
-//     * {@inheritDoc} Method for updating SocialNetworkImage
-//     *
-//     * @param socialNetworkImageResponseDTO - instance of
-//     *                                      {@link SocialNetworkImageResponseDTO}.
-//     */
-//    @Override
-//    public void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile image) {
-//        userRemoteClient.updateSocialImage(socialNetworkImageResponseDTO, image);
-//    }
+    // /**
+    // * {@inheritDoc} Method for updating SocialNetworkImage
+    // *
+    // * @param socialNetworkImageResponseDTO - instance of
+    // * {@link SocialNetworkImageResponseDTO}.
+    // */
+    // @Override
+    // public void update(SocialNetworkImageResponseDTO
+    // socialNetworkImageResponseDTO, MultipartFile image) {
+    // userRemoteClient.updateSocialImage(socialNetworkImageResponseDTO, image);
+    // }
 }

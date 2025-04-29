@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -118,10 +117,11 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
                 throw new RuntimeException("not implemented");
             }
 
-//            @Override
-//            public void saveSocialImageRemote(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile file) {
-//                throw new RuntimeException("not implemented");
-//            }
+            /*
+             * @Override // public void saveSocialImageRemote(SocialNetworkImageRequestDTO
+             * socialNetworkImageRequestDTO, MultipartFile file) { // throw new
+             * RuntimeException("not implemented"); }
+             */
 
             @Override
             public Long deleteSocialImage(Long id) {
@@ -138,11 +138,12 @@ public class UserRemoteClientFallbackFactory implements FallbackFactory<UserRemo
                 throw new RuntimeException("not implemented");
             }
 
-//            @Override
-//            public void updateSocialImage(@RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-//                                          @RequestPart(required = false, name = "file") MultipartFile file) {
-//                throw new RuntimeException("not implemented");
-//            }
+            /*
+             * @Override // public void updateSocialImage(@RequestPart
+             * SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+             * // @RequestPart(required = false, name = "file") MultipartFile file) { //
+             * throw new RuntimeException("not implemented"); }
+             */
         };
     }
 }
