@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -10,6 +11,7 @@ import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
@@ -213,4 +215,21 @@ public interface UserService {
      * @return {@link List} of friends ids
      */
     List<Long> getSixFriendsIdsWithTheHighestRating(Long userId);
+
+    /**
+     * Method that allows to find {@link UserVOAdvancedDto} by id.
+     *
+     * @param id a value of {@link Long}
+     * @return {@link UserVOAdvancedDto} with this id.
+     */
+    UserVOAdvancedDto findByIdAdvanced(Long id);
+
+    /**
+     * Method for getting user's social network url by social network name.
+     *
+     * @param socialNetworks    - {@link List} of user's {@link SocialNetworkVO}
+     *                          instances.
+     * @param socialNetworkName - name of {@link SocialNetworkVO}.
+     */
+    String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
 }

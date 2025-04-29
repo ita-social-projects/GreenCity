@@ -7,6 +7,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.service.EcoNewsService;
@@ -50,7 +51,7 @@ public class ManagementUserPersonalPageController {
         Model model,
         @PathVariable Long id,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        UserVO user = userService.findById(id);
+        UserVOAdvancedDto user = userService.findByIdAdvanced(id);
 
         List<HabitAssignDto> acquiredHabits = habitAssignService
             .getAllHabitAssignsByUserIdAndStatusAcquired(id, locale.getLanguage());

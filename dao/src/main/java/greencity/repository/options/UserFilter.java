@@ -57,8 +57,7 @@ public class UserFilter implements Specification<User> {
         reg = replaceCriteria(reg);
         return cb.or(
             cb.like(r.get(RepoConstants.NAME), reg),
-            cb.like(r.get(RepoConstants.EMAIL), reg),
-            cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg));
+            cb.like(r.get(RepoConstants.EMAIL), reg));
     }
 
     /**

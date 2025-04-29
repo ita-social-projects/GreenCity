@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.client.UserRemoteClient;
 import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ class UserForListDtoMapperTest {
     @Test
     void convertTest() {
         User user = ModelUtils.getUser();
-        UserVO userVO = ModelUtils.getUserVO();
+        UserVOAdvancedDto userVO = ModelUtils.getUserVOAdvancedDto();
 
         UserForListDto expected = UserForListDto.builder()
             .id(userVO.getId())
@@ -39,7 +39,7 @@ class UserForListDtoMapperTest {
             .userCredo(userVO.getUserCredo())
             .build();
 
-        when(userRemoteClient.findNotDeactivatedById(user.getId())).thenReturn(Optional.of(userVO));
+        when(userRemoteClient.findNotDeactivatedByIdAdvanced(user.getId())).thenReturn(Optional.of(userVO));
 
         assertEquals(expected, userForListDtoMapper.convert(user));
     }

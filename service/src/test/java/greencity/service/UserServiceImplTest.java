@@ -5,6 +5,7 @@ import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
@@ -53,7 +54,7 @@ import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.CREATED;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -347,5 +348,20 @@ class UserServiceImplTest {
         assertEquals(List.of(userVO, userVO), userService.findByEmails(emails));
 
         verify(userRepo).findAllByEmailIn(emails);
+    }
+
+    @Test
+    void getSocialNetworkUrlByNameTest() {
+        String expected = "url";
+        List<SocialNetworkVO> socialNetworkVOs = ModelUtils.getListSocialNetworkVO();
+        String actual = userService.getSocialNetworkUrlByName(socialNetworkVOs, "url");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getSocialNetworkUrlByNameNoResultTest() {
+        List<SocialNetworkVO> socialNetworkVOs = ModelUtils.getListSocialNetworkVO();
+        String actual = userService.getSocialNetworkUrlByName(socialNetworkVOs, "something");
+        assertNull(actual);
     }
 }

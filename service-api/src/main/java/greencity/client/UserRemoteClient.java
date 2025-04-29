@@ -1,6 +1,10 @@
 package greencity.client;
 
+import greencity.client.config.UserRemoteClientFallbackFactory;
+import greencity.client.config.UserRemoteClientInterceptor;
+import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
@@ -9,7 +13,17 @@ import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -281,4 +295,80 @@ public class UserRemoteClient {
                 .bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
                 .block();
     }
+
+    /**
+     * Finds {@link UserVOAdvancedDto} that is not 'DEACTIVATED' by
+     * {@link UserVOAdvancedDto}'s id.
+     *
+     * @param id {@link UserVOAdvancedDto}'s id.
+     * @return {@link Optional} of {@link UserVOAdvancedDto}.
+     */
+    @GetMapping("/user/findNotDeactivatedById")
+    Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(@RequestParam Long id);
+
+    /**
+     * Method that returns page with all {@link SocialNetworkImageResponseDTO}.
+     *
+     * @param pageable {@link Pageable}.
+     * @return {@link PageableDto} of {@link SocialNetworkImageResponseDTO}.
+     */
+    @GetMapping("/management/socialnetworkimages/get-all-remote")
+    PageableDto<SocialNetworkImageResponseDTO> getAllSocialNetworkImagesRemote(Pageable pageable);
+
+    // /**
+    // * Method for creating SocialNetworkImageVO.
+    // *
+    // * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
+    // * entity.
+    // * @param file of {@link MultipartFile}
+    // */
+
+    // * @PostMapping( value = "/management/socialnetworkimages/save-remote",
+    // consumes
+    // * = MediaType.MULTIPART_FORM_DATA_VALUE ) void
+    // * saveSocialImageRemote(@Valid @RequestPart("socialNetworkImageRequestDTO")
+    // * SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+    // *
+    // * @RequestPart(required = false, name = "file") MultipartFile file);
+
+    /**
+     * Method which deletes SocialNetworkImageVO by given id.
+     *
+     * @param id of Social Network Images
+     * @return {@link Long} id og the deleted image
+     */
+    @DeleteMapping("/management/socialnetworkimages/delete")
+    Long deleteSocialImage(@RequestParam("id") Long id);
+
+    /**
+     * Method for deleting SocialNetworkImageVO by given id.
+     *
+     * @param listId list of IDs.
+     * @return {@link List} of the deleted image ids
+     */
+    @DeleteMapping("/management/socialnetworkimages/deleteAll")
+    List<Long> deleteAllImages(@RequestBody List<Long> listId);
+
+    /**
+     * Method for getting socialnetworkimages by id.
+     *
+     * @param id of Eco New
+     * @return {@link SocialNetworkImageResponseDTO} instance.
+     */
+    @GetMapping("/management/socialnetworkimages/find")
+    SocialNetworkImageResponseDTO getEcoNewsById(@RequestParam("id") Long id);
+
+    // /**
+    // * Method which updates SocialNetworkImage.
+    // *
+    // * @param socialNetworkImageResponseDTO of
+    // * {@link SocialNetworkImageResponseDTO}.
+    // * @param file of {@link MultipartFile}.
+    // */
+
+    // * @PutMapping("/management/socialnetworkimages/") void
+    // * updateSocialImage(@Valid @RequestPart SocialNetworkImageResponseDTO
+    // * socialNetworkImageResponseDTO,
+    // *
+    // * @RequestPart(required = false, name = "file") MultipartFile file);
 }

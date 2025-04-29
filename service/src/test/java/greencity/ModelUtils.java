@@ -15,7 +15,6 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
@@ -99,7 +98,6 @@ import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.openhours.OpeningHoursDto;
-import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
@@ -115,6 +113,7 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagTranslationVO;
@@ -127,7 +126,6 @@ import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
 import greencity.dto.todolistitem.CustomToDoListItemWithStatusSaveRequestDto;
 import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
-import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
 import greencity.dto.user.EcoNewsAuthorDto;
@@ -143,8 +141,9 @@ import greencity.dto.user.UserToDoListItemVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.dto.useraction.UserActionVO;
-import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.BreakTime;
@@ -187,13 +186,11 @@ import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
 import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.InvitationStatus;
 import greencity.enums.PlaceStatus;
-import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.enums.ToDoListItemStatus;
@@ -3481,5 +3478,107 @@ public class ModelUtils {
                     .longitude(1d)
                     .build())
             .build();
+    }
+
+    public static UserVOAdvancedDto getUserVOAdvancedDto() {
+        UserVOAdvancedDto advancedDto = new UserVOAdvancedDto();
+
+        advancedDto.setFirstName(TestConst.NAME);
+        advancedDto.setDateOfRegistration(LocalDateTime.of(2025, 4, 20, 13, 30));
+        advancedDto.setId(1L);
+        advancedDto.setName(TestConst.NAME);
+        advancedDto.setEmail(TestConst.EMAIL);
+        advancedDto.setRole(Role.ROLE_USER);
+        advancedDto.setUserCredo(TestConst.CREDO);
+        advancedDto.setUserStatus(ACTIVATED);
+        advancedDto.setUserLocation(UserLocationDto.builder()
+            .latitude(1d)
+            .longitude(1d)
+            .build());
+        advancedDto.setLanguageId(getLanguageVO().getId());
+        advancedDto.setUserAchievements(List.of(getUserAchievementVO()));
+        advancedDto.setUserFriends(getUserFriends());
+        advancedDto.setSocialNetworks(getSocialNetworkVOs());
+        advancedDto.setRating(10.0);
+
+        return advancedDto;
+    }
+
+    public static UserAchievementVO getUserAchievementVO() {
+        return new UserAchievementVO(1L, getUserVoShort(), getAchievementVOWithAchievementCategory(), false);
+    }
+
+    public static List<UserVO> getUserFriends() {
+        UserVO firstFriend = UserVO.builder()
+            .id(3L)
+            .name("Sasha")
+            .build();
+
+        UserVO secondFriend = UserVO.builder()
+            .id(4L)
+            .name("Masha")
+            .build();
+
+        return List.of(firstFriend, secondFriend);
+    }
+
+    public static List<SocialNetworkVO> getSocialNetworkVOs() {
+        SocialNetworkVO socialNetworkVO1 = SocialNetworkVO.builder()
+            .id(9L)
+            .url("http://test.com.ua")
+            .user(getUserVoShort())
+            .socialNetworkImage(getOneSocialNetworkImageVO())
+            .build();
+
+        SocialNetworkVO socialNetworkVO2 = SocialNetworkVO.builder()
+            .id(10L)
+            .url("http://test-test.com.ua")
+            .user(getUserVoShort())
+            .socialNetworkImage(getOneSocialNetworkImageVO())
+            .build();
+
+        return List.of(socialNetworkVO1, socialNetworkVO2);
+    }
+
+    public static SocialNetworkImageVO getOneSocialNetworkImageVO() {
+        return SocialNetworkImageVO.builder()
+            .id(13L)
+            .imagePath("http://test-test.com.ua")
+            .hostPath("hostPath2")
+            .build();
+    }
+
+    public static UserVO getUserVoShort() {
+        return UserVO.builder()
+            .id(1L)
+            .email("taras@gmail.com")
+            .build();
+    }
+
+    public static UserVOAdvancedDto getUserVOAdvancedDtoToConvert() {
+        UserVOAdvancedDto advancedDto = new UserVOAdvancedDto();
+
+        advancedDto.setFirstName(TestConst.NAME);
+        advancedDto.setDateOfRegistration(LocalDateTime.of(2025, 4, 20, 13, 30));
+        advancedDto.setId(1L);
+        advancedDto.setName(TestConst.NAME);
+        advancedDto.setEmail(TestConst.EMAIL);
+        advancedDto.setRole(Role.ROLE_USER);
+        advancedDto.setUserCredo(TestConst.CREDO);
+        advancedDto.setUserStatus(ACTIVATED);
+        advancedDto.setUserLocation(UserLocationDto.builder()
+            .latitude(1d)
+            .longitude(1d)
+            .build());
+        advancedDto.setLanguageId(getLanguageVO().getId());
+        advancedDto.setSocialNetworks(getSocialNetworkVOs());
+
+        return advancedDto;
+    }
+
+    public static AchievementVO getAchievementVOWithAchievementCategory() {
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", new AchievementCategoryVO(1L, "CREATE_NEWS"), null,
+            null, null);
     }
 }
