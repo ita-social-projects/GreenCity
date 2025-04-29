@@ -1,7 +1,5 @@
 package greencity.client;
 
-import greencity.client.config.UserRemoteClientFallbackFactory;
-import greencity.client.config.UserRemoteClientInterceptor;
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
@@ -15,18 +13,14 @@ import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.MultipartBodyBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
@@ -303,8 +297,21 @@ public class UserRemoteClient {
      * @param id {@link UserVOAdvancedDto}'s id.
      * @return {@link Optional} of {@link UserVOAdvancedDto}.
      */
-    @GetMapping("/user/findNotDeactivatedById")
-    Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(@RequestParam Long id);
+    public Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(Long id) {
+        String path = "/user/findNotDeactivatedById";
+
+        UserVOAdvancedDto userVO = webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam(ID_QUERY_PARAM, id)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(UserVOAdvancedDto.class)
+                .block();
+
+        return Optional.ofNullable(userVO);
+    }
 
     /**
      * Method that returns page with all {@link SocialNetworkImageResponseDTO}.
@@ -312,24 +319,48 @@ public class UserRemoteClient {
      * @param pageable {@link Pageable}.
      * @return {@link PageableDto} of {@link SocialNetworkImageResponseDTO}.
      */
-    @GetMapping("/management/socialnetworkimages/get-all-remote")
-    PageableDto<SocialNetworkImageResponseDTO> getAllSocialNetworkImagesRemote(Pageable pageable);
+    public PageableDto<SocialNetworkImageResponseDTO> getAllSocialNetworkImagesRemote(Pageable pageable) {
+        String path = "/management/socialnetworkimages/get-all-remote";
 
-    // /**
-    // * Method for creating SocialNetworkImageVO.
-    // *
-    // * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
-    // * entity.
-    // * @param file of {@link MultipartFile}
-    // */
+        return webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
+                                .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PageableDto<SocialNetworkImageResponseDTO>>() {})
+                .block();
+    }
 
-    // * @PostMapping( value = "/management/socialnetworkimages/save-remote",
-    // consumes
-    // * = MediaType.MULTIPART_FORM_DATA_VALUE ) void
-    // * saveSocialImageRemote(@Valid @RequestPart("socialNetworkImageRequestDTO")
-    // * SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-    // *
-    // * @RequestPart(required = false, name = "file") MultipartFile file);
+    /**
+     * Method for creating SocialNetworkImageVO.
+     *
+     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO} entity.
+     * @param file of {@link MultipartFile}
+     */
+    /* public void saveSocialImageRemote(
+            SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+            MultipartFile file) {
+
+        String path = "/management/socialnetworkimages/save-remote";
+
+        MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
+        bodyBuilder.part("socialNetworkImageRequestDTO", socialNetworkImageRequestDTO, MediaType.APPLICATION_JSON);
+
+        if (file != null) {
+            bodyBuilder.part("file", file.getResource());
+        }
+
+        webClient.post()
+                .uri(path)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+    }*/
 
     /**
      * Method which deletes SocialNetworkImageVO by given id.
@@ -337,8 +368,19 @@ public class UserRemoteClient {
      * @param id of Social Network Images
      * @return {@link Long} id og the deleted image
      */
-    @DeleteMapping("/management/socialnetworkimages/delete")
-    Long deleteSocialImage(@RequestParam("id") Long id);
+    public Long deleteSocialImage(Long id) {
+        String path = "/management/socialnetworkimages/delete";
+
+        return webClient.delete()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam(ID_QUERY_PARAM, id)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
+    }
 
     /**
      * Method for deleting SocialNetworkImageVO by given id.
@@ -346,8 +388,16 @@ public class UserRemoteClient {
      * @param listId list of IDs.
      * @return {@link List} of the deleted image ids
      */
-    @DeleteMapping("/management/socialnetworkimages/deleteAll")
-    List<Long> deleteAllImages(@RequestBody List<Long> listId);
+    public List<Long> deleteAllImages(List<Long> listId) {
+        String path = "/management/socialnetworkimages/deleteAll";
+
+        return webClient.method(HttpMethod.DELETE)
+                .uri(path)
+                .bodyValue(listId)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .block();
+    }
 
     /**
      * Method for getting socialnetworkimages by id.
@@ -355,20 +405,57 @@ public class UserRemoteClient {
      * @param id of Eco New
      * @return {@link SocialNetworkImageResponseDTO} instance.
      */
-    @GetMapping("/management/socialnetworkimages/find")
-    SocialNetworkImageResponseDTO getEcoNewsById(@RequestParam("id") Long id);
+    public SocialNetworkImageResponseDTO getEcoNewsById(Long id) {
+        String path = "/management/socialnetworkimages/find";
 
-    // /**
-    // * Method which updates SocialNetworkImage.
-    // *
-    // * @param socialNetworkImageResponseDTO of
-    // * {@link SocialNetworkImageResponseDTO}.
-    // * @param file of {@link MultipartFile}.
-    // */
+        return webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path(path)
+                                .queryParam(ID_QUERY_PARAM, id)
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(SocialNetworkImageResponseDTO.class)
+                .block();
+    }
 
-    // * @PutMapping("/management/socialnetworkimages/") void
-    // * updateSocialImage(@Valid @RequestPart SocialNetworkImageResponseDTO
-    // * socialNetworkImageResponseDTO,
-    // *
-    // * @RequestPart(required = false, name = "file") MultipartFile file);
+    /**
+     * Method which updates SocialNetworkImage.
+     *
+     * @param socialNetworkImageResponseDTO of {@link SocialNetworkImageResponseDTO}.
+     * @param file of {@link MultipartFile}.
+     */
+/*    public void updateSocialImage(
+            SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+            MultipartFile file) {
+
+        String path = "/management/socialnetworkimages/";
+
+        BodyInserters.MultipartInserter multipartInserter = multipartInserter("socialNetworkImageResponseDTO");
+
+        MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
+        bodyBuilder.part("socialNetworkImageResponseDTO", socialNetworkImageResponseDTO, MediaType.APPLICATION_JSON);
+
+        if (file != null) {
+            bodyBuilder.part("file", file.getResource());
+        }
+
+        webClient.put()
+                .uri(path)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+    }*/
+
+    private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
+        MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
+
+        for (MultipartFile multipartFile : multipartFiles) {
+            multipartBodyBuilder.part(partName, multipartFile.getResource());
+        }
+
+        return BodyInserters.fromMultipartData(multipartBodyBuilder.build());
+    }
 }
