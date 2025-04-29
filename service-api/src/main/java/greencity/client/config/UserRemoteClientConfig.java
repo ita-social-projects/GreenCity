@@ -22,7 +22,6 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class UserRemoteClientConfig {
-
     @Value("${greencityuser.server.address}")
     private String greenCityUserBaseUrl;
 
@@ -40,16 +39,14 @@ public class UserRemoteClientConfig {
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder.baseUrl(greenCityUserBaseUrl)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .filter(authorizationHeaderFilter())
-                .clientConnector(
-                        new ReactorClientHttpConnector(
-                                HttpClient.create()
-                                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutMillis)
-                                        .responseTimeout(Duration.ofMillis(responseTimeoutMillis))
-                        )
-                )
-                .build();
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .filter(authorizationHeaderFilter())
+            .clientConnector(
+                new ReactorClientHttpConnector(
+                    HttpClient.create()
+                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutMillis)
+                        .responseTimeout(Duration.ofMillis(responseTimeoutMillis))))
+            .build();
     }
 
     private ExchangeFilterFunction authorizationHeaderFilter() {
@@ -60,8 +57,8 @@ public class UserRemoteClientConfig {
             String authHeader = AppConstant.TOKEN_PREFIX + jwt;
 
             ClientRequest authorizedRequest = ClientRequest.from(clientRequest)
-                    .header(HttpHeaders.AUTHORIZATION, authHeader)
-                    .build();
+                .header(HttpHeaders.AUTHORIZATION, authHeader)
+                .build();
 
             return Mono.just(authorizedRequest);
         });
