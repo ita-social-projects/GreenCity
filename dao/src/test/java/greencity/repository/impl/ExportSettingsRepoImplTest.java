@@ -18,11 +18,13 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExportSettingsRepoImplTest {
     private static final String TABLE_NAME = "users";
+    private static final String NOT_EXISTS_TABLE_NAME = "not_exists_table";
     private static final int LIMIT = 10;
     private static final int OFFSET = 1;
 
@@ -92,5 +94,27 @@ class ExportSettingsRepoImplTest {
 
         assertThrows(DatabaseMetadataException.class,
             () -> settingsRepo.selectPortionFromTable(TABLE_NAME, LIMIT, OFFSET));
+    }
+
+    @Test
+    void countRowsInTableWithValidDbNameTest() throws Exception {
+        String query = String.format("SELECT COUNT(*) FROM %s;", TABLE_NAME);
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(query)).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getInt(1)).thenReturn(5);
+
+        int result = settingsRepo.countRowsInTable(TABLE_NAME);
+
+        assertTrue(result > 0);
+    }
+
+    @Test
+    void countRowsForNotExistsTableThrowExceptionTest() throws Exception {
+        when(dataSource.getConnection()).thenThrow(new SQLException());
+
+        assertThrows(DatabaseMetadataException.class,
+                () -> settingsRepo.countRowsInTable(NOT_EXISTS_TABLE_NAME));
     }
 }

@@ -78,4 +78,21 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
         }
         return new TableRowsDto(tableName, tableData);
     }
+
+    @Override
+    public int countRowsInTable(String tableName) {
+        String query = String.format(AppConstant.SELECT_COUNT_FROM, tableName);
+
+        try (Connection connection = dataSource.getConnection();
+            PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + tableName, e);
+        }
+        return 0;
+    }
 }

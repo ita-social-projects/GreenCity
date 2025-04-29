@@ -35,8 +35,8 @@ public class AppConstant {
     public static final String TABLE_NAME = "TABLE_NAME";
     public static final String COLUMN_NAME = "COLUMN_NAME";
     public static final String SELECT_FROM_WITH_LIMIT_AND_OFFSET = "SELECT * FROM %s LIMIT %d OFFSET %d;";
+    public static final String SELECT_COUNT_FROM = "SELECT COUNT(*) FROM %s;";
     public static final Set<String> supportedLanguages = Set.of(
         DEFAULT_LANGUAGE_CODE,
         LANGUAGE_CODE_UA);
-    public static final String EMPTY_STRING = "";
 }
