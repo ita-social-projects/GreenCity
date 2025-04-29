@@ -78,7 +78,7 @@ public interface UserRemoteClient {
      * @return list of {@link UserNotificationPreferenceVO}
      */
     @GetMapping("/user-notification-preference")
-    List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(@RequestParam Long userId);
+    List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(@RequestParam Long id);
 
     /**
      * Check is user notification preference exists by params in EmailPreferenceDto.
