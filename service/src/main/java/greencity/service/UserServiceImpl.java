@@ -10,6 +10,7 @@ import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UpdateUserDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -18,6 +19,7 @@ import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
@@ -495,8 +497,7 @@ public class UserServiceImpl implements UserService {
             user = userRepo.findByEmail(updateUserDto.getEmail()).orElseThrow(() ->
                     new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
             updateUserDtoUserMapper.merge(updateUserDto, user);
-        }
-        else {
+        } else {
             UserVO userVO = UserVO.builder()
                     .userLocation(updateUserDto.getUserLocation())
                     .email(updateUserDto.getEmail())
@@ -509,5 +510,35 @@ public class UserServiceImpl implements UserService {
         }
         userRepo.save(user);
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserVOAdvancedDto findByIdAdvanced(Long id) {
+        return userRepo.findById(id)
+            .map(user -> {
+                UserVOAdvancedDto userVOAdvancedDto = modelMapper.map(user, UserVOAdvancedDto.class);
+                UserLocation userLocation = user.getUserLocation();
+                if (userLocation != null) {
+                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                    userVOAdvancedDto.setUserLocation(userLocationDto);
+                }
+                return userVOAdvancedDto;
+            })
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName) {
+        return socialNetworks.stream()
+            .map(SocialNetworkVO::getUrl)
+            .filter(url -> url.contains(socialNetworkName))
+            .findFirst()
+            .orElse(null);
     }
 }

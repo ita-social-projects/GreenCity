@@ -132,8 +132,8 @@
                             <td th:text="${allAchievements.getId()}"></td>
                             <td th:text="${allAchievements.getTitle()}"></td>
                             <td>
-                                <span th:text="${allAchievements.getName()}"></span><br>
-                                <span th:text="${allAchievements.getNameEng()}"></span>
+                                <span th:text="${allAchievements.getNameUk()}"></span><br>
+                                <span th:text="${allAchievements.getNameEn()}"></span>
                             </td>
                             <td th:text="${allAchievements.getAchievementCategory().getName()}"></td>
                             <td th:text="${allAchievements.getCondition()}"></td>
@@ -207,13 +207,13 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.name}]] UA</label>
-                                    <input type="text" class="form-control" name="name" required>
+                                    <input type="text" class="form-control" name="nameUk" required>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.name}]] EN</label>
-                                    <input type="text" class="form-control" name="nameEng" required>
+                                    <input type="text" class="form-control" name="nameEn" required>
                                 </div>
                             </div>
                         </div>
@@ -269,13 +269,13 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.name}]] UA</label>
-                                    <input type="text" class="form-control" name="name" required>
+                                    <input type="text" class="form-control" name="nameUk" required>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.name}]] EN</label>
-                                    <input type="text" class="form-control" name="nameEng" required>
+                                    <input type="text" class="form-control" name="nameEn" required>
                                 </div>
                             </div>
                         </div>
