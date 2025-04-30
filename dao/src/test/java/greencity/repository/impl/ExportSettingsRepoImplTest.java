@@ -111,10 +111,21 @@ class ExportSettingsRepoImplTest {
     }
 
     @Test
-    void countRowsForNotExistsTableThrowExceptionTest() throws Exception {
+    void countRowsThrowExceptionWhenCantCreateConnectionTest() throws Exception {
         when(dataSource.getConnection()).thenThrow(new SQLException());
 
         assertThrows(DatabaseMetadataException.class,
-                () -> settingsRepo.countRowsInTable(NOT_EXISTS_TABLE_NAME));
+                () -> settingsRepo.countRowsInTable(TABLE_NAME));
+    }
+
+    @Test
+    void countRowsForNotExistsTableThrowExceptionTest() throws Exception {
+        String query = String.format("SELECT COUNT(*) FROM %s;", NOT_EXISTS_TABLE_NAME);
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(query)).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException());
+
+        assertThrows(DatabaseMetadataException.class,
+            () -> settingsRepo.countRowsInTable(NOT_EXISTS_TABLE_NAME));
     }
 }

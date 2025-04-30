@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
@@ -75,7 +76,7 @@ public class ExportSettingsController {
     })
     @GetMapping("/select")
     public ResponseEntity<PageableAdvancedDto<Map<String, String>>> selectFromTable(
-        @Pattern(regexp = "^(?!_)[a-z]+(?:_[a-z]+){0,10}(?<!_)$",
+        @Pattern(regexp = AppConstant.VALID_TABLE_NAME_REGEX,
             message = ErrorMessage.INVALID_TABLE_NAME) String tableName,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.ok(exportSettingsService.selectFromTable(tableName, pageable));

@@ -86,13 +86,12 @@ public class ExportSettingsRepoImpl implements ExportSettingsRepo {
         try (Connection connection = dataSource.getConnection();
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
+            rs.next();
+
+            return rs.getInt(1);
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new DatabaseMetadataException(ErrorMessage.SQL_METADATA_EXCEPTION_MESSAGE + tableName, e);
         }
-        return 0;
     }
 }
