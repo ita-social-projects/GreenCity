@@ -4,6 +4,7 @@ import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.AddressType;
 import com.google.maps.model.GeocodingResult;
 import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
@@ -20,10 +21,13 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
+import greencity.entity.Language;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
+import greencity.enums.EmailNotification;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.enums.UserUpdateType;
@@ -48,6 +52,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -402,6 +408,14 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public Double findUserRating(Long userId) {
+        return userRepo.findRatingById(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public UserCityDto findAllUsersCities(Long userId) {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
@@ -498,17 +512,20 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
-            UserVO userVO = UserVO.builder()
-                .id(updateUserDto.getId())
-                .name(updateUserDto.getName())
-                .email(updateUserDto.getEmail())
-                .profilePicturePath(updateUserDto.getProfilePicturePath())
-                .userCredo(updateUserDto.getUserCredo())
-                .userLocation(updateUserDto.getUserLocation())
-                .languageId(updateUserDto.getLanguage().getId())
+            Language language = Language.builder()
+                .id(updateUserDto.getLanguage().getId())
+                .code(updateUserDto.getLanguage().getCode())
                 .build();
 
-            user = updateUserDtoUserMapper.merge(updateUserDto, modelMapper.map(userVO, User.class));
+            user = User.builder()
+                .id(updateUserDto.getId())
+                .email(updateUserDto.getEmail())
+                .name(updateUserDto.getName())
+                .profilePicturePath(updateUserDto.getProfilePicturePath())
+                .language(language)
+                .rating(AppConstant.DEFAULT_RATING)
+                .eventOrganizerRating(AppConstant.DEFAULT_RATING)
+                .build();
         }
         userRepo.save(user);
         return true;

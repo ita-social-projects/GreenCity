@@ -14,20 +14,20 @@ public class UpdateUserDtoUserMapper {
 
     public User merge(UpdateUserDto updateUserDto, User user) {
         if (Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.DELETE)) {
-            if (updateUserDto.getUserLocation() != null) {
-                user.setUserLocation(null);
-            }
-            if (updateUserDto.getUserCredo() != null) {
-                user.setUserCredo(null);
+            if (updateUserDto.getId() != null) {
+                user.setId(null);
             }
             if (updateUserDto.getName() != null) {
                 user.setName(null);
             }
+            if (updateUserDto.getEmail() != null) {
+                user.setEmail(null);
+            }
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(null);
             }
-            if (updateUserDto.getEventOrganizerRating() != null) {
-                user.setEventOrganizerRating(null);
+            if (updateUserDto.getUserCredo() != null) {
+                user.setUserCredo(null);
             }
             if (updateUserDto.getLanguage() != null) {
                 user.setLanguage(null);

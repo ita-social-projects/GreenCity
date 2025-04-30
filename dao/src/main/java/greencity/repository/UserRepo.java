@@ -793,4 +793,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         ORDER BY greencity_users.rating DESC LIMIT 6;\
         """)
     List<User> getSixFriendsWithTheHighestRating(Long userId);
+
+    @Query(nativeQuery = true, value = """
+        SELECT rating FROM greencity_users WHERE greencity_users.id = :userId
+        """)
+    Double findRatingById(Long userId);
 }

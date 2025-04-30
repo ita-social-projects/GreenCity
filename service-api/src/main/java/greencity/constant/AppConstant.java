@@ -39,4 +39,5 @@ public class AppConstant {
         LANGUAGE_CODE_UA);
     public static final String EMPTY_STRING = "";
     public static final String GOOGLE_API = "Google API";
+    public static final Double DEFAULT_RATING = 0.0;
 }

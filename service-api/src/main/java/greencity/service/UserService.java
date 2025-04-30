@@ -175,6 +175,14 @@ public interface UserService {
     void increaseUserRating(UserAddRatingDto userAddRatingDto);
 
     /**
+     * Get the rating of the user by user id.
+     *
+     * @param userId id of the user
+     * @return {@link Double} rating of the user
+     */
+    Double findUserRating(Long userId);
+
+    /**
      * Find list of {@link UserVO}'s by emails.
      *
      * @param emails user emails.

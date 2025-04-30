@@ -1,5 +1,6 @@
 package greencity.rating;
 
+import greencity.dto.ratingstatistics.RatingPointsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingPoints;
@@ -25,17 +26,18 @@ public class RatingCalculation {
      * @param userVo of {@link UserVO}
      */
     public void ratingCalculation(RatingPoints rating, UserVO userVo) {
-        User user = modelMapper.map(userVo, User.class);
-        double newRating = user.getRating() + rating.getPoints();
-        user.setRating(newRating > 0 ? newRating : 0);
-        userService.updateUserRating(user.getId(), user.getRating());
-        RatingStatistics ratingStatistics = RatingStatistics
+        Double userRating = userService.findUserRating(userVo.getId());
+        double newRating = userRating + rating.getPoints();
+        userService.updateUserRating(userVo.getId(), newRating);
+
+        RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO
             .builder()
-            .rating(user.getRating())
-            .ratingPoints(rating)
-            .user(user)
+            .rating(userRating)
+            .ratingPoints(modelMapper.map(rating, RatingPointsDto.class))
+            .user(userVo)
             .pointsChanged(rating.getPoints())
             .build();
-        ratingStatisticsService.save(modelMapper.map(ratingStatistics, RatingStatisticsVO.class));
+
+        ratingStatisticsService.save(ratingStatisticsVO);
     }
 }
