@@ -3,17 +3,14 @@ package greencity.mapping;
 import greencity.dto.user.UpdateUserDto;
 import greencity.entity.Language;
 import greencity.entity.User;
-import greencity.entity.UserLocation;
 import greencity.enums.UserUpdateType;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class UpdateUserDtoUserMapper {
-    private final ModelMapper modelMapper;
 
     public User merge(UpdateUserDto updateUserDto, User user) {
         if (Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.DELETE)) {
@@ -36,21 +33,20 @@ public class UpdateUserDtoUserMapper {
                 user.setLanguage(null);
             }
         } else {
-            if (updateUserDto.getUserLocation() != null) {
-                user.setUserLocation(
-                    modelMapper.map(updateUserDto.getUserLocation(), UserLocation.class));
-            }
-            if (updateUserDto.getUserCredo() != null) {
-                user.setUserCredo(updateUserDto.getUserCredo());
+            if (updateUserDto.getId() != null) {
+                user.setId(user.getId());
             }
             if (updateUserDto.getName() != null) {
                 user.setName(updateUserDto.getName());
             }
+            if (updateUserDto.getEmail() != null) {
+                user.setEmail(updateUserDto.getEmail());
+            }
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(updateUserDto.getProfilePicturePath());
             }
-            if (updateUserDto.getEventOrganizerRating() != null) {
-                user.setEventOrganizerRating(updateUserDto.getEventOrganizerRating());
+            if (updateUserDto.getUserCredo() != null) {
+                user.setUserCredo(updateUserDto.getUserCredo());
             }
             if (updateUserDto.getLanguage() != null) {
                 user.setLanguage(Language.builder()

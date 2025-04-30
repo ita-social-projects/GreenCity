@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 public class UpdateUserDto {
-    private long id;
+    private Long id;
     private String name;
     @NotNull
     private String email;

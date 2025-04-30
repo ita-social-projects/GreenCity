@@ -499,13 +499,15 @@ public class UserServiceImpl implements UserService {
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
             UserVO userVO = UserVO.builder()
-                .userLocation(updateUserDto.getUserLocation())
-                .email(updateUserDto.getEmail())
+                .id(updateUserDto.getId())
                 .name(updateUserDto.getName())
-                .userCredo(updateUserDto.getUserCredo())
-                .languageId(updateUserDto.getLanguage().getId())
+                .email(updateUserDto.getEmail())
                 .profilePicturePath(updateUserDto.getProfilePicturePath())
+                .userCredo(updateUserDto.getUserCredo())
+                .userLocation(updateUserDto.getUserLocation())
+                .languageId(updateUserDto.getLanguage().getId())
                 .build();
+
             user = updateUserDtoUserMapper.merge(updateUserDto, modelMapper.map(userVO, User.class));
         }
         userRepo.save(user);
