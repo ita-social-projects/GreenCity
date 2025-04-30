@@ -107,9 +107,9 @@ class ExportSettingsServiceImplTest {
 
     private TableRowsDto populateTableRowDto() {
         List<Map<String, String>> tableData = new LinkedList<>();
-        Map<String, String> row = new LinkedHashMap<>();
 
         for (int i = 0; i < 10; i++) {
+            Map<String, String> row = new LinkedHashMap<>();
             row.put("id", String.valueOf(i));
             row.put("date_of_registration", "1970-01-01 00:00:00");
             row.put("email", "someemail" + i + "@some.com");
