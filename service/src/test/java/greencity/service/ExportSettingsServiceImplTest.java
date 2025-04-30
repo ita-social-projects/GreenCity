@@ -24,7 +24,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,7 +31,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ExportSettingsServiceImplTest {
     private static final String TABLE_NAME = "users";
-    private static final Pageable pageable = PageRequest.of(0, 10);
+    private static final Pageable pageable = PageRequest.of(2, 2);
     private final TableParamsRequestDto tableParams = ModelUtils.tableParamsRequestDto();
 
     @InjectMocks
@@ -71,7 +70,6 @@ class ExportSettingsServiceImplTest {
     @Test
     void selectFromTableWithValidParamsAndResultMoreThenOnePageTest() {
         TableRowsDto tableRowsDto = populateTableRowDto();
-        Pageable pageable = PageRequest.of(2, 2);
         when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, pageable.getPageSize(), (int) pageable.getOffset()))
             .thenReturn(tableRowsDto);
         when(exportSettingsRepo.countRowsInTable(TABLE_NAME)).thenReturn(tableRowsDto.tableData().size());
