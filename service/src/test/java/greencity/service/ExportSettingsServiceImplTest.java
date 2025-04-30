@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ExportSettingsServiceImplTest {
     private static final String TABLE_NAME = "users";
-    private static final Pageable pageable = PageRequest.of(2, 2);
+    private static final Pageable pageable = PageRequest.of(0, 10);
     private final TableParamsRequestDto tableParams = ModelUtils.tableParamsRequestDto();
 
     @InjectMocks
@@ -70,15 +70,18 @@ class ExportSettingsServiceImplTest {
     @Test
     void selectFromTableWithValidParamsAndResultMoreThenOnePageTest() {
         TableRowsDto tableRowsDto = populateTableRowDto();
-        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, pageable.getPageSize(), (int) pageable.getOffset()))
+        Pageable pageableForSecondPage = PageRequest.of(2, 2);
+        when(exportSettingsRepo.selectPortionFromTable(TABLE_NAME, pageableForSecondPage.getPageSize(),
+            (int) pageableForSecondPage.getOffset()))
             .thenReturn(tableRowsDto);
         when(exportSettingsRepo.countRowsInTable(TABLE_NAME)).thenReturn(tableRowsDto.tableData().size());
 
-        PageableAdvancedDto<Map<String, String>> result = settingsService.selectFromTable(TABLE_NAME, pageable);
+        PageableAdvancedDto<Map<String, String>> result =
+            settingsService.selectFromTable(TABLE_NAME, pageableForSecondPage);
 
         assertEquals(result.getTotalElements(), tableRowsDto.tableData().size());
-        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, pageable.getPageSize(),
-            (int) pageable.getOffset());
+        verify(exportSettingsRepo, times(1)).selectPortionFromTable(TABLE_NAME, pageableForSecondPage.getPageSize(),
+            (int) pageableForSecondPage.getOffset());
     }
 
     @Test
