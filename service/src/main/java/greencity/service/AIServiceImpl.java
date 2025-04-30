@@ -69,7 +69,7 @@ public class AIServiceImpl implements AIService {
         }
 
         try {
-            forecastResponse = String.valueOf(grammarChecker.checkGrammar(forecastResponse));
+            forecastResponse = grammarChecker.checkGrammar(forecastResponse);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -92,7 +92,7 @@ public class AIServiceImpl implements AIService {
         String adviceResponse = fetchAdvice(language, habit);
 
         try {
-            adviceResponse = String.valueOf(grammarChecker.checkGrammar(adviceResponse));
+            adviceResponse = grammarChecker.checkGrammar(adviceResponse);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -114,7 +114,7 @@ public class AIServiceImpl implements AIService {
         String newResponse = extractContentFromJson(jsonResponse);
 
         try {
-            newResponse = String.valueOf(grammarChecker.checkGrammar(newResponse));
+            newResponse = grammarChecker.checkGrammar(newResponse);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -122,12 +122,22 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Generates eco news based on user habits and language preference.
+     * Generates eco news content in the specified language based on the user's habits.
+     * <p>
+     * The method performs the following:
+     * <ul>
+     *   <li>Validates input language</li>
+     *   <li>Checks if a week has passed since the last generation (rate limiting)</li>
+     *   <li>Fetches AI-generated eco news without a specific query</li>
+     *   <li>Creates and stores an {@link EcoNews} entity in the database</li>
+     *   <li>Performs grammar correction on the generated text</li>
+     * </ul>
+     * If grammar correction fails, it throws a {@link GrammarCheckException}.
      *
-     * @param language the language in which the eco news should be generated.
-     * @return a string containing the generated eco news.
-     * @throws EcoNewsGenerationLimitException if the generation limit is exceeded.
-     * @throws GrammarCheckException           if grammar checking fails.
+     * @param language the language code (e.g., "en", "uk") for content generation
+     * @return grammatically corrected eco news text
+     * @throws EcoNewsGenerationLimitException if the generation limit (1 per week) is exceeded
+     * @throws GrammarCheckException if grammar correction fails
      */
     @Override
     public String generateEcoNewsBasedOnHabits(String language) {
@@ -143,7 +153,7 @@ public class AIServiceImpl implements AIService {
         String ecoNewsText = ecoNews.getText();
 
         try {
-            ecoNewsText = String.valueOf(grammarChecker.checkGrammar(ecoNewsText));
+            ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
@@ -639,17 +649,13 @@ public class AIServiceImpl implements AIService {
      * @return the "content" value if parsing is successful.
      * @throws JsonResponseParseException if maximum retry attempts are exceeded or parsing fails.
      */
-
     private String extractContentFromJson(String jsonResponse) {
-        int retryCount = 0;
-
-        while (retryCount < MAX_JSON_PARSE_ATTEMPTS) {
+        for (int retryCount = 0; retryCount < MAX_JSON_PARSE_ATTEMPTS; retryCount++) {
             try {
                 jsonResponse = sanitizeJsonResponse(jsonResponse);
 
                 if (!isJsonResponseComplete(jsonResponse)) {
-                    retryCount++;
-                    if (retryCount >= MAX_JSON_PARSE_ATTEMPTS) {
+                    if (retryCount == MAX_JSON_PARSE_ATTEMPTS - 1) {
                         throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
                             + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX);
                     }
@@ -657,8 +663,7 @@ public class AIServiceImpl implements AIService {
                 }
                 return parseContentFromJson(jsonResponse);
             } catch (IncompleteJsonException e) {
-                retryCount++;
-                if (retryCount >= MAX_JSON_PARSE_ATTEMPTS) {
+                if (retryCount == MAX_JSON_PARSE_ATTEMPTS - 1) {
                     throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
                         + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX, e);
                 }

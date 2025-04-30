@@ -36,6 +36,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.IntegerJdbcType;
 import java.time.LocalDateTime;
@@ -240,6 +241,7 @@ public class User {
 
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @BatchSize(size = 50)
     private List<CustomToDoListItem> customToDoListItems = new ArrayList<>();
 
     @Column(name = "profile_picture")
@@ -247,9 +249,11 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_location")
+    @BatchSize(size = 50)
     private UserLocation userLocation;
 
     @ManyToMany(mappedBy = "usersLikedNews")
+    @BatchSize(size = 50)
     private Set<EcoNews> ecoNewsLiked;
 
     @OneToMany
@@ -257,10 +261,12 @@ public class User {
     @JoinTable(name = "users_friends",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
+    @BatchSize(size = 50)
     private List<User> userFriends = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
     private List<UserAchievement> userAchievements = new ArrayList<>();
 
     @Column(name = "rating")
@@ -273,6 +279,7 @@ public class User {
     private String userCredo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
+    @BatchSize(size = 50)
     private List<SocialNetwork> socialNetworks;
 
     @Column(name = "show_location")
@@ -298,28 +305,36 @@ public class User {
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
     private List<UserAction> userActions = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
     private List<Filter> filters = new ArrayList<>();
 
     @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     private Set<EcoNews> favoriteEcoNews;
 
     @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     private Set<Habit> favoriteHabits;
 
     @ManyToMany(mappedBy = "followers", fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     private Set<Event> favoriteEvents;
 
     @ManyToMany(mappedBy = "attenders", fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     private Set<Event> subscribedEvents;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @BatchSize(size = 50)
     private Set<UserNotificationPreference> emailPreference = new HashSet<>();
 
     @ManyToMany(mappedBy = "requesters", fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     private Set<Event> requestedEvents;
 }

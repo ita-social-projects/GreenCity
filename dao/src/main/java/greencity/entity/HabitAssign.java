@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 import java.time.ZonedDateTime;
 import java.util.List;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @NoArgsConstructor
@@ -60,6 +61,7 @@ public class HabitAssign {
     private Boolean isPrivate;
 
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
     private List<UserToDoListItem> userToDoListItems;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -71,14 +73,18 @@ public class HabitAssign {
     private User user;
 
     @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
     private List<HabitStatistic> habitStatistic;
 
     @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
     private List<HabitStatusCalendar> habitStatusCalendars;
 
     @OneToMany(mappedBy = "inviterHabitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 50)
     private List<HabitInvitation> invitationsSent;
 
     @OneToMany(mappedBy = "inviteeHabitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 50)
     private List<HabitInvitation> invitationsReceived;
 }

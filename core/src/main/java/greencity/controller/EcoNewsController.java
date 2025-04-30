@@ -23,8 +23,8 @@ import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.facade.EcoNewsFacade;
-import greencity.security.utils.TokenUtilService;
 import greencity.service.AIService;
+import greencity.service.AcceptLanguageDisplayService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +39,6 @@ import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -68,6 +67,7 @@ public class EcoNewsController {
     private final TagsService tagService;
     private final AIService aiService;
     private final EcoNewsFacade ecoNewsFacade;
+    private final AcceptLanguageDisplayService acceptLanguageDisplayService;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -413,6 +413,18 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
     }
 
+    /**
+     * Endpoint for generating eco news based on the user's habits.
+     * <p>
+     * This method:
+     * <ul>
+     *   <li>Resolves the user's preferred language from the "Accept-Language" header</li>
+     *   <li>Delegates the eco news generation to the AI service</li>
+     *   <li>Returns the generated eco news text</li>
+     * </ul>
+     *
+     * @return a ResponseEntity containing the generated eco news text
+     */
     @Operation(summary = "Generate eco news based on habits")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
@@ -426,8 +438,8 @@ public class EcoNewsController {
     })
     @ApiLocale
     @PostMapping("/generate")
-    public ResponseEntity<String> generateEcoNewsBasedOnHabits(@Parameter(hidden = true) Locale locale) {
-        String language = locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage();
+    public ResponseEntity<String> generateEcoNewsBasedOnHabits() {
+        String language = acceptLanguageDisplayService.resolveLanguage();
         return ResponseEntity.status(HttpStatus.OK)
             .body(aiService.generateEcoNewsBasedOnHabits(language));
     }

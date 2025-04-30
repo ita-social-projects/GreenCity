@@ -1,22 +1,10 @@
 package greencity.entity;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -24,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @NoArgsConstructor
@@ -31,7 +20,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @Builder
-@Table(name = "habits")
+@Table(name = "habits",
+    indexes = @Index(name = "idx_habits_is_deleted", columnList = "is_deleted")
+)
 @EqualsAndHashCode(
     exclude = {"habitAssigns", "followers", "habitTranslations", "tags", "toDoListItems"})
 @ToString(
@@ -57,12 +48,15 @@ public class Habit {
     @Column(name = "user_id")
     private Long userId;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CustomToDoListItem> customToDoListItems;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)
     private List<HabitAssign> habitAssigns;
 
@@ -71,12 +65,14 @@ public class Habit {
         name = "habit_to_do_list_items",
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "to_do_list_item_id"))
+    @BatchSize(size = 50)
     private Set<ToDoListItem> toDoListItems;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "habits_tags",
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @BatchSize(size = 50)
     private Set<Tag> tags;
 
     @Column(name = "is_deleted", nullable = false)
@@ -91,6 +87,7 @@ public class Habit {
         name = "habits_users_likes",
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @BatchSize(size = 50)
     private Set<User> usersLiked = new HashSet<>();
 
     @ManyToMany
@@ -98,6 +95,7 @@ public class Habit {
         name = "habits_users_dislikes",
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @BatchSize(size = 50)
     private Set<User> usersDisliked = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -105,6 +103,7 @@ public class Habit {
     @JoinTable(name = "habits_followers",
         joinColumns = @JoinColumn(name = "habit_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @BatchSize(size = 50)
     private Set<User> followers = new HashSet<>();
 
     @Column(name = "created_at", updatable = false)

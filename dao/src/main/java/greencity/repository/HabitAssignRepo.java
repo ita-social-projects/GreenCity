@@ -7,10 +7,7 @@ import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
@@ -40,10 +37,13 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param userId {@link User} id.
      * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
-        + " JOIN FETCH ht.language l"
-        + " WHERE ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED','REQUESTED')")
+    @EntityGraph(attributePaths = {"habit",
+        "habit.habitTranslations",
+        "habit.habitTranslations.language"
+    })
+    @Query("SELECT ha FROM HabitAssign ha " +
+        "WHERE ha.user.id = :userId " +
+        "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED','REQUESTED')")
     List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
 
     /**
