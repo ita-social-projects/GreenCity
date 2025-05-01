@@ -23,8 +23,6 @@ import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.facade.EcoNewsFacade;
-import greencity.service.AIService;
-import greencity.service.AcceptLanguageDisplayService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,9 +63,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
-    private final AIService aiService;
     private final EcoNewsFacade ecoNewsFacade;
-    private final AcceptLanguageDisplayService acceptLanguageDisplayService;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -411,36 +407,5 @@ public class EcoNewsController {
     @GetMapping("/{ecoNewsId}/summary")
     public ResponseEntity<EcoNewContentSourceDto> getContentAndSourceForEcoNewsById(@PathVariable Long ecoNewsId) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getContentAndSourceForEcoNewsById(ecoNewsId));
-    }
-
-    /**
-     * Endpoint for generating eco news based on the user's habits.
-     * <p>
-     * This method:
-     * <ul>
-     *   <li>Resolves the user's preferred language from the "Accept-Language" header</li>
-     *   <li>Delegates the eco news generation to the AI service</li>
-     *   <li>Returns the generated eco news text</li>
-     * </ul>
-     *
-     * @return a ResponseEntity containing the generated eco news text
-     */
-    @Operation(summary = "Generate eco news based on habits")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = String.class))),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @ApiLocale
-    @PostMapping("/generate")
-    public ResponseEntity<String> generateEcoNewsBasedOnHabits() {
-        String language = acceptLanguageDisplayService.resolveLanguage();
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.generateEcoNewsBasedOnHabits(language));
     }
 }

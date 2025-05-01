@@ -210,11 +210,12 @@ public class AIServiceImpl implements AIService {
      * @return a {@link Page} of {@link EcoNewsGenericDto} containing combined eco news.
      */
     @Override
-    public Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(Long userId, String language,
-                                                             Pageable pageable, List<String> tags,
-                                                             String title, Long authorId,
-                                                             boolean favorite)
-    {
+    public Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(
+        Long userId, String language,
+        Pageable pageable, List<String> tags,
+        String title, Long authorId,
+        boolean favorite
+    ) {
         List<EcoNewsDto> combinedNews;
         if (userId == null) {
             combinedNews = getGeneralEcoNews(tags, title, authorId);
