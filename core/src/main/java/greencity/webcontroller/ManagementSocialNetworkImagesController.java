@@ -1,22 +1,40 @@
 package greencity.webcontroller;
 
+import greencity.annotations.ImageValidation;
+import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.service.SocialNetworkImageService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
+
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
 @AllArgsConstructor
@@ -41,36 +59,36 @@ public class ManagementSocialNetworkImagesController {
         return "core/management_social_network_images";
     }
 
-    // /**
-    // * Method for creating SocialNetworkImage.
-    // *
-    // * @param socialNetworkImageRequestDTO dto for SocialNetworkImage
-    // * entity.
-    // * @param file of {@link MultipartFile}
-    // * @return {@link GenericResponseDto} with of operation and errors fields.
-    // */
-    // @Operation(summary = "Save SocialNetworkImages.")
-    // @ApiResponses(value = {
-    // @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-    // content = @Content(schema = @Schema(implementation =
-    // GenericResponseDto.class))),
-    // @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
-    // })
-    // @ResponseBody
-    // @PostMapping("/")
-    // public GenericResponseDto save(@Valid @RequestPart
-    // SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-    // BindingResult bindingResult,
-    // @ImageValidation @RequestParam(required = false, name = "file") MultipartFile
-    // file) {
-    // if (!bindingResult.hasErrors()) {
-    // socialNetworkImageService.save(socialNetworkImageRequestDTO, file);
-    // }
-    // return buildGenericResponseDto(bindingResult);
-    // }
+     /**
+     * Method for creating SocialNetworkImage.
+     *
+     * @param socialNetworkImageRequestDTO dto for SocialNetworkImage
+     * entity.
+     * @param file of {@link MultipartFile}
+     * @return {@link ResponseEntity} with {@link SocialNetworkImageResponseDTO} or error fields.
+     */
+     @Operation(summary = "Save SocialNetworkImages.")
+     @ApiResponses(value = {
+             @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+                     content = @Content(schema = @Schema(implementation =
+                             GenericResponseDto.class))),
+             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+     })
+     @ResponseBody
+     @PostMapping("/")
+     public ResponseEntity<?> save(@Valid @RequestPart
+                                    SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+                                    BindingResult bindingResult,
+                                    @ImageValidation @RequestParam(required = false, name = "file") MultipartFile
+                                            file) {
+         if (!bindingResult.hasErrors()) {
+             return ResponseEntity.status(HttpStatus.CREATED).body(socialNetworkImageService.save(socialNetworkImageRequestDTO, file));
+         }
+         return ResponseEntity.badRequest().body(buildGenericResponseDto(bindingResult));
+     }
 
     /**
-     * Method which deteles SocialNetworkImage by given id.
+     * Method which deletes SocialNetworkImage by given id.
      *
      * @param id of Social Network Images
      * @return {@link ResponseEntity}

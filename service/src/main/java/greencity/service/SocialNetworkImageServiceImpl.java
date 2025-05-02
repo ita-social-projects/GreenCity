@@ -4,12 +4,14 @@ import greencity.client.UserRemoteClient;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -51,11 +53,15 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         userRemoteClient.deleteAllImages(listId);
     }
 
-    // @Override
-    // public void save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-    // MultipartFile image) {
-    // userRemoteClient.saveSocialImageRemote(socialNetworkImageRequestDTO, image);
-    // }
+    /**
+     * {@inheritDoc}
+     *
+     */
+     @Override
+     public SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+                      MultipartFile image) {
+     return userRemoteClient.saveSocialImageRemote(socialNetworkImageRequestDTO, image);
+     }
 
     /**
      * {@inheritDoc} Method for finding {@link SocialNetworkImageResponseDTO} by id

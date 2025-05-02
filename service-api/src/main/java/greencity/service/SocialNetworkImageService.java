@@ -1,10 +1,12 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * SocialNetworkImageService interface.
@@ -35,15 +37,15 @@ public interface SocialNetworkImageService {
      */
     void deleteAll(List<Long> listId);
 
-    // /**
-    // * Method for creating {@link SocialNetworkImageVO} instance.
-    // *
-    // * @param socialNetworkImageRequestDTO - dto with
-    // * {@link SocialNetworkImageRequestDTO}
-    // * title, text, image path.
-    // */
-    // void save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-    // MultipartFile image);
+     /**
+     * Method for creating SocialNetworkImage instance.
+     *
+     * @param socialNetworkImageRequestDTO - dto with
+     * {@link SocialNetworkImageRequestDTO}
+      * @return {@link SocialNetworkImageResponseDTO}
+     */
+    SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+              MultipartFile image);
 
     /**
      * Method for getting the {@link SocialNetworkImageResponseDTO} instance by its

@@ -3,6 +3,7 @@ package greencity.client;
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
@@ -15,6 +16,7 @@ import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -327,28 +329,32 @@ public class UserRemoteClient {
     }
 
     /**
-     * Method for creating SocialNetworkImageVO.
+     * Method for creating SocialNetworkImage.
      *
-     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
+     * @param socialNetworkImageRequestDTO dto for creating a SocialNetworkImage
      *                                     entity.
      * @param file                         of {@link MultipartFile}
+     * @return {@link SocialNetworkImageResponseDTO}
      */
-    /*
-     * public void saveSocialImageRemote( SocialNetworkImageRequestDTO
-     * socialNetworkImageRequestDTO, MultipartFile file) {
-     *
-     * String path = "/management/socialnetworkimages/save-remote";
-     *
-     * MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
-     * bodyBuilder.part("socialNetworkImageRequestDTO",
-     * socialNetworkImageRequestDTO, MediaType.APPLICATION_JSON);
-     *
-     * if (file != null) { bodyBuilder.part("file", file.getResource()); }
-     *
-     * webClient.post() .uri(path) .contentType(MediaType.MULTIPART_FORM_DATA)
-     * .body(BodyInserters.fromMultipartData(bodyBuilder.build())) .retrieve()
-     * .bodyToMono(Void.class) .block(); }
-     */
+
+    public SocialNetworkImageResponseDTO saveSocialImageRemote(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile file) {
+        String path = "/management/socialnetworkimages/save-remote";
+
+        MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
+        bodyBuilder.part("socialNetworkImageRequestDTO",
+                socialNetworkImageRequestDTO, MediaType.APPLICATION_JSON);
+
+        if (file != null) {
+            bodyBuilder.part("file", file.getResource());
+        }
+        return webClient.post()
+                .uri(path)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+                .retrieve()
+                .bodyToMono(SocialNetworkImageResponseDTO.class)
+                .block();
+    }
 
     /**
      * Method which deletes SocialNetworkImageVO by given id.
