@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habit.HabitAssignVO;
@@ -169,9 +170,9 @@ public class HabitStatisticController {
     @GetMapping("/todayStatisticsForAllHabitItems")
     @ApiLocale
     public ResponseEntity<List<HabitItemsAmountStatisticDto>> getTodayStatisticsForAllHabitItems(
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitStatisticService.getTodayStatisticsForAllHabitItems(locale.getLanguage()));
+            .body(habitStatisticService.getTodayStatisticsForAllHabitItems(languageId));
     }
 
     /**

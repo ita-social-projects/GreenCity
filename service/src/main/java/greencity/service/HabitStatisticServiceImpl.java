@@ -162,8 +162,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Cacheable(value = CacheConstants.HABIT_ITEM_STATISTIC_CACHE, key = "#language")
     @Override
-    public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language) {
-        return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), language).stream()
+    public List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(Long languageId) {
+        return habitStatisticRepo.getStatisticsForAllHabitItemsByDate(ZonedDateTime.now(), languageId).stream()
             .map(it -> HabitItemsAmountStatisticDto.builder()
                 .habitItem((String) it.get(0))
                 .notTakenItems((long) it.get(1))

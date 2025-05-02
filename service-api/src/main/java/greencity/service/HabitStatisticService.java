@@ -71,7 +71,7 @@ public interface HabitStatisticService {
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
      *         key-value pairs.
      */
-    List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(String language);
+    List<HabitItemsAmountStatisticDto> getTodayStatisticsForAllHabitItems(Long languageId);
 
     /**
      * Method for getting amount of habits in progress by user id.

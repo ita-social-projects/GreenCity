@@ -64,7 +64,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      * and the least popular will be the last.
      *
      * @param statisticCreationDate Statistic creation date.
-     * @param languageCode          Language code of habit items, for example, 'en'.
+     * @param languageId            Language id of habit items, for example, 'en'.
      * @return {@link List} of {@link Tuple}s that contain item names and not taken
      *         amount of that items.
      * @author Shevtsiv Rostyslav
@@ -74,12 +74,12 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         + "     INNER JOIN HabitTranslation ht ON ht.habit.id = hs.habitAssign.habit.id "
         + "     WHERE upper(hs.habitAssign.status) <> 'CANCELLED' "
         + "     AND cast(hs.createDate as date) = cast(:statisticCreationDate as date)"
-        + "     AND ht.language.code = :languageCode "
+        + "     AND ht.languageId = :languageId "
         + "GROUP BY ht.habitItem "
         + "ORDER BY COUNT(hs.habitAssign.habit) DESC")
     List<Tuple> getStatisticsForAllHabitItemsByDate(
         @Param("statisticCreationDate") ZonedDateTime statisticCreationDate,
-        @Param("languageCode") String languageCode);
+        @Param("languageId") Long languageId);
 
     /**
      * Method for getting amount of {@link Habit} in progress by {@link User} id.
