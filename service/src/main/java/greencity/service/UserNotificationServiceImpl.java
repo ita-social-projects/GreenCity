@@ -582,7 +582,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         Stream<NotificationDto> stream = ubsNotifications.stream()
             .map(ubsNotificationDto -> modelMapper.map(ubsNotificationDto, NotificationDto.class));
         if (viewed != null) {
-            stream = stream.filter(dto -> dto.getViewed() == viewed);
+            stream = stream.filter(dto -> viewed.equals(dto.getViewed()));
         }
         return stream.toList();
     }
