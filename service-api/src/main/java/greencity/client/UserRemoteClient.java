@@ -414,7 +414,7 @@ public class UserRemoteClient {
     }
 
     // TODO: add @Cacheable. With cache, no worries about a lot of calls to GreenCityUser
-    public String findLanguageCodeByd(Long languageId) {
+    public String findLanguageCodeById(Long languageId) {
         return "ua";
     }
 
@@ -440,6 +440,11 @@ public class UserRemoteClient {
 
     // TODO
     public List<String> findAllLanguageCodes() {
+        return List.of();
+    }
+
+    // TODO
+    public List<Long> findAllLanguageIds() {
         return List.of();
     }
 

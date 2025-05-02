@@ -1,5 +1,6 @@
 package greencity.mapping.events;
 
+import greencity.constant.AppConstant;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateInformationDto;
@@ -11,6 +12,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventImages;
 import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
+import greencity.service.LanguageService;
 import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,14 @@ import java.util.Optional;
  */
 @Component
 public class EventResponseDtoMapper extends AbstractConverter<Event, EventResponseDto> {
-    private static final String LANGUAGE_UA = "ua";
-    private static final String LANGUAGE_EN = "en";
     private static final int MAX_ADDITIONAL_IMAGES = 4;
-
     private final CommentService commentService;
+    private final LanguageService languageService;
 
     @Autowired
-    public EventResponseDtoMapper(@Lazy CommentService commentService) {
+    public EventResponseDtoMapper(@Lazy CommentService commentService, @Lazy LanguageService languageService) {
         this.commentService = commentService;
+        this.languageService = languageService;
     }
 
     /**
@@ -50,12 +51,20 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                 .map(tag -> TagUkEnDto.builder()
                     .id(tag.getId())
                     .nameUk(tag.getTagTranslations().stream()
-                        .filter(tt -> LANGUAGE_UA.equals(tt.getLanguage().getCode()))
+                        .filter(tagTranslation -> {
+                            Long languageId = tagTranslation.getLanguageId();
+                            String languageCode = languageService.findLanguageCodeById(languageId);
+                            return AppConstant.LANGUAGE_CODE_UA.equals(languageCode);
+                        })
                         .findFirst()
                         .map(TagTranslation::getName)
                         .orElse(null))
                     .nameEn(tag.getTagTranslations().stream()
-                        .filter(tt -> LANGUAGE_EN.equals(tt.getLanguage().getCode()))
+                        .filter(tagTranslation -> {
+                            Long languageId = tagTranslation.getLanguageId();
+                            String languageCode = languageService.findLanguageCodeById(languageId);
+                            return AppConstant.DEFAULT_LANGUAGE_CODE.equals(languageCode);
+                        })
                         .findFirst()
                         .map(TagTranslation::getName)
                         .orElse(null))

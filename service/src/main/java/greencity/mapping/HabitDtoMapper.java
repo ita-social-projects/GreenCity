@@ -10,6 +10,8 @@ import greencity.entity.localization.TagTranslation;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import greencity.enums.ToDoListItemStatus;
+import greencity.service.LanguageService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -19,9 +21,10 @@ import org.springframework.stereotype.Component;
  * {@link HabitDto}.
  */
 @Component
+@RequiredArgsConstructor
 public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto> {
-
-    UserRemoteClient userRemoteClient;
+    private final LanguageService languageService;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * Method convert {@link HabitTranslation} to {@link HabitDto}.
@@ -30,9 +33,8 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
      */
     @Override
     protected HabitDto convert(HabitTranslation habitTranslation) {
-        // var language = habitTranslation.getLanguage();
-        Long languageId = habitTranslation.getLanguageId();
-        String languageCode = userRemoteClient.findLanguageCodeByd(languageId);
+        Long habitTranslationLanguageId = habitTranslation.getLanguageId();
+        String habitTranslationLanguageCode = userRemoteClient.findLanguageCodeById(habitTranslationLanguageId);
 
         var habit = habitTranslation.getHabit();
         return HabitDto.builder()
@@ -44,21 +46,26 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                 .name(habitTranslation.getName())
                 .description(habitTranslation.getDescription())
                 .habitItem(habitTranslation.getHabitItem())
-                // .languageCode(language.getCode())
-                .languageCode(languageCode)
+                .languageCode(habitTranslationLanguageCode)
                 .build())
             .tags(habit.getTags().stream()
                 .flatMap(tag -> tag.getTagTranslations().stream())
-                // .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(languageCode))
+                .filter(tagTranslation -> {
+                    Long languageId = tagTranslation.getLanguageId();
+                    String languageCode = languageService.findLanguageCodeById(languageId);
+                    return languageCode.equals(habitTranslationLanguageCode);
+                })
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .toDoListItems(habit.getToDoListItems() != null ? habit.getToDoListItems().stream()
                 .map(shoppingListItem -> ToDoListItemDto.builder()
                     .id(shoppingListItem.getId())
                     .status(ToDoListItemStatus.ACTIVE.toString())
                     .text(shoppingListItem.getTranslations().stream()
-                        // .filter(shoppingListItemTranslation -> shoppingListItemTranslation.getLanguage().equals(language))
-                        .filter(shoppingListItemTranslation -> shoppingListItemTranslation.getLanguage().getCode().equals(languageCode))
+                        .filter(shoppingListItemTranslation -> {
+                            Long languageId = shoppingListItemTranslation.getLanguageId();
+                            String languageCode = languageService.findLanguageCodeById(languageId);
+                            return languageCode.equals(habitTranslationLanguageCode);
+                        })
                         .map(ToDoListItemTranslation::getContent)
                         .findFirst().orElse(null))
                     .build())

@@ -208,9 +208,6 @@ public class User {
     @JoinColumn(name = "user_location")
     private UserLocation userLocation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Language language;
-
     @Column(name = "event_organizer_rating")
     private Double eventOrganizerRating;
 

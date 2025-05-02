@@ -122,7 +122,7 @@ public class TagsServiceImpl implements TagsService {
             .forEach(tagTranslation -> {
                 Optional<TagTranslationDto> tagTranslationDto = tagPostDto.getTagTranslations().stream()
                     .filter(newTranslation -> newTranslation.getLanguage().getId()
-                        .equals(tagTranslation.getLanguage().getId()))
+                        .equals(tagTranslation.getLanguageId()))
                     .findFirst();
                 tagTranslation.setName(tagTranslationDto.map(TagTranslationDto::getName).orElse(null));
             });
@@ -187,8 +187,8 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public List<TagDto> findByTypeAndLanguageCode(TagType type, String languageCode) {
-        List<TagTranslation> tagTranslations = tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);
+    public List<TagDto> findByTypeAndLanguageId(TagType type, Long languageId) {
+        List<TagTranslation> tagTranslations = tagRepo.findTagsByTypeAndLanguageId(type, languageId);
 
         return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>() {
         }.getType());

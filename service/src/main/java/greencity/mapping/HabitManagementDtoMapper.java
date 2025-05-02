@@ -37,7 +37,7 @@ public class HabitManagementDtoMapper extends AbstractConverter<Habit, HabitMana
             .habitTranslations(habit.getHabitTranslations()
                 .stream().map(habitTranslation -> {
 
-                    String languageCode = userRemoteClient.findLanguageCodeByd(habitTranslation.getLanguageId());
+                    String languageCode = userRemoteClient.findLanguageCodeById(habitTranslation.getLanguageId());
 
                     return HabitTranslationManagementDto.builder()
                                 .id(habitTranslation.getId())

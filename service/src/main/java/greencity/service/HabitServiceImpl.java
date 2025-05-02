@@ -21,7 +21,6 @@ import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.AchievementAction;

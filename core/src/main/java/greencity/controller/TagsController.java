@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.tag.NewTagDto;
@@ -46,10 +47,10 @@ public class TagsController {
     @GetMapping("/search")
     @ApiLocale
     public ResponseEntity<List<TagDto>> findByTypeAndLanguageCode(
-        @Parameter(hidden = true) @ValidLanguage Locale locale,
+        @Parameter(hidden = true) @LanguageId Long languageId,
         @RequestParam TagType type) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(tagsService.findByTypeAndLanguageCode(type, locale.getLanguage()));
+            .body(tagsService.findByTypeAndLanguageId(type, languageId));
     }
 
     /**

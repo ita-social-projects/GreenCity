@@ -80,7 +80,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
     private final RatingCalculation ratingCalculation;
-    private final List<String> languageCode = List.of("en", "ua");
+    private final LanguageService languageService;
     private final UserService userService;
     private final UserRepo userRepo;
     private final CommentService commentService;
@@ -222,9 +222,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public EcoNewsDto findDtoByIdAndLanguage(Long id, String language) {
         EcoNews ecoNews = findEcoNewsById(id);
         List<String> tags = new ArrayList<>();
-        for (String lang : languageCode) {
+        for (Long languageId : languageService.findAllLanguageIds()) {
             tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(lang))
+                .filter(tagTranslation -> tagTranslation.getLanguageId().equals(languageId))
                 .map(TagTranslation::getName)
                 .toList());
         }
@@ -553,10 +553,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsGenericDto getEcoNewsGenericDtoWithEnTags(EcoNews ecoNews, Long currentUserId) {
         List<String> tags = new ArrayList<>();
-        for (String language : languageCode) {
+        for (Long languageId : languageService.findAllLanguageIds()) {
             tags.addAll(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguage().getCode().equals(language))
+                .filter(t -> t.getLanguageId().equals(languageId))
                 .map(TagTranslation::getName)
                 .toList());
         }

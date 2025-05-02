@@ -231,7 +231,7 @@ class TagsServiceImplTest {
         List<TagDto> actual = Collections.singletonList(tagDto);
         List<TagTranslation> tagTranslations = Collections.singletonList(ModelUtils.getTagTranslations().get(1));
 
-        when(tagRepo.findTagsByTypeAndLanguageCode(tagType, languageCode))
+        when(tagRepo.findTagsByTypeAndLanguageId(tagType, languageCode))
             .thenReturn(tagTranslations);
         when(modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>() {
         }.getType())).thenReturn(actual);

@@ -17,4 +17,7 @@ public class FactOfTheDayTranslation extends Translation {
     @Setter
     @ManyToOne
     private FactOfTheDay factOfTheDay;
+
+    @Column(name = "language_id", nullable = false)
+    private Long languageId;
 }

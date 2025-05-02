@@ -63,25 +63,32 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * @param filter   {@link String}
      * @return found tags {@link Page}
      */
-    @Query(value = "SELECT DISTINCT t FROM Tag t LEFT JOIN FETCH t.tagTranslations AS tt "
+    // TODO
+    /*@Query(value = "SELECT DISTINCT t FROM Tag t LEFT JOIN FETCH t.tagTranslations AS tt "
         + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
         + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
         + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
         + "OR LOWER(tt.language.code) LIKE LOWER(CONCAT('%', :filter, '%')) "
         + "OR LOWER(tt.name) LIKE LOWER(CONCAT('%', :filter, '%'))",
-        countQuery = "SELECT COUNT(t) FROM Tag t")
+        countQuery = "SELECT COUNT(t) FROM Tag t")*/
+    @Query(value = "SELECT DISTINCT t FROM Tag t LEFT JOIN FETCH t.tagTranslations AS tt "
+            + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
+            + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
+            + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
+            + "OR LOWER(tt.name) LIKE LOWER(CONCAT('%', :filter, '%'))",
+            countQuery = "SELECT COUNT(t) FROM Tag t")
     Page<Tag> filterByAllFields(Pageable pageable, String filter);
 
     /**
      * Method that allow you to find list of Tags by type and language code.
      *
      * @param tagType      {@link TagType}
-     * @param languageCode {@link String}
+     * @param languageId   {@link Long} language id
      * @return list of tag's names.
      */
-    @Query("select tt from TagTranslation tt join fetch tt.tag t join fetch tt.language l "
-        + "where t.type = :tagType and l.code = :languageCode order by tt.id")
-    List<TagTranslation> findTagsByTypeAndLanguageCode(TagType tagType, String languageCode);
+    @Query("select tt from TagTranslation tt join fetch tt.tag t join fetch tt.languageId l "
+        + "where t.type = :tagType and l = :languageId order by tt.id")
+    List<TagTranslation> findTagsByTypeAndLanguageId(TagType tagType, Long languageId);
 
     /**
      * Method that allow you to find list of Tags by type.

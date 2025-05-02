@@ -10,7 +10,6 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
@@ -167,7 +166,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         habit.getHabitTranslations().forEach(
             // ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
                 habitTranslation -> {
-                    String languageCode = userRemoteClient.findLanguageCodeByd(habitTranslation.getLanguageId());
+                    String languageCode = userRemoteClient.findLanguageCodeById(habitTranslation.getLanguageId());
                     enhanceTranslationWithDto(translationDtoMap.get(languageCode), habitTranslation);
                 });
 

@@ -10,7 +10,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -82,7 +81,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                 factPost.getFactOfTheDayTranslations().stream()
                     .map(el -> FactOfTheDayTranslation.builder()
                         .content(el.getContent())
-                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
+                        .languageId(languageService.findByCode(el.getLanguageCode()).getId())
                         .build())
                     .collect(Collectors.toList()))
             .tags(tagsRepo.findTagsById(factPost.getTags()))
@@ -117,7 +116,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                 factPost.getFactOfTheDayTranslations().stream()
                     .map(el -> FactOfTheDayTranslation.builder()
                         .content(el.getContent())
-                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
+                        .languageId(languageService.findByCode(el.getLanguageCode()).getId())
                         .build())
                     .collect(Collectors.toList()))
             .createDate(ZonedDateTime.now())

@@ -4,7 +4,6 @@ import greencity.dto.filter.HabitTranslationFilterDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.HabitAssignStatus;
@@ -68,9 +67,9 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
             predicates.add(createCustomHabitPredicate(criteriaBuilder, habitJoin, filter.getUserId()));
         }
 
-        if (StringUtils.isNotEmpty(filter.getLanguageCode())) {
+        /*if (StringUtils.isNotEmpty(filter.getLanguageCode())) {
             predicates.add(createLanguageCodePredicate(root, criteriaBuilder, filter.getLanguageCode()));
-        }
+        }*/
 
         if (CollectionUtils.isNotEmpty(filter.getComplexities())) {
             predicates.add(createComplexityPredicate(filter.getComplexities(), habitJoin));
@@ -126,9 +125,9 @@ public class HabitTranslationFilter implements Specification<HabitTranslation> {
         return habitJoin.get("complexity").in(complexities);
     }
 
-    private Predicate createLanguageCodePredicate(Root<HabitTranslation> root, CriteriaBuilder cb,
+    /*private Predicate createLanguageCodePredicate(Root<HabitTranslation> root, CriteriaBuilder cb,
         String languageCode) {
         Join<HabitTranslation, Language> languageJoin = root.join("language", JoinType.INNER);
         return cb.equal(languageJoin.get("code"), languageCode);
-    }
+    }*/
 }

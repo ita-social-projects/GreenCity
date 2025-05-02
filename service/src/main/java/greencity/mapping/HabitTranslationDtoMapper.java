@@ -15,7 +15,7 @@ public class HabitTranslationDtoMapper extends AbstractConverter<HabitTranslatio
 
     @Override
     protected HabitTranslationDto convert(HabitTranslation habitTranslation) {
-        String languageCode = userRemoteClient.findLanguageCodeByd(habitTranslation.getLanguageId());
+        String languageCode = userRemoteClient.findLanguageCodeById(habitTranslation.getLanguageId());
 
         return HabitTranslationDto.builder()
             .description(habitTranslation.getDescription())

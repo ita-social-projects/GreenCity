@@ -114,6 +114,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final RatingPointsRepo ratingPointsRepo;
     private final HabitInvitationRepo habitInvitationRepo;
     private final HabitInvitationService habitInvitationService;
+    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -400,7 +401,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .id(toDoListItem.getId())
                 .status(toDoListItem.getStatus().toString())
                 .text(toDoListItem.getToDoListItem().getTranslations().stream()
-                    .filter(toDoItem -> toDoItem.getLanguage().getId().equals(languageId)).findFirst()
+                    .filter(toDoItem -> toDoItem.getLanguageId().equals(languageId)).findFirst()
                     .orElseThrow(
                         () -> new NotFoundException(
                             ErrorMessage.TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND + habitAssignDto.getHabit().getId()))
@@ -1127,7 +1128,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     private List<ToDoListItem> findRelatedToDoListItem(
         Long habitId,
-        String language,
+        Long languageId,
         List<UserToDoListItemResponseDto> listToSave) {
         if (listToSave.isEmpty()) {
             return List.of();
@@ -1138,7 +1139,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
 
         List<ToDoListItem> relatedToDoListItems =
-            toDoListItemRepo.findByNames(habitId, listToSaveNames, language);
+            toDoListItemRepo.findByNames(habitId, listToSaveNames, languageId);
 
         if (listToSaveNames.size() != relatedToDoListItems.size()) {
             List<String> relatedToDoListItemNames = relatedToDoListItems.stream()
@@ -1172,9 +1173,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private String getToDoItemNameByLanguageCode(ToDoListItem toDoItem, String language) {
+        Long languageId = languageService.findLanguageIdByCode(language);
+
         return toDoItem.getTranslations()
             .stream()
-            .filter(x -> x.getLanguage().getCode().equals(language))
+            .filter(x -> x.getLanguageId().equals(languageId))
             .findFirst()
             .orElseThrow()
             .getContent();

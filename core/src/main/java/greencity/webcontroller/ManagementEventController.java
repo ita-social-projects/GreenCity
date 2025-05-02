@@ -1,6 +1,7 @@
 package greencity.webcontroller;
 
 import greencity.annotations.ApiLocale;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.client.RestClient;
 import greencity.constant.HttpStatuses;
@@ -107,7 +108,7 @@ public class ManagementEventController {
         Model model,
         @Parameter(hidden = true) Pageable pageable,
         FilterEventDto filterEventDto,
-        @Parameter(hidden = true) Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         PageableAdvancedDto<EventDto> allEvents;
         if (query != null && !query.isEmpty()) {
             allEvents = eventService.searchEventsBy(pageable, query);
@@ -127,14 +128,15 @@ public class ManagementEventController {
         }
         model.addAttribute(FILTER_EVENT_DTO, filterEventDto);
         model.addAttribute(SORT_MODEL, orderUrl.toString());
-        model.addAttribute(EVENT_TAGS, tagsService.findByTypeAndLanguageCode(TagType.EVENT, locale.getLanguage()));
+        model.addAttribute(EVENT_TAGS, tagsService.findByTypeAndLanguageId(TagType.EVENT, languageId));
         model.addAttribute(PAGE_SIZE, pageable.getPageSize());
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
-        model.addAttribute(CITIES,
+        /*model.addAttribute(CITIES,
             eventService.getAllEventsAddresses().stream()
+                    // TODO: maybe make the annotation not a LanguageId but kind of @CurrentLanguage of type LanguageVO??????
                 .map(e -> "en".equals(locale.getLanguage()) ? e.getCityEn() : e.getCityUk())
                 .distinct()
-                .toList());
+                .toList());*/
 
         return "core/management_events";
     }

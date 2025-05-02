@@ -4,7 +4,6 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;

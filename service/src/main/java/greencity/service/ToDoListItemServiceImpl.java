@@ -357,8 +357,8 @@ public class ToDoListItemServiceImpl implements ToDoListItemService {
     private void updateTranslations(List<ToDoListItemTranslation> oldTranslations,
         List<LanguageTranslationDTO> newTranslations) {
         oldTranslations.forEach(itemTranslation -> itemTranslation.setContent(newTranslations.stream()
-            .filter(newTranslation -> newTranslation.getLanguage().getCode()
-                .equals(itemTranslation.getLanguage().getCode()))
+            .filter(newTranslation -> newTranslation.getLanguage().getId()
+                .equals(itemTranslation.getLanguageId()))
             .findFirst().get()
             .getContent()));
     }

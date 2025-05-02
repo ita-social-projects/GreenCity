@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.dto.tag.TagVO;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
@@ -19,7 +18,7 @@ public class TagMapper extends AbstractConverter<TagVO, Tag> {
         List<TagTranslation> tagTranslations = new ArrayList<>();
         tagVO.getTagTranslations()
             .forEach(tt -> tagTranslations.add(TagTranslation.builder().id(tt.getId()).name(tt.getName())
-                .language(Language.builder().code(tt.getLanguageVO().getCode()).id(tt.getLanguageVO().getId()).build())
+                .languageId(tt.getLanguageVO().getId())
                 .build()));
         tag.setTagTranslations(tagTranslations);
         return tag;

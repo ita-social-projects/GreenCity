@@ -48,4 +48,32 @@ public class LanguageServiceImpl implements LanguageService {
     public List<String> findAllLanguageCodes() {
         return userRemoteClient.findAllLanguageCodes();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Long> findAllLanguageIds() {
+        return userRemoteClient.findAllLanguageIds();
+    }
+
+    @Override
+    public String findLanguageCodeById(Long languageId) {
+        return "";
+    }
+
+    @Override
+    public Long findLanguageIdByCode(String languageCode) {
+        return 0L;
+    }
+
+    @Override
+    public LanguageDTO findLanguageByCode(String code) {
+        return null;
+    }
+
+    @Override
+    public LanguageVO findLanguageById(Long languageId) {
+        return null;
+    }
 }

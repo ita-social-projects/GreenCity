@@ -21,7 +21,6 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
-import greencity.entity.Language;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
@@ -501,7 +500,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     public boolean update(UpdateUserDto updateUserDto) {
-        User user;
+        /*User user;
         System.out.println(updateUserDto.getUserUpdateType());
         if (!Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.CREATE)) {
             user = userRepo.findByEmail(updateUserDto.getEmail()).orElseThrow(
@@ -523,7 +522,7 @@ public class UserServiceImpl implements UserService {
                 .eventOrganizerRating(AppConstant.DEFAULT_RATING)
                 .build();
         }
-        userRepo.save(user);
+        userRepo.save(user);*/
         return true;
     }
 

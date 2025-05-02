@@ -7,6 +7,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.User;
+import greencity.service.LanguageService;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
 @Component
 public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
     private final ModelMapper modelMapper;
+    private final LanguageService languageService;
 
     @Lazy
-    public EcoNewsVOMapper(ModelMapper modelMapper) {
+    public EcoNewsVOMapper(ModelMapper modelMapper, LanguageService languageService) {
         this.modelMapper = modelMapper;
+        this.languageService = languageService;
     }
 
     @Override
@@ -45,14 +48,19 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                 .map(tag -> TagVO.builder()
                     .id(tag.getId())
                     .tagTranslations(tag.getTagTranslations().stream()
-                        .map(tagTranslation -> TagTranslationVO.builder()
-                            .name(tagTranslation.getName())
-                            .id(tagTranslation.getId())
-                            .languageVO(LanguageVO.builder()
-                                .code(tagTranslation.getLanguage().getCode())
-                                .id(tagTranslation.getId())
-                                .build())
-                            .build())
+                        .map(tagTranslation -> {
+                            Long languageId = tagTranslation.getLanguageId();
+                            String languageCode = languageService.findLanguageCodeById(languageId);
+
+                            return TagTranslationVO.builder()
+                                    .name(tagTranslation.getName())
+                                    .id(tagTranslation.getId())
+                                    .languageVO(LanguageVO.builder()
+                                            .code(languageCode)
+                                            .id(tagTranslation.getId())
+                                            .build())
+                                    .build();
+                        })
                         .toList())
                     .build())
                 .toList())

@@ -97,10 +97,10 @@ public interface TagsService {
      * Method that allow you to find list of Tags by type and language code.
      *
      * @param type         {@link TagType}
-     * @param languageCode {@link String}
+     * @param languageId   {@link Long} language id
      * @return {@link List} of {@link TagDto}
      */
-    List<TagDto> findByTypeAndLanguageCode(TagType type, String languageCode);
+    List<TagDto> findByTypeAndLanguageId(TagType type, Long languageId);
 
     /**
      * Method that allow you to find list of Tags by type.

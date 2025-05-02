@@ -1,5 +1,6 @@
 package greencity.mapping.events;
 
+import greencity.constant.AppConstant;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
@@ -11,6 +12,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
 import greencity.service.CommentService;
+import greencity.service.LanguageService;
 import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -28,10 +30,12 @@ import java.util.stream.Collectors;
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
     private final CommentService commentService;
+    private final LanguageService languageService;
 
     @Autowired
-    public EventDtoMapper(@Lazy CommentService commentService) {
+    public EventDtoMapper(@Lazy CommentService commentService, @Lazy LanguageService languageService) {
         this.commentService = commentService;
+        this.languageService = languageService;
     }
 
     /**
@@ -67,10 +71,16 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         event.getTags().forEach(t -> {
             var translations = t.getTagTranslations();
             tagUaEnDtos.add(TagUkEnDto.builder().id(t.getId())
-                .nameUk(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst()
-                    .orElseThrow().getName())
-                .nameEn(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("en")).findFirst()
-                    .orElseThrow().getName())
+                .nameUk(translations.stream().filter(tagTranslation -> {
+                    Long languageId = tagTranslation.getLanguageId();
+                    String languageCode = languageService.findLanguageCodeById(languageId);
+                    return languageCode.equals(AppConstant.LANGUAGE_CODE_UA);
+                }).findFirst().orElseThrow().getName())
+                .nameEn(translations.stream().filter(tagTranslation -> {
+                    Long languageId = tagTranslation.getLanguageId();
+                    String languageCode = languageService.findLanguageCodeById(languageId);
+                    return languageCode.equals(AppConstant.DEFAULT_LANGUAGE_CODE);
+                }).findFirst().orElseThrow().getName())
                 .build());
         });
         eventDto.setTags(tagUaEnDtos);

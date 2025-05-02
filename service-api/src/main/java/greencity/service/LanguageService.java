@@ -40,4 +40,14 @@ public interface LanguageService {
      * @return {@link List} of language code strings.
      */
     List<String> findAllLanguageCodes();
+
+    List<Long> findAllLanguageIds();
+
+    String findLanguageCodeById(Long languageId);
+
+    Long findLanguageIdByCode(String languageCode);
+
+    LanguageDTO findLanguageByCode(String code);
+
+    LanguageVO findLanguageById(Long languageId);
 }
