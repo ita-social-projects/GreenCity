@@ -44,7 +44,7 @@ public interface HabitTranslationRepo
      * @author Markiyan Derevetskyi
      */
 
-    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+    /*@Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language = "
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
@@ -54,7 +54,18 @@ public interface HabitTranslationRepo
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags)) "
         + "AND h.isDeleted = false) "
-        + "ORDER BY ht.habit.id DESC")
+        + "ORDER BY ht.habit.id DESC")*/
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+            + "WHERE ht.languageId = "
+            + "(SELECT l.id FROM Language AS l WHERE l.code = :languageCode) "
+            + "AND ht.habit IN "
+            + "(SELECT h FROM Habit AS h "
+            + "JOIN h.tags AS t "
+            + "WHERE t.id IN "
+            + "(SELECT tt.tag.id FROM TagTranslation AS tt "
+            + "WHERE lower(tt.name) IN (:tags)) "
+            + "AND h.isDeleted = false) "
+            + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     @Query("SELECT DISTINCT ht FROM HabitTranslation ht "

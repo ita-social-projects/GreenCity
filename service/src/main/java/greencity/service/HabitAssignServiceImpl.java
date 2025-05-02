@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -446,6 +447,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return userItemsDTO;
     }
 
+    UserRemoteClient userRemoteClient;
+
     /**
      * Method to get {@link HabitTranslation} for current habit assign and language.
      *
@@ -454,7 +457,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     private HabitTranslation getHabitTranslation(HabitAssign habitAssign, String language) {
         return habitAssign.getHabit().getHabitTranslations().stream()
-            .filter(ht -> ht.getLanguage().getCode().equals(language)).findFirst()
+            // .filter(ht -> ht.getLanguage().getCode().equals(language)).findFirst()
+            .filter(ht -> {
+                Long languageId = ht.getLanguageId();
+                String languageCode = userRemoteClient.findLanguageCodeByd(languageId);
+                return languageCode.equals(language);
+            }).findFirst()
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + habitAssign.getHabit().getId()));
     }

@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableHabitManagementDto;
@@ -108,6 +109,8 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
         return modelMapper.map(habit, HabitManagementDto.class);
     }
 
+    UserRemoteClient userRemoteClient;
+
     /**
      * Method builds {@link Habit} with {@link HabitManagementDto} fields.
      *
@@ -124,9 +127,10 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
                         .description(habitTranslationDto.getDescription())
                         .habitItem(habitTranslationDto.getHabitItem())
                         .name(habitTranslationDto.getName())
-                        .language(modelMapper.map(
+                        /*.languageId(modelMapper.map(
                             languageService.findByCode(habitTranslationDto.getLanguageCode()),
-                            Language.class))
+                            Language.class))*/
+                        .languageId(userRemoteClient.findLanguageIdByCode(habitTranslationDto.getLanguageCode()))
                         .build())
                     .toList())
             .build();
@@ -161,7 +165,11 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
 
         Map<String, HabitTranslationManagementDto> translationDtoMap = getMapTranslationsDtos(habitManagementDto);
         habit.getHabitTranslations().forEach(
-            ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
+            // ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
+                habitTranslation -> {
+                    String languageCode = userRemoteClient.findLanguageCodeByd(habitTranslation.getLanguageId());
+                    enhanceTranslationWithDto(translationDtoMap.get(languageCode), habitTranslation);
+                });
 
         uploadImageForHabit(habitManagementDto, image, habit);
         habit.setComplexity(habitManagementDto.getComplexity());

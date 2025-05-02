@@ -23,12 +23,12 @@ public class Language {
     @Column(name = "code", nullable = false, unique = true, length = 35)
     private String code;
 
-    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
+/*    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<ToDoListItemTranslation> toDoListItemTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
-    private List<FactOfTheDayTranslation> factOfTheDayTranslations;
+    private List<FactOfTheDayTranslation> factOfTheDayTranslations;*/
 }

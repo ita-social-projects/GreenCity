@@ -411,6 +411,14 @@ public class UserRemoteClient {
             .block();
     }
 
+    public String findLanguageCodeByd(Long languageId) {
+        return "ua";
+    }
+
+    public Long findLanguageIdByCode(String languageCode) {
+        return 1L;
+    }
+
     /**
      * Method which updates SocialNetworkImage.
      *

@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.client.UserRemoteClient;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.entity.Habit;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HabitManagementDtoMapper extends AbstractConverter<Habit, HabitManagementDto> {
+
+    UserRemoteClient userRemoteClient;
+
     /**
      * Method convert {@link Habit} to {@link HabitManagementDto}.
      *
@@ -21,6 +25,8 @@ public class HabitManagementDtoMapper extends AbstractConverter<Habit, HabitMana
      */
     @Override
     protected HabitManagementDto convert(Habit habit) {
+
+
         return HabitManagementDto.builder()
             .id(habit.getId())
             .image(habit.getImage())
@@ -29,13 +35,19 @@ public class HabitManagementDtoMapper extends AbstractConverter<Habit, HabitMana
             .isCustomHabit(habit.getIsCustomHabit())
             .isDeleted(habit.getIsDeleted())
             .habitTranslations(habit.getHabitTranslations()
-                .stream().map(habitTranslation -> HabitTranslationManagementDto.builder()
-                    .id(habitTranslation.getId())
-                    .description(habitTranslation.getDescription())
-                    .habitItem(habitTranslation.getHabitItem())
-                    .name(habitTranslation.getName())
-                    .languageCode(habitTranslation.getLanguage().getCode())
-                    .build())
+                .stream().map(habitTranslation -> {
+
+                    String languageCode = userRemoteClient.findLanguageCodeByd(habitTranslation.getLanguageId());
+
+                    return HabitTranslationManagementDto.builder()
+                                .id(habitTranslation.getId())
+                                .description(habitTranslation.getDescription())
+                                .habitItem(habitTranslation.getHabitItem())
+                                .name(habitTranslation.getName())
+                                // .languageCode(habitTranslation.getLanguage().getCode())
+                                .languageCode(languageCode)
+                                .build();
+                    })
                 .collect(Collectors.toList()))
             .build();
     }

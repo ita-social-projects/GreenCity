@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.client.UserRemoteClient;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.HabitTranslation;
 import org.modelmapper.AbstractConverter;
@@ -9,13 +10,18 @@ import java.util.stream.Collectors;
 
 @Component
 public class HabitTranslationDtoMapper extends AbstractConverter<HabitTranslation, HabitTranslationDto> {
+
+    UserRemoteClient userRemoteClient;
+
     @Override
     protected HabitTranslationDto convert(HabitTranslation habitTranslation) {
+        String languageCode = userRemoteClient.findLanguageCodeByd(habitTranslation.getLanguageId());
+
         return HabitTranslationDto.builder()
             .description(habitTranslation.getDescription())
             .habitItem(habitTranslation.getHabitItem())
             .name(habitTranslation.getName())
-            .languageCode(habitTranslation.getLanguage().getCode())
+            .languageCode(languageCode)
             .build();
     }
 

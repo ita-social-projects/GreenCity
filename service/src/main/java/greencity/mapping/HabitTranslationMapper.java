@@ -66,7 +66,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
             .filter(dto -> Objects.equals(language.getCode(), dto.getLanguageCode()))
             .map(dto -> {
                 HabitTranslation habitTranslation = convert(dto);
-                habitTranslation.setLanguage(language);
+                habitTranslation.setLanguageId(language.getId());
                 habitTranslation.setHabit(habit);
                 return habitTranslation;
             })
