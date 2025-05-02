@@ -49,6 +49,8 @@ import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagVO;
@@ -736,5 +738,20 @@ public class ModelUtils {
             .dislikes(0)
             .countComments(0)
             .build();
+    }
+
+    public static SocialNetworkImageRequestDTO getSocialNetworkImageRequestDTO() {
+        return SocialNetworkImageRequestDTO.builder()
+                .imagePath("http://someimage.ua")
+                .hostPath("somehost")
+                .build();
+    }
+
+    public static SocialNetworkImageResponseDTO getSocialNetworkImageResponseDTO() {
+        return SocialNetworkImageResponseDTO.builder()
+                .imagePath("http://someimage.ua")
+                .hostPath("somehost")
+                .id(5L)
+                .build();
     }
 }

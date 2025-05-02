@@ -1,7 +1,9 @@
 package greencity.webcontroller;
 
 import com.google.gson.Gson;
+import greencity.ModelUtils;
 import greencity.dto.PageableDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.service.SocialNetworkImageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,14 +18,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -31,6 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -100,5 +107,34 @@ public class ManagementSocialNetworkImagesControllerTest {
             .andExpect(status().isOk());
 
         verify(socialNetworkImageService).findDtoById(1L);
+    }
+
+    @Test
+    void saveTest() throws Exception {
+        SocialNetworkImageRequestDTO imageToSave = ModelUtils.getSocialNetworkImageRequestDTO();
+        Gson gson = new Gson();
+        String json = gson.toJson(imageToSave);
+        SocialNetworkImageResponseDTO expected = ModelUtils.getSocialNetworkImageResponseDTO();
+        MockMultipartFile dtoPart = new MockMultipartFile(
+                "socialNetworkImageRequestDTO",
+                "socialNetworkImageRequestDTO.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                json.getBytes(StandardCharsets.UTF_8)
+        );
+
+        when(socialNetworkImageService.save(imageToSave, null)).thenReturn(expected);
+
+        MvcResult result = mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
+                        .file(dtoPart)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String resultString = result.getResponse().getContentAsString();
+        SocialNetworkImageResponseDTO responseDTO = gson.fromJson(resultString, SocialNetworkImageResponseDTO.class);
+
+        verify(socialNetworkImageService).save(imageToSave, null);
+        assertEquals(expected, responseDTO);
     }
 }

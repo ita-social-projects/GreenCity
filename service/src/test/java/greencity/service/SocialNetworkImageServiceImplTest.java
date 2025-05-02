@@ -1,7 +1,9 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.client.UserRemoteClient;
 import greencity.dto.PageableDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,6 +70,19 @@ public class SocialNetworkImageServiceImplTest {
 
         SocialNetworkImageResponseDTO result = socialNetworkImageService.findDtoById(toSearch);
         verify(userRemoteClient).getEcoNewsById(toSearch);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void saveTest() {
+        SocialNetworkImageRequestDTO imageToSave = ModelUtils.getSocialNetworkImageRequestDTO();
+        SocialNetworkImageResponseDTO expected = ModelUtils.getSocialNetworkImageResponseDTO();
+
+        when(userRemoteClient.saveSocialImageRemote(imageToSave, null)).thenReturn(expected);
+
+        SocialNetworkImageResponseDTO result = socialNetworkImageService.save(imageToSave, null);
+
+        verify(userRemoteClient).saveSocialImageRemote(imageToSave, null);
         assertEquals(expected, result);
     }
 }
