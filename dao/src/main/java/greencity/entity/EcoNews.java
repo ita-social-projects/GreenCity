@@ -14,6 +14,7 @@ import lombok.ToString;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "eco_news")
@@ -53,10 +54,12 @@ public class EcoNews {
     @Column(nullable = false)
     private boolean hidden = false;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @BatchSize(size = 10)
     private List<Tag> tags;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     @Builder.Default
     @JoinTable(
         name = "eco_news_users_likes",
@@ -64,7 +67,8 @@ public class EcoNews {
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersLikedNews = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     @Builder.Default
     @JoinTable(
         name = "eco_news_users_dislikes",
@@ -73,6 +77,7 @@ public class EcoNews {
     private Set<User> usersDislikedNews = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
     @Builder.Default
     @JoinTable(name = "eco_news_followers",
         joinColumns = @JoinColumn(name = "eco_news_id"),

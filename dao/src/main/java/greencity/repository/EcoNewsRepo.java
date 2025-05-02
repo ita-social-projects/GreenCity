@@ -4,10 +4,7 @@ import greencity.dto.econews.EcoNewsAuthorStatisticDto;
 import greencity.entity.EcoNews;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -186,4 +183,7 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
         GROUP BY tags;
         """, nativeQuery = true)
     List<Object[]> getEcoNewsTagsStatistics(Long languageId);
+
+    @EntityGraph(attributePaths = {"tags", "author"})
+    Optional<EcoNews> findTopByAuthorIdOrderByCreationDateDesc(Long authorId);
 }

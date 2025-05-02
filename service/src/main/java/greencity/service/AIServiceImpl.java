@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
@@ -44,7 +44,6 @@ public class AIServiceImpl implements AIService {
     private final UserRepo userRepo;
     private final GrammarChecker grammarChecker;
     private final ModelMapper modelMapper;
-    private LocalDate lastGeneratedDate = LocalDate.now().minusWeeks(1);
 
     /**
      * Fetches a forecast for a user based on their habits and language preference.
@@ -145,7 +144,6 @@ public class AIServiceImpl implements AIService {
         if (!isWeekPassed()) {
             throw new EcoNewsGenerationLimitException(MESSAGE_ECO_NEWS_LIMIT);
         }
-        lastGeneratedDate = LocalDate.now();
 
         String jsonResponse = fetchNewsWithoutQuery(language);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
@@ -702,7 +700,12 @@ public class AIServiceImpl implements AIService {
      * @return true if a week has passed, false otherwise.
      */
     private boolean isWeekPassed() {
-        return ChronoUnit.WEEKS.between(lastGeneratedDate, LocalDate.now()) >= 1;
+        Optional<EcoNews> latestEcoNews =
+            ecoNewsRepo.findTopByAuthorIdOrderByCreationDateDesc(5L);
+        return latestEcoNews
+            .map(news -> news.getCreationDate().toLocalDate().
+                isBefore(LocalDate.now().minusWeeks(1)))
+            .orElse(true);
     }
 
     /**

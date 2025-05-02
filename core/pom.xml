@@ -269,6 +269,11 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.11.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
