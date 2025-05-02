@@ -5,6 +5,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
@@ -60,8 +61,8 @@ public class HabitController {
     /**
      * Method finds {@link HabitVO} by given id with locale translation.
      *
-     * @param id     of {@link HabitVO}.
-     * @param locale {@link Locale} with needed language code.
+     * @param id         of {@link HabitVO}.
+     * @param languageId {@link Long} with needed language id.
      * @return {@link HabitDto}.
      */
     @Operation(summary = "Find habit by id.")
@@ -76,9 +77,9 @@ public class HabitController {
     @GetMapping("/{id}")
     @ApiLocale
     public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getByIdAndLanguageCode(id, locale.getLanguage()));
+            .body(habitService.getByIdAndLanguageCode(id, languageId));
     }
 
     /**
@@ -101,9 +102,9 @@ public class HabitController {
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable, languageId));
     }
 
     /**
@@ -125,9 +126,9 @@ public class HabitController {
     @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getMyHabits(userVO.getId(), pageable, locale.getLanguage()));
+            habitService.getMyHabits(userVO.getId(), pageable, languageId));
     }
 
     /**
@@ -154,9 +155,9 @@ public class HabitController {
         @PathVariable Long friendId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
+            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable, languageId));
     }
 
     /**
@@ -183,9 +184,9 @@ public class HabitController {
         @PathVariable Long friendId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
+            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, languageId));
     }
 
     /**
@@ -207,15 +208,15 @@ public class HabitController {
     @ApiLocale
     public ResponseEntity<List<ToDoListItemDto>> getToDoListItems(
         @PathVariable Long id,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getToDoListForHabit(id, locale.getLanguage()));
+            habitService.getToDoListForHabit(id, languageId));
     }
 
     /**
      * Method finds all habits by tags and language code.
      *
-     * @param locale          {@link Locale} with needed language code.
+     * @param languageId      {@link Long} with needed language id.
      * @param pageable        {@link Pageable} instance.
      * @param tags            {@link List} of {@link String}
      * @param excludeAssigned {@link boolean} flag to determine whether to exclude
@@ -234,12 +235,12 @@ public class HabitController {
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) @ValidLanguage Locale locale,
+        @Parameter(hidden = true) @LanguageId Long languageId,
         @RequestParam List<String> tags,
         @RequestParam boolean excludeAssigned,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned,
+            habitService.getAllByTagsAndLanguageCode(pageable, tags, languageId, excludeAssigned,
                 userVO.getId()));
     }
 
@@ -529,9 +530,9 @@ public class HabitController {
     public ResponseEntity<PageableDto<HabitDto>> getAllFavorites(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageId));
     }
 
     /**

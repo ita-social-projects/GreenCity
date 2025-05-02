@@ -23,7 +23,7 @@ public interface HabitService {
      * @param languageCode - language code.
      * @return {@link HabitDto}.
      */
-    HabitDto getByIdAndLanguageCode(Long id, String languageCode);
+    HabitDto getByIdAndLanguageCode(Long id, Long languageId);
 
     /**
      * Method returns all default and custom which created by current user his
@@ -72,7 +72,7 @@ public interface HabitService {
      * @return list {@link ToDoListItemDto}.
      * @author Dmytro Khonko
      */
-    List<ToDoListItemDto> getToDoListForHabit(Long habitId, String lang);
+    List<ToDoListItemDto> getToDoListForHabit(Long habitId, Long languageIdA);
 
     /**
      * Method that find all habit's translations by language code and tags.

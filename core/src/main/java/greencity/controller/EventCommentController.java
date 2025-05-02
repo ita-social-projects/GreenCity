@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageArrayValidation;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -71,15 +72,15 @@ public class EventCommentController {
     })
     @PostMapping(path = "/{eventId}/comments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AddCommentDtoResponse> save(
-        @PathVariable Long eventId,
-        @Valid @RequestPart AddCommentDtoRequest request,
-        @Parameter(hidden = true) @CurrentUser UserVO user,
-        @RequestPart(value = "images", required = false) @Nullable @Size(max = 5,
+            @PathVariable Long eventId,
+            @Valid @RequestPart AddCommentDtoRequest request,
+            @Parameter(hidden = true) @CurrentUser UserVO user,
+            @RequestPart(value = "images", required = false) @Nullable @Size(max = 5,
             message = "Download up to 5 images") @ImageArrayValidation MultipartFile[] images,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+            @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.EVENT, eventId, request, images, user, locale));
+            .body(commentService.save(ArticleType.EVENT, eventId, request, images, user, languageId));
     }
 
     /**
@@ -305,8 +306,8 @@ public class EventCommentController {
     public ResponseEntity<CommentDto> likeV2(
         @PathVariable Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO user,
-        @Parameter @ValidLanguage Locale locale) {
-        return ResponseEntity.ok(commentService.likeV2(commentId, user, locale));
+        @Parameter @LanguageId Long languageId) {
+        return ResponseEntity.ok(commentService.likeV2(commentId, user, languageId));
     }
 
     /**

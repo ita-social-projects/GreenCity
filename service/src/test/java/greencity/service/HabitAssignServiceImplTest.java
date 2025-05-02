@@ -1108,7 +1108,7 @@ class HabitAssignServiceImplTest {
         List<ToDoListItemTranslation> list = getToDoListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(fullHabitAssigns);
         when(modelMapper.map(fullHabitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode("en", 1L))
+        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageId("en", 1L))
             .thenReturn(list);
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
@@ -1121,7 +1121,7 @@ class HabitAssignServiceImplTest {
         List<ToDoListItemTranslation> list = getToDoListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode("en", 1L))
+        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageId("en", 1L))
             .thenReturn(list);
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
@@ -1604,7 +1604,7 @@ class HabitAssignServiceImplTest {
             habitAssignInProgress.getHabit().getHabitTranslations().stream().findFirst().get();
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssignInProgress));
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habitId))
+        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageId(language, habitId))
             .thenReturn(new ArrayList<>());
         when(modelMapper.map(habitAssignInProgress, HabitAssignDto.class)).thenReturn(habitAssignDtoInProgress);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDtoInProgress.getHabit());
@@ -1617,7 +1617,7 @@ class HabitAssignServiceImplTest {
         assertEquals(habitWithHabitAssignStatus.getImage(), dto.getImage());
         assertEquals(habitAssignInProgress.getStatus(), dto.getHabitAssignStatus());
         verify(habitAssignRepo).findById(anyLong());
-        verify(toDoListItemTranslationRepo).findToDoListByHabitIdAndByLanguageCode(anyString(), anyLong());
+        verify(toDoListItemTranslationRepo).findToDoListByHabitIdAndByLanguageId(anyString(), anyLong());
         verify(userToDoListItemRepo).getAllAssignedToDoListItemsFull(anyLong());
     }
 
@@ -1637,7 +1637,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(fullHabitAssign));
         when(modelMapper.map(fullHabitAssign, HabitAssignDto.class)).thenReturn(fullHabitAssignDto);
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(language, habitId))
+        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageId(language, habitId))
             .thenReturn(getToDoListItemTranslationList());
         when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(amountOfUsersAcquired);
 
@@ -1645,7 +1645,7 @@ class HabitAssignServiceImplTest {
         assertNotNull(actual.getAmountAcquiredUsers());
 
         verify(habitAssignRepo, times(1)).findById(habitAssignId);
-        verify(toDoListItemTranslationRepo, times(1)).findToDoListByHabitIdAndByLanguageCode(language, habitId);
+        verify(toDoListItemTranslationRepo, times(1)).findToDoListByHabitIdAndByLanguageId(language, habitId);
         verify(habitAssignRepo, times(1)).findAmountOfUsersAcquired(habitId);
     }
 

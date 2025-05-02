@@ -26,7 +26,7 @@ public interface CommentService {
      * @author Dmytro Fedotov
      */
     AddCommentDtoResponse save(ArticleType articleType, Long articleId, AddCommentDtoRequest addCommentDtoRequest,
-        MultipartFile[] images, UserVO userVO, Locale locale);
+        MultipartFile[] images, UserVO userVO, Long languageId);
 
     /**
      * Method to get certain comment specified by commentId.
@@ -95,7 +95,7 @@ public interface CommentService {
      * @param commentId id of {@link CommentVO} to like/unlike.
      * @param userVO    current {@link UserVO} that wants to like/unlike.
      */
-    void like(Long commentId, UserVO userVO, Locale locale);
+    void like(Long commentId, UserVO userVO, Long languageId);
 
     /**
      * Method get count of likes to certain {@link CommentVO} specified by id.
@@ -145,7 +145,7 @@ public interface CommentService {
      * @param userVO    current {@link UserVO} that wants to like/unlike.
      * @return {@link CommentDto} comment with updated data.
      */
-    CommentDto likeV2(Long commentId, UserVO userVO, Locale locale);
+    CommentDto likeV2(Long commentId, UserVO userVO, Long languageId);
 
     /**
      * Method to dislike or remove dislike {@link CommentVO} specified by id.

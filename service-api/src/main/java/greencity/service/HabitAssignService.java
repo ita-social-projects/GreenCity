@@ -30,7 +30,7 @@ public interface HabitAssignService {
      * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, String language);
+    HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, Long languageId);
 
     /**
      * Method for assigning {@code Habit} with default properties.
@@ -71,7 +71,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto} instances.
      */
-    List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, String language);
+    List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, Long languageId);
 
     /**
      * Method to get end date of assigned habit.
@@ -97,7 +97,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return HabitAssignDto.
      */
-    HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language);
+    HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, Long languageId);
 
     /**
      * Method to find {@code HabitAssign} by {@code HabitAssign} id and {@code User}
@@ -108,7 +108,7 @@ public interface HabitAssignService {
      * @param language      {@link String} of language code value.
      * @return HabitDto.
      */
-    HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language);
+    HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, Long languageId);
 
     /**
      * Method to find all (not cancelled) {@code HabitAssign}'s by {@code User} id
@@ -118,7 +118,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
+    List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, Long languageId);
 
     /**
      * Method to find all (not cancelled) id and acquired status.
@@ -189,7 +189,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId, String language);
+    List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId, Long languageId);
 
     /**
      * Method to find number of {@code HabitAssign}'s by id and status.
@@ -209,7 +209,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language);
+    List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, Long languageId);
 
     /**
      * Method to find all cancelled {@code HabitAssign}'s by {@code User} id.
@@ -218,7 +218,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId, String language);
+    List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId, Long languageId);
 
     /**
      * Method to delete all {@code HabitAssign}'s by {@code Habit} instance.
@@ -247,7 +247,7 @@ public interface HabitAssignService {
      * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language);
+    HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, Long languageId);
 
     /**
      * Method to unenroll Habit in defined date.
@@ -267,7 +267,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto} instances.
      */
-    List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language);
+    List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, Long languageId);
 
     /**
      * Method to find all inprogress habit assigns on certain including content
@@ -278,7 +278,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto} instances.
      */
-    List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language);
+    List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, Long languageId);
 
     /**
      * Method to find all inprogress {@link HabitsDateEnrollmentDto} between the
@@ -291,7 +291,7 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto} instances.
      */
     List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId,
-        LocalDate from, LocalDate to, String language);
+        LocalDate from, LocalDate to, Long languageId);
 
     /**
      * Method delete HabitAssign by habitAssignId for current User.
@@ -355,7 +355,7 @@ public interface HabitAssignService {
      * @param locale     {@link Locale} language.
      */
     void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
-        Locale locale);
+                                                       Long languageId);
 
     /**
      * Method to confirm friend request to habit.

@@ -53,7 +53,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -556,7 +555,7 @@ class HabitServiceImplTest {
         ToDoListItemDto toDoListItemDto = new ToDoListItemDto(1L, "test", "ACTIVE");
         List<ToDoListItemDto> toDoListItemDtos = Collections.singletonList(toDoListItemDto);
         when(modelMapper.map(toDoListItemTranslation, ToDoListItemDto.class)).thenReturn(toDoListItemDto);
-        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode("en", 1L))
+        when(toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageId("en", 1L))
             .thenReturn(toDoListItemTranslations);
         assertEquals(toDoListItemDtos, habitService.getToDoListForHabit(1L, "en"));
     }

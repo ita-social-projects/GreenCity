@@ -89,7 +89,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
         AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO,
-        Locale locale) {
+        Long languageId) {
         final User articleAuthor = getArticleAuthor(articleType, articleId);
         if (articleAuthor == null) {
             throw new NotFoundException("Article author not found");
@@ -122,7 +122,7 @@ public class CommentServiceImpl implements CommentService {
             if (checkUserIsNotAuthor(userVO, parentComment.getUser())) {
                 createCommentReplyNotification(articleType, articleId, comment,
                     userVO,
-                    modelMapper.map(parentComment.getUser(), UserVO.class), locale);
+                    modelMapper.map(parentComment.getUser(), UserVO.class), languageId);
             }
         }
 
@@ -135,9 +135,9 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
         if (checkUserIsNotAuthor(userVO, articleAuthor) && !isCommentReply) {
-            createCommentNotification(articleType, articleId, userVO, locale);
+            createCommentNotification(articleType, articleId, userVO, languageId);
         }
-        sendNotificationToTaggedUser(comment, articleType, locale);
+        sendNotificationToTaggedUser(comment, articleType, languageId);
 
         return addCommentDtoResponse;
     }
@@ -186,7 +186,7 @@ public class CommentServiceImpl implements CommentService {
      *                    {@link Locale}.
      * @throws NotFoundException if a tagged user is not found by ID.
      */
-    private void sendNotificationToTaggedUser(Comment comment, ArticleType articleType, Locale locale) {
+    private void sendNotificationToTaggedUser(Comment comment, ArticleType articleType, Long languageId) {
         String commentText = comment.getText();
         Set<Long> usersId = getUserIdFromComment(commentText);
         NotificationType notificationType = getNotificationType(articleType, CommentActionType.COMMENT_USER_TAG);
@@ -201,7 +201,7 @@ public class CommentServiceImpl implements CommentService {
                     notificationType,
                     commentVO.getArticleId(),
                     null,
-                    getArticleTitle(articleType, commentVO.getArticleId(), locale));
+                    getArticleTitle(articleType, commentVO.getArticleId(), languageId));
             }
         }
     }
@@ -242,14 +242,14 @@ public class CommentServiceImpl implements CommentService {
      * @param articleId   {@link Long} id of an article.
      * @return article title {@link User}.
      */
-    protected String getArticleTitle(ArticleType articleType, Long articleId, Locale locale) {
+    protected String getArticleTitle(ArticleType articleType, Long articleId, Long languageId) {
         String articleName;
         switch (articleType) {
             case HABIT -> {
                 Habit habit = habitRepo.findById(articleId)
                     .orElseThrow(() -> new NotFoundException(HABIT_NOT_FOUND_BY_ID + articleId));
                 HabitTranslation habitTranslation =
-                    habitTranslationRepo.findByHabitAndLanguageCode(habit, locale.getLanguage())
+                    habitTranslationRepo.findByHabitAndLanguageId(habit, languageId)
                         .orElseThrow(() -> new NotFoundException(
                             ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + articleId));
                 articleName = habitTranslation.getName();
@@ -313,7 +313,7 @@ public class CommentServiceImpl implements CommentService {
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      */
-    private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Locale locale) {
+    private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Long languageId) {
         UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
@@ -325,7 +325,7 @@ public class CommentServiceImpl implements CommentService {
             getNotificationType(articleType, CommentActionType.COMMENT),
             articleId,
             message,
-            getArticleTitle(articleType, articleId, locale));
+            getArticleTitle(articleType, articleId, languageId));
     }
 
     /**
@@ -339,7 +339,7 @@ public class CommentServiceImpl implements CommentService {
      *                    {@link Locale}.
      */
     private void createCommentLikeNotification(ArticleType articleType, Long articleId, Comment comment,
-        UserVO actionUser, Locale locale) {
+        UserVO actionUser, Long languageId) {
         UserVO targetUser = modelMapper.map(comment.getUser(), UserVO.class);
         userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
             .targetUserVO(targetUser)
@@ -349,7 +349,7 @@ public class CommentServiceImpl implements CommentService {
             .notificationType(getNotificationType(articleType, CommentActionType.COMMENT_LIKE))
             .isLike(true)
             .secondMessageId(comment.getId())
-            .secondMessageText(getArticleTitle(articleType, comment.getArticleId(), locale))
+            .secondMessageText(getArticleTitle(articleType, comment.getArticleId(), languageId))
             .build());
     }
 
@@ -364,7 +364,7 @@ public class CommentServiceImpl implements CommentService {
      *                    {@link Locale}.
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
-        UserVO sender, UserVO receiver, Locale locale) {
+        UserVO sender, UserVO receiver, Long languageId) {
         long replyCount = notificationRepo
             .countUnviewedRepliesByTargetAndParent(
                 receiver.getId(),
@@ -379,7 +379,7 @@ public class CommentServiceImpl implements CommentService {
             articleId,
             message,
             comment.getParentComment().getId(),
-            getArticleTitle(articleType, articleId, locale));
+            getArticleTitle(articleType, articleId, languageId));
     }
 
     /**
@@ -522,8 +522,8 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public void like(Long commentId, UserVO userVO, Locale locale) {
-        likeHelper(commentId, userVO, locale);
+    public void like(Long commentId, UserVO userVO, Long languageId) {
+        likeHelper(commentId, userVO, languageId);
     }
 
     /**
@@ -716,7 +716,7 @@ public class CommentServiceImpl implements CommentService {
      * @param userVO    - current user
      * @param locale    - language of content (if needed)
      */
-    private CommentDto likeHelper(Long commentId, UserVO userVO, Locale locale) {
+    private CommentDto likeHelper(Long commentId, UserVO userVO, Long languageId) {
         Comment comment = commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
@@ -735,7 +735,7 @@ public class CommentServiceImpl implements CommentService {
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY"), userVO);
-        createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, locale);
+        createCommentLikeNotification(comment.getArticleType(), comment.getArticleId(), comment, userVO, languageId);
         return modelMapper.map(commentRepo.save(comment), CommentDto.class);
     }
 
@@ -770,8 +770,8 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public CommentDto likeV2(Long commentId, UserVO userVO, Locale locale) {
-        return likeHelper(commentId, userVO, locale);
+    public CommentDto likeV2(Long commentId, UserVO userVO, Long languageId) {
+        return likeHelper(commentId, userVO, languageId);
     }
 
     /**

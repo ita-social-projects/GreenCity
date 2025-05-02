@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageArrayValidation;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -67,10 +68,10 @@ public class HabitCommentController {
         @RequestPart(value = "images", required = false) @Nullable @Size(max = 5,
             message = "Download up to 5 images") @ImageArrayValidation MultipartFile[] images,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.HABIT, habitId, request, images, userVO, locale));
+            .body(commentService.save(ArticleType.HABIT, habitId, request, images, userVO, languageId));
     }
 
     /**
@@ -203,8 +204,8 @@ public class HabitCommentController {
     @PostMapping("/comments/like")
     public void like(@RequestParam("commentId") Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO user,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        commentService.like(commentId, user, locale);
+        @Parameter(hidden = true) @LanguageId Long languageId) {
+        commentService.like(commentId, user, languageId);
     }
 
     /**

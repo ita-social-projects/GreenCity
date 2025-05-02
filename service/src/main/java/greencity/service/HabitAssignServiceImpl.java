@@ -119,7 +119,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, String language) {
+    public HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, Long languageId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
@@ -128,7 +128,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, language);
+        HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, languageId);
         HabitDto habitDto = habitAssignDto.getHabit();
         Long amountAcquiredUsers = habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId());
         habitDto.setAmountAcquiredUsers(amountAcquiredUsers);
@@ -245,11 +245,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, String language) {
+    public List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, Long languageId) {
         return habitAssignRepo.findAllByUserId(userId)
             .stream()
             .filter(this::isHabitCustom)
-            .map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
+            .map(habitAssign -> buildHabitAssignDtoContent(habitAssign, languageId)).collect(Collectors.toList());
     }
 
     /**
@@ -357,15 +357,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method builds {@link HabitAssignDto} with one habit translation.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param language    code of language.
+     * @param languageId    id of language.
      * @return {@link HabitAssign} instance.
      */
-    private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language) {
-        HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
+    private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, Long languageId) {
+        HabitTranslation habitTranslation = getHabitTranslation(habitAssign, languageId);
         HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
         habitAssignDto.setFriendsIdsTrackingHabit(getFriendsIdsTrackingHabitList(habitAssign));
-        setToDoListItems(habitAssignDto, habitAssign, language);
+        setToDoListItems(habitAssignDto, habitAssign, languageId);
         setLikes(habitAssignDto, habitAssign);
         setDislikes(habitAssignDto, habitAssign);
         return habitAssignDto;
@@ -375,16 +375,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method builds {@link HabitAssignDto} with one habit translation.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param language    code of language.
+     * @param languageId  id of language.
      * @return {@link HabitAssign} instance.
      */
-    private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language, Long userId) {
-        HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
+    private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, Long languageId, Long userId) {
+        HabitTranslation habitTranslation = getHabitTranslation(habitAssign, languageId);
         HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
         habitAssignDto.setFriendsIdsTrackingHabit(
             habitInvitationService.getInvitedFriendsIdsTrackingHabitList(userId, habitAssign.getHabit().getId()));
-        setToDoListItems(habitAssignDto, habitAssign, language);
+        setToDoListItems(habitAssignDto, habitAssign, languageId);
         return habitAssignDto;
     }
 
@@ -393,14 +393,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .findFriendsIdsTrackingHabit(habitAssign.getHabit().getId(), habitAssign.getUser().getId());
     }
 
-    private void setToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
+    private void setToDoListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, Long languageId) {
         habitAssignDto.getHabit().setToDoListItems(userToDoListItemRepo
             .getAllAssignedToDoListItemsFull(habitAssign.getId()).stream()
             .map(toDoListItem -> ToDoListItemDto.builder()
                 .id(toDoListItem.getId())
                 .status(toDoListItem.getStatus().toString())
                 .text(toDoListItem.getToDoListItem().getTranslations().stream()
-                    .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
+                    .filter(toDoItem -> toDoItem.getLanguage().getId().equals(languageId)).findFirst()
                     .orElseThrow(
                         () -> new NotFoundException(
                             ErrorMessage.TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND + habitAssignDto.getHabit().getId()))
@@ -409,18 +409,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList()));
     }
 
-    private HabitAssignDto buildHabitAssignDtoContent(HabitAssign habitAssign, String language) {
-        HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, language);
-        habitAssignDto.setUserToDoListItems(buildUserToDoListItemAdvanceDto(habitAssign, language));
+    private HabitAssignDto buildHabitAssignDtoContent(HabitAssign habitAssign, Long languageId) {
+        HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, languageId);
+        habitAssignDto.setUserToDoListItems(buildUserToDoListItemAdvanceDto(habitAssign, languageId));
         return habitAssignDto;
     }
 
     private List<UserToDoListItemAdvanceDto> buildUserToDoListItemAdvanceDto(HabitAssign habitAssign,
-        String language) {
+        Long languageId) {
         List<UserToDoListItemAdvanceDto> userItemsDTO = new ArrayList<>();
         boolean isContains;
         List<ToDoListItemTranslation> listItemTranslations = toDoListItemTranslationRepo
-            .findToDoListByHabitIdAndByLanguageCode(language, habitAssign.getHabit().getId());
+            .findToDoListByHabitIdAndByLanguageId(languageId, habitAssign.getHabit().getId());
         for (ToDoListItemTranslation translationItem : listItemTranslations) {
             isContains = false;
             for (UserToDoListItem userItem : habitAssign.getUserToDoListItems()) {
@@ -453,16 +453,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method to get {@link HabitTranslation} for current habit assign and language.
      *
      * @param habitAssign {@link HabitAssign} habit assign.
-     * @param language    {@link String} language code.
+     * @param languageId  {@link Long} language id.
      */
-    private HabitTranslation getHabitTranslation(HabitAssign habitAssign, String language) {
+    private HabitTranslation getHabitTranslation(HabitAssign habitAssign, Long languageId) {
         return habitAssign.getHabit().getHabitTranslations().stream()
-            // .filter(ht -> ht.getLanguage().getCode().equals(language)).findFirst()
-            .filter(ht -> {
-                Long languageId = ht.getLanguageId();
-                String languageCode = userRemoteClient.findLanguageCodeByd(languageId);
-                return languageCode.equals(language);
-            }).findFirst()
+            .filter(ht -> ht.getLanguageId().equals(languageId)).findFirst()
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + habitAssign.getHabit().getId()));
     }
@@ -491,17 +486,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language) {
+    public HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, Long languageId) {
         HabitAssign habitAssign =
             habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
                 .orElseThrow(
                     () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
                         + habitId));
-        return buildHabitAssignDto(habitAssign, language);
+        return buildHabitAssignDto(habitAssign, languageId);
     }
 
     @Override
-    public HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language) {
+    public HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, Long languageId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
@@ -510,12 +505,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        var habitAssignDto = buildHabitAssignDto(habitAssign, language);
+        var habitAssignDto = buildHabitAssignDto(habitAssign, languageId);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
         List<ToDoListItemDto> toDoListItems = new ArrayList<>();
         toDoListItemTranslationRepo
-            .findToDoListByHabitIdAndByLanguageCode(language, habit.getId())
+            .findToDoListByHabitIdAndByLanguageId(languageId, habit.getId())
             .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemDto.class)));
         changeStatuses(ToDoListItemStatus.INPROGRESS.toString(),
             habitAssign.getId(), toDoListItems);
@@ -553,9 +548,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language) {
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, Long languageId) {
         return habitAssignRepo.findAllByUserId(userId)
-            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language, userId))
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, languageId, userId))
             .collect(Collectors.toList());
     }
 
@@ -584,9 +579,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId,
-        String language) {
+                                                                                 Long languageId) {
         return habitAssignRepo.findAllByHabitId(habitId)
-            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, languageId)).collect(Collectors.toList());
     }
 
     /**
@@ -614,9 +609,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language) {
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, Long languageId) {
         return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
-            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
+            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, languageId))
             .collect(Collectors.toList());
     }
 
@@ -661,9 +656,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     @Transactional(readOnly = true)
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId,
-        String language) {
+                                                                             Long languageId) {
         return habitAssignRepo.findAllByUserIdAndStatusIsCancelled(userId)
-            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
+            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, languageId))
             .collect(Collectors.toList());
     }
 
@@ -702,7 +697,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language) {
+    public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, Long languageId) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
@@ -722,7 +717,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             AchievementCategoryType.HABIT, AchievementAction.ASSIGN, habitAssign.getHabit().getId());
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("DAYS_OF_HABIT_IN_PROGRESS"), userVO);
 
-        return buildHabitAssignDto(habitAssign, language);
+        return buildHabitAssignDto(habitAssign, languageId);
     }
 
     /**
@@ -873,10 +868,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language) {
+    public List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, Long languageId) {
         List<HabitAssign> list = habitAssignRepo.findAllInprogressHabitAssignsOnDate(userId, date);
         return list.stream().map(
-            habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            habitAssign -> buildHabitAssignDto(habitAssign, languageId)).collect(Collectors.toList());
     }
 
     /**
@@ -884,10 +879,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language) {
+    public List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, Long languageId) {
         List<HabitAssign> list = habitAssignRepo.findAllInprogressHabitAssignsOnDate(userId, date);
         return list.stream().map(
-            habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
+            habitAssign -> buildHabitAssignDtoContent(habitAssign, languageId)).collect(Collectors.toList());
     }
 
     /**
@@ -895,7 +890,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
-        String language) {
+                                                                      Long languageId) {
         if (from.isAfter(to)) {
             throw new BadRequestException(ErrorMessage.INVALID_DATE_RANGE);
         }
@@ -916,7 +911,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .build())
             .collect(Collectors.toList());
 
-        habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
+        habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, languageId, dtos));
         return dtos;
     }
 
@@ -937,12 +932,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * status calendar.
      *
      * @param habitAssign {@code HabitAssign} habit assign.
-     * @param language    {@link String} of language code value.
+     * @param languageId  {@link Long} language id value.
      * @param list        of {@link HabitsDateEnrollmentDto} instances.
      */
-    private void buildHabitsDateEnrollmentDto(HabitAssign habitAssign, String language,
+    private void buildHabitsDateEnrollmentDto(HabitAssign habitAssign, Long languageId,
         List<HabitsDateEnrollmentDto> list) {
-        HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
+        HabitTranslation habitTranslation = getHabitTranslation(habitAssign, languageId);
 
         list.stream().filter(dto -> checkIfHabitIsActiveOnDay(dto, habitAssign))
             .forEach(dto -> markHabitOnHabitsEnrollmentDto(dto, checkIfHabitIsEnrolledOnDay(dto, habitAssign),
@@ -1452,10 +1447,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     @Transactional
     public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
-        Locale locale) {
+                                                              Long languageId) {
         friendsIds.stream()
             .map(friendId -> getValidatedFriend(userVO, friendId, habitId))
-            .forEach(friend -> processHabitInvite(userVO, friend, habitId, locale));
+            .forEach(friend -> processHabitInvite(userVO, friend, habitId, languageId));
     }
 
     private User getValidatedFriend(UserVO userVO, Long friendId, Long habitId) {
@@ -1465,7 +1460,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return friend;
     }
 
-    private void processHabitInvite(UserVO userVO, User friend, Long habitId, Locale locale) {
+    private void processHabitInvite(UserVO userVO, User friend, Long habitId, Long languageId) {
         Habit habit = getHabitById(habitId);
         HabitAssign habitAssign = assignHabitToUser(habit, friend);
         assignToDoListToUser(habitId, habitAssign);
@@ -1483,7 +1478,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitInvitation habitInvitation =
             habitInvitationRepo.save(createHabitInvitation(habitAssign, inviterHabitAssign));
 
-        String habitName = getHabitTranslation(habitAssign, locale.getLanguage()).getName();
+        String habitName = getHabitTranslation(habitAssign, languageId).getName();
         UserVO friendVO = mapToUserVO(friend);
 
         userNotificationService.createNotification(friendVO, userVO, NotificationType.HABIT_INVITE, habitId, habitName,

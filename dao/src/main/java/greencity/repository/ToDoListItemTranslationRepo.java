@@ -33,14 +33,14 @@ public interface ToDoListItemTranslationRepo extends JpaRepository<ToDoListItemT
      * Method for getting to-do list translations for given habit in specific
      * language.
      *
-     * @param languageCode code of needed language
+     * @param languageId   id of needed language
      * @param habitId      code of needed language
      * @return List of {@link ToDoListItemTranslation}, that contains all to-do list
      *         item translations for needed habit.
      */
     @Query("SELECT it FROM ToDoListItemTranslation it JOIN ToDoListItem i ON i.id = it.toDoListItem.id "
         + "JOIN i.habits h ON h.id = :habitId"
-        + " WHERE it.language.code = :languageCode")
-    List<ToDoListItemTranslation> findToDoListByHabitIdAndByLanguageCode(String languageCode,
-        @Param(value = "habitId") Long habitId);
+        + " WHERE it.language.id = :languageId")
+    List<ToDoListItemTranslation> findToDoListByHabitIdAndByLanguageId(Long languageId,
+                                                                       @Param(value = "habitId") Long habitId);
 }

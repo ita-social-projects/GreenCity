@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageArrayValidation;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -80,11 +81,11 @@ public class EcoNewsCommentController {
         @Valid @RequestPart AddCommentDtoRequest request,
         @RequestPart(value = "images", required = false) @Nullable @Size(max = 5,
             message = "Download up to 5 images") @ImageArrayValidation MultipartFile[] images,
-        @Parameter(hidden = true) @ValidLanguage Locale locale,
+        @Parameter(hidden = true) @LanguageId Long languageId,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.save(ArticleType.ECO_NEWS, ecoNewsId, request, images, user, locale));
+            .body(commentService.save(ArticleType.ECO_NEWS, ecoNewsId, request, images, user, languageId));
     }
 
     /**
@@ -220,8 +221,8 @@ public class EcoNewsCommentController {
     public void like(
         @RequestParam("commentId") Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @ValidLanguage Locale locale) {
-        commentService.like(commentId, userVO, locale);
+        @LanguageId Long languageId) {
+        commentService.like(commentId, userVO, languageId);
     }
 
     /**
@@ -335,8 +336,8 @@ public class EcoNewsCommentController {
     public ResponseEntity<CommentDto> likeV2(
         @RequestParam("commentId") Long commentId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @ValidLanguage Locale locale) {
-        return ResponseEntity.ok(commentService.likeV2(commentId, userVO, locale));
+        @LanguageId Long languageId) {
+        return ResponseEntity.ok(commentService.likeV2(commentId, userVO, languageId));
     }
 
     /**

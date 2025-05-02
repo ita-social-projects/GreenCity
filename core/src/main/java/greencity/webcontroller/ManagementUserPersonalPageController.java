@@ -1,6 +1,7 @@
 package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
+import greencity.annotations.LanguageId;
 import greencity.annotations.ValidLanguage;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.EventDto;
@@ -50,17 +51,17 @@ public class ManagementUserPersonalPageController {
     public String getUserById(
         Model model,
         @PathVariable Long id,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @LanguageId Long languageId) {
         UserVOAdvancedDto user = userService.findByIdAdvanced(id);
 
         List<HabitAssignDto> acquiredHabits = habitAssignService
-            .getAllHabitAssignsByUserIdAndStatusAcquired(id, locale.getLanguage());
+            .getAllHabitAssignsByUserIdAndStatusAcquired(id, languageId);
         List<HabitAssignDto> inProgressHabits = habitAssignService
-            .findInprogressHabitAssignsOnDateContent(id, LocalDate.now(), locale.getLanguage());
+            .findInprogressHabitAssignsOnDateContent(id, LocalDate.now(), languageId);
         List<HabitAssignDto> cancelledHabits = habitAssignService
-            .getAllHabitAssignsByUserIdAndCancelledStatus(id, locale.getLanguage());
+            .getAllHabitAssignsByUserIdAndCancelledStatus(id, languageId);
         List<HabitAssignDto> customHabits = habitAssignService
-            .getAllCustomHabitAssignsByUserId(id, locale.getLanguage());
+            .getAllCustomHabitAssignsByUserId(id, languageId);
         List<EcoNewsDto> publishedEcoNews = ecoNewsService.getAllByUser(user);
         List<PlaceVO> createdEcoPlaces = placeService.getAllCreatedPlacesByUserId(user.getId());
         List<EventDto> organizedEvents = eventService.getAllEventsOrganizedByUser(id);

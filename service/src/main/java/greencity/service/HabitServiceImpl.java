@@ -102,22 +102,18 @@ public class HabitServiceImpl implements HabitService {
     private final LanguageService languageService;
 
     /**
-     * Method returns Habit by its id.
-     *
-     * @param id           - id of the {@link Long} habit
-     * @param languageCode - language code {@link String}
-     * @return {@link HabitDto}
+     * {@inheritDoc}
      */
     @Override
-    public HabitDto getByIdAndLanguageCode(Long id, String languageCode) {
+    public HabitDto getByIdAndLanguageCode(Long id, Long languageId) {
         Habit habit = habitRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
-        HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
+        HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageId(habit, languageId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + id));
         var habitDto = modelMapper.map(habitTranslation, HabitDto.class);
         List<ToDoListItemDto> toDoListItems = new ArrayList<>();
         toDoListItemTranslationRepo
-            .findToDoListByHabitIdAndByLanguageCode(languageCode, id)
+            .findToDoListByHabitIdAndByLanguageId(languageId, id)
             .forEach(x -> toDoListItems.add(modelMapper.map(x, ToDoListItemDto.class)));
         habitDto.setToDoListItems(toDoListItems);
         habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
@@ -309,8 +305,8 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public List<ToDoListItemDto> getToDoListForHabit(Long habitId, String lang) {
-        return toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageCode(lang, habitId)
+    public List<ToDoListItemDto> getToDoListForHabit(Long habitId, Long languageId) {
+        return toDoListItemTranslationRepo.findToDoListByHabitIdAndByLanguageId(languageId, habitId)
             .stream()
             .map(g -> modelMapper.map(g, ToDoListItemDto.class))
             .collect(Collectors.toList());
@@ -521,11 +517,10 @@ public class HabitServiceImpl implements HabitService {
                 .collect(Collectors.toList());
             UserVO userVO = modelMapper.map(user, UserVO.class);
             Long languageId = userVO.getLanguageId();
-            LanguageVO language = languageService.findById(languageId);
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
                 userVO, friendsIds, habit.getId(),
-                Locale.of(language.getCode()));
+                languageId);
         }
     }
 

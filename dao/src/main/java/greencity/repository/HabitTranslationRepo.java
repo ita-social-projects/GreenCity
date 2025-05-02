@@ -20,11 +20,11 @@ public interface HabitTranslationRepo
     /**
      * Method return {@link Optional} of {@link HabitTranslation}.
      *
-     * @param habit    {@link Habit}
-     * @param language code language.
+     * @param habit      {@link Habit}
+     * @param languageId language id
      * @return {@link Optional} of {@link HabitTranslation}.
      */
-    Optional<HabitTranslation> findByHabitAndLanguageCode(Habit habit, String language);
+    Optional<HabitTranslation> findByHabitAndLanguageId(Habit habit, Long languageId);
 
     /**
      * Method deletes all {@link HabitTranslation}'s by {@link Habit} instance.
@@ -356,7 +356,7 @@ public interface HabitTranslationRepo
      * @param pageable                {@link Pageable}.
      * @param tags                    {@link List} of {@link String}.
      * @param complexities            {@link List} of {@link Integer}.
-     * @param languageCode            language code {@link String}.
+     * @param languageId              language id {@link Long}.
      * @param userId                  {@link Long} id of current user.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
@@ -378,7 +378,7 @@ public interface HabitTranslationRepo
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
-        List<String> tags, Optional<List<Integer>> complexities, String languageCode,
+        List<String> tags, Optional<List<Integer>> complexities, Long languageId,
         List<Long> requestedCustomHabitIds,
         Long userId);
 
