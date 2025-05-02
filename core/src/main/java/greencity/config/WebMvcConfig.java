@@ -1,5 +1,7 @@
 package greencity.config;
 
+import greencity.client.UserRemoteClient;
+import greencity.converters.LanguageIdResolver;
 import greencity.converters.UserArgumentResolver;
 import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.Locale;
 public class WebMvcConfig implements WebMvcConfigurer {
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * Method for configuring message source.
@@ -100,5 +103,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.removeIf(resolver -> resolver instanceof PageableHandlerMethodArgumentResolver);
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
         resolvers.add(new CustomPageableHandlerMethodArgumentResolver());
+        resolvers.add(new LanguageIdResolver(userRemoteClient));
     }
 }
