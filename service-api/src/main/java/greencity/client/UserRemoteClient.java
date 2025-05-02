@@ -337,23 +337,24 @@ public class UserRemoteClient {
      * @return {@link SocialNetworkImageResponseDTO}
      */
 
-    public SocialNetworkImageResponseDTO saveSocialImageRemote(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile file) {
+    public SocialNetworkImageResponseDTO saveSocialImageRemote(
+        SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile file) {
         String path = "/management/socialnetworkimages/save-remote";
 
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("socialNetworkImageRequestDTO",
-                socialNetworkImageRequestDTO, MediaType.APPLICATION_JSON);
+            socialNetworkImageRequestDTO, MediaType.APPLICATION_JSON);
 
         if (file != null) {
             bodyBuilder.part("file", file.getResource());
         }
         return webClient.post()
-                .uri(path)
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
-                .retrieve()
-                .bodyToMono(SocialNetworkImageResponseDTO.class)
-                .block();
+            .uri(path)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+            .retrieve()
+            .bodyToMono(SocialNetworkImageResponseDTO.class)
+            .block();
     }
 
     /**

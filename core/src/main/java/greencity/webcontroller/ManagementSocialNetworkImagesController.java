@@ -31,9 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
-
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
@@ -59,33 +57,31 @@ public class ManagementSocialNetworkImagesController {
         return "core/management_social_network_images";
     }
 
-     /**
+    /**
      * Method for creating SocialNetworkImage.
      *
-     * @param socialNetworkImageRequestDTO dto for SocialNetworkImage
-     * entity.
-     * @param file of {@link MultipartFile}
-     * @return {@link ResponseEntity} with {@link SocialNetworkImageResponseDTO} or error fields.
+     * @param socialNetworkImageRequestDTO dto for SocialNetworkImage entity.
+     * @param file                         of {@link MultipartFile}
+     * @return {@link ResponseEntity} with {@link SocialNetworkImageResponseDTO} or
+     *         error fields.
      */
-     @Operation(summary = "Save SocialNetworkImages.")
-     @ApiResponses(value = {
-             @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-                     content = @Content(schema = @Schema(implementation =
-                             GenericResponseDto.class))),
-             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
-     })
-     @ResponseBody
-     @PostMapping("/")
-     public ResponseEntity<?> save(@Valid @RequestPart
-                                    SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-                                    BindingResult bindingResult,
-                                    @ImageValidation @RequestParam(required = false, name = "file") MultipartFile
-                                            file) {
-         if (!bindingResult.hasErrors()) {
-             return ResponseEntity.status(HttpStatus.CREATED).body(socialNetworkImageService.save(socialNetworkImageRequestDTO, file));
-         }
-         return ResponseEntity.badRequest().body(buildGenericResponseDto(bindingResult));
-     }
+    @Operation(summary = "Save SocialNetworkImages.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @ResponseBody
+    @PostMapping("/")
+    public ResponseEntity<?> save(@Valid @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
+        if (!bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(socialNetworkImageService.save(socialNetworkImageRequestDTO, file));
+        }
+        return ResponseEntity.badRequest().body(buildGenericResponseDto(bindingResult));
+    }
 
     /**
      * Method which deletes SocialNetworkImage by given id.

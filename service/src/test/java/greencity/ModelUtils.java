@@ -3586,16 +3586,16 @@ public class ModelUtils {
 
     public static SocialNetworkImageRequestDTO getSocialNetworkImageRequestDTO() {
         return SocialNetworkImageRequestDTO.builder()
-                .imagePath("http://someimage.ua")
-                .hostPath("somehost")
-                .build();
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .build();
     }
 
     public static SocialNetworkImageResponseDTO getSocialNetworkImageResponseDTO() {
         return SocialNetworkImageResponseDTO.builder()
-                .imagePath("http://someimage.ua")
-                .hostPath("somehost")
-                .id(5L)
-                .build();
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .id(5L)
+            .build();
     }
 }

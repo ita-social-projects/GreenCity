@@ -57,11 +57,11 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * {@inheritDoc}
      *
      */
-     @Override
-     public SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-                      MultipartFile image) {
-     return userRemoteClient.saveSocialImageRemote(socialNetworkImageRequestDTO, image);
-     }
+    @Override
+    public SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+        MultipartFile image) {
+        return userRemoteClient.saveSocialImageRemote(socialNetworkImageRequestDTO, image);
+    }
 
     /**
      * {@inheritDoc} Method for finding {@link SocialNetworkImageResponseDTO} by id

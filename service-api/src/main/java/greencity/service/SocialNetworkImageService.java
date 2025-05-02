@@ -37,15 +37,15 @@ public interface SocialNetworkImageService {
      */
     void deleteAll(List<Long> listId);
 
-     /**
+    /**
      * Method for creating SocialNetworkImage instance.
      *
      * @param socialNetworkImageRequestDTO - dto with
-     * {@link SocialNetworkImageRequestDTO}
-      * @return {@link SocialNetworkImageResponseDTO}
+     *                                     {@link SocialNetworkImageRequestDTO}
+     * @return {@link SocialNetworkImageResponseDTO}
      */
     SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
-              MultipartFile image);
+        MultipartFile image);
 
     /**
      * Method for getting the {@link SocialNetworkImageResponseDTO} instance by its
