@@ -32,7 +32,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, Long languageId);
 
     /**
      * Method returns all habits of the current user.
@@ -40,7 +40,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getMyHabits(Long userId, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getMyHabits(Long userId, Pageable pageable, Long languageId);
 
     /**
      * Method returns all habits of a friend, both default and custom, for the
@@ -51,7 +51,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllHabitsOfFriend(Long userId, Long friendId, Pageable pageable, Long languageId);
 
     /**
      * Method returns all mutual habits, both default and custom, that are shared
@@ -64,7 +64,7 @@ public interface HabitService {
      * @return Pageable of {@link HabitDto}.
      */
     PageableDto<HabitDto> getAllMutualHabitsWithFriend(Long userId, Long friendId, Pageable pageable,
-        String languageCode);
+                                                       Long languageId);
 
     /**
      * Method returns to-do list in specific language by habit id.
@@ -88,7 +88,7 @@ public interface HabitService {
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Markiyan Derevetskyi
      */
-    PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode,
+    PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, Long languageId,
         boolean excludeAssigned, Long userId);
 
     /**
@@ -229,7 +229,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, Long languageId);
 
     /**
      * Retrieves a paginated list of friends of a user with has invitation status.
