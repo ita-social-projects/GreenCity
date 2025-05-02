@@ -4,8 +4,6 @@ import greencity.dto.ratingstatistics.RatingPointsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingPoints;
-import greencity.entity.RatingStatistics;
-import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
 import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;

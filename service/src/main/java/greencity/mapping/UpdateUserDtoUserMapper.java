@@ -11,7 +11,6 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class UpdateUserDtoUserMapper {
-
     public User merge(UpdateUserDto updateUserDto, User user) {
         if (Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.DELETE)) {
             if (updateUserDto.getId() != null) {

@@ -6,10 +6,8 @@ import greencity.entity.RatingPoints;
 import greencity.repository.RatingPointsRepo;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.RatingStatistics;
 import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
-import java.time.ZonedDateTime;
 
 import greencity.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,17 +45,8 @@ class RatingCalculationTest {
 
         UserVO userVO = ModelUtils.getUserVO();
         user.setRating(1D);
-        ZonedDateTime now = ZonedDateTime.now();
-        RatingStatistics ratingStatistics = RatingStatistics
-            .builder()
-            .rating(user.getRating() + rating.getPoints())
-            .ratingPoints(rating)
-            .user(user)
-            .pointsChanged(rating.getPoints())
-            .build();
 
         RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO.builder()
-            .id(1L)
             .rating(user.getRating())
             .ratingPoints(RatingPointsDto.builder()
                 .id(rating.getId())
@@ -66,19 +54,16 @@ class RatingCalculationTest {
                 .points(rating.getPoints())
                 .build())
             .user(userVO)
-            .createDate(now)
             .pointsChanged(rating.getPoints())
             .build();
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        doNothing().when(userService).updateUserRating(1L, 6.0d);
-        when(modelMapper.map(ratingStatistics, RatingStatisticsVO.class)).thenReturn(ratingStatisticsVO);
-        when(ratingStatisticsService.save(ratingStatisticsVO)).thenReturn(ratingStatisticsVO);
+
+        when(modelMapper.map(rating, RatingPointsDto.class)).thenReturn(ratingStatisticsVO.getRatingPoints());
+        when(userService.findUserRating(userVO.getId())).thenReturn(user.getRating());
 
         ratingCalculation.ratingCalculation(rating, userVO);
 
-        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(rating, RatingPointsDto.class);
         verify(userService).updateUserRating(1L, 6.0d);
-        verify(modelMapper).map(ratingStatistics, RatingStatisticsVO.class);
         verify(ratingStatisticsService).save(ratingStatisticsVO);
     }
 }

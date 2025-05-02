@@ -113,6 +113,8 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.tag.TagUkEnDto;
@@ -3580,5 +3582,20 @@ public class ModelUtils {
         return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
             "Acquired habit 14 days", new AchievementCategoryVO(1L, "CREATE_NEWS"), null,
             null, null);
+    }
+
+    public static SocialNetworkImageRequestDTO getSocialNetworkImageRequestDTO() {
+        return SocialNetworkImageRequestDTO.builder()
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .build();
+    }
+
+    public static SocialNetworkImageResponseDTO getSocialNetworkImageResponseDTO() {
+        return SocialNetworkImageResponseDTO.builder()
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .id(5L)
+            .build();
     }
 }

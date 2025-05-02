@@ -1,7 +1,6 @@
 package greencity.dto.user;
 
 import greencity.dto.language.LanguageVO;
-import greencity.dto.location.UserLocationDto;
 import greencity.enums.UserUpdateType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
