@@ -1,6 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
@@ -61,7 +62,7 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
      *
      * @author Bulhakova Oleksandra
      */
-    public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, Language language, Habit habit) {
+    public List<HabitTranslation> mapAllToList(List<HabitTranslationDto> dtoList, LanguageDTO language, Habit habit) {
         return dtoList.stream()
             .filter(dto -> Objects.equals(language.getCode(), dto.getLanguageCode()))
             .map(dto -> {

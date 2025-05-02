@@ -27,25 +27,17 @@ public interface LanguageService {
     LanguageDTO findByCode(String code);
 
     /**
+     * Method for getting {@link LanguageVO} by id.
+     *
+     * @param languageId id of language.
+     * @return {@link LanguageVO} by language id.
+     */
+    LanguageVO findById(Long languageId);
+
+    /**
      * Method, that returns codes of all languages.
      *
      * @return {@link List} of language code strings.
      */
     List<String> findAllLanguageCodes();
-
-    /**
-     * Method for getting {@link LanguageVO} by language id.
-     *
-     * @param id id of language.
-     * @return {@link LanguageVO} by language id.
-     */
-    LanguageVO findById(Long id);
-
-    /**
-     * Check whether Language exists by id.
-     *
-     * @param id id of language.
-     * @return boolean of whether language exists by that id.
-     */
-    Boolean existsById(Long id);
 }

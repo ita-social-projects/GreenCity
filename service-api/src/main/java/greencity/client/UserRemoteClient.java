@@ -2,6 +2,8 @@ package greencity.client;
 
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
@@ -411,12 +413,34 @@ public class UserRemoteClient {
             .block();
     }
 
+    // TODO: add @Cacheable. With cache, no worries about a lot of calls to GreenCityUser
     public String findLanguageCodeByd(Long languageId) {
         return "ua";
     }
 
+    // TODO: add @Cacheable. With cache, no worries about a lot of calls to GreenCityUser
     public Long findLanguageIdByCode(String languageCode) {
         return 1L;
+    }
+
+    // TODO
+    public List<LanguageDTO> getAllLanguages() {
+        return List.of();
+    }
+
+    // TODO
+    public LanguageDTO findLanguageByCode(String code) {
+        return null;
+    }
+
+    // TODO
+    public LanguageVO findLanguageById(Long languageId) {
+        return null;
+    }
+
+    // TODO
+    public List<String> findAllLanguageCodes() {
+        return List.of();
     }
 
     /**
