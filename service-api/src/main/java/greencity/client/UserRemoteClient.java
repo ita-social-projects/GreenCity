@@ -418,25 +418,23 @@ public class UserRemoteClient {
      *                                      {@link SocialNetworkImageResponseDTO}.
      * @param file                          of {@link MultipartFile}.
      */
-    /*
-     * public void updateSocialImage( SocialNetworkImageResponseDTO
-     * socialNetworkImageResponseDTO, MultipartFile file) {
-     *
-     * String path = "/management/socialnetworkimages/";
-     *
-     * BodyInserters.MultipartInserter multipartInserter =
-     * multipartInserter("socialNetworkImageResponseDTO");
-     *
-     * MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
-     * bodyBuilder.part("socialNetworkImageResponseDTO",
-     * socialNetworkImageResponseDTO, MediaType.APPLICATION_JSON);
-     *
-     * if (file != null) { bodyBuilder.part("file", file.getResource()); }
-     *
-     * webClient.put() .uri(path) .contentType(MediaType.MULTIPART_FORM_DATA)
-     * .body(BodyInserters.fromMultipartData(bodyBuilder.build())) .retrieve()
-     * .bodyToMono(Void.class) .block(); }
-     */
+
+    public void updateSocialImage(SocialNetworkImageResponseDTO
+                                          socialNetworkImageResponseDTO, MultipartFile file) {
+        String path = "/management/socialnetworkimages/";
+
+        MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
+        bodyBuilder.part("socialNetworkImageResponseDTO",
+                socialNetworkImageResponseDTO, MediaType.APPLICATION_JSON);
+
+        if (file != null) {
+            bodyBuilder.part("file", file.getResource());
+        }
+
+        webClient.put().uri(path).contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(bodyBuilder.build())).retrieve()
+                .bodyToMono(Void.class).block();
+    }
 
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();

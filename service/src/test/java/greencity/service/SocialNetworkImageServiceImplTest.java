@@ -12,10 +12,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 public class SocialNetworkImageServiceImplTest {
@@ -84,5 +88,33 @@ public class SocialNetworkImageServiceImplTest {
 
         verify(userRemoteClient).saveSocialImageRemote(imageToSave, null);
         assertEquals(expected, result);
+    }
+
+    @Test
+    void updateTest() {
+        SocialNetworkImageResponseDTO toUpdate = ModelUtils.getSocialNetworkImageResponseDTO();
+
+        doNothing().when(userRemoteClient).updateSocialImage(toUpdate, null);
+
+        socialNetworkImageService.update(toUpdate, null);
+
+        verify(userRemoteClient).updateSocialImage(toUpdate, null);
+    }
+
+    @Test
+    void updateWithFileTest() {
+        SocialNetworkImageResponseDTO toUpdate = ModelUtils.getSocialNetworkImageResponseDTO();
+        MultipartFile file = new MockMultipartFile(
+                "file",
+                "test-image.jpg",
+                "image/jpeg",
+                "fake-image-content".getBytes()
+        );
+
+        doNothing().when(userRemoteClient).updateSocialImage(toUpdate, file);
+
+        socialNetworkImageService.update(toUpdate, file);
+
+        verify(userRemoteClient).updateSocialImage(toUpdate, file);
     }
 }

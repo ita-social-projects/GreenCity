@@ -56,12 +56,12 @@ public interface SocialNetworkImageService {
      */
     SocialNetworkImageResponseDTO findDtoById(Long id);
 
-    // /**
-    // * Method for updating {@link SocialNetworkImageVO} instance.
-    // *
-    // * @param socialNetworkImageResponseDTO - instance of
-    // * {@link SocialNetworkImageVO}.
-    // */
-    // void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-    // MultipartFile multipartFile);
+    /**
+     * Method for updating SocialNetworkImage instance.
+     *
+     * @param socialNetworkImageResponseDTO - instance of
+     *                                      SocialNetworkImage.
+     */
+    void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+                MultipartFile multipartFile);
 }
