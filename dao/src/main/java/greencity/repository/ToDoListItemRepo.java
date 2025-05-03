@@ -23,7 +23,7 @@ public interface ToDoListItemRepo
      */
     @Query("SELECT g FROM ToDoListItem g join g.translations as gt"
         + " WHERE CONCAT(g.id,'') LIKE LOWER(CONCAT('%', :query, '%')) "
-        + "OR LOWER(gt.language.code) LIKE LOWER(CONCAT('%', :query, '%'))"
+        + "OR LOWER(gt.languageCode) LIKE LOWER(CONCAT('%', :query, '%'))"
         + "OR LOWER(gt.content) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<ToDoListItem> searchBy(Pageable paging, String query);
 
@@ -80,7 +80,7 @@ public interface ToDoListItemRepo
         join HabitAssign as ha on ha.id = usli.habitAssign.id
         join ToDoListItemTranslation as translations on
         translations.toDoListItem.id = usli.toDoListItem.id
-        join Language as lang on translations.language.id = lang.id
+        join Language as lang on translations.languageCode = lang.code
         where usli.status = 'INPROGRESS'
         and ha.status = 'INPROGRESS'
         and ha.user.id = :userId
@@ -100,7 +100,7 @@ public interface ToDoListItemRepo
     @Query("SELECT sli FROM ToDoListItem sli "
         + "JOIN ToDoListItemTranslation slt ON sli.id = slt.toDoListItem.id "
         + "JOIN sli.habits h ON h.id = :habitId"
-        + " WHERE slt.language.code = :languageCode AND slt.content in :listOfName")
+        + " WHERE slt.languageCode = :languageCode AND slt.content in :listOfName")
     List<ToDoListItem> findByNames(@Param("habitId") Long habitId, @Param("listOfName") List<String> itemNames,
         String languageCode);
 }
