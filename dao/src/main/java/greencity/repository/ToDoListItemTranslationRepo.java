@@ -40,7 +40,7 @@ public interface ToDoListItemTranslationRepo extends JpaRepository<ToDoListItemT
      */
     @Query("SELECT it FROM ToDoListItemTranslation it JOIN ToDoListItem i ON i.id = it.toDoListItem.id "
         + "JOIN i.habits h ON h.id = :habitId"
-        + " WHERE it.language.code = :languageCode")
+        + " WHERE it.languageCode = :languageCode")
     List<ToDoListItemTranslation> findToDoListByHabitIdAndByLanguageCode(String languageCode,
         @Param(value = "habitId") Long habitId);
 }
