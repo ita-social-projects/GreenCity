@@ -2,6 +2,8 @@ package greencity.client;
 
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
@@ -409,6 +411,30 @@ public class UserRemoteClient {
             .retrieve()
             .bodyToMono(SocialNetworkImageResponseDTO.class)
             .block();
+    }
+
+    // TODO
+    // TODO: add caching if needed
+    public List<LanguageDTO> getAllLanguages() {
+        return List.of();
+    }
+
+    // TODO
+    // TODO: add caching if needed
+    public LanguageDTO findLanguageByCode(String code) {
+        return null;
+    }
+
+    // TODO
+    // TODO: add caching if needed
+    public LanguageVO findByLanguageId(Long id) {
+        return null;
+    }
+
+    // TODO
+    // TODO: add caching if needed
+    public List<String> findAllLanguageCodes() {
+        return List.of();
     }
 
     /**

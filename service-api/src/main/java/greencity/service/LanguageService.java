@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageVO;
+
 import java.util.List;
 
 /**
@@ -27,14 +28,7 @@ public interface LanguageService {
     LanguageDTO findByCode(String code);
 
     /**
-     * Method, that returns codes of all languages.
-     *
-     * @return {@link List} of language code strings.
-     */
-    List<String> findAllLanguageCodes();
-
-    /**
-     * Method for getting {@link LanguageVO} by language id.
+     * Method for getting {@link LanguageVO} by code.
      *
      * @param id id of language.
      * @return {@link LanguageVO} by language id.
@@ -42,10 +36,9 @@ public interface LanguageService {
     LanguageVO findById(Long id);
 
     /**
-     * Check whether Language exists by id.
+     * Method, that returns codes of all languages.
      *
-     * @param id id of language.
-     * @return boolean of whether language exists by that id.
+     * @return {@link List} of language code strings.
      */
-    Boolean existsById(Long id);
+    List<String> findAllLanguageCodes();
 }

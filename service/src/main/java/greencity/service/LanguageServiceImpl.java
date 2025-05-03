@@ -1,16 +1,11 @@
 package greencity.service;
 
-import greencity.constant.ErrorMessage;
+import greencity.client.UserRemoteClient;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageVO;
-import greencity.entity.Language;
-import greencity.exception.exceptions.LanguageNotFoundException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.LanguageRepo;
 import java.util.List;
+
+import greencity.dto.language.LanguageVO;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,16 +14,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class LanguageServiceImpl implements LanguageService {
-    private final LanguageRepo languageRepo;
-    private final ModelMapper modelMapper;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public List<LanguageDTO> getAllLanguages() {
-        return modelMapper.map(languageRepo.findAll(), new TypeToken<List<LanguageDTO>>() {
-        }.getType());
+        return userRemoteClient.getAllLanguages();
     }
 
     /**
@@ -36,17 +29,7 @@ public class LanguageServiceImpl implements LanguageService {
      */
     @Override
     public LanguageDTO findByCode(String code) {
-        return languageRepo.findByCode(code)
-            .map(l -> modelMapper.map(l, LanguageDTO.class))
-            .orElseThrow(() -> new LanguageNotFoundException(ErrorMessage.INVALID_LANGUAGE_CODE));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> findAllLanguageCodes() {
-        return languageRepo.findAllLanguageCodes();
+        return userRemoteClient.findLanguageByCode(code);
     }
 
     /**
@@ -54,16 +37,14 @@ public class LanguageServiceImpl implements LanguageService {
      */
     @Override
     public LanguageVO findById(Long id) {
-        Language language = languageRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException());
-        return modelMapper.map(language, LanguageVO.class);
+        return userRemoteClient.findByLanguageId(id);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Boolean existsById(Long id) {
-        return languageRepo.existsById(id);
+    public List<String> findAllLanguageCodes() {
+        return userRemoteClient.findAllLanguageCodes();
     }
 }
