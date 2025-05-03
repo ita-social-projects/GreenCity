@@ -105,11 +105,10 @@ public class SocialNetworkImageServiceImplTest {
     void updateWithFileTest() {
         SocialNetworkImageResponseDTO toUpdate = ModelUtils.getSocialNetworkImageResponseDTO();
         MultipartFile file = new MockMultipartFile(
-                "file",
-                "test-image.jpg",
-                "image/jpeg",
-                "fake-image-content".getBytes()
-        );
+            "file",
+            "test-image.jpg",
+            "image/jpeg",
+            "fake-image-content".getBytes());
 
         doNothing().when(userRemoteClient).updateSocialImage(toUpdate, file);
 

@@ -129,17 +129,15 @@ public class ManagementSocialNetworkImagesController {
      */
     @Operation(summary = "Update SocialNetworkImage")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
-    public GenericResponseDto update(@Valid @RequestPart
-                                     SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-                                     BindingResult bindingResult,
-                                     @ImageValidation @RequestPart(required = false, name = "file") MultipartFile
-                                             file) {
+    public GenericResponseDto update(@Valid @RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+        BindingResult bindingResult,
+        @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             socialNetworkImageService.update(socialNetworkImageResponseDTO, file);
         }

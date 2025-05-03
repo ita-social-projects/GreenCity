@@ -59,9 +59,8 @@ public interface SocialNetworkImageService {
     /**
      * Method for updating SocialNetworkImage instance.
      *
-     * @param socialNetworkImageResponseDTO - instance of
-     *                                      SocialNetworkImage.
+     * @param socialNetworkImageResponseDTO - instance of SocialNetworkImage.
      */
     void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-                MultipartFile multipartFile);
+        MultipartFile multipartFile);
 }

@@ -145,23 +145,23 @@ public class ManagementSocialNetworkImagesControllerTest {
         String json = gson.toJson(imageToUpdate);
 
         MockMultipartFile dtoPart = new MockMultipartFile(
-                "socialNetworkImageResponseDTO",
-                "socialNetworkImageResponseDTO.json",
-                MediaType.APPLICATION_JSON_VALUE,
-                json.getBytes(StandardCharsets.UTF_8));
+            "socialNetworkImageResponseDTO",
+            "socialNetworkImageResponseDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
 
         doNothing().when(socialNetworkImageService).update(imageToUpdate, null);
 
         mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
-                        .file(dtoPart)
-                        .with(request -> {
-                            request.setMethod("PUT");
-                            return request;
-                        })
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+            .file(dtoPart)
+            .with(request -> {
+                request.setMethod("PUT");
+                return request;
+            })
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
         verify(socialNetworkImageService).update(imageToUpdate, null);
     }
@@ -173,31 +173,30 @@ public class ManagementSocialNetworkImagesControllerTest {
         String json = gson.toJson(imageToUpdate);
 
         MockMultipartFile dtoPart = new MockMultipartFile(
-                "socialNetworkImageResponseDTO",
-                "socialNetworkImageResponseDTO.json",
-                MediaType.APPLICATION_JSON_VALUE,
-                json.getBytes(StandardCharsets.UTF_8));
+            "socialNetworkImageResponseDTO",
+            "socialNetworkImageResponseDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
 
         MockMultipartFile imageFile = new MockMultipartFile(
-                "file",
-                "test-image.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "some-image-content".getBytes()
-        );
+            "file",
+            "test-image.jpg",
+            MediaType.IMAGE_JPEG_VALUE,
+            "some-image-content".getBytes());
 
         doNothing().when(socialNetworkImageService).update(imageToUpdate, imageFile);
 
         mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
-                        .file(dtoPart)
-                        .file(imageFile)
-                        .with(request -> {
-                            request.setMethod("PUT");
-                            return request;
-                        })
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+            .file(dtoPart)
+            .file(imageFile)
+            .with(request -> {
+                request.setMethod("PUT");
+                return request;
+            })
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
 
         verify(socialNetworkImageService).update(imageToUpdate, imageFile);
     }
@@ -209,30 +208,29 @@ public class ManagementSocialNetworkImagesControllerTest {
         String json = gson.toJson(imageToUpdate);
 
         MockMultipartFile dtoPart = new MockMultipartFile(
-                "socialNetworkImageResponseDTO",
-                "socialNetworkImageResponseDTO.json",
-                MediaType.APPLICATION_JSON_VALUE,
-                json.getBytes(StandardCharsets.UTF_8));
+            "socialNetworkImageResponseDTO",
+            "socialNetworkImageResponseDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
 
         MockMultipartFile imageFile = new MockMultipartFile(
-                "file",
-                "test-image.mp3",
-                "audio/mpeg",
-                "some-image-content".getBytes()
-        );
+            "file",
+            "test-image.mp3",
+            "audio/mpeg",
+            "some-image-content".getBytes());
 
         doNothing().when(socialNetworkImageService).update(imageToUpdate, imageFile);
 
         mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
-                        .file(dtoPart)
-                        .file(imageFile)
-                        .with(request -> {
-                            request.setMethod("PUT");
-                            return request;
-                        })
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+            .file(dtoPart)
+            .file(imageFile)
+            .with(request -> {
+                request.setMethod("PUT");
+                return request;
+            })
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
     }
 }

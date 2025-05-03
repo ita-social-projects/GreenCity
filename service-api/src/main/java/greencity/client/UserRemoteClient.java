@@ -419,21 +419,20 @@ public class UserRemoteClient {
      * @param file                          of {@link MultipartFile}.
      */
 
-    public void updateSocialImage(SocialNetworkImageResponseDTO
-                                          socialNetworkImageResponseDTO, MultipartFile file) {
+    public void updateSocialImage(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile file) {
         String path = "/management/socialnetworkimages/";
 
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("socialNetworkImageResponseDTO",
-                socialNetworkImageResponseDTO, MediaType.APPLICATION_JSON);
+            socialNetworkImageResponseDTO, MediaType.APPLICATION_JSON);
 
         if (file != null) {
             bodyBuilder.part("file", file.getResource());
         }
 
         webClient.put().uri(path).contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(bodyBuilder.build())).retrieve()
-                .bodyToMono(Void.class).block();
+            .body(BodyInserters.fromMultipartData(bodyBuilder.build())).retrieve()
+            .bodyToMono(Void.class).block();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {

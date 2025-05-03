@@ -81,8 +81,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      *                                      {@link SocialNetworkImageResponseDTO}.
      */
     @Override
-    public void update(SocialNetworkImageResponseDTO
-                               socialNetworkImageResponseDTO, MultipartFile image) {
+    public void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile image) {
         userRemoteClient.updateSocialImage(socialNetworkImageResponseDTO, image);
     }
 }
