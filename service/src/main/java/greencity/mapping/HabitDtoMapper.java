@@ -41,7 +41,7 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                 .build())
             .tags(habit.getTags().stream()
                 .flatMap(tag -> tag.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(languageCode))
+                .filter(tagTranslation -> tagTranslation.getLanguageCode().equals(languageCode))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .toDoListItems(habit.getToDoListItems() != null ? habit.getToDoListItems().stream()
                 .map(shoppingListItem -> ToDoListItemDto.builder()

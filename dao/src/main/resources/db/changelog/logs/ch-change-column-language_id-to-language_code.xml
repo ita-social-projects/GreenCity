@@ -42,4 +42,17 @@
         </update>
         <renameColumn tableName="habit_translation" oldColumnName="language_id" newColumnName="language_code" />
     </changeSet>
+
+    <changeSet id="ch-change-column-language_id-to-language_code-4" author="Maksym Kozak">
+        <modifyDataType tableName="tag_translations" columnName="language_id" newDataType="varchar(5)" />
+        <update tableName="tag_translations">
+            <column name="language_id" value="ua" />
+            <where>language_id = '1'</where>
+        </update>
+        <update tableName="tag_translations">
+            <column name="language_id" value="en" />
+            <where>language_id = '2'</where>
+        </update>
+        <renameColumn tableName="tag_translations" oldColumnName="language_id" newColumnName="language_code" />
+    </changeSet>
 </databaseChangeLog>

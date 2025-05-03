@@ -1,6 +1,5 @@
 package greencity.entity.localization;
 
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -10,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
@@ -39,7 +37,5 @@ public class TagTranslation {
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "language_id", nullable = false)
-    private Language language;
+    private String languageCode;
 }

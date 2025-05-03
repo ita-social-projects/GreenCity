@@ -32,6 +32,11 @@ public class LanguageServiceImpl implements LanguageService {
         return userRemoteClient.findLanguageByCode(code);
     }
 
+    @Override
+    public LanguageVO findByCodeTemp(String code) {
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */

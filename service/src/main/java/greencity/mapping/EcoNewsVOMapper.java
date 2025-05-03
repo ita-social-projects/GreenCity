@@ -49,7 +49,7 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                             .name(tagTranslation.getName())
                             .id(tagTranslation.getId())
                             .languageVO(LanguageVO.builder()
-                                .code(tagTranslation.getLanguage().getCode())
+                                .code(tagTranslation.getLanguageCode())
                                 .id(tagTranslation.getId())
                                 .build())
                             .build())

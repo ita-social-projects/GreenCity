@@ -4,7 +4,6 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -51,11 +50,11 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
 
     /**
      * Method that builds {@link List} of {@link HabitTranslation} from {@link List}
-     * of {@link HabitTranslationDto}, {@link Language} language and {@link Habit}
+     * of {@link HabitTranslationDto}, {@link LanguageDTO} language and {@link Habit}
      * habit.
      *
      * @param dtoList  {@link List} of {@link HabitTranslationDto}
-     * @param language {@link Language}
+     * @param language {@link LanguageDTO}
      * @param habit    {@link Habit}
      *
      * @return {@link List} of {@link HabitTranslation}

@@ -27,6 +27,8 @@ public interface LanguageService {
      */
     LanguageDTO findByCode(String code);
 
+    LanguageVO findByCodeTemp(String code);
+
     /**
      * Method for getting {@link LanguageVO} by code.
      *

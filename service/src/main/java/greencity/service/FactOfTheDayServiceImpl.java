@@ -10,7 +10,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
