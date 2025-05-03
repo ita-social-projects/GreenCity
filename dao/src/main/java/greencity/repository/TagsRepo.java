@@ -67,7 +67,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
         + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
         + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
         + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
-        + "OR LOWER(tt.language.code) LIKE LOWER(CONCAT('%', :filter, '%')) "
+        + "OR LOWER(tt.languageCode) LIKE LOWER(CONCAT('%', :filter, '%')) "
         + "OR LOWER(tt.name) LIKE LOWER(CONCAT('%', :filter, '%'))",
         countQuery = "SELECT COUNT(t) FROM Tag t")
     Page<Tag> filterByAllFields(Pageable pageable, String filter);
@@ -79,8 +79,8 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * @param languageCode {@link String}
      * @return list of tag's names.
      */
-    @Query("select tt from TagTranslation tt join fetch tt.tag t join fetch tt.language l "
-        + "where t.type = :tagType and l.code = :languageCode order by tt.id")
+    @Query("select tt from TagTranslation tt join fetch tt.tag t "
+        + "where t.type = :tagType and tt.languageCode = :languageCode order by tt.id")
     List<TagTranslation> findTagsByTypeAndLanguageCode(TagType tagType, String languageCode);
 
     /**
