@@ -80,11 +80,10 @@ public interface ToDoListItemRepo
         join HabitAssign as ha on ha.id = usli.habitAssign.id
         join ToDoListItemTranslation as translations on
         translations.toDoListItem.id = usli.toDoListItem.id
-        join Language as lang on translations.languageCode = lang.code
         where usli.status = 'INPROGRESS'
         and ha.status = 'INPROGRESS'
         and ha.user.id = :userId
-        and lang.code = :code""")
+        and translations.languageCode = :code""")
     List<ToDoListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
         @Param("code") String code);
 
