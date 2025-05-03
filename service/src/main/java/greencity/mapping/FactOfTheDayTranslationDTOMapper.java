@@ -15,7 +15,7 @@ public class FactOfTheDayTranslationDTOMapper extends AbstractConverter<FactOfTh
             .factOfTheDayTranslations(factOfTheDay.getFactOfTheDayTranslations().stream()
                 .map(factOfTheDayTranslation -> FactOfTheDayTranslationEmbeddedPostDTO.builder()
                     .content(factOfTheDayTranslation.getContent())
-                    .languageCode(factOfTheDayTranslation.getLanguage().getCode())
+                    .languageCode(factOfTheDayTranslation.getLanguageCode())
                     .build())
                 .toList())
             .build();

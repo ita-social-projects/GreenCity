@@ -41,8 +41,7 @@ public class HabitTranslation {
     @Column(nullable = false)
     private String habitItem;
 
-    @ManyToOne
-    private Language language;
+    private String languageCode;
 
     @ManyToOne
     private Habit habit;

@@ -437,8 +437,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 String habitTitle = habitAssign.getHabit()
                     .getHabitTranslations()
                     .stream()
-                    .filter(ht -> modelMapper.map(ht.getLanguage(), LanguageVO.class).getCode()
-                        .equals(language.getCode()))
+                    .filter(ht -> ht.getLanguageCode().equals(language.getCode()))
                     .toList()
                     .getFirst()
                     .getName();

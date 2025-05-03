@@ -22,8 +22,7 @@ public class Translation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Language language;
+    private String languageCode;
 
     @Column(nullable = false, unique = true, length = 4000)
     private String content;

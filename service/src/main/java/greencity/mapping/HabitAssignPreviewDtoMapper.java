@@ -48,7 +48,7 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
         LanguageVO language = languageService.findById(languageId);
 
         HabitTranslationDto habitTranslationDto = habitTranslations.stream()
-            .filter(tr -> Objects.equals(tr.getLanguage().getCode(), language.getCode()))
+            .filter(tr -> Objects.equals(tr.getLanguageCode(), language.getCode()))
             .findFirst().map(tr -> HabitTranslationDto.builder()
                 .name(tr.getName())
                 .description(tr.getDescription())

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="ch-change-column-language_id-to-language_code-1" author="Maksym Kozak">
+        <modifyDataType tableName="fact_of_the_day_translations" columnName="language_id" newDataType="varchar(5)" />
+        <update tableName="fact_of_the_day_translations">
+            <column name="language_id" value="ua" />
+            <where>language_id = '1'</where>
+        </update>
+        <update tableName="fact_of_the_day_translations">
+            <column name="language_id" value="en" />
+            <where>language_id = '2'</where>
+        </update>
+        <renameColumn tableName="fact_of_the_day_translations" oldColumnName="language_id" newColumnName="language_code" />
+    </changeSet>
+
+    <changeSet id="ch-change-column-language_id-to-language_code-2" author="Maksym Kozak">
+        <modifyDataType tableName="to_do_list_item_translations" columnName="language_id" newDataType="varchar(5)" />
+        <update tableName="to_do_list_item_translations">
+            <column name="language_id" value="ua" />
+            <where>language_id = '1'</where>
+        </update>
+        <update tableName="to_do_list_item_translations">
+            <column name="language_id" value="en" />
+            <where>language_id = '2'</where>
+        </update>
+        <renameColumn tableName="to_do_list_item_translations" oldColumnName="language_id" newColumnName="language_code" />
+    </changeSet>
+
+    <changeSet id="ch-change-column-language_id-to-language_code-3" author="Maksym Kozak">
+        <modifyDataType tableName="habit_translation" columnName="language_id" newDataType="varchar(5)" />
+        <update tableName="habit_translation">
+            <column name="language_id" value="ua" />
+            <where>language_id = '1'</where>
+        </update>
+        <update tableName="habit_translation">
+            <column name="language_id" value="en" />
+            <where>language_id = '2'</where>
+        </update>
+        <renameColumn tableName="habit_translation" oldColumnName="language_id" newColumnName="language_code" />
+    </changeSet>
+</databaseChangeLog>

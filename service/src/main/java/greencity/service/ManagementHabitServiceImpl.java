@@ -124,9 +124,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
                         .description(habitTranslationDto.getDescription())
                         .habitItem(habitTranslationDto.getHabitItem())
                         .name(habitTranslationDto.getName())
-                        .language(modelMapper.map(
-                            languageService.findByCode(habitTranslationDto.getLanguageCode()),
-                            Language.class))
+                        .languageCode(habitTranslationDto.getLanguageCode())
                         .build())
                     .toList())
             .build();
@@ -161,7 +159,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
 
         Map<String, HabitTranslationManagementDto> translationDtoMap = getMapTranslationsDtos(habitManagementDto);
         habit.getHabitTranslations().forEach(
-            ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
+            ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguageCode()), ht));
 
         uploadImageForHabit(habitManagementDto, image, habit);
         habit.setComplexity(habitManagementDto.getComplexity());
