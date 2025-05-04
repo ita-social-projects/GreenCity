@@ -4,7 +4,7 @@ import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
@@ -55,7 +55,7 @@ import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitTranslation;
 import static greencity.ModelUtils.getLanguage;
-import static greencity.ModelUtils.getLanguageVO;
+import static greencity.ModelUtils.getLanguageDTO;
 import static greencity.ModelUtils.getNotification;
 import static greencity.ModelUtils.getNotificationDto;
 import static greencity.ModelUtils.getNotificationInviteDto;
@@ -903,10 +903,9 @@ class UserNotificationServiceImplTest {
 
         when(habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage())
             .thenReturn(List.of(habitAssign));
-        when(modelMapper.map(getLanguage(), LanguageVO.class)).thenReturn(getLanguageVO());
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userVO.getLanguageId()).thenReturn(languageId);
-        when(languageService.findById(languageId)).thenReturn(ModelUtils.getLanguageVO());
+        when(languageService.findById(languageId)).thenReturn(ModelUtils.getLanguageDTO());
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(notificationRepo.countByTargetUserIdAndViewedIsFalse(user.getId())).thenReturn(1L);
         userNotificationService.checkLastDayOfHabitPrimaryDurationToMessage();

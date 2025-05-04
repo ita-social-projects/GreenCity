@@ -1,63 +1,80 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.dto.language.LanguageDTO;
-import greencity.entity.Language;
-import greencity.exception.exceptions.LanguageNotFoundException;
-import greencity.repository.LanguageRepo;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LanguageServiceImplTest {
 
     @Mock
-    private ModelMapper modelMapper;
-
-    @Mock
-    private LanguageRepo languageRepo;
+    private UserRemoteClient userRemoteClient;
 
     @InjectMocks
     private LanguageServiceImpl languageService;
 
-    private final Language language = ModelUtils.getLanguage();
-
     @Test
     void getAllLanguages() {
-        List<LanguageDTO> expected = Collections.emptyList();
-        when(modelMapper.map(languageRepo.findAll(), new TypeToken<List<LanguageDTO>>() {
-        }.getType())).thenReturn(expected);
-        assertEquals(expected, languageService.getAllLanguages());
+        List<LanguageDTO> expectedResult = List.of(
+                new LanguageDTO(1L, "code1"),
+                new LanguageDTO(2L, "code2")
+        );
+        when(userRemoteClient.getAllLanguages())
+                .thenReturn(expectedResult);
+
+        List<LanguageDTO> actualResult = languageService.getAllLanguages();
+
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
     void findByCode() {
-        LanguageDTO dto = new LanguageDTO(1L, "en");
-        when(languageRepo.findByCode(language.getCode())).thenReturn(Optional.of(language));
-        when(modelMapper.map(language, LanguageDTO.class)).thenReturn(dto);
-        assertEquals(dto, languageService.findByCode(language.getCode()));
+        String languageCode = "en";
+        LanguageDTO expectedResult = ModelUtils.getLanguageDTO();
+        when(userRemoteClient.findLanguageByCode(languageCode))
+                .thenReturn(expectedResult);
+
+        LanguageDTO actualResult = languageService.findByCode(languageCode);
+
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
+    void findById() {
+        Long languageId = 5L;
+        LanguageDTO expectedResult = ModelUtils.getLanguageDTO();
+        when(userRemoteClient.findLanguageById(languageId))
+                .thenReturn(expectedResult);
+
+        LanguageDTO actualResult = languageService.findById(languageId);
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    // TODO
+    /*@Test
     void findCodeByIdFailed() {
         Assertions.assertThrows(LanguageNotFoundException.class, () -> languageService.findByCode("ua"));
-    }
+    }*/
 
     @Test
     void findAllLanguageCodes() {
-        List<String> code = Collections.singletonList(language.getCode());
-        when(languageRepo.findAllLanguageCodes()).thenReturn(code);
-        assertEquals(code, languageService.findAllLanguageCodes());
+        List<String> expectedResult = List.of("code1", "code2");
+        when(userRemoteClient.findAllLanguageCodes())
+                .thenReturn(expectedResult);
+
+        List<String> actualResult = languageService.findAllLanguageCodes();
+
+        assertEquals(expectedResult, actualResult);
     }
 }

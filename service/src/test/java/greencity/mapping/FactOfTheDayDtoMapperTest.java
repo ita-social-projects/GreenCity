@@ -1,22 +1,29 @@
 package greencity.mapping;
 
+import greencity.ModelUtils;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedDTO;
+import greencity.dto.language.LanguageDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.Language;
+import greencity.service.LanguageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 class FactOfTheDayDtoMapperTest {
+    @Mock
+    LanguageService languageService;
+
     @InjectMocks
-    private FactOfTheDayDtoMapper factOfTheDayDtoMapper;
+    FactOfTheDayDtoMapper factOfTheDayDtoMapper;
 
     @BeforeEach
     public void setUp() {
@@ -28,19 +35,13 @@ class FactOfTheDayDtoMapperTest {
         FactOfTheDayTranslation translation1 = FactOfTheDayTranslation.builder()
             .id(1L)
             .content("Fact content 1")
-            .language(Language.builder()
-                .id(1L)
-                .code("en")
-                .build())
+            .languageCode("en")
             .build();
 
         FactOfTheDayTranslation translation2 = FactOfTheDayTranslation.builder()
             .id(2L)
             .content("Fact content 2")
-            .language(Language.builder()
-                .id(2L)
-                .code("fr")
-                .build())
+            .languageCode("fr")
             .build();
 
         FactOfTheDay fact = FactOfTheDay.builder()
@@ -50,6 +51,11 @@ class FactOfTheDayDtoMapperTest {
             .createDate(ZonedDateTime.now())
             .build();
 
+        LanguageDTO languageDTO = ModelUtils.getLanguageDTO();
+
+        when(languageService.findByCode(translation1.getLanguageCode())).thenReturn(languageDTO);
+        when(languageService.findByCode(translation2.getLanguageCode())).thenReturn(languageDTO);
+
         FactOfTheDayDTO factOfTheDayDTO = factOfTheDayDtoMapper.convert(fact);
 
         assertNotNull(factOfTheDayDTO);
@@ -58,17 +64,18 @@ class FactOfTheDayDtoMapperTest {
         assertEquals(fact.getCreateDate(), factOfTheDayDTO.getCreateDate());
         assertEquals(2, factOfTheDayDTO.getFactOfTheDayTranslations().size());
 
+
         FactOfTheDayTranslationEmbeddedDTO dtoTranslation1 = factOfTheDayDTO.getFactOfTheDayTranslations().get(0);
         assertEquals(translation1.getId(), dtoTranslation1.getId());
         assertEquals(translation1.getContent(), dtoTranslation1.getContent());
-        assertEquals(translation1.getLanguage().getId(), dtoTranslation1.getLanguage().getId());
-        assertEquals(translation1.getLanguage().getCode(), dtoTranslation1.getLanguage().getCode());
+        assertEquals(languageDTO.getId(), dtoTranslation1.getLanguage().getId());
+        assertEquals(languageDTO.getCode(), dtoTranslation1.getLanguage().getCode());
 
         FactOfTheDayTranslationEmbeddedDTO dtoTranslation2 = factOfTheDayDTO.getFactOfTheDayTranslations().get(1);
         assertEquals(translation2.getId(), dtoTranslation2.getId());
         assertEquals(translation2.getContent(), dtoTranslation2.getContent());
-        assertEquals(translation2.getLanguage().getId(), dtoTranslation2.getLanguage().getId());
-        assertEquals(translation2.getLanguage().getCode(), dtoTranslation2.getLanguage().getCode());
+        assertEquals(languageDTO.getId(), dtoTranslation2.getLanguage().getId());
+        assertEquals(languageDTO.getCode(), dtoTranslation2.getLanguage().getCode());
     }
 
     @Test

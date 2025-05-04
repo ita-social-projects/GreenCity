@@ -8,7 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import java.util.List;
 import greencity.service.LanguageService;
 import org.junit.jupiter.api.Test;
@@ -45,21 +44,21 @@ class HabitAssignPreviewDtoMapperTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .language(Language.builder().id(1L).code("ua").build())
+                .languageCode("ua")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .language(Language.builder().id(1L).code("en").build())
+                .languageCode("en")
                 .build()));
         Habit habit = habitAssign.getHabit();
         HabitTranslation habitTranslationUk = habit.getHabitTranslations().stream()
-            .filter(translation -> translation.getLanguage().getCode().equalsIgnoreCase("ua"))
+            .filter(translation -> translation.getLanguageCode().equalsIgnoreCase("ua"))
             .findFirst().orElse(null);
         HabitTranslation habitTranslationEn = habit.getHabitTranslations().stream()
-            .filter(translation -> !translation.getLanguage().getCode().equalsIgnoreCase("en"))
+            .filter(translation -> !translation.getLanguageCode().equalsIgnoreCase("en"))
             .findFirst().orElse(null);
         HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
             .name(habitTranslationEn.getName())
@@ -85,7 +84,7 @@ class HabitAssignPreviewDtoMapperTest {
         when(userVO.getLanguageId())
             .thenReturn(languageId);
         when(languageService.findById(languageId))
-            .thenReturn(ModelUtils.getLanguageVO());
+            .thenReturn(ModelUtils.getLanguageDTO());
 
         HabitAssignPreviewDto actual = habitAssignPreviewDtoMapper.convert(habitAssign);
 

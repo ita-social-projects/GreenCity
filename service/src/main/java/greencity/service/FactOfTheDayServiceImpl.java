@@ -39,7 +39,6 @@ import static greencity.enums.TagType.FACT_OF_THE_DAY;
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final FactOfTheDayRepo factOfTheDayRepo;
     private final ModelMapper modelMapper;
-    private final LanguageService languageService;
     private final FactOfTheDayTranslationService factOfTheDayTranslationService;
     private final TagsRepo tagsRepo;
     @Resource
