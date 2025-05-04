@@ -36,7 +36,7 @@ public class LanguageServiceImpl implements LanguageService {
      */
     @Override
     public LanguageDTO findById(Long id) {
-        return userRemoteClient.findByLanguageId(id);
+        return userRemoteClient.findLanguageById(id);
     }
 
     /**

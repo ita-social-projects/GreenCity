@@ -426,7 +426,7 @@ public class UserRemoteClient {
 
     // TODO
     // TODO: add caching if needed
-    public LanguageDTO findByLanguageId(Long id) {
+    public LanguageDTO findLanguageById(Long id) {
         return null;
     }
 
