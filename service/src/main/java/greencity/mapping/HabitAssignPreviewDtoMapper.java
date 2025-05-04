@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
@@ -45,7 +45,7 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
         User habitAssignUser = habitAssign.getUser();
         UserVO habitAssignUserVO = modelMapper.map(habitAssignUser, UserVO.class);
         Long languageId = habitAssignUserVO.getLanguageId();
-        LanguageVO language = languageService.findById(languageId);
+        LanguageDTO language = languageService.findById(languageId);
 
         HabitTranslationDto habitTranslationDto = habitTranslations.stream()
             .filter(tr -> Objects.equals(tr.getLanguageCode(), language.getCode()))

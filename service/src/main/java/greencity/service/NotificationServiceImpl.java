@@ -6,7 +6,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;
@@ -218,7 +218,7 @@ public class NotificationServiceImpl implements NotificationService {
                         User targetUser = notification.getTargetUser();
                         UserVO userVO = modelMapper.map(targetUser, UserVO.class);
                         Long languageId = userVO.getLanguageId();
-                        LanguageVO language = languageService.findById(languageId);
+                        LanguageDTO language = languageService.findById(languageId);
 
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
                             language.getCode());
@@ -258,7 +258,7 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
         Long languageId = userService.findById(notification.getTargetUser().getId()).getLanguageId();
-        LanguageVO userLanguage = languageService.findById(languageId);
+        LanguageDTO userLanguage = languageService.findById(languageId);
         ScheduledEmailMessage message = createScheduledEmailMessage(notification, userLanguage.getCode());
         List<NotificationType> likes = List.of(
             NotificationType.ECONEWS_COMMENT_LIKE,

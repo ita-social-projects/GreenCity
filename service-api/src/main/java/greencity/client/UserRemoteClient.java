@@ -3,7 +3,6 @@ package greencity.client;
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
@@ -427,7 +426,7 @@ public class UserRemoteClient {
 
     // TODO
     // TODO: add caching if needed
-    public LanguageVO findByLanguageId(Long id) {
+    public LanguageDTO findByLanguageId(Long id) {
         return null;
     }
 

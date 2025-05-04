@@ -4,7 +4,6 @@ import greencity.client.UserRemoteClient;
 import greencity.dto.language.LanguageDTO;
 import java.util.List;
 
-import greencity.dto.language.LanguageVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,16 +31,11 @@ public class LanguageServiceImpl implements LanguageService {
         return userRemoteClient.findLanguageByCode(code);
     }
 
-    @Override
-    public LanguageVO findByCodeTemp(String code) {
-        return null;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public LanguageVO findById(Long id) {
+    public LanguageDTO findById(Long id) {
         return userRemoteClient.findByLanguageId(id);
     }
 

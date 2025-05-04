@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -48,7 +48,7 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                         .map(tagTranslation -> TagTranslationVO.builder()
                             .name(tagTranslation.getName())
                             .id(tagTranslation.getId())
-                            .languageVO(LanguageVO.builder()
+                            .languageVO(LanguageDTO.builder()
                                 .code(tagTranslation.getLanguageCode())
                                 .id(tagTranslation.getId())
                                 .build())

@@ -1,6 +1,6 @@
 package greencity.dto.user;
 
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.enums.UserUpdateType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,6 +17,6 @@ public class UpdateUserDto {
     private String name;
     private String profilePicturePath;
     private String userCredo;
-    private LanguageVO language;
+    private LanguageDTO language;
     private UserUpdateType userUpdateType;
 }

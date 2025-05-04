@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
@@ -23,12 +23,12 @@ public class TagVOMapper extends AbstractConverter<Tag, TagVO> {
             .tagTranslations(tag.getTagTranslations().stream()
                 .map(tagTranslation -> {
                     String languageCode = tagTranslation.getLanguageCode();
-                    LanguageVO languageVO = languageService.findByCodeTemp(languageCode);
+                    LanguageDTO language = languageService.findByCode(languageCode);
 
                     return TagTranslationVO.builder()
                             .id(tagTranslation.getId())
                             .name(tagTranslation.getName())
-                            .languageVO(languageVO)
+                            .languageVO(language)
                             .build();
                 })
                 .collect(Collectors.toList()))

@@ -12,7 +12,6 @@ import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
@@ -518,7 +517,7 @@ public class HabitServiceImpl implements HabitService {
                 .collect(Collectors.toList());
             UserVO userVO = modelMapper.map(user, UserVO.class);
             Long languageId = userVO.getLanguageId();
-            LanguageVO language = languageService.findById(languageId);
+            LanguageDTO language = languageService.findById(languageId);
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
                 userVO, friendsIds, habit.getId(),
