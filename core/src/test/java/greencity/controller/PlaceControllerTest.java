@@ -106,11 +106,11 @@ class PlaceControllerTest {
 
     @Test
     void proposePlace() throws Exception {
-        CategoryDto categoryDto = CategoryDto.builder().name("test").build();
+        CategoryDto categoryDto = CategoryDto.builder().nameEn("test").build();
         String json = """
             {
               "category": {
-                "name": "test"
+                "nameEn": "test"
               },
               "discountValues": [
                 {

@@ -1,9 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
     <property name="DATE_FORMAT" value="yyyy-MM-dd HH:mm:ss" />
     <property name="LOG_PATH" value="./logs" />
     <property name="LOG_MAX_SIZE" value="5MB" />
     <property name="LOG_PATTERN" value="[%d{${DATE_FORMAT}}] %highlight(%level) %cyan(%-40.40logger{40}) %magenta(%-5.5(:%line)) %msg%n" />
+    <property name="REST_LOG_PATTERN" value="[%d{${DATE_FORMAT}}] [TransactionId=%X{transactionId}] %-5level %msg%n" />
+    <property name="TX_LOG_PATTERN" value="[%d{${DATE_FORMAT}}] %highlight(%level) %cyan(%-40.40logger{40}) %magenta(%-5.5(:%line)) [TransactionId=%X{transactionId}] %msg%n" />
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -11,27 +13,50 @@
         </encoder>
     </appender>
 
-    <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="consoleWithTx" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${TX_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="applicationFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/application.log</file>
-
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Daily log file rotation -->
             <fileNamePattern>${LOG_PATH}/application-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-
-            <!-- Max file size before rolling -->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>${LOG_MAX_SIZE}</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
-
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
+    <appender name="restFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/rest.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/rest-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${LOG_MAX_SIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${REST_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="console"/>
-        <appender-ref ref="rollingFile"/>
+        <appender-ref ref="applicationFile"/>
     </root>
 
+    <logger name="greencity.logging" level="INFO" additivity="false">
+        <appender-ref ref="consoleWithTx"/>
+        <appender-ref ref="restFile"/>
+    </logger>
 </configuration>

@@ -33,10 +33,10 @@ public class Achievement {
     @Column(nullable = false, length = 300)
     private String title;
 
-    @Column(nullable = false, length = 300)
-    private String name;
-    @Column(nullable = false, length = 300)
-    private String nameEng;
+    @Column(nullable = false, length = 300, name = "name_uk")
+    private String nameUk;
+    @Column(nullable = false, length = 300, name = "name_en")
+    private String nameEn;
 
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement", fetch = FetchType.LAZY)
     private List<UserAchievement> userAchievements;

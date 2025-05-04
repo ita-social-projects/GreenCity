@@ -14,15 +14,15 @@ public class NewTagDtoMapper extends AbstractConverter<Tag, NewTagDto> {
         Optional<TagTranslation> tagTranslationEn = source.getTagTranslations().stream()
             .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals("en"))
             .findFirst();
-        Optional<TagTranslation> tagTranslationUa = source.getTagTranslations().stream()
+        Optional<TagTranslation> tagTranslationUk = source.getTagTranslations().stream()
             .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals("ua"))
             .findFirst();
         String name = tagTranslationEn.map(TagTranslation::getName).orElse(null);
-        String nameUa = tagTranslationUa.map(TagTranslation::getName).orElse(null);
+        String nameUk = tagTranslationUk.map(TagTranslation::getName).orElse(null);
 
         return NewTagDto.builder()
-            .name(name)
-            .nameUa(nameUa)
+            .nameEn(name)
+            .nameUk(nameUk)
             .id(source.getId())
             .build();
     }

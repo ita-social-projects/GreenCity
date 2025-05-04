@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Lazy
 @RequiredArgsConstructor
 @RequestMapping("/logs")
-@Profile({"dev", "test"})
 public class LogFileController {
     private final LogFileService logFileService;
     private final DotenvService dotenvService;

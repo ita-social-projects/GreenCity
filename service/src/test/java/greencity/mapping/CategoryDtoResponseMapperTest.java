@@ -21,7 +21,7 @@ class CategoryDtoResponseMapperTest {
         Category category = ModelUtils.getCategory();
         CategoryDtoResponse expected = CategoryDtoResponse.builder()
             .id(category.getId())
-            .name(category.getName())
+            .name(category.getNameEn())
             .build();
         assertEquals(expected, categoryDtoResponseMapper.convert(category));
     }

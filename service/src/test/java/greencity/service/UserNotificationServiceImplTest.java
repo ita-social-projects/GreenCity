@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.language.LanguageVO;
@@ -7,6 +8,7 @@ import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
+import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
@@ -28,10 +30,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.security.Principal;
 import java.time.ZoneId;
@@ -64,6 +69,7 @@ import static greencity.ModelUtils.testUser;
 import static greencity.ModelUtils.testUserVo;
 import static greencity.enums.NotificationType.EVENT_COMMENT_USER_TAG;
 import static greencity.enums.ProjectName.GREENCITY;
+import static greencity.enums.ProjectName.PICKUP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -100,9 +106,117 @@ class UserNotificationServiceImplTest {
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private HabitAssignRepo habitAssignRepo;
+    @Mock
+    private RestClient restClient;
 
     @Test
-    void getNotificationsFilteredTest() {
+    void getNotificationsFilteredTestWhenProjectNameIsNull() {
+        Principal principal = getPrincipal();
+        String language = "en";
+        String email = "danylo@gmail.com";
+        ProjectName projectName = null;
+        List<NotificationType> notificationTypes = Collections.emptyList();
+        Boolean viewed = false;
+        int pageNumber = 0;
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable countPageableGreenCity = PageRequest.of(0, 1);
+        Pageable countPageableUbs = PageRequest.of(0, 1);
+        Page<Notification> countGreenCityPage = new PageImpl<>(Collections.emptyList(), countPageableGreenCity, 5);
+        PageableAdvancedDto<UbsNotificationDto> countUbsPage = new PageableAdvancedDto<>(
+            Collections.emptyList(), 5, 0, 1, 0, false, false, true, true);
+
+        when(userService.findByEmail(email)).thenReturn(testUserVo);
+        when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
+            countPageableGreenCity))
+            .thenReturn(countGreenCityPage);
+        when(restClient.findAllNotificationsForUserFromUbs(principal, countPageableUbs))
+            .thenReturn(countUbsPage);
+
+        Pageable greenCityPageable = PageRequest.of(0, pageSize);
+        Pageable ubsPageable = PageRequest.of(0, pageSize);
+
+        Notification notification1 = new Notification();
+        notification1.setNotificationType(NotificationType.HABIT_COMMENT_REPLY);
+        Notification notification2 = new Notification();
+        notification2.setNotificationType(NotificationType.EVENT_COMMENT);
+        Page<Notification> greenCityNotificationsPage =
+            new PageImpl<>(List.of(notification1, notification2), greenCityPageable, 2);
+
+        UbsNotificationDto ubsNotificationDto1 = mock(UbsNotificationDto.class);
+        UbsNotificationDto ubsNotificationDto2 = mock(UbsNotificationDto.class);
+        PageableAdvancedDto<UbsNotificationDto> ubsNotificationsPage = new PageableAdvancedDto<>(
+            List.of(ubsNotificationDto1, ubsNotificationDto2), 2, 0, 1, 0, false, false, true, true);
+
+        when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
+            greenCityPageable))
+            .thenReturn(greenCityNotificationsPage);
+        when(restClient.findAllNotificationsForUserFromUbs(principal, ubsPageable))
+            .thenReturn(ubsNotificationsPage);
+
+        NotificationDto notificationDto1 = mock(NotificationDto.class);
+        NotificationDto notificationDto2 = mock(NotificationDto.class);
+        NotificationDto notificationDto3 = mock(NotificationDto.class);
+        NotificationDto notificationDto4 = mock(NotificationDto.class);
+
+        when(modelMapper.map(notification1, NotificationDto.class)).thenReturn(notificationDto1);
+        when(modelMapper.map(notification2, NotificationDto.class)).thenReturn(notificationDto2);
+        when(modelMapper.map(ubsNotificationDto1, NotificationDto.class)).thenReturn(notificationDto3);
+        when(modelMapper.map(ubsNotificationDto2, NotificationDto.class)).thenReturn(notificationDto4);
+
+        when(notificationDto1.getNotificationType()).thenReturn(NotificationType.ECONEWS_COMMENT_LIKE.name());
+        when(notificationDto2.getNotificationType()).thenReturn(EVENT_COMMENT_USER_TAG.name());
+
+        ZonedDateTime time1 = ZonedDateTime.now();
+        ZonedDateTime time2 = time1.minusMinutes(1);
+        ZonedDateTime time3 = time2.minusMinutes(1);
+        ZonedDateTime time4 = time3.minusMinutes(1);
+
+        when(notificationDto1.getTime()).thenReturn(time1);
+        when(notificationDto2.getTime()).thenReturn(time2);
+        when(notificationDto3.getTime()).thenReturn(time3);
+        when(notificationDto4.getTime()).thenReturn(time4);
+
+        List<NotificationDto> expectedPage =
+            List.of(notificationDto1, notificationDto2, notificationDto3, notificationDto4);
+        long totalElements = 10;
+        int totalPages = (int) Math.ceilDiv(totalElements, pageSize);
+        boolean hasPrevious = false;
+        boolean hasNext = (pageNumber + 1) < totalPages;
+        boolean isFirst = true;
+        boolean isLast = !hasNext;
+
+        PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
+            pageable,
+            principal,
+            language,
+            projectName,
+            notificationTypes,
+            viewed);
+
+        assertEquals(expectedPage, actualResult.getPage());
+        assertEquals(totalElements, actualResult.getTotalElements());
+        assertEquals(pageNumber, actualResult.getCurrentPage());
+        assertEquals(totalPages, actualResult.getTotalPages());
+        assertEquals(pageNumber, actualResult.getNumber());
+        assertEquals(hasPrevious, actualResult.isHasPrevious());
+        assertEquals(hasNext, actualResult.isHasNext());
+        assertEquals(isFirst, actualResult.isFirst());
+        assertEquals(isLast, actualResult.isLast());
+
+        verify(userService, times(2)).findByEmail(email);
+        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
+            countPageableGreenCity);
+        verify(restClient).findAllNotificationsForUserFromUbs(principal, countPageableUbs);
+        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
+            greenCityPageable);
+        verify(restClient).findAllNotificationsForUserFromUbs(principal, ubsPageable);
+        verify(modelMapper, times(2)).map(any(Notification.class), eq(NotificationDto.class));
+        verify(modelMapper, times(2)).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
+    }
+
+    @Test
+    void getNotificationsFilteredTestWhenProjectNameIsGreenCity() {
         Notification notification = getNotification();
         NotificationDto notificationDto = getNotificationDto();
 
@@ -125,6 +239,51 @@ class UserNotificationServiceImplTest {
         verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page);
         verify(modelMapper).map(notification, NotificationDto.class);
+    }
+
+    @Test
+    void getNotificationsFilteredTestWhenProjectNameIsPickup() {
+        Pageable pageable = Mockito.mock(Pageable.class);
+        Principal principal = getPrincipal();
+        String language = "en";
+        List<NotificationType> notificationTypes = Collections.emptyList();
+        Boolean viewed = false;
+        PageableAdvancedDto<UbsNotificationDto> notificationsFromUbs = Mockito.mock(PageableAdvancedDto.class);
+        UbsNotificationDto ubsNotificationDto = mock(UbsNotificationDto.class);
+        List<UbsNotificationDto> page = List.of(
+            ubsNotificationDto,
+            ubsNotificationDto);
+        NotificationDto notificationDto = Mockito.mock(NotificationDto.class);
+        List<NotificationDto> expectedPage = List.of(
+            notificationDto,
+            notificationDto);
+
+        when(restClient.findAllNotificationsForUserFromUbs(principal, pageable))
+            .thenReturn(notificationsFromUbs);
+        when(notificationsFromUbs.getPage())
+            .thenReturn(page);
+        when(modelMapper.map(any(UbsNotificationDto.class), eq(NotificationDto.class)))
+            .thenReturn(notificationDto);
+
+        PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
+            pageable,
+            principal,
+            language,
+            PICKUP,
+            notificationTypes,
+            viewed);
+
+        assertEquals(expectedPage, actualResult.getPage());
+        assertEquals(notificationsFromUbs.getTotalElements(), actualResult.getTotalElements());
+        assertEquals(notificationsFromUbs.getCurrentPage(), actualResult.getCurrentPage());
+        assertEquals(notificationsFromUbs.getTotalPages(), actualResult.getTotalPages());
+        assertEquals(notificationsFromUbs.getNumber(), actualResult.getNumber());
+        assertEquals(notificationsFromUbs.isHasPrevious(), actualResult.isHasPrevious());
+        assertEquals(notificationsFromUbs.isHasNext(), actualResult.isHasNext());
+        assertEquals(notificationsFromUbs.isFirst(), actualResult.isFirst());
+        assertEquals(notificationsFromUbs.isLast(), actualResult.isLast());
+        verify(restClient).findAllNotificationsForUserFromUbs(principal, pageable);
+        verify(modelMapper, times(page.size())).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
     }
 
     static Stream<Arguments> getNotificationScenariosInEnglish() {

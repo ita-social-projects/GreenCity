@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class UserLocationDto {
     private Long id;
     private String cityEn;
-    private String cityUa;
+    private String cityUk;
     private String regionEn;
-    private String regionUa;
+    private String regionUk;
     private String countryEn;
-    private String countryUa;
+    private String countryUk;
     private Double latitude;
     private Double longitude;
 }

@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.ToString;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString(exclude = {"customToDoListItemDto"})
 public class CustomHabitDtoResponse {
     private Long id;
     private Long userId;

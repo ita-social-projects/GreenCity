@@ -12,6 +12,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventCityDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventRequestDto;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -480,6 +482,8 @@ public class EventController {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
@@ -730,5 +734,44 @@ public class EventController {
         @Parameter(hidden = true) Principal principal) {
         eventService.declineRequest(eventId, principal.getName(), userId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for retrieving all events, where user is attendee.
+     *
+     * @param userVO {@link UserVO} current user information.
+     * @return all events, where user is an attendee.
+     * @author Andrii Danylenko.
+     */
+    @Operation(summary = "Retrieves all events, where user is an attendee.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/user-data/getAllUserAssigned")
+    public ResponseEntity<Page<EventResponseDto>> getAllUserAssigned(
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId()));
+    }
+
+    /**
+     * Retrieves cities relevant to the user, such as the user's own city (if
+     * available) and the top three cities with the highest number of events.
+     *
+     * @author Andrii Danylenko
+     */
+    @Operation(summary = "Retrieves cities relevant to the user, such as the user's own city "
+        + "(if available) and the top three cities with the highest number of events.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/addresses/get-relevant")
+    public ResponseEntity<List<EventCityDto>> getRelevantAddresses(
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.ok(eventService.getAllRelevantEventsCityByUser(userVO));
     }
 }
