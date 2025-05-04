@@ -43,5 +43,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="fact_of_the_day"
         />
+
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="fact_of_the_day_translations"
+                                 constraintName="FK_language_fact_of_the_day_translations"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="languages"
+        />
     </changeSet>
 </databaseChangeLog>
