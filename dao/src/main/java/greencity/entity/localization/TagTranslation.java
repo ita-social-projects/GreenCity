@@ -37,5 +37,6 @@ public class TagTranslation {
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
+    @Column(nullable = false, length = 5)
     private String languageCode;
 }
