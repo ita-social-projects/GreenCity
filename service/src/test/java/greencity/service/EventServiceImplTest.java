@@ -18,7 +18,6 @@ import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
@@ -135,9 +134,6 @@ class EventServiceImplTest {
 
     @Mock
     UserRepo userRepo;
-
-    @Mock
-    LanguageService languageService;
 
     @InjectMocks
     EventServiceImpl eventService;
@@ -2550,7 +2546,6 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityEnExists() {
         UserVO userVO = ModelUtils.getUserVO();
-        userVO.setLanguageVO(ModelUtils.getLanguageDTO());
         String userCity = "Kyiv";
         userVO.getUserLocation().setCityEn(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
@@ -2569,6 +2564,7 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityUaExists() {
         UserVO userVO = ModelUtils.getUserVO();
+        userVO.setLanguageVO(ModelUtils.getUaLanguageDTO());
         String userCity = "Київ";
         userVO.getUserLocation().setCityUk(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
