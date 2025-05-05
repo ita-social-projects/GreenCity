@@ -18,10 +18,10 @@ import static org.mockito.Mockito.when;
 class LanguageServiceImplTest {
 
     @Mock
-    private UserRemoteClient userRemoteClient;
+    UserRemoteClient userRemoteClient;
 
     @InjectMocks
-    private LanguageServiceImpl languageService;
+    LanguageServiceImpl languageService;
 
     @Test
     void getAllLanguages() {
@@ -59,13 +59,6 @@ class LanguageServiceImplTest {
 
         assertEquals(expectedResult, actualResult);
     }
-
-    // TODO
-    /*
-     * @Test void findCodeByIdFailed() {
-     * Assertions.assertThrows(LanguageNotFoundException.class, () ->
-     * languageService.findByCode("ua")); }
-     */
 
     @Test
     void findAllLanguageCodes() {
