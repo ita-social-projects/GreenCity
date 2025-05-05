@@ -17,6 +17,5 @@ public class UpdateUserDto {
     private String name;
     private String profilePicturePath;
     private String userCredo;
-    private LanguageDTO language;
     private UserUpdateType userUpdateType;
 }

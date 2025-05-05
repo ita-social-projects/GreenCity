@@ -507,19 +507,11 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
-            // TODO
-            /*
-             * Language language = Language.builder()
-             * .id(updateUserDto.getLanguage().getId())
-             * .code(updateUserDto.getLanguage().getCode()) .build();
-             */
-
             user = User.builder()
                 .id(updateUserDto.getId())
                 .email(updateUserDto.getEmail())
                 .name(updateUserDto.getName())
                 .profilePicturePath(updateUserDto.getProfilePicturePath())
-                // .language(language)
                 .rating(AppConstant.DEFAULT_RATING)
                 .eventOrganizerRating(AppConstant.DEFAULT_RATING)
                 .build();

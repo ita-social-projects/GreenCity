@@ -27,10 +27,6 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getUserCredo() != null) {
                 user.setUserCredo(null);
             }
-            // TODO
-            /*
-             * if (updateUserDto.getLanguage() != null) { user.setLanguage(null); }
-             */
         } else {
             if (updateUserDto.getId() != null) {
                 user.setId(user.getId());
@@ -47,12 +43,6 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getUserCredo() != null) {
                 user.setUserCredo(updateUserDto.getUserCredo());
             }
-            // TODO
-            /*
-             * if (updateUserDto.getLanguage() != null) {
-             * user.setLanguage(Language.builder() .id(updateUserDto.getLanguage().getId())
-             * .code(updateUserDto.getLanguage().getCode()) .build()); }
-             */
         }
         return user;
     }
