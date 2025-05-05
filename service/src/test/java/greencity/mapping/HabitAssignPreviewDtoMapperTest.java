@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
@@ -27,16 +28,13 @@ class HabitAssignPreviewDtoMapperTest {
     @Mock
     ModelMapper modelMapper;
 
-    @Mock
-    LanguageService languageService;
-
     @InjectMocks
     HabitAssignPreviewDtoMapper habitAssignPreviewDtoMapper;
 
     @Test
     void convertTest() {
         UserVO userVO = mock(UserVO.class);
-        Long languageId = 2L;
+        LanguageDTO language = ModelUtils.getUaLanguageDTO();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getHabit().setHabitTranslations(List.of(
             HabitTranslation.builder()
@@ -81,10 +79,8 @@ class HabitAssignPreviewDtoMapperTest {
 
         when(modelMapper.map(habitAssign.getUser(), UserVO.class))
             .thenReturn(userVO);
-        when(userVO.getLanguageId())
-            .thenReturn(languageId);
-        when(languageService.findById(languageId))
-            .thenReturn(ModelUtils.getLanguageDTO());
+        when(userVO.getLanguageVO())
+            .thenReturn(language);
 
         HabitAssignPreviewDto actual = habitAssignPreviewDtoMapper.convert(habitAssign);
 

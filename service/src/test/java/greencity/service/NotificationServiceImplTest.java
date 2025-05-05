@@ -75,9 +75,6 @@ class NotificationServiceImplTest {
     @Mock
     UserRemoteClient userRemoteClient;
 
-    @Mock
-    LanguageService languageService;
-
     @Test
     void sendDailyReportTest() {
         EmailPreferencePeriodicity periodicity = EmailPreferencePeriodicity.DAILY;
@@ -201,13 +198,10 @@ class NotificationServiceImplTest {
         User targetUser = getUser();
         notification.setTargetUser(targetUser);
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
 
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
         when(userService.findById(targetUser.getId())).thenReturn(targetUserVO);
         when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
 
         notificationService.sendEmailNotification(notificationDto);
 
@@ -225,15 +219,12 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User user = getUser();
         UserVO userVO = getUserVO();
-        Long languageId = userVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         notification.setTargetUser(user);
         notification.setNotificationType(NotificationType.HABIT_INVITE);
 
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
         when(userService.findById(user.getId())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
 
         notificationService.sendEmailNotification(notificationDto);
 
@@ -251,15 +242,12 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User user = getUser();
         UserVO userVO = getUserVO();
-        Long languageId = userVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         notification.setTargetUser(user);
         notification.setNotificationType(NotificationType.ECONEWS_COMMENT);
 
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
         when(userService.findById(user.getId())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
 
         notificationService.sendEmailNotification(notificationDto);
 
@@ -277,15 +265,12 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User user = getUser();
         UserVO userVO = getUserVO();
-        Long languageId = userVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         notification.setTargetUser(user);
         notification.setNotificationType(NotificationType.ECONEWS_LIKE);
 
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
         when(userService.findById(user.getId())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
 
         notificationService.sendEmailNotification(notificationDto);
 
@@ -302,8 +287,6 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
         EmailPreferenceDto twiceADayPreferenceDto =
             new EmailPreferenceDto(targetUser.getId(), EmailPreference.INVITES, EmailPreferencePeriodicity.TWICE_A_DAY);
@@ -326,7 +309,6 @@ class NotificationServiceImplTest {
                     NotificationType.FRIEND_REQUEST_ACCEPTED))
                 .thenReturn(Collections.singletonList(notification));
             when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-            when(languageService.findById(languageId)).thenReturn(languageVO);
             when(userRemoteClient.searchUserNotificationPreference(twiceADayPreferenceDto)).thenReturn(false);
             when(userRemoteClient.searchUserNotificationPreference(dailyPreferenceDto)).thenReturn(false);
             when(userRemoteClient.searchUserNotificationPreference(weeklyPreferenceDto)).thenReturn(true);
@@ -350,8 +332,6 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
         EmailPreferenceDto twiceADayPreferenceDto = new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS,
             EmailPreferencePeriodicity.TWICE_A_DAY);
@@ -372,7 +352,6 @@ class NotificationServiceImplTest {
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT_REPLY))
                 .thenReturn(Collections.singletonList(notification));
             when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-            when(languageService.findById(languageId)).thenReturn(languageVO);
             when(userRemoteClient.searchUserNotificationPreference(twiceADayPreferenceDto)).thenReturn(false);
             when(userRemoteClient.searchUserNotificationPreference(dailyPreferenceDto)).thenReturn(true);
             when(userRemoteClient.searchUserNotificationPreference(weeklyPreferenceDto)).thenReturn(false);
@@ -396,8 +375,6 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 12, 10, 0);
         EmailPreferenceDto twiceADayPreferenceDto = new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS,
             EmailPreferencePeriodicity.TWICE_A_DAY);
@@ -418,7 +395,6 @@ class NotificationServiceImplTest {
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT))
                 .thenReturn(Collections.singletonList(notification));
             when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-            when(languageService.findById(languageId)).thenReturn(languageVO);
             when(userRemoteClient.searchUserNotificationPreference(twiceADayPreferenceDto)).thenReturn(true);
             when(userRemoteClient.searchUserNotificationPreference(dailyPreferenceDto)).thenReturn(false);
             when(userRemoteClient.searchUserNotificationPreference(weeklyPreferenceDto)).thenReturn(false);
@@ -442,8 +418,6 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 8, 1, 18, 0);
         EmailPreferenceDto twiceADayPreferenceDto =
             new EmailPreferenceDto(targetUser.getId(), EmailPreference.LIKES, EmailPreferencePeriodicity.TWICE_A_DAY);
@@ -473,7 +447,6 @@ class NotificationServiceImplTest {
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.HABIT_COMMENT_LIKE))
                 .thenReturn(Collections.singletonList(notification));
             when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-            when(languageService.findById(languageId)).thenReturn(languageVO);
             when(userRemoteClient.searchUserNotificationPreference(twiceADayPreferenceDto)).thenReturn(false);
             when(userRemoteClient.searchUserNotificationPreference(dailyPreferenceDto)).thenReturn(false);
             when(userRemoteClient.searchUserNotificationPreference(weeklyPreferenceDto)).thenReturn(false);
@@ -497,8 +470,6 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         notification.setTargetUser(targetUser);
 
         when(notificationRepo
@@ -506,7 +477,6 @@ class NotificationServiceImplTest {
             .thenReturn(Collections.singletonList(notification));
         when(userRemoteClient.searchUserNotificationPreference(any(EmailPreferenceDto.class))).thenReturn(true);
         when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
 
         notificationService.sendTaggedInCommentScheduledEmail();
 
@@ -525,8 +495,6 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         notification.setTargetUser(targetUser);
 
         when(notificationRepo
@@ -534,7 +502,6 @@ class NotificationServiceImplTest {
             .thenReturn(Collections.singletonList(notification));
         when(userRemoteClient.searchUserNotificationPreference(any(EmailPreferenceDto.class))).thenReturn(true);
         when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
 
         notificationService.sendHabitInviteScheduledEmail();
 
@@ -553,8 +520,6 @@ class NotificationServiceImplTest {
         Notification notification = getNotification();
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
-        Long languageId = targetUserVO.getLanguageId();
-        LanguageDTO languageVO = ModelUtils.getLanguageDTO();
         notification.setTargetUser(targetUser);
 
         when(notificationRepo
@@ -581,7 +546,6 @@ class NotificationServiceImplTest {
             .thenReturn(Collections.singletonList(notification));
         when(userRemoteClient.searchUserNotificationPreference(any(EmailPreferenceDto.class))).thenReturn(true);
         when(modelMapper.map(targetUser, UserVO.class)).thenReturn(targetUserVO);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
 
         notificationService.sendSystemNotificationsScheduledEmail();
 

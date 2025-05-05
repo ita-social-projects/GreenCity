@@ -110,8 +110,6 @@ class UserNotificationServiceImplTest {
     private HabitAssignRepo habitAssignRepo;
     @Mock
     private RestClient restClient;
-    @Mock
-    private LanguageService languageService;
 
     @Test
     void getNotificationsFilteredTestWhenProjectNameIsNull() {
@@ -899,13 +897,12 @@ class UserNotificationServiceImplTest {
         User user = getUser().setId(2L);
         UserVO userVO = spy(getUserVO().setId(2L));
         HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS).setUser(user).setHabit(habit);
-        Long languageId = 1L;
+        LanguageDTO language = ModelUtils.getLanguageDTO();
 
         when(habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage())
             .thenReturn(List.of(habitAssign));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getLanguageId()).thenReturn(languageId);
-        when(languageService.findById(languageId)).thenReturn(ModelUtils.getLanguageDTO());
+        when(userVO.getLanguageVO()).thenReturn(language);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(notificationRepo.countByTargetUserIdAndViewedIsFalse(user.getId())).thenReturn(1L);
         userNotificationService.checkLastDayOfHabitPrimaryDurationToMessage();

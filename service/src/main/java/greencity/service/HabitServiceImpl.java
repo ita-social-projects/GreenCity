@@ -516,8 +516,7 @@ public class HabitServiceImpl implements HabitService {
                 .map(UserFriendDto::getId)
                 .collect(Collectors.toList());
             UserVO userVO = modelMapper.map(user, UserVO.class);
-            Long languageId = userVO.getLanguageId();
-            LanguageDTO language = languageService.findById(languageId);
+            LanguageDTO language = userVO.getLanguageVO();
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
                 userVO, friendsIds, habit.getId(),

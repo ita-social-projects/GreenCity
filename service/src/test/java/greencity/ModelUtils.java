@@ -529,7 +529,7 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
-            .languageId(getLanguageDTO().getId())
+            .languageVO(getLanguageDTO())
             .userStatus(ACTIVATED)
             .userLocation(
                 UserLocationDto.builder()
@@ -545,7 +545,7 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
-            .languageId(getLanguageDTO().getId())
+            .languageVO(getLanguageDTO())
             .build();
     }
 
@@ -555,7 +555,7 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
-            .languageId(getLanguageDTO().getId())
+            .languageVO(getLanguageDTO())
             .build();
     }
 
@@ -580,7 +580,7 @@ public class ModelUtils {
             .userLocation(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
-            .languageId(1L)
+            .languageVO(getLanguageDTO())
             .build();
     }
 
@@ -3458,7 +3458,7 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
-            .languageId(getLanguageDTO().getId())
+            .languageVO(getLanguageDTO())
             .userStatus(BLOCKED)
             .userLocation(
                 UserLocationDto.builder()
@@ -3483,7 +3483,7 @@ public class ModelUtils {
             .latitude(1d)
             .longitude(1d)
             .build());
-        advancedDto.setLanguageId(getLanguageDTO().getId());
+        advancedDto.setLanguageVO(getLanguageDTO());
         advancedDto.setUserAchievements(List.of(getUserAchievementVO()));
         advancedDto.setUserFriends(getUserFriends());
         advancedDto.setSocialNetworks(getSocialNetworkVOs());
@@ -3558,7 +3558,7 @@ public class ModelUtils {
             .latitude(1d)
             .longitude(1d)
             .build());
-        advancedDto.setLanguageId(getLanguageDTO().getId());
+        advancedDto.setLanguageVO(getLanguageDTO());
         advancedDto.setSocialNetworks(getSocialNetworkVOs());
 
         return advancedDto;

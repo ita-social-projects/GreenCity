@@ -70,7 +70,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private static final String NOTIFICATION = "/notification";
     private final HabitAssignRepo habitAssignRepo;
     private final RestClient restClient;
-    private final LanguageService languageService;
 
     private final Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator
         .comparing(NotificationDto::getTime).reversed();
@@ -432,8 +431,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage()
             .forEach(habitAssign -> {
                 UserVO targetUser = modelMapper.map(habitAssign.getUser(), UserVO.class);
-                Long languageId = targetUser.getLanguageId();
-                LanguageDTO language = languageService.findById(languageId);
+                LanguageDTO language = targetUser.getLanguageVO();
                 String habitTitle = habitAssign.getHabit()
                     .getHabitTranslations()
                     .stream()

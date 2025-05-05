@@ -25,11 +25,9 @@ import java.util.Objects;
 @Component
 public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, HabitAssignPreviewDto> {
     private final ModelMapper modelMapper;
-    private final LanguageService languageService;
 
     @Lazy
-    public HabitAssignPreviewDtoMapper(LanguageService languageService, ModelMapper modelMapper) {
-        this.languageService = languageService;
+    public HabitAssignPreviewDtoMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
@@ -44,8 +42,7 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
         List<HabitTranslation> habitTranslations = habitAssign.getHabit().getHabitTranslations();
         User habitAssignUser = habitAssign.getUser();
         UserVO habitAssignUserVO = modelMapper.map(habitAssignUser, UserVO.class);
-        Long languageId = habitAssignUserVO.getLanguageId();
-        LanguageDTO language = languageService.findById(languageId);
+        LanguageDTO language = habitAssignUserVO.getLanguageVO();
 
         HabitTranslationDto habitTranslationDto = habitTranslations.stream()
             .filter(tr -> Objects.equals(tr.getLanguageCode(), language.getCode()))

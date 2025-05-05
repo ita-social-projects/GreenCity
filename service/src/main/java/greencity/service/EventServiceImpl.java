@@ -138,7 +138,6 @@ public class EventServiceImpl implements EventService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
-    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -1417,10 +1416,10 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO) {
-        Long languageId = userVO.getLanguageId();
-        LanguageDTO language = languageService.findById(languageId);
+        LanguageDTO language = userVO.getLanguageVO();
 
         String userLocale = language.getCode();
+        System.out.println("userLocale: " + userLocale);
         String userCity = AppConstant.EMPTY_STRING;
         UserLocationDto locationDto = userVO.getUserLocation();
         if (locationDto != null) {

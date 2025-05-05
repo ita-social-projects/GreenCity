@@ -2550,18 +2550,15 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityEnExists() {
         UserVO userVO = ModelUtils.getUserVO();
+        userVO.setLanguageVO(ModelUtils.getLanguageDTO());
         String userCity = "Kyiv";
         userVO.getUserLocation().setCityEn(userCity);
-        Long languageId = userVO.getLanguageId();
-        LanguageDTO language = ModelUtils.getLanguageDTO();
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection(userCity, "Київ", 1L),
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
 
-        when(languageService.findById(languageId))
-            .thenReturn(language);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
 
@@ -2572,10 +2569,7 @@ class EventServiceImplTest {
     @Test
     void getAllRelevantEventsCityByUserReturnsListWithUserCityIfUsersCityUaExists() {
         UserVO userVO = ModelUtils.getUserVO();
-        Long languageId = 1L;
-        userVO.setLanguageId(languageId);
         String userCity = "Київ";
-        LanguageDTO language = LanguageDTO.builder().id(languageId).code("ua").build();
         userVO.getUserLocation().setCityUk(userCity);
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Kyiv", userCity, 1L),
@@ -2583,8 +2577,6 @@ class EventServiceImplTest {
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
 
-        when(languageService.findById(languageId))
-            .thenReturn(language);
         when(eventRepo.findRelevantCitiesForUser(userCity))
             .thenReturn(eventCityDtoProjections);
 
@@ -2596,15 +2588,11 @@ class EventServiceImplTest {
     void getAllRelevantEventsCityByUserDoesNotThrowAnExceptionIfUserLocationIsNull() {
         UserVO userVO = ModelUtils.getUserVO();
         userVO.setUserLocation(null);
-        Long languageId = userVO.getLanguageId();
-        LanguageDTO language = ModelUtils.getLanguageDTO();
         List<EventCityDtoProjection> eventCityDtoProjections = List.of(
             getProjection("Dnipro", "Дніпро", 3L),
             getProjection("Lviv", "Львів", 2L),
             getProjection("Uzhhorod", "Ужгород", 1L));
 
-        when(languageService.findById(languageId))
-            .thenReturn(language);
         when(eventRepo.findRelevantCitiesForUser(anyString()))
             .thenReturn(eventCityDtoProjections);
 

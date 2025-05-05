@@ -822,7 +822,7 @@ class HabitServiceImplTest {
             ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
         UserVO userVO = mock(UserVO.class);
-        Long languageId = 1L;
+        LanguageDTO language = ModelUtils.getLanguageDTO();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
@@ -844,8 +844,7 @@ class HabitServiceImplTest {
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getLanguageId()).thenReturn(languageId);
-        when(languageService.findById(languageId)).thenReturn(languageEn);
+        when(userVO.getLanguageVO()).thenReturn(language);
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoUA), "ua"))

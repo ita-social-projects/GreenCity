@@ -140,7 +140,7 @@ class PlaceServiceImplTest {
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .languageId(language.getId())
+            .languageVO(language)
             .build();
     private final UserVO userVOAdmin =
         UserVO.builder()
@@ -149,7 +149,7 @@ class PlaceServiceImplTest {
             .name("Nazar Stasyuk")
             .role(Role.ROLE_ADMIN)
             .userStatus(UserStatus.ACTIVATED)
-            .languageId(language.getId())
+            .languageVO(language)
             .build();
     Place genericEntity1 = Place.builder()
         .id(1L)

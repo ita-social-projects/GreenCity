@@ -38,7 +38,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final UserService userService;
     private final RestClient restClient;
     private final ModelMapper modelMapper;
-    private final LanguageService languageService;
 
     /**
      * {@inheritDoc}
@@ -133,9 +132,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private SubscriberDto addSubscriberInfo(SubscriberDto subscriber, Map<String, UserVO> registeredUsers) {
         Optional.ofNullable(registeredUsers.get(subscriber.getEmail()))
             .ifPresent(user -> {
-                Long languageId = user.getLanguageId();
-                LanguageDTO language = languageService.findById(languageId);
-
+                LanguageDTO language = user.getLanguageVO();
                 subscriber.setName(user.getName());
                 subscriber.setLanguage(language.getCode());
             });
