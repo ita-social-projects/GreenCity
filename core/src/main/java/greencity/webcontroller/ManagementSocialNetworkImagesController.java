@@ -25,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -118,29 +119,28 @@ public class ManagementSocialNetworkImagesController {
         return ResponseEntity.status(HttpStatus.OK).body(socialNetworkImageService.findDtoById(id));
     }
 
-    // /**
-    // * Method which updates {@link SocialNetworkImageVO}.
-    // *
-    // * @param socialNetworkImageResponseDTO of
-    // * {@link SocialNetworkImageResponseDTO}.
-    // * @param file of {@link MultipartFile}.
-    // * @return {@link GenericResponseDto} with of operation and errors fields.
-    // */
-    // @Operation(summary = "Update Econews.")
-    // @ApiResponses(value = {
-    // @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-    // @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
-    // })
-    // @ResponseBody
-    // @PutMapping("/")
-    // public GenericResponseDto update(@Valid @RequestPart
-    // SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
-    // BindingResult bindingResult,
-    // @ImageValidation @RequestPart(required = false, name = "file") MultipartFile
-    // file) {
-    // if (!bindingResult.hasErrors()) {
-    // socialNetworkImageService.update(socialNetworkImageResponseDTO, file);
-    // }
-    // return buildGenericResponseDto(bindingResult);
-    // }
+    /**
+     * Method which updates SocialNetworkImage.
+     *
+     * @param socialNetworkImageResponseDTO of
+     *                                      {@link SocialNetworkImageResponseDTO}.
+     * @param file                          of {@link MultipartFile}.
+     * @return {@link GenericResponseDto} with of operation and errors fields.
+     */
+    @Operation(summary = "Update SocialNetworkImage")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @ResponseBody
+    @PutMapping("/")
+    public GenericResponseDto update(@Valid @RequestPart SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+        BindingResult bindingResult,
+        @ImageValidation @RequestPart(required = false, name = "file") MultipartFile file) {
+        if (!bindingResult.hasErrors()) {
+            socialNetworkImageService.update(socialNetworkImageResponseDTO, file);
+        }
+        return buildGenericResponseDto(bindingResult);
+    }
 }
