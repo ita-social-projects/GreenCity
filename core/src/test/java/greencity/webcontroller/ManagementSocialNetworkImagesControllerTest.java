@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -135,5 +136,101 @@ public class ManagementSocialNetworkImagesControllerTest {
 
         verify(socialNetworkImageService).save(imageToSave, null);
         assertEquals(expected, responseDTO);
+    }
+
+    @Test
+    void updateTest() throws Exception {
+        SocialNetworkImageResponseDTO imageToUpdate = ModelUtils.getSocialNetworkImageResponseDTO();
+        Gson gson = new Gson();
+        String json = gson.toJson(imageToUpdate);
+
+        MockMultipartFile dtoPart = new MockMultipartFile(
+            "socialNetworkImageResponseDTO",
+            "socialNetworkImageResponseDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
+
+        doNothing().when(socialNetworkImageService).update(imageToUpdate, null);
+
+        mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
+            .file(dtoPart)
+            .with(request -> {
+                request.setMethod("PUT");
+                return request;
+            })
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(socialNetworkImageService).update(imageToUpdate, null);
+    }
+
+    @Test
+    void updateWithImageTest() throws Exception {
+        SocialNetworkImageResponseDTO imageToUpdate = ModelUtils.getSocialNetworkImageResponseDTO();
+        Gson gson = new Gson();
+        String json = gson.toJson(imageToUpdate);
+
+        MockMultipartFile dtoPart = new MockMultipartFile(
+            "socialNetworkImageResponseDTO",
+            "socialNetworkImageResponseDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
+
+        MockMultipartFile imageFile = new MockMultipartFile(
+            "file",
+            "test-image.jpg",
+            MediaType.IMAGE_JPEG_VALUE,
+            "some-image-content".getBytes());
+
+        doNothing().when(socialNetworkImageService).update(imageToUpdate, imageFile);
+
+        mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
+            .file(dtoPart)
+            .file(imageFile)
+            .with(request -> {
+                request.setMethod("PUT");
+                return request;
+            })
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(socialNetworkImageService).update(imageToUpdate, imageFile);
+    }
+
+    @Test
+    void updateWithWrongImageTypeTest() throws Exception {
+        SocialNetworkImageResponseDTO imageToUpdate = ModelUtils.getSocialNetworkImageResponseDTO();
+        Gson gson = new Gson();
+        String json = gson.toJson(imageToUpdate);
+
+        MockMultipartFile dtoPart = new MockMultipartFile(
+            "socialNetworkImageResponseDTO",
+            "socialNetworkImageResponseDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
+
+        MockMultipartFile imageFile = new MockMultipartFile(
+            "file",
+            "test-image.mp3",
+            "audio/mpeg",
+            "some-image-content".getBytes());
+
+        doNothing().when(socialNetworkImageService).update(imageToUpdate, imageFile);
+
+        mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
+            .file(dtoPart)
+            .file(imageFile)
+            .with(request -> {
+                request.setMethod("PUT");
+                return request;
+            })
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
     }
 }

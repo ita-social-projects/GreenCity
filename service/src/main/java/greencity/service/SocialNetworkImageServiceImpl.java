@@ -74,15 +74,14 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         return userRemoteClient.getEcoNewsById(id);
     }
 
-    // /**
-    // * {@inheritDoc} Method for updating SocialNetworkImage
-    // *
-    // * @param socialNetworkImageResponseDTO - instance of
-    // * {@link SocialNetworkImageResponseDTO}.
-    // */
-    // @Override
-    // public void update(SocialNetworkImageResponseDTO
-    // socialNetworkImageResponseDTO, MultipartFile image) {
-    // userRemoteClient.updateSocialImage(socialNetworkImageResponseDTO, image);
-    // }
+    /**
+     * {@inheritDoc} Method for updating SocialNetworkImage
+     *
+     * @param socialNetworkImageResponseDTO - instance of
+     *                                      {@link SocialNetworkImageResponseDTO}.
+     */
+    @Override
+    public void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile image) {
+        userRemoteClient.updateSocialImage(socialNetworkImageResponseDTO, image);
+    }
 }
