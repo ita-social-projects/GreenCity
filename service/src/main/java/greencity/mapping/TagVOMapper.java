@@ -26,10 +26,10 @@ public class TagVOMapper extends AbstractConverter<Tag, TagVO> {
                     LanguageDTO language = languageService.findByCode(languageCode);
 
                     return TagTranslationVO.builder()
-                            .id(tagTranslation.getId())
-                            .name(tagTranslation.getName())
-                            .languageVO(language)
-                            .build();
+                        .id(tagTranslation.getId())
+                        .name(tagTranslation.getName())
+                        .languageVO(language)
+                        .build();
                 })
                 .collect(Collectors.toList()))
             .build();

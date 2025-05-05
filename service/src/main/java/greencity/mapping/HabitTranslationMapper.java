@@ -50,8 +50,8 @@ public class HabitTranslationMapper extends AbstractConverter<HabitTranslationDt
 
     /**
      * Method that builds {@link List} of {@link HabitTranslation} from {@link List}
-     * of {@link HabitTranslationDto}, {@link LanguageDTO} language and {@link Habit}
-     * habit.
+     * of {@link HabitTranslationDto}, {@link LanguageDTO} language and
+     * {@link Habit} habit.
      *
      * @param dtoList  {@link List} of {@link HabitTranslationDto}
      * @param language {@link LanguageDTO}

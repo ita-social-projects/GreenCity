@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import java.util.Optional;
-
 import greencity.constant.AppConstant;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;

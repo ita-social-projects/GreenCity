@@ -64,7 +64,6 @@ class FactOfTheDayDtoMapperTest {
         assertEquals(fact.getCreateDate(), factOfTheDayDTO.getCreateDate());
         assertEquals(2, factOfTheDayDTO.getFactOfTheDayTranslations().size());
 
-
         FactOfTheDayTranslationEmbeddedDTO dtoTranslation1 = factOfTheDayDTO.getFactOfTheDayTranslations().get(0);
         assertEquals(translation1.getId(), dtoTranslation1.getId());
         assertEquals(translation1.getContent(), dtoTranslation1.getContent());

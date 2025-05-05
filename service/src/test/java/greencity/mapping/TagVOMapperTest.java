@@ -38,16 +38,16 @@ class TagVOMapperTest {
                 .map(tagTranslation -> {
 
                     when(languageService.findByCode(tagTranslation.getLanguageCode()))
-                            .thenReturn(language);
+                        .thenReturn(language);
 
                     return TagTranslationVO.builder()
-                            .id(tagTranslation.getId())
-                            .name(tagTranslation.getName())
-                            .languageVO(LanguageDTO.builder()
-                                    .id(language.getId())
-                                    .code(language.getCode())
-                                    .build())
-                            .build();
+                        .id(tagTranslation.getId())
+                        .name(tagTranslation.getName())
+                        .languageVO(LanguageDTO.builder()
+                            .id(language.getId())
+                            .code(language.getCode())
+                            .build())
+                        .build();
                 })
                 .collect(Collectors.toList()))
             .build();

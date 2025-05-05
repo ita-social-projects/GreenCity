@@ -5,7 +5,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedDTO;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.FactOfTheDay;
 import greencity.service.LanguageService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -30,10 +29,10 @@ public class FactOfTheDayDtoMapper extends AbstractConverter<FactOfTheDay, FactO
                     LanguageDTO languageDTO = languageService.findByCode(languageCode);
 
                     return FactOfTheDayTranslationEmbeddedDTO.builder()
-                            .id(factOfTheDayTranslation.getId())
-                            .content(factOfTheDayTranslation.getContent())
-                            .language(languageDTO)
-                            .build();
+                        .id(factOfTheDayTranslation.getId())
+                        .content(factOfTheDayTranslation.getContent())
+                        .language(languageDTO)
+                        .build();
                 })
                 .toList())
             .createDate(factOfTheDay.getCreateDate())

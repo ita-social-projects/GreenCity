@@ -28,9 +28,9 @@ public class UpdateUserDtoUserMapper {
                 user.setUserCredo(null);
             }
             // TODO
-            /*if (updateUserDto.getLanguage() != null) {
-                user.setLanguage(null);
-            }*/
+            /*
+             * if (updateUserDto.getLanguage() != null) { user.setLanguage(null); }
+             */
         } else {
             if (updateUserDto.getId() != null) {
                 user.setId(user.getId());
@@ -48,12 +48,11 @@ public class UpdateUserDtoUserMapper {
                 user.setUserCredo(updateUserDto.getUserCredo());
             }
             // TODO
-            /*if (updateUserDto.getLanguage() != null) {
-                user.setLanguage(Language.builder()
-                    .id(updateUserDto.getLanguage().getId())
-                    .code(updateUserDto.getLanguage().getCode())
-                    .build());
-            }*/
+            /*
+             * if (updateUserDto.getLanguage() != null) {
+             * user.setLanguage(Language.builder() .id(updateUserDto.getLanguage().getId())
+             * .code(updateUserDto.getLanguage().getCode()) .build()); }
+             */
         }
         return user;
     }

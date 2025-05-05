@@ -839,8 +839,8 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
         List<HabitTranslation> habitTranslationList = List.of(
-                habitTranslationUa.setLanguageCode(languageEn.getCode()),
-                habitTranslationUa.setLanguageCode(languageUa.getCode()));
+            habitTranslationUa.setLanguageCode(languageEn.getCode()),
+            habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
@@ -1041,8 +1041,8 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
         List<HabitTranslation> habitTranslationList = List.of(
-                habitTranslationUa.setLanguageCode(languageEn.getCode()),
-                habitTranslationUa.setLanguageCode(languageUa.getCode()));
+            habitTranslationUa.setLanguageCode(languageEn.getCode()),
+            habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);

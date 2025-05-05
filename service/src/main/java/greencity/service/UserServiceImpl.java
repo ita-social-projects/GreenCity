@@ -508,10 +508,11 @@ public class UserServiceImpl implements UserService {
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
             // TODO
-            /*Language language = Language.builder()
-                .id(updateUserDto.getLanguage().getId())
-                .code(updateUserDto.getLanguage().getCode())
-                .build();*/
+            /*
+             * Language language = Language.builder()
+             * .id(updateUserDto.getLanguage().getId())
+             * .code(updateUserDto.getLanguage().getCode()) .build();
+             */
 
             user = User.builder()
                 .id(updateUserDto.getId())

@@ -26,11 +26,10 @@ class LanguageServiceImplTest {
     @Test
     void getAllLanguages() {
         List<LanguageDTO> expectedResult = List.of(
-                new LanguageDTO(1L, "code1"),
-                new LanguageDTO(2L, "code2")
-        );
+            new LanguageDTO(1L, "code1"),
+            new LanguageDTO(2L, "code2"));
         when(userRemoteClient.getAllLanguages())
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         List<LanguageDTO> actualResult = languageService.getAllLanguages();
 
@@ -42,7 +41,7 @@ class LanguageServiceImplTest {
         String languageCode = "en";
         LanguageDTO expectedResult = ModelUtils.getLanguageDTO();
         when(userRemoteClient.findLanguageByCode(languageCode))
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         LanguageDTO actualResult = languageService.findByCode(languageCode);
 
@@ -54,7 +53,7 @@ class LanguageServiceImplTest {
         Long languageId = 5L;
         LanguageDTO expectedResult = ModelUtils.getLanguageDTO();
         when(userRemoteClient.findLanguageById(languageId))
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         LanguageDTO actualResult = languageService.findById(languageId);
 
@@ -62,16 +61,17 @@ class LanguageServiceImplTest {
     }
 
     // TODO
-    /*@Test
-    void findCodeByIdFailed() {
-        Assertions.assertThrows(LanguageNotFoundException.class, () -> languageService.findByCode("ua"));
-    }*/
+    /*
+     * @Test void findCodeByIdFailed() {
+     * Assertions.assertThrows(LanguageNotFoundException.class, () ->
+     * languageService.findByCode("ua")); }
+     */
 
     @Test
     void findAllLanguageCodes() {
         List<String> expectedResult = List.of("code1", "code2");
         when(userRemoteClient.findAllLanguageCodes())
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         List<String> actualResult = languageService.findAllLanguageCodes();
 
