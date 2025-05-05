@@ -250,4 +250,20 @@ public interface UserService {
      * @param socialNetworkName - name of {@link SocialNetworkVO}.
      */
     String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
+
+    /**
+     * Method for updating user's profilePicturePath.
+     *
+     * @param userId    - {@link Long} of user's id.
+     * @param profilePicturePath - new picturePath.
+     */
+    void updateUserProfilePicture(Long userId, String profilePicturePath);
+
+    /**
+     * Method for getting user's profilePicturePath.
+     *
+     * @param userId    - {@link Long} of user's id.
+     * @return  {@link String} - user's profilePicturePath.
+     */
+    String getProfilePicturePath(Long userId);
 }

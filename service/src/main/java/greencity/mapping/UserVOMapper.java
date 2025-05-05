@@ -17,7 +17,9 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
     @Override
     protected UserVO convert(User user) {
         String email = user.getEmail();
-        return userRemoteClient.findNotDeactivatedByEmail(email)
+        UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        userVO.setProfilePicturePath(user.getProfilePicturePath());
+        return userVO;
     }
 }

@@ -50,6 +50,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -555,5 +557,27 @@ public class UserServiceImpl implements UserService {
             .filter(url -> url.contains(socialNetworkName))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUserProfilePicture(Long userId, String profilePicturePath) {
+        User user = userRepo.findById(userId).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)
+        );
+         user.setProfilePicturePath(profilePicturePath);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProfilePicturePath(Long userId) {
+        User user = userRepo.findById(userId).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)
+        );
+        return user.getProfilePicturePath();
     }
 }

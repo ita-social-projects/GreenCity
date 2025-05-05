@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
@@ -186,5 +188,43 @@ public class UserController {
     @PatchMapping("/update")
     public ResponseEntity<Boolean> updateUser(@RequestBody UpdateUserDto updateUserDto) {
         return ResponseEntity.ok(userService.update(updateUserDto));
+    }
+
+    /**
+     * Method to update user's picture path. Used
+     * by GreenCityRemoteClient on the GreenCityUser microservice as a remote endpoint.
+     *
+     */
+    @Operation(summary = "Updates user's picture path")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @PutMapping("/picturePath")
+    public ResponseEntity<Void> updatePicturePath(@RequestParam(name = "userId") Long userId,
+                                                  @RequestParam(name = "profilePicturePath") String profilePicturePath) {
+        userService.updateUserProfilePicture(userId, profilePicturePath);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to get user's picture path. Used
+     * by GreenCityRemoteClient on the GreenCityUser microservice as a remote endpoint.
+     *
+     */
+    @Operation(summary = "Gets user's picture path")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/picturePath")
+    public ResponseEntity<String> getPicturePath(@RequestParam(name = "userId") Long userId) {
+        return ResponseEntity.ok(userService.getProfilePicturePath(userId));
     }
 }
