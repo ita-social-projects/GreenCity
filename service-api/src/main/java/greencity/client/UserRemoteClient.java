@@ -465,9 +465,8 @@ public class UserRemoteClient {
         return webClient.get()
                 .uri(path)
                 .retrieve()
-                .bodyToFlux(String.class)
-                .toStream()
-                .toList();
+                .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
+                .block();
     }
 
     /**
