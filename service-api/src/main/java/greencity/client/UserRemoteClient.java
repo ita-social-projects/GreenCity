@@ -1,5 +1,6 @@
 package greencity.client;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
@@ -15,8 +16,11 @@ import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
+import greencity.exception.exceptions.LanguageNotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -412,28 +418,76 @@ public class UserRemoteClient {
             .block();
     }
 
-    // TODO
     // TODO: add caching if needed
+    /**
+     * Method to get all languages as {@link LanguageDTO}.
+     *
+     * @return {@link List} of {@link LanguageDTO}
+     */
     public List<LanguageDTO> getAllLanguages() {
-        return List.of();
+        String path = "/lang";
+
+        return webClient.get()
+                .uri(path)
+                .retrieve()
+                .bodyToFlux(LanguageDTO.class)
+                .toStream()
+                .toList();
     }
 
-    // TODO
     // TODO: add caching if needed
-    public LanguageDTO findLanguageByCode(String code) {
-        return null;
+    /**
+     * Find language {@link LanguageDTO} by code.
+     *
+     * @param code language code
+     * @return language {@link LanguageDTO}
+     */
+    public LanguageDTO findLanguageByCode(String code) throws NotFoundException {
+        String path = "/lang/codes/{code}";
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(path).build(code))
+                .retrieve()
+                .onStatus(httpStatusCode -> httpStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND),
+                        clientResponse -> Mono.error(new LanguageNotFoundException(ErrorMessage.LANGUAGE_NOT_FOUND_BY_CODE + code)))
+                .bodyToMono(LanguageDTO.class)
+                .block();
     }
 
-    // TODO
     // TODO: add caching if needed
+    /**
+     * Find language {@link LanguageDTO} by id.
+     *
+     * @param id language id
+     * @return language {@link LanguageDTO}
+     */
     public LanguageDTO findLanguageById(Long id) {
-        return null;
+        String path = "/lang/{id}";
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(path).build(id))
+                .retrieve()
+                .onStatus(httpStatusCode -> httpStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND),
+                        clientResponse -> Mono.error(new LanguageNotFoundException(ErrorMessage.LANGUAGE_NOT_FOUND_BY_ID + id)))
+                .bodyToMono(LanguageDTO.class)
+                .block();
     }
 
-    // TODO
     // TODO: add caching if needed
+    /**
+     * Method to get all language codes.
+     *
+     * @return {@link List} of {@link String} language codes
+     */
     public List<String> findAllLanguageCodes() {
-        return List.of();
+        String path = "/lang/codes";
+
+        return webClient.get()
+                .uri(path)
+                .retrieve()
+                .bodyToFlux(String.class)
+                .toStream()
+                .toList();
     }
 
     /**
