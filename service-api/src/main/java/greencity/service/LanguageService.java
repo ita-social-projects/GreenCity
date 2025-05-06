@@ -26,14 +26,6 @@ public interface LanguageService {
     LanguageDTO findByCode(String code);
 
     /**
-     * Method for getting {@link LanguageDTO} by code.
-     *
-     * @param id id of language.
-     * @return {@link LanguageDTO} by language id.
-     */
-    LanguageDTO findById(Long id);
-
-    /**
      * Method, that returns codes of all languages.
      *
      * @return {@link List} of language code strings.

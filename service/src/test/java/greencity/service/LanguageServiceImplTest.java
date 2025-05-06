@@ -49,18 +49,6 @@ class LanguageServiceImplTest {
     }
 
     @Test
-    void findById() {
-        Long languageId = 5L;
-        LanguageDTO expectedResult = ModelUtils.getLanguageDTO();
-        when(userRemoteClient.findLanguageById(languageId))
-            .thenReturn(expectedResult);
-
-        LanguageDTO actualResult = languageService.findById(languageId);
-
-        assertEquals(expectedResult, actualResult);
-    }
-
-    @Test
     void findAllLanguageCodes() {
         List<String> expectedResult = List.of("code1", "code2");
         when(userRemoteClient.findAllLanguageCodes())

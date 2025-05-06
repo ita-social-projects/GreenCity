@@ -34,14 +34,6 @@ public class LanguageServiceImpl implements LanguageService {
      * {@inheritDoc}
      */
     @Override
-    public LanguageDTO findById(Long id) {
-        return userRemoteClient.findLanguageById(id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<String> findAllLanguageCodes() {
         return userRemoteClient.findAllLanguageCodes();
     }

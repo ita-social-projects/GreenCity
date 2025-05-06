@@ -456,25 +456,6 @@ public class UserRemoteClient {
 
     // TODO: add caching if needed
     /**
-     * Find language {@link LanguageDTO} by id.
-     *
-     * @param id language id
-     * @return language {@link LanguageDTO}
-     */
-    public LanguageDTO findLanguageById(Long id) {
-        String path = "/lang/{id}";
-
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(path).build(id))
-                .retrieve()
-                .onStatus(httpStatusCode -> httpStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND),
-                        clientResponse -> Mono.error(new LanguageNotFoundException(ErrorMessage.LANGUAGE_NOT_FOUND_BY_ID + id)))
-                .bodyToMono(LanguageDTO.class)
-                .block();
-    }
-
-    // TODO: add caching if needed
-    /**
      * Method to get all language codes.
      *
      * @return {@link List} of {@link String} language codes
