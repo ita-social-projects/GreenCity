@@ -102,8 +102,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     @Query(nativeQuery = true,
         value = "SELECT DISTINCT tt.name FROM tag_translations tt "
             + "INNER JOIN habits_tags ent ON tt.tag_id = ent.tag_id "
-            + "INNER JOIN languages l ON l.id = tt.language_id "
-            + "WHERE l.code = :languageCode")
+            + "WHERE tt.language_code = :languageCode")
     List<String> findAllHabitsTags(String languageCode);
 
     /**

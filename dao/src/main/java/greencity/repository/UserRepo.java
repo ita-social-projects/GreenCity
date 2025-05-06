@@ -659,6 +659,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param userId {@link Long} current user's id.
      * @return {@link String}.
      */
+    // TODO: remove that method and replace calls to it with call to UserRemoteClient
     @Query(value = "SELECT l.code FROM greencity_users AS u "
         + "JOIN languages AS l "
         + "ON u.language_id = l.id "
