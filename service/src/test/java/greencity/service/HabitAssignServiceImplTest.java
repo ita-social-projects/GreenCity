@@ -18,6 +18,7 @@ import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.CustomToDoListItemSaveRequestDto;
@@ -31,7 +32,6 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import greencity.entity.HabitStatusCalendar;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
@@ -800,10 +800,10 @@ class HabitAssignServiceImplTest {
     void getAllHabitAssignsByHabitIdAndStatusNotCancelled() {
         Long habitId = 1L;
 
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
-        translation.setLanguage(languageEn);
+        translation.setLanguageCode(languageEn.getCode());
 
         HabitAssign habitAssignNotCancelled = ModelUtils.getHabitAssign();
 
@@ -825,10 +825,10 @@ class HabitAssignServiceImplTest {
     void getNumberHabitAssignsByHabitIdAndStatusTest() {
         Long habitId = 1L;
 
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
 
         HabitTranslation translation = ModelUtils.getHabitTranslation();
-        translation.setLanguage(languageEn);
+        translation.setLanguageCode(languageEn.getCode());
 
         List<HabitAssign> habitAssignList = Collections.singletonList(ModelUtils.getHabitAssign());
 
@@ -913,14 +913,14 @@ class HabitAssignServiceImplTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .language(Language.builder().id(1L).code("ua").build())
+                .languageCode("ua")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
                 .name("nameUa")
                 .habitItem("habitItemUa")
                 .description("descriptionUa")
-                .language(Language.builder().id(1L).code("en").build())
+                .languageCode("en")
                 .build()));
         PageableAdvancedDto<HabitAssignPreviewDto> expected =
             new PageableAdvancedDto<>(List.of(habitAssignPreviewDto), returnedPage.getTotalElements(),
@@ -957,14 +957,14 @@ class HabitAssignServiceImplTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .language(Language.builder().id(1L).code("ua").build())
+                .languageCode("ua")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
                 .name("nameUa")
                 .habitItem("habitItemUa")
                 .description("descriptionUa")
-                .language(Language.builder().id(1L).code("en").build())
+                .languageCode("en")
                 .build()));
         PageableAdvancedDto<HabitAssignPreviewDto> expected =
             new PageableAdvancedDto<>(List.of(habitAssignPreviewDto), returnedPage.getTotalElements(),
@@ -1001,14 +1001,14 @@ class HabitAssignServiceImplTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .language(Language.builder().id(1L).code("ua").build())
+                .languageCode("ua")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
                 .name("nameUa")
                 .habitItem("habitItemUa")
                 .description("descriptionUa")
-                .language(Language.builder().id(1L).code("en").build())
+                .languageCode("en")
                 .build()));
         PageableAdvancedDto<HabitAssignPreviewDto> expected =
             new PageableAdvancedDto<>(List.of(habitAssignPreviewDto), returnedPage.getTotalElements(),
@@ -1427,7 +1427,7 @@ class HabitAssignServiceImplTest {
 
         Long id = 3L;
         LocalDate date = LocalDate.now();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
 
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(habitTranslation));
@@ -1448,7 +1448,7 @@ class HabitAssignServiceImplTest {
     void findInprogressHabitAssignsOnDateContent() {
         Long id = 3L;
         LocalDate date = LocalDate.now();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
 
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(habitTranslation));

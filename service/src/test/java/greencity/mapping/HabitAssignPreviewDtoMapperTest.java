@@ -4,11 +4,11 @@ import greencity.ModelUtils;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import java.util.List;
 import greencity.service.LanguageService;
 import org.junit.jupiter.api.Test;
@@ -28,16 +28,13 @@ class HabitAssignPreviewDtoMapperTest {
     @Mock
     ModelMapper modelMapper;
 
-    @Mock
-    LanguageService languageService;
-
     @InjectMocks
     HabitAssignPreviewDtoMapper habitAssignPreviewDtoMapper;
 
     @Test
     void convertTest() {
         UserVO userVO = mock(UserVO.class);
-        Long languageId = 2L;
+        LanguageDTO language = ModelUtils.getUaLanguageDTO();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getHabit().setHabitTranslations(List.of(
             HabitTranslation.builder()
@@ -45,21 +42,21 @@ class HabitAssignPreviewDtoMapperTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .language(Language.builder().id(1L).code("ua").build())
+                .languageCode("ua")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .language(Language.builder().id(1L).code("en").build())
+                .languageCode("en")
                 .build()));
         Habit habit = habitAssign.getHabit();
         HabitTranslation habitTranslationUk = habit.getHabitTranslations().stream()
-            .filter(translation -> translation.getLanguage().getCode().equalsIgnoreCase("ua"))
+            .filter(translation -> translation.getLanguageCode().equalsIgnoreCase("ua"))
             .findFirst().orElse(null);
         HabitTranslation habitTranslationEn = habit.getHabitTranslations().stream()
-            .filter(translation -> !translation.getLanguage().getCode().equalsIgnoreCase("en"))
+            .filter(translation -> !translation.getLanguageCode().equalsIgnoreCase("en"))
             .findFirst().orElse(null);
         HabitTranslationDto habitTranslationDto = HabitTranslationDto.builder()
             .name(habitTranslationEn.getName())
@@ -82,10 +79,8 @@ class HabitAssignPreviewDtoMapperTest {
 
         when(modelMapper.map(habitAssign.getUser(), UserVO.class))
             .thenReturn(userVO);
-        when(userVO.getLanguageId())
-            .thenReturn(languageId);
-        when(languageService.findById(languageId))
-            .thenReturn(ModelUtils.getLanguageVO());
+        when(userVO.getLanguageVO())
+            .thenReturn(language);
 
         HabitAssignPreviewDto actual = habitAssignPreviewDtoMapper.convert(habitAssign);
 

@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.location.UserLocationDto;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -29,5 +30,5 @@ public class UserVO {
 
     private UserLocationDto userLocation;
 
-    private Long languageId;
+    private LanguageDTO languageVO;
 }

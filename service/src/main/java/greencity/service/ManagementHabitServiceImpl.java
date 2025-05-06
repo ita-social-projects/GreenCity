@@ -9,7 +9,6 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 public class ManagementHabitServiceImpl implements ManagementHabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
-    private final LanguageService languageService;
     private final FileService fileService;
     private final HabitAssignService habitAssignService;
     private final UserActionRepo userActionRepo;
@@ -124,9 +122,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
                         .description(habitTranslationDto.getDescription())
                         .habitItem(habitTranslationDto.getHabitItem())
                         .name(habitTranslationDto.getName())
-                        .language(modelMapper.map(
-                            languageService.findByCode(habitTranslationDto.getLanguageCode()),
-                            Language.class))
+                        .languageCode(habitTranslationDto.getLanguageCode())
                         .build())
                     .toList())
             .build();
@@ -161,7 +157,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
 
         Map<String, HabitTranslationManagementDto> translationDtoMap = getMapTranslationsDtos(habitManagementDto);
         habit.getHabitTranslations().forEach(
-            ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
+            ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguageCode()), ht));
 
         uploadImageForHabit(habitManagementDto, image, habit);
         habit.setComplexity(habitManagementDto.getComplexity());

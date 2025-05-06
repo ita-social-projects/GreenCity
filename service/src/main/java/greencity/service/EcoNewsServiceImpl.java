@@ -224,7 +224,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         List<String> tags = new ArrayList<>();
         for (String lang : languageCode) {
             tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(lang))
+                .filter(tagTranslation -> tagTranslation.getLanguageCode().equals(lang))
                 .map(TagTranslation::getName)
                 .toList());
         }
@@ -556,7 +556,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         for (String language : languageCode) {
             tags.addAll(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguage().getCode().equals(language))
+                .filter(t -> t.getLanguageCode().equals(language))
                 .map(TagTranslation::getName)
                 .toList());
         }

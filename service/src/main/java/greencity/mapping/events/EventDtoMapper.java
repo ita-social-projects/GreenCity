@@ -1,5 +1,6 @@
 package greencity.mapping.events;
 
+import greencity.constant.AppConstant;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
@@ -67,9 +68,11 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         event.getTags().forEach(t -> {
             var translations = t.getTagTranslations();
             tagUaEnDtos.add(TagUkEnDto.builder().id(t.getId())
-                .nameUk(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst()
+                .nameUk(translations.stream().filter(tr -> tr.getLanguageCode().equals(AppConstant.LANGUAGE_CODE_UA))
+                    .findFirst()
                     .orElseThrow().getName())
-                .nameEn(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("en")).findFirst()
+                .nameEn(translations.stream()
+                    .filter(tr -> tr.getLanguageCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE)).findFirst()
                     .orElseThrow().getName())
                 .build());
         });

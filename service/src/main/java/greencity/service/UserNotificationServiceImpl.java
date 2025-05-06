@@ -4,7 +4,7 @@ import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
@@ -70,7 +70,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private static final String NOTIFICATION = "/notification";
     private final HabitAssignRepo habitAssignRepo;
     private final RestClient restClient;
-    private final LanguageService languageService;
 
     private final Comparator<NotificationDto> sortByRecentNotificationsComparator = Comparator
         .comparing(NotificationDto::getTime).reversed();
@@ -432,13 +431,11 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage()
             .forEach(habitAssign -> {
                 UserVO targetUser = modelMapper.map(habitAssign.getUser(), UserVO.class);
-                Long languageId = targetUser.getLanguageId();
-                LanguageVO language = languageService.findById(languageId);
+                LanguageDTO language = targetUser.getLanguageVO();
                 String habitTitle = habitAssign.getHabit()
                     .getHabitTranslations()
                     .stream()
-                    .filter(ht -> modelMapper.map(ht.getLanguage(), LanguageVO.class).getCode()
-                        .equals(language.getCode()))
+                    .filter(ht -> ht.getLanguageCode().equals(language.getCode()))
                     .toList()
                     .getFirst()
                     .getName();

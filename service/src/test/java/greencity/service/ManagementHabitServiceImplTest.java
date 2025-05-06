@@ -9,7 +9,6 @@ import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
@@ -37,7 +36,6 @@ import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitManagementDtoWithDefaultImage;
 import static greencity.ModelUtils.getHabitManagementDtoWithoutImage;
 import static greencity.ModelUtils.getHabitWithDefaultImage;
-import static greencity.ModelUtils.getLanguage;
 import static greencity.ModelUtils.getLanguageDTO;
 import static greencity.ModelUtils.getSortModel;
 import static greencity.ModelUtils.getSortedPageable;
@@ -121,7 +119,7 @@ class ManagementHabitServiceImplTest {
     void saveHabitAndTranslationsTest() {
         when(languageService.findByCode("en")).thenReturn(LanguageDTO.builder().id(1L).code("en").build());
         when(modelMapper.map(languageService.findByCode("en"),
-            Language.class)).thenReturn(Language.builder().id(1L).code("en").build());
+            LanguageDTO.class)).thenReturn(LanguageDTO.builder().id(1L).code("en").build());
         HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L)
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .habitTranslations(List.of(
@@ -138,9 +136,7 @@ class ManagementHabitServiceImplTest {
                         .description(habitTranslationDto.getDescription())
                         .habitItem(habitTranslationDto.getHabitItem())
                         .name(habitTranslationDto.getName())
-                        .language(modelMapper.map(
-                            languageService.findByCode(habitTranslationDto.getLanguageCode()),
-                            Language.class))
+                        .languageCode(habitTranslationDto.getLanguageCode())
                         .build())
                     .toList())
             .build();
@@ -157,7 +153,7 @@ class ManagementHabitServiceImplTest {
     void updateTest() {
         when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1L).habitTranslations(List
             .of(HabitTranslation.builder().habitItem("Item").description("Description")
-                .language(Language.builder().id(1L).code("en").build()).name("Name").build()))
+                .languageCode("en").name("Name").build()))
             .build()));
         HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L).image("image")
             .habitTranslations(List.of(
@@ -170,7 +166,7 @@ class ManagementHabitServiceImplTest {
         Habit habit = habitRepo.findById(1L).orElse(null);
         assert habit != null;
         habit.getHabitTranslations().forEach(
-            ht -> enhanceTranslationWithDto(managementDtoMap.get(ht.getLanguage().getCode()), ht));
+            ht -> enhanceTranslationWithDto(managementDtoMap.get(ht.getLanguageCode()), ht));
         when(habitRepo.save(habit)).thenReturn(habit);
         managementHabitService.update(habitManagementDto, null);
         verify(habitRepo, times(1)).save(habit);
@@ -234,14 +230,9 @@ class ManagementHabitServiceImplTest {
 
     @Test
     void saveHabitAndTranslationsWhenImageNullTest() {
-        var languageDTO = getLanguageDTO();
-        var language = getLanguage();
         var habitManagementDtoWithoutImage = getHabitManagementDtoWithoutImage();
         var habitManagementDtoWithDefaultImage = getHabitManagementDtoWithDefaultImage();
         var habit = getHabitWithDefaultImage();
-
-        when(languageService.findByCode(LANGUAGE_CODE_EN)).thenReturn(languageDTO);
-        when(modelMapper.map(languageDTO, Language.class)).thenReturn(language);
 
         when(habitRepo.save(habit)).thenReturn(habit);
         when(modelMapper.map(habit, HabitManagementDto.class)).thenReturn(habitManagementDtoWithDefaultImage);
@@ -250,16 +241,12 @@ class ManagementHabitServiceImplTest {
 
         assertEquals(AppConstant.DEFAULT_HABIT_IMAGE, result.getImage());
 
-        verify(languageService).findByCode(LANGUAGE_CODE_EN);
-        verify(modelMapper).map(languageDTO, Language.class);
         verify(habitRepo).save(habit);
         verify(modelMapper).map(habit, HabitManagementDto.class);
     }
 
     @Test
     void saveHabitAndTranslationsWhenImageEmptyTest() {
-        var languageDTO = getLanguageDTO();
-        var language = getLanguage();
         var habitManagementDtoWithoutImage = getHabitManagementDtoWithoutImage();
         var habitManagementDtoWithDefaultImage = getHabitManagementDtoWithDefaultImage();
         var habit = getHabitWithDefaultImage();
@@ -267,8 +254,6 @@ class ManagementHabitServiceImplTest {
         MultipartFile emptyImage = mock(MultipartFile.class);
 
         when(emptyImage.isEmpty()).thenReturn(true);
-        when(languageService.findByCode(LANGUAGE_CODE_EN)).thenReturn(languageDTO);
-        when(modelMapper.map(languageDTO, Language.class)).thenReturn(language);
 
         when(habitRepo.save(habit)).thenReturn(habit);
         when(modelMapper.map(habit, HabitManagementDto.class)).thenReturn(habitManagementDtoWithDefaultImage);
@@ -277,8 +262,6 @@ class ManagementHabitServiceImplTest {
 
         assertEquals(AppConstant.DEFAULT_HABIT_IMAGE, result.getImage());
 
-        verify(languageService).findByCode(LANGUAGE_CODE_EN);
-        verify(modelMapper).map(languageDTO, Language.class);
         verify(habitRepo).save(habit);
         verify(modelMapper).map(habit, HabitManagementDto.class);
         verify(emptyImage).isEmpty();

@@ -399,7 +399,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .id(toDoListItem.getId())
                 .status(toDoListItem.getStatus().toString())
                 .text(toDoListItem.getToDoListItem().getTranslations().stream()
-                    .filter(toDoItem -> toDoItem.getLanguage().getCode().equals(language)).findFirst()
+                    .filter(toDoItem -> toDoItem.getLanguageCode().equals(language)).findFirst()
                     .orElseThrow(
                         () -> new NotFoundException(
                             ErrorMessage.TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND + habitAssignDto.getHabit().getId()))
@@ -454,7 +454,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     private HabitTranslation getHabitTranslation(HabitAssign habitAssign, String language) {
         return habitAssign.getHabit().getHabitTranslations().stream()
-            .filter(ht -> ht.getLanguage().getCode().equals(language)).findFirst()
+            .filter(ht -> ht.getLanguageCode().equals(language)).findFirst()
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + habitAssign.getHabit().getId()));
     }
@@ -1171,7 +1171,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private String getToDoItemNameByLanguageCode(ToDoListItem toDoItem, String language) {
         return toDoItem.getTranslations()
             .stream()
-            .filter(x -> x.getLanguage().getCode().equals(language))
+            .filter(x -> x.getLanguageCode().equals(language))
             .findFirst()
             .orElseThrow()
             .getContent();

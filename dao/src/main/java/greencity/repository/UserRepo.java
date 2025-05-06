@@ -654,18 +654,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
 
     /**
-     * Method to find user language code by userId.
-     *
-     * @param userId {@link Long} current user's id.
-     * @return {@link String}.
-     */
-    @Query(value = "SELECT l.code FROM greencity_users AS u "
-        + "JOIN languages AS l "
-        + "ON u.language_id = l.id "
-        + "WHERE u.id = :userId", nativeQuery = true)
-    String findUserLanguageCodeByUserId(Long userId);
-
-    /**
      * Method finds friends status and requesterId.
      *
      * @param userId   {@link Long} current user's id.

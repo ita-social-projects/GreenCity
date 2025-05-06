@@ -13,7 +13,6 @@ import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.entity.HabitAssign;
-import greencity.entity.Language;
 import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
@@ -104,16 +103,14 @@ class ToDoListItemServiceImplTest {
     private List<ToDoListItemTranslation> toDoListItemTranslations = Arrays.asList(
         ToDoListItemTranslation.builder()
             .id(1L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()))
+            .languageCode(language)
             .content("TEST")
             .toDoListItem(
                 new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .build(),
         ToDoListItemTranslation.builder()
             .id(2L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()))
+            .languageCode(language)
             .content("TEST")
             .toDoListItem(
                 new ToDoListItem(2L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))

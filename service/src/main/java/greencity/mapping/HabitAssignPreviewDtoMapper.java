@@ -3,14 +3,13 @@ package greencity.mapping;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.service.LanguageService;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
@@ -25,11 +24,9 @@ import java.util.Objects;
 @Component
 public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, HabitAssignPreviewDto> {
     private final ModelMapper modelMapper;
-    private final LanguageService languageService;
 
     @Lazy
-    public HabitAssignPreviewDtoMapper(LanguageService languageService, ModelMapper modelMapper) {
-        this.languageService = languageService;
+    public HabitAssignPreviewDtoMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
@@ -44,11 +41,10 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
         List<HabitTranslation> habitTranslations = habitAssign.getHabit().getHabitTranslations();
         User habitAssignUser = habitAssign.getUser();
         UserVO habitAssignUserVO = modelMapper.map(habitAssignUser, UserVO.class);
-        Long languageId = habitAssignUserVO.getLanguageId();
-        LanguageVO language = languageService.findById(languageId);
+        LanguageDTO language = habitAssignUserVO.getLanguageVO();
 
         HabitTranslationDto habitTranslationDto = habitTranslations.stream()
-            .filter(tr -> Objects.equals(tr.getLanguage().getCode(), language.getCode()))
+            .filter(tr -> Objects.equals(tr.getLanguageCode(), language.getCode()))
             .findFirst().map(tr -> HabitTranslationDto.builder()
                 .name(tr.getName())
                 .description(tr.getDescription())

@@ -10,7 +10,7 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
@@ -19,7 +19,6 @@ import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.entity.RatingPoints;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -42,7 +41,6 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.repository.LanguageRepo;
 import greencity.repository.RatingPointsRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
@@ -143,9 +141,6 @@ class HabitServiceImplTest {
 
     @Mock
     TagsRepo tagsRepo;
-
-    @Mock
-    LanguageRepo languageRepo;
 
     @Mock
     CustomToDoListItemRepo customToDoListItemRepo;
@@ -253,7 +248,6 @@ class HabitServiceImplTest {
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
             .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
-        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn("ua");
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
@@ -333,7 +327,6 @@ class HabitServiceImplTest {
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
         when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
             .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
-        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn(languageCode);
 
         assertEquals(pageableDto, habitService.getAllHabitsOfFriend(userId, friendId, pageable, languageCode));
 
@@ -358,7 +351,6 @@ class HabitServiceImplTest {
             habitService.getAllHabitsOfFriend(userId, friendId, pageable, languageCode);
         });
 
-        verify(userRepo, never()).findUserLanguageCodeByUserId(anyLong());
         verify(habitTranslationRepo, never()).findAllMutualHabitsWithFriend(any(Pageable.class), anyLong(), anyLong(),
             anyString());
     }
@@ -393,7 +385,6 @@ class HabitServiceImplTest {
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
         when(habitAssignRepo.findHabitsByHabitIdAndUserId(anyLong(), anyLong()))
             .thenReturn(List.of(getHabitAssign(), getHabitAssign(HabitAssignStatus.INPROGRESS)));
-        when(userRepo.findUserLanguageCodeByUserId(userVO.getId())).thenReturn(languageCode);
 
         assertEquals(pageableDto, habitService.getAllMutualHabitsWithFriend(userId, friendId, pageable, languageCode));
 
@@ -418,7 +409,6 @@ class HabitServiceImplTest {
             habitService.getAllMutualHabitsWithFriend(userId, friendId, pageable, languageCode);
         });
 
-        verify(userRepo, never()).findUserLanguageCodeByUserId(anyLong());
         verify(habitTranslationRepo, never()).findAllMutualHabitsWithFriend(any(Pageable.class), anyLong(), anyLong(),
             anyString());
     }
@@ -595,8 +585,8 @@ class HabitServiceImplTest {
     void addCustomHabitTestWithImagePathInDto() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
-        Language languageUa = ModelUtils.getLanguageUa();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageUa = ModelUtils.getUaLanguageDTO();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
@@ -621,8 +611,8 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
         List<HabitTranslation> habitTranslationList = List.of(
-            habitTranslationUa.setLanguage(languageEn),
-            habitTranslationUa.setLanguage(languageUa));
+            habitTranslationUa.setLanguageCode(languageEn.getCode()),
+            habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
@@ -631,8 +621,8 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoEN), "en"))
             .thenReturn(List.of(habitTranslationUa));
-        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
-        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
+        when(languageService.findByCode("ua")).thenReturn(languageUa);
+        when(languageService.findByCode("en")).thenReturn(languageEn);
         when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemResponseDto)))
             .thenReturn(List.of(customToDoListItem));
@@ -668,8 +658,8 @@ class HabitServiceImplTest {
     void addCustomHabitTestWithImageFile() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
-        Language languageUa = ModelUtils.getLanguageUa();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageUa = ModelUtils.getUaLanguageDTO();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
@@ -694,16 +684,16 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
         List<HabitTranslation> habitTranslationList = List.of(
-            habitTranslationUa.setLanguage(languageEn),
-            habitTranslationUa.setLanguage(languageUa));
+            habitTranslationUa.setLanguageCode(languageEn.getCode()),
+            habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
         habitTranslationList.forEach(h -> when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user)));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoEN)))
             .thenReturn(List.of(habitTranslationUa));
-        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
-        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
+        when(languageService.findByCode("ua")).thenReturn(languageUa);
+        when(languageService.findByCode("en")).thenReturn(languageEn);
         when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoEN), "ua"))
             .thenReturn(Collections.emptyList());
@@ -743,8 +733,8 @@ class HabitServiceImplTest {
     void addCustomHabitTest2() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
-        Language languageUa = ModelUtils.getLanguageUa();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageUa = ModelUtils.getUaLanguageDTO();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
@@ -769,8 +759,8 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
         List<HabitTranslation> habitTranslationList = List.of(
-            habitTranslationUa.setLanguage(languageEn),
-            habitTranslationUa.setLanguage(languageUa));
+            habitTranslationUa.setLanguageCode(languageEn.getCode()),
+            habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
@@ -779,8 +769,8 @@ class HabitServiceImplTest {
             .thenReturn(List.of(habitTranslationUa));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoUA), "en"))
             .thenReturn(List.of(habitTranslationUa));
-        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
-        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
+        when(languageService.findByCode("ua")).thenReturn(languageUa);
+        when(languageService.findByCode("en")).thenReturn(languageEn);
         when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemResponseDto)))
             .thenReturn(List.of(customToDoListItem));
@@ -815,8 +805,8 @@ class HabitServiceImplTest {
     void addCustomHabitWithInvitedFriendsTest() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
-        Language languageUa = ModelUtils.getLanguageUa();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageUa = ModelUtils.getUaLanguageDTO();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
@@ -827,8 +817,7 @@ class HabitServiceImplTest {
             ModelUtils.getCustomToDoListItemResponseDtoForServiceTest();
         CustomToDoListItem customToDoListItem = ModelUtils.getCustomToDoListItemForServiceTest();
         UserVO userVO = mock(UserVO.class);
-        Long languageId = 1L;
-        LanguageVO languageVO = ModelUtils.getLanguageVO();
+        LanguageDTO language = ModelUtils.getLanguageDTO();
 
         CustomHabitDtoRequest addCustomHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
@@ -845,21 +834,20 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
         List<HabitTranslation> habitTranslationList = List.of(
-            habitTranslationUa.setLanguage(languageEn),
-            habitTranslationUa.setLanguage(languageUa));
+            habitTranslationUa.setLanguageCode(languageEn.getCode()),
+            habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userVO.getLanguageId()).thenReturn(languageId);
-        when(languageService.findById(languageId)).thenReturn(languageVO);
+        when(userVO.getLanguageVO()).thenReturn(language);
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoUA), "ua"))
             .thenReturn(List.of(habitTranslationUa));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoUA), "en"))
             .thenReturn(List.of(habitTranslationUa));
-        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
-        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
+        when(languageService.findByCode("ua")).thenReturn(languageUa);
+        when(languageService.findByCode("en")).thenReturn(languageEn);
         when(customToDoListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customToDoListItem));
         when(customToDoListMapper.mapAllToList(List.of(customToDoListItemResponseDto)))
             .thenReturn(List.of(customToDoListItem));
@@ -1021,8 +1009,8 @@ class HabitServiceImplTest {
         User user = ModelUtils.getUser();
         Role role = Role.ROLE_ADMIN;
         Tag tag = ModelUtils.getTagHabitForServiceTest();
-        Language languageUa = ModelUtils.getLanguageUa();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageUa = ModelUtils.getUaLanguageDTO();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
@@ -1047,8 +1035,8 @@ class HabitServiceImplTest {
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
         List<HabitTranslation> habitTranslationList = List.of(
-            habitTranslationUa.setLanguage(languageEn),
-            habitTranslationUa.setLanguage(languageUa));
+            habitTranslationUa.setLanguageCode(languageEn.getCode()),
+            habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);

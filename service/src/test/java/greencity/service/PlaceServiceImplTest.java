@@ -13,7 +13,7 @@ import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.filter.FilterPlacesApiDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
@@ -34,7 +34,6 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
-import greencity.entity.Language;
 import greencity.entity.Location;
 import greencity.entity.Photo;
 import greencity.entity.Place;
@@ -65,7 +64,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -128,14 +126,7 @@ class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
         .nameEn("test").build();
-    private final Language language = Language.builder()
-        .id(2L)
-        .code("en")
-        .build();
-    private final LanguageVO languageVO = LanguageVO.builder()
-        .id(2L)
-        .code("en")
-        .build();
+    private final LanguageDTO language = ModelUtils.getLanguageDTO();
     private final User user =
         User.builder()
             .id(1L)
@@ -149,7 +140,7 @@ class PlaceServiceImplTest {
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
-            .languageId(languageVO.getId())
+            .languageVO(language)
             .build();
     private final UserVO userVOAdmin =
         UserVO.builder()
@@ -158,7 +149,7 @@ class PlaceServiceImplTest {
             .name("Nazar Stasyuk")
             .role(Role.ROLE_ADMIN)
             .userStatus(UserStatus.ACTIVATED)
-            .languageId(languageVO.getId())
+            .languageVO(language)
             .build();
     Place genericEntity1 = Place.builder()
         .id(1L)

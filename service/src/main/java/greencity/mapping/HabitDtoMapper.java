@@ -26,7 +26,7 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
      */
     @Override
     protected HabitDto convert(HabitTranslation habitTranslation) {
-        var language = habitTranslation.getLanguage();
+        String languageCode = habitTranslation.getLanguageCode();
         var habit = habitTranslation.getHabit();
         return HabitDto.builder()
             .id(habit.getId())
@@ -37,11 +37,11 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                 .name(habitTranslation.getName())
                 .description(habitTranslation.getDescription())
                 .habitItem(habitTranslation.getHabitItem())
-                .languageCode(language.getCode())
+                .languageCode(languageCode)
                 .build())
             .tags(habit.getTags().stream()
                 .flatMap(tag -> tag.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
+                .filter(tagTranslation -> tagTranslation.getLanguageCode().equals(languageCode))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .toDoListItems(habit.getToDoListItems() != null ? habit.getToDoListItems().stream()
                 .map(shoppingListItem -> ToDoListItemDto.builder()
@@ -49,7 +49,7 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                     .status(ToDoListItemStatus.ACTIVE.toString())
                     .text(shoppingListItem.getTranslations().stream()
                         .filter(shoppingListItemTranslation -> shoppingListItemTranslation
-                            .getLanguage().equals(language))
+                            .getLanguageCode().equals(languageCode))
                         .map(ToDoListItemTranslation::getContent)
                         .findFirst().orElse(null))
                     .build())
