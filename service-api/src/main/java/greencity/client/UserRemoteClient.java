@@ -30,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -428,11 +427,11 @@ public class UserRemoteClient {
         String path = "/lang";
 
         return webClient.get()
-                .uri(path)
-                .retrieve()
-                .bodyToFlux(LanguageDTO.class)
-                .toStream()
-                .toList();
+            .uri(path)
+            .retrieve()
+            .bodyToFlux(LanguageDTO.class)
+            .toStream()
+            .toList();
     }
 
     // TODO: add caching
@@ -446,12 +445,13 @@ public class UserRemoteClient {
         String path = "/lang/codes/{code}";
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(path).build(code))
-                .retrieve()
-                .onStatus(httpStatusCode -> httpStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND),
-                        clientResponse -> Mono.error(new LanguageNotFoundException(ErrorMessage.LANGUAGE_NOT_FOUND_BY_CODE + code)))
-                .bodyToMono(LanguageDTO.class)
-                .block();
+            .uri(uriBuilder -> uriBuilder.path(path).build(code))
+            .retrieve()
+            .onStatus(httpStatusCode -> httpStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND),
+                clientResponse -> Mono
+                    .error(new LanguageNotFoundException(ErrorMessage.LANGUAGE_NOT_FOUND_BY_CODE + code)))
+            .bodyToMono(LanguageDTO.class)
+            .block();
     }
 
     /**
@@ -463,10 +463,11 @@ public class UserRemoteClient {
         String path = "/lang/codes";
 
         return webClient.get()
-                .uri(path)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
-                .block();
+            .uri(path)
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<List<String>>() {
+            })
+            .block();
     }
 
     /**
