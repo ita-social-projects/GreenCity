@@ -169,7 +169,7 @@ public interface UserService {
     String findUserCredoByUserId(Long userId);
 
     /**
-     * Update and return user credo by user id.
+     * Update user credo by user id.
      *
      * @param updateUserCredoDto containing update information
      * @return {@link String} user credo
