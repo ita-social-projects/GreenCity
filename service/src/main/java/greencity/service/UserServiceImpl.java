@@ -10,6 +10,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UpdateUserDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
@@ -425,6 +426,19 @@ public class UserServiceImpl implements UserService {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
         return modelMapper.map(userLocation, UserLocationDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String findUserCredoByUserId(Long userId) {
+        return userRepo.findUserCredoById(userId);
+    }
+
+    @Override
+    public void updateUserCredo(UpdateUserCredoDto updateUserCredoDto) {
+        userRepo.updateUserCredo(updateUserCredoDto.userId(), updateUserCredoDto.userCredo());
     }
 
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
