@@ -6,6 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
@@ -169,6 +170,17 @@ class UserServiceImplTest {
             userService.checkUpdatableUser(userId, email);
         });
         assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
+    }
+
+    @Test
+    void updateUserCredoTest() {
+        Long userId = 3L;
+        String userCredo = "new user credo";
+        UpdateUserCredoDto updateUserCredoDto = new UpdateUserCredoDto(userId, userCredo);
+
+        userService.updateUserCredo(updateUserCredoDto);
+
+        verify(userRepo).updateUserCredo(userId, userCredo);
     }
 
     @Test
