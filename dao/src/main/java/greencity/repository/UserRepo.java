@@ -793,6 +793,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     String findUserCredoById(Long userId);
 
     @Modifying
-    @Query("UPDATE User SET userCredo =: userCredo WHERE id =: userId")
+    @Query("UPDATE User SET userCredo =:userCredo WHERE id =:userId")
     void updateUserCredo(Long userId, String userCredo);
 }
