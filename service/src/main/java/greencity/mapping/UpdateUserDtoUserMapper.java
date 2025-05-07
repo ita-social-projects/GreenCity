@@ -24,9 +24,6 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(null);
             }
-            if (updateUserDto.getUserCredo() != null) {
-                user.setUserCredo(null);
-            }
         } else {
             if (updateUserDto.getId() != null) {
                 user.setId(user.getId());
@@ -39,9 +36,6 @@ public class UpdateUserDtoUserMapper {
             }
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(updateUserDto.getProfilePicturePath());
-            }
-            if (updateUserDto.getUserCredo() != null) {
-                user.setUserCredo(updateUserDto.getUserCredo());
             }
         }
         return user;
