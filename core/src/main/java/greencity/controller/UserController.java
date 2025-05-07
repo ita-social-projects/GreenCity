@@ -172,27 +172,6 @@ public class UserController {
     }
 
     /**
-     * Method to find user credo by user id.
-     *
-     * @param userId id of the user
-     * @return {@link String} user credo.
-     */
-    @Operation(summary = "Get user credo")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("/{id}/credo")
-    public ResponseEntity<String> findUserCredoByUserId(@PathVariable(name = "id") Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findUserCredoByUserId(userId));
-    }
-
-    /**
      * Method to update user credo by user id.
      *
      * @param updateUserCredoDto containing update information.

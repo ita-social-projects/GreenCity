@@ -161,18 +161,9 @@ public interface UserService {
     UserLocationDto findUserLocationDtoByUserId(Long userId);
 
     /**
-     * Find and return user credo by user id.
-     *
-     * @param userId id of the user
-     * @return {@link String} user credo
-     **/
-    String findUserCredoByUserId(Long userId);
-
-    /**
      * Update user credo by user id.
      *
      * @param updateUserCredoDto containing update information
-     * @return {@link String} user credo
      **/
     void updateUserCredo(UpdateUserCredoDto updateUserCredoDto);
 

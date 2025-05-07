@@ -420,14 +420,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userLocation, UserLocationDto.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String findUserCredoByUserId(Long userId) {
-        return userRepo.findUserCredoById(userId);
-    }
-
     @Override
     public void updateUserCredo(UpdateUserCredoDto updateUserCredoDto) {
         userRepo.updateUserCredo(updateUserCredoDto.userId(), updateUserCredoDto.userCredo());
