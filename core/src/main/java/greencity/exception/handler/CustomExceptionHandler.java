@@ -696,15 +696,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercepts exception {@link ResponseStatusException}.
+     * Method intercepts exception {@link UserAlreadyExistsException}.
      *
      * @param ex      Exception that should be intercepted.
      * @param request Contains details about the occurred exception.
      * @return {@code ResponseEntity} which contains the HTTP status and body with
      *         the exception message.
      */
-    @ExceptionHandler(ResponseStatusException.class)
-    public final ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public final ResponseEntity<Object> handleResponseStatusException(UserAlreadyExistsException ex,
+        WebRequest request) {
         log.warn(ex.getMessage(), ex);
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
