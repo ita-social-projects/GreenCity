@@ -10,6 +10,9 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserCredoDto;
+import greencity.dto.user.UpdateUserDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -101,15 +104,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findByEmail(String email) {
         return userRepo.findByEmail(email)
-            .map(user -> {
-                UserVO userVO = modelMapper.map(user, UserVO.class);
-                UserLocation userLocation = user.getUserLocation();
-                if (userLocation != null) {
-                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
-                    userVO.setUserLocation(userLocationDto);
-                }
-                return userVO;
-            })
+            .map(user -> modelMapper.map(user, UserVO.class))
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
@@ -428,6 +423,16 @@ public class UserServiceImpl implements UserService {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
         return modelMapper.map(userLocation, UserLocationDto.class);
+    }
+
+    @Override
+    public void updateUserCredo(UpdateUserCredoDto updateUserCredoDto) {
+        userRepo.updateUserCredo(updateUserCredoDto.userId(), updateUserCredoDto.userCredo());
+    }
+
+    @Override
+    public String findUserCredoByUserId(Long userId) {
+        return userRepo.findUserCredoByUserId(userId);
     }
 
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
