@@ -52,7 +52,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -561,7 +560,8 @@ public class UserServiceImpl implements UserService {
     public Boolean createUser(CreateGreenCityUserDto createUserDto) {
         Optional<User> existingUser = userRepo.findByEmail(createUserDto.getEmail());
         if (existingUser.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         User userToSave = User.builder()
             .id(createUserDto.getId())

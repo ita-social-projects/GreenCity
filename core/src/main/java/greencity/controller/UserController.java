@@ -203,8 +203,8 @@ public class UserController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "409", description = HttpStatuses.CONFLICT,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.CONFLICT)))
+        @ApiResponse(responseCode = "409", description = HttpStatuses.CONFLICT,
+            content = @Content(examples = @ExampleObject(HttpStatuses.CONFLICT)))
     })
     @PostMapping("/create")
     public ResponseEntity<Boolean> createUser(@RequestBody CreateGreenCityUserDto createUserDto) {

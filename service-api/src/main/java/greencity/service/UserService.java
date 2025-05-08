@@ -255,7 +255,8 @@ public interface UserService {
     /**
      * Method for creating a GreenCity user.
      *
-     * @param createUserDto - {@link CreateGreenCityUserDto} that represents a new user.
+     * @param createUserDto - {@link CreateGreenCityUserDto} that represents a new
+     *                      user.
      * @return {@link Boolean} with the result of creation: true for success and
      *         false for failure
      */
