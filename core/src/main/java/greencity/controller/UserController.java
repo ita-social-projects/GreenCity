@@ -191,18 +191,18 @@ public class UserController {
     }
 
     /**
-     * Method to synchronize GreenCityUser's new user entity with GreenCity entity. Used
-     * by GreenCityRemoteClient on the GreenCityUser microservice as a remote endpoint
-     * to create a new user.
+     * Method to synchronize GreenCityUser's new user entity with GreenCity entity.
+     * Used by GreenCityRemoteClient on the GreenCityUser microservice as a remote
+     * endpoint to create a new user.
      *
      */
     @Operation(summary = "Creates GreenCity user when it is created on GreenCityUser microservice")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @PostMapping("/create")
     public ResponseEntity<Boolean> createUser(@RequestBody UserDto createUserDto) {

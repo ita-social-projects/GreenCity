@@ -547,13 +547,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean createUser(UserDto createUserDto) {
         User userToSave = User.builder()
-                .id(createUserDto.getId())
-                .email(createUserDto.getEmail())
-                .name(createUserDto.getName())
-                .profilePicturePath(createUserDto.getProfilePicturePath())
-                .rating(AppConstant.DEFAULT_RATING)
-                .eventOrganizerRating(AppConstant.DEFAULT_RATING)
-                .build();
+            .id(createUserDto.getId())
+            .email(createUserDto.getEmail())
+            .name(createUserDto.getName())
+            .profilePicturePath(createUserDto.getProfilePicturePath())
+            .rating(AppConstant.DEFAULT_RATING)
+            .eventOrganizerRating(AppConstant.DEFAULT_RATING)
+            .build();
         userRepo.save(userToSave);
         return true;
     }
