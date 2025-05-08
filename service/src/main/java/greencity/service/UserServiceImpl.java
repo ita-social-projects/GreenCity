@@ -563,7 +563,7 @@ public class UserServiceImpl implements UserService {
     public Boolean createUser(CreateGreenCityUserDto createUserDto) {
         Optional<User> existingUser = userRepo.findByEmail(createUserDto.getEmail());
         if (existingUser.isPresent()) {
-            throw new UserAlreadyExistsException(HttpStatus.CREATED,
+            throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
                 ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         User userToSave = User.builder()
