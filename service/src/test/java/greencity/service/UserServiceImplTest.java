@@ -189,7 +189,7 @@ class UserServiceImplTest {
         String expectedResult = "my user credo";
 
         when(userRepo.findUserCredoByUserId(userId))
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         String actualResult = userService.findUserCredoByUserId(userId);
 
