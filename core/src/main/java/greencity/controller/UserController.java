@@ -7,6 +7,7 @@ import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserDto;
 import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -186,5 +188,24 @@ public class UserController {
     @PatchMapping("/update")
     public ResponseEntity<Boolean> updateUser(@RequestBody UpdateUserDto updateUserDto) {
         return ResponseEntity.ok(userService.update(updateUserDto));
+    }
+
+    /**
+     * Method to synchronize GreenCityUser's new user entity with GreenCity entity. Used
+     * by GreenCityRemoteClient on the GreenCityUser microservice as a remote endpoint
+     * to create a new user.
+     *
+     */
+    @Operation(summary = "Creates GreenCity user when it is created on GreenCityUser microservice")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @PostMapping("/create")
+    public ResponseEntity<Boolean> createUser(@RequestBody UserDto createUserDto) {
+        return ResponseEntity.ok(userService.createUser(createUserDto));
     }
 }

@@ -355,7 +355,8 @@ public class SecurityConfig {
                     "place/v2/save",
                     EVENTS + COMMENTS + "/dislikeV2" + COMMENT_ID,
                     EVENTS + COMMENTS + "/likeV2" + COMMENT_ID,
-                    LOGS)
+                    LOGS,
+                        USERS + "/create")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",

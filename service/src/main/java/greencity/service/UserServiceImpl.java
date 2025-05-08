@@ -10,17 +10,8 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
-import greencity.dto.user.UpdateUserDto;
+import greencity.dto.user.*;
 import greencity.dto.socialnetwork.SocialNetworkVO;
-import greencity.dto.user.UserAddRatingDto;
-import greencity.dto.user.UserCityDto;
-import greencity.dto.user.UserFilterDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserProfileDtoRequest;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserVO;
-import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
@@ -548,5 +539,22 @@ public class UserServiceImpl implements UserService {
             .filter(url -> url.contains(socialNetworkName))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean createUser(UserDto createUserDto) {
+        User userToSave = User.builder()
+                .id(createUserDto.getId())
+                .email(createUserDto.getEmail())
+                .name(createUserDto.getName())
+                .profilePicturePath(createUserDto.getProfilePicturePath())
+                .rating(AppConstant.DEFAULT_RATING)
+                .eventOrganizerRating(AppConstant.DEFAULT_RATING)
+                .build();
+        userRepo.save(userToSave);
+        return true;
     }
 }
