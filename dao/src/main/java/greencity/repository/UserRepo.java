@@ -787,6 +787,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         """)
     Double findRatingById(Long userId);
 
+    @Query(nativeQuery = true, value = "SELECT user_credo FROM greencity_users WHERE id =:userId")
+    String findUserCredoByUserId(Long userId);
+
     @Modifying
     @Query("UPDATE User SET userCredo =:userCredo WHERE id =:userId")
     void updateUserCredo(Long userId, String userCredo);

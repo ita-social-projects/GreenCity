@@ -258,4 +258,6 @@ public interface UserService {
      * @param socialNetworkName - name of {@link SocialNetworkVO}.
      */
     String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
+
+    String findUserCredoByUserId(Long userId);
 }

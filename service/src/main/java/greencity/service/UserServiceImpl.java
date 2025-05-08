@@ -547,4 +547,9 @@ public class UserServiceImpl implements UserService {
             .findFirst()
             .orElse(null);
     }
+
+    @Override
+    public String findUserCredoByUserId(Long userId) {
+        return userRepo.findUserCredoByUserId(userId);
+    }
 }
