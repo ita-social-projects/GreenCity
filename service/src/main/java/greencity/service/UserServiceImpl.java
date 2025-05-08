@@ -36,6 +36,7 @@ import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.mapping.UpdateUserDtoUserMapper;
 import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserLocationRepo;
@@ -52,7 +53,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -563,7 +563,7 @@ public class UserServiceImpl implements UserService {
     public Boolean createUser(CreateGreenCityUserDto createUserDto) {
         Optional<User> existingUser = userRepo.findByEmail(createUserDto.getEmail());
         if (existingUser.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
+            throw new UserAlreadyExistsException(HttpStatus.CREATED,
                 ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }
         User userToSave = User.builder()
