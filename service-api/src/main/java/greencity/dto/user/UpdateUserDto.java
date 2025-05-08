@@ -6,7 +6,6 @@ import lombok.Data;
 
 /**
  * This class represents common fields for GreenCity and GreenCityUser user.
- * {@link UserVO} entity
  */
 @Data
 public class UpdateUserDto {

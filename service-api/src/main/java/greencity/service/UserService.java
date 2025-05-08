@@ -14,6 +14,9 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
+import greencity.dto.user.UpdateUserDto;
+import greencity.dto.user.CreateGreenCityUserDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
@@ -258,6 +261,16 @@ public interface UserService {
      * @param socialNetworkName - name of {@link SocialNetworkVO}.
      */
     String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
+
+    /**
+     * Method for creating a GreenCity user.
+     *
+     * @param createUserDto - {@link CreateGreenCityUserDto} that represents a new
+     *                      user.
+     * @return {@link Boolean} with the result of creation: true for success and
+     *         false for failure
+     */
+    Boolean createUser(CreateGreenCityUserDto createUserDto);
 
     String findUserCredoByUserId(Long userId);
 }
