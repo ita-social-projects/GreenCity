@@ -230,7 +230,7 @@ public class UserController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{id}/credo")
-    public ResponseEntity<String> updateUserCredoByUserId(@PathVariable("id") Long userId) {
+    public ResponseEntity<String> findUserCredoByUserId(@PathVariable("id") Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findUserCredoByUserId(userId));
     }
 

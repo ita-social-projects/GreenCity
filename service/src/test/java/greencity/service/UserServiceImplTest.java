@@ -184,6 +184,19 @@ class UserServiceImplTest {
     }
 
     @Test
+    void findUserCredoByUserIdTest() {
+        Long userId = 5L;
+        String expectedResult = "my user credo";
+
+        when(userRepo.findUserCredoByUserId(userId))
+                .thenReturn(expectedResult);
+
+        String actualResult = userService.findUserCredoByUserId(userId);
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
     void getInitialsByIdTest() {
         Long id = 12L;
         User user = Mockito.mock(User.class);

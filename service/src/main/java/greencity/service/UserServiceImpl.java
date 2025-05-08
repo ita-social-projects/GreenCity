@@ -425,6 +425,11 @@ public class UserServiceImpl implements UserService {
         userRepo.updateUserCredo(updateUserCredoDto.userId(), updateUserCredoDto.userCredo());
     }
 
+    @Override
+    public String findUserCredoByUserId(Long userId) {
+        return userRepo.findUserCredoByUserId(userId);
+    }
+
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
         return user.getUserLocation() == null
             && (userProfileDtoRequest.getCoordinates().getLatitude() == null
@@ -546,10 +551,5 @@ public class UserServiceImpl implements UserService {
             .filter(url -> url.contains(socialNetworkName))
             .findFirst()
             .orElse(null);
-    }
-
-    @Override
-    public String findUserCredoByUserId(Long userId) {
-        return userRepo.findUserCredoByUserId(userId);
     }
 }
