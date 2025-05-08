@@ -179,13 +179,13 @@ public class UserController {
      */
     @Operation(summary = "Get user rating")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{id}/rating")
     public ResponseEntity<Double> findUserRatingByUserId(@PathVariable("id") Long userId) {
@@ -221,13 +221,13 @@ public class UserController {
      */
     @Operation(summary = "Get user credo")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{id}/credo")
     public ResponseEntity<String> updateUserCredoByUserId(@PathVariable("id") Long userId) {
