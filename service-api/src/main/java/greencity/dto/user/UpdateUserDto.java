@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUserDto extends UserDto {
+public class UpdateUserDto extends CreateGreenCityUserDto {
     private String userCredo;
     private UserUpdateType userUpdateType;
 }

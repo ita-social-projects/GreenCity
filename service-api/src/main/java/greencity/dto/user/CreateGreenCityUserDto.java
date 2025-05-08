@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class CreateGreenCityUserDto {
     private Long id;
     @NotNull
     private String email;

@@ -12,7 +12,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.dto.user.UpdateUserDto;
-import greencity.dto.user.UserDto;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
@@ -255,9 +255,9 @@ public interface UserService {
     /**
      * Method for creating a GreenCity user.
      *
-     * @param createUserDto - {@link UserDto} that represents a new user.
+     * @param createUserDto - {@link CreateGreenCityUserDto} that represents a new user.
      * @return {@link Boolean} with the result of creation: true for success and
      *         false for failure
      */
-    Boolean createUser(UserDto createUserDto);
+    Boolean createUser(CreateGreenCityUserDto createUserDto);
 }

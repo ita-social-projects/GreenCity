@@ -694,4 +694,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
+
+    /**
+     * Method intercepts exception {@link ResponseStatusException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(ResponseStatusException.class)
+    public final ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
+        log.warn(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+    }
 }

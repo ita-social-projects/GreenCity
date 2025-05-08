@@ -7,7 +7,7 @@ import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserVO;
-import greencity.dto.user.UserDto;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -202,10 +202,12 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "409", description = HttpStatuses.CONFLICT,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.CONFLICT)))
     })
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createUser(@RequestBody UserDto createUserDto) {
+    public ResponseEntity<Boolean> createUser(@RequestBody CreateGreenCityUserDto createUserDto) {
         return ResponseEntity.ok(userService.createUser(createUserDto));
     }
 }
