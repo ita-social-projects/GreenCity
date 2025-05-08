@@ -25,7 +25,7 @@ public class UserManagementDtoMapper extends AbstractConverter<User, UserManagem
             .id(userVO.getId())
             .name(userVO.getName())
             .email(userVO.getEmail())
-            .userCredo(userVO.getUserCredo())
+            .userCredo(user.getUserCredo())
             .role(userVO.getRole())
             .userStatus(userVO.getUserStatus())
             .build();

@@ -33,7 +33,7 @@ class UserManagementDtoMapperTest {
             .id(userVO.getId())
             .name(userVO.getName())
             .email(userVO.getEmail())
-            .userCredo(userVO.getUserCredo())
+            .userCredo(user.getUserCredo())
             .role(userVO.getRole())
             .userStatus(userVO.getUserStatus())
             .build();

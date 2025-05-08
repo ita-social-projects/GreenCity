@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UpdateUserDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
@@ -160,6 +161,13 @@ public interface UserService {
     UserLocationDto findUserLocationDtoByUserId(Long userId);
 
     /**
+     * Update user credo by user id.
+     *
+     * @param updateUserCredoDto containing update information
+     **/
+    void updateUserCredo(UpdateUserCredoDto updateUserCredoDto);
+
+    /**
      * Set user location by coordinates from {@link UserProfileDtoRequest}.
      *
      * @param userId                id of the user whose location will be updated
@@ -250,4 +258,6 @@ public interface UserService {
      * @param socialNetworkName - name of {@link SocialNetworkVO}.
      */
     String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
+
+    String findUserCredoByUserId(Long userId);
 }

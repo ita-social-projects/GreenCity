@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UpdateUserDto;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
@@ -168,6 +169,69 @@ public class UserController {
         @RequestBody UserAddRatingDto userAddRatingDto) {
         userService.increaseUserRating(userAddRatingDto);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to get user rating by user id.
+     *
+     * @param userId user id.
+     * @return {@link String} user rating.
+     */
+    @Operation(summary = "Get user rating")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/{id}/rating")
+    public ResponseEntity<Double> findUserRatingByUserId(@PathVariable("id") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findUserRating(userId));
+    }
+
+    /**
+     * Method to update user credo by user id.
+     *
+     * @param updateUserCredoDto containing update information.
+     */
+    @Operation(summary = "Update user credo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PatchMapping("/credo")
+    public ResponseEntity<Void> updateUserCredoByUserId(@RequestBody UpdateUserCredoDto updateUserCredoDto) {
+        userService.updateUserCredo(updateUserCredoDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to get user credo by user id.
+     *
+     * @param userId user id.
+     * @return {@link String} user credo.
+     */
+    @Operation(summary = "Get user credo")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/{id}/credo")
+    public ResponseEntity<String> findUserCredoByUserId(@PathVariable("id") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findUserCredoByUserId(userId));
     }
 
     /**

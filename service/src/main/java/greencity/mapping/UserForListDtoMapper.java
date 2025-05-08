@@ -28,7 +28,7 @@ public class UserForListDtoMapper extends AbstractConverter<User, UserForListDto
             .email(userVO.getEmail())
             .userStatus(userVO.getUserStatus())
             .role(userVO.getRole())
-            .userCredo(userVO.getUserCredo())
+            .userCredo(user.getUserCredo())
             .build();
     }
 }

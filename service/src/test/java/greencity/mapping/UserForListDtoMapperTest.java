@@ -36,7 +36,7 @@ class UserForListDtoMapperTest {
             .email(userVO.getEmail())
             .userStatus(userVO.getUserStatus())
             .role(userVO.getRole())
-            .userCredo(userVO.getUserCredo())
+            .userCredo(user.getUserCredo())
             .build();
 
         when(userRemoteClient.findNotDeactivatedByIdAdvanced(user.getId())).thenReturn(Optional.of(userVO));
