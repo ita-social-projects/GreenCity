@@ -704,7 +704,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      *         the exception message.
      */
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public final ResponseEntity<Object> handleResponseStatusException(UserAlreadyExistsException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleResponseStatusException(UserAlreadyExistsException ex,
+        WebRequest request) {
         log.warn(ex.getMessage(), ex);
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
