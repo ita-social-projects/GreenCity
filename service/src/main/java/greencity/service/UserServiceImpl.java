@@ -433,6 +433,11 @@ public class UserServiceImpl implements UserService {
         return userRepo.findUserCredoByUserId(userId);
     }
 
+    @Override
+    public String findUserNameByEmail(String email) {
+        return userRepo.findUserNameByEmail(email);
+    }
+
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
         return user.getUserLocation() == null
             && (userProfileDtoRequest.getCoordinates().getLatitude() == null

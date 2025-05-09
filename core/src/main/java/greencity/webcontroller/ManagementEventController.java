@@ -16,6 +16,7 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.enums.TagType;
 import greencity.service.EventService;
 import greencity.service.TagsService;
+import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -86,6 +87,7 @@ public class ManagementEventController {
     private final EventService eventService;
     private final TagsService tagsService;
     private final RestClient restClient;
+    private final UserService userService;
     private final ModelMapper getModelMapper;
 
     @Value("${google.maps.api.key}")
@@ -194,7 +196,8 @@ public class ManagementEventController {
         model.addAttribute(ADD_EVENT_DTO_REQUEST, new AddEventDtoRequest());
         model.addAttribute(IMAGES, new MultipartFile[] {});
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
-        model.addAttribute(AUTHOR, restClient.findByEmail(principal.getName()).getName());
+        String userName = userService.findUserNameByEmail(principal.getName());
+        model.addAttribute(AUTHOR, userName);
         model.addAttribute(GOOGLE_MAP_API_KEY, googleMapApiKey);
         return "core/management_create_event";
     }
@@ -246,7 +249,8 @@ public class ManagementEventController {
     @GetMapping("/edit/{id}")
     public String editEvent(@PathVariable("id") Long id, Model model, Principal principal) {
         model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
-        model.addAttribute(AUTHOR, restClient.findByEmail(principal.getName()).getName());
+        String userName = userService.findUserNameByEmail(principal.getName());
+        model.addAttribute(AUTHOR, userName);
         model.addAttribute(EVENT_DTO, eventService.getEvent(id, principal));
         model.addAttribute(GOOGLE_MAP_API_KEY, googleMapApiKey);
         return "core/management_edit_event";
