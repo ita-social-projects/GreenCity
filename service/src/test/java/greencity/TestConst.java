@@ -11,4 +11,5 @@ public final class TestConst {
     public static final String TEST_QUERY = "Test";
     public static final String UNKNOWN_STATUS = "unknown_status";
     public static final String CREDO = "I believe in unicorns";
+    public static final String PICTURE_PATH = "http://testpicture.com.ua";
 }

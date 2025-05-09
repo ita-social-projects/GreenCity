@@ -262,4 +262,22 @@ class CustomExceptionHandlerTest {
         assertEquals(customExceptionHandler.handleInsufficientLocationDataException(actual, webRequest),
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
     }
+
+    @Test
+    void handleUserAlreadyExistsExceptionTest() {
+        Map<String, Object> objectMapConflict = new HashMap<>();
+        objectMapConflict.put("path", "/ownSecurity/restorePassword");
+        objectMapConflict.put("message", "409 CONFLICT \"Test Error message\"");
+        objectMapConflict.put("timestamp", "2021-02-06T17:27:50.569+0000");
+        objectMapConflict.put("trace", "Conflict");
+
+        UserAlreadyExistsException actualException = new UserAlreadyExistsException(HttpStatus.CONFLICT, "Test Error message");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMapConflict);
+        when(errorAttributes.getErrorAttributes(eq(webRequest), any(ErrorAttributeOptions.class)))
+                .thenReturn(objectMapConflict);
+        ResponseEntity<ExceptionResponse> expectedResponse = ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+        ResponseEntity<ExceptionResponse> actualResponse = customExceptionHandler.handleUserAlreadyExistsException(actualException, webRequest);
+
+        assertEquals(expectedResponse, actualResponse);
+    }
 }

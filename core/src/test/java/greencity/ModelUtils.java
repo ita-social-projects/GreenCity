@@ -67,6 +67,7 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.entity.Comment;
 import greencity.entity.User;
 import greencity.enums.ArticleType;
@@ -753,5 +754,14 @@ public class ModelUtils {
             .hostPath("somehost")
             .id(5L)
             .build();
+    }
+
+    public static CreateGreenCityUserDto getCreateGreenCityDto() {
+        return CreateGreenCityUserDto.builder()
+                .id(1L)
+                .email(TestConst.EMAIL)
+                .name(TestConst.NAME)
+                .profilePicturePath(TestConst.PICTURE_PATH)
+                .build();
     }
 }
