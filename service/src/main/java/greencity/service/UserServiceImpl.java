@@ -515,7 +515,8 @@ public class UserServiceImpl implements UserService {
         } else {
             user = User.builder()
                 .id(updateUserDto.getId())
-                .email(updateUserDto.getEmail())
+                    // TODO: delete
+                // .email(updateUserDto.getEmail())
                 .name(updateUserDto.getName())
                 .profilePicturePath(updateUserDto.getProfilePicturePath())
                 .rating(AppConstant.DEFAULT_RATING)
@@ -568,7 +569,8 @@ public class UserServiceImpl implements UserService {
         }
         User userToSave = User.builder()
             .id(createUserDto.getId())
-            .email(createUserDto.getEmail())
+                // TODO: delete
+            // .email(createUserDto.getEmail())
             .name(createUserDto.getName())
             .profilePicturePath(createUserDto.getProfilePicturePath())
             .rating(AppConstant.DEFAULT_RATING)

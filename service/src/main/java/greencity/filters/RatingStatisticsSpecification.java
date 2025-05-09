@@ -59,8 +59,10 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
 
     private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
+        // TODO
         Join<RatingStatistics, User> userJoin = root.join(RatingStatistics_.user);
-        return criteriaBuilder.like(userJoin.get(User_.email), "%" + searchCriteria.getValue() + "%");
+        // return criteriaBuilder.like(userJoin.get(User_.email), "%" + searchCriteria.getValue() + "%");
+        return null;
     }
 
     private Predicate getUserIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,

@@ -52,7 +52,9 @@ public class EmailPreferenceAspect {
         if (message instanceof EmailMessage) {
             return ((EmailMessage) message).getEmail();
         } else if (message instanceof Notification) {
-            return ((Notification) message).getTargetUser().getEmail();
+            // TODO
+            // return ((Notification) message).getTargetUser().getEmail();
+            return "email";
         }
         return null;
     }

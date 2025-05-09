@@ -59,7 +59,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             EventAuthorDto.builder()
                 .id(organizer.getId())
                 .name(organizer.getName())
-                .email(organizer.getEmail())
+                    // TODO
+                .email("organizer.getEmail()")
                 .organizerRating(organizer.getEventOrganizerRating())
                 .build());
         eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));

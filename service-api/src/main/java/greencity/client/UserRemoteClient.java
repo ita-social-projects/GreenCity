@@ -494,6 +494,12 @@ public class UserRemoteClient {
             .bodyToMono(Void.class).block();
     }
 
+    // TODO
+    // TODO: add caching
+    public String findUserEmailByUserId(Long userId) {
+        return "aaa";
+    }
+
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
 
