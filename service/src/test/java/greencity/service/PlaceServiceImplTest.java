@@ -533,7 +533,7 @@ class PlaceServiceImplTest {
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
 
         when(placeRepo.findAll(pageable)).thenReturn(pages);
-        when(favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(principal.getName()))
+        when(favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserId(principal.getName()))
             .thenReturn(Collections.singletonList(1L));
 
         PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal);
@@ -552,7 +552,7 @@ class PlaceServiceImplTest {
         assertEquals(expected.getIsFavorite(), actual.getIsFavorite());
 
         verify(placeRepo).findAll(pageable);
-        verify(favoritePlaceRepo).findAllFavoritePlaceLocationIdsByUserEmail(principal.getName());
+        verify(favoritePlaceRepo).findAllFavoritePlaceLocationIdsByUserId(principal.getName());
     }
 
     @Test

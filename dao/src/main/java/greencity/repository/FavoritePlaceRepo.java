@@ -43,15 +43,12 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
     /**
      * Find all favorite places locations ids by user email.
      *
-     * @param email - user's email
+     * @param userId - user's id
      * @return list of favorite places locations ids
      * @author Olena Sotnik
      */
-    /*@Query("SELECT fp.place.location.id FROM FavoritePlace AS fp "
-        + "WHERE fp.user = "
-        + "(SELECT u FROM User AS u WHERE u.email = :email)")*/
     @Query("SELECT fp.place.location.id FROM FavoritePlace AS fp "
             + "WHERE fp.user = "
-            + "(SELECT u FROM User AS u WHERE 'email' = :email)")
-    List<Long> findAllFavoritePlaceLocationIdsByUserEmail(String email);
+            + "(SELECT u FROM User AS u WHERE u.id = :userId)")
+    List<Long> findAllFavoritePlaceLocationIdsByUserId(Long userId);
 }

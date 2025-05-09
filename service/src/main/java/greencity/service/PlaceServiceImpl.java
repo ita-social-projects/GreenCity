@@ -277,7 +277,9 @@ public class PlaceServiceImpl implements PlaceService {
         Page<Place> pages = placeRepo.findAll(pageable);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(pages);
         if (!CollectionUtils.isEmpty(placeDtos) && principal != null) {
-            setIsFavoriteToAdminPlaceDto(placeDtos, principal.getName());
+            String userEmail = principal.getName();
+            Long userId = userService.findIdByEmail(userEmail);
+            setIsFavoriteToAdminPlaceDto(placeDtos, userId);
         }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
     }
@@ -618,8 +620,8 @@ public class PlaceServiceImpl implements PlaceService {
         }
     }
 
-    private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, String email) {
-        List<Long> favoritePlacesLocationIds = favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(email);
+    private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, Long userId) {
+        List<Long> favoritePlacesLocationIds = favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserId(userId);
         placeDtos.forEach(dto -> {
             boolean isFavorite = favoritePlacesLocationIds.stream()
                 .anyMatch(locationId -> locationId.equals(dto.getLocation().getId()));
