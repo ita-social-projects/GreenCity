@@ -49,11 +49,11 @@ class UserControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(userController)
-                .setCustomArgumentResolvers(
-                        new PageableHandlerMethodArgumentResolver())
-                .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, endpointValidationHelper))
-                .build();
+            .standaloneSetup(userController)
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver())
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, endpointValidationHelper))
+            .build();
     }
 
     @Test
@@ -63,11 +63,11 @@ class UserControllerTest {
         when(userService.createUser(userDto)).thenReturn(true);
 
         mockMvc.perform(post(userLink + "/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(userDto))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("true"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(userDto))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andExpect(content().string("true"));
 
         verify(userService).createUser(userDto);
     }
@@ -76,13 +76,14 @@ class UserControllerTest {
     void createUserConflictTest() throws Exception {
         CreateGreenCityUserDto userDto = ModelUtils.getCreateGreenCityDto();
 
-        when(userService.createUser(userDto)).thenThrow(new UserAlreadyExistsException(HttpStatus.CONFLICT, "User already registered with this email"));
+        when(userService.createUser(userDto))
+            .thenThrow(new UserAlreadyExistsException(HttpStatus.CONFLICT, "User already registered with this email"));
         MvcResult result = mockMvc.perform(post(userLink + "/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(userDto))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict())
-                .andReturn();
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(userDto))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isConflict())
+            .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
         assertTrue(responseBody.contains("User already registered with this email"));

@@ -758,10 +758,10 @@ public class ModelUtils {
 
     public static CreateGreenCityUserDto getCreateGreenCityDto() {
         return CreateGreenCityUserDto.builder()
-                .id(1L)
-                .email(TestConst.EMAIL)
-                .name(TestConst.NAME)
-                .profilePicturePath(TestConst.PICTURE_PATH)
-                .build();
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .profilePicturePath(TestConst.PICTURE_PATH)
+            .build();
     }
 }

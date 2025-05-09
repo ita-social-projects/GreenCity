@@ -271,12 +271,15 @@ class CustomExceptionHandlerTest {
         objectMapConflict.put("timestamp", "2021-02-06T17:27:50.569+0000");
         objectMapConflict.put("trace", "Conflict");
 
-        UserAlreadyExistsException actualException = new UserAlreadyExistsException(HttpStatus.CONFLICT, "Test Error message");
+        UserAlreadyExistsException actualException =
+            new UserAlreadyExistsException(HttpStatus.CONFLICT, "Test Error message");
         ExceptionResponse exceptionResponse = new ExceptionResponse(objectMapConflict);
         when(errorAttributes.getErrorAttributes(eq(webRequest), any(ErrorAttributeOptions.class)))
-                .thenReturn(objectMapConflict);
-        ResponseEntity<ExceptionResponse> expectedResponse = ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
-        ResponseEntity<ExceptionResponse> actualResponse = customExceptionHandler.handleUserAlreadyExistsException(actualException, webRequest);
+            .thenReturn(objectMapConflict);
+        ResponseEntity<ExceptionResponse> expectedResponse =
+            ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+        ResponseEntity<ExceptionResponse> actualResponse =
+            customExceptionHandler.handleUserAlreadyExistsException(actualException, webRequest);
 
         assertEquals(expectedResponse, actualResponse);
     }
