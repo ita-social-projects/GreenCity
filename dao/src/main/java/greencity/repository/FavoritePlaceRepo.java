@@ -15,6 +15,8 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      * @return list of favorite places
      * @author Zakhar Skaletskyi
      */
+    // TODO: replace with call to UserRemoteClient
+    @Query(nativeQuery = true, value = "SELECT * from greencity_users where 'email'=:email")
     List<FavoritePlace> findAllByUserEmail(String email);
 
     /**
@@ -25,6 +27,8 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      * @return FavoritePlace entity
      * @author Zakhar Skaletskyi
      */
+    // TODO: replace with call to UserRemoteClient
+    @Query(nativeQuery = true, value = "SELECT * from greencity_users where id=:id 'email'=:userEmail")
     FavoritePlace findByPlaceIdAndUserEmail(Long id, String userEmail);
 
     /**
@@ -43,8 +47,11 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      * @return list of favorite places locations ids
      * @author Olena Sotnik
      */
-    @Query("SELECT fp.place.location.id FROM FavoritePlace AS fp "
+    /*@Query("SELECT fp.place.location.id FROM FavoritePlace AS fp "
         + "WHERE fp.user = "
-        + "(SELECT u FROM User AS u WHERE u.email = :email)")
+        + "(SELECT u FROM User AS u WHERE u.email = :email)")*/
+    @Query("SELECT fp.place.location.id FROM FavoritePlace AS fp "
+            + "WHERE fp.user = "
+            + "(SELECT u FROM User AS u WHERE 'email' = :email)")
     List<Long> findAllFavoritePlaceLocationIdsByUserEmail(String email);
 }
