@@ -143,6 +143,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.entity.Achievement;
@@ -3582,6 +3583,15 @@ public class ModelUtils {
             .imagePath("http://someimage.ua")
             .hostPath("somehost")
             .id(5L)
+            .build();
+    }
+
+    public static CreateGreenCityUserDto getCreateGreenCityDto() {
+        return CreateGreenCityUserDto.builder()
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .profilePicturePath(TestConst.PICTURE_PATH)
             .build();
     }
 }

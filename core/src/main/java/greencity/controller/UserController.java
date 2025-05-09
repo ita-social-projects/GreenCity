@@ -262,7 +262,7 @@ public class UserController {
      */
     @Operation(summary = "Creates GreenCity user when it is created on GreenCityUser microservice")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -272,6 +272,6 @@ public class UserController {
     })
     @PostMapping("/create")
     public ResponseEntity<Boolean> createUser(@RequestBody CreateGreenCityUserDto createUserDto) {
-        return ResponseEntity.ok(userService.createUser(createUserDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(createUserDto));
     }
 }
