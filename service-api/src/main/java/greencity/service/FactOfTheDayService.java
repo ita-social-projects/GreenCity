@@ -89,7 +89,7 @@ public interface FactOfTheDayService {
      * @param email the email of the user for whom the tags are retrieved
      * @return a random fact of the day based on the user's habits
      */
-    FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String email);
+    FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(Long userId);
 
     /**
      * Retrieves all tags associated with Facts of the Day.
