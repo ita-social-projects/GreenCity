@@ -1,7 +1,6 @@
 package greencity.mapping;
 
 import greencity.dto.user.UpdateUserDto;
-import greencity.entity.Language;
 import greencity.entity.User;
 import greencity.enums.UserUpdateType;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +24,6 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(null);
             }
-            if (updateUserDto.getUserCredo() != null) {
-                user.setUserCredo(null);
-            }
-            if (updateUserDto.getLanguage() != null) {
-                user.setLanguage(null);
-            }
         } else {
             if (updateUserDto.getId() != null) {
                 user.setId(user.getId());
@@ -43,15 +36,6 @@ public class UpdateUserDtoUserMapper {
             }
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(updateUserDto.getProfilePicturePath());
-            }
-            if (updateUserDto.getUserCredo() != null) {
-                user.setUserCredo(updateUserDto.getUserCredo());
-            }
-            if (updateUserDto.getLanguage() != null) {
-                user.setLanguage(Language.builder()
-                    .id(updateUserDto.getLanguage().getId())
-                    .code(updateUserDto.getLanguage().getCode())
-                    .build());
             }
         }
         return user;

@@ -197,7 +197,6 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID,
                     EVENTS + "/v2" + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
-                    "/languages/codes",
                     SEARCH + ECO_NEWS,
                     SEARCH + EVENTS,
                     SEARCH + PLACES,
@@ -357,7 +356,8 @@ public class SecurityConfig {
                     "place/v2/save",
                     EVENTS + COMMENTS + "/dislikeV2" + COMMENT_ID,
                     EVENTS + COMMENTS + "/likeV2" + COMMENT_ID,
-                    LOGS)
+                    LOGS,
+                    USERS + "/create")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",

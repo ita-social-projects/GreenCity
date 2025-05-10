@@ -6,7 +6,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;
@@ -58,7 +58,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserRemoteClient userRemoteClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     private final UserService userService;
-    private final LanguageService languageService;
     @Value("${client.address}")
     private String clientAddress;
 
@@ -217,8 +216,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .forEach(notification -> {
                         User targetUser = notification.getTargetUser();
                         UserVO userVO = modelMapper.map(targetUser, UserVO.class);
-                        Long languageId = userVO.getLanguageId();
-                        LanguageVO language = languageService.findById(languageId);
+                        LanguageDTO language = userVO.getLanguageVO();
 
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
                             language.getCode());
@@ -257,8 +255,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
-        Long languageId = userService.findById(notification.getTargetUser().getId()).getLanguageId();
-        LanguageVO userLanguage = languageService.findById(languageId);
+        LanguageDTO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguageVO();
         ScheduledEmailMessage message = createScheduledEmailMessage(notification, userLanguage.getCode());
         List<NotificationType> likes = List.of(
             NotificationType.ECONEWS_COMMENT_LIKE,

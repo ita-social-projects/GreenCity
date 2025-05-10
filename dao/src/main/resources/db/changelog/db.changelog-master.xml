@@ -265,4 +265,5 @@
     <include file="db/changelog/logs/ch-update-column-names-Bulhakova.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-positions-Bulhakova.xml"/>
     <include file="db/changelog/logs/ch-add-table-greencity-users-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-change-column-language_id-to-language_code.xml"/>
 </databaseChangeLog>

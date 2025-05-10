@@ -6,10 +6,12 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
 import greencity.enums.Role;
@@ -18,6 +20,7 @@ import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.enums.UserStatus;
 import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserRepo;
@@ -31,9 +34,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import static greencity.ModelUtils.getListUserManagementVO;
@@ -65,6 +65,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
@@ -169,6 +170,30 @@ class UserServiceImplTest {
             userService.checkUpdatableUser(userId, email);
         });
         assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
+    }
+
+    @Test
+    void updateUserCredoTest() {
+        Long userId = 3L;
+        String userCredo = "new user credo";
+        UpdateUserCredoDto updateUserCredoDto = new UpdateUserCredoDto(userId, userCredo);
+
+        userService.updateUserCredo(updateUserCredoDto);
+
+        verify(userRepo).updateUserCredo(userId, userCredo);
+    }
+
+    @Test
+    void findUserCredoByUserIdTest() {
+        Long userId = 5L;
+        String expectedResult = "my user credo";
+
+        when(userRepo.findUserCredoByUserId(userId))
+            .thenReturn(expectedResult);
+
+        String actualResult = userService.findUserCredoByUserId(userId);
+
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
@@ -363,5 +388,31 @@ class UserServiceImplTest {
         List<SocialNetworkVO> socialNetworkVOs = ModelUtils.getListSocialNetworkVO();
         String actual = userService.getSocialNetworkUrlByName(socialNetworkVOs, "something");
         assertNull(actual);
+    }
+
+    @Test
+    void createUserTest() {
+        CreateGreenCityUserDto createGreenCityUserDto = ModelUtils.getCreateGreenCityDto();
+        User createdUser = getUser();
+        when(userRepo.findByEmail(createGreenCityUserDto.getEmail())).thenReturn(Optional.empty());
+        when(userRepo.save(any(User.class))).thenReturn(createdUser);
+
+        Boolean result = userService.createUser(createGreenCityUserDto);
+
+        assertTrue(result);
+        verify(userRepo).findByEmail(createGreenCityUserDto.getEmail());
+        verify(userRepo).save(any(User.class));
+    }
+
+    @Test
+    void createUserAlreadyExistsTest() {
+        CreateGreenCityUserDto createGreenCityUserDto = ModelUtils.getCreateGreenCityDto();
+        User existingdUser = getUser();
+        when(userRepo.findByEmail(createGreenCityUserDto.getEmail())).thenReturn(Optional.of(existingdUser));
+
+        assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(createGreenCityUserDto));
+
+        verify(userRepo).findByEmail(createGreenCityUserDto.getEmail());
+        verify(userRepo, never()).save(any(User.class));
     }
 }

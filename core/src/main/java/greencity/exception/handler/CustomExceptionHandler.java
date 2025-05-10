@@ -694,4 +694,22 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
+
+    /**
+     * Method intercepts exception {@link UserAlreadyExistsException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public final ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex,
+        WebRequest request) {
+        log.warn(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+    }
 }

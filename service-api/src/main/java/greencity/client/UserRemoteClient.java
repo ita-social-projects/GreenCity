@@ -1,7 +1,9 @@
 package greencity.client;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
@@ -14,8 +16,11 @@ import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
+import greencity.exception.exceptions.LanguageNotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -432,6 +438,59 @@ public class UserRemoteClient {
                 .build())
             .retrieve()
             .bodyToMono(SocialNetworkImageResponseDTO.class)
+            .block();
+    }
+
+    // TODO: add caching
+    /**
+     * Method to get all languages as {@link LanguageDTO}.
+     *
+     * @return {@link List} of {@link LanguageDTO}
+     */
+    public List<LanguageDTO> getAllLanguages() {
+        String path = "/lang";
+
+        return webClient.get()
+            .uri(path)
+            .retrieve()
+            .bodyToFlux(LanguageDTO.class)
+            .toStream()
+            .toList();
+    }
+
+    // TODO: add caching
+    /**
+     * Find language {@link LanguageDTO} by code.
+     *
+     * @param code language code
+     * @return language {@link LanguageDTO}
+     */
+    public LanguageDTO findLanguageByCode(String code) throws NotFoundException {
+        String path = "/lang/codes/{code}";
+
+        return webClient.get()
+            .uri(uriBuilder -> uriBuilder.path(path).build(code))
+            .retrieve()
+            .onStatus(httpStatusCode -> httpStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND),
+                clientResponse -> Mono
+                    .error(new LanguageNotFoundException(ErrorMessage.LANGUAGE_NOT_FOUND_BY_CODE + code)))
+            .bodyToMono(LanguageDTO.class)
+            .block();
+    }
+
+    /**
+     * Method to get all language codes.
+     *
+     * @return {@link List} of {@link String} language codes
+     */
+    public List<String> findAllLanguageCodes() {
+        String path = "/lang/codes";
+
+        return webClient.get()
+            .uri(path)
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<List<String>>() {
+            })
             .block();
     }
 

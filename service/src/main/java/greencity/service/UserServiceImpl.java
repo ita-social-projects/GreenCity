@@ -10,6 +10,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UpdateUserDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
@@ -21,7 +22,7 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
-import greencity.entity.Language;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
@@ -35,6 +36,7 @@ import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.mapping.UpdateUserDtoUserMapper;
 import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserLocationRepo;
@@ -48,6 +50,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -430,6 +433,16 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userLocation, UserLocationDto.class);
     }
 
+    @Override
+    public void updateUserCredo(UpdateUserCredoDto updateUserCredoDto) {
+        userRepo.updateUserCredo(updateUserCredoDto.userId(), updateUserCredoDto.userCredo());
+    }
+
+    @Override
+    public String findUserCredoByUserId(Long userId) {
+        return userRepo.findUserCredoByUserId(userId);
+    }
+
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
         return user.getUserLocation() == null
             && (userProfileDtoRequest.getCoordinates().getLatitude() == null
@@ -510,17 +523,11 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
-            Language language = Language.builder()
-                .id(updateUserDto.getLanguage().getId())
-                .code(updateUserDto.getLanguage().getCode())
-                .build();
-
             user = User.builder()
                 .id(updateUserDto.getId())
                 .email(updateUserDto.getEmail())
                 .name(updateUserDto.getName())
                 .profilePicturePath(updateUserDto.getProfilePicturePath())
-                .language(language)
                 .rating(AppConstant.DEFAULT_RATING)
                 .eventOrganizerRating(AppConstant.DEFAULT_RATING)
                 .build();
@@ -557,6 +564,28 @@ public class UserServiceImpl implements UserService {
             .filter(url -> url.contains(socialNetworkName))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean createUser(CreateGreenCityUserDto createUserDto) {
+        Optional<User> existingUser = userRepo.findByEmail(createUserDto.getEmail());
+        if (existingUser.isPresent()) {
+            throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
+                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+        }
+        User userToSave = User.builder()
+            .id(createUserDto.getId())
+            .email(createUserDto.getEmail())
+            .name(createUserDto.getName())
+            .profilePicturePath(createUserDto.getProfilePicturePath())
+            .rating(AppConstant.DEFAULT_RATING)
+            .eventOrganizerRating(AppConstant.DEFAULT_RATING)
+            .build();
+        userRepo.save(userToSave);
+        return true;
     }
 
     /**

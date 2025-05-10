@@ -654,18 +654,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
 
     /**
-     * Method to find user language code by userId.
-     *
-     * @param userId {@link Long} current user's id.
-     * @return {@link String}.
-     */
-    @Query(value = "SELECT l.code FROM greencity_users AS u "
-        + "JOIN languages AS l "
-        + "ON u.language_id = l.id "
-        + "WHERE u.id = :userId", nativeQuery = true)
-    String findUserLanguageCodeByUserId(Long userId);
-
-    /**
      * Method finds friends status and requesterId.
      *
      * @param userId   {@link Long} current user's id.
@@ -798,4 +786,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         SELECT rating FROM greencity_users WHERE greencity_users.id = :userId
         """)
     Double findRatingById(Long userId);
+
+    @Query(nativeQuery = true, value = "SELECT user_credo FROM greencity_users WHERE id =:userId")
+    String findUserCredoByUserId(Long userId);
+
+    @Modifying
+    @Query("UPDATE User SET userCredo =:userCredo WHERE id =:userId")
+    void updateUserCredo(Long userId, String userCredo);
 }

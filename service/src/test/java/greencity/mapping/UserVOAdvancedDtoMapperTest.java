@@ -26,6 +26,8 @@ class UserVOAdvancedDtoMapperTest {
 
     @Test
     void convertTest() {
+        UserVOAdvancedDto expected = ModelUtils.getUserVOAdvancedDto();
+        UserVOAdvancedDto toConvert = ModelUtils.getUserVOAdvancedDtoToConvert();
         User userToConvert = User.builder()
             .id(1L)
             .userAchievements(List.of(ModelUtils.getUserAchievement()))
@@ -36,10 +38,9 @@ class UserVOAdvancedDtoMapperTest {
                     .build())
                 .toList())
             .rating(10.0)
+            .userCredo(expected.getUserCredo())
             .build();
 
-        UserVOAdvancedDto expected = ModelUtils.getUserVOAdvancedDto();
-        UserVOAdvancedDto toConvert = ModelUtils.getUserVOAdvancedDtoToConvert();
         when(userRemoteClient.findNotDeactivatedByIdAdvanced(userToConvert.getId()))
             .thenReturn(Optional.of(toConvert));
 

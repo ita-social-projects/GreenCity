@@ -45,8 +45,7 @@ public interface HabitTranslationRepo
      */
 
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -59,7 +58,7 @@ public interface HabitTranslationRepo
 
     @Query("SELECT DISTINCT ht FROM HabitTranslation ht "
         + "JOIN ht.habit h "
-        + "WHERE ht.language = (SELECT l FROM Language l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND (h.id IN (SELECT ha.habit.id FROM HabitAssign ha "
         + "WHERE ha.user.id = :userId "
         + "AND (ha.status = 'INPROGRESS' "
@@ -82,8 +81,7 @@ public interface HabitTranslationRepo
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "JOIN ht.habit AS h "
-        + "WHERE ht.language = (SELECT l FROM Language AS l "
-        + "WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND h.id IN (SELECT ha.habit.id FROM HabitAssign AS ha "
         + "WHERE ha.user.id = :friendId "
         + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED') "
@@ -106,8 +104,7 @@ public interface HabitTranslationRepo
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "JOIN ht.habit AS h "
-        + "WHERE ht.language = (SELECT l FROM Language AS l "
-        + "WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND h.id IN (SELECT ha.habit.id FROM HabitAssign AS ha "
         + "WHERE (ha.user.id = :friendId OR ha.user.id = :userId) "
         + "AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED') "
@@ -132,8 +129,7 @@ public interface HabitTranslationRepo
      *         unassigned habit translations.
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -164,8 +160,7 @@ public interface HabitTranslationRepo
      */
 
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -192,8 +187,7 @@ public interface HabitTranslationRepo
      * @author Lilia Mokhnatska
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -220,8 +214,7 @@ public interface HabitTranslationRepo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -250,8 +243,7 @@ public interface HabitTranslationRepo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
@@ -271,8 +263,7 @@ public interface HabitTranslationRepo
      * @author Lilia Mokhnatska
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE h.isCustomHabit = false AND h.isDeleted = false) "
@@ -295,8 +286,7 @@ public interface HabitTranslationRepo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE ((h.isCustomHabit = true AND h.isDeleted = false "
@@ -323,8 +313,7 @@ public interface HabitTranslationRepo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -349,8 +338,7 @@ public interface HabitTranslationRepo
      * @author Lilia Mokhnatska
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -379,8 +367,7 @@ public interface HabitTranslationRepo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
@@ -412,8 +399,7 @@ public interface HabitTranslationRepo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT  ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
@@ -435,8 +421,7 @@ public interface HabitTranslationRepo
      * @author Lilia Mokhnatska
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE h.isCustomHabit = false AND h.isDeleted = false "
@@ -471,8 +456,7 @@ public interface HabitTranslationRepo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :language) "
+        + "WHERE ht.languageCode = :language "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
@@ -489,7 +473,7 @@ public interface HabitTranslationRepo
      * @return {@link HabitTranslation}.
      */
     @Query("SELECT ht FROM HabitTranslation ht "
-        + "WHERE ht.language.id = 1 "
+        + "WHERE ht.languageCode = 'ua' "
         + "AND ht.habit.id = :id "
         + "AND ht.habit.isDeleted = false")
     HabitTranslation getHabitTranslationByUaLanguage(Long id);
@@ -501,14 +485,14 @@ public interface HabitTranslationRepo
      * @return {@link HabitTranslation}.
      */
     @Query("SELECT ht FROM HabitTranslation ht "
-        + "WHERE ht.language.id = 2 "
+        + "WHERE ht.languageCode = 'en' "
         + "AND ht.habit.id = :id "
         + "AND ht.habit.isDeleted = false")
     HabitTranslation getHabitTranslationByEnLanguage(Long id);
 
     @Query("SELECT DISTINCT ht FROM HabitTranslation ht "
         + "JOIN ht.habit h "
-        + "WHERE ht.language = (SELECT l FROM Language l WHERE l.code = :languageCode) "
+        + "WHERE ht.languageCode = :languageCode "
         + "AND :userId IN (SELECT f.id FROM h.followers f)"
         + "AND h.isDeleted = false")
     Page<HabitTranslation> findMyFavoriteHabits(Pageable pageable, Long userId, String languageCode);

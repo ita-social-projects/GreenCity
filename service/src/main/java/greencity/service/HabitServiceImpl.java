@@ -11,7 +11,7 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
@@ -20,7 +20,6 @@ import greencity.entity.CustomToDoListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.AchievementAction;
@@ -44,7 +43,6 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.repository.LanguageRepo;
 import greencity.repository.RatingPointsRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.ToDoListItemTranslationRepo;
@@ -86,7 +84,6 @@ public class HabitServiceImpl implements HabitService {
     private final CustomHabitMapper customHabitMapper;
     private final ToDoListItemTranslationRepo toDoListItemTranslationRepo;
     private final CustomToDoListItemRepo customToDoListItemRepo;
-    private final LanguageRepo languageRepo;
     private final UserRepo userRepo;
     private final TagsRepo tagsRepo;
     private final FileService fileService;
@@ -492,8 +489,7 @@ public class HabitServiceImpl implements HabitService {
                 return true;
             })
             .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(habitDto,
-                languageRepo.findByCode(dto.getLanguageCode())
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.SELECT_CORRECT_LANGUAGE)),
+                languageService.findByCode(dto.getLanguageCode()),
                 habit))
             .flatMap(Collection::stream).toList();
         habit.setHabitTranslations(habitTranslations);
@@ -520,8 +516,7 @@ public class HabitServiceImpl implements HabitService {
                 .map(UserFriendDto::getId)
                 .collect(Collectors.toList());
             UserVO userVO = modelMapper.map(user, UserVO.class);
-            Long languageId = userVO.getLanguageId();
-            LanguageVO language = languageService.findById(languageId);
+            LanguageDTO language = userVO.getLanguageVO();
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
                 userVO, friendsIds, habit.getId(),
@@ -777,7 +772,7 @@ public class HabitServiceImpl implements HabitService {
 
     private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(
         CustomHabitDtoRequest habitDto,
-        Language language, Habit habit) {
+        LanguageDTO language, Habit habit) {
         return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language, habit);
     }
 }

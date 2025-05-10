@@ -9,7 +9,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -52,9 +51,6 @@ class FactOfTheDayServiceImplTest {
 
     @Mock
     private FactOfTheDayRepo factOfTheDayRepo;
-
-    @Mock
-    private LanguageService languageService;
 
     @Mock
     private FactOfTheDayService service;
@@ -131,7 +127,6 @@ class FactOfTheDayServiceImplTest {
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(dbFact));
         when(modelMapper.map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class)).thenReturn(
             ModelUtils.getFactOfTheDayTranslationVO());
-        when(languageService.findByCode("en")).thenReturn(languageDTO);
         when(factOfTheDayTranslationService.saveAll(anyList())).thenReturn(null);
         when(tagsRepo.findTagsById(List.of(25L))).thenReturn(tagDtos);
 
@@ -139,8 +134,6 @@ class FactOfTheDayServiceImplTest {
         assertEquals(fact, factOfTheDayService.updateFactOfTheDayAndTranslations(fact));
         verify(factOfTheDayRepo, times(1)).findById(anyLong());
         verify(factOfTheDayTranslationService, times(1)).deleteAll(anyList());
-        verify(languageService, times(1)).findByCode(anyString());
-        verify(modelMapper, times(1)).map(languageDTO, Language.class);
         verify(factOfTheDayRepo, times(1)).save(any(FactOfTheDay.class));
         verify(factOfTheDayTranslationService, times(1)).saveAll(anyList());
         verify(modelMapper, times(1)).map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class);

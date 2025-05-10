@@ -32,6 +32,7 @@ public class ErrorMessage {
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
+    public static final String LANGUAGE_NOT_FOUND_BY_CODE = "The language does not exist by this code: ";
 
     public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
     public static final String CATEGORY_NOT_FOUND_BY_NAME = "The category does not exist by this name: ";
@@ -256,4 +257,5 @@ public class ErrorMessage {
     public static final String INSUFFICIENT_LOCATION_DATA_FOUND =
         "Insufficient location data found for the provided coordinates.";
     public static final String USER_DID_NOT_SET_ANY_CITY = "User did not set any city";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User already registered with this email";
 }

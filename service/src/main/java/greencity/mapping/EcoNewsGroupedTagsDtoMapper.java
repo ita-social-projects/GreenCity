@@ -73,12 +73,12 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
      */
     private TagUkEnNamesDto mapToTagUkEnNamesDto(Tag tag) {
         String nameEn = tag.getTagTranslations().stream()
-            .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
+            .filter(t -> t.getLanguageCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
             .map(TagTranslation::getName)
             .findFirst().orElse("");
 
         String nameUk = tag.getTagTranslations().stream()
-            .filter(t -> t.getLanguage().getCode().equals("ua"))
+            .filter(t -> t.getLanguageCode().equals(AppConstant.LANGUAGE_CODE_UA))
             .map(TagTranslation::getName)
             .findFirst().orElse("");
 

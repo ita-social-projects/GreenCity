@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UpdateUserDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
@@ -13,6 +14,7 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
@@ -160,6 +162,13 @@ public interface UserService {
     UserLocationDto findUserLocationDtoByUserId(Long userId);
 
     /**
+     * Update user credo by user id.
+     *
+     * @param updateUserCredoDto containing update information
+     **/
+    void updateUserCredo(UpdateUserCredoDto updateUserCredoDto);
+
+    /**
      * Set user location by coordinates from {@link UserProfileDtoRequest}.
      *
      * @param userId                id of the user whose location will be updated
@@ -250,6 +259,18 @@ public interface UserService {
      * @param socialNetworkName - name of {@link SocialNetworkVO}.
      */
     String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
+
+    /**
+     * Method for creating a GreenCity user.
+     *
+     * @param createUserDto - {@link CreateGreenCityUserDto} that represents a new
+     *                      user.
+     * @return {@link Boolean} with the result of creation: true for success and
+     *         false for failure
+     */
+    Boolean createUser(CreateGreenCityUserDto createUserDto);
+
+    String findUserCredoByUserId(Long userId);
 
     /**
      * Method for updating user's profilePicturePath.

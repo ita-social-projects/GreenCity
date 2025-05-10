@@ -106,7 +106,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      *         IDs.
      */
     @Query(nativeQuery = true, value = """
-        SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
+        SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, tt.language_code AS languageCode,
                tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
                e.title_image, e.creation_date, start_date, finish_date, online_link,
                latitude, longitude, street_en, street_uk, house_number, city_en, city_uk,
@@ -135,10 +135,9 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                  ) edl_max ON e.id = edl_max.event_id
                  LEFT JOIN events_tags et ON e.id = et.event_id
                  LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
-                 LEFT JOIN languages l ON tt.language_id = l.id
                  LEFT JOIN greencity_users u ON e.organizer_id = u.id
         WHERE (e.id IN (:ids))
-        GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id, edl_max.latest_finish_date;""")
+        GROUP BY e.id, tt.name, edl.city_en, et.tag_id, tt.language_code, u.id, edl.id, edl_max.latest_finish_date;""")
     List<Tuple> loadEventDataByIds(List<Long> ids);
 
     /**
@@ -154,7 +153,7 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
      */
     @Query(nativeQuery = true,
         value = """
-            SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, l.code AS languageCode,
+            SELECT e.id AS eventId, e.title, e.description, et.tag_id AS tagId, tt.language_code AS languageCode,
                    tt.name AS tagName, e.is_open, u.id AS organizerId, u.name AS organizerName,
                    e.title_image, e.creation_date, start_date, finish_date, online_link,
                    latitude, longitude, street_en, street_uk, house_number, city_en, city_uk,
@@ -186,14 +185,13 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
                 ) edl_max ON e.id = edl_max.event_id
                      LEFT JOIN events_tags et ON e.id = et.event_id
                      LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
-                     LEFT JOIN languages l ON tt.language_id = l.id
                      LEFT JOIN greencity_users u ON e.organizer_id = u.id
                      LEFT JOIN users_friends uf ON
                          uf.user_id = :userId AND uf.friend_id=e.organizer_id AND uf.status='FRIEND'
                      LEFT JOIN events_followers ef ON e.id = ef.event_id AND ef.user_id = :userId
                      LEFT JOIN events_attenders ea ON e.id = ea.event_id
             WHERE (e.id IN (:ids))
-                GROUP BY e.id, tt.name, edl.city_en, et.tag_id, l.code, u.id, edl.id,eg.user_id,
+                GROUP BY e.id, tt.name, edl.city_en, et.tag_id, tt.language_code, u.id, edl.id,eg.user_id,
                                 uf.friend_id, ea.user_id, ef.user_id, edl_max.latest_finish_date,eg.grade;
             """)
     List<Tuple> loadEventDataByIds(List<Long> ids, Long userId);

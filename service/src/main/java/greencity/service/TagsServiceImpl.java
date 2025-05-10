@@ -121,8 +121,8 @@ public class TagsServiceImpl implements TagsService {
         toUpdate.getTagTranslations()
             .forEach(tagTranslation -> {
                 Optional<TagTranslationDto> tagTranslationDto = tagPostDto.getTagTranslations().stream()
-                    .filter(newTranslation -> newTranslation.getLanguage().getId()
-                        .equals(tagTranslation.getLanguage().getId()))
+                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
+                        .equals(tagTranslation.getLanguageCode()))
                     .findFirst();
                 tagTranslation.setName(tagTranslationDto.map(TagTranslationDto::getName).orElse(null));
             });
