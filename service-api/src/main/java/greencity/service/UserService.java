@@ -275,7 +275,7 @@ public interface UserService {
     /**
      * Method for updating user's profilePicturePath.
      *
-     * @param userId    - {@link Long} of user's id.
+     * @param userId             - {@link Long} of user's id.
      * @param profilePicturePath - new picturePath.
      */
     void updateUserProfilePicture(Long userId, String profilePicturePath);
@@ -283,8 +283,8 @@ public interface UserService {
     /**
      * Method for getting user's profilePicturePath.
      *
-     * @param userId    - {@link Long} of user's id.
-     * @return  {@link String} - user's profilePicturePath.
+     * @param userId - {@link Long} of user's id.
+     * @return {@link String} - user's profilePicturePath.
      */
     String getProfilePicturePath(Long userId);
 }

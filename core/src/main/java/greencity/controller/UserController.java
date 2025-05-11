@@ -278,41 +278,41 @@ public class UserController {
     }
 
     /**
-     * Method to update user's picture path. Used
-     * by GreenCityRemoteClient on the GreenCityUser microservice as a remote endpoint.
+     * Method to update user's picture path. Used by GreenCityRemoteClient on the
+     * GreenCityUser microservice as a remote endpoint.
      *
      */
     @Operation(summary = "Updates user's picture path")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PutMapping("/picturePath")
     public ResponseEntity<Void> updatePicturePath(@RequestParam(name = "userId") Long userId,
-                                                  @RequestParam(name = "profilePicturePath") String profilePicturePath) {
+        @RequestParam(name = "profilePicturePath") String profilePicturePath) {
         userService.updateUserProfilePicture(userId, profilePicturePath);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
-     * Method to get user's picture path. Used
-     * by GreenCityRemoteClient on the GreenCityUser microservice as a remote endpoint.
+     * Method to get user's picture path. Used by GreenCityRemoteClient on the
+     * GreenCityUser microservice as a remote endpoint.
      *
      */
     @Operation(summary = "Gets user's picture path")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/picturePath")
     public ResponseEntity<String> getPicturePath(@RequestParam(name = "userId") Long userId) {
