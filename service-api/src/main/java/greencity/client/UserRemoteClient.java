@@ -51,27 +51,15 @@ public class UserRemoteClient {
      * @param email {@link UserVO}'s Email.
      * @return {@link Optional} of {@link UserVO}.
      */
-//    public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-//        String path = "/user/findNotDeactivatedByEmail";
-//        UserVO userVO = webClient.get()
-//            .uri(uriBuilder -> uriBuilder.path(path)
-//                .queryParam(USER_EMAIL_QUERY_PARAM, email)
-//                .build())
-//            .retrieve()
-//            .bodyToMono(UserVO.class)
-//            .block();
-//        return Optional.ofNullable(userVO);
-//    }
-
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        String path = "/user/findNotDeactivatedByEmailRemote";
+        String path = "/user/findNotDeactivatedByEmail";
         UserVO userVO = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(path)
-                        .queryParam(USER_EMAIL_QUERY_PARAM, email)
-                        .build())
-                .retrieve()
-                .bodyToMono(UserVO.class)
-                .block();
+            .uri(uriBuilder -> uriBuilder.path(path)
+                .queryParam(USER_EMAIL_QUERY_PARAM, email)
+                .build())
+            .retrieve()
+            .bodyToMono(UserVO.class)
+            .block();
         return Optional.ofNullable(userVO);
     }
 
@@ -81,27 +69,15 @@ public class UserRemoteClient {
      * @param id - {@link UserVO}'s id
      * @return {@link Optional} of found {@link UserVO}.
      */
-//    public Optional<UserVO> findNotDeactivatedById(Long id) {
-//        String path = "/user/findNotDeactivatedById";
-//        UserVO userVO = webClient.get()
-//            .uri(uriBuilder -> uriBuilder.path(path)
-//                .queryParam(ID_QUERY_PARAM, id)
-//                .build())
-//            .retrieve()
-//            .bodyToMono(UserVO.class)
-//            .block();
-//        return Optional.ofNullable(userVO);
-//    }
-
     public Optional<UserVO> findNotDeactivatedById(Long id) {
-        String path = "/user/findNotDeactivatedByIdRemote";
+        String path = "/user/findNotDeactivatedById";
         UserVO userVO = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(path)
-                        .queryParam(ID_QUERY_PARAM, id)
-                        .build())
-                .retrieve()
-                .bodyToMono(UserVO.class)
-                .block();
+            .uri(uriBuilder -> uriBuilder.path(path)
+                .queryParam(ID_QUERY_PARAM, id)
+                .build())
+            .retrieve()
+            .bodyToMono(UserVO.class)
+            .block();
         return Optional.ofNullable(userVO);
     }
 
