@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
@@ -67,7 +68,7 @@ public class FavoritePlaceController {
      * principal are ignored because Spring automatically provide the Principal
      * object .
      *
-     * @param principal - Principal with {@link UserVO} email
+     * @param userVO - current {@link UserVO} user
      * @return list of {@link PlaceByBoundsDto}
      * @author Zakhar Skaletskyi
      */
@@ -79,8 +80,10 @@ public class FavoritePlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    public ResponseEntity<List<PlaceByBoundsDto>> findAllByUserEmail(@Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
+    public ResponseEntity<List<PlaceByBoundsDto>> findAllByUserEmail(
+            @Parameter(hidden = true) @CurrentUser UserVO userVO
+            ) {
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserId(userVO.getId()));
     }
 
     /**

@@ -11,13 +11,11 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
     /**
      * Find all favorite places by user email.
      *
-     * @param email - user's email
+     * @param userId - user's id
      * @return list of favorite places
      * @author Zakhar Skaletskyi
      */
-    // TODO: replace with call to UserRemoteClient
-    @Query(nativeQuery = true, value = "SELECT * from greencity_users where 'email'=:email")
-    List<FavoritePlace> findAllByUserEmail(String email);
+    List<FavoritePlace> findAllByUserId(Long userId);
 
     /**
      * Find favorite place existing by place id and user email.
@@ -28,7 +26,6 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      * @author Zakhar Skaletskyi
      */
     // TODO: replace with call to UserRemoteClient
-    @Query(nativeQuery = true, value = "SELECT * from greencity_users where id=:id 'email'=:userEmail")
     FavoritePlace findByPlaceIdAndUserEmail(Long id, String userEmail);
 
     /**

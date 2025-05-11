@@ -35,11 +35,11 @@ public interface FavoritePlaceService {
     /**
      * Find all {@link FavoritePlaceVO} by {@link UserVO} email.
      *
-     * @param email - {@link UserVO} email
+     * @param userId - {@link UserVO}'s id
      * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi
      */
-    List<PlaceByBoundsDto> findAllByUserEmail(String email);
+    List<PlaceByBoundsDto> findAllByUserId(Long userId);
 
     /**
      * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id

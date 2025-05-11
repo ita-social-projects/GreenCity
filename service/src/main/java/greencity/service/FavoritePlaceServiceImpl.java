@@ -74,9 +74,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public List<PlaceByBoundsDto> findAllByUserEmail(String email) {
+    public List<PlaceByBoundsDto> findAllByUserId(Long userId) {
         log.info(LogMessage.IN_FIND_ALL);
-        return favoritePlaceRepo.findAllByUserEmail(email).stream()
+        return favoritePlaceRepo.findAllByUserId(userId).stream()
             .map(fp -> modelMapper.map(fp, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
     }
