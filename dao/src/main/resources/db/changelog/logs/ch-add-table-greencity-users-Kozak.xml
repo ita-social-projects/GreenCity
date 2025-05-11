@@ -8,9 +8,6 @@
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="email" type="VARCHAR(50)">
-                <constraints nullable="false" unique="true"/>
-            </column>
             <column name="name" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
@@ -33,7 +30,7 @@
     <changeSet id="fill-greencity-user-table" author="Maksym Kozak">
         <sql>
             INSERT INTO greencity_users
-            SELECT id, email, name, profile_picture, user_credo, rating, user_location, language_id, event_organizer_rating FROM users;
+            SELECT id, name, profile_picture, user_credo, rating, user_location, language_id, event_organizer_rating FROM users;
         </sql>
     </changeSet>
 </databaseChangeLog>
