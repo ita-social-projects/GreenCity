@@ -41,7 +41,7 @@ public class FavoritePlaceController {
      * are ignored because Spring automatically provide the Principal object.
      *
      * @param favoritePlaceDto - dto for {@link FavoritePlaceVO} entity
-     * @param principal        - Principal with user email
+     * @param userVO           - current user
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
@@ -58,9 +58,9 @@ public class FavoritePlaceController {
     })
     @PutMapping
     public ResponseEntity<FavoritePlaceDto> update(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
-        @Parameter(hidden = true) Principal principal) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .update(favoritePlaceDto, principal.getName()));
+            .update(favoritePlaceDto, userVO.getId()));
     }
 
     /**
@@ -92,7 +92,7 @@ public class FavoritePlaceController {
      * Principal object.
      *
      * @param placeId   - {@link PlaceVO} id
-     * @param principal - Principal with {@link UserVO} email
+     * @param userVO    - current user
      * @return id of deleted {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
@@ -108,9 +108,9 @@ public class FavoritePlaceController {
     })
     @DeleteMapping("/{placeId}")
     public ResponseEntity<Long> deleteByUserEmailAndPlaceId(@PathVariable Long placeId,
-        @Parameter(hidden = true) Principal principal) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .deleteByUserEmailAndPlaceId(placeId, principal.getName()));
+            .deleteByUserIdAndPlaceId(placeId, userVO.getId()));
     }
 
     /**
@@ -119,7 +119,7 @@ public class FavoritePlaceController {
      * Principal object.
      *
      * @param placeId   - {@link PlaceVO} id
-     * @param principal - Principal with {@link UserVO} email
+     * @param userVO    - current user
      * @return info about {@link PlaceVO} with name from {@link PlaceByBoundsDto}
      * @author Zakhar Skaletskyi
      */
@@ -136,8 +136,8 @@ public class FavoritePlaceController {
     })
     @GetMapping("/favorite/{placeId}")
     public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@PathVariable Long placeId,
-        @Parameter(hidden = true) Principal principal) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .getFavoritePlaceWithLocation(placeId, principal.getName()));
+            .getFavoritePlaceWithLocation(placeId, userVO.getId()));
     }
 }

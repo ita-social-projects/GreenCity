@@ -21,12 +21,11 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
      * Find favorite place existing by place id and user email.
      *
      * @param id        - favorite place
-     * @param userEmail - user's email
+     * @param userId    - user's id
      * @return FavoritePlace entity
      * @author Zakhar Skaletskyi
      */
-    // TODO: replace with call to UserRemoteClient
-    FavoritePlace findByPlaceIdAndUserEmail(Long id, String userEmail);
+    FavoritePlace findByPlaceIdAndUserId(Long id, Long userId);
 
     /**
      * Find favorite place by place id.

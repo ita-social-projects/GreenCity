@@ -185,9 +185,9 @@ public class PlaceController {
     })
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
-        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @Parameter(hidden = true) Principal principal) {
+        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(favoritePlaceService.save(favoritePlaceDto, principal.getName()));
+            .body(favoritePlaceService.save(favoritePlaceDto, userVO.getId()));
     }
 
     /**
