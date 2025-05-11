@@ -2,7 +2,9 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.CreateGreenCityUserDto;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.exception.helper.EndpointValidationHelper;
@@ -24,10 +26,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
@@ -49,11 +56,11 @@ class UserControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders
-            .standaloneSetup(userController)
-            .setCustomArgumentResolvers(
-                new PageableHandlerMethodArgumentResolver())
-            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, endpointValidationHelper))
-            .build();
+                .standaloneSetup(userController)
+                .setCustomArgumentResolvers(
+                        new PageableHandlerMethodArgumentResolver())
+                .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, endpointValidationHelper))
+                .build();
     }
 
     @Test
@@ -63,11 +70,11 @@ class UserControllerTest {
         when(userService.createUser(userDto)).thenReturn(true);
 
         mockMvc.perform(post(userLink + "/create")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(userDto))
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated())
-            .andExpect(content().string("true"));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().string("true"));
 
         verify(userService).createUser(userDto);
     }
@@ -77,17 +84,79 @@ class UserControllerTest {
         CreateGreenCityUserDto userDto = ModelUtils.getCreateGreenCityDto();
 
         when(userService.createUser(userDto))
-            .thenThrow(new UserAlreadyExistsException(HttpStatus.CONFLICT, "User already registered with this email"));
+                .thenThrow(new UserAlreadyExistsException(HttpStatus.CONFLICT, "User already registered with this email"));
         MvcResult result = mockMvc.perform(post(userLink + "/create")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(userDto))
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isConflict())
-            .andReturn();
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
         assertTrue(responseBody.contains("User already registered with this email"));
 
         verify(userService).createUser(userDto);
+    }
+
+    @Test
+    void updatePicturePathTest() throws Exception {
+        Long userId = 1L;
+        String profilePicturePath = "http://somepicture.com.ua";
+
+        doNothing().when(userService).updateUserProfilePicture(userId, profilePicturePath);
+
+        mockMvc.perform(put(userLink + "/picturePath")
+                        .param("profilePicturePath", profilePicturePath)
+                        .param("userId", String.valueOf(userId)))
+                .andExpect(status().isOk());
+
+        verify(userService).updateUserProfilePicture(userId, profilePicturePath);
+    }
+
+    @Test
+    void updatePicturePathUserNotFoundTest() throws Exception {
+        Long userId = 999L;
+        String profilePicturePath = "http://somepicture.com.ua";
+
+        doThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId))
+                .when(userService).updateUserProfilePicture(userId, profilePicturePath);
+
+        mockMvc.perform(put(userLink + "/picturePath")
+                        .param("profilePicturePath", profilePicturePath)
+                        .param("userId", String.valueOf(userId)))
+                .andExpect(status().isNotFound());
+
+        verify(userService).updateUserProfilePicture(userId, profilePicturePath);
+    }
+
+    @Test
+    void getPicturePathTest() throws Exception {
+        Long userId = 1L;
+        String profilePicturePath = "http://somepicture.com.ua";
+
+        when(userService.getProfilePicturePath(userId)).thenReturn(profilePicturePath);
+
+        MvcResult result = mockMvc.perform(get(userLink + "/picturePath")
+                        .param("userId", String.valueOf(userId)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        assertEquals(profilePicturePath, responseBody);
+        verify(userService).getProfilePicturePath(userId);
+    }
+
+    @Test
+    void getPicturePathUserNotFoundTest() throws Exception {
+        Long userId = 1L;
+
+        when(userService.getProfilePicturePath(userId)).thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        mockMvc.perform(get(userLink + "/picturePath")
+                        .param("userId", String.valueOf(userId)))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        verify(userService).getProfilePicturePath(userId);
     }
 }

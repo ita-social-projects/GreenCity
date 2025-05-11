@@ -288,7 +288,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
                     content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PutMapping("/picturePath")
     public ResponseEntity<Void> updatePicturePath(@RequestParam(name = "userId") Long userId,
@@ -308,7 +310,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
                     content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/picturePath")
     public ResponseEntity<String> getPicturePath(@RequestParam(name = "userId") Long userId) {
