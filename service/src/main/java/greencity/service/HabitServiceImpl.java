@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -97,6 +98,7 @@ public class HabitServiceImpl implements HabitService {
     private final HabitInvitationService habitInvitationService;
     private final HabitInvitationRepo habitInvitationRepo;
     private final LanguageService languageService;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * Method returns Habit by its id.
@@ -758,14 +760,18 @@ public class HabitServiceImpl implements HabitService {
         Long userId, String name, Long habitId, Pageable pageable) {
         List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
         List<UserFriendHabitInviteDto> dtoList = tuples.stream()
-            .map(tuple -> UserFriendHabitInviteDto.builder()
-                .id(tuple.get("id", Long.class))
-                .name(tuple.get("name", String.class))
-                .email(tuple.get("email", String.class))
-                .profilePicturePath(tuple.get("profile_picture", String.class))
-                .hasInvitation(tuple.get("has_invitation", Boolean.class))
-                .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
-                .build())
+            .map(tuple -> {
+                Long id = tuple.get("id", Long.class);
+                String email = userRemoteClient.findUserEmailByUserId(id);
+                return UserFriendHabitInviteDto.builder()
+                        .id(id)
+                        .name(tuple.get("name", String.class))
+                        .email(email)
+                        .profilePicturePath(tuple.get("profile_picture", String.class))
+                        .hasInvitation(tuple.get("has_invitation", Boolean.class))
+                        .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
+                        .build();
+            })
             .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
