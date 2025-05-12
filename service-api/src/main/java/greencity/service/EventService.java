@@ -98,9 +98,9 @@ public interface EventService {
      * Method for adding an event to favorites by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      */
-    void addToFavorites(Long eventId, String email);
+    void addToFavorites(Long eventId, Long userId);
 
     /**
      * Method for removing an event from favorites by event id.

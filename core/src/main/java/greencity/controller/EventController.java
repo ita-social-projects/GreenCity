@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
@@ -345,8 +346,8 @@ public class EventController {
     })
     @PostMapping("/{eventId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.addToFavorites(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.addToFavorites(eventId, userId);
         return ResponseEntity.ok().build();
     }
 
