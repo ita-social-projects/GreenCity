@@ -548,10 +548,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean createUser(CreateGreenCityUserDto createUserDto) {
-        if (userRepo.existsByEmail(createUserDto.getEmail())) {
+        // TODO: ? remove that call ? or maybe replace with exists by id
+        /*if (userRepo.existsByEmail(createUserDto.getEmail())) {
             throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
                 ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
-        }
+        }*/
         User userToSave = User.builder()
             .id(createUserDto.getId())
                 // TODO: delete

@@ -3,6 +3,7 @@ package greencity.service;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.PlacesSearchResult;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -106,6 +107,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final UserNotificationService userNotificationService;
     private final RestClient restClient;
     private final PhotoRepo photoRepo;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -678,7 +680,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_NAME + dto.getPlaceName()));
 
-        if (!userRepo.existsByEmail(dto.getEmail())) {
+        if (!userRemoteClient.userExistsByEmail(dto.getEmail())) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
 

@@ -23,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
-    // TODO: call UserRemoteClient
-    boolean existsByEmail(String email);
-
     /**
      * Find all {@link User}.
      *

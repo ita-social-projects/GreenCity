@@ -518,6 +518,11 @@ public class UserRemoteClient {
         return List.of();
     }
 
+    // TODO
+    public boolean userExistsByEmail(String email) {
+        return false;
+    }
+
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
 
