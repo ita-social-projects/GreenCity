@@ -106,9 +106,9 @@ public interface EventService {
      * Method for removing an event from favorites by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      */
-    void removeFromFavorites(Long eventId, String email);
+    void removeFromFavorites(Long eventId, Long userId);
 
     /**
      * Return Events searched by some query.

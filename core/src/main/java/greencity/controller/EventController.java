@@ -368,8 +368,8 @@ public class EventController {
     })
     @DeleteMapping("/{eventId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.removeFromFavorites(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.removeFromFavorites(eventId, userId);
         return ResponseEntity.ok().build();
     }
 
