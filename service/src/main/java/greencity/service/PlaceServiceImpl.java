@@ -552,9 +552,9 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
-        User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, Long userId, MultipartFile[] images) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         UserVO userVO = modelMapper.map(user, UserVO.class);
 
         if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
@@ -680,7 +680,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_NAME + dto.getPlaceName()));
 
-        if (userRepo.findByEmail(dto.getEmail()).isEmpty()) {
+        if (!userRepo.existsByEmail(dto.getEmail())) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
 
@@ -742,7 +742,7 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional
     @Override
-    public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email) {
+    public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, Long userId) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
         Category updatedCategory = modelMapper.map(
             categoryService.findByName(dto.getCategory().getNameEn()), Category.class);
@@ -751,7 +751,7 @@ public class PlaceServiceImpl implements PlaceService {
         updateLocation(dto, updatedPlace, updatable);
         updatePlaceProperties(dto, updatedPlace, updatedCategory);
         Place place = modelMapper.map(updatedPlace, Place.class);
-        Optional<User> user = userRepo.findByEmail(email);
+        Optional<User> user = userRepo.findById(userId);
         mapMultipartFilesToPhotos(images, place, user.orElse(null));
         placeRepo.save(updatedPlace);
         return modelMapper.map(updatedPlace, PlaceVO.class);

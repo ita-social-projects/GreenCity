@@ -103,7 +103,7 @@ public interface PlaceService {
      * @param email  - admin user email
      * @return place {@link PlaceVO}
      */
-    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email);
+    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, Long userId);
 
     /**
      * Method for updating {@link PlaceVO}.
@@ -267,7 +267,7 @@ public interface PlaceService {
     /**
      * Method to create new place From UI.
      */
-    PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images);
+    PlaceResponse addPlaceFromUi(AddPlaceDto dto, Long userId, MultipartFile[] images);
 
     /**
      * Method for getting Places by searchQuery.
