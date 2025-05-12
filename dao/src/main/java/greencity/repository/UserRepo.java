@@ -39,16 +39,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> findAll(@NonNull Specification<User> filter, @NonNull Pageable pageable);
 
     /**
-     * Find id by email.
-     *
-     * @param email - User email
-     * @return User id
-     */
-    // TODO
-    @Query("SELECT id FROM User WHERE email=:email")
-    Optional<Long> findIdByEmail(String email);
-
-    /**
      * Updates user rating as event organizer.
      *
      * @param userId {@link User}'s id

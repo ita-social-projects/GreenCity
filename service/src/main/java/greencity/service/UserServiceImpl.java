@@ -118,16 +118,6 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Long findIdByEmail(String email) {
-        log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
-        return userRepo.findIdByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
         checkUpdatableUser(id, email);
         accessForUpdateUserStatus(id, email);
