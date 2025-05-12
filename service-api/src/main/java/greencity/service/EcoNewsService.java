@@ -148,9 +148,9 @@ public interface EcoNewsService {
      * Method for removing an eco new from favorites by ecoNewsId.
      *
      * @param ecoNewsId - eco-News id.
-     * @param email     - user email.
+     * @param userId    - user's id.
      */
-    void removeFromFavorites(Long ecoNewsId, String email);
+    void removeFromFavorites(Long ecoNewsId, Long userId);
 
     /**
      * Find {@link EcoNewsVO} for management.

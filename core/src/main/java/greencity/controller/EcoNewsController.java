@@ -124,8 +124,8 @@ public class EcoNewsController {
     })
     @DeleteMapping("/{ecoNewsId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long ecoNewsId,
-        @Parameter(hidden = true) Principal principal) {
-        ecoNewsService.removeFromFavorites(ecoNewsId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        ecoNewsService.removeFromFavorites(ecoNewsId, userId);
         return ResponseEntity.ok().build();
     }
 

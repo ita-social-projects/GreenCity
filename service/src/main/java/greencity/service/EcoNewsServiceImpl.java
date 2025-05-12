@@ -362,11 +362,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public void removeFromFavorites(Long ecoNewsId, String email) {
+    public void removeFromFavorites(Long ecoNewsId, Long userId) {
         EcoNews ecoNews = findEcoNewsById(ecoNewsId);
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!ecoNews.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES);
