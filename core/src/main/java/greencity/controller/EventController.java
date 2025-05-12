@@ -670,8 +670,8 @@ public class EventController {
     })
     @DeleteMapping("/{eventId}/removeFromRequested")
     public ResponseEntity<Object> removeFromRequested(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.removeFromRequested(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.removeFromRequested(eventId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

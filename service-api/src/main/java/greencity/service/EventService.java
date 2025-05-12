@@ -295,10 +295,10 @@ public interface EventService {
      * Method for removing an event from requested by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      * @author Olha Pitsyk.
      */
-    void removeFromRequested(Long eventId, String email);
+    void removeFromRequested(Long eventId, Long userId);
 
     /**
      * Method for getting all users who made request for joining the event.
