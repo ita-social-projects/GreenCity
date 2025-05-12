@@ -101,9 +101,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .map(user -> modelMapper.map(user, UserVO.class))
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return userRemoteClient.findByEmail(email);
     }
 
     /**
@@ -509,8 +507,8 @@ public class UserServiceImpl implements UserService {
         User user;
         System.out.println(updateUserDto.getUserUpdateType());
         if (!Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.CREATE)) {
-            user = userRepo.findByEmail(updateUserDto.getEmail()).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
+            user = userRepo.findById(updateUserDto.getId()).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + updateUserDto.getId()));
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
             user = User.builder()
@@ -562,8 +560,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean createUser(CreateGreenCityUserDto createUserDto) {
-        Optional<User> existingUser = userRepo.findByEmail(createUserDto.getEmail());
-        if (existingUser.isPresent()) {
+        if (userRepo.existsByEmail(createUserDto.getEmail())) {
             throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
                 ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
         }

@@ -27,15 +27,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean existsByEmail(String email);
 
     /**
-     * Find {@link User} by email.
-     *
-     * @param email user email.
-     * @return {@link User}
-     */
-    // TODO: replace with call to UserRemoteClient
-    Optional<User> findByEmail(String email);
-
-    /**
      * Find list of {@link User}'s by emails.
      *
      * @param emails user emails.

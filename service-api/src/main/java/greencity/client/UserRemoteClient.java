@@ -500,6 +500,13 @@ public class UserRemoteClient {
         return "aaa";
     }
 
+    // TODO
+    // TODO: minimize amount of calls to findByEmail of UserServiceImpl
+    // TODO: exception handling in case not found
+    public UserVO findByEmail(String email) {
+        return new UserVO();
+    }
+
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
 
