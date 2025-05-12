@@ -29,7 +29,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link User}
      */
     // TODO: replace with call to UserRemoteClient
-    @Query(nativeQuery = true, value = "SELECT * from greencity_users where 'email'=:email")
     Optional<User> findByEmail(String email);
 
     /**
@@ -39,7 +38,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return list of {@link User}.
      */
     // TODO: replace with call to UserRemoteClient
-    @Query(nativeQuery = true, value = "SELECT * from greencity_users where 'email'=:emails")
     List<User> findAllByEmailIn(List<String> emails);
 
     /**
@@ -61,8 +59,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return User id
      */
     // TODO
-    // @Query("SELECT id FROM User WHERE email=:email")
-    @Query("SELECT id FROM User WHERE 'email'=:email")
+    @Query("SELECT id FROM User WHERE email=:email")
     Optional<Long> findIdByEmail(String email);
 
     /**
