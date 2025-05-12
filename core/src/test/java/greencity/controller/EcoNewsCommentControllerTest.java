@@ -13,6 +13,7 @@ import greencity.service.CommentService;
 import greencity.service.UserService;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,9 +33,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.util.Locale;
+
 import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -60,6 +61,7 @@ class EcoNewsCommentControllerTest {
     private static final String ECONEWS_LINK = "/eco-news";
     private final Principal principal = getPrincipal();
     private MockMvc mockMvc;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     @InjectMocks
     private EcoNewsCommentController ecoNewsCommentController;
     @Mock
@@ -68,6 +70,11 @@ class EcoNewsCommentControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
+
+    @BeforeAll
+    static void setUp() {
+        OBJECT_MAPPER.findAndRegisterModules();
+    }
 
     @BeforeEach
     void setup() {
@@ -112,9 +119,8 @@ class EcoNewsCommentControllerTest {
             .content(content))
             .andExpect(status().isCreated());
 
-        ObjectMapper mapper = new ObjectMapper();
         AddCommentDtoRequest addCommentDtoRequest =
-            mapper.readValue(content, AddCommentDtoRequest.class);
+            OBJECT_MAPPER.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest,
@@ -189,9 +195,7 @@ class EcoNewsCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
-        String expectedJson = objectMapper.writeValueAsString(commentReplies);
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentReplies);
 
         when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
             .thenReturn(commentReplies);
@@ -296,7 +300,7 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).like(numericCommentId, userVO, null);
+        verify(commentService).like(numericCommentId, userVO, Locale.ENGLISH);
     }
 
     @Test
@@ -323,7 +327,7 @@ class EcoNewsCommentControllerTest {
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .like(commentId, userVO, null);
+            .like(commentId, userVO, Locale.ENGLISH);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(post(ECONEWS_LINK + "/comments/like")
@@ -384,7 +388,7 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).dislike(numericCommentId, userVO, null);
+        verify(commentService).dislike(numericCommentId, userVO);
     }
 
     @Test
@@ -411,7 +415,7 @@ class EcoNewsCommentControllerTest {
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .dislike(commentId, userVO, null);
+            .dislike(commentId, userVO);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(post(ECONEWS_LINK + "/comments/dislike")
@@ -423,4 +427,37 @@ class EcoNewsCommentControllerTest {
         verify(userService).findByEmail(anyString());
     }
 
+    @Test
+    @SneakyThrows
+    void testLikeV2WithValidData() {
+        Long commentId = 1L;
+        UserVO userVO = getUserVO();
+        CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(commentService.likeV2(commentId, userVO, Locale.ENGLISH)).thenReturn(commentDto);
+        String expectedContent = OBJECT_MAPPER.writeValueAsString(commentDto);
+        mockMvc.perform(post(ECONEWS_LINK + "/comments/likeV2")
+            .param("commentId", commentId.toString())
+            .principal(principal))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedContent));
+        verify(commentService).likeV2(commentId, userVO, Locale.ENGLISH);
+    }
+
+    @Test
+    @SneakyThrows
+    void testDislikeV2WithValidData() {
+        Long commentId = 1L;
+        UserVO userVO = getUserVO();
+        CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(commentService.dislikeV2(commentId, userVO)).thenReturn(commentDto);
+        String expectedContent = OBJECT_MAPPER.writeValueAsString(commentDto);
+        mockMvc.perform(post(ECONEWS_LINK + "/comments/dislikeV2")
+            .param("commentId", commentId.toString())
+            .principal(principal))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedContent));
+        verify(commentService).dislikeV2(commentId, userVO);
+    }
 }

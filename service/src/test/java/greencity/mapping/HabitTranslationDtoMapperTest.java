@@ -19,7 +19,7 @@ class HabitTranslationDtoMapperTest {
 
     @Test
     void convertTest() {
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTest();
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTestUk();
         habitTranslation.setLanguage(ModelUtils.getLanguage());
 
         HabitTranslationDto expected = HabitTranslationDto.builder()
@@ -33,7 +33,7 @@ class HabitTranslationDtoMapperTest {
 
     @Test
     void mapAllToListTest() {
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTest();
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTestUk();
         habitTranslation.setLanguage(ModelUtils.getLanguage());
 
         List<HabitTranslation> habitTranslationList = List.of(habitTranslation);

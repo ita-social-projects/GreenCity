@@ -13,6 +13,7 @@ import greencity.service.CommentService;
 import greencity.service.UserService;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +43,7 @@ import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
@@ -70,6 +72,12 @@ class EventCommentControllerTest {
     @Mock
     private CommentService commentService;
     private final Principal principal = getPrincipal();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    @BeforeAll
+    static void setUp() {
+        OBJECT_MAPPER.findAndRegisterModules();
+    }
 
     @BeforeEach
     void setup() {
@@ -114,9 +122,8 @@ class EventCommentControllerTest {
             .content(content))
             .andExpect(status().isCreated());
 
-        ObjectMapper mapper = new ObjectMapper();
         AddCommentDtoRequest addCommentDtoRequest =
-            mapper.readValue(content, AddCommentDtoRequest.class);
+            OBJECT_MAPPER.readValue(content, AddCommentDtoRequest.class);
 
         verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(eq(ArticleType.EVENT),
@@ -234,8 +241,7 @@ class EventCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
-        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        String expectedJson = objectMapper.writeValueAsString(commentReplies);
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentReplies);
 
         when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
             .thenReturn(commentReplies);
@@ -390,7 +396,7 @@ class EventCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).dislike(commentId, userVO, null);
+        verify(commentService).dislike(commentId, userVO);
     }
 
     @Test
@@ -415,12 +421,46 @@ class EventCommentControllerTest {
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .dislike(commentId, userVO, null);
+            .dislike(commentId, userVO);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislike/" + commentId)
                 .principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
+    }
+
+    @Test
+    @SneakyThrows
+    void getLikeV2ResponseTest() {
+        long commentId = 1L;
+        CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
+        UserVO user = getUserVO();
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
+        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(commentService.likeV2(commentId, user, Locale.ENGLISH)).thenReturn(commentDto);
+        mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/likeV2/" + commentId)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(expectedJson))
+            .andExpect(status().isOk());
+        verify(commentService, times(1)).likeV2(commentId, user, Locale.ENGLISH);
+    }
+
+    @Test
+    @SneakyThrows
+    void getDislikeV2ResponseTest() {
+        long commentId = 1L;
+        CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
+        UserVO user = getUserVO();
+        String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
+        when(userService.findByEmail(anyString())).thenReturn(user);
+        when(commentService.dislikeV2(commentId, user)).thenReturn(commentDto);
+        mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislikeV2/" + commentId)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(expectedJson))
+            .andExpect(status().isOk());
+        verify(commentService, times(1)).dislikeV2(commentId, user);
     }
 }

@@ -13,16 +13,16 @@ public class AddressDtoMapper extends AbstractConverter<AddressDto, Address> {
             .latitude(addressDto.getLatitude())
             .longitude(addressDto.getLongitude())
             .streetEn(addressDto.getStreetEn())
-            .streetUa(addressDto.getStreetUa())
+            .streetUk(addressDto.getStreetUk())
             .houseNumber(addressDto.getHouseNumber())
             .cityEn(addressDto.getCityEn())
-            .cityUa(addressDto.getCityUa())
+            .cityUk(addressDto.getCityUk())
             .regionEn(addressDto.getRegionEn())
-            .regionUa(addressDto.getRegionUa())
+            .regionUk(addressDto.getRegionUk())
             .countryEn(addressDto.getCountryEn())
-            .countryUa(addressDto.getCountryUa())
+            .countryUk(addressDto.getCountryUk())
             .formattedAddressEn(addressDto.getFormattedAddressEn())
-            .formattedAddressUa(addressDto.getFormattedAddressUa())
+            .formattedAddressUk(addressDto.getFormattedAddressUk())
             .build();
     }
 }

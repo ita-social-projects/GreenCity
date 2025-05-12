@@ -35,7 +35,7 @@ public class PlaceInfoDtoMapper extends AbstractConverter<Place, PlaceInfoDto> {
             .id(source.getLocation().getId())
             .lat(source.getLocation().getLat())
             .lng(source.getLocation().getLng())
-            .address(source.getLocation().getAddress())
+            .address(source.getLocation().getAddressEn())
             .build());
         List<String> images = source.getPhotos().stream().map(Photo::getName).toList();
 

@@ -51,6 +51,8 @@ public class SecurityConfig {
     private static final String REPLIES = "/replies";
     private static final String LIKE = "/like";
     private static final String DISLIKE = "/dislike";
+    private static final String LIKE_NEW = "/like-v2";
+    private static final String DISLIKE_NEW = "/dislike-v2";
     private static final String LIKES = "/likes";
     private static final String DISLIKES = "/dislikes";
     private static final String COUNT = "/count";
@@ -146,8 +148,6 @@ public class SecurityConfig {
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
                     "/place/info/{id}",
-                    "/place/info/favorite/{placeId}",
-                    "/favorite_place/favorite/{placeId}",
                     "/place/statuses",
                     "/place/all",
                     "/habit",
@@ -157,7 +157,6 @@ public class SecurityConfig {
                     "/tags/v2/search",
                     "/habit/tags/all",
                     "/habit/statistic/{habitId}",
-                    "/habit/statistic/assign/{habitAssignId}",
                     "/habit/statistic/todayStatisticsForAllHabitItems",
                     HABITS + "/comments/{id}",
                     HABITS + "/comments/{parentCommentId}/replies/active",
@@ -171,6 +170,7 @@ public class SecurityConfig {
                     ECO_NEWS + "/tags",
                     ECO_NEWS + ECO_NEWS_ID + "/recommended",
                     ECO_NEWS + ECO_NEWS_ID,
+                    ECO_NEWS + ECO_NEWS_ID + "/v2",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + DISLIKES + COUNT,
                     ECO_NEWS_ID_COMMENTS,
@@ -206,14 +206,7 @@ public class SecurityConfig {
                     "/token",
                     "/socket/**",
                     FRIENDS + "/user/{userId}",
-                    "/habit/assign/confirm/{habitAssignId}",
-                    "/database/backup",
-                    "/database/backupFiles",
                     COMMIT_INFO)
-                .permitAll()
-                .requestMatchers(HttpMethod.DELETE,
-                    "/place/{id}",
-                    "/place")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
                     SUBSCRIPTIONS,
@@ -234,6 +227,8 @@ public class SecurityConfig {
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
+                    ECO_NEWS + ECO_NEWS_ID + "/dislikeV2",
+                    ECO_NEWS + ECO_NEWS_ID + "/likeV2",
                     "/favorite_place/",
                     "/to-do-list-items",
                     "/habit/assign/allForCurrentUser",
@@ -266,12 +261,14 @@ public class SecurityConfig {
                     "/user/{userId}/friends/",
                     "/user/{userId}/friendRequests/",
                     "/chat",
+                    EVENTS + "/user-data/getAllUserAssigned",
                     EVENTS + ATTENDERS + COUNT,
                     EVENTS + ORGANIZERS + COUNT,
                     EVENTS + EVENT_ID + LIKES,
                     EVENTS + EVENT_ID + LIKES + COUNT,
                     EVENTS + EVENT_ID + DISLIKES + COUNT,
                     EVENTS + EVENT_ID + "/requested-users",
+                    EVENTS + "/addresses/get-relevant",
                     "/user/to-do-list-items/{userId}/get-all-inprogress",
                     "/habit/assign/{habitAssignId}/allUserAndCustomList",
                     "/habit/assign/allUserAndCustomToDoListsInprogress",
@@ -283,6 +280,12 @@ public class SecurityConfig {
                     "/habit/allMutualHabits/{friendId}",
                     "/habit/{habitId}/friends/profile-pictures",
                     "habit/favorites",
+                    "/favorite_place/favorite/{placeId}",
+                    "/habit/statistic/assign/{habitAssignId}",
+                    "/habit/assign/confirm/{habitAssignId}",
+                    "/place/info/favorite/{placeId}",
+                    "/database/backup",
+                    "/database/backupFiles",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
@@ -318,6 +321,8 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID + RATINGS,
                     EVENTS + EVENT_ID + LIKE,
                     EVENTS + EVENT_ID + DISLIKE,
+                    EVENTS + EVENT_ID + LIKE_NEW,
+                    EVENTS + EVENT_ID + DISLIKE_NEW,
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
@@ -348,6 +353,8 @@ public class SecurityConfig {
                     ECO_NEWS + "/{ecoNewsId}/favorites",
                     "/habit/assign/{habitId}/invite",
                     "place/v2/save",
+                    EVENTS + COMMENTS + "/dislikeV2" + COMMENT_ID,
+                    EVENTS + COMMENTS + "/likeV2" + COMMENT_ID,
                     LOGS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
@@ -449,7 +456,7 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))
             .logout(logout -> logout.logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))
+                .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies("accessToken")

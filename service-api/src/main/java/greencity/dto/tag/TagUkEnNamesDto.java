@@ -3,10 +3,9 @@ package greencity.dto.tag;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
 @Builder
-public class TagUaEnDto {
-    private Long id;
-    private String nameUa;
+@Data
+public class TagUkEnNamesDto {
+    private String nameUk;
     private String nameEn;
 }

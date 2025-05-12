@@ -44,13 +44,13 @@ class AddEventDtoRequestMapperTest {
 
     @Test
     void convertTestWithNullRegionUa() {
-        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullRegionUa;
+        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullRegionUk;
         assertThrows(BadRequestException.class, () -> mapper.convert(request));
     }
 
     @Test
     void convertTestWithNullCountryUa() {
-        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullCountryUa;
+        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullCountryUk;
         assertThrows(BadRequestException.class, () -> mapper.convert(request));
     }
 

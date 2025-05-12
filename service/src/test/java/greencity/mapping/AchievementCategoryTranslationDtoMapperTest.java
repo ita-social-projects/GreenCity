@@ -20,7 +20,7 @@ class AchievementCategoryTranslationDtoMapperTest {
         AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
         AchievementCategoryTranslationDto expected = AchievementCategoryTranslationDto.builder()
             .id(achievementCategory.getId())
-            .title(achievementCategory.getTitle())
+            .titleUk(achievementCategory.getTitleUk())
             .titleEn(achievementCategory.getTitleEn())
             .build();
         assertEquals(expected, mapper.convert(achievementCategory));

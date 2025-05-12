@@ -79,6 +79,7 @@ public class ErrorMessage {
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
+    public static final String USER_ID_NULL = "User ID cannot be null";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
     public static final String USER_HAS_NO_TO_DO_LIST_ITEMS =
         "This user hasn't selected any to-do list items yet";
@@ -155,6 +156,7 @@ public class ErrorMessage {
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
 
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
+    public static final String NO_EVENTS_FOUND = "No events found for user with ID: %d";
     public static final String WRONG_COUNT_OF_EVENT_DATES =
         "Count of dates should be at least one but not more seven";
     public static final String NO_EVENT_LINK_OR_ADDRESS = "Invalid online-link or address";
@@ -246,4 +248,12 @@ public class ErrorMessage {
     public static final String BAD_SECRET_KEY = "The given secret key is incorrect";
     public static final String CANNOT_DELETE_DOTENV = "Failed to delete .env file";
     public static final String FUNCTIONALITY_NOT_AVAILABLE = "Functionality is not available";
+    public static final String NEGATIVE_LIMIT = "Limit cannot be negative";
+    public static final String NEGATIVE_OFFSET = "Offset cannot be negative";
+    public static final String SQL_METADATA_EXCEPTION_MESSAGE = "Error occurred while retrieving database data for: ";
+    public static final String EXCEED_LIMIT = "Out of max rows limit. Max limit is " + AppConstant.SQL_ROW_LIMIT;
+    public static final String GENERATION_EXCEL_FILE_ERROR = "Error generating Excel file";
+    public static final String EMPTY_TABLE = "Table '%s' doesn't contain any row";
+    public static final String INVALID_TABLE_NAME = "Table name must contain only lowercase letters "
+        + "and single underscores between words. Cannot start or end with an underscore.";
 }
