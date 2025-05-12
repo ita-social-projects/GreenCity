@@ -151,8 +151,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String title,
         Long authorId,
         boolean favorite,
-        String email) {
-        Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
+        Long currentUserId) {
 
         return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
@@ -713,12 +712,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return predicateList.size() == 1
             ? predicateList.getFirst()
             : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
-    }
-
-    private Long getUserIdByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .map(User::getId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**

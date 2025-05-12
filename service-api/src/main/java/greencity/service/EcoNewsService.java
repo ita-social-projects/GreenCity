@@ -61,7 +61,7 @@ public interface EcoNewsService {
         String title,
         Long authorId,
         boolean favorite,
-        String email);
+        Long userId);
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
