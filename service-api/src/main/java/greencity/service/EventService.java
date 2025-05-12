@@ -286,10 +286,10 @@ public interface EventService {
      * Method for adding an event to requested by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      * @author Olha Pitsyk.
      */
-    void addToRequested(Long eventId, String email);
+    void addToRequested(Long eventId, Long userId);
 
     /**
      * Method for removing an event from requested by event id.

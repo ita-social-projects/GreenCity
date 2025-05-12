@@ -649,8 +649,8 @@ public class EventController {
     })
     @PostMapping("/{eventId}/addToRequested")
     public ResponseEntity<Object> addToRequested(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.addToRequested(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.addToRequested(eventId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
