@@ -526,7 +526,7 @@ public class PlaceController {
     @ApiPageable
     @GetMapping("all")
     public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@Parameter(hidden = true) Pageable page,
-        @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page, principal));
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page, userId));
     }
 }

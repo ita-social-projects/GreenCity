@@ -272,13 +272,11 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal) {
+    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, Long userId) {
         log.info(LogMessage.IN_FIND_ALL);
         Page<Place> pages = placeRepo.findAll(pageable);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(pages);
-        if (!CollectionUtils.isEmpty(placeDtos) && principal != null) {
-            String userEmail = principal.getName();
-            Long userId = userService.findIdByEmail(userEmail);
+        if (!CollectionUtils.isEmpty(placeDtos)) {
             setIsFavoriteToAdminPlaceDto(placeDtos, userId);
         }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());

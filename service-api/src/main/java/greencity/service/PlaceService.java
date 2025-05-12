@@ -124,14 +124,14 @@ public interface PlaceService {
      * Find all places from DB for User with current email.
      *
      * @param pageable  {@link Pageable}.
-     * @param principal {@link Principal}. Represents loggedIn User to show if place
+     * @param userId    {@link Long} current user id
      *                  isFavorite.
      * @return an object of {@link PageableDto} which contains a list of
      *         {@link AdminPlaceDto}.
      * @author Olena Petryshak
      * @author Olena Sotnik
      */
-    PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal);
+    PageableDto<AdminPlaceDto> findAll(Pageable pageable, Long userId);
 
     /**
      * Method for deleting place by id.
