@@ -140,9 +140,9 @@ public interface EcoNewsService {
      * Method for adding an eco new to favorites by ecoNewsId.
      *
      * @param ecoNewsId - eco-news id.
-     * @param email     - user email.
+     * @param userId    - user's id.
      */
-    void addToFavorites(Long ecoNewsId, String email);
+    void addToFavorites(Long ecoNewsId, Long userId);
 
     /**
      * Method for removing an eco new from favorites by ecoNewsId.

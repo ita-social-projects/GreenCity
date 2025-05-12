@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.annotations.ValidLanguage;
@@ -103,8 +104,8 @@ public class EcoNewsController {
     })
     @PostMapping("/{ecoNewsId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long ecoNewsId,
-        @Parameter(hidden = true) Principal principal) {
-        ecoNewsService.addToFavorites(ecoNewsId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        ecoNewsService.addToFavorites(ecoNewsId, userId);
         return ResponseEntity.ok().build();
     }
 
