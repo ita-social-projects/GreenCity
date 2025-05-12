@@ -87,7 +87,6 @@ public class SecurityConfig {
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
     public static final String LOGS = "/logs/**";
-    private static final String DISLIKE_V2 = "/dislikeV2";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -228,7 +227,7 @@ public class SecurityConfig {
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
-                    ECO_NEWS + ECO_NEWS_ID + DISLIKE_V2,
+                    ECO_NEWS + ECO_NEWS_ID + "/dislikeV2",
                     ECO_NEWS + ECO_NEWS_ID + "/likeV2",
                     "/favorite_place/",
                     "/to-do-list-items",
@@ -354,9 +353,8 @@ public class SecurityConfig {
                     ECO_NEWS + "/{ecoNewsId}/favorites",
                     "/habit/assign/{habitId}/invite",
                     "place/v2/save",
-                    EVENTS + COMMENTS + DISLIKE_V2 + COMMENT_ID,
+                    EVENTS + COMMENTS + "/dislikeV2" + COMMENT_ID,
                     EVENTS + COMMENTS + "/likeV2" + COMMENT_ID,
-                    ECO_NEWS + COMMENTS + DISLIKE_V2,
                     LOGS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
