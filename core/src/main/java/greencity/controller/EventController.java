@@ -691,10 +691,10 @@ public class EventController {
     @GetMapping("/{eventId}/requested-users")
     public ResponseEntity<PageableDto<UserForListDto>> getRequestedUsers(
         @PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(eventService.getRequestedUsers(eventId, principal.getName(), pageable));
+            .body(eventService.getRequestedUsers(eventId, userId, pageable));
     }
 
     /**

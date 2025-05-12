@@ -1029,9 +1029,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable) {
-        User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, Long userId, Pageable pageable) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
