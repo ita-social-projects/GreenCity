@@ -149,12 +149,12 @@ public interface HabitService {
      *
      * @param addCustomHabitDtoRequest dto with {@link CustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
-     * @param userEmail                {@link String} - user email.
+     * @param userId                   {@link Long} - user's id.
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
     CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
-        String userEmail);
+        Long userId);
 
     /**
      * Retrieves a list of profile pictures of the user's friends who are associated
@@ -174,22 +174,22 @@ public interface HabitService {
      *
      * @param customHabitDtoRequest dto with {@link CustomHabitDtoRequest} entered
      *                              info about field that need to edit.
-     * @param userEmail             {@link String} - user email.
+     * @param userId                {@link Long} - user's id.
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Olena Sotnik.
      */
     CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest, Long habitId,
-        String userEmail, MultipartFile image);
+        Long userId, MultipartFile image);
 
     /**
      * Method for deleting of custom habit by its id.
      *
      * @param customHabitId - id of custom habit to be deleted.
-     * @param ownerEmail    - email of user who owns the habit.
+     * @param ownerId       - id of user who owns the habit.
      *
      * @author Olena Sotnik.
      */
-    void deleteCustomHabit(Long customHabitId, String ownerEmail);
+    void deleteCustomHabit(Long customHabitId, Long ownerId);
 
     /**
      * Method to like or unlike {@link HabitVO} specified by id.
@@ -213,15 +213,15 @@ public interface HabitService {
      * @param habitId - habit id
      * @param email   - email of user
      */
-    void addToFavorites(Long habitId, String email);
+    void addToFavorites(Long habitId, Long userId);
 
     /**
      * Method for removing a habit from favorites by habitId.
      *
      * @param habitId - habit id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      */
-    void removeFromFavorites(Long habitId, String email);
+    void removeFromFavorites(Long habitId, Long userId);
 
     /**
      * Method returns all favorite habits.

@@ -4,6 +4,7 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -334,13 +335,13 @@ public class HabitController {
     })
     @PostMapping(value = "/custom", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomHabitDtoResponse> addCustomHabit(
-        @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
+            @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
             required = true) @RequestPart @Valid CustomHabitDtoRequest request,
-        @Parameter(description = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
-        @Parameter(hidden = true) Principal principal) {
+            @Parameter(description = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
+            @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(habitService.addCustomHabit(request, image, principal.getName()));
+            .body(habitService.addCustomHabit(request, image, userId));
     }
 
     /**
@@ -395,11 +396,11 @@ public class HabitController {
     })
     @PutMapping(value = "/update/{habitId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
-        @RequestPart @Valid CustomHabitDtoRequest request, @Parameter(hidden = true) Principal principal,
+        @RequestPart @Valid CustomHabitDtoRequest request, @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(description = "Image of habit") @ImageValidation @RequestPart(
             required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
+            .body(habitService.updateCustomHabit(request, habitId, userId, image));
     }
 
     /**
@@ -423,8 +424,8 @@ public class HabitController {
     })
     @DeleteMapping(value = "/delete/{customHabitId}")
     public ResponseEntity<Object> deleteCustomHabit(@PathVariable Long customHabitId,
-        @Parameter(hidden = true) Principal principal) {
-        habitService.deleteCustomHabit(customHabitId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitService.deleteCustomHabit(customHabitId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -484,8 +485,8 @@ public class HabitController {
     })
     @PostMapping("/{habitId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long habitId,
-        @Parameter(hidden = true) Principal principal) {
-        habitService.addToFavorites(habitId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitService.addToFavorites(habitId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -504,8 +505,8 @@ public class HabitController {
     })
     @DeleteMapping("/{habitId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long habitId,
-        @Parameter(hidden = true) Principal principal) {
-        habitService.removeFromFavorites(habitId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitService.removeFromFavorites(habitId, userId);
         return ResponseEntity.ok().build();
     }
 

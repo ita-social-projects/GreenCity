@@ -340,9 +340,9 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     @Override
     public CustomHabitDtoResponse addCustomHabit(
-        CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
-        User user = userRepo.findByEmail(userEmail)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, Long userId) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
             image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
@@ -402,9 +402,9 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     @Override
     public CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest habitDto, Long habitId,
-        String userEmail, MultipartFile image) {
-        User user = userRepo.findByEmail(userEmail)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        Long userId, MultipartFile image) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         Habit toUpdate = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + habitId));
         checkAccessForAdminAndModeratorAndByUserId(user, toUpdate);
@@ -539,12 +539,10 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteCustomHabit(Long customHabitId, String ownerEmail) {
+    public void deleteCustomHabit(Long customHabitId, Long ownerId) {
         Habit toDelete = habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId));
-        User owner = userRepo.findByEmail(ownerEmail)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + ownerEmail));
-        unAssignOwnerFromCustomHabit(toDelete, owner.getId());
+        unAssignOwnerFromCustomHabit(toDelete, ownerId);
         toDelete.setIsDeleted(true);
         habitRepo.save(toDelete);
     }
@@ -641,12 +639,12 @@ public class HabitServiceImpl implements HabitService {
     }
 
     @Override
-    public void addToFavorites(Long habitId, String email) {
+    public void addToFavorites(Long habitId, Long userId) {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (habit.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_HABIT_TO_FAVORITES);
@@ -658,12 +656,12 @@ public class HabitServiceImpl implements HabitService {
     }
 
     @Override
-    public void removeFromFavorites(Long habitId, String email) {
+    public void removeFromFavorites(Long habitId, Long userId) {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!habit.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.HABIT_NOT_IN_FAVORITES);
