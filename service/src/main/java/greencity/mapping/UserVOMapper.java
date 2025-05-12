@@ -34,7 +34,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             userVO.setUserLocation(userLocationDto);
         }
         userVO.setUserCredo(user.getUserCredo());
-
+        userVO.setProfilePicturePath(user.getProfilePicturePath());
         return userVO;
     }
 }

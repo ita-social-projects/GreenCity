@@ -415,4 +415,45 @@ class UserServiceImplTest {
         verify(userRepo).findByEmail(createGreenCityUserDto.getEmail());
         verify(userRepo, never()).save(any(User.class));
     }
+
+    @Test
+    void updateUserProfilePictureTest() {
+        User user = getUser();
+        String profilePicturePath = "http://newprofilepicture.com.ua";
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+
+        userService.updateUserProfilePicture(1L, profilePicturePath);
+
+        assertEquals(profilePicturePath, user.getProfilePicturePath());
+    }
+
+    @Test
+    void updateUserProfilePictureUserNotFoundTest() {
+        String profilePicturePath = "http://newprofilepicture.com.ua";
+
+        when(userRepo.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> userService.updateUserProfilePicture(999L, profilePicturePath));
+    }
+
+    @Test
+    void getProfilePicturePathTest() {
+        User user = getUser();
+        String profilePicturePath = "http://testprofilepicture.com.ua";
+        user.setProfilePicturePath(profilePicturePath);
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+
+        String result = userService.getProfilePicturePath(1L);
+
+        assertEquals(profilePicturePath, result);
+    }
+
+    @Test
+    void getProfilePicturePathUserNotFoundTest() {
+        when(userRepo.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> userService.getProfilePicturePath(999L));
+    }
 }

@@ -271,4 +271,20 @@ public interface UserService {
     Boolean createUser(CreateGreenCityUserDto createUserDto);
 
     String findUserCredoByUserId(Long userId);
+
+    /**
+     * Method for updating user's profilePicturePath.
+     *
+     * @param userId             - {@link Long} of user's id.
+     * @param profilePicturePath - new picturePath.
+     */
+    void updateUserProfilePicture(Long userId, String profilePicturePath);
+
+    /**
+     * Method for getting user's profilePicturePath.
+     *
+     * @param userId - {@link Long} of user's id.
+     * @return {@link String} - user's profilePicturePath.
+     */
+    String getProfilePicturePath(Long userId);
 }

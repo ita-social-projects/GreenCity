@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     public UserVO findByEmail(String email) {
         return userRepo.findByEmail(email)
             .map(user -> modelMapper.map(user, UserVO.class))
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
@@ -576,5 +576,25 @@ public class UserServiceImpl implements UserService {
             .build();
         userRepo.save(userToSave);
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUserProfilePicture(Long userId, String profilePicturePath) {
+        User user = userRepo.findById(userId).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+        user.setProfilePicturePath(profilePicturePath);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProfilePicturePath(Long userId) {
+        User user = userRepo.findById(userId).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+        return user.getProfilePicturePath();
     }
 }

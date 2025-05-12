@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
@@ -273,5 +275,47 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<Boolean> createUser(@RequestBody CreateGreenCityUserDto createUserDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(createUserDto));
+    }
+
+    /**
+     * Method to update user's picture path. Used by GreenCityRemoteClient on the
+     * GreenCityUser microservice as a remote endpoint.
+     *
+     */
+    @Operation(summary = "Updates user's picture path")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PutMapping("/picturePath")
+    public ResponseEntity<Void> updatePicturePath(@RequestParam(name = "userId") Long userId,
+        @RequestParam(name = "profilePicturePath") String profilePicturePath) {
+        userService.updateUserProfilePicture(userId, profilePicturePath);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to get user's picture path. Used by GreenCityRemoteClient on the
+     * GreenCityUser microservice as a remote endpoint.
+     *
+     */
+    @Operation(summary = "Gets user's picture path")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/picturePath")
+    public ResponseEntity<String> getPicturePath(@RequestParam(name = "userId") Long userId) {
+        return ResponseEntity.ok(userService.getProfilePicturePath(userId));
     }
 }
