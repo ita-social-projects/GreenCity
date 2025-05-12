@@ -554,8 +554,8 @@ public class EventController {
     public ResponseEntity<Object> rateEvent(
         @PathVariable Long eventId,
         @RequestBody @NotNull @Positive @Max(3) Integer grade,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.rateEvent(eventId, principal.getName(), grade);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.rateEvent(eventId, userId, grade);
         return ResponseEntity.ok().build();
     }
 

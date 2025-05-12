@@ -143,11 +143,11 @@ public interface EventService {
     /**
      * Rate Event.
      *
-     * @param email   - user that rates event
+     * @param userId  - id of user that rates event
      * @param eventId - id of rated event
      * @param grade   - grade of event
      */
-    void rateEvent(Long eventId, String email, int grade);
+    void rateEvent(Long eventId, Long userId, int grade);
 
     /**
      * Get all event attenders.
