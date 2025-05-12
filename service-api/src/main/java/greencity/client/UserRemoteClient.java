@@ -507,6 +507,17 @@ public class UserRemoteClient {
         return new UserVO();
     }
 
+    /**
+     * Find list of {@link UserVO}'s by emails.
+     *
+     * @param emails user emails.
+     * @return list of {@link UserVO}.
+     */
+    // TODO
+    public List<UserVO> findAllByEmailIn(List<String> emails) {
+        return List.of();
+    }
+
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
 

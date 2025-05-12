@@ -280,9 +280,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserVO> findByEmails(List<String> emails) {
-        return userRepo.findAllByEmailIn(emails).stream()
-            .map(u -> modelMapper.map(u, UserVO.class))
-            .toList();
+        return userRemoteClient.findAllByEmailIn(emails);
     }
 
     /**
