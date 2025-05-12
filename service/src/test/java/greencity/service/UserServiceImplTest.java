@@ -225,7 +225,7 @@ class UserServiceImplTest {
     void testFindByEmailThrowException() {
         when(userRepo.findByEmail(testEmail)).thenReturn(Optional.empty());
 
-        assertThrows(WrongIdException.class, () -> userService.findByEmail(testEmail));
+        assertThrows(WrongEmailException.class, () -> userService.findByEmail(testEmail));
 
         verify(userRepo).findByEmail(testEmail);
     }
