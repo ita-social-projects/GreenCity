@@ -26,7 +26,7 @@ public class QuartzConfig {
     @Bean
     public JobDetail ecoNewsGenerationJobDetail() {
         return JobBuilder.newJob(EcoNewsGenerationJob.class)
-            .withIdentity(JOB_DETAILS_IDENTITY)
+            .withIdentity(ECO_NEWS_GENERATION_JOB_IDENTITY)
             .storeDurably()
             .build();
     }
@@ -44,7 +44,7 @@ public class QuartzConfig {
         String fixedCron = fixCronExpression(cronExpression);
         return TriggerBuilder.newTrigger()
             .forJob(ecoNewsGenerationJobDetail())
-            .withIdentity(TRIGGER_IDENTITY)
+            .withIdentity(ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
             .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
             .build();
     }
@@ -60,14 +60,26 @@ public class QuartzConfig {
      * @return The corrected cron expression, if needed.
      */
     private String fixCronExpression(String cron) {
-        String[] parts = cron.trim().split(SPLIT_REGEX);
-        if (parts.length == CRON_FIELDS_COUNT
-            && !QUESTION_MARK.equals(parts[DAY_OF_MONTH_INDEX])
-            && !STAR.equals(parts[DAY_OF_WEEK_INDEX]))
-        {
-            parts[3] = QUESTION_MARK;
-            return String.join(SPACE, parts);
+        String[] fields = cron.trim().split(CRON_FIELD_SPLIT_REGEX);
+        if (fields.length != CRON_FIELDS_COUNT_EXPECTED) {
+            throw new IllegalArgumentException(INVALID_CRON_EXPRESSION_ERROR + cron);
         }
-        return cron;
+
+        boolean hasDayOfMonth = !fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
+
+        boolean hasDayOfWeek = !fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_WILDCARD);
+
+        if (hasDayOfMonth && hasDayOfWeek) {
+            fields[CRON_FIELD_DAY_OF_MONTH_INDEX] = CRON_DAY_OF_MONTH_PLACEHOLDER;
+        }
+
+        if (fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD)
+            && fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_WILDCARD))
+        {
+            fields[CRON_FIELD_DAY_OF_MONTH_INDEX] = CRON_DAY_OF_MONTH_PLACEHOLDER;
+        }
+        return String.join(CRON_SPACE_SEPARATOR, fields);
     }
 }
