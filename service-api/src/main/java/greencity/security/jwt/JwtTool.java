@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.NativeWebRequest;
-import javax.crypto.SecretKey;
 
 /**
  * Class that provides methods for working with JWT.
@@ -122,17 +121,17 @@ public class JwtTool {
     }
 
     /**
-     * Method to extract user id as claim from JWT
+     * Method to extract user id as claim from JWT.
      *
      * @param jwt {@link String} json web token
      * @return Long user id extracted from token
      */
     public Long extractUserIdFromJwt(String jwt) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
-                .build()
-                .parseSignedClaims(jwt)
-                .getPayload()
-                .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+            .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
+            .build()
+            .parseSignedClaims(jwt)
+            .getPayload()
+            .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
     }
 }

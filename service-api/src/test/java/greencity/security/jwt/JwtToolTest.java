@@ -67,9 +67,9 @@ class JwtToolTest {
     void extractUserIdFromJwtTest() {
         Long expectedResult = 5L;
         String jwt = Jwts.builder()
-                .claim(AppConstant.JWT_USER_ID_CLAIM, expectedResult)
-                .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
-                .compact();
+            .claim(AppConstant.JWT_USER_ID_CLAIM, expectedResult)
+            .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
+            .compact();
 
         Long actualResult = jwtTool.extractUserIdFromJwt(jwt);
 

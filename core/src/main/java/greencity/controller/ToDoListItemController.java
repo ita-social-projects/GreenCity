@@ -232,7 +232,7 @@ public class ToDoListItemController {
     })
     @GetMapping("/{userId}/get-all-inprogress")
     public ResponseEntity<List<ToDoListItemDto>> findInProgressByUserId(
-            @PathVariable @ValidCurrentUserId Long userId, @RequestParam(name = "lang") String code) {
+        @PathVariable @ValidCurrentUserId Long userId, @RequestParam(name = "lang") String code) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(toDoListItemService.findInProgressByUserIdAndLanguageCode(userId, code));
     }

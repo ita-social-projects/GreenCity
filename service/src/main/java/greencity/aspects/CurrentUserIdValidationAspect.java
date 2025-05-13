@@ -51,7 +51,8 @@ public class CurrentUserIdValidationAspect {
 
     /**
      * Returns method parameter of type {@link Long} that is annotated with
-     * {@link ValidCurrentUserId}. The position of such a parameter can be arbitrary.
+     * {@link ValidCurrentUserId}. The position of such a parameter can be
+     * arbitrary.
      *
      * @param joinPoint is used for annotated parameter observation.
      * @return {@link Optional} containing supplied user id or empty Optional if the
