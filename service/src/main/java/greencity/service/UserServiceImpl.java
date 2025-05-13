@@ -583,18 +583,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateUserProfilePicture(Long userId, String profilePicturePath) {
-        User user = userRepo.findById(userId).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-        user.setProfilePicturePath(profilePicturePath);
+        int updatedRows = userRepo.updateUserProfilePictureByUserId(userId, profilePicturePath);
+        if (updatedRows == 0) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String getProfilePicturePath(Long userId) {
-        User user = userRepo.findById(userId).orElseThrow(
-            () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-        return user.getProfilePicturePath();
-    }
+        @Override
+        public String getProfilePicturePath(Long userId) {
+            if (!userRepo.existsById(userId)) {
+                throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+            }
+            return userRepo.findProfilePicturePathByUserId(userId);
+        }
 }
