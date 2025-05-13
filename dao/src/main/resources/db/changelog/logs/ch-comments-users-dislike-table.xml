@@ -39,4 +39,9 @@
                                  referencedColumnNames="id"
                                  referencedTableName="comments"/>
     </changeSet>
+    <changeSet id="1747141984482-1" author="Andrii Danylenko">
+        <addPrimaryKey tableName="comments_users_dislikes"
+                       columnNames="user_id, comment_id"
+                       constraintName="PK_comments_users_dislikes"/>
+    </changeSet>
 </databaseChangeLog>
