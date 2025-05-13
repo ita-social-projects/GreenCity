@@ -2,7 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
-import greencity.annotations.CurrentUserId;
+import greencity.annotations.ValidCurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
@@ -232,7 +232,7 @@ public class ToDoListItemController {
     })
     @GetMapping("/{userId}/get-all-inprogress")
     public ResponseEntity<List<ToDoListItemDto>> findInProgressByUserId(
-        @PathVariable @CurrentUserId Long userId, @RequestParam(name = "lang") String code) {
+        @PathVariable @ValidCurrentUserId Long userId, @RequestParam(name = "lang") String code) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(toDoListItemService.findInProgressByUserIdAndLanguageCode(userId, code));
     }

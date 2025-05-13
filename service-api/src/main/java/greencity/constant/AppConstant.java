@@ -14,6 +14,7 @@ public class AppConstant {
     public static final String USER = "USER";
     public static final String AUTHORIZATION = "Authorization";
     public static final String ROLE = "role";
+    public static final String JWT_USER_ID_CLAIM = "userId";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String LANGUAGE_CODE_UA = "ua";
     public static final Integer MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER = 6;

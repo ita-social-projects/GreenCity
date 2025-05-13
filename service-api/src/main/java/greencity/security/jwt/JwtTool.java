@@ -1,7 +1,10 @@
 package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.ROLE;
+import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.enums.Role;
+import greencity.exception.exceptions.NoJwtException;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -16,7 +19,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * Class that provides methods for working with JWT.
@@ -105,5 +110,35 @@ public class JwtTool {
             .filter(authHeader -> authHeader.startsWith("Bearer "))
             .map(token -> token.substring(7))
             .orElse(null);
+    }
+
+    /**
+     * Method to extract jwt from a {@link NativeWebRequest} instance.
+     *
+     * @param nativeWebRequest request to extract jwt from
+     * @return {@link String} jwt
+     * @throws NoJwtException in case jwt could not be extracted from the request
+     */
+    public String extractJwtFromNativeWebRequest(NativeWebRequest nativeWebRequest) throws NoJwtException {
+        String authorizationHeader = nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorizationHeader == null || !authorizationHeader.startsWith(AppConstant.TOKEN_PREFIX)) {
+            throw new NoJwtException(ErrorMessage.NO_JWT_TOKEN_FOUND);
+        }
+        return authorizationHeader.substring(AppConstant.TOKEN_PREFIX.length());
+    }
+
+    /**
+     * Method to extract user id as claim from JWT.
+     *
+     * @param jwt {@link String} json web token
+     * @return Long user id extracted from token
+     */
+    public Long extractUserIdFromJwt(String jwt) {
+        return Jwts.parser()
+            .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
+            .build()
+            .parseSignedClaims(jwt)
+            .getPayload()
+            .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
     }
 }

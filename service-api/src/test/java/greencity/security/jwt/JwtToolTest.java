@@ -1,7 +1,10 @@
 package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.ROLE;
+
+import greencity.constant.AppConstant;
 import greencity.enums.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,6 +61,19 @@ class JwtToolTest {
             .getPayload()
             .get(ROLE);
         assertEquals(expectedRole, Role.valueOf(authorities.getFirst()));
+    }
+
+    @Test
+    void extractUserIdFromJwtTest() {
+        Long expectedResult = 5L;
+        String jwt = Jwts.builder()
+            .claim(AppConstant.JWT_USER_ID_CLAIM, expectedResult)
+            .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
+            .compact();
+
+        Long actualResult = jwtTool.extractUserIdFromJwt(jwt);
+
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test

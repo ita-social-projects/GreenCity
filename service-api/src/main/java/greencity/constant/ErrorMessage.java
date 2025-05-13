@@ -258,4 +258,5 @@ public class ErrorMessage {
         "Insufficient location data found for the provided coordinates.";
     public static final String USER_DID_NOT_SET_ANY_CITY = "User did not set any city";
     public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User already registered with this email";
+    public static final String NO_JWT_TOKEN_FOUND = "No JWT found in request header";
 }
