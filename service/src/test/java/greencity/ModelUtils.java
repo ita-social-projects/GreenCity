@@ -724,13 +724,13 @@ public class ModelUtils {
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", false, Collections.singletonList(tag), Collections.emptySet(),
-            Collections.emptySet(), Collections.emptySet(), 0.0);
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", false, Collections.singletonList(getTag()), Collections.emptySet(),
-            Collections.emptySet(), Collections.emptySet(), 0.0);
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {

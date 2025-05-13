@@ -33,5 +33,4 @@ public class QuartzConstants {
     public static final String CRON_EXPRESSION_CRITICAL_ERROR = "💥 [ERROR] Critical error in cron expression: {}";
 
     public static final String MDC_REQUEST_ID = "requestId";
-
 }

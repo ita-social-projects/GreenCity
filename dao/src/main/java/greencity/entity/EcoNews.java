@@ -1,7 +1,5 @@
 package greencity.entity;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.NoArgsConstructor;
@@ -83,8 +81,4 @@ public class EcoNews {
         joinColumns = @JoinColumn(name = "eco_news_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> followers = new HashSet<>();
-
-    @Min(0)
-    @Max(1)
-    private Double relevanceScore;
 }
