@@ -112,6 +112,13 @@ public class JwtTool {
             .orElse(null);
     }
 
+    /**
+     * Method to extract jwt from a {@link NativeWebRequest} instance.
+     *
+     * @param nativeWebRequest request to extract jwt from
+     * @return {@link String} jwt
+     * @throws NoJwtException in case jwt could not be extracted from the request
+     */
     public String extractJwtFromNativeWebRequest(NativeWebRequest nativeWebRequest) throws NoJwtException {
         String authorizationHeader = nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader == null || !authorizationHeader.startsWith(AppConstant.TOKEN_PREFIX)) {
