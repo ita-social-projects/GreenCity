@@ -1,0 +1,63 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="user-eco-news-relevance-user-id-index" author="DmytroLysenko1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_user_id"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_user_id"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="user-eco-news-relevance-eco-news-id-index" author="DmytroLysenko1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_eco_news_id"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_eco_news_id">
+            <column name="eco_news_id"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_eco_news_id"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="user-eco-news-relevance-composite-index" author="DmytroLysenko1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_composite"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_composite">
+            <column name="user_id"/>
+            <column name="eco_news_id"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="user_eco_news_relevance" indexName="idx_user_eco_news_relevance_composite"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="eco-news-author-id-index" author="DmytroLysenko1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="eco_news" indexName="idx_eco_news_author_email"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="eco_news" indexName="idx_eco_news_author_email">
+            <column name="author_id"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="eco_news" indexName="idx_eco_news_author_email"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

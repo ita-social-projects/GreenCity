@@ -16,6 +16,7 @@ public class QuartzConstants {
     public static final int CRON_FIELD_DAY_OF_MONTH_INDEX = 3;
     public static final int CRON_FIELD_DAY_OF_WEEK_INDEX = 5;
 
+    public static final String CREATION_CRON_FAILED_MESSAGE = "Failed to create trigger with cron: ";
     public static final String INVALID_CRON_EXPRESSION_ERROR = "Invalid cron expression (must have 6 fields): ";
     public static final String METHOD_CALLED = "🔍 [TRACE] Method '{}' called with parameters: {}";
     public static final String METHOD_SUCCESS = "✅ [INFO] Method '{}' executed successfully in {} ms. Result: {}";

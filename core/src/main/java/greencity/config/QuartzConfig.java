@@ -1,6 +1,8 @@
 package greencity.config;
 
 import static greencity.constant.QuartzConstants.*;
+import greencity.exception.exceptions.InvalidCronException;
+import greencity.exception.exceptions.TriggerException;
 import greencity.scheduler.EcoNewsGenerationJob;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
@@ -38,14 +40,14 @@ public class QuartzConfig {
                 .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
                 .build();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to create trigger with cron: " + fixedCron, e);
+            throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
         }
     }
 
     private String fixCronExpression(String cron) {
         String[] fields = cron.trim().split(CRON_FIELD_SPLIT_REGEX);
         if (fields.length != CRON_FIELDS_COUNT_EXPECTED) {
-            throw new IllegalArgumentException(INVALID_CRON_EXPRESSION_ERROR + cron);
+            throw new InvalidCronException(INVALID_CRON_EXPRESSION_ERROR + cron);
         }
 
         if (shouldFixDayOfMonth(fields)) {
@@ -56,9 +58,11 @@ public class QuartzConfig {
     }
 
     private boolean shouldFixDayOfMonth(String[] fields) {
-        boolean hasDayOfMonth = !fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+        boolean hasDayOfMonth = !fields[CRON_FIELD_DAY_OF_MONTH_INDEX]
+            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
             && !fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
-        boolean hasDayOfWeek = !fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+        boolean hasDayOfWeek = !fields[CRON_FIELD_DAY_OF_WEEK_INDEX]
+            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
             && !fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_WILDCARD);
 
         return (hasDayOfMonth && hasDayOfWeek)

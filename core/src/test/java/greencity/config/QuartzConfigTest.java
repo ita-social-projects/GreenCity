@@ -31,15 +31,10 @@ class QuartzConfigTest {
     @Value("${cron4}")
     private String cron4;
 
-    private static final String cronExpression1 = "0 0 20 ? * SAT";
-    private static final String cronExpression2 = "0 0 12 ? * MON";
-    private static final String cronExpression3 = "0 0 9 ? * WED";
-    private static final String cronExpression4 = "0 0 6 ? * ?";
-    private static final String cronExpression5 = "0 0 14 ? * FRI";
-    private static final String invokedMethod = "fixCronExpression";
+    private static final String INVOKED_METHOD = "fixCronExpression";
 
     private Method getFixMethod() throws NoSuchMethodException {
-        Method method = QuartzConfig.class.getDeclaredMethod(invokedMethod, String.class);
+        Method method = QuartzConfig.class.getDeclaredMethod(INVOKED_METHOD, String.class);
         method.setAccessible(true);
         return method;
     }
@@ -48,34 +43,34 @@ class QuartzConfigTest {
     void testFixCronExpressionWithDayOfMonthAndDayOfWeek() throws Exception {
         Method method = getFixMethod();
         String fixedCron = (String) method.invoke(quartzConfig, cronExpression);
-        assertEquals(cronExpression1, fixedCron);
+        assertEquals(cronExpression, fixedCron);
     }
 
     @Test
     void testReplaceDayOfMonthWithQuestionMark() throws Exception {
         Method method = getFixMethod();
         String fixed = (String) method.invoke(quartzConfig, cron1);
-        assertEquals(cronExpression2, fixed);
+        assertEquals(cron1, fixed);
     }
 
     @Test
     void testKeepValidCronExpressionUnchanged() throws Exception {
         Method method = getFixMethod();
         String fixed = (String) method.invoke(quartzConfig, cron2);
-        assertEquals(cronExpression3, fixed);
+        assertEquals(cron2, fixed);
     }
 
     @Test
     void testAlreadyCorrectExpression() throws Exception {
         Method method = getFixMethod();
         String fixed = (String) method.invoke(quartzConfig, cron3);
-        assertEquals(cronExpression4, fixed);
+        assertEquals(cron3, fixed);
     }
 
     @Test
     void testFixBothDayOfMonthAndWeekPresent() throws Exception {
         Method method = getFixMethod();
         String fixed = (String) method.invoke(quartzConfig, cron4);
-        assertEquals(cronExpression5, fixed);
+        assertEquals(cron4, fixed);
     }
 }

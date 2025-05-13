@@ -1,0 +1,48 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="-habit-assign-user-id-index" author="DmytroLysenko1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="habit_assign" indexName="idx_habit_assign_user_id"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="habit_assign" indexName="idx_habit_assign_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="habit_assign" indexName="idx_habit_assign_user_id"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="habit-assign-habit-id-index" author="DmytroLysenko1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="habit_assign" indexName="idx_habit_assign_habit_id"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="habit_assign" indexName="idx_habit_assign_habit_id">
+            <column name="habit_id"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="habit_assign" indexName="idx_habit_assign_habit_id"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="habit-translations-habit-id-index" author="DmytroLysenko1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="habit_translations" indexName="idx_habit_translations_habit_id"/>
+            </not>
+        </preConditions>
+        <createIndex tableName="habit_translations" indexName="idx_habit_translations_habit_id">
+            <column name="habit_id"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="habit_translations" indexName="idx_habit_translations_habit_id"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

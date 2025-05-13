@@ -2,9 +2,12 @@ package greencity.repository;
 
 import greencity.dto.econews.EcoNewsAuthorStatisticDto;
 import greencity.entity.EcoNews;
+import jakarta.persistence.QueryHint;
+import java.time.ZonedDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -186,4 +189,24 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
 
     @EntityGraph(attributePaths = {"tags", "author"})
     Optional<EcoNews> findTopByAuthorIdOrderByCreationDateDesc(Long authorId);
+
+    @EntityGraph(value = "EcoNews.withAuthorAndTags")
+    @Query(
+        "SELECT n FROM EcoNews n "+
+        "JOIN FETCH n.author " +
+        "WHERE n.author.email = :aiUserEmail"
+    )
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    List<EcoNews> findAllAIGenerated(@Param("aiUserEmail") String aiUserEmail);
+
+    @EntityGraph(value = "EcoNews.withAuthorAndTags")
+    @Query(
+        "SELECT n FROM EcoNews n " +
+        "JOIN FETCH n.author " +
+        "WHERE n.author.email = :aiUserEmail " +
+        "AND n.creationDate >= :since")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    List<EcoNews> findAllAIGeneratedSince(
+        @Param("aiUserEmail") String aiUserEmail,
+        @Param("since") ZonedDateTime since);
 }

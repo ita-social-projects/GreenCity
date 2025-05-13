@@ -23,6 +23,13 @@ import org.hibernate.annotations.BatchSize;
 @Getter
 @Setter
 @Builder
+@NamedEntityGraph(
+    name = "EcoNews.withAuthorAndTags",
+    attributeNodes = {
+        @NamedAttributeNode("author"),
+        @NamedAttributeNode("tags")
+    }
+)
 public class EcoNews {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

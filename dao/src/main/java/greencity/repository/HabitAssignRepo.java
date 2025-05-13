@@ -5,6 +5,7 @@ import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
+import jakarta.persistence.QueryHint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -454,11 +455,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         """)
     List<HabitStatusCount> countHabitAssignsByStatus();
 
-    @Query("""
-            SELECT ht.name FROM HabitAssign ha
-            JOIN ha.habit h
-            JOIN h.habitTranslations ht
-            WHERE ha.user.id = :userId
-        """)
+    @Query(
+        "SELECT DISTINCT ht.name FROM HabitAssign ha " +
+        "JOIN ha.habit h " +
+        "JOIN h.habitTranslations ht " +
+        "WHERE ha.user.id = :userId"
+    )
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     List<String> fetchHabitNamesByUserId(@Param("userId") Long userId);
 }
