@@ -2,7 +2,9 @@ package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.ROLE;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.enums.Role;
+import greencity.exception.exceptions.NoJwtException;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -17,7 +19,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.NativeWebRequest;
 import javax.crypto.SecretKey;
 
 /**
@@ -100,6 +104,20 @@ public class JwtTool {
             .orElse(null);
     }
 
+    public String extractJwtFromNativeWebRequest(NativeWebRequest nativeWebRequest) throws NoJwtException {
+        String authorizationHeader = nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorizationHeader == null || !authorizationHeader.startsWith(AppConstant.TOKEN_PREFIX)) {
+            throw new NoJwtException(ErrorMessage.NO_JWT_TOKEN_FOUND);
+        }
+        return authorizationHeader.substring(AppConstant.TOKEN_PREFIX.length());
+    }
+
+    /**
+     * Method to extract user id as claim from JWT
+     *
+     * @param jwt {@link String} json web token
+     * @return Long user id extracted from token
+     */
     public Long extractUserIdFromJwt(String jwt) {
         return Jwts.parser()
                 .verifyWith(getAccessTokenKey())
