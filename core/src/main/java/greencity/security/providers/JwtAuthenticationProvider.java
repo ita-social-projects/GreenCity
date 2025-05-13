@@ -40,7 +40,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public Authentication authenticate(Authentication authentication) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes());
+        SecretKey key = jwtTool.getAccessTokenKey();
         String email = Jwts.parser()
             .verifyWith(key).build()
             .parseSignedClaims(authentication.getName())

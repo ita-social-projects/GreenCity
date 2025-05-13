@@ -1,6 +1,7 @@
 package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.ROLE;
+import greencity.constant.AppConstant;
 import greencity.enums.Role;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import javax.crypto.SecretKey;
 
 /**
  * Class that provides methods for working with JWT.
@@ -86,15 +88,6 @@ public class JwtTool {
     }
 
     /**
-     * Returns access token key.
-     *
-     * @return accessTokenKey
-     */
-    public String getAccessTokenKey() {
-        return accessTokenKey;
-    }
-
-    /**
      * Method that get token from {@link HttpServletRequest}.
      *
      * @param servletRequest this is your request.
@@ -105,5 +98,23 @@ public class JwtTool {
             .filter(authHeader -> authHeader.startsWith("Bearer "))
             .map(token -> token.substring(7))
             .orElse(null);
+    }
+
+    public Long extractUserIdFromJwt(String jwt) {
+        return Jwts.parser()
+                .verifyWith(getAccessTokenKey())
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload()
+                .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+    }
+
+    /**
+     * Returns access token key.
+     *
+     * @return accessTokenKey
+     */
+    public SecretKey getAccessTokenKey() {
+        return Keys.hmacShaKeyFor(accessTokenKey.getBytes());
     }
 }
