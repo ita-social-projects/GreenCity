@@ -421,18 +421,18 @@ class UserServiceImplTest {
         User user = getUser();
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath)).thenReturn(1);
 
         userService.updateUserProfilePicture(1L, profilePicturePath);
 
-        assertEquals(profilePicturePath, user.getProfilePicturePath());
+        verify(userRepo).updateUserProfilePictureByUserId(1L, profilePicturePath);
     }
 
     @Test
     void updateUserProfilePictureUserNotFoundTest() {
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.findById(999L)).thenReturn(Optional.empty());
+        when(userRepo.updateUserProfilePictureByUserId(999L, profilePicturePath)).thenReturn(0);
 
         assertThrows(NotFoundException.class, () -> userService.updateUserProfilePicture(999L, profilePicturePath));
     }
@@ -443,7 +443,8 @@ class UserServiceImplTest {
         String profilePicturePath = "http://testprofilepicture.com.ua";
         user.setProfilePicturePath(profilePicturePath);
 
-        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.existsById(1L)).thenReturn(true);
+        when(userRepo.findProfilePicturePathByUserId(1L)).thenReturn(profilePicturePath);
 
         String result = userService.getProfilePicturePath(1L);
 
@@ -452,7 +453,7 @@ class UserServiceImplTest {
 
     @Test
     void getProfilePicturePathUserNotFoundTest() {
-        when(userRepo.findById(999L)).thenReturn(Optional.empty());
+        when(userRepo.existsById(999L)).thenReturn(false);
 
         assertThrows(NotFoundException.class, () -> userService.getProfilePicturePath(999L));
     }

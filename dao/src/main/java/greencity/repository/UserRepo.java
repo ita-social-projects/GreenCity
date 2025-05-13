@@ -8,6 +8,7 @@ import jakarta.persistence.Tuple;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -793,4 +794,33 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Modifying
     @Query("UPDATE User SET userCredo =:userCredo WHERE id =:userId")
     void updateUserCredo(Long userId, String userCredo);
+
+    /**
+     * Updates the profile picture path of a user by their id.
+     *
+     * @param userId             the id of the user
+     * @param profilePicturePath the new profile picture path
+     * @return the number of affected rows (1 if updated, 0 if user not found)
+     */
+    @Modifying
+    @Query("UPDATE User u SET u.profilePicturePath =:profilePicturePath WHERE u.id =:userId")
+    int updateUserProfilePictureByUserId(@Param("userId") Long userId,
+        @Param("profilePicturePath") String profilePicturePath);
+
+    /**
+     * Checks if a user with the given id exists.
+     *
+     * @param userId the id of the user
+     * @return true if a user with the given id exists, false otherwise
+     */
+    boolean existsById(@NotNull @Param("userId") Long userId);
+
+    /**
+     * Retrieves the profile picture path of a user by their id.
+     *
+     * @param userId the id of the user
+     * @return the profile picture path, or null if not set
+     */
+    @Query("SELECT u.profilePicturePath FROM User u WHERE u.id =:userId")
+    String findProfilePicturePathByUserId(@Param("userId") Long userId);
 }
