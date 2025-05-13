@@ -44,7 +44,7 @@ class JwtToolTest {
         final String accessToken = jwtTool.createAccessToken(expectedEmail, expectedRole);
         System.out.println(accessToken);
 
-        SecretKey key = jwtTool.getAccessTokenKey();
+        SecretKey key = Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes());
 
         String actualEmail = Jwts.parser()
             .verifyWith(key)
@@ -68,7 +68,7 @@ class JwtToolTest {
         Long expectedResult = 5L;
         String jwt = Jwts.builder()
                 .claim(AppConstant.JWT_USER_ID_CLAIM, expectedResult)
-                .signWith(jwtTool.getAccessTokenKey())
+                .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
                 .compact();
 
         Long actualResult = jwtTool.extractUserIdFromJwt(jwt);

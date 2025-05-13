@@ -92,6 +92,15 @@ public class JwtTool {
     }
 
     /**
+     * Returns access token key.
+     *
+     * @return accessTokenKey
+     */
+    public String getAccessTokenKey() {
+        return accessTokenKey;
+    }
+
+    /**
      * Method that get token from {@link HttpServletRequest}.
      *
      * @param servletRequest this is your request.
@@ -120,19 +129,10 @@ public class JwtTool {
      */
     public Long extractUserIdFromJwt(String jwt) {
         return Jwts.parser()
-                .verifyWith(getAccessTokenKey())
+                .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
                 .build()
                 .parseSignedClaims(jwt)
                 .getPayload()
                 .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
-    }
-
-    /**
-     * Returns access token key.
-     *
-     * @return accessTokenKey
-     */
-    public SecretKey getAccessTokenKey() {
-        return Keys.hmacShaKeyFor(accessTokenKey.getBytes());
     }
 }
