@@ -118,9 +118,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
-        checkUpdatableUser(id, email);
-        accessForUpdateUserStatus(id, email);
+    public UserStatusDto updateStatus(Long id, UserStatus userStatus, Long currentUserId) {
+        checkUpdatableUser(id, currentUserId);
+        accessForUpdateUserStatus(id, currentUserId);
         UserVO userVO = findById(id);
         userVO.setUserStatus(userStatus);
 
@@ -155,11 +155,10 @@ public class UserServiceImpl implements UserService {
      * then throw exception.
      *
      * @param id    id of updatable user.
-     * @param email email of admin/moderator.
+     * @param currentUserId id of current user.
      */
-    protected void checkUpdatableUser(Long id, String email) {
-        UserVO user = findByEmail(email);
-        if (id.equals(user.getId())) {
+    protected void checkUpdatableUser(Long id, Long currentUserId) {
+        if (id.equals(currentUserId)) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
     }
@@ -169,10 +168,10 @@ public class UserServiceImpl implements UserService {
      * moderators, then throw exception.
      *
      * @param id    id of updatable user.
-     * @param email email of admin/moderator.
+     * @param currentUserId email of current user.
      */
-    private void accessForUpdateUserStatus(Long id, String email) {
-        UserVO user = findByEmail(email);
+    private void accessForUpdateUserStatus(Long id, Long currentUserId) {
+        UserVO user = findById(currentUserId);
         if (user.getRole() == Role.ROLE_MODERATOR) {
             Role role = findById(id).getRole();
             if ((role == Role.ROLE_MODERATOR) || (role == Role.ROLE_ADMIN)) {

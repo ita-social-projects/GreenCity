@@ -66,7 +66,7 @@ public interface UserService {
      * @param userStatus {@link UserStatus} for user.
      * @return {@link UserStatusDto}
      */
-    UserStatusDto updateStatus(Long id, UserStatus userStatus, String email);
+    UserStatusDto updateStatus(Long id, UserStatus userStatus, Long currentUserId);
 
     /**
      * Update {@code ROLE} of user.
