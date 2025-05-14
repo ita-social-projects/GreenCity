@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -91,9 +92,9 @@ public class HabitCommentController {
     })
     @GetMapping("/comments/{id}")
     public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(commentService.getCommentById(ArticleType.HABIT, id, userVO));
+            .body(commentService.getCommentById(ArticleType.HABIT, id, userId));
     }
 
     /**
@@ -101,7 +102,7 @@ public class HabitCommentController {
      * comment id.
      *
      * @param parentCommentId id of parent comment {@link CommentDto}
-     * @param userVO          {@link UserVO} user who want to get replies.
+     * @param userId          {@link Long} id of user who want to get replies.
      * @return Pageable of {@link CommentDto}
      */
     @Operation(description = "Get all active replies to comment.")
@@ -117,10 +118,10 @@ public class HabitCommentController {
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long parentCommentId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(commentService.getAllActiveReplies(pageable, parentCommentId, userVO));
+            .body(commentService.getAllActiveReplies(pageable, parentCommentId, userId));
     }
 
     /**
@@ -180,9 +181,9 @@ public class HabitCommentController {
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveComments(
         @Parameter(hidden = true) Pageable pageable,
         Long habitId,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(commentService.getAllActiveComments(pageable, user, habitId, ArticleType.HABIT));
+            .body(commentService.getAllActiveComments(pageable, userId, habitId, ArticleType.HABIT));
     }
 
     /**
