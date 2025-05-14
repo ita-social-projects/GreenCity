@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ScheduledEmailMessage {
+public class ScheduledEmailMessage implements UserIdMessage {
     private String username;
     private Long userId;
     private String baseLink;
