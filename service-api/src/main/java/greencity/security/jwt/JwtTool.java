@@ -3,6 +3,7 @@ package greencity.security.jwt;
 import static greencity.constant.AppConstant.ROLE;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.user.UserClaims;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
 import io.jsonwebtoken.Claims;
@@ -139,13 +140,26 @@ public class JwtTool {
             .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
     }
 
-    public String extractUserEmail(String jwt) {
-        return extractClaims(jwt).getSubject();
+    public UserClaims extractUserClaims(String jwt) {
+        Claims claims = extractClaims(jwt);
+
+        return new UserClaims(
+                extractUserId(claims),
+                extractUserEmail(claims),
+                extractUserRoles(claims)
+        );
     }
 
-    public List<String> extractUserRoles(String jwt) {
-        return (List<String>) extractClaims(jwt)
-                .get(ROLE);
+    private String extractUserEmail(Claims claims) {
+        return claims.getSubject();
+    }
+
+    private List<String> extractUserRoles(Claims claims) {
+        return (List<String>) claims.get(ROLE);
+    }
+
+    private Long extractUserId(Claims claims) {
+        return claims.get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
     }
 
     private Claims extractClaims(String jwt) {

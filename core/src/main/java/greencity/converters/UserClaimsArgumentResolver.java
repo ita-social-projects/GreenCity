@@ -12,8 +12,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver {
@@ -32,14 +30,6 @@ public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver
                                   WebDataBinderFactory binderFactory
     ) throws Exception {
         String jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
-        Long userId = jwtTool.extractUserId(jwt);
-        String userEmail = jwtTool.extractUserEmail(jwt);
-        List<String> userRoles = jwtTool.extractUserRoles(jwt);
-
-        return new UserClaims(
-                userId,
-                userEmail,
-                userRoles
-        );
+        return jwtTool.extractUserClaims(jwt);
     }
 }
