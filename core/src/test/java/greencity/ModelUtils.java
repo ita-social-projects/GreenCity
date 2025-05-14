@@ -705,6 +705,19 @@ public class ModelUtils {
         return new TableRowsDto("users", tableData);
     }
 
+    public static PageableAdvancedDto<Map<String, String>> getPageableAdvancedDtoForTableRows() {
+        return new PageableAdvancedDto<>(
+            getTableRowsDto().tableData(),
+            1,
+            0,
+            1,
+            0,
+            false,
+            true,
+            true,
+            true);
+    }
+
     public static TableParamsRequestDto tableParamsRequestDto() {
         return new TableParamsRequestDto("users", 10, 1);
     }

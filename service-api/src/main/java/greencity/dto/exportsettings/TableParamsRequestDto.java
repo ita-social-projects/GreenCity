@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
 public record TableParamsRequestDto(
-    @Pattern(regexp = "^(?!_)[a-z]+(?:_[a-z]+){0,10}(?<!_)$",
+    @Pattern(regexp = AppConstant.VALID_TABLE_NAME_REGEX,
         message = ErrorMessage.INVALID_TABLE_NAME) String tableName,
 
     @Min(value = 0, message = ErrorMessage.NEGATIVE_LIMIT) @Max(value = AppConstant.SQL_ROW_LIMIT,
