@@ -30,7 +30,6 @@
         <test.containers.version>1.19.3</test.containers.version>
         <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
         <apache.commons.version>3.13.0</apache.commons.version>
-        <apache.poi.version>5.4.0</apache.poi.version>
     </properties>
 
     <dependencies>
