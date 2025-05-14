@@ -28,6 +28,6 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
         @NonNull NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory) {
         String jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
-        return jwtTool.extractUserIdFromJwt(jwt);
+        return jwtTool.extractUserId(jwt);
     }
 }

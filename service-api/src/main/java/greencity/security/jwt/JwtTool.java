@@ -134,7 +134,7 @@ public class JwtTool {
      * @param jwt {@link String} json web token
      * @return Long user id extracted from token
      */
-    public Long extractUserIdFromJwt(String jwt) {
+    public Long extractUserId(String jwt) {
         return extractClaims(jwt)
             .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
     }

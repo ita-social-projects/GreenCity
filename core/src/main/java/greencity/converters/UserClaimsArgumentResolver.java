@@ -32,7 +32,7 @@ public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver
                                   WebDataBinderFactory binderFactory
     ) throws Exception {
         String jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
-        Long userId = jwtTool.extractUserIdFromJwt(jwt);
+        Long userId = jwtTool.extractUserId(jwt);
         String userEmail = jwtTool.extractUserEmail(jwt);
         List<String> userRoles = jwtTool.extractUserRoles(jwt);
 

@@ -4,7 +4,6 @@ import static greencity.constant.AppConstant.ROLE;
 
 import greencity.constant.AppConstant;
 import greencity.enums.Role;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,14 +63,14 @@ class JwtToolTest {
     }
 
     @Test
-    void extractUserIdFromJwtTest() {
+    void extractUserIdTest() {
         Long expectedResult = 5L;
         String jwt = Jwts.builder()
             .claim(AppConstant.JWT_USER_ID_CLAIM, expectedResult)
             .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
             .compact();
 
-        Long actualResult = jwtTool.extractUserIdFromJwt(jwt);
+        Long actualResult = jwtTool.extractUserId(jwt);
 
         assertEquals(expectedResult, actualResult);
     }
