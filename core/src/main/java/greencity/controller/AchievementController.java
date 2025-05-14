@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
@@ -48,13 +49,15 @@ public class AchievementController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping
-    public ResponseEntity<List<AchievementVO>> getAll(@Parameter(hidden = true) Principal principal,
+    public ResponseEntity<List<AchievementVO>> getAll(
+        @Parameter(hidden = true) @CurrentUserId Long userId,
+        @Parameter(hidden = true) Principal principal,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
         return ResponseEntity.ok().body(
-            achievementService.findAllByTypeAndCategory(principal.getName(), achievementStatus, achievementCategoryId));
+            achievementService.findAllByTypeAndCategory(userId, principal.getName(), achievementStatus, achievementCategoryId));
     }
 
     /**
@@ -83,12 +86,14 @@ public class AchievementController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/count")
-    public ResponseEntity<Integer> getAchievementCount(@Parameter(hidden = true) Principal principal,
+    public ResponseEntity<Integer> getAchievementCount(
+        @Parameter(hidden = true) @CurrentUserId Long userId,
+        @Parameter(hidden = true) Principal principal,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
-        return ResponseEntity.ok().body(achievementService.findAchievementCountByTypeAndCategory(principal.getName(),
+        return ResponseEntity.ok().body(achievementService.findAchievementCountByTypeAndCategory(userId, principal.getName(),
             achievementStatus, achievementCategoryId));
     }
 

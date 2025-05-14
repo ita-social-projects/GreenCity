@@ -51,7 +51,7 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
                 Long achievementCategoryId = achievementCategory.getId();
                 achievementCategory
                     .setTotalQuantity(
-                        achievementService.findAchievementCountByTypeAndCategory(userEmail, null, achievementCategoryId));
+                        achievementService.findAchievementCountByTypeAndCategory(userId, userEmail, null, achievementCategoryId));
                 achievementCategory.setAchieved(userAchievementRepo
                     .findAllByUserIdAndAchievement_AchievementCategoryId(userId, achievementCategoryId).size());
                 return achievementCategory;
