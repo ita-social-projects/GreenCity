@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.exportsettings.EnvironmentDto;
 import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
@@ -7,9 +8,12 @@ import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.repository.ExportSettingsRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -23,11 +27,14 @@ public class ExportSettingsServiceImpl implements ExportSettingsService {
         return exportSettingsRepo.getTablesMetadata();
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public TableRowsDto selectFromTable(TableParamsRequestDto tableParams) {
-        return exportSettingsRepo.selectPortionFromTable(tableParams.tableName(), tableParams.limit(),
-            tableParams.offset());
+    @Transactional(readOnly = true)
+    public PageableAdvancedDto<Map<String, String>> selectFromTable(String tableName, Pageable pageable) {
+        int totalElements = exportSettingsRepo.countRowsInTable(tableName);
+        TableRowsDto data = exportSettingsRepo.selectPortionFromTable(
+            tableName, pageable.getPageSize(), (int) pageable.getOffset());
+
+        return populatePageableDto(totalElements, pageable, data.tableData());
     }
 
     @Transactional(readOnly = true)
@@ -42,5 +49,23 @@ public class ExportSettingsServiceImpl implements ExportSettingsService {
     @Override
     public EnvironmentDto getEnvironmentVariables() {
         return new EnvironmentDto(System.getenv());
+    }
+
+    private PageableAdvancedDto<Map<String, String>> populatePageableDto(int totalElements, Pageable pageable,
+        List<Map<String, String>> data) {
+        int totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
+        boolean isFirst = pageable.getPageNumber() == 0;
+        boolean isLast = pageable.getPageNumber() + 1 >= totalPages;
+
+        return new PageableAdvancedDto<>(
+            data,
+            totalElements,
+            pageable.getPageNumber(),
+            totalPages,
+            pageable.getPageNumber(),
+            pageable.getPageNumber() > 0,
+            !isLast,
+            isFirst,
+            isLast);
     }
 }

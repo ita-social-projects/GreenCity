@@ -17,4 +17,13 @@ public interface ExportSettingsRepo {
      * @return dto {@link TableRowsDto}
      */
     TableRowsDto selectPortionFromTable(String tableName, int limit, int offset);
+
+    /**
+     * Method for receiving total number of rows in the db table.
+     *
+     * @param tableName {@link String} DB table name.
+     *
+     * @return int count of rows.
+     */
+    int countRowsInTable(String tableName);
 }

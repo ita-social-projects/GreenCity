@@ -1,21 +1,27 @@
 package greencity.controller;
 
+import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.exportsettings.EnvironmentDto;
 import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.exportsettings.TableRowsDto;
 import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.service.ExportSettingsService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +29,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -54,7 +61,7 @@ public class ExportSettingsController {
     /**
      * Method for receiving rows from DB by table name, limit and offset.
      *
-     * @return dto {@link TableRowsDto}
+     * @return dto {@link PageableAdvancedDto}
      */
     @Operation(summary = "Get table rows by params.")
     @ApiResponses(value = {
@@ -68,20 +75,22 @@ public class ExportSettingsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @GetMapping("/select")
-    public ResponseEntity<TableRowsDto> selectFromTable(@Valid TableParamsRequestDto tableParams) {
-        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableParams));
+    public ResponseEntity<PageableAdvancedDto<Map<String, String>>> selectFromTable(
+        @Pattern(regexp = AppConstant.VALID_TABLE_NAME_REGEX,
+            message = ErrorMessage.INVALID_TABLE_NAME) String tableName,
+        @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.ok(exportSettingsService.selectFromTable(tableName, pageable));
     }
 
     /**
      * Method for receiving an .xlsx file with rows from DB by table name, limit and
      * offset.
      *
-     * @return dto {@link TableRowsDto}
+     * @return the excel file as stream {@link InputStreamResource}
      */
     @Operation(summary = "Get excel file with table rows by params.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = TableRowsDto.class))),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
