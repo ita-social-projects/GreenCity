@@ -59,7 +59,7 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
 
     private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        // TODO
+        // TODO: ? seems like we forced to get rid of that predicate ?
         Join<RatingStatistics, User> userJoin = root.join(RatingStatistics_.user);
         // return criteriaBuilder.like(userJoin.get(User_.email), "%" + searchCriteria.getValue() + "%");
         return null;
