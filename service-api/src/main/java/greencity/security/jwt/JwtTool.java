@@ -140,12 +140,8 @@ public class JwtTool {
 
         return new UserClaims(
             extractUserId(claims),
-            extractUserEmail(claims),
+            claims.getSubject(),
             extractUserRoles(claims));
-    }
-
-    private String extractUserEmail(Claims claims) {
-        return claims.getSubject();
     }
 
     private List<Role> extractUserRoles(Claims claims) {
@@ -160,8 +156,7 @@ public class JwtTool {
      * @return Long user id extracted from token
      */
     public Long extractUserId(String jwt) {
-        return extractClaims(jwt)
-            .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+        return extractUserId(extractClaims(jwt));
     }
 
     private Long extractUserId(Claims claims) {
