@@ -494,8 +494,13 @@ public class UserRemoteClient {
             .bodyToMono(Void.class).block();
     }
 
+    /**
+     * Method to find user email by user id
+     *
+     * @param userId user's id
+     * @return user's email
+     */
     // TODO
-    // TODO: add caching
     public String findUserEmailByUserId(Long userId) {
         return "aaa";
     }
@@ -511,6 +516,12 @@ public class UserRemoteClient {
         return List.of();
     }
 
+    /**
+     * Method to check whether user exists by email
+     *
+     * @param email user's email
+     * @return boolean of whether user by that email exists
+     */
     // TODO
     public boolean userExistsByEmail(String email) {
         return false;
