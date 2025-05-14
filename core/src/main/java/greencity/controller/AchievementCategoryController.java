@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.service.AchievementCategoryService;
@@ -36,8 +37,9 @@ public class AchievementCategoryController {
     })
     @GetMapping
     public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.ok()
-            .body(achievementCategoryService.findAllWithAtLeastOneAchievement(principal.getName()));
+            .body(achievementCategoryService.findAllWithAtLeastOneAchievement(userId, principal.getName()));
     }
 }
