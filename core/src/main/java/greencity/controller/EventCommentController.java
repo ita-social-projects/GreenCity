@@ -168,8 +168,8 @@ public class EventCommentController {
     public ResponseEntity<Object> update(
         @PathVariable Long commentId,
         @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        commentService.update(commentText, commentId, user);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        commentService.update(commentText, commentId, userId);
         return ResponseEntity.ok().build();
     }
 

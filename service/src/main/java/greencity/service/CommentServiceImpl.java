@@ -558,11 +558,11 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     @Transactional
-    public void update(String commentText, Long id, UserVO userVO) {
+    public void update(String commentText, Long id, Long currentUserId) {
         Comment comment = commentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
-        if (!userVO.getId().equals(comment.getUser().getId())) {
+        if (!currentUserId.equals(comment.getUser().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 

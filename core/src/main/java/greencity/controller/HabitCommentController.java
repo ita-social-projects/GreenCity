@@ -250,8 +250,8 @@ public class HabitCommentController {
     @PatchMapping("/comments")
     public void update(@RequestParam Long id,
         @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        commentService.update(commentText, id, user);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        commentService.update(commentText, id, userId);
     }
 
     /**
