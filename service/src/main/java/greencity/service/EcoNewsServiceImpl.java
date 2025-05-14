@@ -118,7 +118,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
         final EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
-        UserVO user = userService.findByEmail(email);
+        UserVO user = userService.findNotDeactivatedByEmail(email);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(RatingPointsNames.CREATE_NEWS), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);

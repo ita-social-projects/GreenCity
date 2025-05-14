@@ -500,13 +500,6 @@ public class UserRemoteClient {
         return "aaa";
     }
 
-    // TODO
-    // TODO: minimize amount of calls to findByEmail of UserServiceImpl
-    // TODO: exception handling in case not found
-    public UserVO findByEmail(String email) {
-        return new UserVO();
-    }
-
     /**
      * Find list of {@link UserVO}'s by emails.
      *

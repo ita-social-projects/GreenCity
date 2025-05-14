@@ -100,18 +100,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserVO findByEmail(String email) {
-        return userRemoteClient.findByEmail(email);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        UserVO user = userRemoteClient.findNotDeactivatedByEmail(email)
+    public UserVO findNotDeactivatedByEmail(String email) {
+        return userRemoteClient.findNotDeactivatedByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-        return Optional.of(user);
     }
 
     /**
