@@ -78,7 +78,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
+    public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Long userId, Pageable page, Principal principal,
         String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed) {
         return switch (projectName) {
             case null -> {
@@ -89,7 +89,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 try (ExecutorService executorService = Executors.newFixedThreadPool((int) notificationSourcesCount)) {
                     CompletableFuture<Long> greenCityTotalFuture = CompletableFuture.supplyAsync(() -> {
                         Pageable tempPageable = PageRequest.of(0, 1);
-                        return getNotificationsForUserFromGreenCity(tempPageable, principal, language, projectName,
+                        return getNotificationsForUserFromGreenCity(userId, tempPageable, language, projectName,
                             notificationTypes, viewed).getTotalElements();
                     }, executorService);
 
@@ -118,7 +118,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                         PageableAdvancedDto<NotificationDto> greenCityPage;
 
                         do {
-                            greenCityPage = getNotificationsForUserFromGreenCity(tempPageable, principal, language,
+                            greenCityPage = getNotificationsForUserFromGreenCity(userId, tempPageable, language,
                                 projectName, notificationTypes, viewed);
                             greenCityNotifications.addAll(greenCityPage.getPage());
                             currentPage++;
@@ -175,8 +175,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                     .build();
             }
             case GREENCITY -> getNotificationsForUserFromGreenCity(
+                userId,
                 page,
-                principal,
                 language,
                 projectName,
                 notificationTypes,
@@ -388,8 +388,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteNotification(Principal principal, Long notificationId) {
-        Long userId = userService.findByEmail(principal.getName()).getId();
+    public void deleteNotification(Long userId, Long notificationId) {
         if (!notificationRepo.existsByIdAndTargetUserId(notificationId, userId)) {
             throw new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId);
         }
@@ -558,12 +557,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         sendNotification(notification.getTargetUser().getId());
     }
 
-    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable page,
-        Principal principal, String language, ProjectName projectName, List<NotificationType> notificationTypes,
+    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Long userId, Pageable page,
+        String language, ProjectName projectName, List<NotificationType> notificationTypes,
         Boolean viewed) {
-        UserVO user = userService.findByEmail(principal.getName());
-        Long userId = user.getId();
-
         Page<Notification> notificationsFromGreenCityPage =
             notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
 

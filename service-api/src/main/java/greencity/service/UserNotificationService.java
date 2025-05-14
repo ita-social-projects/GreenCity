@@ -25,7 +25,7 @@ public interface UserNotificationService {
      * @param viewed            notification is viewed or not. Can be null
      * @return Page of {@link NotificationDto} instance.
      */
-    PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
+    PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Long userId, Pageable pageable, Principal principal,
         String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed);
 
     /**
@@ -170,11 +170,11 @@ public interface UserNotificationService {
     /**
      * Method to delete specific Notification.
      *
-     * @param principal      user
+     * @param userId      user's id
      * @param notificationId id of notification, that should be deleted
      * @author Volodymyr Mladonov
      */
-    void deleteNotification(Principal principal, Long notificationId);
+    void deleteNotification(Long userId, Long notificationId);
 
     /**
      * Method to mark specific Notification as unread.
