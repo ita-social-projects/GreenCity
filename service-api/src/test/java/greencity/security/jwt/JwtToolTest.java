@@ -82,11 +82,11 @@ class JwtToolTest {
         String userEmail = "email@email.com";
         List<Role> roles = List.of(Role.ROLE_USER, Role.ROLE_UBS_EMPLOYEE);
         String jwt = Jwts.builder()
-                .claim(AppConstant.JWT_USER_ID_CLAIM, userId)
-                .claim(AppConstant.ROLE, roles)
-                .subject(userEmail)
-                .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
-                .compact();
+            .claim(AppConstant.JWT_USER_ID_CLAIM, userId)
+            .claim(AppConstant.ROLE, roles)
+            .subject(userEmail)
+            .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
+            .compact();
 
         UserClaims actualResult = jwtTool.extractUserClaims(jwt);
 

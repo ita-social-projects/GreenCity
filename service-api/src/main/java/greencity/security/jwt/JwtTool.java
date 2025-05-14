@@ -130,24 +130,18 @@ public class JwtTool {
     }
 
     /**
-     * Method to extract user id as claim from JWT.
+     * Method to extract user claims as {@link UserClaims} from JWT.
      *
      * @param jwt {@link String} json web token
-     * @return Long user id extracted from token
+     * @return {@link UserClaims} extracted from token
      */
-    public Long extractUserId(String jwt) {
-        return extractClaims(jwt)
-            .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
-    }
-
     public UserClaims extractUserClaims(String jwt) {
         Claims claims = extractClaims(jwt);
 
         return new UserClaims(
-                extractUserId(claims),
-                extractUserEmail(claims),
-                extractUserRoles(claims)
-        );
+            extractUserId(claims),
+            extractUserEmail(claims),
+            extractUserRoles(claims));
     }
 
     private String extractUserEmail(Claims claims) {
@@ -159,15 +153,26 @@ public class JwtTool {
         return roleNames.stream().map(Role::valueOf).toList();
     }
 
+    /**
+     * Method to extract user id as claim from JWT.
+     *
+     * @param jwt {@link String} json web token
+     * @return Long user id extracted from token
+     */
+    public Long extractUserId(String jwt) {
+        return extractClaims(jwt)
+            .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+    }
+
     private Long extractUserId(Claims claims) {
         return claims.get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
     }
 
     private Claims extractClaims(String jwt) {
         return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
-                .build()
-                .parseSignedClaims(jwt)
-                .getPayload();
+            .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
+            .build()
+            .parseSignedClaims(jwt)
+            .getPayload();
     }
 }

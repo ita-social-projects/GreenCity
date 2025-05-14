@@ -20,15 +20,14 @@ public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver
     @Override
     public boolean supportsParameter(@NonNull MethodParameter parameter) {
         return parameter.getParameterAnnotation(CurrentUserClaims.class) != null
-                && parameter.getParameterType().isAssignableFrom(UserClaims.class);
+            && parameter.getParameterType().isAssignableFrom(UserClaims.class);
     }
 
     @Override
     public UserClaims resolveArgument(@NonNull MethodParameter parameter,
-                                  ModelAndViewContainer mavContainer,
-                                  @NonNull NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory
-    ) throws Exception {
+        ModelAndViewContainer mavContainer,
+        @NonNull NativeWebRequest webRequest,
+        WebDataBinderFactory binderFactory) throws Exception {
         String jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
         return jwtTool.extractUserClaims(jwt);
     }
