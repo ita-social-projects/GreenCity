@@ -154,8 +154,9 @@ public class JwtTool {
         return claims.getSubject();
     }
 
-    private List<String> extractUserRoles(Claims claims) {
-        return (List<String>) claims.get(ROLE);
+    private List<Role> extractUserRoles(Claims claims) {
+        List<String> roleNames = (List<String>) claims.get(ROLE);
+        return roleNames.stream().map(Role::valueOf).toList();
     }
 
     private Long extractUserId(Claims claims) {
