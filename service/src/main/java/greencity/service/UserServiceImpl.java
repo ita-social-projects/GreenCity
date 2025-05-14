@@ -501,8 +501,6 @@ public class UserServiceImpl implements UserService {
         } else {
             user = User.builder()
                 .id(updateUserDto.getId())
-                    // TODO: delete
-                // .email(updateUserDto.getEmail())
                 .name(updateUserDto.getName())
                 .profilePicturePath(updateUserDto.getProfilePicturePath())
                 .rating(AppConstant.DEFAULT_RATING)
@@ -548,15 +546,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean createUser(CreateGreenCityUserDto createUserDto) {
-        // TODO: ? remove that call ? or maybe replace with exists by id
-        /*if (userRepo.existsByEmail(createUserDto.getEmail())) {
+        Long newUserId = createUserDto.getId();
+        if (userRepo.existsById(newUserId)) {
             throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
-                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
-        }*/
+                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_ID.formatted(newUserId));
+        }
         User userToSave = User.builder()
-            .id(createUserDto.getId())
-                // TODO: delete
-            // .email(createUserDto.getEmail())
+            .id(newUserId)
             .name(createUserDto.getName())
             .profilePicturePath(createUserDto.getProfilePicturePath())
             .rating(AppConstant.DEFAULT_RATING)

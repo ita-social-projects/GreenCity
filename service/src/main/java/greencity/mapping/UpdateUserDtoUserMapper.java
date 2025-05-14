@@ -18,10 +18,6 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getName() != null) {
                 user.setName(null);
             }
-            // TODO: delete
-            /*if (updateUserDto.getEmail() != null) {
-                user.setEmail(null);
-            }*/
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(null);
             }
@@ -32,10 +28,6 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getName() != null) {
                 user.setName(updateUserDto.getName());
             }
-            // TODO: delete
-            /*if (updateUserDto.getEmail() != null) {
-                user.setEmail(updateUserDto.getEmail());
-            }*/
             if (updateUserDto.getProfilePicturePath() != null) {
                 user.setProfilePicturePath(updateUserDto.getProfilePicturePath());
             }

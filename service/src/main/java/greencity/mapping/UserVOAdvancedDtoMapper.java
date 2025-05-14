@@ -31,8 +31,7 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
                 .id(userAchievement.getId())
                 .user(UserVO.builder()
                     .id(userAchievement.getUser().getId())
-                        // TODO
-                    // .email(userAchievement.getUser().getEmail())
+                    .email(userRemoteClient.findUserEmailByUserId(userAchievement.getUser().getId()))
                     .build())
                 .achievement(AchievementVO.builder()
                     .id(userAchievement.getAchievement().getId())

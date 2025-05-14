@@ -5,6 +5,7 @@ import greencity.client.UserRemoteClient;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
+import greencity.entity.User;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.EmailMessage;
@@ -52,9 +53,8 @@ public class EmailPreferenceAspect {
         if (message instanceof EmailMessage) {
             return ((EmailMessage) message).getEmail();
         } else if (message instanceof Notification) {
-            // TODO
-            // return ((Notification) message).getTargetUser().getEmail();
-            return "email";
+            User targetUser = ((Notification) message).getTargetUser();
+            return userRemoteClient.findUserEmailByUserId(targetUser.getId());
         }
         return null;
     }

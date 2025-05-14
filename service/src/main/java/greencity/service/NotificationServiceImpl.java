@@ -391,7 +391,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         User targetUser = notification.getTargetUser();
 
-        // TODO
+        // TODO: replace email field of ScheduledEmailMessage with userId, then we can get user's email in GreenCityUser by that id
         return ScheduledEmailMessage.builder()
             // .email(targetUser.getEmail())
             .username(targetUser.getName())

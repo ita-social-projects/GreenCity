@@ -1,5 +1,6 @@
 package greencity.mapping.events;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
@@ -29,10 +30,12 @@ import java.util.stream.Collectors;
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
     private final CommentService commentService;
+    private final UserRemoteClient userRemoteClient;
 
     @Autowired
-    public EventDtoMapper(@Lazy CommentService commentService) {
+    public EventDtoMapper(@Lazy CommentService commentService, UserRemoteClient userRemoteClient) {
         this.commentService = commentService;
+        this.userRemoteClient = userRemoteClient;
     }
 
     /**
@@ -54,13 +57,14 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setIsRelevant(EventUtils.isRelevant(event.getDates()));
         eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
+        Long organizerId = organizer.getId();
+        String organizerEmail = userRemoteClient.findUserEmailByUserId(organizerId);
 
         eventDto.setOrganizer(
             EventAuthorDto.builder()
                 .id(organizer.getId())
                 .name(organizer.getName())
-                    // TODO
-                .email("organizer.getEmail()")
+                .email(organizerEmail)
                 .organizerRating(organizer.getEventOrganizerRating())
                 .build());
         eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));

@@ -1,5 +1,6 @@
 package greencity.mapping.events;
 
+import greencity.client.UserRemoteClient;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateInformationDto;
@@ -29,10 +30,12 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
     private static final int MAX_ADDITIONAL_IMAGES = 4;
 
     private final CommentService commentService;
+    private final UserRemoteClient userRemoteClient;
 
     @Autowired
-    public EventResponseDtoMapper(@Lazy CommentService commentService) {
+    public EventResponseDtoMapper(@Lazy CommentService commentService, UserRemoteClient userRemoteClient) {
         this.commentService = commentService;
+        this.userRemoteClient = userRemoteClient;
     }
 
     /**
@@ -63,6 +66,8 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                 .toList());
 
         User organizer = event.getOrganizer();
+        Long organizerId = organizer.getId();
+        String organizerEmail = userRemoteClient.findUserEmailByUserId(organizerId);
 
         List<EventDateInformationDto> dateInformation = event.getDates().stream()
             .map(date -> new EventDateInformationDto(
@@ -96,8 +101,7 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                 organizer.getId(),
                 organizer.getName(),
                 organizer.getEventOrganizerRating(),
-                // TODO
-                "organizer.getEmail()"),
+                organizerEmail),
             event.getCreationDate(),
             event.isOpen(),
             dateInformation,
