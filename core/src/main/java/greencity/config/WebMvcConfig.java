@@ -1,6 +1,7 @@
 package greencity.config;
 
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserClaimsArgumentResolver;
 import greencity.converters.UserIdArgumentResolver;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
@@ -103,6 +104,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.removeIf(resolver -> resolver instanceof PageableHandlerMethodArgumentResolver);
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
         resolvers.add(new UserIdArgumentResolver(jwtTool));
+        resolvers.add(new UserClaimsArgumentResolver(jwtTool));
         resolvers.add(new CustomPageableHandlerMethodArgumentResolver());
     }
 }

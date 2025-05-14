@@ -1,6 +1,7 @@
 package greencity.converters;
 
-import greencity.annotations.CurrentUserId;
+import greencity.annotations.CurrentUserClaims;
+import greencity.dto.user.UserClaims;
 import greencity.security.jwt.JwtTool;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -13,21 +14,21 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtTool jwtTool;
 
     @Override
     public boolean supportsParameter(@NonNull MethodParameter parameter) {
-        return parameter.getParameterAnnotation(CurrentUserId.class) != null
-            && parameter.getParameterType().isAssignableFrom(Long.class);
+        return parameter.getParameterAnnotation(CurrentUserClaims.class) != null
+            && parameter.getParameterType().isAssignableFrom(UserClaims.class);
     }
 
     @Override
-    public Object resolveArgument(@NonNull MethodParameter parameter,
+    public UserClaims resolveArgument(@NonNull MethodParameter parameter,
         ModelAndViewContainer mavContainer,
         @NonNull NativeWebRequest webRequest,
-        WebDataBinderFactory binderFactory) {
+        WebDataBinderFactory binderFactory) throws Exception {
         String jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
-        return jwtTool.extractUserId(jwt);
+        return jwtTool.extractUserClaims(jwt);
     }
 }

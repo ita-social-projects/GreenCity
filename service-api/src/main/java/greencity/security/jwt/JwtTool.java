@@ -3,8 +3,10 @@ package greencity.security.jwt;
 import static greencity.constant.AppConstant.ROLE;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.user.UserClaims;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -128,17 +130,44 @@ public class JwtTool {
     }
 
     /**
+     * Method to extract user claims as {@link UserClaims} from JWT.
+     *
+     * @param jwt {@link String} json web token
+     * @return {@link UserClaims} extracted from token
+     */
+    public UserClaims extractUserClaims(String jwt) {
+        Claims claims = extractClaims(jwt);
+
+        return new UserClaims(
+            extractUserId(claims),
+            claims.getSubject(),
+            extractUserRoles(claims));
+    }
+
+    private List<Role> extractUserRoles(Claims claims) {
+        List<String> roleNames = (List<String>) claims.get(ROLE);
+        return roleNames.stream().map(Role::valueOf).toList();
+    }
+
+    /**
      * Method to extract user id as claim from JWT.
      *
      * @param jwt {@link String} json web token
      * @return Long user id extracted from token
      */
-    public Long extractUserIdFromJwt(String jwt) {
+    public Long extractUserId(String jwt) {
+        return extractUserId(extractClaims(jwt));
+    }
+
+    private Long extractUserId(Claims claims) {
+        return claims.get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+    }
+
+    private Claims extractClaims(String jwt) {
         return Jwts.parser()
             .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
             .build()
             .parseSignedClaims(jwt)
-            .getPayload()
-            .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+            .getPayload();
     }
 }

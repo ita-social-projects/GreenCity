@@ -3,8 +3,8 @@ package greencity.security.jwt;
 import static greencity.constant.AppConstant.ROLE;
 
 import greencity.constant.AppConstant;
+import greencity.dto.user.UserClaims;
 import greencity.enums.Role;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,16 +64,35 @@ class JwtToolTest {
     }
 
     @Test
-    void extractUserIdFromJwtTest() {
+    void extractUserIdTest() {
         Long expectedResult = 5L;
         String jwt = Jwts.builder()
             .claim(AppConstant.JWT_USER_ID_CLAIM, expectedResult)
             .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
             .compact();
 
-        Long actualResult = jwtTool.extractUserIdFromJwt(jwt);
+        Long actualResult = jwtTool.extractUserId(jwt);
 
         assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void extractUserClaimsTest() {
+        Long userId = 7L;
+        String userEmail = "email@email.com";
+        List<Role> roles = List.of(Role.ROLE_USER, Role.ROLE_UBS_EMPLOYEE);
+        String jwt = Jwts.builder()
+            .claim(AppConstant.JWT_USER_ID_CLAIM, userId)
+            .claim(AppConstant.ROLE, roles)
+            .subject(userEmail)
+            .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
+            .compact();
+
+        UserClaims actualResult = jwtTool.extractUserClaims(jwt);
+
+        assertEquals(userId, actualResult.userId());
+        assertEquals(userEmail, actualResult.userEmail());
+        assertEquals(roles, actualResult.roles());
     }
 
     @Test
