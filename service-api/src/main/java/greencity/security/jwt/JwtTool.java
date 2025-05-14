@@ -5,6 +5,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -134,11 +135,24 @@ public class JwtTool {
      * @return Long user id extracted from token
      */
     public Long extractUserIdFromJwt(String jwt) {
-        return Jwts.parser()
-            .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
-            .build()
-            .parseSignedClaims(jwt)
-            .getPayload()
+        return extractClaims(jwt)
             .get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+    }
+
+    public String extractUserEmail(String jwt) {
+        return extractClaims(jwt).getSubject();
+    }
+
+    public List<String> extractUserRoles(String jwt) {
+        return (List<String>) extractClaims(jwt)
+                .get(ROLE);
+    }
+
+    private Claims extractClaims(String jwt) {
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload();
     }
 }
