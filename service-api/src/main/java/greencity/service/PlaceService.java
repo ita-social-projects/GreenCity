@@ -196,7 +196,7 @@ public interface PlaceService {
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto,
-        UserVO userVO);
+        Long userId);
 
     /**
      * The method finds all {@link GeocodingResult}'s from {@link GoogleApiService}

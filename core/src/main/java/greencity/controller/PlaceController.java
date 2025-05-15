@@ -186,9 +186,9 @@ public class PlaceController {
     })
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
-        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(favoritePlaceService.save(favoritePlaceDto, userVO.getId()));
+            .body(favoritePlaceService.save(favoritePlaceDto, userId));
     }
 
     /**
@@ -269,8 +269,8 @@ public class PlaceController {
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
         @Valid @RequestBody FilterPlaceDto filterDto,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userId));
     }
 
     /**

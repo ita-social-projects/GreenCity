@@ -423,8 +423,7 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO) {
-        Long userId = userVO == null ? null : userVO.getId();
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, Long userId) {
         List<Place> list =
             ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
                 : placeRepo.findAll(new PlaceFilter(filterDto, userId));
