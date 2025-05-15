@@ -250,19 +250,19 @@ public interface EventService {
      * Method to check if user liked an event.
      *
      * @param eventId - id of {@link EventDto} to check liked or not.
-     * @param userVO  - instance of {@link UserVO}.
+     * @param userId  - {@link Long} current user id.
      * @return user liked event or not.
      */
-    boolean isEventLikedByUser(Long eventId, UserVO userVO);
+    boolean isEventLikedByUser(Long eventId, Long userId);
 
     /**
      * Method to check if user disliked an event.
      *
      * @param eventId - id of {@link EventDto} to check disliked or not.
-     * @param userVO  - instance of {@link UserVO}.
+     * @param userId  - {@link Long} current user id.
      * @return user liked event or not.
      */
-    boolean isEventDislikedByUser(Long eventId, UserVO userVO);
+    boolean isEventDislikedByUser(Long eventId, Long userId);
 
     /**
      * Retrieves a set of user profile pictures for all users who have liked the

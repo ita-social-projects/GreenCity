@@ -955,20 +955,20 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isEventLikedByUser(Long eventId, UserVO userVO) {
+    public boolean isEventLikedByUser(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isEventDislikedByUser(Long eventId, UserVO userVO) {
+    public boolean isEventDislikedByUser(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     /**

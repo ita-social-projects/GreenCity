@@ -510,8 +510,8 @@ public class EventController {
     })
     @GetMapping("/{eventId}/likes")
     public ResponseEntity<Boolean> isEventLikedByUser(
-        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userVO));
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userId));
     }
 
     /**
@@ -531,8 +531,8 @@ public class EventController {
     })
     @GetMapping("/{eventId}/dislikes")
     public ResponseEntity<Boolean> isEventDislikedByUser(
-        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventDislikedByUser(eventId, userVO));
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventDislikedByUser(eventId, userId));
     }
 
     /**
@@ -754,8 +754,8 @@ public class EventController {
     @GetMapping("/user-data/getAllUserAssigned")
     public ResponseEntity<Page<EventResponseDto>> getAllUserAssigned(
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId()));
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userId));
     }
 
     /**
