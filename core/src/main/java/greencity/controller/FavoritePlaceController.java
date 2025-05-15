@@ -1,6 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
@@ -9,7 +9,6 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
 import greencity.service.FavoritePlaceService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import java.security.Principal;
 import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,7 +40,7 @@ public class FavoritePlaceController {
      * are ignored because Spring automatically provide the Principal object.
      *
      * @param favoritePlaceDto - dto for {@link FavoritePlaceVO} entity
-     * @param userVO           - current user
+     * @param userId           - current user id
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
@@ -58,9 +57,9 @@ public class FavoritePlaceController {
     })
     @PutMapping
     public ResponseEntity<FavoritePlaceDto> update(@Valid @RequestBody FavoritePlaceDto favoritePlaceDto,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .update(favoritePlaceDto, userVO.getId()));
+            .update(favoritePlaceDto, userId));
     }
 
     /**
@@ -68,7 +67,7 @@ public class FavoritePlaceController {
      * principal are ignored because Spring automatically provide the Principal
      * object .
      *
-     * @param userVO - current {@link UserVO} user
+     * @param userId - current user id
      * @return list of {@link PlaceByBoundsDto}
      * @author Zakhar Skaletskyi
      */
@@ -81,9 +80,9 @@ public class FavoritePlaceController {
     })
     @GetMapping
     public ResponseEntity<List<PlaceByBoundsDto>> findAllByUserEmail(
-            @Parameter(hidden = true) @CurrentUser UserVO userVO
+            @Parameter(hidden = true) @CurrentUserId Long userId
             ) {
-        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserId(userVO.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserId(userId));
     }
 
     /**
@@ -92,7 +91,7 @@ public class FavoritePlaceController {
      * Principal object.
      *
      * @param placeId   - {@link PlaceVO} id
-     * @param userVO    - current user
+     * @param userId    - current user id
      * @return id of deleted {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
@@ -108,9 +107,9 @@ public class FavoritePlaceController {
     })
     @DeleteMapping("/{placeId}")
     public ResponseEntity<Long> deleteByUserEmailAndPlaceId(@PathVariable Long placeId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .deleteByUserIdAndPlaceId(placeId, userVO.getId()));
+            .deleteByUserIdAndPlaceId(placeId, userId));
     }
 
     /**
@@ -119,7 +118,7 @@ public class FavoritePlaceController {
      * Principal object.
      *
      * @param placeId   - {@link PlaceVO} id
-     * @param userVO    - current user
+     * @param userId    - current user id
      * @return info about {@link PlaceVO} with name from {@link PlaceByBoundsDto}
      * @author Zakhar Skaletskyi
      */
@@ -136,8 +135,8 @@ public class FavoritePlaceController {
     })
     @GetMapping("/favorite/{placeId}")
     public ResponseEntity<PlaceByBoundsDto> getFavoritePlaceWithCoordinate(@PathVariable Long placeId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService
-            .getFavoritePlaceWithLocation(placeId, userVO.getId()));
+            .getFavoritePlaceWithLocation(placeId, userId));
     }
 }
