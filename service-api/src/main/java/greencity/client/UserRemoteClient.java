@@ -511,9 +511,9 @@ public class UserRemoteClient {
      * @param email user's email
      * @return boolean of whether user by that email exists
      */
-    // TODO
     public boolean userExistsByEmail(String email) {
-        return false;
+        Optional<UserVO> userVOOptional = findNotDeactivatedByEmail(email);
+        return userVOOptional.isPresent();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
