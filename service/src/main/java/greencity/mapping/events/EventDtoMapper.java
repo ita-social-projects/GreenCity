@@ -1,12 +1,12 @@
 package greencity.mapping.events;
 
-import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
@@ -16,7 +16,6 @@ import greencity.service.CommentService;
 import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
@@ -30,12 +29,12 @@ import java.util.stream.Collectors;
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
     private final CommentService commentService;
-    private final UserRemoteClient userRemoteClient;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public EventDtoMapper(@Lazy CommentService commentService, UserRemoteClient userRemoteClient) {
+    @Lazy
+    public EventDtoMapper(CommentService commentService, ModelMapper modelMapper) {
         this.commentService = commentService;
-        this.userRemoteClient = userRemoteClient;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -57,14 +56,13 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setIsRelevant(EventUtils.isRelevant(event.getDates()));
         eventDto.setCountComments(commentService.countCommentsForEvent(event.getId()));
         User organizer = event.getOrganizer();
-        Long organizerId = organizer.getId();
-        String organizerEmail = userRemoteClient.findUserEmailByUserId(organizerId);
+        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
 
         eventDto.setOrganizer(
             EventAuthorDto.builder()
                 .id(organizer.getId())
                 .name(organizer.getName())
-                .email(organizerEmail)
+                .email(organizerVO.getEmail())
                 .organizerRating(organizer.getEventOrganizerRating())
                 .build());
         eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));

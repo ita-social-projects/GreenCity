@@ -33,6 +33,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.CustomHabitMapper;
 import greencity.mapping.CustomToDoListMapper;
 import greencity.mapping.CustomToDoListResponseDtoMapper;
@@ -756,7 +757,9 @@ public class HabitServiceImpl implements HabitService {
         List<UserFriendHabitInviteDto> dtoList = tuples.stream()
             .map(tuple -> {
                 Long id = tuple.get("id", Long.class);
-                String email = userRemoteClient.findUserEmailByUserId(id);
+                String email = userRemoteClient.findNotDeactivatedById(id)
+                        .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id))
+                        .getEmail();
                 return UserFriendHabitInviteDto.builder()
                         .id(id)
                         .name(tuple.get("name", String.class))

@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-import greencity.client.UserRemoteClient;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -13,12 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserManagementVOMapper extends AbstractConverter<User, UserManagementVO> {
     private final ModelMapper modelMapper;
-    private final UserRemoteClient userRemoteClient;
 
     @Lazy
-    public UserManagementVOMapper(ModelMapper modelMapper, UserRemoteClient userRemoteClient) {
+    public UserManagementVOMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
-        this.userRemoteClient = userRemoteClient;
     }
 
     @Override
@@ -28,7 +25,7 @@ public class UserManagementVOMapper extends AbstractConverter<User, UserManageme
         return UserManagementVO.builder()
             .id(user.getId())
             .name(user.getName())
-            .email(userRemoteClient.findUserEmailByUserId(user.getId()))
+            .email(userVO.getEmail())
             .userCredo(user.getUserCredo())
             .role(userVO.getRole())
             .userStatus(userVO.getUserStatus())

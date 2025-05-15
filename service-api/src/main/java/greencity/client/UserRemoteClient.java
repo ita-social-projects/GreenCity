@@ -495,17 +495,6 @@ public class UserRemoteClient {
     }
 
     /**
-     * Method to find user email by user id
-     *
-     * @param userId user's id
-     * @return user's email
-     */
-    // TODO
-    public String findUserEmailByUserId(Long userId) {
-        return "aaa";
-    }
-
-    /**
      * Find list of {@link UserVO}'s by emails.
      *
      * @param emails user emails.
