@@ -500,9 +500,17 @@ public class UserRemoteClient {
      * @param emails user emails.
      * @return list of {@link UserVO}.
      */
-    // TODO
     public List<UserVO> findAllByEmailIn(List<String> emails) {
-        return List.of();
+        String path = "/user/email/findAll";
+        String emailsListQueryParam = "emails";
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(path)
+                        .queryParam(emailsListQueryParam, emails)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {})
+                .block();
     }
 
     /**
