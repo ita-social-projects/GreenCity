@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidCurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -64,12 +65,12 @@ public class ToDoListItemController {
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> saveUserToDoListItems(
         @Valid @RequestBody List<ToDoListItemRequestDto> dto,
-        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         Long habitId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(toDoListItemService.saveUserToDoListItems(user.getId(), habitId, dto, locale.getLanguage()));
+            .body(toDoListItemService.saveUserToDoListItems(userId, habitId, dto, locale.getLanguage()));
     }
 
     /**
@@ -93,12 +94,12 @@ public class ToDoListItemController {
     @GetMapping("/habits/{habitId}/to-do-list")
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> getToDoListItemsAssignedToUser(
-        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(
             description = "Id of the Habit that belongs to current user. Cannot be empty.") @PathVariable Long habitId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(toDoListItemService.getUserToDoList(user.getId(), habitId, locale.getLanguage()));
+            .body(toDoListItemService.getUserToDoList(userId, habitId, locale.getLanguage()));
     }
 
     /**
@@ -121,8 +122,8 @@ public class ToDoListItemController {
     })
     @DeleteMapping
     public void delete(
-        @Parameter(hidden = true) @CurrentUser UserVO user, Long habitId, Long toDoListItemId) {
-        toDoListItemService.deleteUserToDoListItemByItemIdAndUserIdAndHabitId(toDoListItemId, user.getId(),
+        @Parameter(hidden = true) @CurrentUserId Long userId, Long habitId, Long toDoListItemId) {
+        toDoListItemService.deleteUserToDoListItemByItemIdAndUserIdAndHabitId(toDoListItemId, userId,
             habitId);
     }
 
@@ -146,13 +147,13 @@ public class ToDoListItemController {
     @PatchMapping("/{userToDoListItemId}")
     @ApiLocale
     public ResponseEntity<UserToDoListItemResponseDto> updateUserToDoListItemStatus(
-        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(description = "Id of the UserToDoListItems that belongs to current user."
             + " Cannot be empty.") @PathVariable Long userToDoListItemId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(toDoListItemService.updateUserToDoListItemStatus(user.getId(), userToDoListItemId,
+            .body(toDoListItemService.updateUserToDoListItemStatus(userId, userToDoListItemId,
                 locale.getLanguage()));
     }
 
@@ -177,13 +178,13 @@ public class ToDoListItemController {
     @PatchMapping("/{userToDoListItemId}/status/{status}")
     @ApiLocale
     public ResponseEntity<List<UserToDoListItemResponseDto>> updateUserToDoListItemStatus(
-        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(description = "Id of the userToDoListItem that belongs to current user."
             + " Cannot be empty.") @PathVariable(value = "userToDoListItemId") Long userToDoListItemId,
         @PathVariable(value = "status") String status,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(toDoListItemService
-            .updateUserToDoListItemStatus(user.getId(), userToDoListItemId, locale.getLanguage(), status));
+            .updateUserToDoListItemStatus(userId, userToDoListItemId, locale.getLanguage(), status));
     }
 
     /**
@@ -209,8 +210,7 @@ public class ToDoListItemController {
         @Parameter(description = "Ids of user to-do list items separated by a comma \n e.g. 1,2",
             required = true) @Pattern(
                 regexp = "^\\d+(,\\d+)++$",
-                message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS) @RequestParam String ids,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
+                message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS) @RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(toDoListItemService
             .deleteUserToDoListItems(ids));
     }
