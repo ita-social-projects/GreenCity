@@ -720,8 +720,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public void setHiddenValue(Long id, UserVO user, boolean value) {
-        if (user.getRole() != Role.ROLE_ADMIN) {
+    public void setHiddenValue(Long id, UserClaims userClaims, boolean value) {
+        if (!userClaims.roles().contains(Role.ROLE_ADMIN)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         EcoNews ecoNews = findEcoNewsById(id);
