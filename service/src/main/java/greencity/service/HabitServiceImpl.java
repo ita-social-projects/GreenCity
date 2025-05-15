@@ -134,15 +134,14 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode) {
-        long userId = userVO.getId();
+    public PageableDto<HabitDto> getAllHabitsByLanguageCode(Long userId, Pageable pageable, String languageCode) {
         List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
 
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
                 requestedCustomHabitIds, userId, languageCode);
-        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userId);
     }
 
     /**
@@ -239,10 +238,9 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable,
+    public PageableDto<HabitDto> getAllByDifferentParameters(Long userId, Pageable pageable,
         Optional<List<String>> tags, Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities,
         String languageCode) {
-        Long userId = userVO.getId();
         HabitTranslationFilterDto filterDto = HabitTranslationFilterDto.builder()
             .userId(userId)
             .languageCode(languageCode)
@@ -252,7 +250,7 @@ public class HabitServiceImpl implements HabitService {
             .build();
         Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
         Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
-        return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO.getId());
+        return buildPageableDtoForDifferentParameters(habitTranslationsPage, userId);
     }
 
     private PageableDto<HabitDto> buildPageableDtoForDifferentParameters(Page<HabitTranslation> habitTranslationsPage,
@@ -521,7 +519,7 @@ public class HabitServiceImpl implements HabitService {
             LanguageDTO language = userVO.getLanguageVO();
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
-                userVO, friendsIds, habit.getId(),
+                userVO.getId(), friendsIds, habit.getId(),
                 Locale.of(language.getCode()));
         }
     }
@@ -675,21 +673,19 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable,
+    public PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(Long userId, Pageable pageable,
         String languageCode) {
-        Long userId = userVO.getId();
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findMyFavoriteHabits(pageable, userId, languageCode);
-        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(UserVO userVO, String name, Pageable pageable,
+    public PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(Long userId, String name, Pageable pageable,
         Long habitId) {
-        Long userId = userVO.getId();
         name = Optional.ofNullable(name).orElse("");
         Page<UserFriendHabitInviteDto> friendsWithIsInvitedStatus =
             findUserFriendsWithHabitInvitesMapped(userId, name, habitId, pageable);

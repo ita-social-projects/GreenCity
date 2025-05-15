@@ -100,11 +100,11 @@ public class HabitController {
     @GetMapping
     @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAll(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -124,11 +124,11 @@ public class HabitController {
     })
     @GetMapping("/my")
     @ApiPageable
-    public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUser UserVO userVO,
+    public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getMyHabits(userVO.getId(), pageable, locale.getLanguage()));
+            habitService.getMyHabits(userId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -153,11 +153,11 @@ public class HabitController {
     @GetMapping("/all/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllHabitsOfFriend(
         @PathVariable Long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
+            habitService.getAllHabitsOfFriend(userId, friendId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -182,11 +182,11 @@ public class HabitController {
     @GetMapping("/allMutualHabits/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
         @PathVariable Long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
+            habitService.getAllMutualHabitsWithFriend(userId, friendId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -234,14 +234,14 @@ public class HabitController {
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam List<String> tags,
         @RequestParam boolean excludeAssigned,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned,
-                userVO.getId()));
+                userId));
     }
 
     /**
@@ -266,7 +266,7 @@ public class HabitController {
     @GetMapping("/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam(required = false, name = "tags") Optional<List<String>> tags,
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
@@ -274,7 +274,7 @@ public class HabitController {
         @Parameter(hidden = true) Pageable pageable) throws BadRequestException {
         if (isValid(tags, isCustomHabit, complexities)) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                habitService.getAllByDifferentParameters(userVO, pageable, tags,
+                habitService.getAllByDifferentParameters(userId, pageable, tags,
                     isCustomHabit, complexities, locale.getLanguage()));
         } else {
             throw new BadRequestException("You should enter at least one parameter");
@@ -370,9 +370,9 @@ public class HabitController {
     @GetMapping("/{habitAssignId}/friends/profile-pictures")
     public ResponseEntity<List<UserProfilePictureDto>> getFriendsAssignedToHabitProfilePictures(
         @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userVO.getId()));
+            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userId));
     }
 
     /**
@@ -528,11 +528,11 @@ public class HabitController {
     @GetMapping("/favorites")
     @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAllFavorites(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllFavoriteHabitsByLanguageCode(userId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -559,9 +559,9 @@ public class HabitController {
         @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) @Nullable String name,
         @RequestParam Long habitId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(habitService.findAllFriendsOfUser(userVO, name, page, habitId));
+            .body(habitService.findAllFriendsOfUser(userId, name, page, habitId));
     }
 }

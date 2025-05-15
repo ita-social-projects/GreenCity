@@ -32,7 +32,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(Long userId, Pageable pageable, String languageCode);
 
     /**
      * Method returns all habits of the current user.
@@ -104,7 +104,7 @@ public interface HabitService {
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Lilia Mokhnatska
      */
-    PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable, Optional<List<String>> tags,
+    PageableDto<HabitDto> getAllByDifferentParameters(Long userId, Pageable pageable, Optional<List<String>> tags,
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
@@ -211,7 +211,7 @@ public interface HabitService {
      * Method for adding a habit to favorites by habitId.
      *
      * @param habitId - habit id
-     * @param email   - email of user
+     * @param userId  - id of user
      */
     void addToFavorites(Long habitId, Long userId);
 
@@ -229,19 +229,19 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(Long userId, Pageable pageable, String languageCode);
 
     /**
      * Retrieves a paginated list of friends of a user with has invitation status.
      * Optionally filters by friend name.
      *
-     * @param userVO   The current user's details.
+     * @param userId   Current user id.
      * @param name     Optional name filter for friends.
      * @param pageable .
      * @param habitId  The ID of the habit.
      * @return A paginated list of friends (UserFriendHabitInviteDto) who can be
      *         invited to the habit.
      */
-    PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(UserVO userVO, @Nullable String name,
+    PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(Long userId, @Nullable String name,
         Pageable pageable, Long habitId);
 }
