@@ -708,7 +708,7 @@ public class HabitAssignController {
      *
      * @param habitId    - id of {@link HabitAssignVO}.
      * @param friendsIds - list of ids of user friends {@link UserVO} to invite.
-     * @param userId     - current user id.
+     * @param userVO     - user who send request {@link UserVO}.
      * @param locale     - current language
      *                   {@link greencity.dto.language.LanguageDTO}.
      */
@@ -723,9 +723,9 @@ public class HabitAssignController {
     @PostMapping("/{habitId}/invite")
     public ResponseEntity<ResponseEntity.BodyBuilder> inviteFriendRequest(@PathVariable Long habitId,
         @Parameter(description = "List of friends ids to invite") @RequestParam List<Long> friendsIds,
-        @Parameter(hidden = true) @CurrentUserId Long userId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userId, friendsIds, habitId, locale);
+        habitAssignService.inviteFriendForYourHabitWithEmailNotification(userVO, friendsIds, habitId, locale);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

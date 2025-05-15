@@ -1443,26 +1443,26 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional
-    public void inviteFriendForYourHabitWithEmailNotification(Long userId, List<Long> friendsIds, Long habitId,
+    public void inviteFriendForYourHabitWithEmailNotification(UserVO userVO, List<Long> friendsIds, Long habitId,
         Locale locale) {
         friendsIds.stream()
-            .map(friendId -> getValidatedFriend(userId, friendId, habitId))
-            .forEach(friend -> processHabitInvite(userId, friend, habitId, locale));
+            .map(friendId -> getValidatedFriend(userVO, friendId, habitId))
+            .forEach(friend -> processHabitInvite(userVO, friend, habitId, locale));
     }
 
-    private User getValidatedFriend(Long userId, Long friendId, Long habitId) {
+    private User getValidatedFriend(UserVO userVO, Long friendId, Long habitId) {
         User friend = getUserById(friendId);
-        checkIfUserIsAFriend(userId, friendId);
+        checkIfUserIsAFriend(userVO.getId(), friendId);
         checkHabitAssignmentValidity(habitId, friend);
         return friend;
     }
 
-    private void processHabitInvite(Long userId, User friend, Long habitId, Locale locale) {
+    private void processHabitInvite(UserVO userVO, User friend, Long habitId, Locale locale) {
         Habit habit = getHabitById(habitId);
         HabitAssign habitAssign = assignHabitToUser(habit, friend);
         assignToDoListToUser(habitId, habitAssign);
 
-        HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userId, habit);
+        HabitAssign inviterHabitAssign = getOrAssignHabitToUser(userVO, habit);
         assignToDoListToUser(habitId, inviterHabitAssign);
 
         boolean invitationExists = habitInvitationRepo.existsByInviterHabitAssignAndInviteeHabitAssign(
@@ -1487,10 +1487,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignRepo.save(habitAssign);
     }
 
-    private HabitAssign getOrAssignHabitToUser(Long userId, Habit habit) {
-        return habitAssignRepo.findByHabitIdAndUserId(habit.getId(), userId)
+    private HabitAssign getOrAssignHabitToUser(UserVO userVO, Habit habit) {
+        return habitAssignRepo.findByHabitIdAndUserId(habit.getId(), userVO.getId())
             .orElseGet(() -> {
-                HabitAssign habitAssign = assignHabitToUser(habit, getUserById(userId));
+                HabitAssign habitAssign = assignHabitToUser(habit, getUserById(userVO.getId()));
                 assignToDoListToUser(habit.getId(), habitAssign);
                 return habitAssign;
             });

@@ -519,7 +519,7 @@ public class HabitServiceImpl implements HabitService {
             LanguageDTO language = userVO.getLanguageVO();
 
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
-                userVO.getId(), friendsIds, habit.getId(),
+                userVO, friendsIds, habit.getId(),
                 Locale.of(language.getCode()));
         }
     }
