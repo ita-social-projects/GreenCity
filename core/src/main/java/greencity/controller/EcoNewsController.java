@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserClaims;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
@@ -21,6 +22,7 @@ import greencity.dto.econews.EcoNewContentSourceDto;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
@@ -150,12 +152,12 @@ public class EcoNewsController {
             required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
         @Parameter(description = "Image of eco news") @ImageValidation @RequestPart(
             required = false) MultipartFile image,
-        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims,
         @PathVariable Long ecoNewsId) {
         if (!ecoNewsId.equals(updateEcoNewsDto.getId())) {
             throw new WrongIdException(ErrorMessage.ECO_NEWS_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL);
         }
-        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, user));
+        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, userClaims));
     }
 
     /**

@@ -13,6 +13,7 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import java.util.Locale;
@@ -134,7 +135,7 @@ public interface EcoNewsService {
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
      * @return instance of {@link EcoNewsGenericDto}.
      */
-    EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
+    EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserClaims userClaims);
 
     /**
      * Method for adding an eco new to favorites by ecoNewsId.
