@@ -1,12 +1,13 @@
 package greencity.webcontroller;
 
-import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserClaims;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.Role;
@@ -102,15 +103,15 @@ public class ManagementUserPersonalPageController {
      *
      * @param id          Path variable - id of user
      * @param userRole    Role that has to be set to user
-     * @param currentUser {@link UserVO} of current user
+     * @param userClaims  {@link UserClaims} claims of current user
      *
      * @return View template path {@link String}.
      */
     @PostMapping(value = "/updateUserRole")
     public String updateUserRole(@PathVariable Long id, @RequestParam(name = "userRole") String userRole,
-        @CurrentUser UserVO currentUser) {
+        @CurrentUserClaims UserClaims userClaims) {
         Role role = Role.valueOf("ROLE_" + userRole.toUpperCase());
-        userService.updateRole(id, role, currentUser.getEmail());
+        userService.updateRole(id, role, userClaims.userEmail());
         return "redirect:/management/users/{id}";
     }
 }
