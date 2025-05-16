@@ -189,9 +189,6 @@ public class User {
     @Id
     private Long id;
 
-/*    @Column(unique = true, nullable = false, length = 50)
-    private String email;*/
-
     @Column(nullable = false, length = 30)
     private String name;
 
