@@ -30,10 +30,6 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
                 allPredicates =
                     criteriaBuilder.and(allPredicates, getUserIdPredicate(root, criteriaBuilder, searchCriteria));
             }
-            if (searchCriteria.getType().equals("userMail")) {
-                allPredicates =
-                    criteriaBuilder.and(allPredicates, getUserMailPredicate(root, criteriaBuilder, searchCriteria));
-            }
             if (searchCriteria.getType().equals("dateRange")) {
                 allPredicates =
                     criteriaBuilder.and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
@@ -55,14 +51,6 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
         Join<RatingStatistics, RatingPoints> ratingPointsJoin = root.join(RatingStatistics_.ratingPoints);
         return criteriaBuilder.like(criteriaBuilder.lower(ratingPointsJoin.get("name")),
             "%" + searchCriteria.getValue().toString().toLowerCase() + "%");
-    }
-
-    private Predicate getUserMailPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
-        SearchCriteria searchCriteria) {
-        // TODO: ? seems like we forced to get rid of that predicate ?
-        Join<RatingStatistics, User> userJoin = root.join(RatingStatistics_.user);
-        // return criteriaBuilder.like(userJoin.get(User_.email), "%" + searchCriteria.getValue() + "%");
-        return null;
     }
 
     private Predicate getUserIdPredicate(Root<RatingStatistics> root, CriteriaBuilder criteriaBuilder,
