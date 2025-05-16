@@ -492,7 +492,6 @@ public class UserServiceImpl implements UserService {
             user = User.builder()
                 .id(updateUserDto.getId())
                 .name(updateUserDto.getName())
-                .profilePicturePath(updateUserDto.getProfilePicturePath())
                 .rating(AppConstant.DEFAULT_RATING)
                 .eventOrganizerRating(AppConstant.DEFAULT_RATING)
                 .build();
