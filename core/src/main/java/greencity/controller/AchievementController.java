@@ -1,10 +1,12 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserClaims;
 import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.user.UserClaims;
 import greencity.dto.useraction.UserActionVO;
 import greencity.enums.AchievementStatus;
 import greencity.service.AchievementService;
@@ -50,14 +52,13 @@ public class AchievementController {
     })
     @GetMapping
     public ResponseEntity<List<AchievementVO>> getAll(
-        @Parameter(hidden = true) @CurrentUserId Long userId,
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
         return ResponseEntity.ok().body(
-            achievementService.findAllByTypeAndCategory(userId, principal.getName(), achievementStatus, achievementCategoryId));
+            achievementService.findAllByTypeAndCategory(userClaims.userId(), userClaims.userEmail(), achievementStatus, achievementCategoryId));
     }
 
     /**
