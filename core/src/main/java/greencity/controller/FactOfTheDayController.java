@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
@@ -57,7 +58,7 @@ public class FactOfTheDayController {
     })
     @GetMapping("/random/by-tags")
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDayByTags(
-        @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok(factOfTheDayService.getRandomFactOfTheDayForUser(principal.getName()));
+            @CurrentUserId Long userId) {
+        return ResponseEntity.ok(factOfTheDayService.getRandomFactOfTheDayForUser(userId));
     }
 }

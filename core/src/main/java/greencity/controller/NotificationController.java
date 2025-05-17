@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
@@ -53,12 +54,13 @@ public class NotificationController {
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getNotificationsFiltered(
         @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Principal principal,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam(name = "project-name", required = false) ProjectName projectName,
         @RequestParam(name = "notification-types", required = false) List<NotificationType> notificationTypes,
         @RequestParam(required = false) Boolean viewed) {
-        return ResponseEntity.ok().body(userNotificationService.getNotificationsFiltered(pageable, principal,
+        return ResponseEntity.ok().body(userNotificationService.getNotificationsFiltered(userId, pageable, principal,
             locale.getLanguage(), projectName, notificationTypes, viewed));
     }
 
@@ -101,7 +103,7 @@ public class NotificationController {
     /**
      * Method to delete specific Notification.
      *
-     * @param principal      Principal with userId
+     * @param userId      User's id
      * @param notificationId id of notification, that should be deleted
      */
     @Operation(summary = "Delete single Notification.")
@@ -113,9 +115,9 @@ public class NotificationController {
     })
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<Object> deleteNotification(
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable Long notificationId) {
-        userNotificationService.deleteNotification(principal, notificationId);
+        userNotificationService.deleteNotification(userId, notificationId);
         return ResponseEntity.ok().build();
     }
 

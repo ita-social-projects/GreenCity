@@ -100,9 +100,8 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public UserVO findByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .map(user -> modelMapper.map(user, UserVO.class))
+    public UserVO findNotDeactivatedByEmail(String email) {
+        return userRemoteClient.findNotDeactivatedByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
@@ -110,29 +109,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        UserVO user = userRemoteClient.findNotDeactivatedByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-        return Optional.of(user);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Long findIdByEmail(String email) {
-        log.info(LogMessage.IN_FIND_ID_BY_EMAIL, email);
-        return userRepo.findIdByEmail(email)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public UserStatusDto updateStatus(Long id, UserStatus userStatus, String email) {
-        checkUpdatableUser(id, email);
-        accessForUpdateUserStatus(id, email);
+    public UserStatusDto updateStatus(Long id, UserStatus userStatus, Long currentUserId) {
+        checkUpdatableUser(id, currentUserId);
+        accessForUpdateUserStatus(id, currentUserId);
         UserVO userVO = findById(id);
         userVO.setUserStatus(userStatus);
 
@@ -167,11 +146,10 @@ public class UserServiceImpl implements UserService {
      * then throw exception.
      *
      * @param id    id of updatable user.
-     * @param email email of admin/moderator.
+     * @param currentUserId id of current user.
      */
-    protected void checkUpdatableUser(Long id, String email) {
-        UserVO user = findByEmail(email);
-        if (id.equals(user.getId())) {
+    protected void checkUpdatableUser(Long id, Long currentUserId) {
+        if (id.equals(currentUserId)) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);
         }
     }
@@ -181,10 +159,10 @@ public class UserServiceImpl implements UserService {
      * moderators, then throw exception.
      *
      * @param id    id of updatable user.
-     * @param email email of admin/moderator.
+     * @param currentUserId email of current user.
      */
-    private void accessForUpdateUserStatus(Long id, String email) {
-        UserVO user = findByEmail(email);
+    private void accessForUpdateUserStatus(Long id, Long currentUserId) {
+        UserVO user = findById(currentUserId);
         if (user.getRole() == Role.ROLE_MODERATOR) {
             Role role = findById(id).getRole();
             if ((role == Role.ROLE_MODERATOR) || (role == Role.ROLE_ADMIN)) {
@@ -282,9 +260,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserVO> findByEmails(List<String> emails) {
-        return userRepo.findAllByEmailIn(emails).stream()
-            .map(u -> modelMapper.map(u, UserVO.class))
-            .toList();
+        return userRemoteClient.findAllByEmailIn(emails);
     }
 
     /**
@@ -509,15 +485,13 @@ public class UserServiceImpl implements UserService {
         User user;
         System.out.println(updateUserDto.getUserUpdateType());
         if (!Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.CREATE)) {
-            user = userRepo.findByEmail(updateUserDto.getEmail()).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + updateUserDto.getEmail()));
+            user = userRepo.findById(updateUserDto.getId()).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + updateUserDto.getId()));
             updateUserDtoUserMapper.merge(updateUserDto, user);
         } else {
             user = User.builder()
                 .id(updateUserDto.getId())
-                .email(updateUserDto.getEmail())
                 .name(updateUserDto.getName())
-                .profilePicturePath(updateUserDto.getProfilePicturePath())
                 .rating(AppConstant.DEFAULT_RATING)
                 .eventOrganizerRating(AppConstant.DEFAULT_RATING)
                 .build();
@@ -561,14 +535,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean createUser(CreateGreenCityUserDto createUserDto) {
-        Optional<User> existingUser = userRepo.findByEmail(createUserDto.getEmail());
-        if (existingUser.isPresent()) {
+        Long newUserId = createUserDto.getId();
+        if (userRepo.existsById(newUserId)) {
             throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
-                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL);
+                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_ID.formatted(newUserId));
         }
         User userToSave = User.builder()
-            .id(createUserDto.getId())
-            .email(createUserDto.getEmail())
+            .id(newUserId)
             .name(createUserDto.getName())
             .profilePicturePath(createUserDto.getProfilePicturePath())
             .rating(AppConstant.DEFAULT_RATING)

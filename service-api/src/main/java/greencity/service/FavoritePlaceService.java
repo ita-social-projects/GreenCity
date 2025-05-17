@@ -14,43 +14,43 @@ public interface FavoritePlaceService {
      *
      * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name,
      *                         {@link PlaceVO} id and {@link UserVO} email
-     * @param userEmail        - User email
+     * @param userId           - User's id
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
-    FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail);
+    FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, Long userId);
 
     /**
      * Update favorite place name for user.
      *
      * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name,
      *                         {@link PlaceVO} id and {@link UserVO} email
-     * @param userEmail        - {@link UserVO} email
+     * @param userId        - {@link UserVO} id
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
 
-    FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail);
+    FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, Long userId);
 
     /**
      * Find all {@link FavoritePlaceVO} by {@link UserVO} email.
      *
-     * @param email - {@link UserVO} email
+     * @param userId - {@link UserVO}'s id
      * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi
      */
-    List<PlaceByBoundsDto> findAllByUserEmail(String email);
+    List<PlaceByBoundsDto> findAllByUserId(Long userId);
 
     /**
      * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id
      * .
      *
      * @param placeId   - {@link PlaceVO} id
-     * @param userEmail - {@link UserVO} email
+     * @param userId    - {@link UserVO} id
      * @return - id of deleted {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
-    Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail);
+    Long deleteByUserIdAndPlaceId(Long placeId, Long userId);
 
     /**
      * FInd {@link FavoritePlaceVO} by id.
@@ -74,9 +74,9 @@ public interface FavoritePlaceService {
      * Get {@link FavoritePlaceVO} coordinates, id and name.
      *
      * @param id    {@link FavoritePlaceVO}
-     * @param email - {@link UserVO} email
+     * @param userId - {@link UserVO} id
      * @return {@link PlaceByBoundsDto} with name from favorite place
      * @author Zakhar Skaletskyi
      */
-    PlaceByBoundsDto getFavoritePlaceWithLocation(Long id, String email);
+    PlaceByBoundsDto getFavoritePlaceWithLocation(Long id, Long userId);
 }

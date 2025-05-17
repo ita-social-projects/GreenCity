@@ -379,12 +379,12 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public void addToFavorites(Long eventId, String email) {
+    public void addToFavorites(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (event.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES);
@@ -398,12 +398,12 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public void removeFromFavorites(Long eventId, String email) {
+    public void removeFromFavorites(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!event.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_FAVORITES);
@@ -495,11 +495,11 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public void rateEvent(Long eventId, String email, int grade) {
+    public void rateEvent(Long eventId, Long userId, int grade) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (event.getOrganizer().getId().equals(currentUser.getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
@@ -955,20 +955,20 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isEventLikedByUser(Long eventId, UserVO userVO) {
+    public boolean isEventLikedByUser(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isEventDislikedByUser(Long eventId, UserVO userVO) {
+    public boolean isEventDislikedByUser(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     /**
@@ -994,12 +994,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void addToRequested(Long eventId, String email) {
+    public void addToRequested(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (event.getRequesters().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_REQUESTED);
@@ -1013,12 +1013,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void removeFromRequested(Long eventId, String email) {
+    public void removeFromRequested(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!event.getRequesters().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_REQUESTED);
@@ -1029,9 +1029,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable) {
-        User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, Long userId, Pageable pageable) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));

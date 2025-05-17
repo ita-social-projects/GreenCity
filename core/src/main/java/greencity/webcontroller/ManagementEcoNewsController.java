@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserClaims;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -10,6 +11,7 @@ import greencity.dto.econews.*;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
@@ -274,8 +276,8 @@ public class ManagementEcoNewsController {
      */
     @PatchMapping("/hide")
     public ResponseEntity<Long> hide(@RequestParam("id") Long id,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        ecoNewsService.setHiddenValue(id, user, true);
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims) {
+        ecoNewsService.setHiddenValue(id, userClaims, true);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
@@ -287,8 +289,8 @@ public class ManagementEcoNewsController {
      */
     @PatchMapping("/show")
     public ResponseEntity<Long> show(@RequestParam("id") Long id,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        ecoNewsService.setHiddenValue(id, user, false);
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims) {
+        ecoNewsService.setHiddenValue(id, userClaims, false);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }

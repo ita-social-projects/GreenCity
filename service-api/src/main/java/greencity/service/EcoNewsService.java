@@ -13,6 +13,7 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import java.util.Locale;
@@ -61,7 +62,7 @@ public interface EcoNewsService {
         String title,
         Long authorId,
         boolean favorite,
-        String email);
+        Long userId);
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
@@ -134,23 +135,23 @@ public interface EcoNewsService {
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
      * @return instance of {@link EcoNewsGenericDto}.
      */
-    EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
+    EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserClaims userClaims);
 
     /**
      * Method for adding an eco new to favorites by ecoNewsId.
      *
      * @param ecoNewsId - eco-news id.
-     * @param email     - user email.
+     * @param userId    - user's id.
      */
-    void addToFavorites(Long ecoNewsId, String email);
+    void addToFavorites(Long ecoNewsId, Long userId);
 
     /**
      * Method for removing an eco new from favorites by ecoNewsId.
      *
      * @param ecoNewsId - eco-News id.
-     * @param email     - user email.
+     * @param userId    - user's id.
      */
-    void removeFromFavorites(Long ecoNewsId, String email);
+    void removeFromFavorites(Long ecoNewsId, Long userId);
 
     /**
      * Find {@link EcoNewsVO} for management.
@@ -229,10 +230,10 @@ public interface EcoNewsService {
      * Method for hiding/unhiding the {@link EcoNewsVO} instance by its id.
      *
      * @param id    - {@link EcoNewsVO} instance id which will be hidden/unhidden.
-     * @param user  current {@link UserVO} that wants to hide.
+     * @param userClaims  - {@link UserClaims} current user claims.
      * @param value value to be set to hidden field.
      */
-    void setHiddenValue(Long id, UserVO user, boolean value);
+    void setHiddenValue(Long id, UserClaims userClaims, boolean value);
 
     /**
      * Method for getting 3 eco-news sorted by likes and then by comments.

@@ -6,6 +6,7 @@ import greencity.dto.event.EventDateInformationDto;
 import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventImages;
@@ -13,7 +14,7 @@ import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
 import greencity.utils.EventUtils;
 import org.modelmapper.AbstractConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -29,10 +30,12 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
     private static final int MAX_ADDITIONAL_IMAGES = 4;
 
     private final CommentService commentService;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public EventResponseDtoMapper(@Lazy CommentService commentService) {
+    @Lazy
+    public EventResponseDtoMapper(CommentService commentService, ModelMapper modelMapper) {
         this.commentService = commentService;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -63,6 +66,7 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                 .toList());
 
         User organizer = event.getOrganizer();
+        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
 
         List<EventDateInformationDto> dateInformation = event.getDates().stream()
             .map(date -> new EventDateInformationDto(
@@ -96,7 +100,7 @@ public class EventResponseDtoMapper extends AbstractConverter<Event, EventRespon
                 organizer.getId(),
                 organizer.getName(),
                 organizer.getEventOrganizerRating(),
-                organizer.getEmail()),
+                organizerVO.getEmail()),
             event.getCreationDate(),
             event.isOpen(),
             dateInformation,

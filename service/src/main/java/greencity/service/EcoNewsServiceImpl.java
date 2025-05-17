@@ -21,6 +21,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNews_;
@@ -118,7 +119,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
         final EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
-        UserVO user = userService.findByEmail(email);
+        UserVO user = userService.findNotDeactivatedByEmail(email);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(RatingPointsNames.CREATE_NEWS), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
@@ -151,8 +152,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String title,
         Long authorId,
         boolean favorite,
-        String email) {
-        Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
+        Long currentUserId) {
 
         return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
@@ -331,9 +331,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserVO user) {
+    public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserClaims userClaims) {
         EcoNews toUpdate = findEcoNewsById(updateEcoNewsDto.getId());
-        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
+        if (!userClaims.roles().contains(Role.ROLE_ADMIN) && !userClaims.userId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
@@ -347,11 +347,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public void addToFavorites(Long ecoNewsId, String email) {
+    public void addToFavorites(Long ecoNewsId, Long userId) {
         EcoNews ecoNews = findEcoNewsById(ecoNewsId);
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (ecoNews.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES);
@@ -362,11 +362,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public void removeFromFavorites(Long ecoNewsId, String email) {
+    public void removeFromFavorites(Long ecoNewsId, Long userId) {
         EcoNews ecoNews = findEcoNewsById(ecoNewsId);
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!ecoNews.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES);
@@ -715,19 +715,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
-    private Long getUserIdByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .map(User::getId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-    }
-
     /**
      * {@inheritDoc}
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public void setHiddenValue(Long id, UserVO user, boolean value) {
-        if (user.getRole() != Role.ROLE_ADMIN) {
+    public void setHiddenValue(Long id, UserClaims userClaims, boolean value) {
+        if (!userClaims.roles().contains(Role.ROLE_ADMIN)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         EcoNews ecoNews = findEcoNewsById(id);

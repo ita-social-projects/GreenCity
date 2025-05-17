@@ -3,6 +3,7 @@ package greencity.service;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.PlacesSearchResult;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -106,6 +107,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final UserNotificationService userNotificationService;
     private final RestClient restClient;
     private final PhotoRepo photoRepo;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -124,7 +126,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public PlaceVO save(PlaceAddDto dto, String email) {
-        UserVO user = userService.findByEmail(email);
+        UserVO user = userService.findNotDeactivatedByEmail(email);
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
@@ -272,12 +274,12 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal) {
+    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, Long userId) {
         log.info(LogMessage.IN_FIND_ALL);
         Page<Place> pages = placeRepo.findAll(pageable);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(pages);
-        if (!CollectionUtils.isEmpty(placeDtos) && principal != null) {
-            setIsFavoriteToAdminPlaceDto(placeDtos, principal.getName());
+        if (!CollectionUtils.isEmpty(placeDtos)) {
+            setIsFavoriteToAdminPlaceDto(placeDtos, userId);
         }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
     }
@@ -421,8 +423,7 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, UserVO userVO) {
-        Long userId = userVO == null ? null : userVO.getId();
+    public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto, Long userId) {
         List<Place> list =
             ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
                 : placeRepo.findAll(new PlaceFilter(filterDto, userId));
@@ -550,9 +551,9 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      */
     @Override
-    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images) {
-        User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, Long userId, MultipartFile[] images) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         UserVO userVO = modelMapper.map(user, UserVO.class);
 
         if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
@@ -618,8 +619,8 @@ public class PlaceServiceImpl implements PlaceService {
         }
     }
 
-    private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, String email) {
-        List<Long> favoritePlacesLocationIds = favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(email);
+    private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, Long userId) {
+        List<Long> favoritePlacesLocationIds = favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserId(userId);
         placeDtos.forEach(dto -> {
             boolean isFavorite = favoritePlacesLocationIds.stream()
                 .anyMatch(locationId -> locationId.equals(dto.getLocation().getId()));
@@ -678,7 +679,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = placeRepo.findByNameIgnoreCase(dto.getPlaceName())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_NAME + dto.getPlaceName()));
 
-        if (userRepo.findByEmail(dto.getEmail()).isEmpty()) {
+        if (!userRemoteClient.userExistsByEmail(dto.getEmail())) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
 
@@ -740,7 +741,7 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional
     @Override
-    public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email) {
+    public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, Long userId) {
         log.info(LogMessage.IN_UPDATE, dto.getName());
         Category updatedCategory = modelMapper.map(
             categoryService.findByName(dto.getCategory().getNameEn()), Category.class);
@@ -749,7 +750,7 @@ public class PlaceServiceImpl implements PlaceService {
         updateLocation(dto, updatedPlace, updatable);
         updatePlaceProperties(dto, updatedPlace, updatedCategory);
         Place place = modelMapper.map(updatedPlace, Place.class);
-        Optional<User> user = userRepo.findByEmail(email);
+        Optional<User> user = userRepo.findById(userId);
         mapMultipartFilesToPhotos(images, place, user.orElse(null));
         placeRepo.save(updatedPlace);
         return modelMapper.map(updatedPlace, PlaceVO.class);

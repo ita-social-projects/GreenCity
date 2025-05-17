@@ -13,8 +13,10 @@ import lombok.experimental.SuperBuilder;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode()
 @SuperBuilder
-public class UpdateUserDto extends CreateGreenCityUserDto {
+public class UpdateUserDto {
+    private Long id;
+    private String name;
     private UserUpdateType userUpdateType;
 }

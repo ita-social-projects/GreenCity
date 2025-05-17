@@ -18,24 +18,12 @@ public class UpdateUserDtoUserMapper {
             if (updateUserDto.getName() != null) {
                 user.setName(null);
             }
-            if (updateUserDto.getEmail() != null) {
-                user.setEmail(null);
-            }
-            if (updateUserDto.getProfilePicturePath() != null) {
-                user.setProfilePicturePath(null);
-            }
         } else {
             if (updateUserDto.getId() != null) {
                 user.setId(user.getId());
             }
             if (updateUserDto.getName() != null) {
                 user.setName(updateUserDto.getName());
-            }
-            if (updateUserDto.getEmail() != null) {
-                user.setEmail(updateUserDto.getEmail());
-            }
-            if (updateUserDto.getProfilePicturePath() != null) {
-                user.setProfilePicturePath(updateUserDto.getProfilePicturePath());
             }
         }
         return user;

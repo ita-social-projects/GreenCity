@@ -386,7 +386,7 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public CommentDto getCommentById(ArticleType type, Long id, UserVO userVO) {
+    public CommentDto getCommentById(ArticleType type, Long id, Long userId) {
         Comment comment = commentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + id));
 
@@ -394,21 +394,21 @@ public class CommentServiceImpl implements CommentService {
             throw new BadRequestException("Comment with id: " + id + " doesn't belong to " + type.getLink());
         }
 
-        return convertToCommentDto(comment, userVO);
+        return convertToCommentDto(comment, userId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+    public PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, Long userId) {
         Comment parentComment = commentRepo.findById(parentCommentId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + parentCommentId));
         Page<Comment> pages =
             commentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentComment.getId(),
                 CommentStatus.DELETED);
 
-        return convertPagesToCommentDtos(pages, userVO);
+        return convertPagesToCommentDtos(pages, userId);
     }
 
     /**
@@ -416,15 +416,15 @@ public class CommentServiceImpl implements CommentService {
      * {@link PageableDto} containing {@link CommentDto} objects.
      *
      * @param pages  the {@link Page} of {@link Comment} entities to be converted.
-     * @param userVO the {@link UserVO} representing the current user, used to
+     * @param userId the {@link Long} representing the current user id, used to
      *               determine if the user has liked each comment. This may be
      *               {@code null} if the current user's information is not
      *               available.
      * @return a {@link PageableDto} of {@link CommentDto} containing the mapped
      *         {@link CommentDto} objects.
      */
-    public PageableDto<CommentDto> convertPagesToCommentDtos(Page<Comment> pages, UserVO userVO) {
-        List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userVO)).toList();
+    public PageableDto<CommentDto> convertPagesToCommentDtos(Page<Comment> pages, Long userId) {
+        List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userId)).toList();
 
         return new PageableDto<>(
             commentDtos,
@@ -478,7 +478,7 @@ public class CommentServiceImpl implements CommentService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId,
+    public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, Long userId, Long articleId,
         ArticleType articleType) {
         checkArticleExists(articleType, articleId);
 
@@ -486,7 +486,7 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.findAllByParentCommentIdIsNullAndArticleIdAndArticleTypeAndStatusNotOrderByCreatedDateDesc(
                 pageable, articleId, articleType, CommentStatus.DELETED);
 
-        return convertPagesToCommentDtos(pages, userVO);
+        return convertPagesToCommentDtos(pages, userId);
     }
 
     /**
@@ -494,18 +494,18 @@ public class CommentServiceImpl implements CommentService {
      * object.
      *
      * @param comment the {@link Comment} entity to be converted.
-     * @param user    the {@link UserVO} representing the current user, which is
+     * @param userId  the {@link Long} representing the current user id, which is
      *                used to determine if the current user has liked the comment.
      * @return a {@link CommentDto} that contains the mapped information from the
      *         provided {@link Comment} entity.
      */
-    private CommentDto convertToCommentDto(Comment comment, UserVO user) {
+    private CommentDto convertToCommentDto(Comment comment, Long userId) {
         CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
-        if (user != null) {
+        if (userId != null) {
             commentDto.setCurrentUserLiked(comment.getUsersLiked().stream()
-                .anyMatch(u -> u.getId().equals(user.getId())));
+                .anyMatch(u -> u.getId().equals(userId)));
             commentDto.setCurrentUserDisliked(comment.getUsersDisliked().stream()
-                .anyMatch(u -> u.getId().equals(user.getId())));
+                .anyMatch(u -> u.getId().equals(userId)));
         }
         if (comment.getParentComment() != null) {
             commentDto.setParentCommentId(comment.getParentComment().getId());
@@ -558,11 +558,11 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     @Transactional
-    public void update(String commentText, Long id, UserVO userVO) {
+    public void update(String commentText, Long id, Long currentUserId) {
         Comment comment = commentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
-        if (!userVO.getId().equals(comment.getUser().getId())) {
+        if (!currentUserId.equals(comment.getUser().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 

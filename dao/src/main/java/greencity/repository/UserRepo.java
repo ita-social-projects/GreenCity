@@ -22,21 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-    /**
-     * Find {@link User} by email.
-     *
-     * @param email user email.
-     * @return {@link User}
-     */
-    Optional<User> findByEmail(String email);
-
-    /**
-     * Find list of {@link User}'s by emails.
-     *
-     * @param emails user emails.
-     * @return list of {@link User}.
-     */
-    List<User> findAllByEmailIn(List<String> emails);
 
     /**
      * Find all {@link User}.
@@ -49,15 +34,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @NonNull
     Page<User> findAll(@NonNull Specification<User> filter, @NonNull Pageable pageable);
-
-    /**
-     * Find id by email.
-     *
-     * @param email - User email
-     * @return User id
-     */
-    @Query("SELECT id FROM User WHERE email=:email")
-    Optional<Long> findIdByEmail(String email);
 
     /**
      * Updates user rating as event organizer.

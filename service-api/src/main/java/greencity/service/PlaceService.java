@@ -103,7 +103,7 @@ public interface PlaceService {
      * @param email  - admin user email
      * @return place {@link PlaceVO}
      */
-    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, String email);
+    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, Long userId);
 
     /**
      * Method for updating {@link PlaceVO}.
@@ -124,14 +124,14 @@ public interface PlaceService {
      * Find all places from DB for User with current email.
      *
      * @param pageable  {@link Pageable}.
-     * @param principal {@link Principal}. Represents loggedIn User to show if place
+     * @param userId    {@link Long} current user id
      *                  isFavorite.
      * @return an object of {@link PageableDto} which contains a list of
      *         {@link AdminPlaceDto}.
      * @author Olena Petryshak
      * @author Olena Sotnik
      */
-    PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal);
+    PageableDto<AdminPlaceDto> findAll(Pageable pageable, Long userId);
 
     /**
      * Method for deleting place by id.
@@ -196,7 +196,7 @@ public interface PlaceService {
      * @author Roman Zahouri
      */
     List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto,
-        UserVO userVO);
+        Long userId);
 
     /**
      * The method finds all {@link GeocodingResult}'s from {@link GoogleApiService}
@@ -267,7 +267,7 @@ public interface PlaceService {
     /**
      * Method to create new place From UI.
      */
-    PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email, MultipartFile[] images);
+    PlaceResponse addPlaceFromUi(AddPlaceDto dto, Long userId, MultipartFile[] images);
 
     /**
      * Method for getting Places by searchQuery.

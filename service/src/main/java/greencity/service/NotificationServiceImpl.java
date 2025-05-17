@@ -392,7 +392,7 @@ public class NotificationServiceImpl implements NotificationService {
         User targetUser = notification.getTargetUser();
 
         return ScheduledEmailMessage.builder()
-            .email(targetUser.getEmail())
+            .userId(targetUser.getId())
             .username(targetUser.getName())
             .baseLink(createBaseLink(notification))
             .subject(subject)

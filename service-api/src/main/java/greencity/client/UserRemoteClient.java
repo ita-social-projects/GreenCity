@@ -494,6 +494,36 @@ public class UserRemoteClient {
             .bodyToMono(Void.class).block();
     }
 
+    /**
+     * Find list of {@link UserVO}'s by emails.
+     *
+     * @param emails user emails.
+     * @return list of {@link UserVO}.
+     */
+    public List<UserVO> findAllByEmailIn(List<String> emails) {
+        String path = "/user/email/findAll";
+        String emailsListQueryParam = "emails";
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(path)
+                        .queryParam(emailsListQueryParam, emails)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {})
+                .block();
+    }
+
+    /**
+     * Method to check whether user exists by email
+     *
+     * @param email user's email
+     * @return boolean of whether user by that email exists
+     */
+    public boolean userExistsByEmail(String email) {
+        Optional<UserVO> userVOOptional = findNotDeactivatedByEmail(email);
+        return userVOOptional.isPresent();
+    }
+
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
 

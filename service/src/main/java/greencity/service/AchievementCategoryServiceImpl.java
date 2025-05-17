@@ -44,17 +44,16 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(String email) {
-        UserVO user = userService.findByEmail(email);
+    public List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(Long userId, String userEmail) {
         return achievementCategoryRepo.findAllWithAtLeastOneAchievement().stream()
             .map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class))
             .map(achievementCategory -> {
                 Long achievementCategoryId = achievementCategory.getId();
                 achievementCategory
                     .setTotalQuantity(
-                        achievementService.findAchievementCountByTypeAndCategory(email, null, achievementCategoryId));
+                        achievementService.findAchievementCountByTypeAndCategory(userId, userEmail, null, achievementCategoryId));
                 achievementCategory.setAchieved(userAchievementRepo
-                    .findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
+                    .findAllByUserIdAndAchievement_AchievementCategoryId(userId, achievementCategoryId).size());
                 return achievementCategory;
             })
             .toList();

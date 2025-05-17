@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.user.UserVO;
 import greencity.service.AIService;
@@ -39,10 +40,10 @@ public class AIController {
     })
     @ApiLocale
     @GetMapping("/forecast")
-    public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUser UserVO userVO,
+    public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.getForecast(userVO.getId(), locale.getDisplayLanguage()));
+            .body(aiService.getForecast(userId, locale.getDisplayLanguage()));
     }
 
     @Operation(summary = "Generates news content based on the specified language and query")

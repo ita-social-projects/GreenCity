@@ -200,8 +200,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String userEmail) {
-        Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userEmail);
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(Long userId) {
+        Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userId);
         try {
             return getRandomFactOfTheDayByTags(userTagIds);
         } catch (NotFoundException e) {

@@ -128,7 +128,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * Finds the IDs of tags associated with habits that are in progress for the
      * user with the specified email.
      *
-     * @param email the email of the user
+     * @param userId the id of the user
      * @return a set of tag IDs ({@link Long}) associated with the user's
      *         in-progress habits
      */
@@ -138,6 +138,6 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
             + "INNER JOIN habits h ON ht.habit_id = h.id "
             + "INNER JOIN habit_assign ha ON h.id = ha.habit_id "
             + "INNER JOIN greencity_users u ON ha.user_id = u.id AND ha.status = 'INPROGRESS' "
-            + "WHERE u.email = :email")
-    Set<Long> findTagsIdByUserHabitsInProgress(String email);
+            + "WHERE u.id = :userId")
+    Set<Long> findTagsIdByUserHabitsInProgress(Long userId);
 }

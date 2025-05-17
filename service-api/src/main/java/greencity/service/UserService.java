@@ -41,15 +41,7 @@ public interface UserService {
      * @param email - {@link UserVO}'s email
      * @return {@link Optional} of found {@link UserVO}.
      */
-    Optional<UserVO> findNotDeactivatedByEmail(String email);
-
-    /**
-     * Find UserVO's id by UserVO email.
-     *
-     * @param email - {@link UserVO} email
-     * @return {@link UserVO} id
-     */
-    Long findIdByEmail(String email);
+    UserVO findNotDeactivatedByEmail(String email);
 
     /**
      * Method that allow you to find {@link UserVO} by id.
@@ -60,21 +52,13 @@ public interface UserService {
     UserVO findById(Long id);
 
     /**
-     * Method that allow you to find {@link UserVO} by email.
-     *
-     * @param email a value of {@link String}
-     * @return {@link UserVO} with this email.
-     */
-    UserVO findByEmail(String email);
-
-    /**
      * Update status of user.
      *
      * @param id         {@link UserVO} id.
      * @param userStatus {@link UserStatus} for user.
      * @return {@link UserStatusDto}
      */
-    UserStatusDto updateStatus(Long id, UserStatus userStatus, String email);
+    UserStatusDto updateStatus(Long id, UserStatus userStatus, Long currentUserId);
 
     /**
      * Update {@code ROLE} of user.
