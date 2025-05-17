@@ -5,7 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
-import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class UserManagementDtoMapper extends AbstractConverter<User, UserManagem
     protected UserManagementDto convert(User user) {
         Long userId = user.getId();
         UserVO userVO = userRemoteClient.findNotDeactivatedById(userId)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         return UserManagementDto.builder()
             .id(userVO.getId())
