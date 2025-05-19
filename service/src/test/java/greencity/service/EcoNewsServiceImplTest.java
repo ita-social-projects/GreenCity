@@ -21,6 +21,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
@@ -234,7 +235,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(tagVOList,
             new TypeToken<List<Tag>>() {
             }.getType())).thenReturn(tags);
-        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
         EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, null, TestConst.EMAIL);
 
         assertEquals(ecoNewsGenericDto, actual);
@@ -350,13 +351,13 @@ class EcoNewsServiceImplTest {
             }.getType())).thenReturn(ecoNews.getTags());
 
         EcoNewsGenericDto actual =
-            ecoNewsService.update(updateEcoNewsDto, file, ModelUtils.getUserVO());
+            ecoNewsService.update(updateEcoNewsDto, file, ModelUtils.getUserClaims());
         assertEquals(ecoNewsDto, actual);
     }
 
     @Test
     void updateEcoNewsDtoTest_whenEcoNewsNotSaved_throwException() {
-        UserVO userVO = ModelUtils.getUserVO();
+        UserClaims userClaims = ModelUtils.getUserClaims();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDto();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
@@ -374,22 +375,21 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.save(ecoNews)).thenThrow(new RuntimeException());
 
         assertThrows(NotSavedException.class,
-            () -> ecoNewsService.update(updateEcoNewsDto, file, userVO));
+            () -> ecoNewsService.update(updateEcoNewsDto, file, userClaims));
 
         verify(fileService).delete(anyString());
     }
 
     @Test
     void updateEcoNewsDtoThrowsExceptionTest() {
-        UserVO user = ModelUtils.getUserVO();
+        UserClaims userClaims = ModelUtils.getUserClaims();
         ecoNews.getAuthor().setId(2L);
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
-        assertThrows(BadRequestException.class, () -> ecoNewsService.update(updateEcoNewsDto, null, user));
-
+        assertThrows(BadRequestException.class, () -> ecoNewsService.update(updateEcoNewsDto, null, userClaims));
     }
 
     @Test
@@ -635,7 +635,7 @@ class EcoNewsServiceImplTest {
         tags.add("news");
 
         User mockUser = ModelUtils.getUser();
-        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
+        // when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Root<EcoNews> root = mock(Root.class);
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
@@ -670,7 +670,7 @@ class EcoNewsServiceImplTest {
 
         when(ecoNewsRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
-        ecoNewsService.find(pageable, tags, "1", 1L, false, "user@example.com");
+        ecoNewsService.find(pageable, tags, "1", 1L, false, mockUser.getId());
         verify(ecoNewsRepo, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
@@ -687,7 +687,7 @@ class EcoNewsServiceImplTest {
         when(root.<EcoNews, User>join("followers")).thenReturn(followersJoin);
         when(followersJoin.<Long>get("id")).thenReturn(userIdPath);
         when(criteriaBuilder.equal(userIdPath, mockUser.getId())).thenReturn(favoritePredicate);
-        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
+        // when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Predicate result = ecoNewsService.getPredicate(
             root,
@@ -713,10 +713,10 @@ class EcoNewsServiceImplTest {
         List<EcoNews> ecoNewsList = Collections.singletonList(getEcoNews());
         Page<EcoNews> page = new PageImpl<>(ecoNewsList, pageable, ecoNewsList.size());
 
-        when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
+        // when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
         when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
 
-        ecoNewsService.find(pageable, null, null, null, false, "user@example.com");
+        ecoNewsService.find(pageable, null, null, null, false, mockUser.getId());
 
         verify(ecoNewsRepo, times(1)).findAll(any(Pageable.class));
     }
@@ -799,7 +799,7 @@ class EcoNewsServiceImplTest {
         User author = ModelUtils.getUser();
         User action = User.builder()
             .id(2L)
-            .email(TestConst.EMAIL)
+            // .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .subscribedEvents(new HashSet<>())
             .favoriteEvents(new HashSet<>())
@@ -836,11 +836,11 @@ class EcoNewsServiceImplTest {
     void setHiddenValue() {
         String accessToken = "Token";
         when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
-        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        UserClaims adminClaims = ModelUtils.getAdminUserClaims();
         EcoNews ecoNew = getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNew));
 
-        ecoNewsService.setHiddenValue(1L, adminVO, true);
+        ecoNewsService.setHiddenValue(1L, adminClaims, true);
         verify(ecoNewsRepo, times(1)).save(ecoNew.setHidden(true));
     }
 
@@ -848,42 +848,44 @@ class EcoNewsServiceImplTest {
     void setHiddenWithNotAdminValueThrowExceptionTest() {
         String accessToken = "Token";
         when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
-        UserVO userVO = ModelUtils.getUserVO();
+        UserClaims userClaims = ModelUtils.getUserClaims();
 
-        assertThrows(BadRequestException.class, () -> ecoNewsService.setHiddenValue(1L, userVO, true));
+        assertThrows(BadRequestException.class, () -> ecoNewsService.setHiddenValue(1L, userClaims, true));
     }
 
     @Test
     void setHiddenWithWrongIdValueThrowExceptionTest() {
         String accessToken = "Token";
         when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
-        UserVO adminVO = ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN);
+        UserClaims adminClaims = ModelUtils.getAdminUserClaims();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> ecoNewsService.setHiddenValue(1L, adminVO, true));
+        assertThrows(NotFoundException.class, () -> ecoNewsService.setHiddenValue(1L, adminClaims, true));
     }
 
     @Test
     void addToFavorites_ShouldAddUserToFavorites() {
         User user = ModelUtils.getUser();
+        Long userId = user.getId();
 
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        ecoNewsService.addToFavorites(1L, TestConst.EMAIL);
+        ecoNewsService.addToFavorites(1L, userId);
 
         assertTrue(ecoNews.getFollowers().contains(user));
         verify(ecoNewsRepo).save(ecoNews);
         verify(ecoNewsRepo).findById(1L);
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(userId);
     }
 
     @Test
     void addToFavorites_ShouldThrowExceptionIfEcoNewsNotFound() {
+        Long userId = 2L;
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+                ecoNewsService.addToFavorites(1L, userId));
 
         assertEquals(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
@@ -891,55 +893,61 @@ class EcoNewsServiceImplTest {
 
     @Test
     void addToFavorites_ShouldThrowExceptionIfUserNotFound() {
+        Long userId = 3L;
+
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+                ecoNewsService.addToFavorites(1L, userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + TestConst.EMAIL, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(userId);
     }
 
     @Test
     void addToFavorites_ShouldThrowExceptionIfUserAlreadyInFavorites() {
         User user = ModelUtils.getUser();
+        Long userId = user.getId();
 
         ecoNews.setFollowers(Collections.singleton(user));
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
         BadRequestException exception =
-            assertThrows(BadRequestException.class, () -> ecoNewsService.addToFavorites(1L, TestConst.EMAIL));
+            assertThrows(BadRequestException.class, () -> ecoNewsService.addToFavorites(1L, userId));
 
         assertEquals(ErrorMessage.USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(userId);
     }
 
     @Test
     void removeFromFavorites_ShouldRemoveUserFromFavorites() {
         User user = ModelUtils.getUser();
+        Long userId = user.getId();
 
         ecoNews.setFollowers(Collections.singleton(user));
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL);
+        ecoNewsService.removeFromFavorites(1L, userId);
 
         assertFalse(ecoNews.getFollowers().contains(user));
         verify(ecoNewsRepo).save(ecoNews);
         verify(ecoNewsRepo).findById(1L);
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(userId);
     }
 
     @Test
     void removeFromFavorites_ShouldThrowExceptionIfEcoNewsNotFound() {
+        Long userId = 4L;
+
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+                ecoNewsService.removeFromFavorites(1L, userId));
 
         assertEquals(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
@@ -947,30 +955,33 @@ class EcoNewsServiceImplTest {
 
     @Test
     void removeFromFavorites_ShouldThrowExceptionIfUserNotFound() {
+        Long userId = 3L;
+
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+                ecoNewsService.removeFromFavorites(1L, userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + TestConst.EMAIL, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(userId);
     }
 
     @Test
     void removeFromFavorites_ShouldThrowExceptionIfUserNotInFavorites() {
         User user = ModelUtils.getUser();
+        Long userId = user.getId();
 
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
         BadRequestException exception =
-            assertThrows(BadRequestException.class, () -> ecoNewsService.removeFromFavorites(1L, TestConst.EMAIL));
+            assertThrows(BadRequestException.class, () -> ecoNewsService.removeFromFavorites(1L, userId));
 
         assertEquals(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(userId);
     }
 
     @Test

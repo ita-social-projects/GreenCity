@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.TestConst;
 import greencity.dto.achievement.ActionDto;
 import greencity.service.UserNotificationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +54,7 @@ class NotificationControllerTest {
 
         mockMvc.perform(get(notificationLink).principal(principal))
             .andExpect(status().isOk());
-        verify(userNotificationService).getNotificationsFiltered(pageable, principal, "en", null, null, null);
+        verify(userNotificationService).getNotificationsFiltered(TestConst.USER_ID, pageable, principal, "en", null, null, null);
     }
 
     @Test
@@ -76,7 +77,7 @@ class NotificationControllerTest {
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(userNotificationService).deleteNotification(principal, 1L);
+        verify(userNotificationService).deleteNotification(TestConst.USER_ID, 1L);
     }
 
     @Test

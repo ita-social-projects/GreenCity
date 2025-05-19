@@ -114,7 +114,6 @@ class ManagementUserControllerTest {
 
         PageableDetailedDto<UserManagementVO> userPageableDetailedDto = getUserPageableDetailedDto();
 
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(userService.getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class)))
             .thenReturn(userPageableDetailedDto);
         when(filterService.getAllFilters(USER_ID)).thenReturn(response);
@@ -126,7 +125,6 @@ class ManagementUserControllerTest {
             .param("query", TEST_QUERY))
             .andExpect(model().attribute("users", userPageableDetailedDto));
 
-        verify(userService).findByEmail(anyString());
         verify(userService).getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class));
         verify(filterService).getAllFilters(USER_ID);
     }
@@ -252,11 +250,12 @@ class ManagementUserControllerTest {
         User user = getUser();
 
         String content = objectMapper.writeValueAsString(dto);
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/filter-save").content(content).principal(principal)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isFound());
+
+        verify(filterService.save(userVO.getId(), dto));
     }
 
     @Test

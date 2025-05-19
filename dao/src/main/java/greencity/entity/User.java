@@ -143,7 +143,7 @@ import java.util.Set;
                 FROM greencity_users u
                 LEFT JOIN user_location ul ON u.user_location = ul.id
                 WHERE
-                    u.id IN (:users)
+                    u.id IN (:greencity_users)
                     OR (
                         (
                             (

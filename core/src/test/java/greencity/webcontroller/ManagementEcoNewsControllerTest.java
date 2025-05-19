@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import greencity.ModelUtils;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -103,7 +104,7 @@ class ManagementEcoNewsControllerTest {
     @Test
     void delete() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         doNothing().when(ecoNewsService).delete(1L, userVO);
         this.mockMvc.perform(MockMvcRequestBuilders
             .delete(managementEcoNewsLink + "/delete?id=1")
@@ -306,26 +307,27 @@ class ManagementEcoNewsControllerTest {
     @Test
     void hide() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, true);
+        // TODO: mock user claims injection
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), true);
         this.mockMvc.perform(MockMvcRequestBuilders
             .patch(managementEcoNewsLink + "/hide?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, true);
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, ModelUtils.getUserClaims(), true);
     }
 
     @Test
     void show() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, false);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), false);
         this.mockMvc.perform(MockMvcRequestBuilders
             .patch(managementEcoNewsLink + "/show?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, false);
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, ModelUtils.getUserClaims(), false);
     }
 }

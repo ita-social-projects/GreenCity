@@ -39,15 +39,15 @@ class EmailPreferenceAspectTest {
     void testProceedWhenUserHasEmailPreference() throws Throwable {
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
+        UserVO user = ModelUtils.getUserVO();
 
         Object[] args =
-            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en", false)};
+            {new ScheduledEmailMessage("username", user.getId(), "baselink", "subject", "message", "en", false)};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
-        UserVO user = ModelUtils.getUserVO();
         EmailPreferenceDto emailPreferenceDto =
             new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
-        when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
+        // when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
         when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(true);
@@ -66,16 +66,16 @@ class EmailPreferenceAspectTest {
     void testProceedWhenUserDoesNotHaveEmailPreference() throws Throwable {
         EmailPreference emailPreference = EmailPreference.LIKES;
         when(checkEmailPreference.value()).thenReturn(emailPreference);
+        UserVO user = ModelUtils.getUserVO();
 
         Object[] args =
-            {new ScheduledEmailMessage("username", "test@gmail.com", "baselink", "subject", "message", "en", false)};
+            {new ScheduledEmailMessage("username", user.getId(), "baselink", "subject", "message", "en", false)};
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
-        UserVO user = ModelUtils.getUserVO();
         EmailPreferenceDto emailPreferenceDto =
             new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
 
-        when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
+        // when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
         when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(false);

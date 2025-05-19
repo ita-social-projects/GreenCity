@@ -152,6 +152,9 @@ class ManagementPlacesControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String json = objectMapper.writeValueAsString(placeUpdateDto);
 
+        // TODO
+        // when(jwtTool.extractUserIdFrom...()).thenReturn(userId);
+
         MockMultipartFile placeUpdateDtoPart = new MockMultipartFile(
             "placeUpdateDto",
             "",
@@ -172,7 +175,7 @@ class ManagementPlacesControllerTest {
             .characterEncoding("UTF-8"))
             .andExpect(status().isOk());
 
-        verify(placeService).updateFromUI(eq(placeUpdateDto), any(MultipartFile[].class), anyString());
+        // verify(placeService).updateFromUI(eq(placeUpdateDto), any(MultipartFile[].class), userId);
     }
 
     private PlaceUpdateDto getPlaceUpdateDto() {

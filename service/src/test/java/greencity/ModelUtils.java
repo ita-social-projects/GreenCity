@@ -131,6 +131,7 @@ import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
@@ -451,7 +452,7 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            .email(TestConst.EMAIL)
+            // .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .rating(10.)
             .profilePicturePath("image path")
@@ -465,7 +466,7 @@ public class ModelUtils {
     public static User getUserNotCommentOwner() {
         return User.builder()
             .id(2L)
-            .email(TestConst.EMAIL)
+            // .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
@@ -476,7 +477,7 @@ public class ModelUtils {
     public static User getAttenderUser() {
         return User.builder()
             .id(2L)
-            .email("danylo@gmail.com")
+            // .email("danylo@gmail.com")
             .name("Danylo")
             .build();
     }
@@ -492,7 +493,7 @@ public class ModelUtils {
     public static User getTestUser() {
         return User.builder()
             .id(2L)
-            .email("user@email.com")
+            // .email("user@email.com")
             .build();
     }
 
@@ -538,6 +539,24 @@ public class ModelUtils {
                     .longitude(1d)
                     .build())
             .build();
+    }
+
+    public static UserClaims getUserClaims() {
+        UserVO userVO = getUserVO();
+        return UserClaims.builder()
+                .userId(userVO.getId())
+                .userEmail(userVO.getEmail())
+                .roles(List.of(userVO.getRole()))
+                .build();
+    }
+
+    public static UserClaims getAdminUserClaims() {
+        UserVO userVO = getUserVO();
+        return UserClaims.builder()
+                .userId(userVO.getId())
+                .userEmail(userVO.getEmail())
+                .roles(List.of(Role.ROLE_ADMIN))
+                .build();
     }
 
     public static UserVO getUserVONotCommentOwner() {
@@ -1678,7 +1697,7 @@ public class ModelUtils {
     private static User createUserRoleUser() {
         return User.builder()
             .id(2L)
-            .email("test2@mail.com")
+            // .email("test2@mail.com")
             .build();
     }
 
@@ -1693,7 +1712,7 @@ public class ModelUtils {
     private static User createUser() {
         return User.builder()
             .id(1L)
-            .email("test@mail.com")
+            // .email("test@mail.com")
             .build();
     }
 

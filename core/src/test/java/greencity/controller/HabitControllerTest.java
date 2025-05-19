@@ -3,6 +3,7 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
@@ -92,7 +93,7 @@ class HabitControllerTest {
         mockMvc.perform(get(habitLink + "?page=1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage());
+        verify(habitService).getAllHabitsByLanguageCode(userVO.getId(), pageable, locale.getLanguage());
     }
 
     @Test
@@ -189,7 +190,6 @@ class HabitControllerTest {
     void findByDifferentParameters() throws Exception {
         Locale locale = Locale.of("en");
         Gson gson = new Gson();
-        UserVO userVO = new UserVO();
 
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
@@ -198,7 +198,7 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
             Optional.of(true),
             Optional.of(List.of(1)),
             locale.getLanguage());
@@ -208,14 +208,13 @@ class HabitControllerTest {
     void findByDifferentParametersWithComplexityAndTags() throws Exception {
         Locale locale = Locale.of("en");
         Gson gson = new Gson();
-        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
             .param("complexities", "1")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
             Optional.empty(),
             Optional.of(List.of(1)),
             locale.getLanguage());
@@ -225,14 +224,13 @@ class HabitControllerTest {
     void findByDifferentParametersWithComplexityAndIsCustomHabit() throws Exception {
         Locale locale = Locale.of("en");
         Gson gson = new Gson();
-        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("complexities", "1")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.empty(),
             Optional.of(true),
             Optional.of(List.of(1)),
             locale.getLanguage());
@@ -242,14 +240,13 @@ class HabitControllerTest {
     void findByDifferentParametersWithTagsAndIsCustomHabit() throws Exception {
         Locale locale = Locale.of("en");
         Gson gson = new Gson();
-        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
             Optional.of(true),
             Optional.empty(),
             locale.getLanguage());
@@ -259,13 +256,12 @@ class HabitControllerTest {
     void findByDifferentParametersWithComplexity() throws Exception {
         Locale locale = Locale.of("en");
         Gson gson = new Gson();
-        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("complexities", "1")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.empty(),
             Optional.empty(),
             Optional.of(List.of(1)),
             locale.getLanguage());
@@ -275,13 +271,12 @@ class HabitControllerTest {
     void findByDifferentParametersWithIsCustomHabit() throws Exception {
         Locale locale = Locale.of("en");
         Gson gson = new Gson();
-        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.empty(),
             Optional.of(true),
             Optional.empty(),
             locale.getLanguage());
@@ -291,13 +286,12 @@ class HabitControllerTest {
     void findByDifferentParametersWithTags() throws Exception {
         Locale locale = Locale.of("en");
         Gson gson = new Gson();
-        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
             Optional.empty(),
             Optional.empty(),
             locale.getLanguage());
@@ -358,7 +352,7 @@ class HabitControllerTest {
             .principal(principal)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isCreated());
-        verify(habitService).addCustomHabit(dto, null, principal.getName());
+        verify(habitService).addCustomHabit(dto, null, TestConst.USER_ID);
     }
 
     @Test
@@ -398,7 +392,7 @@ class HabitControllerTest {
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
-        verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), imageFile);
+        verify(habitService).updateCustomHabit(dto, habitId, TestConst.USER_ID, imageFile);
     }
 
     @Test
@@ -407,7 +401,7 @@ class HabitControllerTest {
         mockMvc.perform(delete("/habit/delete/{customHabitId}", customHabitId)
             .principal(principal)).andExpect(status().isOk());
 
-        verify(habitService).deleteCustomHabit(customHabitId, principal.getName());
+        verify(habitService).deleteCustomHabit(customHabitId, TestConst.USER_ID);
     }
 
     @Test
@@ -447,7 +441,7 @@ class HabitControllerTest {
         mockMvc.perform(post(habitLink + "/{habitId}/favorites", habitId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(habitService).addToFavorites(habitId, principal.getName());
+        verify(habitService).addToFavorites(habitId, TestConst.USER_ID);
     }
 
     @Test
@@ -457,13 +451,12 @@ class HabitControllerTest {
         mockMvc.perform(delete(habitLink + "/{habitId}/favorites", habitId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(habitService).removeFromFavorites(habitId, principal.getName());
+        verify(habitService).removeFromFavorites(habitId, TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void getAllFavoritesTest() {
-        UserVO userVO = new UserVO();
         Pageable pageable = PageRequest.of(0, 10);
         String languageCode = "en";
 
@@ -474,7 +467,7 @@ class HabitControllerTest {
             .locale(Locale.forLanguageTag(languageCode)))
             .andExpect(status().isOk());
 
-        verify(habitService).getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+        verify(habitService).getAllFavoriteHabitsByLanguageCode(TestConst.USER_ID, pageable, languageCode);
     }
 
     @Test
@@ -482,7 +475,6 @@ class HabitControllerTest {
     void findAllFriendsOfUserToBeInvitedTest() {
         Long habitId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
-        UserVO userVO = new UserVO();
 
         mockMvc.perform(get(habitLink + "/friends")
             .principal(getPrincipal())
@@ -491,6 +483,6 @@ class HabitControllerTest {
             .param("size", "10"))
             .andExpect(status().isOk());
 
-        verify(habitService).findAllFriendsOfUser(userVO, null, pageable, habitId);
+        verify(habitService).findAllFriendsOfUser(TestConst.USER_ID, null, pageable, habitId);
     }
 }

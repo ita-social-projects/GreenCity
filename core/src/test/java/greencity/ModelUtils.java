@@ -62,6 +62,7 @@ import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
@@ -134,7 +135,6 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .build();
     }
@@ -146,6 +146,15 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
             .build();
+    }
+
+    public static UserClaims getUserClaims() {
+        UserVO userVO = getUserVO();
+        return UserClaims.builder()
+                .userId(userVO.getId())
+                .userEmail(userVO.getEmail())
+                .roles(List.of(userVO.getRole()))
+                .build();
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {

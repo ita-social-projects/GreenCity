@@ -280,30 +280,30 @@ class FactOfTheDayServiceImplTest {
 
     @Test
     void getRandomFactOfTheDayForUser_success() {
-        String userEmail = "user@example.com";
+        Long userId = 3L;
         Set<Long> tagIds = Set.of(1L);
         FactOfTheDay factOfTheDay = ModelUtils.getFactOfTheDay();
         FactOfTheDayTranslationDTO expectedDto = ModelUtils.getFactOfTheDayTranslationDTO();
 
         when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.of(factOfTheDay));
         when(modelMapper.map(factOfTheDay, FactOfTheDayTranslationDTO.class)).thenReturn(expectedDto);
-        when(tagsRepo.findTagsIdByUserHabitsInProgress(userEmail)).thenReturn(tagIds);
+        when(tagsRepo.findTagsIdByUserHabitsInProgress(userId)).thenReturn(tagIds);
         when(factOfTheDayService.getRandomFactOfTheDayByTags(tagIds))
             .thenReturn(expectedDto);
 
         FactOfTheDayTranslationDTO result =
-            factOfTheDayService.getRandomFactOfTheDayForUser(userEmail);
+            factOfTheDayService.getRandomFactOfTheDayForUser(userId);
 
         assertEquals(expectedDto, result);
     }
 
     @Test
     void getRandomFactOfTheDayForUser_noUserTags() {
-        String userEmail = "user@example.com";
+        Long userId = 3L;
 
-        when(tagsRepo.findTagsIdByUserHabitsInProgress(userEmail)).thenReturn(Collections.emptySet());
+        when(tagsRepo.findTagsIdByUserHabitsInProgress(userId)).thenReturn(Collections.emptySet());
 
-        FactOfTheDayTranslationDTO result = factOfTheDayService.getRandomFactOfTheDayForUser(userEmail);
+        FactOfTheDayTranslationDTO result = factOfTheDayService.getRandomFactOfTheDayForUser(userId);
 
         assertNull(result);
     }

@@ -17,7 +17,6 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            .email("danylo@gmail.com")
             .name("Taras")
             .build();
     }

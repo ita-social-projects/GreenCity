@@ -60,7 +60,7 @@ public class ModelUtils {
 
     public static SendHabitNotification getSendHabitNotification() {
         return SendHabitNotification.builder()
-            .email("test@gmail.com")
+            .userId(2L)
             .name("taras")
             .build();
     }
@@ -191,7 +191,7 @@ public class ModelUtils {
             .subject("test")
             .language("en")
             .baseLink("test")
-            .email("test@gmail.com")
+            .userId(getUserVO().getId())
             .build();
     }
 

@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.TestConst;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.place.PlaceAddDto;
@@ -249,7 +250,7 @@ class PlaceControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(favoritePlaceService).save(favoritePlaceDto, principal.getName());
+        verify(favoritePlaceService).save(favoritePlaceDto, TestConst.USER_ID);
     }
 
     @Test
@@ -334,7 +335,7 @@ class PlaceControllerTest {
             }
             """;
 
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         this.mockMvc.perform(post(placeLink + "/filter")
             .content(json)
@@ -342,7 +343,7 @@ class PlaceControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(placeService).getPlacesByFilter(filterPlaceDto, userVO);
+        verify(placeService).getPlacesByFilter(filterPlaceDto, TestConst.USER_ID);
     }
 
     @Test
@@ -363,7 +364,7 @@ class PlaceControllerTest {
               "openNow": true
             }
             """;
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(placeService.getPlacesByFilter(filterDto, userVO)).thenReturn(getPlaceByBoundsDto());
 
         this.mockMvc.perform(post(placeLink + "/filter/api")
@@ -529,7 +530,7 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(placeService, times(1))
-            .findAll(pageable, principal);
+            .findAll(pageable, TestConst.USER_ID);
     }
 
     @Test

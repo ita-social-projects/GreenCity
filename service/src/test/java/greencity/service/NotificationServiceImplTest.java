@@ -209,7 +209,7 @@ class NotificationServiceImplTest {
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotificationSystem(captor.capture()));
         ScheduledEmailMessage capturedMessage = captor.getValue();
-        assertEquals(notificationDto.getTargetUser().getEmail(), capturedMessage.getEmail());
+        assertEquals(notificationDto.getTargetUser().getId(), capturedMessage.getUserId());
         assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
     }
 
@@ -232,7 +232,7 @@ class NotificationServiceImplTest {
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotificationInvites(captor.capture()));
         ScheduledEmailMessage capturedMessage = captor.getValue();
-        assertEquals(notificationDto.getTargetUser().getEmail(), capturedMessage.getEmail());
+        assertEquals(notificationDto.getTargetUser().getEmail(), capturedMessage.getUserId());
         assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
     }
 
@@ -255,7 +255,7 @@ class NotificationServiceImplTest {
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotificationComments(captor.capture()));
         ScheduledEmailMessage capturedMessage = captor.getValue();
-        assertEquals(notificationDto.getTargetUser().getEmail(), capturedMessage.getEmail());
+        assertEquals(notificationDto.getTargetUser().getId(), capturedMessage.getUserId());
         assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
     }
 
@@ -278,7 +278,7 @@ class NotificationServiceImplTest {
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotificationLikes(captor.capture()));
         ScheduledEmailMessage capturedMessage = captor.getValue();
-        assertEquals(notificationDto.getTargetUser().getEmail(), capturedMessage.getEmail());
+        assertEquals(notificationDto.getTargetUser().getId(), capturedMessage.getUserId());
         assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
     }
 
@@ -321,7 +321,7 @@ class NotificationServiceImplTest {
                 .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
             List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
             for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-                assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+                assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
                 assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
             }
         }
@@ -364,7 +364,7 @@ class NotificationServiceImplTest {
                 .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
             List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
             for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-                assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+                assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
                 assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
             }
         }
@@ -407,7 +407,7 @@ class NotificationServiceImplTest {
                 .untilAsserted(() -> verify(restClient, times(2)).sendScheduledEmailNotification(captor.capture()));
             List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
             for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-                assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+                assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
                 assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
             }
         }
@@ -459,7 +459,7 @@ class NotificationServiceImplTest {
                 .untilAsserted(() -> verify(restClient, times(5)).sendScheduledEmailNotification(captor.capture()));
             List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
             for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-                assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+                assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
                 assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
             }
         }
@@ -485,7 +485,7 @@ class NotificationServiceImplTest {
             .untilAsserted(() -> verify(restClient, times(1)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
             assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
         }
     }
@@ -510,7 +510,7 @@ class NotificationServiceImplTest {
             .untilAsserted(() -> verify(restClient, times(1)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
             assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
         }
     }
@@ -554,7 +554,7 @@ class NotificationServiceImplTest {
             .untilAsserted(() -> verify(restClient, times(7)).sendScheduledEmailNotification(captor.capture()));
         List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
         for (ScheduledEmailMessage capturedMessage : capturedMessages) {
-            assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
+            assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
             assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
         }
     }

@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.TestConst;
 import greencity.service.AchievementCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,10 +46,10 @@ class AchievementCategoryControllerTest {
 
     @Test
     void getAchievementCategoriesTest() throws Exception {
-        when(achievementCategoryService.findAllWithAtLeastOneAchievement(anyString())).thenReturn(Collections.emptyList());
+        when(achievementCategoryService.findAllWithAtLeastOneAchievement(anyLong(), anyString())).thenReturn(Collections.emptyList());
         mockMvc.perform(get(achievementCategoryLink).principal(principal))
                 .andExpect(status().isOk());
-        verify(achievementCategoryService).findAllWithAtLeastOneAchievement("test@gmail.com");
+        verify(achievementCategoryService).findAllWithAtLeastOneAchievement(TestConst.USER_ID, "test@gmail.com");
     }
 
 }

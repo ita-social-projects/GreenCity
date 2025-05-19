@@ -251,7 +251,7 @@ class HabitServiceImplTest {
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
-        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable, languageCode));
+        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO.getId(), pageable, languageCode));
         assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
@@ -439,7 +439,7 @@ class HabitServiceImplTest {
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto<HabitDto> pageableDto = new PageableDto<>(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
-        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable, languageCode));
+        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO.getId(), pageable, languageCode));
         assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
@@ -527,7 +527,7 @@ class HabitServiceImplTest {
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
 
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(userVO, pageable, Optional.of(tags),
+        assertEquals(pageableDto, habitService.getAllByDifferentParameters(userVO.getId(), pageable, Optional.of(tags),
             Optional.of(isCustomHabit), Optional.of(complexities), languageCode));
         assertDoesNotThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_HABIT_ASSIGN_LIST));
 
@@ -614,7 +614,7 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguageCode(languageEn.getCode()),
             habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        // when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoEN), "ua"))
@@ -635,9 +635,9 @@ class HabitServiceImplTest {
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+            habitService.addCustomHabit(addCustomHabitDtoRequest, null, TestConst.USER_ID));
 
-        verify(userRepo).findByEmail(user.getEmail());
+        // verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -687,7 +687,7 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguageCode(languageEn.getCode()),
             habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
-        habitTranslationList.forEach(h -> when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user)));
+        habitTranslationList.forEach(h -> when(userRepo.findById(user.getId())).thenReturn(Optional.of(user)));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoEN)))
@@ -709,9 +709,9 @@ class HabitServiceImplTest {
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
+            habitService.addCustomHabit(addCustomHabitDtoRequest, image, user.getId()));
 
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -762,7 +762,7 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguageCode(languageEn.getCode()),
             habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoUA), "ua"))
@@ -783,9 +783,9 @@ class HabitServiceImplTest {
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+            habitService.addCustomHabit(addCustomHabitDtoRequest, null, user.getId()));
 
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -837,7 +837,7 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguageCode(languageEn.getCode()),
             habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userVO.getLanguageVO()).thenReturn(language);
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
@@ -862,9 +862,9 @@ class HabitServiceImplTest {
             any(UserVO.class), anyList(), anyLong(), any(Locale.class));
 
         assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+            habitService.addCustomHabit(addCustomHabitDtoRequest, null, user.getId()));
 
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -897,7 +897,7 @@ class HabitServiceImplTest {
         addCustomHabitDtoRequest.setHabitTranslations(List.of(habitTranslationWithUnsupportedId));
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(addCustomHabitDtoRequest.getHabitTranslations(), "ua"))
@@ -908,9 +908,9 @@ class HabitServiceImplTest {
         when(habitRepo.save(any(Habit.class))).thenReturn(habit);
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(RESPONSE);
         assertThrows(NotFoundException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
+            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, user.getId()));
 
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -925,13 +925,13 @@ class HabitServiceImplTest {
         CustomHabitDtoRequest addCustomHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
         MultipartFile image = ModelUtils.getFile();
-        when(userRepo.findByEmail("user@gmail.com")).thenReturn(Optional.empty());
+        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.empty());
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(nullable(Habit.class));
 
         assertThrows(WrongEmailException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "user@gmail.com"));
+            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, TestConst.USER_ID));
 
-        verify(userRepo).findByEmail("user@gmail.com");
+        verify(userRepo).findById(TestConst.USER_ID);
         verify(customHabitMapper).convert(addCustomHabitDtoRequest);
     }
 
@@ -1038,7 +1038,7 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguageCode(languageEn.getCode()),
             habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
@@ -1055,10 +1055,10 @@ class HabitServiceImplTest {
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
         assertEquals(customHabitDtoResponse,
-            habitService.updateCustomHabit(customHabitDtoRequest, 1L, "taras@gmail.com", image));
+            habitService.updateCustomHabit(customHabitDtoRequest, 1L, user.getId(), image));
 
         verify(habitRepo).findById(anyLong());
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(any());
         verify(customHabitMapper).convert(customHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -1074,13 +1074,13 @@ class HabitServiceImplTest {
     void updateCustomHabitThrowsUserNotFoundException() {
         CustomHabitDtoRequest customHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
-        when(userRepo.findByEmail("user@gmail.com")).thenReturn(Optional.empty());
+        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.empty());
         when(habitRepo.save(customHabitMapper.convert(customHabitDtoRequest))).thenReturn(nullable(Habit.class));
 
         assertThrows(WrongEmailException.class,
-            () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, "user@gmail.com", null));
+            () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, TestConst.USER_ID, null));
 
-        verify(userRepo).findByEmail("user@gmail.com");
+        verify(userRepo).findById(TestConst.USER_ID);
         verify(customHabitMapper).convert(customHabitDtoRequest);
     }
 
@@ -1089,7 +1089,7 @@ class HabitServiceImplTest {
         CustomHabitDtoRequest customHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
         User user = ModelUtils.getUser();
-        String email = user.getEmail();
+        Long userId = user.getId();
         Role role = Role.ROLE_USER;
         UserVO userVO = mock(UserVO.class);
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
@@ -1097,12 +1097,12 @@ class HabitServiceImplTest {
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
         assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, email, null));
+            () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, userId, null));
 
-        verify(userRepo).findByEmail(anyString());
+        verify(userRepo).findById(userId);
         verify(habitRepo).findById(anyLong());
     }
 
@@ -1126,7 +1126,7 @@ class HabitServiceImplTest {
         when(customToDoListMapper.mapAllToList(any()))
             .thenReturn(List.of(newItem));
         when(customToDoListItemRepo.save(any())).thenReturn(ModelUtils.getCustomToDoListItemForUpdate());
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
@@ -1136,12 +1136,12 @@ class HabitServiceImplTest {
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(customHabitDtoResponse);
 
         assertEquals(customHabitDtoResponse,
-            habitService.updateCustomHabit(customHabitDtoRequest, 1L, "user@email.com", image));
+            habitService.updateCustomHabit(customHabitDtoRequest, 1L, user.getId(), image));
 
         verify(customToDoListItemRepo, times(2)).findAllByUserIdAndHabitId(2L, 1L);
         verify(customToDoListItemRepo).save(any());
         verify(habitRepo).findById(anyLong());
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(any());
         verify(tagsRepo).findById(20L);
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
@@ -1165,7 +1165,7 @@ class HabitServiceImplTest {
         CustomHabitDtoRequest customHabitDtoRequest = ModelUtils.getCustomHabitDtoRequestWithComplexityAndDuration();
         CustomHabitDtoResponse customHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
 
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userVO.getRole()).thenReturn(role);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
@@ -1174,10 +1174,10 @@ class HabitServiceImplTest {
         when(habitRepo.save(habit)).thenReturn(habit);
 
         assertEquals(customHabitDtoResponse,
-            habitService.updateCustomHabit(customHabitDtoRequest, 1L, "user@email.com", null));
+            habitService.updateCustomHabit(customHabitDtoRequest, 1L, user.getId(), null));
 
         verify(habitRepo).findById(anyLong());
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(any());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
         verify(habitTranslationRepo).findAllByHabit(habit);
@@ -1188,7 +1188,7 @@ class HabitServiceImplTest {
         CustomHabitDtoRequest customHabitDtoRequest =
             ModelUtils.getAddCustomHabitDtoRequestWithImage();
         User user = ModelUtils.getTestUser();
-        String email = user.getEmail();
+        Long userId = user.getId();
         Role role = Role.ROLE_USER;
         UserVO userVO = mock(UserVO.class);
 
@@ -1196,15 +1196,15 @@ class HabitServiceImplTest {
         habit.setUserId(1L);
 
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(userVO.getRole()).thenReturn(role);
 
         assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, email, null));
+            () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, userId, null));
 
         assertNotEquals(user.getId(), habit.getUserId());
-        verify(userRepo).findByEmail(anyString());
+        verify(userRepo).findById(userId);
         verify(habitRepo).findById(anyLong());
     }
 
@@ -1217,24 +1217,23 @@ class HabitServiceImplTest {
         toDelete.setUserId(1L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        // when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, 1L))
             .thenReturn(List.of(habitAssign.getId()));
 
-        habitService.deleteCustomHabit(customHabitId, user.getEmail());
+        habitService.deleteCustomHabit(customHabitId, user.getId());
 
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
-        verify(userRepo).findByEmail(user.getEmail());
+        // verify(userRepo).findById(user.getId());
         verify(habitRepo).findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, 1L);
     }
 
     @Test
     void deleteCustomHabitThrowsNotFoundExceptionTest() {
         Long customHabitId = 1L;
-        String userEmail = "email@gmail.com";
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> habitService.deleteCustomHabit(customHabitId, userEmail));
+            () -> habitService.deleteCustomHabit(customHabitId, TestConst.USER_ID));
 
         assertEquals(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId, exception.getMessage());
         verify(habitRepo, times(0)).save(any(Habit.class));
@@ -1250,7 +1249,7 @@ class HabitServiceImplTest {
             .thenReturn(Optional.of(toDelete));
 
         WrongEmailException exception = assertThrows(WrongEmailException.class,
-            () -> habitService.deleteCustomHabit(customHabitId, userEmail));
+            () -> habitService.deleteCustomHabit(customHabitId, TestConst.USER_ID));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail, exception.getMessage());
         verify(habitRepo, times(0)).save(any(Habit.class));
@@ -1262,18 +1261,18 @@ class HabitServiceImplTest {
         Long customHabitId = 1L;
         Habit toDelete = ModelUtils.getHabitWithCustom();
         User user = ModelUtils.getUser();
-        String userEmail = user.getEmail();
+        // String userEmail = user.getEmail();
         toDelete.setUserId(4L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        // when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         UserHasNoPermissionToAccessException exception = assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> habitService.deleteCustomHabit(customHabitId, userEmail));
+            () -> habitService.deleteCustomHabit(customHabitId, TestConst.USER_ID));
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
-        verify(userRepo).findByEmail(user.getEmail());
+        // verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo, times(0)).save(any(Habit.class));
     }
 
@@ -1514,27 +1513,27 @@ class HabitServiceImplTest {
         user.setId(2L);
 
         when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.of(user));
         when(habitRepo.save(habit)).thenReturn(habit);
 
-        habitService.addToFavorites(1L, TestConst.EMAIL);
+        habitService.addToFavorites(1L, TestConst.USER_ID);
 
         verify(habitRepo).findById(any());
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(TestConst.USER_ID);
         verify(habitRepo).save(habit);
     }
 
     @Test
     void addToFavoritesThrowsExceptionWhenHabitNotFoundTest() {
         when(habitRepo.findById(any())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> habitService.addToFavorites(1L, TestConst.EMAIL));
+        assertThrows(NotFoundException.class, () -> habitService.addToFavorites(1L, TestConst.USER_ID));
         verify(habitRepo).findById(any());
     }
 
     @Test
     void addToFavoritesThrowsExceptionWhenUserNotFoundTest() {
         when(userRepo.findById(any())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> habitService.addToFavorites(1L, TestConst.EMAIL));
+        assertThrows(NotFoundException.class, () -> habitService.addToFavorites(1L, TestConst.USER_ID));
         verify(habitRepo).findById(any());
     }
 
@@ -1544,12 +1543,12 @@ class HabitServiceImplTest {
         Habit habit = ModelUtils.getHabit().setFollowers((Set.of(user)));
 
         when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.of(user));
 
-        assertThrows(BadRequestException.class, () -> habitService.addToFavorites(1L, TestConst.EMAIL));
+        assertThrows(BadRequestException.class, () -> habitService.addToFavorites(1L, TestConst.USER_ID));
 
         verify(habitRepo).findById(any());
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(TestConst.USER_ID);
     }
 
     @Test
@@ -1558,27 +1557,27 @@ class HabitServiceImplTest {
         Habit habit = ModelUtils.getHabit();
         habit.getFollowers().add(user);
         when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.of(user));
         when(habitRepo.save(habit)).thenReturn(habit);
 
-        habitService.removeFromFavorites(1L, TestConst.EMAIL);
+        habitService.removeFromFavorites(1L, TestConst.USER_ID);
 
         verify(habitRepo).findById(any());
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(TestConst.USER_ID);
         verify(habitRepo).save(habit);
     }
 
     @Test
     void removeFromFavoritesThrowsExceptionWhenHabitNotFoundTest() {
         when(habitRepo.findById(any())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> habitService.removeFromFavorites(1L, TestConst.EMAIL));
+        assertThrows(NotFoundException.class, () -> habitService.removeFromFavorites(1L, TestConst.USER_ID));
         verify(habitRepo).findById(any());
     }
 
     @Test
     void removeFromFavoritesThrowsExceptionWhenUserNotFoundTest() {
         when(userRepo.findById(any())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> habitService.removeFromFavorites(1L, TestConst.EMAIL));
+        assertThrows(NotFoundException.class, () -> habitService.removeFromFavorites(1L, TestConst.USER_ID));
         verify(habitRepo).findById(any());
     }
 
@@ -1589,12 +1588,12 @@ class HabitServiceImplTest {
         user.setId(2L);
 
         when(habitRepo.findById(any())).thenReturn(Optional.of(habit));
-        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.of(user));
 
-        assertThrows(BadRequestException.class, () -> habitService.removeFromFavorites(1L, TestConst.EMAIL));
+        assertThrows(BadRequestException.class, () -> habitService.removeFromFavorites(1L, TestConst.USER_ID));
 
         verify(habitRepo).findById(any());
-        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(userRepo).findById(TestConst.USER_ID);
     }
 
     @Test
@@ -1618,7 +1617,7 @@ class HabitServiceImplTest {
             .thenReturn(habitTranslation);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
 
-        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO.getId(), pageable, languageCode);
 
         assertNotNull(result);
         assertEquals(1, result.getPage().size());
@@ -1634,7 +1633,7 @@ class HabitServiceImplTest {
         Page<HabitTranslation> habitTranslationPage = Page.empty(pageable);
         when(habitTranslationRepo.findMyFavoriteHabits(pageable, 1L, languageCode)).thenReturn(habitTranslationPage);
 
-        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, languageCode);
+        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO.getId(), pageable, languageCode);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());
@@ -1653,7 +1652,7 @@ class HabitServiceImplTest {
             .thenReturn(tuples);
 
         PageableDto<UserFriendHabitInviteDto> result =
-            habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
+            habitService.findAllFriendsOfUser(userVO.getId(), null, pageable, habitId);
 
         assertNotNull(result);
         assertEquals(2, result.getPage().size());
@@ -1683,7 +1682,7 @@ class HabitServiceImplTest {
             .thenReturn(tuples);
 
         PageableDto<UserFriendHabitInviteDto> result =
-            habitService.findAllFriendsOfUser(userVO, "Jo", pageable, habitId);
+            habitService.findAllFriendsOfUser(userVO.getId(), "Jo", pageable, habitId);
 
         assertNotNull(result);
         assertTrue(result.getPage().getFirst().getHasInvitation());
@@ -1705,7 +1704,7 @@ class HabitServiceImplTest {
             .thenReturn(List.of());
 
         PageableDto<UserFriendHabitInviteDto> result =
-            habitService.findAllFriendsOfUser(userVO, null, pageable, habitId);
+            habitService.findAllFriendsOfUser(userVO.getId(), null, pageable, habitId);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());
@@ -1721,7 +1720,7 @@ class HabitServiceImplTest {
         UserVO userVO = getUserVO();
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
             .thenReturn(List.of());
-        PageableDto<UserFriendHabitInviteDto> result = habitService.findAllFriendsOfUser(userVO, "", pageable, habitId);
+        PageableDto<UserFriendHabitInviteDto> result = habitService.findAllFriendsOfUser(userVO.getId(), "", pageable, habitId);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());

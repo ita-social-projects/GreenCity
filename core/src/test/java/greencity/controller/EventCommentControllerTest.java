@@ -92,7 +92,7 @@ class EventCommentControllerTest {
     void save() {
         Long eventId = 1L;
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = """
                 {
@@ -125,7 +125,7 @@ class EventCommentControllerTest {
         AddCommentDtoRequest addCommentDtoRequest =
             OBJECT_MAPPER.readValue(content, AddCommentDtoRequest.class);
 
-        verify(userService).findByEmail("test@gmail.com");
+        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(eq(ArticleType.EVENT),
             eq(1L),
             eq(addCommentDtoRequest),
@@ -148,7 +148,7 @@ class EventCommentControllerTest {
     void updateTest() {
         Long commentId = 1L;
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "string";
 
@@ -158,8 +158,8 @@ class EventCommentControllerTest {
             .content(content))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).update("string", commentId, userVO);
+        // verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).update("string", commentId, userVO.getId());
     }
 
     @Test
@@ -168,13 +168,13 @@ class EventCommentControllerTest {
         Long commentId = 1L;
         Long eventId = 1L;
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(delete(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}", eventId, commentId)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
+        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).delete(commentId, userVO);
     }
 
@@ -192,13 +192,13 @@ class EventCommentControllerTest {
     void getEventCommentByIdWithUser() {
         UserVO userVO = getUserVO();
 
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}", 1)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).getCommentById(ArticleType.EVENT, 1L, userVO);
+        verify(commentService).getCommentById(ArticleType.EVENT, 1L, userVO.getId());
     }
 
     @Test
@@ -206,7 +206,7 @@ class EventCommentControllerTest {
     void getAllActiveComments() {
         UserVO userVO = getUserVO();
 
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -215,8 +215,8 @@ class EventCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).getAllActiveComments(pageable, userVO, 1L, ArticleType.EVENT);
+        // verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).getAllActiveComments(pageable, userVO.getId(), 1L, ArticleType.EVENT);
     }
 
     @Test
@@ -236,14 +236,14 @@ class EventCommentControllerTest {
         int pageSize = 20;
         UserVO userVO = getUserVO();
 
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
         String expectedJson = OBJECT_MAPPER.writeValueAsString(commentReplies);
 
-        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
+        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId()))
             .thenReturn(commentReplies);
 
         mockMvc
@@ -255,8 +255,8 @@ class EventCommentControllerTest {
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
-        verify(userService).findByEmail(principal.getName());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
+        // verify(userService).findByEmail(principal.getName());
     }
 
     @Test
@@ -278,13 +278,13 @@ class EventCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .getAllActiveReplies(pageable, parentCommentId, userVO);
+            .getAllActiveReplies(pageable, parentCommentId, userVO.getId());
 
         Assertions.assertThatThrownBy(
             () -> mockMvc
@@ -344,7 +344,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/like" + "/1")
             .principal(principal))
@@ -369,7 +369,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -390,7 +390,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislike" + "/1")
             .principal(principal))
@@ -415,7 +415,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -437,7 +437,7 @@ class EventCommentControllerTest {
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         UserVO user = getUserVO();
         String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        // when(userService.findByEmail(anyString())).thenReturn(user);
         when(commentService.likeV2(commentId, user, Locale.ENGLISH)).thenReturn(commentDto);
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/likeV2/" + commentId)
             .principal(principal)
@@ -454,7 +454,7 @@ class EventCommentControllerTest {
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         UserVO user = getUserVO();
         String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
-        when(userService.findByEmail(anyString())).thenReturn(user);
+        // when(userService.findByEmail(anyString())).thenReturn(user);
         when(commentService.dislikeV2(commentId, user)).thenReturn(commentDto);
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislikeV2/" + commentId)
             .principal(principal)

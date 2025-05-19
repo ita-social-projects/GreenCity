@@ -95,7 +95,7 @@ class ToDoListItemServiceImplTest {
     private User user = User.builder()
         .id(1L)
         .name("Test Testing")
-        .email("test@gmail.com")
+        // .email("test@gmail.com")
         .build();
 
     private String language = "uk";

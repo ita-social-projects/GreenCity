@@ -89,7 +89,7 @@ class EcoNewsCommentControllerTest {
     void saveTest() {
         UserVO userVO = getUserVO();
         Locale locale = Locale.of("en");
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = """
             {
@@ -122,7 +122,7 @@ class EcoNewsCommentControllerTest {
         AddCommentDtoRequest addCommentDtoRequest =
             OBJECT_MAPPER.readValue(content, AddCommentDtoRequest.class);
 
-        verify(userService).findByEmail("test@gmail.com");
+        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.ECO_NEWS, 1L, addCommentDtoRequest,
             new MultipartFile[] {imageFile}, userVO, locale);
         verify(commentService).save(eq(ArticleType.ECO_NEWS),
@@ -160,7 +160,7 @@ class EcoNewsCommentControllerTest {
     @SneakyThrows
     void getAllActiveCommentsTest() {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -169,8 +169,8 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).getAllActiveComments(pageable, userVO, 1L, ArticleType.ECO_NEWS);
+        // verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).getAllActiveComments(pageable, userVO.getId(), 1L, ArticleType.ECO_NEWS);
     }
 
     @Test
@@ -190,14 +190,14 @@ class EcoNewsCommentControllerTest {
         int pageSize = 20;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
         String expectedJson = OBJECT_MAPPER.writeValueAsString(commentReplies);
 
-        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
+        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId()))
             .thenReturn(commentReplies);
 
         mockMvc.perform(get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active", parentCommentId)
@@ -206,8 +206,8 @@ class EcoNewsCommentControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
-        verify(userService).findByEmail(principal.getName());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
+        // verify(userService).findByEmail(principal.getName());
     }
 
     @Test
@@ -228,21 +228,21 @@ class EcoNewsCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .getAllActiveReplies(pageable, parentCommentId, userVO);
+            .getAllActiveReplies(pageable, parentCommentId, userVO.getId());
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(get(ECONEWS_LINK + "/comments/{parentCommentId}/replies/active",
                 parentCommentId).principal(principal)).andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        verify(userService).findByEmail(anyString());
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
+        // verify(userService).findByEmail(anyString());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
     }
 
     @Test
@@ -293,7 +293,7 @@ class EcoNewsCommentControllerTest {
         Long numericCommentId = Long.valueOf(commentId);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(ECONEWS_LINK + "/comments/like")
             .param("commentId", commentId)
@@ -321,7 +321,7 @@ class EcoNewsCommentControllerTest {
         String commentIdParam = "1";
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -336,14 +336,14 @@ class EcoNewsCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        verify(userService).findByEmail(anyString());
+        // verify(userService).findByEmail(anyString());
     }
 
     @Test
     @SneakyThrows
     void updateTest() {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "string";
 
@@ -354,15 +354,15 @@ class EcoNewsCommentControllerTest {
             .content(content))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).update(content, 1L, userVO);
+        // verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).update(content, 1L, userVO.getId());
     }
 
     @Test
     @SneakyThrows
     void deleteTest() {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
 
         mockMvc.perform(delete(ECONEWS_LINK + "/comments/{id}", 1)
@@ -370,7 +370,7 @@ class EcoNewsCommentControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
+        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).delete(1L, userVO);
     }
 
@@ -381,7 +381,7 @@ class EcoNewsCommentControllerTest {
         Long numericCommentId = Long.valueOf(commentId);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(ECONEWS_LINK + "/comments/dislike")
             .param("commentId", commentId)
@@ -409,7 +409,7 @@ class EcoNewsCommentControllerTest {
         String commentIdParam = "1";
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -424,7 +424,7 @@ class EcoNewsCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        verify(userService).findByEmail(anyString());
+        // verify(userService).findByEmail(anyString());
     }
 
     @Test
@@ -433,7 +433,7 @@ class EcoNewsCommentControllerTest {
         Long commentId = 1L;
         UserVO userVO = getUserVO();
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(commentService.likeV2(commentId, userVO, Locale.ENGLISH)).thenReturn(commentDto);
         String expectedContent = OBJECT_MAPPER.writeValueAsString(commentDto);
         mockMvc.perform(post(ECONEWS_LINK + "/comments/likeV2")
@@ -450,7 +450,7 @@ class EcoNewsCommentControllerTest {
         Long commentId = 1L;
         UserVO userVO = getUserVO();
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(commentService.dislikeV2(commentId, userVO)).thenReturn(commentDto);
         String expectedContent = OBJECT_MAPPER.writeValueAsString(commentDto);
         mockMvc.perform(post(ECONEWS_LINK + "/comments/dislikeV2")

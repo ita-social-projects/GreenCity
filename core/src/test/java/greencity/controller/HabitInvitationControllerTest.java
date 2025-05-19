@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.TestConst;
 import greencity.config.SecurityConfig;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitInvitationService;
@@ -50,23 +51,21 @@ class HabitInvitationControllerTest {
     @SneakyThrows
     void acceptHabitInvitationShouldReturn200() {
         Long invitationId = 1L;
-        UserVO userVO = new UserVO();
-        doNothing().when(habitInvitationService).acceptHabitInvitation(invitationId, userVO);
+        doNothing().when(habitInvitationService).acceptHabitInvitation(invitationId, TestConst.USER_ID);
         mockMvc.perform(patch("/habit/invite/{invitationId}/accept", invitationId)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitInvitationService, times(1)).acceptHabitInvitation(invitationId, userVO);
+        verify(habitInvitationService, times(1)).acceptHabitInvitation(invitationId, TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void rejectHabitInvitationShouldReturn200() {
         Long invitationId = 2L;
-        UserVO userVO = new UserVO();
-        doNothing().when(habitInvitationService).rejectHabitInvitation(invitationId, userVO);
+        doNothing().when(habitInvitationService).rejectHabitInvitation(invitationId, TestConst.USER_ID);
         mockMvc.perform(delete("/habit/invite/{invitationId}/reject", invitationId)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitInvitationService, times(1)).rejectHabitInvitation(invitationId, userVO);
+        verify(habitInvitationService, times(1)).rejectHabitInvitation(invitationId, TestConst.USER_ID);
     }
 }

@@ -41,7 +41,7 @@ class EcoNewsVOMapperTest {
             .author(UserVO.builder()
                 .id(ecoNews.getAuthor().getId())
                 .name(ecoNews.getAuthor().getName())
-                .email(ecoNews.getAuthor().getEmail())
+                .email(authorVO.getEmail())
                 .role(role)
                 .build())
             .creationDate(ecoNews.getCreationDate())

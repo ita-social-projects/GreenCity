@@ -82,8 +82,8 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void saveTest() {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = """
             {
               "text": "string",
@@ -115,7 +115,7 @@ class HabitCommentControllerTest {
         AddCommentDtoRequest addCommentDtoRequest =
             mapper.readValue(content, AddCommentDtoRequest.class);
 
-        verify(userService).findByEmail("test@gmail.com");
+        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest,
             new MultipartFile[] {imageFile}, userVO, Locale.of("en"));
         verify(commentService).save(eq(ArticleType.HABIT),
@@ -153,7 +153,7 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void getAllActiveCommentsTest() {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -162,8 +162,8 @@ class HabitCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).getAllActiveComments(pageable, userVO, 1L, ArticleType.HABIT);
+        // verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).getAllActiveComments(pageable, userVO.getId(), 1L, ArticleType.HABIT);
     }
 
     @Test
@@ -183,7 +183,7 @@ class HabitCommentControllerTest {
         int pageSize = 20;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
@@ -192,7 +192,7 @@ class HabitCommentControllerTest {
         objectMapper.findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(commentReplies);
 
-        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO))
+        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId()))
             .thenReturn(commentReplies);
 
         mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active", parentCommentId)
@@ -201,8 +201,8 @@ class HabitCommentControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
-        verify(userService).findByEmail(principal.getName());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
+        // verify(userService).findByEmail(principal.getName());
     }
 
     @Test
@@ -223,21 +223,21 @@ class HabitCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .getAllActiveReplies(pageable, parentCommentId, userVO);
+            .getAllActiveReplies(pageable, parentCommentId, userVO.getId());
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active",
                 parentCommentId).principal(principal)).andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        verify(userService).findByEmail(anyString());
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO);
+        // verify(userService).findByEmail(anyString());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
     }
 
     @Test
@@ -288,7 +288,7 @@ class HabitCommentControllerTest {
         Long numericCommentId = Long.valueOf(commentId);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(HABIT_LINK + "/comments/like")
             .param("commentId", commentId)
@@ -316,7 +316,7 @@ class HabitCommentControllerTest {
         String commentIdParam = "1";
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -331,14 +331,14 @@ class HabitCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        verify(userService).findByEmail(anyString());
+        // verify(userService).findByEmail(anyString());
     }
 
     @Test
     @SneakyThrows
     void updateTest() {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "string";
 
@@ -349,15 +349,15 @@ class HabitCommentControllerTest {
             .content(content))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).update(content, 1L, userVO);
+        // verify(userService).findByEmail("test@gmail.com");
+        verify(commentService).update(content, 1L, userVO.getId());
     }
 
     @Test
     @SneakyThrows
     void deleteTest() {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
 
         mockMvc.perform(delete(HABIT_LINK + "/comments/{id}", 1)
@@ -365,7 +365,7 @@ class HabitCommentControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail("test@gmail.com");
+        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).delete(1L, userVO);
     }
 
@@ -376,7 +376,7 @@ class HabitCommentControllerTest {
         Long numericCommentId = Long.valueOf(commentId);
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(HABIT_LINK + "/comments/dislike")
             .param("commentId", commentId)
@@ -404,7 +404,7 @@ class HabitCommentControllerTest {
         String commentIdParam = "1";
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -419,6 +419,6 @@ class HabitCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        verify(userService).findByEmail(anyString());
+        // verify(userService).findByEmail(anyString());
     }
 }

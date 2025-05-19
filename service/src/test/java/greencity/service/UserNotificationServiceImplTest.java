@@ -128,7 +128,7 @@ class UserNotificationServiceImplTest {
         PageableAdvancedDto<UbsNotificationDto> countUbsPage = new PageableAdvancedDto<>(
             Collections.emptyList(), 5, 0, 1, 0, false, false, true, true);
 
-        when(userService.findByEmail(email)).thenReturn(testUserVo);
+        // when(userService.findByEmail(email)).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             countPageableGreenCity))
             .thenReturn(countGreenCityPage);
@@ -189,6 +189,7 @@ class UserNotificationServiceImplTest {
         boolean isLast = !hasNext;
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
+                testUserVo.getId(),
             pageable,
             principal,
             language,
@@ -206,7 +207,7 @@ class UserNotificationServiceImplTest {
         assertEquals(isFirst, actualResult.isFirst());
         assertEquals(isLast, actualResult.isLast());
 
-        verify(userService, times(2)).findByEmail(email);
+        // verify(userService, times(2)).findByEmail(email);
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             countPageableGreenCity);
         verify(restClient).findAllNotificationsForUserFromUbs(principal, countPageableUbs);
@@ -227,18 +228,18 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = getPageableAdvancedDtoForNotificationDto();
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        // when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
 
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page))
             .thenReturn(notificationPage);
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> expected = userNotificationService
-            .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null, true);
+            .getNotificationsFiltered(testUserVo.getId(), page, getPrincipal(), "en", ProjectName.GREENCITY, null, true);
 
         assertEquals(expected, actual);
 
-        verify(userService).findByEmail("danylo@gmail.com");
+        // verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page);
         verify(modelMapper).map(notification, NotificationDto.class);
     }
@@ -268,6 +269,7 @@ class UserNotificationServiceImplTest {
             .thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
+                testUserVo.getId(),
             pageable,
             principal,
             language,
@@ -331,7 +333,7 @@ class UserNotificationServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        // when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
             ProjectName.GREENCITY,
             null,
@@ -342,6 +344,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = userNotificationService
             .getNotificationsFiltered(
+                    testUserVo.getId(),
                 pageRequest,
                 getPrincipal(),
                 "en",
@@ -358,7 +361,7 @@ class UserNotificationServiceImplTest {
 
         assertEquals(expected, actual);
 
-        verify(userService).findByEmail("danylo@gmail.com");
+        // verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo)
             .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true,
                 pageRequest);
@@ -391,7 +394,7 @@ class UserNotificationServiceImplTest {
         PageImpl<Notification> notificationPage = new PageImpl<>(
             List.of(friendRequestNotification, habitInviteNotification), page, 2);
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        // when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
             true, page))
             .thenReturn(notificationPage);
@@ -412,14 +415,14 @@ class UserNotificationServiceImplTest {
             List.of(friendRequestInviteDto, habitInviteInviteDto));
 
         PageableAdvancedDto<NotificationDto> result = userNotificationService
-            .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null,
+            .getNotificationsFiltered(testUserVo.getId(), page, getPrincipal(), "en", ProjectName.GREENCITY, null,
                 true);
 
         NotificationInviteDto notificationInviteDto = (NotificationInviteDto) result.getPage().getFirst();
 
         assertEquals(expected, result);
         assertEquals(InvitationStatus.PENDING.toString(), notificationInviteDto.getStatus());
-        verify(userService).findByEmail("danylo@gmail.com");
+        // verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
             true, page);
         verify(modelMapper).map(friendRequestNotification, NotificationDto.class);
@@ -484,7 +487,7 @@ class UserNotificationServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        // when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
             ProjectName.GREENCITY,
             null,
@@ -495,6 +498,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = userNotificationService
             .getNotificationsFiltered(
+                    testUserVo.getId(),
                 pageRequest,
                 getPrincipal(),
                 "ua",
@@ -510,7 +514,7 @@ class UserNotificationServiceImplTest {
                     actionUserText));
         assertEquals(expected, actual);
 
-        verify(userService).findByEmail("danylo@gmail.com");
+        // verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo)
             .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, pageRequest);
         verify(modelMapper).map(notification, NotificationDto.class);
@@ -660,24 +664,24 @@ class UserNotificationServiceImplTest {
     @Test
     void deleteNotificationTest() {
         Long notificationId = 1L;
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        // when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(true);
 
-        userNotificationService.deleteNotification(getPrincipal(), notificationId);
+        userNotificationService.deleteNotification(testUserVo.getId(), notificationId);
 
-        verify(userService).findByEmail("danylo@gmail.com");
+        // verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).existsByIdAndTargetUserId(notificationId, testUserVo.getId());
     }
 
     @Test
     void deleteNonExistentNotificationAndGetNotFoundExceptionTest() {
         Long notificationId = 1L;
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
+        // when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(false);
 
         Principal principal = getPrincipal();
         assertThrows(NotFoundException.class,
-            () -> userNotificationService.deleteNotification(principal, notificationId));
+            () -> userNotificationService.deleteNotification(testUserVo.getId(), notificationId));
     }
 
     @Test

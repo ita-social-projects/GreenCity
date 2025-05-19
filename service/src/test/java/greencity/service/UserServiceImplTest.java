@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
@@ -42,6 +43,7 @@ import static greencity.ModelUtils.getUnSortedPageable;
 import static greencity.ModelUtils.getUserFilterDto;
 import static greencity.ModelUtils.getUserManagementVOPage;
 import static greencity.ModelUtils.getUserPage;
+import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.testEmail;
 import static greencity.ModelUtils.testEmail2;
 import static greencity.ModelUtils.testUser;
@@ -163,11 +165,11 @@ class UserServiceImplTest {
         UserLocation userLocation = user.getUserLocation();
         UserLocationDto userLocationDto = new UserLocationDto();
 
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        // when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(modelMapper.map(userLocation, UserLocationDto.class)).thenReturn(userLocationDto);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
-            userService.checkUpdatableUser(userId, email);
+            userService.checkUpdatableUser(userId, user.getId());
         });
         assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
     }
@@ -209,52 +211,24 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testFindByEmail() {
-        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
-        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
-
-        UserVO actual = userService.findByEmail(testEmail);
-
-        assertEquals(testUserVo, actual);
-
-        verify(userRepo).findByEmail(testEmail);
-        verify(modelMapper).map(testUser, UserVO.class);
-    }
-
-    @Test
-    void testFindByEmailThrowException() {
-        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.empty());
-
-        assertThrows(WrongEmailException.class, () -> userService.findByEmail(testEmail));
-
-        verify(userRepo).findByEmail(testEmail);
-    }
-
-    @Test
     void testFindNotDeactivatedByEmail() {
         when(userRemoteClient.findNotDeactivatedByEmail(testEmail))
-            .thenReturn(Optional.of(testUserVo));
+                .thenReturn(Optional.of(testUserVo));
 
-        Optional<UserVO> actual = userService.findNotDeactivatedByEmail(testEmail);
+        UserVO actual = userService.findNotDeactivatedByEmail(testEmail);
 
-        assertEquals(Optional.of(testUserVo), actual);
+        assertEquals(testUserVo, actual);
     }
 
     @Test
-    void testFindIdByEmail() {
-        when(userRepo.findIdByEmail(testEmail)).thenReturn(Optional.of(1L));
+    void testFindNotDeactivatedByEmailThrowException() {
+        when(userRemoteClient.findNotDeactivatedByEmail(testEmail))
+                .thenReturn(Optional.empty());
 
-        Long actual = userService.findIdByEmail(testEmail);
-
-        assertEquals(1L, actual);
-    }
-
-    @Test
-    void testFindIdByEmailThrowsException() {
-        when(userRepo.findIdByEmail(testEmail)).thenReturn(Optional.empty());
-
-        assertThrows(WrongEmailException.class,
-            () -> userService.findIdByEmail(testEmail));
+        assertThrows(
+                WrongEmailException.class,
+                () -> userService.findNotDeactivatedByEmail(testEmail)
+        );
     }
 
     @Test
@@ -264,17 +238,17 @@ class UserServiceImplTest {
             .userStatus(UserStatus.CREATED)
             .build();
 
-        when(userRepo.findByEmail(testEmail2)).thenReturn(Optional.ofNullable(testUser));
+        // when(userRepo.findByEmail(testEmail2)).thenReturn(Optional.ofNullable(testUser));
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUserRoleUser));
         when(modelMapper.map(testUserRoleUser, UserVO.class)).thenReturn(userVORoleUser);
         when(modelMapper.map(userVORoleUser, UserStatusDto.class)).thenReturn(testUserStatusDto);
 
-        UserStatusDto actual = userService.updateStatus(2L, CREATED, testEmail2);
+        UserStatusDto actual = userService.updateStatus(2L, CREATED, TestConst.USER_ID);
 
         assertEquals(testUserStatusDto, actual);
 
-        verify(userRepo, times(2)).findByEmail(anyString());
+        // verify(userRepo, times(2)).findByEmail(anyString());
         verify(modelMapper, times(4)).map(any(User.class), eq(UserVO.class));
         verify(userRepo, times(2)).findById(anyLong());
         verify(userRemoteClient).updateUserStatus(userStatusDto);
@@ -283,22 +257,22 @@ class UserServiceImplTest {
 
     @Test
     void testUpdateStatusThrowsBadUpdateRequestException() {
-        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        // when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
         assertThrows(BadUpdateRequestException.class,
-            () -> userService.updateStatus(1L, CREATED, testEmail));
+            () -> userService.updateStatus(1L, CREATED, TestConst.USER_ID));
     }
 
     @Test
     void testUpdateStatusThrowsLowRoleLevelException() {
-        when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
+        // when(userRepo.findByEmail(testEmail)).thenReturn(Optional.ofNullable(testUser));
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUser));
         when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
 
         assertThrows(LowRoleLevelException.class,
-            () -> userService.updateStatus(2L, CREATED, testEmail));
+            () -> userService.updateStatus(2L, CREATED, TestConst.USER_ID));
     }
 
     @Test
@@ -367,12 +341,12 @@ class UserServiceImplTest {
     void findByEmailsTest() {
         List<String> emails = List.of("email@gmail.com", "gmail@gmail.com");
 
-        when(userRepo.findAllByEmailIn(emails)).thenReturn(List.of(getUser(), getUser()));
-        when(modelMapper.map(getUser(), UserVO.class)).thenReturn(userVO);
+        when(userRemoteClient.findAllByEmailIn(emails))
+                .thenReturn(List.of(getUserVO(), getUserVO()));
 
         assertEquals(List.of(userVO, userVO), userService.findByEmails(emails));
 
-        verify(userRepo).findAllByEmailIn(emails);
+        verify(userRemoteClient).findAllByEmailIn(emails);
     }
 
     @Test
@@ -394,25 +368,24 @@ class UserServiceImplTest {
     void createUserTest() {
         CreateGreenCityUserDto createGreenCityUserDto = ModelUtils.getCreateGreenCityDto();
         User createdUser = getUser();
-        when(userRepo.findByEmail(createGreenCityUserDto.getEmail())).thenReturn(Optional.empty());
+        when(userRepo.existsById(createGreenCityUserDto.getId())).thenReturn(false);
         when(userRepo.save(any(User.class))).thenReturn(createdUser);
 
         Boolean result = userService.createUser(createGreenCityUserDto);
 
         assertTrue(result);
-        verify(userRepo).findByEmail(createGreenCityUserDto.getEmail());
+        verify(userRepo).existsById(createGreenCityUserDto.getId());
         verify(userRepo).save(any(User.class));
     }
 
     @Test
     void createUserAlreadyExistsTest() {
         CreateGreenCityUserDto createGreenCityUserDto = ModelUtils.getCreateGreenCityDto();
-        User existingdUser = getUser();
-        when(userRepo.findByEmail(createGreenCityUserDto.getEmail())).thenReturn(Optional.of(existingdUser));
+        when(userRepo.existsById(createGreenCityUserDto.getId())).thenReturn(true);
 
         assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(createGreenCityUserDto));
 
-        verify(userRepo).findByEmail(createGreenCityUserDto.getEmail());
+        verify(userRepo).existsById(createGreenCityUserDto.getId());
         verify(userRepo, never()).save(any(User.class));
     }
 

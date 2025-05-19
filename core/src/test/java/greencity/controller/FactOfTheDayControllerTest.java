@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.TestConst;
 import greencity.service.FactOfTheDayService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,6 @@ class FactOfTheDayControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(factOfTheDayService).getRandomFactOfTheDayForUser("testUser@example.com");
+        verify(factOfTheDayService).getRandomFactOfTheDayForUser(TestConst.USER_ID);
     }
 }
