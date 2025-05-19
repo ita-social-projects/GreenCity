@@ -249,7 +249,6 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_location")
-    @BatchSize(size = 50)
     private UserLocation userLocation;
 
     @ManyToMany(mappedBy = "usersLikedNews")

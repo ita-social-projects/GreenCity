@@ -32,6 +32,14 @@ public class QuartzConstants {
     public static final String METHOD_CRON_VALIDATION_FAILED_EXCEPTION = "⚙️ [DEBUG] Cron validation failed due to exception: {}";
     public static final String CRON_EXPRESSION_WARNING = "⚠️ [WARN] The provided cron expression might be outdated or invalid: {}";
     public static final String CRON_EXPRESSION_CRITICAL_ERROR = "💥 [ERROR] Critical error in cron expression: {}";
+    public static final String NEXT_FIRE_TIME = "🔁 Next fire time: {}";
+    public static final String PREVIOUS_FIRE_TIME = "✅ Previous fire time: {}";
+    public static final String NONE_EXECUTION = "None";
+    public static final String JOB_LISTENER_NAME = "LoggingJobListener";
+    public static final String JOB_EXECUTION_START = "🔄 Job '{}' is about to execute";
+    public static final String JOB_EXECUTION_VETOED = "Job execution vetoed: Job '{}' was vetoed at fire time {} (scheduled for {})";
+    public static final String JOB_EXECUTION_FAILED = "❌ Job '{}' failed with exception: ";
+    public static final String JOB_EXECUTION_SUCCESS = "✅ Job '{}' executed successfully";
 
     public static final String MDC_REQUEST_ID = "requestId";
 }

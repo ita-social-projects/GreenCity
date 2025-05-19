@@ -2,12 +2,14 @@ package greencity.aspect;
 
 import static greencity.constant.QuartzConstants.*;
 
+import java.util.Date;
 import java.util.UUID;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.slf4j.MDC;
@@ -22,41 +24,6 @@ public class QuartzLoggingAspect {
 
     @Pointcut("execution(* greencity.config.QuartzConfig.ecoNewsGenerationTrigger(..))")
     public void ecoNewsGenerationTriggerMethods() {}
-
-    @Around("ecoNewsGenerationTriggerMethods()")
-    public Object logAroundEcoNewsGenerationTrigger(ProceedingJoinPoint joinPoint) throws Throwable {
-        String requestId = UUID.randomUUID().toString();
-        MDC.put(MDC_REQUEST_ID, requestId);
-
-        long startTime = System.currentTimeMillis();
-        String methodName = joinPoint.getSignature().getName();
-        Object[] args = joinPoint.getArgs();
-
-        log.trace(METHOD_CALLED, methodName, Arrays.toString(args));
-        log.debug(CRON_EXPRESSION, cronExpression);
-        log.debug(CRON_VALIDATION_STARTED);
-        log.info(CRON_EXECUTION_STARTED, cronExpression);
-
-        Object result;
-        try {
-            result = joinPoint.proceed();
-
-            long endTime = System.currentTimeMillis();
-            log.info(METHOD_SUCCESS, methodName, (endTime - startTime), result);
-            log.debug(METHOD_CRON_VALIDATION_SUCCESS);
-            log.info(METHOD_EXECUTION_TIME, methodName, (endTime - startTime));
-        } catch (Throwable throwable) {
-            long endTime = System.currentTimeMillis();
-            log.error(METHOD_EXCEPTION, methodName, (endTime - startTime), throwable.getMessage(), throwable);
-            log.debug(METHOD_CRON_VALIDATION_FAILED_EXCEPTION, throwable.getMessage());
-            throw throwable;
-        } finally {
-            MDC.remove(MDC_REQUEST_ID);
-        }
-
-        log.debug(METHOD_FINISHED, methodName, Arrays.toString(args));
-        return result;
-    }
 
     @After("ecoNewsGenerationTriggerMethods()")
     public void logCronExpressionWarning() {
@@ -78,5 +45,48 @@ public class QuartzLoggingAspect {
     public void logCompletionDetails(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         log.debug(METHOD_COMPLETED_EXECUTION, methodName, Arrays.toString(joinPoint.getArgs()));
+    }
+
+    @Around("ecoNewsGenerationTriggerMethods()")
+    public Object logAroundEcoNewsGenerationTrigger(ProceedingJoinPoint joinPoint) throws Throwable {
+        String requestId = UUID.randomUUID().toString();
+        MDC.put(MDC_REQUEST_ID, requestId);
+
+        long startTime = System.currentTimeMillis();
+        String methodName = joinPoint.getSignature().getName();
+        Object[] args = joinPoint.getArgs();
+
+        log.trace(METHOD_CALLED, methodName, Arrays.toString(args));
+        log.debug(CRON_EXPRESSION, cronExpression);
+        log.debug(CRON_VALIDATION_STARTED);
+        log.info(CRON_EXECUTION_STARTED, cronExpression);
+
+        Object result;
+        try {
+            result = joinPoint.proceed();
+
+            if (result instanceof Trigger trigger) {
+                Date next = trigger.getNextFireTime();
+                Date previous = trigger.getPreviousFireTime();
+
+                log.info("🔁 Next fire time: {}", next != null ? next : "null");
+                log.info("✅ Previous fire time: {}", previous != null ? previous : "Never executed yet");
+            }
+
+            long endTime = System.currentTimeMillis();
+            log.info(METHOD_SUCCESS, methodName, (endTime - startTime), result);
+            log.debug(METHOD_CRON_VALIDATION_SUCCESS);
+            log.info(METHOD_EXECUTION_TIME, methodName, (endTime - startTime));
+        } catch (Throwable throwable) {
+            long endTime = System.currentTimeMillis();
+            log.error(METHOD_EXCEPTION, methodName, (endTime - startTime), throwable.getMessage(), throwable);
+            log.debug(METHOD_CRON_VALIDATION_FAILED_EXCEPTION, throwable.getMessage());
+            throw throwable;
+        } finally {
+            MDC.remove(MDC_REQUEST_ID);
+        }
+
+        log.debug(METHOD_FINISHED, methodName, Arrays.toString(args));
+        return result;
     }
 }

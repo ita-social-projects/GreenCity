@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import static greencity.constant.OpenAIRequest.*;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.UserEcoNewsRelevanceResponseDto;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.entity.localization.TagTranslation;
 import static greencity.constant.OpenAIConstants.*;
@@ -43,6 +44,7 @@ public class AIServiceImpl implements AIService {
     private final TagsRepo tagsRepo;
     private final UserRepo userRepo;
     private final GrammarChecker grammarChecker;
+    private final UserEcoNewsRelevanceService userEcoNewsRelevanceService;
     private final ModelMapper modelMapper;
 
     /**
@@ -170,29 +172,16 @@ public class AIServiceImpl implements AIService {
      * @return a list of {@link EcoNewsDto} containing relevant eco news.
      */
     @Override
-    public List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language,
-                                                      List<String> tags, String title,
-                                                      Long authorId, boolean favorite)
-    {
-        List<EcoNews> ecoNewsList = ecoNewsRepo.findAll();
-        ecoNewsList = ecoNewsList.stream()
-            .filter(ecoNews -> filterByTags(ecoNews, tags))
-            .filter(ecoNews -> filterByTitle(ecoNews, title))
-            .filter(ecoNews -> filterByAuthor(ecoNews, authorId))
-            .toList();
+    public List<EcoNewsDto> getRelevantEcoNewsForUser(
+        Long userId, String language,
+        List<String> tags, String title,
+        Long authorId, boolean favorite
+    ) {
+        List<EcoNews> filteredNews = getFilteredEcoNews(tags, title, authorId);
+        List<UserEcoNewsRelevanceResponseDto> precomputedRelevances = userEcoNewsRelevanceService.getRelevantNewsForUser(userId);
+        List<String> userHabits = habitAssignRepo.fetchHabitNamesByUserId(userId);
 
-        List<String> habitAssigns = habitAssignRepo.fetchHabitNamesByUserId(userId);
-
-        return ecoNewsList.stream()
-            .map(ecoNews -> {
-                EcoNewsDto ecoNewsDto = modelMapper.map(ecoNews, EcoNewsDto.class);
-                if (habitAssigns != null) {
-                    double relevanceScore = calculateRelevanceScore(ecoNews, habitAssigns);
-                    ecoNewsDto.setRelevanceScore(relevanceScore);
-                }
-                return ecoNewsDto;
-            }).sorted(Comparator.comparingDouble(EcoNewsDto::getRelevanceScore).reversed())
-            .toList();
+        return enrichWithRelevance(filteredNews, precomputedRelevances, userHabits, language);
     }
 
     /**
@@ -209,35 +198,77 @@ public class AIServiceImpl implements AIService {
      */
     @Override
     public Page<EcoNewsGenericDto> getCombinedEcoNewsForUser(
-        Long userId, String language,
-        Pageable pageable, List<String> tags,
-        String title, Long authorId,
-        boolean favorite
+        Long userId, String language, Pageable pageable,
+        List<String> tags, String title, Long authorId, boolean favorite
     ) {
-        List<EcoNewsDto> combinedNews;
-        if (userId == null) {
-            combinedNews = getGeneralEcoNews(tags, title, authorId);
-        } else {
-            List<EcoNewsDto> relevantEcoNews = getRelevantEcoNewsForUser(userId, language,
-                tags, title,
-                authorId, favorite);
-            List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(tags, title, authorId);
+        List<EcoNewsDto> combinedNews = (userId == null)
+            ? getGeneralEcoNews(tags, title, authorId)
+            : mergeRelevantAndGeneralNews(userId, language, tags, title, authorId, favorite);
 
-            combinedNews = new ArrayList<>(relevantEcoNews);
-            combinedNews.addAll(generalEcoNews);
-        }
+        List<EcoNewsDto> sortedNews = sortNewsByRelevance(combinedNews);
+        List<EcoNewsGenericDto> pagedContent = paginateAndConvert(sortedNews, pageable);
 
-        List<EcoNewsDto> sortedCombinedNews = combinedNews.stream()
+        return new PageImpl<>(pagedContent, pageable, sortedNews.size());
+    }
+
+    private List<EcoNews> getFilteredEcoNews(List<String> tags, String title, Long authorId) {
+        return ecoNewsRepo.findAll().stream()
+            .filter(news -> filterByTags(news, tags))
+            .filter(news -> filterByTitle(news, title))
+            .filter(news -> filterByAuthor(news, authorId))
+            .toList();
+    }
+
+    private List<EcoNewsDto> enrichWithRelevance(List<EcoNews> ecoNewsList,
+                                                 List<UserEcoNewsRelevanceResponseDto> precomputed,
+                                                 List<String> userHabits,
+                                                 String language) {
+        return ecoNewsList.stream()
+            .map(news -> {
+                EcoNewsDto dto = modelMapper.map(news, EcoNewsDto.class);
+                double score = getRelevanceScore(news, dto, precomputed, userHabits, language);
+                dto.setRelevanceScore(score);
+                return dto;
+            })
             .sorted(Comparator.comparingDouble(EcoNewsDto::getRelevanceScore).reversed())
             .toList();
+    }
 
+    private double getRelevanceScore(EcoNews news, EcoNewsDto dto,
+                                     List<UserEcoNewsRelevanceResponseDto> precomputed,
+                                     List<String> habits, String language) {
+        return precomputed.stream()
+            .filter(r -> r.getEcoNewsId().equals(news.getId()))
+            .findFirst()
+            .map(UserEcoNewsRelevanceResponseDto::getRelevance)
+            .orElseGet(() -> userEcoNewsRelevanceService.calculateRelevanceScore(dto, habits, language));
+    }
+
+    private List<EcoNewsDto> sortNewsByRelevance(List<EcoNewsDto> newsList) {
+        return newsList.stream()
+            .sorted(Comparator.comparingDouble(EcoNewsDto::getRelevanceScore).reversed())
+            .toList();
+    }
+
+    private List<EcoNewsGenericDto> paginateAndConvert(List<EcoNewsDto> sortedNews, Pageable pageable) {
         int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), sortedCombinedNews.size());
-        List<EcoNewsGenericDto> pageContent = sortedCombinedNews.subList(start, end)
-            .stream()
+        int end = Math.min(start + pageable.getPageSize(), sortedNews.size());
+
+        return sortedNews.subList(start, end).stream()
             .map(this::convertToGenericDto)
             .toList();
-        return new PageImpl<>(pageContent, pageable, sortedCombinedNews.size());
+    }
+
+    private List<EcoNewsDto> mergeRelevantAndGeneralNews(
+        Long userId, String language, List<String> tags,
+        String title, Long authorId, boolean favorite
+    ) {
+        List<EcoNewsDto> relevantEcoNews = getRelevantEcoNewsForUser(userId, language, tags, title, authorId, favorite);
+        List<EcoNewsDto> generalEcoNews = getGeneralEcoNews(tags, title, authorId);
+
+        List<EcoNewsDto> combined = new ArrayList<>(relevantEcoNews);
+        combined.addAll(generalEcoNews);
+        return combined;
     }
 
     /**
@@ -269,47 +300,6 @@ public class AIServiceImpl implements AIService {
         return ecoNewsList.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .toList();
-    }
-
-    /**
-     * Calculates the relevance score of eco news based on user habits.
-     *
-     * @param ecoNews    the eco news to calculate relevance for.
-     * @param habitNames the list of user habit names.
-     * @return the calculated relevance score.
-     */
-    private double calculateRelevanceScore(EcoNews ecoNews, List<String> habitNames) {
-        double maxRelevance = 0.0;
-        for (String habitName : habitNames) {
-            double relevance = analyzeRelevance(ecoNews.getTitle(), habitName);
-            if (relevance > maxRelevance) {
-                maxRelevance = relevance;
-            }
-        }
-        return maxRelevance;
-    }
-
-    /**
-     * Analyzes the relevance between two topics using OpenAI.
-     *
-     * @param topic1 the first topic.
-     * @param topic2 the second topic.
-     * @return the relevance score between 0 and 1.
-     * @throws OpenAIRelevanceException if the relevance score is invalid or cannot be parsed.
-     */
-    private double analyzeRelevance(String topic1, String topic2) {
-        String prompt = String.format(OPENAI_SIMILARITY_PROMPT, topic1, topic2);
-        String response = openAIService.makeRequest(prompt);
-
-        try {
-            double score = Double.parseDouble(response.trim());
-            if (score < 0 || score > 1) {
-                throw new OpenAIRelevanceException(ERROR_INVALID_RELEVANCE_SCORE + score);
-            }
-            return score;
-        } catch (NumberFormatException e) {
-            throw new OpenAIRelevanceException(ERROR_RELEVANCE_SCORE_PARSE_FAILURE + response, e);
-        }
     }
 
     /**

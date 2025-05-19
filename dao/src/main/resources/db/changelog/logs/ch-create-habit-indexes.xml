@@ -34,14 +34,14 @@
     <changeSet id="habit-translations-habit-id-index" author="DmytroLysenko1">
         <preConditions onFail="MARK_RAN">
             <not>
-                <indexExists tableName="habit_translations" indexName="idx_habit_translations_habit_id"/>
+                <indexExists tableName="habit_translation" indexName="idx_habit_translations_habit_id"/>
             </not>
         </preConditions>
-        <createIndex tableName="habit_translations" indexName="idx_habit_translations_habit_id">
+        <createIndex tableName="habit_translation" indexName="idx_habit_translations_habit_id">
             <column name="habit_id"/>
         </createIndex>
         <rollback>
-            <dropIndex tableName="habit_translations" indexName="idx_habit_translations_habit_id"/>
+            <dropIndex tableName="habit_translation" indexName="idx_habit_translations_habit_id"/>
         </rollback>
     </changeSet>
 
