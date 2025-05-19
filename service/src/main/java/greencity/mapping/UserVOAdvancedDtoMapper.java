@@ -8,7 +8,7 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
-import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
         Long id = user.getId();
 
         UserVOAdvancedDto userVOAdvancedDto = userRemoteClient.findNotDeactivatedByIdAdvanced(id)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
 
         userVOAdvancedDto.setUserAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
             .stream().map(userAchievement -> UserAchievementVO.builder()

@@ -32,7 +32,6 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.CustomHabitMapper;
 import greencity.mapping.CustomToDoListMapper;
@@ -341,7 +340,7 @@ public class HabitServiceImpl implements HabitService {
     public CustomHabitDtoResponse addCustomHabit(
         CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, Long userId) {
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
             image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
@@ -403,7 +402,7 @@ public class HabitServiceImpl implements HabitService {
     public CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest habitDto, Long habitId,
         Long userId, MultipartFile image) {
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         Habit toUpdate = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + habitId));
         checkAccessForAdminAndModeratorAndByUserId(user, toUpdate);

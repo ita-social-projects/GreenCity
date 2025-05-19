@@ -5,7 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
-import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class UserForListDtoMapper extends AbstractConverter<User, UserForListDto
     protected UserForListDto convert(User user) {
         Long id = user.getId();
         UserVOAdvancedDto userVO = userRemoteClient.findNotDeactivatedByIdAdvanced(id)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
 
         return UserForListDto.builder()
             .id(userVO.getId())
