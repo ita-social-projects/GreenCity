@@ -33,9 +33,7 @@ public class UserFilter implements Specification<User> {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filterUserDto != null) {
-            System.out.println("GHFOAOFOSOVMOSDV");
             predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getQuery()));
-            System.out.println("GHFOAOFOSOVMOSDV");
         }
         if (filterUserDto != null && filterUserDto.getStatus() != null) {
             predicates.add(hasStatusLike(root, criteriaBuilder, filterUserDto.getStatus()));
