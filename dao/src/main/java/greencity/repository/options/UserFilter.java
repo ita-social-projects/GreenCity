@@ -33,7 +33,9 @@ public class UserFilter implements Specification<User> {
         List<Predicate> predicates = new ArrayList<>();
 
         if (filterUserDto != null) {
+            System.out.println("GHFOAOFOSOVMOSDV");
             predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getQuery()));
+            System.out.println("GHFOAOFOSOVMOSDV");
         }
         if (filterUserDto != null && filterUserDto.getStatus() != null) {
             predicates.add(hasStatusLike(root, criteriaBuilder, filterUserDto.getStatus()));
@@ -56,8 +58,7 @@ public class UserFilter implements Specification<User> {
     private Predicate hasFieldsLike(Root<User> r, CriteriaBuilder cb, String reg) {
         reg = replaceCriteria(reg);
         return cb.or(
-            cb.like(r.get(RepoConstants.NAME), reg),
-            cb.like(r.get(RepoConstants.EMAIL), reg));
+            cb.like(r.get(RepoConstants.NAME), reg));
     }
 
     /**
