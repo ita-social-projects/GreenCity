@@ -86,7 +86,9 @@
                     </div>
 
                     <div th:if="${user.profilePicturePath}">
-                        <img class="profile-picture" th:src="${user.profilePicturePath}" alt="profilePicture">
+                        <img class="profile-picture"
+                             th:src="${#strings.replace(#strings.replace(user.profilePicturePath, '[&quot;', ''), '&quot;]', '')}"
+                             alt="profilePicture">
                     </div>
                     <div th:if="${user.profilePicturePath} == null">
                         <div class="profile-picture default"
