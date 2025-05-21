@@ -11,7 +11,7 @@ class UserFriendDtoTest {
     void userFriendDtoConstructorTest() {
         Long id = 1L;
         String name = "name";
-        String email = "email";
+        // String email = "email";
         UserLocationDto uLocation = new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
             "Львівська", "Ukraine", "Україна", 12.345678, 12.345678);
         Double rating = 1.0;
@@ -20,7 +20,7 @@ class UserFriendDtoTest {
         Long chatId = 4L;
         String friendStatus = "FRIEND";
         Long requesterId = 3L;
-        UserFriendDto userFriendDto = new UserFriendDto(id, name, email, rating, uLocation.getId(),
+        UserFriendDto userFriendDto = new UserFriendDto(id, name, rating, uLocation.getId(),
             uLocation.getCityEn(), uLocation.getCityUk(), uLocation.getRegionEn(), uLocation.getRegionUk(),
             uLocation.getCountryEn(), uLocation.getCountryUk(), uLocation.getLatitude(), uLocation.getLongitude(),
             mutualFriends, profilePicture, chatId, friendStatus, requesterId);
@@ -40,7 +40,7 @@ class UserFriendDtoTest {
     void testUserFriendDtoConstructorWithoutUserLocation() {
         Long id = 1L;
         String name = "name";
-        String email = "email";
+        // String email = "email";
         Double rating = 1.0;
         Long ulId = null;
         Long mutualFriends = 2L;
@@ -50,7 +50,7 @@ class UserFriendDtoTest {
         Long requesterId = 3L;
 
         UserFriendDto userFriendDto = new UserFriendDto(
-            id, name, email, rating, ulId, null, null, null, null, null, null,
+            id, name, rating, ulId, null, null, null, null, null, null,
             null, null, mutualFriends, profilePicturePath, chatId, friendStatus, requesterId);
 
         assertNull(userFriendDto.getUserLocationDto());
