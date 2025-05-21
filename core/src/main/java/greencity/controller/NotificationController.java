@@ -103,7 +103,7 @@ public class NotificationController {
     /**
      * Method to delete specific Notification.
      *
-     * @param userId      User's id
+     * @param userId         User's id
      * @param notificationId id of notification, that should be deleted
      */
     @Operation(summary = "Delete single Notification.")

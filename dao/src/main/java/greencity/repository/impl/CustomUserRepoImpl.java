@@ -46,10 +46,9 @@ public class CustomUserRepoImpl implements CustomUserRepo {
 
         List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
         Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
-                        .collect(Collectors.toMap(
-                                UserEmailDto::userId,
-                                UserEmailDto::userEmail
-                        ));
+            .collect(Collectors.toMap(
+                UserEmailDto::userId,
+                UserEmailDto::userEmail));
 
         resultList.forEach(userFriendDto -> {
             String email = userIdToUserEmailMap.get(userFriendDto.getId());

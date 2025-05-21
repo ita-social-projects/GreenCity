@@ -114,7 +114,8 @@ class AchievementCategoryServiceImplTest {
         when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryTranslationDto.class))
             .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
         // when(userService.findByEmail("email@gmail.com")).thenReturn(userVO);
-        when(achievementService.findAchievementCountByTypeAndCategory(userVO.getId(), email, null, list.getFirst().getId()))
+        when(achievementService.findAchievementCountByTypeAndCategory(userVO.getId(), email, null,
+            list.getFirst().getId()))
             .thenReturn(0);
         when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userVO.getId(),
             expectedDto.getId())).thenReturn(Collections.emptyList());

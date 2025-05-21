@@ -740,7 +740,7 @@ public class EventController {
     /**
      * Method for retrieving all events, where user is attendee.
      *
-     * @param userVO {@link UserVO} current user information.
+     * @param userId current user id.
      * @return all events, where user is an attendee.
      * @author Andrii Danylenko.
      */

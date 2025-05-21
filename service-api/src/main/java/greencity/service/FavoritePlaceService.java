@@ -25,7 +25,7 @@ public interface FavoritePlaceService {
      *
      * @param favoritePlaceDto - dto with {@link FavoritePlaceVO} name,
      *                         {@link PlaceVO} id and {@link UserVO} email
-     * @param userId        - {@link UserVO} id
+     * @param userId           - {@link UserVO} id
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
@@ -45,8 +45,8 @@ public interface FavoritePlaceService {
      * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id
      * .
      *
-     * @param placeId   - {@link PlaceVO} id
-     * @param userId    - {@link UserVO} id
+     * @param placeId - {@link PlaceVO} id
+     * @param userId  - {@link UserVO} id
      * @return - id of deleted {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
@@ -73,7 +73,7 @@ public interface FavoritePlaceService {
     /**
      * Get {@link FavoritePlaceVO} coordinates, id and name.
      *
-     * @param id    {@link FavoritePlaceVO}
+     * @param id     {@link FavoritePlaceVO}
      * @param userId - {@link UserVO} id
      * @return {@link PlaceByBoundsDto} with name from favorite place
      * @author Zakhar Skaletskyi

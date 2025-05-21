@@ -92,16 +92,16 @@ class EventControllerTest {
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
+                new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper),
-                    new UserIdArgumentResolver(jwtTool))
+                new UserIdArgumentResolver(jwtTool))
             .build();
 
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test

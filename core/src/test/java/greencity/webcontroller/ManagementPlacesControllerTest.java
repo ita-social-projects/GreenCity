@@ -175,7 +175,8 @@ class ManagementPlacesControllerTest {
             .characterEncoding("UTF-8"))
             .andExpect(status().isOk());
 
-        // verify(placeService).updateFromUI(eq(placeUpdateDto), any(MultipartFile[].class), userId);
+        // verify(placeService).updateFromUI(eq(placeUpdateDto),
+        // any(MultipartFile[].class), userId);
     }
 
     private PlaceUpdateDto getPlaceUpdateDto() {

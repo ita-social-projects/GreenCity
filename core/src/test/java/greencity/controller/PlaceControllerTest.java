@@ -106,9 +106,9 @@ class PlaceControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(placeController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
+                new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper),
-                    new UserIdArgumentResolver(jwtTool))
+                new UserIdArgumentResolver(jwtTool))
             .build();
     }
 
@@ -252,9 +252,9 @@ class PlaceControllerTest {
             """;
 
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         FavoritePlaceDto favoritePlaceDto = FavoritePlaceDto.builder().name("test").placeId(1L).build();
         this.mockMvc.perform(post(placeLink + "/save/favorite/")
@@ -349,9 +349,9 @@ class PlaceControllerTest {
             """;
 
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         this.mockMvc.perform(post(placeLink + "/filter")
             .content(json)
@@ -543,9 +543,9 @@ class PlaceControllerTest {
         String jwt = "jwt";
 
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         this.mockMvc.perform(get(placeLink + "/all?page=0&&size=5")
             .principal(principal))

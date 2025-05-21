@@ -65,15 +65,15 @@ class FriendControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(friendController)
             .setCustomArgumentResolvers(
                 new PageableHandlerMethodArgumentResolver(),
-                    new UserIdArgumentResolver(jwtTool))
+                new UserIdArgumentResolver(jwtTool))
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, null))
             .build();
 
         String jwt = "jwt";
         lenient().when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         lenient().when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -137,12 +137,11 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(friendService).findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
-                userVO.getId(),
-                "",
-                false,
-                false,
-                PageRequest.of(0, 10)
-        );
+            userVO.getId(),
+            "",
+            false,
+            false,
+            PageRequest.of(0, 10));
     }
 
     @Test

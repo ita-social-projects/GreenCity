@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidCurrentUserId;
 import greencity.annotations.ValidLanguage;

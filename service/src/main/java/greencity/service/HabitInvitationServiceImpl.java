@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import greencity.entity.User;

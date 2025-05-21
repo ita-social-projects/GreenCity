@@ -39,9 +39,9 @@ class EventDtoMapperTest {
         String email = "email";
 
         when(modelMapper.map(event.getOrganizer(), UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getEmail())
-                .thenReturn(email);
+            .thenReturn(email);
 
         EventDto result = mapper.convert(event);
 
@@ -57,9 +57,9 @@ class EventDtoMapperTest {
         String email = "email";
 
         when(modelMapper.map(event.getOrganizer(), UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getEmail())
-                .thenReturn(email);
+            .thenReturn(email);
 
         EventDto expected = ModelUtils.getEventWithoutAddressDto();
 

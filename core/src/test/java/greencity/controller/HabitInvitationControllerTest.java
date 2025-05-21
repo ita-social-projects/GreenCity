@@ -54,14 +54,14 @@ class HabitInvitationControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(habitInvitationController)
-                .setCustomArgumentResolvers(new UserIdArgumentResolver(jwtTool))
-                .build();
+            .setCustomArgumentResolvers(new UserIdArgumentResolver(jwtTool))
+            .build();
 
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test

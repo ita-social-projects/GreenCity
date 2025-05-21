@@ -1,10 +1,8 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
-import greencity.dto.user.UserVO;
 import greencity.service.AIService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -284,7 +284,7 @@ public class ManagementUserController {
      * Method for creating new filter.
      *
      * @param currentUserId current user id.
-     * @param dto         filter's dto.
+     * @param dto           filter's dto.
      */
     @PostMapping(value = "/filter-save")
     public String saveUserFilter(@CurrentUserId Long currentUserId, @RequestBody UserFilterDtoRequest dto) {

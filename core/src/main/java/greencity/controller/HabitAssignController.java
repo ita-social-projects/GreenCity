@@ -266,10 +266,10 @@ public class HabitAssignController {
      * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
      * the current user and another specified user, with pagination.
      *
-     * @param userId   the {@code User} id of the other user to find mutual habit
-     *                 assignments with.
-     * @param currentUserId   current user id.
-     * @param pageable the {@link Pageable} object for pagination information.
+     * @param userId        the {@code User} id of the other user to find mutual
+     *                      habit assignments with.
+     * @param currentUserId current user id.
+     * @param pageable      the {@link Pageable} object for pagination information.
      * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
      *         with a list of {@link HabitAssignPreviewDto} representing the found
      *         mutual habit assignments and pagination information.
@@ -296,10 +296,10 @@ public class HabitAssignController {
      * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
      * user made by current user, with pagination.
      *
-     * @param userId   the {@code User} id of the other user to find habit
-     *                 assignments with.
-     * @param currentUserId   current user id.
-     * @param pageable the {@link Pageable} object for pagination information.
+     * @param userId        the {@code User} id of the other user to find habit
+     *                      assignments with.
+     * @param currentUserId current user id.
+     * @param pageable      the {@link Pageable} object for pagination information.
      * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
      *         with a list of {@link HabitAssignPreviewDto} representing the found
      *         assignments and pagination information.

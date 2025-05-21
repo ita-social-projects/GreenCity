@@ -89,16 +89,16 @@ class EventCommentControllerTest {
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventCommentController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
-                    new UserIdArgumentResolver(jwtTool),
-                    new UserArgumentResolver(userService, modelMapper))
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool),
+                new UserArgumentResolver(userService, modelMapper))
             .build();
 
         String jwt = "jwt";
         lenient().when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         lenient().when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test

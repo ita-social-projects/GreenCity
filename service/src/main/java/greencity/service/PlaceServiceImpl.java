@@ -57,7 +57,6 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.Valid;
-import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

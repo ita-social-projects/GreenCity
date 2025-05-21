@@ -84,8 +84,8 @@ public class ManagementUserPersonalPageController {
     /**
      * Method that updates status of a {@link UserVO}.
      *
-     * @param id          Path variable - id of user
-     * @param userStatus  Status that has to be set to user
+     * @param id            Path variable - id of user
+     * @param userStatus    Status that has to be set to user
      * @param currentUserId {@link Long} id of current user
      *
      * @return View template path {@link String}.
@@ -101,9 +101,9 @@ public class ManagementUserPersonalPageController {
     /**
      * Method that updates role of a {@link UserVO}.
      *
-     * @param id          Path variable - id of user
-     * @param userRole    Role that has to be set to user
-     * @param userClaims  {@link UserClaims} claims of current user
+     * @param id         Path variable - id of user
+     * @param userRole   Role that has to be set to user
+     * @param userClaims {@link UserClaims} claims of current user
      *
      * @return View template path {@link String}.
      */

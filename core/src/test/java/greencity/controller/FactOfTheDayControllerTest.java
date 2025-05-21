@@ -60,9 +60,9 @@ class FactOfTheDayControllerTest {
         String jwt = "jwt";
 
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         mockMvc.perform(get(factOfTheDayLink + "/random/by-tags")
             .principal(mockPrincipal)

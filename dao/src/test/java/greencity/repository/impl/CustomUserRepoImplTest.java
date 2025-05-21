@@ -43,14 +43,13 @@ class CustomUserRepoImplTest {
         List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
         TypedQuery<UserFriendDto> query = mock(TypedQuery.class);
         List<UserEmailDto> userEmailDtos = List.of(
-                new UserEmailDto(1L, "email1"),
-                new UserEmailDto(2L, "email2")
-        );
+            new UserEmailDto(1L, "email1"),
+            new UserEmailDto(2L, "email2"));
 
         when(entityManager.createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
             UserFriendDto.class)).thenReturn(query);
         when(userRemoteClient.findUserEmailsByUserIds(userIds))
-                .thenReturn(userEmailDtos);
+            .thenReturn(userEmailDtos);
 
         customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
@@ -97,15 +96,14 @@ class CustomUserRepoImplTest {
         List<User> users = List.of(user1, user2, user3);
 
         List<UserEmailDto> userEmailDtos = List.of(
-                new UserEmailDto(1L, "email1"),
-                new UserEmailDto(2L, "email2")
-        );
+            new UserEmailDto(1L, "email1"),
+            new UserEmailDto(2L, "email2"));
 
         TypedQuery<UserFriendDto> query = mock(TypedQuery.class);
         when(entityManager.createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
             UserFriendDto.class)).thenReturn(query);
         when(userRemoteClient.findUserEmailsByUserIds(userIds))
-                .thenReturn(userEmailDtos);
+            .thenReturn(userEmailDtos);
 
         UserFriendDto friend1 = new UserFriendDto();
         friend1.setId(user2Id);

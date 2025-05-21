@@ -58,7 +58,8 @@ public class AchievementController {
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
         return ResponseEntity.ok().body(
-            achievementService.findAllByTypeAndCategory(userClaims.userId(), userClaims.userEmail(), achievementStatus, achievementCategoryId));
+            achievementService.findAllByTypeAndCategory(userClaims.userId(), userClaims.userEmail(), achievementStatus,
+                achievementCategoryId));
     }
 
     /**
@@ -94,8 +95,9 @@ public class AchievementController {
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
-        return ResponseEntity.ok().body(achievementService.findAchievementCountByTypeAndCategory(userId, principal.getName(),
-            achievementStatus, achievementCategoryId));
+        return ResponseEntity.ok()
+            .body(achievementService.findAchievementCountByTypeAndCategory(userId, principal.getName(),
+                achievementStatus, achievementCategoryId));
     }
 
     /**

@@ -49,8 +49,8 @@ class HabitStatisticControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitStatisticController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
-                    new UserIdArgumentResolver(jwtTool))
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .build();
     }
 
@@ -70,9 +70,9 @@ class HabitStatisticControllerTest {
         String jwt = "jwt";
 
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
             .content(json)
@@ -91,9 +91,9 @@ class HabitStatisticControllerTest {
         String jwt = "jwt";
 
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         mockMvc.perform(put(habitLink + "/{id}", 1)
             .content(json)

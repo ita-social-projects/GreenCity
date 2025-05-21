@@ -37,9 +37,9 @@ public class AchievementCategoryController {
     })
     @GetMapping
     public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(
-        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims
-    ) {
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims) {
         return ResponseEntity.ok()
-            .body(achievementCategoryService.findAllWithAtLeastOneAchievement(userClaims.userId(), userClaims.userEmail()));
+            .body(achievementCategoryService.findAllWithAtLeastOneAchievement(userClaims.userId(),
+                userClaims.userEmail()));
     }
 }

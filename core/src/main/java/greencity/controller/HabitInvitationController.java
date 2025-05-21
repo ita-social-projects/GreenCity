@@ -1,9 +1,7 @@
 package greencity.controller;
 
-import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
-import greencity.dto.user.UserVO;
 import greencity.service.HabitInvitationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -80,8 +80,7 @@ public class FavoritePlaceController {
     })
     @GetMapping
     public ResponseEntity<List<PlaceByBoundsDto>> findAllByUserEmail(
-            @Parameter(hidden = true) @CurrentUserId Long userId
-            ) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserId(userId));
     }
 
@@ -90,8 +89,8 @@ public class FavoritePlaceController {
      * Parameter principal are ignored because Spring automatically provide the
      * Principal object.
      *
-     * @param placeId   - {@link PlaceVO} id
-     * @param userId    - current user id
+     * @param placeId - {@link PlaceVO} id
+     * @param userId  - current user id
      * @return id of deleted {@link FavoritePlaceVO}
      * @author Zakhar Skaletskyi
      */
@@ -117,8 +116,8 @@ public class FavoritePlaceController {
      * Parameter principal is ignored because Spring automatically provide the
      * Principal object.
      *
-     * @param placeId   - {@link PlaceVO} id
-     * @param userId    - current user id
+     * @param placeId - {@link PlaceVO} id
+     * @param userId  - current user id
      * @return info about {@link PlaceVO} with name from {@link PlaceByBoundsDto}
      * @author Zakhar Skaletskyi
      */

@@ -21,7 +21,6 @@ import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
 import greencity.exception.exceptions.NotFoundException;
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -100,7 +99,7 @@ public interface PlaceService {
      *
      * @param dto    - dto for Place entity
      * @param images - array of photos
-     * @param email  - admin user email
+     * @param userId - admin user id
      * @return place {@link PlaceVO}
      */
     PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, Long userId);
@@ -123,9 +122,8 @@ public interface PlaceService {
     /**
      * Find all places from DB for User with current email.
      *
-     * @param pageable  {@link Pageable}.
-     * @param userId    {@link Long} current user id
-     *                  isFavorite.
+     * @param pageable {@link Pageable}.
+     * @param userId   {@link Long} current user id isFavorite.
      * @return an object of {@link PageableDto} which contains a list of
      *         {@link AdminPlaceDto}.
      * @author Olena Petryshak

@@ -48,7 +48,7 @@ class AchievementCategoryControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(achievementCategoryController)
-                .setCustomArgumentResolvers(new UserClaimsArgumentResolver(jwtTool))
+            .setCustomArgumentResolvers(new UserClaimsArgumentResolver(jwtTool))
             .build();
     }
 
@@ -57,12 +57,13 @@ class AchievementCategoryControllerTest {
         String jwt = "jwt";
 
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserClaims(jwt))
-                .thenReturn(ModelUtils.getUserClaims());
-        when(achievementCategoryService.findAllWithAtLeastOneAchievement(anyLong(), anyString())).thenReturn(Collections.emptyList());
+            .thenReturn(ModelUtils.getUserClaims());
+        when(achievementCategoryService.findAllWithAtLeastOneAchievement(anyLong(), anyString()))
+            .thenReturn(Collections.emptyList());
         mockMvc.perform(get(achievementCategoryLink).principal(principal))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(achievementCategoryService).findAllWithAtLeastOneAchievement(TestConst.USER_ID, TestConst.EMAIL);
     }
 

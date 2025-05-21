@@ -544,19 +544,19 @@ public class ModelUtils {
     public static UserClaims getUserClaims() {
         UserVO userVO = getUserVO();
         return UserClaims.builder()
-                .userId(userVO.getId())
-                .userEmail(userVO.getEmail())
-                .roles(List.of(userVO.getRole()))
-                .build();
+            .userId(userVO.getId())
+            .userEmail(userVO.getEmail())
+            .roles(List.of(userVO.getRole()))
+            .build();
     }
 
     public static UserClaims getAdminUserClaims() {
         UserVO userVO = getUserVO();
         return UserClaims.builder()
-                .userId(userVO.getId())
-                .userEmail(userVO.getEmail())
-                .roles(List.of(Role.ROLE_ADMIN))
-                .build();
+            .userId(userVO.getId())
+            .userEmail(userVO.getEmail())
+            .roles(List.of(Role.ROLE_ADMIN))
+            .build();
     }
 
     public static UserVO getUserVONotCommentOwner() {

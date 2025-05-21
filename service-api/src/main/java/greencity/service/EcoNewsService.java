@@ -229,9 +229,10 @@ public interface EcoNewsService {
     /**
      * Method for hiding/unhiding the {@link EcoNewsVO} instance by its id.
      *
-     * @param id    - {@link EcoNewsVO} instance id which will be hidden/unhidden.
-     * @param userClaims  - {@link UserClaims} current user claims.
-     * @param value value to be set to hidden field.
+     * @param id         - {@link EcoNewsVO} instance id which will be
+     *                   hidden/unhidden.
+     * @param userClaims - {@link UserClaims} current user claims.
+     * @param value      value to be set to hidden field.
      */
     void setHiddenValue(Long id, UserClaims userClaims, boolean value);
 

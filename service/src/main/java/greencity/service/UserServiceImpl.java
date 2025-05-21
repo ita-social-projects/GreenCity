@@ -6,7 +6,6 @@ import com.google.maps.model.GeocodingResult;
 import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.constant.LogMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
@@ -57,7 +56,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -145,7 +143,7 @@ public class UserServiceImpl implements UserService {
      * Method which check that, if admin/moderator update role/status of himself,
      * then throw exception.
      *
-     * @param id    id of updatable user.
+     * @param id            id of updatable user.
      * @param currentUserId id of current user.
      */
     protected void checkUpdatableUser(Long id, Long currentUserId) {
@@ -158,7 +156,7 @@ public class UserServiceImpl implements UserService {
      * Method which check that, if moderator trying update status of admins or
      * moderators, then throw exception.
      *
-     * @param id    id of updatable user.
+     * @param id            id of updatable user.
      * @param currentUserId email of current user.
      */
     private void accessForUpdateUserStatus(Long id, Long currentUserId) {

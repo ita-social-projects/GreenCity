@@ -316,9 +316,9 @@ class ManagementEcoNewsControllerTest {
     void hide() throws Exception {
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserClaims(jwt))
-                .thenReturn(ModelUtils.getUserClaims());
+            .thenReturn(ModelUtils.getUserClaims());
 
         doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), true);
         this.mockMvc.perform(MockMvcRequestBuilders
@@ -333,9 +333,9 @@ class ManagementEcoNewsControllerTest {
     void show() throws Exception {
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserClaims(jwt))
-                .thenReturn(ModelUtils.getUserClaims());
+            .thenReturn(ModelUtils.getUserClaims());
 
         doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), false);
         this.mockMvc.perform(MockMvcRequestBuilders

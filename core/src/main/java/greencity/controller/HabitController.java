@@ -20,7 +20,6 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.service.HabitService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -137,7 +136,8 @@ public class HabitController {
      * created by the friend.
      *
      * @param friendId the ID of the friend whose habits are to be retrieved.
-     * @param userVO   the current user obtained from the authentication context.
+     * @param userId   the current user's id obtained from the authentication
+     *                 context.
      * @param pageable the pagination information.
      * @return {@link ResponseEntity} containing a pageable list of
      *         {@link HabitDto}.
@@ -166,7 +166,8 @@ public class HabitController {
      * and are either in progress or acquired.
      *
      * @param friendId the ID of the friend with whom to find mutual habits.
-     * @param userVO   the current user obtained from the authentication context.
+     * @param userId   the current user's id obtained from the authentication
+     *                 context.
      * @param pageable the pagination information.
      * @return {@link ResponseEntity} containing a pageable list of
      *         {@link HabitDto}.
@@ -335,10 +336,10 @@ public class HabitController {
     })
     @PostMapping(value = "/custom", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomHabitDtoResponse> addCustomHabit(
-            @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
+        @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
             required = true) @RequestPart @Valid CustomHabitDtoRequest request,
-            @Parameter(description = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
-            @Parameter(hidden = true) @CurrentUserId Long userId) {
+        @Parameter(description = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(habitService.addCustomHabit(request, image, userId));
@@ -351,7 +352,7 @@ public class HabitController {
      * or were invited by the user for the specific habit assignment.
      *
      * @param habitAssignId The ID of the habit assignment.
-     * @param userVO        The current user, represented as a {@link UserVO}.
+     * @param userId        The current user's id.
      * @return A {@link ResponseEntity} containing a list of
      *         {@link UserProfilePictureDto} objects representing the profile
      *         pictures of the friends associated with the habit.
@@ -542,7 +543,7 @@ public class HabitController {
      * @param page    The pagination information (page number, size).
      * @param name    Optional name filter for friends.
      * @param habitId The ID of the habit for which friends are being invited.
-     * @param userVO  The current user's details.
+     * @param userId  The current user's id.
      * @return A paginated list of friends (UserFriendHabitInviteDto) to be invited.
      */
     @Operation(summary = "Find all friends to be invited")

@@ -13,7 +13,6 @@ import greencity.dto.specification.SpecificationNameDto;
 import greencity.service.CategoryService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.Parameter;

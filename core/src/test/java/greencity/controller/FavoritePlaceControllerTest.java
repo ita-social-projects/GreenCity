@@ -55,15 +55,15 @@ class FavoritePlaceControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(favoritePlaceController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
-                    new UserIdArgumentResolver(jwtTool))
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .build();
 
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test

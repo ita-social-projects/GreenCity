@@ -4,7 +4,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
@@ -51,7 +50,8 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
                 Long achievementCategoryId = achievementCategory.getId();
                 achievementCategory
                     .setTotalQuantity(
-                        achievementService.findAchievementCountByTypeAndCategory(userId, userEmail, null, achievementCategoryId));
+                        achievementService.findAchievementCountByTypeAndCategory(userId, userEmail, null,
+                            achievementCategoryId));
                 achievementCategory.setAchieved(userAchievementRepo
                     .findAllByUserIdAndAchievement_AchievementCategoryId(userId, achievementCategoryId).size());
                 return achievementCategory;

@@ -7,7 +7,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserVO;
 import greencity.enums.RecommendedFriendsType;
 import greencity.service.FriendService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -202,7 +201,7 @@ public class FriendController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(page, userId,
-                    currentUserId));
+                currentUserId));
     }
 
     /**

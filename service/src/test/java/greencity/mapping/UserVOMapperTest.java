@@ -25,7 +25,7 @@ class UserVOMapperTest {
     @Test
     void convert() {
         User userToConvert = User.builder()
-                .id(1L)
+            .id(1L)
             // .email("email")
             .build();
         UserVO expected = ModelUtils.getUserVOWithData();

@@ -1253,7 +1253,7 @@ class HabitServiceImplTest {
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
         when(userRepo.findById(TestConst.USER_ID))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         WrongIdException exception = assertThrows(WrongIdException.class,
             () -> habitService.deleteCustomHabit(customHabitId, TestConst.USER_ID));
@@ -1623,7 +1623,8 @@ class HabitServiceImplTest {
             .thenReturn(habitTranslation);
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
 
-        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO.getId(), pageable, languageCode);
+        PageableDto<HabitDto> result =
+            habitService.getAllFavoriteHabitsByLanguageCode(userVO.getId(), pageable, languageCode);
 
         assertNotNull(result);
         assertEquals(1, result.getPage().size());
@@ -1639,7 +1640,8 @@ class HabitServiceImplTest {
         Page<HabitTranslation> habitTranslationPage = Page.empty(pageable);
         when(habitTranslationRepo.findMyFavoriteHabits(pageable, 1L, languageCode)).thenReturn(habitTranslationPage);
 
-        PageableDto<HabitDto> result = habitService.getAllFavoriteHabitsByLanguageCode(userVO.getId(), pageable, languageCode);
+        PageableDto<HabitDto> result =
+            habitService.getAllFavoriteHabitsByLanguageCode(userVO.getId(), pageable, languageCode);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());
@@ -1653,18 +1655,18 @@ class HabitServiceImplTest {
         UserVO userVO = getUserVO();
         List<Tuple> tuples = getUserFriendInviteHabitDtoTuple2();
         List<Long> userIds = tuples.stream()
-                .map(tuple -> tuple.get("id", Long.class))
-                .toList();
+            .map(tuple -> tuple.get("id", Long.class))
+            .toList();
         List<UserEmailDto> userEmailDtos = tuples.stream()
-                        .map(tuple -> new UserEmailDto(
-                                tuple.get("id", Long.class),
-                                tuple.get("email", String.class)
-                        )).toList();
+            .map(tuple -> new UserEmailDto(
+                tuple.get("id", Long.class),
+                tuple.get("email", String.class)))
+            .toList();
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
             .thenReturn(tuples);
         when(userRemoteClient.findUserEmailsByUserIds(userIds))
-                .thenReturn(userEmailDtos);
+            .thenReturn(userEmailDtos);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO.getId(), null, pageable, habitId);
@@ -1693,18 +1695,18 @@ class HabitServiceImplTest {
         UserVO userVO = getUserVO();
         List<Tuple> tuples = getUserFriendInviteHabitDtoTuple1();
         List<Long> userIds = tuples.stream()
-                .map(tuple -> tuple.get("id", Long.class))
-                .toList();
+            .map(tuple -> tuple.get("id", Long.class))
+            .toList();
         List<UserEmailDto> userEmailDtos = tuples.stream()
-                .map(tuple -> new UserEmailDto(
-                        tuple.get("id", Long.class),
-                        tuple.get("email", String.class)
-                )).toList();
+            .map(tuple -> new UserEmailDto(
+                tuple.get("id", Long.class),
+                tuple.get("email", String.class)))
+            .toList();
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "Jo", habitId, pageable))
             .thenReturn(tuples);
         when(userRemoteClient.findUserEmailsByUserIds(userIds))
-                .thenReturn(userEmailDtos);
+            .thenReturn(userEmailDtos);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO.getId(), "Jo", pageable, habitId);
@@ -1745,7 +1747,8 @@ class HabitServiceImplTest {
         UserVO userVO = getUserVO();
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
             .thenReturn(List.of());
-        PageableDto<UserFriendHabitInviteDto> result = habitService.findAllFriendsOfUser(userVO.getId(), "", pageable, habitId);
+        PageableDto<UserFriendHabitInviteDto> result =
+            habitService.findAllFriendsOfUser(userVO.getId(), "", pageable, habitId);
 
         assertNotNull(result);
         assertTrue(result.getPage().isEmpty());

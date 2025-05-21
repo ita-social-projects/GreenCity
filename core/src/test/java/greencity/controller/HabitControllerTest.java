@@ -84,18 +84,18 @@ class HabitControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitController)
-                .setCustomArgumentResolvers(
-                        new PageableHandlerMethodArgumentResolver(),
-                        new UserIdArgumentResolver(jwtTool))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, null))
             .setValidator(mockValidator)
             .build();
 
         String jwt = "jwt";
         lenient().when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         lenient().when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -176,7 +176,8 @@ class HabitControllerTest {
             "&lang=" + locale.getLanguage() + "&tags=News,Education" + "&excludeAssigned=" + excludeAssigned)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned, TestConst.USER_ID);
+        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned,
+            TestConst.USER_ID);
     }
 
     @Test
@@ -209,7 +210,8 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(),
+            Optional.of(List.of("reusable")),
             Optional.of(true),
             Optional.of(List.of(1)),
             locale.getLanguage());
@@ -225,7 +227,8 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(),
+            Optional.of(List.of("reusable")),
             Optional.empty(),
             Optional.of(List.of(1)),
             locale.getLanguage());
@@ -257,7 +260,8 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(),
+            Optional.of(List.of("reusable")),
             Optional.of(true),
             Optional.empty(),
             locale.getLanguage());
@@ -302,7 +306,8 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(TestConst.USER_ID, createPageRequest(),
+            Optional.of(List.of("reusable")),
             Optional.empty(),
             Optional.empty(),
             locale.getLanguage());

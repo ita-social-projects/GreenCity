@@ -884,8 +884,8 @@ class EcoNewsServiceImplTest {
         Long userId = 2L;
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.addToFavorites(1L, userId));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> ecoNewsService.addToFavorites(1L, userId));
 
         assertEquals(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
@@ -898,8 +898,8 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.addToFavorites(1L, userId));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> ecoNewsService.addToFavorites(1L, userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + TestConst.USER_ID, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
@@ -946,8 +946,8 @@ class EcoNewsServiceImplTest {
 
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.removeFromFavorites(1L, userId));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> ecoNewsService.removeFromFavorites(1L, userId));
 
         assertEquals(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
@@ -960,8 +960,8 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-                ecoNewsService.removeFromFavorites(1L, userId));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> ecoNewsService.removeFromFavorites(1L, userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + TestConst.USER_ID, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);

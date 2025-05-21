@@ -543,7 +543,7 @@ public class HabitServiceImpl implements HabitService {
         Habit toDelete = habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId));
         User owner = userRepo.findById(ownerId)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + ownerId));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + ownerId));
         unAssignOwnerFromCustomHabit(toDelete, owner.getId());
         toDelete.setIsDeleted(true);
         habitRepo.save(toDelete);
@@ -759,27 +759,26 @@ public class HabitServiceImpl implements HabitService {
         List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
 
         List<Long> userIds = tuples.stream()
-                .map(tuple -> tuple.get("id", Long.class))
-                .toList();
+            .map(tuple -> tuple.get("id", Long.class))
+            .toList();
         List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
         Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
-                .collect(Collectors.toMap(
-                        UserEmailDto::userId,
-                        UserEmailDto::userEmail
-                ));
+            .collect(Collectors.toMap(
+                UserEmailDto::userId,
+                UserEmailDto::userEmail));
 
         List<UserFriendHabitInviteDto> dtoList = tuples.stream()
             .map(tuple -> {
                 Long id = tuple.get("id", Long.class);
                 String email = userIdToUserEmailMap.get(id);
                 return UserFriendHabitInviteDto.builder()
-                        .id(id)
-                        .name(tuple.get("name", String.class))
-                        .email(email)
-                        .profilePicturePath(tuple.get("profile_picture", String.class))
-                        .hasInvitation(tuple.get("has_invitation", Boolean.class))
-                        .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
-                        .build();
+                    .id(id)
+                    .name(tuple.get("name", String.class))
+                    .email(email)
+                    .profilePicturePath(tuple.get("profile_picture", String.class))
+                    .hasInvitation(tuple.get("has_invitation", Boolean.class))
+                    .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
+                    .build();
             })
             .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, dtoList.size());

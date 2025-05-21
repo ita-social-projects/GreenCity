@@ -131,7 +131,8 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementVO> findAllByTypeAndCategory(Long userId, String principalEmail, AchievementStatus achievementStatus,
+    public List<AchievementVO> findAllByTypeAndCategory(Long userId, String principalEmail,
+        AchievementStatus achievementStatus,
         Long achievementCategoryId) {
         Long searchAchievementCategoryId =
             achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
@@ -202,7 +203,8 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public Integer findAchievementCountByTypeAndCategory(Long userId, String principalEmail, AchievementStatus achievementStatus,
+    public Integer findAchievementCountByTypeAndCategory(Long userId, String principalEmail,
+        AchievementStatus achievementStatus,
         Long achievementCategoryId) {
         Long searchAchievementCategoryId =
             achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;

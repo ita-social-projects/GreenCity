@@ -69,16 +69,16 @@ class HabitAssignControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitAssignController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
+                new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper),
-                    new UserIdArgumentResolver(jwtTool))
+                new UserIdArgumentResolver(jwtTool))
             .build();
 
         String jwt = "jwt";
         lenient().when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         lenient().when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -93,7 +93,7 @@ class HabitAssignControllerTest {
     @Test
     void getHabitAssign() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitAssignId}", 1L)
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isOk());
         verify(habitAssignService).getByHabitAssignIdAndUserId(1L, userVO.getId(), "en");
     }
@@ -114,8 +114,8 @@ class HabitAssignControllerTest {
     @Test
     void updateStatusAndDurationOfHabitAssignTest() throws Exception {
         mockMvc.perform(put(habitLink + "/{habitAssignId}/update-status-and-duration?duration=15", 1L)
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateStatusAndDurationOfHabitAssign(1L, userVO.getId(), 15);
     }
@@ -123,8 +123,8 @@ class HabitAssignControllerTest {
     @Test
     void updateHabitAssignDurationTest() throws Exception {
         mockMvc.perform(put(habitLink + "/{habitAssignId}/update-habit-duration?duration=15", 1L)
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateUserHabitInfoDuration(1L, userVO.getId(), 15);
     }
@@ -166,7 +166,7 @@ class HabitAssignControllerTest {
     @Test
     void getHabitAssignByHabitIdTest() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitId}/active", 1L)
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(habitAssignService).findHabitAssignByUserIdAndHabitId(userVO.getId(), 1L, "en");
@@ -175,7 +175,7 @@ class HabitAssignControllerTest {
     @Test
     void getCurrentUserHabitAssignsByIdAndAcquired() throws Exception {
         mockMvc.perform(get(habitLink + "/allForCurrentUser")
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(habitAssignService).getAllHabitAssignsByUserIdAndStatusNotCancelled(userVO.getId(), "en");
@@ -250,7 +250,7 @@ class HabitAssignControllerTest {
     @Test
     void getInprogressHabitAssignOnDate() throws Exception {
         mockMvc.perform(get(habitLink + "/active/{date}", LocalDate.now())
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(habitAssignService).findInprogressHabitAssignsOnDate(userVO.getId(), LocalDate.now(), "en");
@@ -291,8 +291,8 @@ class HabitAssignControllerTest {
     @Test
     void getListOfUserAndCustomToDoListsInprogress() throws Exception {
         mockMvc.perform(get(habitLink + "/allUserAndCustomToDoListsInprogress")
-                .principal(principal)
-                .locale(Locale.forLanguageTag("en")))
+            .principal(principal)
+            .locale(Locale.forLanguageTag("en")))
             .andExpect(status().isOk());
         verify(habitAssignService).getListOfUserAndCustomToDoListsWithStatusInprogress(userVO.getId(), "en");
     }
@@ -303,10 +303,10 @@ class HabitAssignControllerTest {
         Gson gson = new Gson();
         String json = gson.toJson(dto);
         mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
-                .principal(principal)
-                .locale(Locale.forLanguageTag("ua"))
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(principal)
+            .locale(Locale.forLanguageTag("ua"))
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).fullUpdateUserAndCustomToDoLists(userVO.getId(), 1L, dto, "ua");
     }
@@ -314,9 +314,9 @@ class HabitAssignControllerTest {
     @Test
     void updateProgressNotificationHasDisplayedTest() throws Exception {
         mockMvc.perform(
-                put(habitLink + "/{habitAssignId}/updateProgressNotificationHasDisplayed", 1L)
-                    .principal(principal)
-                    .contentType(MediaType.APPLICATION_JSON))
+            put(habitLink + "/{habitAssignId}/updateProgressNotificationHasDisplayed", 1L)
+                .principal(principal)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateProgressNotificationHasDisplayed(1L, userVO.getId());
     }
@@ -344,8 +344,8 @@ class HabitAssignControllerTest {
     @Test
     void getFriendsHabitsStreakTest() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitId}/friends/habit-duration-info", 1L)
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).getAllHabitsWorkingDaysInfoForCurrentUserFriends(1L, 1L);
     }

@@ -81,14 +81,14 @@ class HabitCommentControllerTest {
             .setCustomArgumentResolvers(
                 new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper),
-                    new UserIdArgumentResolver(jwtTool))
+                new UserIdArgumentResolver(jwtTool))
             .build();
 
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -353,7 +353,7 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void deleteTest() {
         UserVO userVO = getUserVO();
-         when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
 
         mockMvc.perform(delete(HABIT_LINK + "/comments/{id}", 1)

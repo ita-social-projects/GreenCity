@@ -342,7 +342,7 @@ class UserServiceImplTest {
         List<UserVO> expectedResult = List.of(userVO, userVO);
 
         when(userRemoteClient.findAllByEmailIn(emails))
-                .thenReturn(expectedResult);
+            .thenReturn(expectedResult);
 
         assertEquals(expectedResult, userService.findByEmails(emails));
 

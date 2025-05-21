@@ -170,7 +170,7 @@ public interface UserNotificationService {
     /**
      * Method to delete specific Notification.
      *
-     * @param userId      user's id
+     * @param userId         user's id
      * @param notificationId id of notification, that should be deleted
      * @author Volodymyr Mladonov
      */

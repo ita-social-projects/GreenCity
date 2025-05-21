@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageableWithLocale;
-import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserId;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
@@ -9,7 +8,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
-import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;

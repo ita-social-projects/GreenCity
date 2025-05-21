@@ -94,11 +94,11 @@ class ManagementUserControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementUserController)
-                .setCustomArgumentResolvers(
-                        new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, modelMapper),
-                        new UserIdArgumentResolver(jwtTool))
-                .build();
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserIdArgumentResolver(jwtTool))
+            .build();
         objectMapper = new ObjectMapper();
     }
 
@@ -125,7 +125,7 @@ class ManagementUserControllerTest {
         PageableDetailedDto<UserManagementVO> userPageableDetailedDto = getUserPageableDetailedDto();
 
         when(userService.findNotDeactivatedByEmail(principal.getName()))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userService.getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class)))
             .thenReturn(userPageableDetailedDto);
         when(filterService.getAllFilters(USER_ID)).thenReturn(response);
@@ -264,9 +264,9 @@ class ManagementUserControllerTest {
 
         String content = objectMapper.writeValueAsString(dto);
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/filter-save").content(content).principal(principal)

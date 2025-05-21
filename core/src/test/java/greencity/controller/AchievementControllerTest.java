@@ -50,18 +50,18 @@ class AchievementControllerTest {
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(achievementController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
-                    new UserIdArgumentResolver(jwtTool),
-                    new UserClaimsArgumentResolver(jwtTool))
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool),
+                new UserClaimsArgumentResolver(jwtTool))
             .build();
 
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
         when(jwtTool.extractUserClaims(jwt))
-                .thenReturn(ModelUtils.getUserClaims());
+            .thenReturn(ModelUtils.getUserClaims());
     }
 
     @Test
@@ -94,7 +94,8 @@ class AchievementControllerTest {
     @Test
     void countAllTest() throws Exception {
         mockMvc.perform(get(achievementLink + "/count").principal(principal)).andExpect(status().isOk());
-        verify(achievementService).findAchievementCountByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", null, null);
+        verify(achievementService).findAchievementCountByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", null,
+            null);
     }
 
     @Test
@@ -103,7 +104,8 @@ class AchievementControllerTest {
             .perform(
                 get(achievementLink + "/count").principal(principal).param("achievementStatus", ACHIEVED.toString()))
             .andExpect(status().isOk());
-        verify(achievementService).findAchievementCountByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", ACHIEVED, null);
+        verify(achievementService).findAchievementCountByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", ACHIEVED,
+            null);
     }
 
     @Test
@@ -112,6 +114,7 @@ class AchievementControllerTest {
             .perform(
                 get(achievementLink + "/count").principal(principal).param("achievementStatus", UNACHIEVED.toString()))
             .andExpect(status().isOk());
-        verify(achievementService).findAchievementCountByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", UNACHIEVED, null);
+        verify(achievementService).findAchievementCountByTypeAndCategory(TestConst.USER_ID, "test@gmail.com",
+            UNACHIEVED, null);
     }
 }

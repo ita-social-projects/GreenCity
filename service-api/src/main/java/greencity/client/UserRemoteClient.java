@@ -506,16 +506,17 @@ public class UserRemoteClient {
         String emailsListQueryParam = "emails";
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(path)
-                        .queryParam(emailsListQueryParam, emails)
-                        .build())
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {})
-                .block();
+            .uri(uriBuilder -> uriBuilder.path(path)
+                .queryParam(emailsListQueryParam, emails)
+                .build())
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {
+            })
+            .block();
     }
 
     /**
-     * Method to check whether user exists by email
+     * Method to check whether user exists by email.
      *
      * @param email user's email
      * @return boolean of whether user by that email exists
@@ -526,21 +527,23 @@ public class UserRemoteClient {
     }
 
     /**
-     * Method to find all {@link UserEmailDto} user emails by user ids
+     * Method to find all {@link UserEmailDto} user emails by user ids.
      *
      * @param userIds list of user ids
-     * @return list of {@link UserEmailDto} containing information about user's email
+     * @return list of {@link UserEmailDto} containing information about user's
+     *         email
      */
     public List<UserEmailDto> findUserEmailsByUserIds(List<Long> userIds) {
         String path = "/user/email/findByIds";
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(path)
-                        .queryParam("userIds", userIds)
-                        .build())
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<UserEmailDto>>() {})
-                .block();
+            .uri(uriBuilder -> uriBuilder.path(path)
+                .queryParam("userIds", userIds)
+                .build())
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<List<UserEmailDto>>() {
+            })
+            .block();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {

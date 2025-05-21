@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-
     /**
      * Find all {@link User}.
      *

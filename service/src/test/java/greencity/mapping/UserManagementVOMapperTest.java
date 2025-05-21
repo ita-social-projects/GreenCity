@@ -44,7 +44,7 @@ class UserManagementVOMapperTest {
         when(userVO.getUserStatus())
             .thenReturn(userManagementVO.getUserStatus());
         when(userVO.getEmail())
-                .thenReturn(userManagementVO.getEmail());
+            .thenReturn(userManagementVO.getEmail());
 
         UserManagementVO result = userManagementVOMapper.convert(user);
         assertEquals(userManagementVO, result);
@@ -68,7 +68,7 @@ class UserManagementVOMapperTest {
             when(userVO.getUserStatus())
                 .thenReturn(userManagementVO.getUserStatus());
             when(userVO.getEmail())
-                    .thenReturn(userManagementVO.getEmail());
+                .thenReturn(userManagementVO.getEmail());
         }
 
         Page<UserManagementVO> result = userManagementVOMapper.mapAllToPage(userPage);

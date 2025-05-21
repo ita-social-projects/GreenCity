@@ -189,7 +189,7 @@ class UserNotificationServiceImplTest {
         boolean isLast = !hasNext;
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
-                testUserVo.getId(),
+            testUserVo.getId(),
             pageable,
             principal,
             language,
@@ -235,7 +235,8 @@ class UserNotificationServiceImplTest {
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> expected = userNotificationService
-            .getNotificationsFiltered(testUserVo.getId(), page, getPrincipal(), "en", ProjectName.GREENCITY, null, true);
+            .getNotificationsFiltered(testUserVo.getId(), page, getPrincipal(), "en", ProjectName.GREENCITY, null,
+                true);
 
         assertEquals(expected, actual);
 
@@ -269,7 +270,7 @@ class UserNotificationServiceImplTest {
             .thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
-                testUserVo.getId(),
+            testUserVo.getId(),
             pageable,
             principal,
             language,
@@ -344,7 +345,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = userNotificationService
             .getNotificationsFiltered(
-                    testUserVo.getId(),
+                testUserVo.getId(),
                 pageRequest,
                 getPrincipal(),
                 "en",
@@ -498,7 +499,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = userNotificationService
             .getNotificationsFiltered(
-                    testUserVo.getId(),
+                testUserVo.getId(),
                 pageRequest,
                 getPrincipal(),
                 "ua",

@@ -56,7 +56,7 @@ public class FactOfTheDayController {
     })
     @GetMapping("/random/by-tags")
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDayByTags(
-            @CurrentUserId Long userId) {
+        @CurrentUserId Long userId) {
         return ResponseEntity.ok(factOfTheDayService.getRandomFactOfTheDayForUser(userId));
     }
 }

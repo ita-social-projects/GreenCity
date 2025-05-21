@@ -42,9 +42,9 @@ class EventResponseDtoMapperTest {
         String email = "email";
 
         when(modelMapper.map(event.getOrganizer(), UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getEmail())
-                .thenReturn(email);
+            .thenReturn(email);
 
         EventResponseDto result = mapper.convert(event);
 
@@ -60,9 +60,9 @@ class EventResponseDtoMapperTest {
         String email = "email";
 
         when(modelMapper.map(event.getOrganizer(), UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(userVO.getEmail())
-                .thenReturn(email);
+            .thenReturn(email);
 
         EventResponseDto result = mapper.convert(event);
 

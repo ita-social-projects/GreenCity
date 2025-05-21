@@ -153,7 +153,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Long authorId,
         boolean favorite,
         Long currentUserId) {
-
         return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
             ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
@@ -333,7 +332,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserClaims userClaims) {
         EcoNews toUpdate = findEcoNewsById(updateEcoNewsDto.getId());
-        if (!userClaims.roles().contains(Role.ROLE_ADMIN) && !userClaims.userId().equals(toUpdate.getAuthor().getId())) {
+        if (!userClaims.roles().contains(Role.ROLE_ADMIN)
+            && !userClaims.userId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         enhanceWithNewData(toUpdate, updateEcoNewsDto, image);

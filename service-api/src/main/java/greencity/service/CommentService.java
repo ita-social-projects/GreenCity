@@ -117,7 +117,8 @@ public interface CommentService {
      *
      * @param commentText new text of {@link CommentVO}.
      * @param id          to specify {@link CommentVO} that user wants to change.
-     * @param userId      current {@link Long} user's id that wants to change comment.
+     * @param userId      current {@link Long} user's id that wants to change
+     *                    comment.
      */
     void update(String commentText, Long id, Long userId);
 

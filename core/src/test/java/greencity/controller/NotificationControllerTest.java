@@ -51,8 +51,8 @@ class NotificationControllerTest {
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
             .setCustomArgumentResolvers(
-                    new PageableHandlerMethodArgumentResolver(),
-                    new UserIdArgumentResolver(jwtTool))
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .setValidator(mockValidator)
             .build();
     }
@@ -62,13 +62,14 @@ class NotificationControllerTest {
         var pageable = PageRequest.of(0, 20);
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         mockMvc.perform(get(notificationLink).principal(principal))
             .andExpect(status().isOk());
-        verify(userNotificationService).getNotificationsFiltered(TestConst.USER_ID, pageable, principal, "en", null, null, null);
+        verify(userNotificationService).getNotificationsFiltered(TestConst.USER_ID, pageable, principal, "en", null,
+            null, null);
     }
 
     @Test
@@ -89,9 +90,9 @@ class NotificationControllerTest {
     void deleteNotificationTest() throws Exception {
         String jwt = "jwt";
         when(jwtTool.extractJwtFromNativeWebRequest(any()))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         mockMvc.perform(delete(notificationLink + "/{notificationId}", 1L)
             .principal(principal)

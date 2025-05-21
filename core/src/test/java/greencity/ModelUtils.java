@@ -151,10 +151,10 @@ public class ModelUtils {
     public static UserClaims getUserClaims() {
         UserVO userVO = getUserVO();
         return UserClaims.builder()
-                .userId(TestConst.USER_ID)
-                .userEmail(TestConst.EMAIL)
-                .roles(List.of(userVO.getRole()))
-                .build();
+            .userId(TestConst.USER_ID)
+            .userEmail(TestConst.EMAIL)
+            .roles(List.of(userVO.getRole()))
+            .build();
     }
 
     public static EcoNewsAuthorDto getEcoNewsAuthorDto() {
