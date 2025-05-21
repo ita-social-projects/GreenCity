@@ -6,6 +6,7 @@ import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
@@ -522,6 +523,24 @@ public class UserRemoteClient {
     public boolean userExistsByEmail(String email) {
         Optional<UserVO> userVOOptional = findNotDeactivatedByEmail(email);
         return userVOOptional.isPresent();
+    }
+
+    /**
+     * Method to find all {@link UserEmailDto} user emails by user ids
+     *
+     * @param userIds list of user ids
+     * @return list of {@link UserEmailDto} containing information about user's email
+     */
+    public List<UserEmailDto> findUserEmailsByUserIds(List<Long> userIds) {
+        String path = "/user/email/findByIds";
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(path)
+                        .queryParam("userIds", userIds)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserEmailDto>>() {})
+                .block();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
