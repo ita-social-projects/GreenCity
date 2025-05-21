@@ -54,6 +54,7 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
 
         userVOAdvancedDto.setRating(user.getRating());
         userVOAdvancedDto.setUserCredo(user.getUserCredo());
+        userVOAdvancedDto.setProfilePicturePath(user.getProfilePicturePath());
 
         return userVOAdvancedDto;
     }
