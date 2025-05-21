@@ -1,14 +1,17 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.TestConst;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.security.jwt.JwtTool;
 import greencity.service.CommentService;
 import greencity.service.UserService;
 import lombok.SneakyThrows;
@@ -68,22 +71,31 @@ class HabitCommentControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    JwtTool jwtTool;
     private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitCommentController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                    new UserIdArgumentResolver(jwtTool))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void saveTest() {
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
-        // when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         String content = """
             {
               "text": "string",
@@ -115,7 +127,7 @@ class HabitCommentControllerTest {
         AddCommentDtoRequest addCommentDtoRequest =
             mapper.readValue(content, AddCommentDtoRequest.class);
 
-        // verify(userService).findByEmail("test@gmail.com");
+        verify(userService).findNotDeactivatedByEmail("test@gmail.com");
         verify(commentService).save(ArticleType.HABIT, 1L, addCommentDtoRequest,
             new MultipartFile[] {imageFile}, userVO, Locale.of("en"));
         verify(commentService).save(eq(ArticleType.HABIT),
@@ -152,9 +164,6 @@ class HabitCommentControllerTest {
     @Test
     @SneakyThrows
     void getAllActiveCommentsTest() {
-        UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
-
         int pageNumber = 5;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -162,8 +171,7 @@ class HabitCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail("test@gmail.com");
-        verify(commentService).getAllActiveComments(pageable, userVO.getId(), 1L, ArticleType.HABIT);
+        verify(commentService).getAllActiveComments(pageable, TestConst.USER_ID, 1L, ArticleType.HABIT);
     }
 
     @Test
@@ -182,9 +190,6 @@ class HabitCommentControllerTest {
         int pageNumber = 0;
         int pageSize = 20;
 
-        UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
-
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
@@ -192,7 +197,7 @@ class HabitCommentControllerTest {
         objectMapper.findAndRegisterModules();
         String expectedJson = objectMapper.writeValueAsString(commentReplies);
 
-        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId()))
+        when(commentService.getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID))
             .thenReturn(commentReplies);
 
         mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active", parentCommentId)
@@ -201,8 +206,7 @@ class HabitCommentControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
-        // verify(userService).findByEmail(principal.getName());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID);
     }
 
     @Test
@@ -217,27 +221,21 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void getAllActiveRepliesWithNonexistentIdNotFoundTest() {
         Long parentCommentId = 1L;
-
         int pageNumber = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
-
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .getAllActiveReplies(pageable, parentCommentId, userVO.getId());
+            .getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc.perform(get(HABIT_LINK + "/comments/{parentCommentId}/replies/active",
                 parentCommentId).principal(principal)).andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        // verify(userService).findByEmail(anyString());
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID);
     }
 
     @Test
@@ -288,7 +286,7 @@ class HabitCommentControllerTest {
         Long numericCommentId = Long.valueOf(commentId);
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(HABIT_LINK + "/comments/like")
             .param("commentId", commentId)
@@ -316,7 +314,7 @@ class HabitCommentControllerTest {
         String commentIdParam = "1";
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -331,14 +329,13 @@ class HabitCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        // verify(userService).findByEmail(anyString());
+        verify(userService).findNotDeactivatedByEmail(principal.getName());
     }
 
     @Test
     @SneakyThrows
     void updateTest() {
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "string";
 
@@ -349,7 +346,6 @@ class HabitCommentControllerTest {
             .content(content))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).update(content, 1L, userVO.getId());
     }
 
@@ -357,7 +353,7 @@ class HabitCommentControllerTest {
     @SneakyThrows
     void deleteTest() {
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+         when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
 
         mockMvc.perform(delete(HABIT_LINK + "/comments/{id}", 1)
@@ -365,7 +361,7 @@ class HabitCommentControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail("test@gmail.com");
+        verify(userService).findNotDeactivatedByEmail("test@gmail.com");
         verify(commentService).delete(1L, userVO);
     }
 
@@ -376,7 +372,7 @@ class HabitCommentControllerTest {
         Long numericCommentId = Long.valueOf(commentId);
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(HABIT_LINK + "/comments/dislike")
             .param("commentId", commentId)
@@ -404,7 +400,7 @@ class HabitCommentControllerTest {
         String commentIdParam = "1";
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -419,6 +415,6 @@ class HabitCommentControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException(errorMessage));
 
-        // verify(userService).findByEmail(anyString());
+        verify(userService).findNotDeactivatedByEmail(anyString());
     }
 }

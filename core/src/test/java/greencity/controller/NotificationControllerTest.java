@@ -1,7 +1,9 @@
 package greencity.controller;
 
 import greencity.TestConst;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.achievement.ActionDto;
+import greencity.security.jwt.JwtTool;
 import greencity.service.UserNotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,9 @@ import java.security.Principal;
 
 import static greencity.ModelUtils.getActionDto;
 import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,10 +44,15 @@ class NotificationControllerTest {
     @Mock
     private Validator mockValidator;
 
+    @Mock
+    JwtTool jwtTool;
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(notificationController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(
+                    new PageableHandlerMethodArgumentResolver(),
+                    new UserIdArgumentResolver(jwtTool))
             .setValidator(mockValidator)
             .build();
     }
@@ -51,6 +60,11 @@ class NotificationControllerTest {
     @Test
     void getNotificationsFilteredTest() throws Exception {
         var pageable = PageRequest.of(0, 20);
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
 
         mockMvc.perform(get(notificationLink).principal(principal))
             .andExpect(status().isOk());
@@ -73,6 +87,12 @@ class NotificationControllerTest {
 
     @Test
     void deleteNotificationTest() throws Exception {
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
+
         mockMvc.perform(delete(notificationLink + "/{notificationId}", 1L)
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))

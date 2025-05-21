@@ -3,7 +3,10 @@ package greencity.webcontroller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserClaimsArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
@@ -12,6 +15,7 @@ import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.converters.ZonedDateTimeTypeAdapter;
+import greencity.security.jwt.JwtTool;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -63,13 +67,17 @@ class ManagementEcoNewsControllerTest {
     private UserService userService;
     @Mock
     private Validator mockValidator;
+    @Mock
+    JwtTool jwtTool;
     private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEcoNewsController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserClaimsArgumentResolver(jwtTool))
             .setValidator(mockValidator)
             .build();
     }
@@ -306,9 +314,12 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void hide() throws Exception {
-        UserVO userVO = getUserVO();
-        // TODO: mock user claims injection
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserClaims(jwt))
+                .thenReturn(ModelUtils.getUserClaims());
+
         doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), true);
         this.mockMvc.perform(MockMvcRequestBuilders
             .patch(managementEcoNewsLink + "/hide?id=1")
@@ -320,8 +331,12 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void show() throws Exception {
-        UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserClaims(jwt))
+                .thenReturn(ModelUtils.getUserClaims());
+
         doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), false);
         this.mockMvc.perform(MockMvcRequestBuilders
             .patch(managementEcoNewsLink + "/show?id=1")

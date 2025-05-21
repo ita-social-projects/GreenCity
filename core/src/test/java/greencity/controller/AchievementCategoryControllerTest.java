@@ -1,6 +1,9 @@
 package greencity.controller;
 
+import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.converters.UserClaimsArgumentResolver;
+import greencity.security.jwt.JwtTool;
 import greencity.service.AchievementCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -35,21 +39,31 @@ class AchievementCategoryControllerTest {
     @Mock
     private AchievementCategoryService achievementCategoryService;
 
+    @Mock
+    JwtTool jwtTool;
+
     @InjectMocks
     private AchievementCategoryController achievementCategoryController;
 
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(achievementCategoryController)
+                .setCustomArgumentResolvers(new UserClaimsArgumentResolver(jwtTool))
             .build();
     }
 
     @Test
     void getAchievementCategoriesTest() throws Exception {
+        String jwt = "jwt";
+
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserClaims(jwt))
+                .thenReturn(ModelUtils.getUserClaims());
         when(achievementCategoryService.findAllWithAtLeastOneAchievement(anyLong(), anyString())).thenReturn(Collections.emptyList());
         mockMvc.perform(get(achievementCategoryLink).principal(principal))
                 .andExpect(status().isOk());
-        verify(achievementCategoryService).findAllWithAtLeastOneAchievement(TestConst.USER_ID, "test@gmail.com");
+        verify(achievementCategoryService).findAllWithAtLeastOneAchievement(TestConst.USER_ID, TestConst.EMAIL);
     }
 
 }

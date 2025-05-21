@@ -1,10 +1,14 @@
 package greencity.controller;
 
+import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.converters.UserClaimsArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.achievement.ActionDto;
 import static greencity.enums.AchievementStatus.ACHIEVED;
 import static greencity.enums.AchievementStatus.UNACHIEVED;
 
+import greencity.security.jwt.JwtTool;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +24,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
 import static greencity.ModelUtils.getActionDto;
 import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +38,9 @@ class AchievementControllerTest {
     private final Principal principal = getPrincipal();
 
     @Mock
+    private JwtTool jwtTool;
+
+    @Mock
     private AchievementService achievementService;
 
     @InjectMocks
@@ -40,28 +49,39 @@ class AchievementControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(achievementController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(
+                    new PageableHandlerMethodArgumentResolver(),
+                    new UserIdArgumentResolver(jwtTool),
+                    new UserClaimsArgumentResolver(jwtTool))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
+        when(jwtTool.extractUserClaims(jwt))
+                .thenReturn(ModelUtils.getUserClaims());
     }
 
     @Test
     void findAllTest() throws Exception {
         mockMvc.perform(get(achievementLink).principal(principal)).andExpect(status().isOk());
-        verify(achievementService).findAllByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", null, null);
+        verify(achievementService).findAllByTypeAndCategory(TestConst.USER_ID, TestConst.EMAIL, null, null);
     }
 
     @Test
     void findAllAchievedTest() throws Exception {
         mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", ACHIEVED.toString()))
             .andExpect(status().isOk());
-        verify(achievementService).findAllByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", ACHIEVED, null);
+        verify(achievementService).findAllByTypeAndCategory(TestConst.USER_ID, TestConst.EMAIL, ACHIEVED, null);
     }
 
     @Test
     void findAllUnAchievedTest() throws Exception {
         mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", UNACHIEVED.toString()))
             .andExpect(status().isOk());
-        verify(achievementService).findAllByTypeAndCategory(TestConst.USER_ID, "test@gmail.com", UNACHIEVED, null);
+        verify(achievementService).findAllByTypeAndCategory(TestConst.USER_ID, TestConst.EMAIL, UNACHIEVED, null);
     }
 
     @Test

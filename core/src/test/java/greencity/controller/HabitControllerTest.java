@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.repository.HabitTranslationRepo;
+import greencity.security.jwt.JwtTool;
 import greencity.service.HabitService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -36,6 +38,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,6 +51,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class HabitControllerTest {
 
     private MockMvc mockMvc;
+
+    @Mock
+    JwtTool jwtTool;
 
     @Mock
     HabitService habitService;
@@ -77,10 +84,18 @@ class HabitControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .setCustomArgumentResolvers(
+                        new PageableHandlerMethodArgumentResolver(),
+                        new UserIdArgumentResolver(jwtTool))
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, null))
             .setValidator(mockValidator)
             .build();
+
+        String jwt = "jwt";
+        lenient().when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        lenient().when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -88,12 +103,11 @@ class HabitControllerTest {
         int pageNumber = 1;
         int pageSize = 20;
         Locale locale = Locale.of("en");
-        UserVO userVO = new UserVO();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(habitLink + "?page=1")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllHabitsByLanguageCode(userVO.getId(), pageable, locale.getLanguage());
+        verify(habitService).getAllHabitsByLanguageCode(TestConst.USER_ID, pageable, locale.getLanguage());
     }
 
     @Test
@@ -102,7 +116,6 @@ class HabitControllerTest {
         int pageSize = 20;
         Locale locale = Locale.of("en");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = new UserVO();
 
         mockMvc.perform(get(habitLink + "/my")
             .param("page", String.valueOf(pageNumber))
@@ -111,7 +124,7 @@ class HabitControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(habitService).getMyHabits(userVO.getId(), pageable, locale.getLanguage());
+        verify(habitService).getMyHabits(TestConst.USER_ID, pageable, locale.getLanguage());
     }
 
     @Test
@@ -120,7 +133,6 @@ class HabitControllerTest {
         int pageSize = 20;
         Locale locale = Locale.of("en");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = new UserVO();
         Long friendId = 1L;
 
         mockMvc.perform(get(habitLink + "/all/{friendId}", friendId)
@@ -130,7 +142,7 @@ class HabitControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(habitService).getAllHabitsOfFriend(userVO.getId(), friendId, pageable, locale.getLanguage());
+        verify(habitService).getAllHabitsOfFriend(TestConst.USER_ID, friendId, pageable, locale.getLanguage());
     }
 
     @Test
@@ -139,7 +151,6 @@ class HabitControllerTest {
         int pageSize = 20;
         Locale locale = Locale.of("en");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = new UserVO();
         Long friendId = 1L;
 
         mockMvc.perform(get(habitLink + "/allMutualHabits/{friendId}", friendId)
@@ -149,7 +160,7 @@ class HabitControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(habitService).getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, locale.getLanguage());
+        verify(habitService).getAllMutualHabitsWithFriend(TestConst.USER_ID, friendId, pageable, locale.getLanguage());
     }
 
     @Test
@@ -165,7 +176,7 @@ class HabitControllerTest {
             "&lang=" + locale.getLanguage() + "&tags=News,Education" + "&excludeAssigned=" + excludeAssigned)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned, null);
+        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned, TestConst.USER_ID);
     }
 
     @Test
@@ -362,7 +373,7 @@ class HabitControllerTest {
         mockMvc.perform(get(habitLink + "/{habitId}/friends/profile-pictures", habitId))
             .andExpect(status().isOk());
 
-        verify(habitService).getFriendsAssignedToHabitProfilePictures(habitId, null);
+        verify(habitService).getFriendsAssignedToHabitProfilePictures(habitId, TestConst.USER_ID);
     }
 
     @Test

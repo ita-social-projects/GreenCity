@@ -1,14 +1,17 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.TestConst;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.ArticleType;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.security.jwt.JwtTool;
 import greencity.service.CommentService;
 import greencity.service.UserService;
 import lombok.SneakyThrows;
@@ -43,6 +46,7 @@ import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -66,6 +70,8 @@ class EventCommentControllerTest {
     @InjectMocks
     private EventCommentController eventCommentController;
     @Mock
+    JwtTool jwtTool;
+    @Mock
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
@@ -82,9 +88,17 @@ class EventCommentControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventCommentController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                    new PageableHandlerMethodArgumentResolver(),
+                    new UserIdArgumentResolver(jwtTool),
+                    new UserArgumentResolver(userService, modelMapper))
             .build();
+
+        String jwt = "jwt";
+        lenient().when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        lenient().when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -92,7 +106,7 @@ class EventCommentControllerTest {
     void save() {
         Long eventId = 1L;
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = """
                 {
@@ -125,7 +139,7 @@ class EventCommentControllerTest {
         AddCommentDtoRequest addCommentDtoRequest =
             OBJECT_MAPPER.readValue(content, AddCommentDtoRequest.class);
 
-        // verify(userService).findByEmail("test@gmail.com");
+        verify(userService).findNotDeactivatedByEmail("test@gmail.com");
         verify(commentService).save(eq(ArticleType.EVENT),
             eq(1L),
             eq(addCommentDtoRequest),
@@ -148,7 +162,6 @@ class EventCommentControllerTest {
     void updateTest() {
         Long commentId = 1L;
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "string";
 
@@ -158,7 +171,6 @@ class EventCommentControllerTest {
             .content(content))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).update("string", commentId, userVO.getId());
     }
 
@@ -168,13 +180,13 @@ class EventCommentControllerTest {
         Long commentId = 1L;
         Long eventId = 1L;
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(delete(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}", eventId, commentId)
             .principal(principal))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail("test@gmail.com");
+        verify(userService).findNotDeactivatedByEmail(principal.getName());
         verify(commentService).delete(commentId, userVO);
     }
 
@@ -184,29 +196,23 @@ class EventCommentControllerTest {
         mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}", 1))
             .andExpect(status().isOk());
 
-        verify(commentService).getCommentById(ArticleType.EVENT, 1L, null);
+        verify(commentService).getCommentById(ArticleType.EVENT, 1L, TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void getEventCommentByIdWithUser() {
-        UserVO userVO = getUserVO();
-
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
-
         mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}", 1)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(commentService).getCommentById(ArticleType.EVENT, 1L, userVO.getId());
+        verify(commentService).getCommentById(ArticleType.EVENT, 1L, TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void getAllActiveComments() {
         UserVO userVO = getUserVO();
-
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         int pageNumber = 5;
         int pageSize = 20;
@@ -215,7 +221,6 @@ class EventCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail("test@gmail.com");
         verify(commentService).getAllActiveComments(pageable, userVO.getId(), 1L, ArticleType.EVENT);
     }
 
@@ -234,16 +239,13 @@ class EventCommentControllerTest {
         Long parentCommentId = 1L;
         int pageNumber = 0;
         int pageSize = 20;
-        UserVO userVO = getUserVO();
-
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         PageableDto<CommentDto> commentReplies = getPageableCommentDtos();
 
         String expectedJson = OBJECT_MAPPER.writeValueAsString(commentReplies);
 
-        when(commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId()))
+        when(commentService.getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID))
             .thenReturn(commentReplies);
 
         mockMvc
@@ -255,8 +257,7 @@ class EventCommentControllerTest {
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
-        verify(commentService).getAllActiveReplies(pageable, parentCommentId, userVO.getId());
-        // verify(userService).findByEmail(principal.getName());
+        verify(commentService).getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID);
     }
 
     @Test
@@ -344,7 +345,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/like" + "/1")
             .principal(principal))
@@ -369,7 +370,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -390,7 +391,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislike" + "/1")
             .principal(principal))
@@ -415,7 +416,7 @@ class EventCommentControllerTest {
         Long commentId = 1L;
 
         UserVO userVO = getUserVO();
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
@@ -437,7 +438,7 @@ class EventCommentControllerTest {
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         UserVO user = getUserVO();
         String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
-        // when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(user);
         when(commentService.likeV2(commentId, user, Locale.ENGLISH)).thenReturn(commentDto);
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/likeV2/" + commentId)
             .principal(principal)
@@ -454,7 +455,7 @@ class EventCommentControllerTest {
         CommentDto commentDto = getPageableCommentDtos().getPage().getFirst();
         UserVO user = getUserVO();
         String expectedJson = OBJECT_MAPPER.writeValueAsString(commentDto);
-        // when(userService.findByEmail(anyString())).thenReturn(user);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(user);
         when(commentService.dislikeV2(commentId, user)).thenReturn(commentDto);
         mockMvc.perform(post(EVENT_COMMENTS_CONTROLLER_LINK + "/dislikeV2/" + commentId)
             .principal(principal)

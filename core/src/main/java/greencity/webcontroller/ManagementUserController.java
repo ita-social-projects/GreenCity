@@ -287,7 +287,7 @@ public class ManagementUserController {
      * @param dto         filter's dto.
      */
     @PostMapping(value = "/filter-save")
-    public String saveUserFilter(@CurrentUserId Long currentUserId, UserFilterDtoRequest dto) {
+    public String saveUserFilter(@CurrentUserId Long currentUserId, @RequestBody UserFilterDtoRequest dto) {
         filterService.save(currentUserId, dto);
         return "redirect:/management/users";
     }

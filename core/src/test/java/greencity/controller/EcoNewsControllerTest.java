@@ -10,11 +10,13 @@ import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 import greencity.TestConst;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
+import greencity.security.jwt.JwtTool;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -66,6 +68,8 @@ class EcoNewsControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    JwtTool jwtTool;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -82,10 +86,18 @@ class EcoNewsControllerTest {
     public void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserIdArgumentResolver(jwtTool))
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, OBJECT_MAPPER, null))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -156,7 +168,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null, false, null);
+        verify(ecoNewsService).find(pageable, null, null, null, false, TestConst.USER_ID);
     }
 
     @Test
@@ -169,7 +181,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, 1L, false, null);
+        verify(ecoNewsService).find(pageable, null, null, 1L, false, TestConst.USER_ID);
     }
 
     @Test

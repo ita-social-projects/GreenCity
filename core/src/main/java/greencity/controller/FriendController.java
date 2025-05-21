@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -104,7 +103,7 @@ public class FriendController {
      * Method for accepting friend request from user.
      *
      * @param friendId id user friend.
-     * @param userVO   {@link UserVO} user.
+     * @param userId   current user id.
      */
     @Operation(summary = "Accept friend request")
     @ApiResponses(value = {
@@ -119,8 +118,8 @@ public class FriendController {
     @PatchMapping("/{friendId}/acceptFriend")
     public ResponseEntity<ResponseEntity.BodyBuilder> acceptFriendRequest(
         @Parameter(description = "Friend's id. Cannot be empty.") @PathVariable long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        friendService.acceptFriendRequest(userVO.getId(), friendId);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        friendService.acceptFriendRequest(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

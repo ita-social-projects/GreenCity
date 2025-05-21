@@ -151,8 +151,8 @@ public class ModelUtils {
     public static UserClaims getUserClaims() {
         UserVO userVO = getUserVO();
         return UserClaims.builder()
-                .userId(userVO.getId())
-                .userEmail(userVO.getEmail())
+                .userId(TestConst.USER_ID)
+                .userEmail(TestConst.EMAIL)
                 .roles(List.of(userVO.getRole()))
                 .build();
     }

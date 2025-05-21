@@ -2,7 +2,9 @@ package greencity.controller;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.security.jwt.JwtTool;
 import greencity.service.FavoritePlaceService;
 
 import java.security.Principal;
@@ -40,6 +42,9 @@ class FavoritePlaceControllerTest {
     @Mock
     ModelMapper modelMapper;
 
+    @Mock
+    JwtTool jwtTool;
+
     @InjectMocks
     FavoritePlaceController favoritePlaceController;
 
@@ -49,8 +54,16 @@ class FavoritePlaceControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(favoritePlaceController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(
+                    new PageableHandlerMethodArgumentResolver(),
+                    new UserIdArgumentResolver(jwtTool))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test

@@ -2,13 +2,15 @@ package greencity.controller;
 
 import com.google.gson.Gson;
 import greencity.ModelUtils;
-import greencity.client.RestClient;
+import greencity.TestConst;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
+import greencity.security.jwt.JwtTool;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.security.Principal;
@@ -28,6 +30,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -42,9 +46,6 @@ class HabitAssignControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    private RestClient restClient;
-
-    @Mock
     private HabitAssignService habitAssignService;
 
     @Mock
@@ -52,6 +53,9 @@ class HabitAssignControllerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    JwtTool jwtTool;
 
     @InjectMocks
     private HabitAssignController habitAssignController;
@@ -64,15 +68,22 @@ class HabitAssignControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitAssignController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                    new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                    new UserIdArgumentResolver(jwtTool))
             .build();
+
+        String jwt = "jwt";
+        lenient().when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        lenient().when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test
     void assign() throws Exception {
-
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
                 .principal(principal))
             .andExpect(status().isCreated());
@@ -81,7 +92,6 @@ class HabitAssignControllerTest {
 
     @Test
     void getHabitAssign() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/{habitAssignId}", 1L)
                 .principal(principal))
             .andExpect(status().isOk());
@@ -103,7 +113,6 @@ class HabitAssignControllerTest {
 
     @Test
     void updateStatusAndDurationOfHabitAssignTest() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(put(habitLink + "/{habitAssignId}/update-status-and-duration?duration=15", 1L)
                 .principal(principal)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -113,7 +122,6 @@ class HabitAssignControllerTest {
 
     @Test
     void updateHabitAssignDurationTest() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(put(habitLink + "/{habitAssignId}/update-habit-duration?duration=15", 1L)
                 .principal(principal)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -126,7 +134,6 @@ class HabitAssignControllerTest {
         Long habitAssignId = 2L;
         LocalDate date = LocalDate.now();
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(post(habitLink + "/{habitAssignId}/enroll/{date}", habitAssignId, date)
             .principal(principal))
             .andExpect(status().isOk());
@@ -138,7 +145,6 @@ class HabitAssignControllerTest {
         Long habitAssignId = 1L;
         LocalDate date = LocalDate.now();
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(post(habitLink + "/{habitAssignId}/unenroll/{date}", habitAssignId, date)
             .principal(principal))
             .andExpect(status().isOk());
@@ -150,7 +156,6 @@ class HabitAssignControllerTest {
         LocalDate from = LocalDate.now();
         LocalDate to = from.plusDays(2L);
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", from, to)
             .principal(principal))
             .andExpect(status().isOk());
@@ -160,7 +165,6 @@ class HabitAssignControllerTest {
 
     @Test
     void getHabitAssignByHabitIdTest() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/{habitId}/active", 1L)
                 .principal(principal))
             .andExpect(status().isOk());
@@ -170,7 +174,6 @@ class HabitAssignControllerTest {
 
     @Test
     void getCurrentUserHabitAssignsByIdAndAcquired() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/allForCurrentUser")
                 .principal(principal))
             .andExpect(status().isOk());
@@ -181,7 +184,6 @@ class HabitAssignControllerTest {
     @Test
     void getAllMutualHabitsWithUserTest() throws Exception {
         long friendId = 2L;
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/allMutualHabits/{userId}", friendId)
             .principal(principal))
             .andExpect(status().isOk());
@@ -194,7 +196,6 @@ class HabitAssignControllerTest {
     @Test
     void getMyHabitsOfCurrentUserTest() throws Exception {
         long friendId = 2L;
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/myHabits/{userId}", friendId)
             .principal(principal))
             .andExpect(status().isOk());
@@ -218,7 +219,6 @@ class HabitAssignControllerTest {
     void deleteHabitAssignTest() throws Exception {
         Long habitAssignId = 1L;
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(delete(habitLink + "/delete/{habitAssignId}", habitAssignId)
             .principal(principal)).andExpect(status().isOk());
         verify(habitAssignService).deleteHabitAssign(habitAssignId, userVO.getId());
@@ -230,7 +230,7 @@ class HabitAssignControllerTest {
         Gson gson = new Gson();
         String json = gson.toJson(propertiesDto);
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(post(habitLink + "/{habitId}/custom", 1L)
             .principal(principal)
             .content(json)
@@ -249,7 +249,6 @@ class HabitAssignControllerTest {
 
     @Test
     void getInprogressHabitAssignOnDate() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/active/{date}", LocalDate.now())
                 .principal(principal))
             .andExpect(status().isOk());
@@ -261,7 +260,6 @@ class HabitAssignControllerTest {
     void getUsersHabitByHabitId() throws Exception {
         Long habitAssignId = 1L;
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/{habitAssignId}/more", habitAssignId)
             .principal(principal))
             .andExpect(status().isOk());
@@ -273,7 +271,6 @@ class HabitAssignControllerTest {
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
         Long habitAssignId = 1L;
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId)
             .principal(principal))
             .andExpect(status().isOk());
@@ -284,7 +281,6 @@ class HabitAssignControllerTest {
     void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
         Long habitAssignId = 1L;
 
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId)
             .principal(principal)
             .locale(Locale.forLanguageTag("ua")))
@@ -294,7 +290,6 @@ class HabitAssignControllerTest {
 
     @Test
     void getListOfUserAndCustomToDoListsInprogress() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/allUserAndCustomToDoListsInprogress")
                 .principal(principal)
                 .locale(Locale.forLanguageTag("en")))
@@ -304,7 +299,6 @@ class HabitAssignControllerTest {
 
     @Test
     void updateUserAndCustomToDoLists() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         UserToDoAndCustomToDoListsDto dto = ModelUtils.getUserToDoAndCustomToDoListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
@@ -319,7 +313,6 @@ class HabitAssignControllerTest {
 
     @Test
     void updateProgressNotificationHasDisplayedTest() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(
                 put(habitLink + "/{habitAssignId}/updateProgressNotificationHasDisplayed", 1L)
                     .principal(principal)
@@ -330,7 +323,7 @@ class HabitAssignControllerTest {
 
     @Test
     void inviteFriendRequest() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(post(habitLink + "/{habitId}/invite", 1L)
                         .param("friendsIds", "2", "3", "4")
@@ -350,7 +343,6 @@ class HabitAssignControllerTest {
 
     @Test
     void getFriendsHabitsStreakTest() throws Exception {
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(habitLink + "/{habitId}/friends/habit-duration-info", 1L)
                 .principal(principal)
                 .contentType(MediaType.APPLICATION_JSON))

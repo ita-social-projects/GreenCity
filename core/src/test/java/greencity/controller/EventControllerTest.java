@@ -5,6 +5,7 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
 import greencity.dto.filter.FilterEventDto;
@@ -13,6 +14,7 @@ import greencity.enums.EventStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.security.jwt.JwtTool;
 import greencity.service.EventService;
 import greencity.service.UserService;
 import java.security.Principal;
@@ -38,6 +40,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,6 +78,8 @@ class EventControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    JwtTool jwtTool;
     private static ObjectMapper objectMapper;
 
     @BeforeAll
@@ -86,9 +91,17 @@ class EventControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                    new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                    new UserIdArgumentResolver(jwtTool))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test

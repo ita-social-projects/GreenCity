@@ -2,7 +2,9 @@ package greencity.controller;
 
 import greencity.TestConst;
 import greencity.config.SecurityConfig;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.user.UserVO;
+import greencity.security.jwt.JwtTool;
 import greencity.service.HabitInvitationService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,12 +45,23 @@ class HabitInvitationControllerTest {
     @Mock
     private HabitInvitationService habitInvitationService;
 
+    @Mock
+    private JwtTool jwtTool;
+
     @InjectMocks
     private HabitInvitationController habitInvitationController;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(habitInvitationController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(habitInvitationController)
+                .setCustomArgumentResolvers(new UserIdArgumentResolver(jwtTool))
+                .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
     }
 
     @Test

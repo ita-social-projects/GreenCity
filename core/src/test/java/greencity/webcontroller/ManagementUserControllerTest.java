@@ -2,8 +2,10 @@ package greencity.webcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
@@ -16,6 +18,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import greencity.security.jwt.JwtTool;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -78,6 +81,9 @@ class ManagementUserControllerTest {
     @Mock
     private FilterService filterService;
 
+    @Mock
+    JwtTool jwtTool;
+
     @InjectMocks
     private ManagementUserController managementUserController;
 
@@ -87,8 +93,12 @@ class ManagementUserControllerTest {
 
     @BeforeEach
     void setUp() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(managementUserController).setCustomArgumentResolvers(
-            new PageableHandlerMethodArgumentResolver(), new UserArgumentResolver(userService, modelMapper)).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(managementUserController)
+                .setCustomArgumentResolvers(
+                        new PageableHandlerMethodArgumentResolver(),
+                        new UserArgumentResolver(userService, modelMapper),
+                        new UserIdArgumentResolver(jwtTool))
+                .build();
         objectMapper = new ObjectMapper();
     }
 
@@ -114,6 +124,8 @@ class ManagementUserControllerTest {
 
         PageableDetailedDto<UserManagementVO> userPageableDetailedDto = getUserPageableDetailedDto();
 
+        when(userService.findNotDeactivatedByEmail(principal.getName()))
+                .thenReturn(userVO);
         when(userService.getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class)))
             .thenReturn(userPageableDetailedDto);
         when(filterService.getAllFilters(USER_ID)).thenReturn(response);
@@ -243,6 +255,7 @@ class ManagementUserControllerTest {
 
     @Test
     void saveUserFilterTest() throws Exception {
+        String jwt = "jwt";
         var principal = getPrincipal();
         UserFilterDtoRequest dto = UserFilterDtoRequest.builder().name("Test").userRole("ADMIN").userStatus("ACTIVATED")
             .searchCriteria("Test").build();
@@ -250,12 +263,16 @@ class ManagementUserControllerTest {
         User user = getUser();
 
         String content = objectMapper.writeValueAsString(dto);
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+                .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+                .thenReturn(TestConst.USER_ID);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/filter-save").content(content).principal(principal)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isFound());
 
-        verify(filterService.save(userVO.getId(), dto));
+        verify(filterService).save(userVO.getId(), dto);
     }
 
     @Test
