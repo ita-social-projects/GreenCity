@@ -1,7 +1,9 @@
 package greencity.repository.impl;
 
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,20 +33,30 @@ class CustomUserRepoImplTest {
     @Mock
     private EntityManager entityManager;
 
+    @Mock
+    UserRemoteClient userRemoteClient;
+
     @Test
     void fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUserTest() {
         long userId = 1L;
         List<User> users = List.of(ModelUtils.getUser());
         List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
         TypedQuery<UserFriendDto> query = mock(TypedQuery.class);
+        List<UserEmailDto> userEmailDtos = List.of(
+                new UserEmailDto(1L, "email1"),
+                new UserEmailDto(2L, "email2")
+        );
 
         when(entityManager.createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
             UserFriendDto.class)).thenReturn(query);
+        when(userRemoteClient.findUserEmailsByUserIds(userIds))
+                .thenReturn(userEmailDtos);
 
         customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
         verify(query).setParameter("userId", userId);
         verify(query).setParameter("users", userIds);
+        verify(userRemoteClient).findUserEmailsByUserIds(userIds);
     }
 
     @Test
@@ -74,6 +86,7 @@ class CustomUserRepoImplTest {
         long user1Id = 10L;
         long user2Id = 20L;
         long user3Id = 30L;
+        List<Long> userIds = List.of(10L, 20L, 30L);
 
         User user1 = ModelUtils.getUser();
         user1.setId(user1Id);
@@ -83,9 +96,16 @@ class CustomUserRepoImplTest {
         user3.setId(user3Id);
         List<User> users = List.of(user1, user2, user3);
 
+        List<UserEmailDto> userEmailDtos = List.of(
+                new UserEmailDto(1L, "email1"),
+                new UserEmailDto(2L, "email2")
+        );
+
         TypedQuery<UserFriendDto> query = mock(TypedQuery.class);
         when(entityManager.createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
             UserFriendDto.class)).thenReturn(query);
+        when(userRemoteClient.findUserEmailsByUserIds(userIds))
+                .thenReturn(userEmailDtos);
 
         UserFriendDto friend1 = new UserFriendDto();
         friend1.setId(user2Id);
@@ -99,7 +119,8 @@ class CustomUserRepoImplTest {
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
         verify(query).setParameter("userId", userId);
-        verify(query).setParameter("users", List.of(10L, 20L, 30L));
+        verify(query).setParameter("users", userIds);
+        verify(userRemoteClient).findUserEmailsByUserIds(userIds);
 
         assertEquals(3, result.size());
         assertEquals(10L, result.get(0).getId());
