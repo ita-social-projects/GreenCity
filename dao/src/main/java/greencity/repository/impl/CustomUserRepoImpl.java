@@ -2,6 +2,7 @@ package greencity.repository.impl;
 
 import greencity.client.UserRemoteClient;
 import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.entity.User;
 import greencity.repository.CustomUserRepo;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,15 @@ public class CustomUserRepoImpl implements CustomUserRepo {
 
         List<UserFriendDto> resultList = query.getResultList();
 
+        List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
+        Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
+                        .collect(Collectors.toMap(
+                                UserEmailDto::userId,
+                                UserEmailDto::userEmail
+                        ));
+
         resultList.forEach(userFriendDto -> {
-            String email = userRemoteClient.findUserEmailByUserId(userFriendDto.getId());
+            String email = userIdToUserEmailMap.get(userFriendDto.getId());
             userFriendDto.setEmail(email);
         });
 

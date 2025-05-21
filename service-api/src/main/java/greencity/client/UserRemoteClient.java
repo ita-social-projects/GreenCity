@@ -6,6 +6,7 @@ import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
@@ -525,8 +526,8 @@ public class UserRemoteClient {
     }
 
     // TODO
-    public String findUserEmailByUserId(Long userId) {
-        return "userEmail";
+    public List<UserEmailDto> findUserEmailsByUserIds(List<Long> userIds) {
+        return userIds.stream().map(userId -> new UserEmailDto(userId, "email")).toList();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
