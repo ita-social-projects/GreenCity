@@ -1,5 +1,6 @@
 package greencity.repository.impl;
 
+import greencity.client.UserRemoteClient;
 import greencity.dto.friends.UserFriendDto;
 import greencity.entity.User;
 import greencity.repository.CustomUserRepo;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @Repository
 public class CustomUserRepoImpl implements CustomUserRepo {
     private final EntityManager entityManager;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -40,6 +42,12 @@ public class CustomUserRepoImpl implements CustomUserRepo {
         query.setParameter("users", userIds);
 
         List<UserFriendDto> resultList = query.getResultList();
+
+        resultList.forEach(userFriendDto -> {
+            String email = userRemoteClient.findUserEmailByUserId(userFriendDto.getId());
+            userFriendDto.setEmail(email);
+        });
+
         Map<Long, UserFriendDto> resultMap = resultList.stream()
             .collect(Collectors.toMap(UserFriendDto::getId, dto -> dto));
 

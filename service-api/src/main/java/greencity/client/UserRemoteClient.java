@@ -524,6 +524,11 @@ public class UserRemoteClient {
         return userVOOptional.isPresent();
     }
 
+    // TODO
+    public String findUserEmailByUserId(Long userId) {
+        return "userEmail";
+    }
+
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
 

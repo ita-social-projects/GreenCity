@@ -51,17 +51,17 @@ import java.util.Set;
                 columns = {
                     @ColumnResult(name = "id", type = Long.class),
                     @ColumnResult(name = "name", type = String.class),
-                    @ColumnResult(name = "email", type = String.class),
+                    // @ColumnResult(name = "email", type = String.class),
                     @ColumnResult(name = "rating", type = Double.class),
-                    @ColumnResult(name = "ulId", type = Long.class),
-                    @ColumnResult(name = "cityEn", type = String.class),
-                    @ColumnResult(name = "cityUa", type = String.class),
-                    @ColumnResult(name = "regionEn", type = String.class),
-                    @ColumnResult(name = "regionUa", type = String.class),
-                    @ColumnResult(name = "countryEn", type = String.class),
-                    @ColumnResult(name = "countryUa", type = String.class),
-                    @ColumnResult(name = "latitude", type = Double.class),
-                    @ColumnResult(name = "longitude", type = Double.class),
+                    // @ColumnResult(name = "ulId", type = Long.class),
+                    // @ColumnResult(name = "cityEn", type = String.class),
+                    // @ColumnResult(name = "cityUa", type = String.class),
+                    // @ColumnResult(name = "regionEn", type = String.class),
+                    // @ColumnResult(name = "regionUa", type = String.class),
+                    // @ColumnResult(name = "countryEn", type = String.class),
+                    // @ColumnResult(name = "countryUa", type = String.class),
+                    // @ColumnResult(name = "latitude", type = Double.class),
+                    // @ColumnResult(name = "longitude", type = Double.class),
                     @ColumnResult(name = "mutualFriends", type = Long.class),
                     @ColumnResult(name = "profilePicturePath", type = String.class),
                     @ColumnResult(name = "chatId", type = Long.class),
@@ -90,7 +90,6 @@ import java.util.Set;
                 SELECT
                     u.id,
                     u.name,
-                    u.email,
                     u.rating,
                     ul.id AS ulId,
                     ul.city_en AS cityEn,
@@ -142,7 +141,7 @@ import java.util.Set;
                            OR (uf3.user_id = u.id AND uf3.friend_id = :userId)
                         LIMIT 1
                     ) AS requesterId
-                FROM users u
+                FROM greencity_users u
                 LEFT JOIN user_location ul ON u.user_location = ul.id
                 WHERE
                     u.id IN (:users)
