@@ -525,9 +525,22 @@ public class UserRemoteClient {
         return userVOOptional.isPresent();
     }
 
-    // TODO
+    /**
+     * Method to find all {@link UserEmailDto} user emails by user ids
+     *
+     * @param userIds list of user ids
+     * @return list of {@link UserEmailDto} containing information about user's email
+     */
     public List<UserEmailDto> findUserEmailsByUserIds(List<Long> userIds) {
-        return userIds.stream().map(userId -> new UserEmailDto(userId, "email")).toList();
+        String path = "/user/email/findByIds";
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(path)
+                        .queryParam("userIds", userIds)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<UserEmailDto>>() {})
+                .block();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
