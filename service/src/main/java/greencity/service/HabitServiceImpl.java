@@ -15,6 +15,7 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -64,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -540,7 +542,9 @@ public class HabitServiceImpl implements HabitService {
     public void deleteCustomHabit(Long customHabitId, Long ownerId) {
         Habit toDelete = habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId));
-        unAssignOwnerFromCustomHabit(toDelete, ownerId);
+        User owner = userRepo.findById(ownerId)
+                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + ownerId));
+        unAssignOwnerFromCustomHabit(toDelete, owner.getId());
         toDelete.setIsDeleted(true);
         habitRepo.save(toDelete);
     }
@@ -753,12 +757,21 @@ public class HabitServiceImpl implements HabitService {
     private Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
         Long userId, String name, Long habitId, Pageable pageable) {
         List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
+
+        List<Long> userIds = tuples.stream()
+                .map(tuple -> tuple.get("id", Long.class))
+                .toList();
+        List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
+        Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
+                .collect(Collectors.toMap(
+                        UserEmailDto::userId,
+                        UserEmailDto::userEmail
+                ));
+
         List<UserFriendHabitInviteDto> dtoList = tuples.stream()
             .map(tuple -> {
                 Long id = tuple.get("id", Long.class);
-                String email = userRemoteClient.findNotDeactivatedById(id)
-                        .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id))
-                        .getEmail();
+                String email = userIdToUserEmailMap.get(id);
                 return UserFriendHabitInviteDto.builder()
                         .id(id)
                         .name(tuple.get("name", String.class))
