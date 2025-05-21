@@ -278,7 +278,7 @@ public class PlaceServiceImpl implements PlaceService {
         log.info(LogMessage.IN_FIND_ALL);
         Page<Place> pages = placeRepo.findAll(pageable);
         List<AdminPlaceDto> placeDtos = createAdminPageableDtoList(pages);
-        if (!CollectionUtils.isEmpty(placeDtos)) {
+        if (!CollectionUtils.isEmpty(placeDtos) && userId != null) {
             setIsFavoriteToAdminPlaceDto(placeDtos, userId);
         }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());

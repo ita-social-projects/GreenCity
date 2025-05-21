@@ -32,8 +32,6 @@ class FavoritePlaceServiceImplTest {
     @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
-    private RestClient restClient;
-    @Mock
     private PlaceService placeService;
     @Mock
     private ModelMapper modelMapper;
@@ -43,8 +41,6 @@ class FavoritePlaceServiceImplTest {
     private final FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
     private final FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
     private final FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
-    // TODO
-    private final String userEmail = "favoritePlace.getUser().getEmail();";
     private final Long userId = favoritePlace.getUser().getId();
     private final Long favoritePlaceId = favoritePlace.getId();
     private final PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
@@ -52,7 +48,7 @@ class FavoritePlaceServiceImplTest {
     @Test
     void saveFavoritePlaceAlreadyExistTest() {
         when(placeService.existsById(any())).thenReturn(true);
-        when(favoritePlaceRepo.findByPlaceIdAndUserId(anyLong(), anyLong())).thenReturn(new FavoritePlace());
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(dto.getPlaceId(), userId)).thenReturn(new FavoritePlace());
         when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
 
         Exception exception = assertThrows(
@@ -60,11 +56,11 @@ class FavoritePlaceServiceImplTest {
             () -> favoritePlaceService.save(dto, userId));
 
         String expectedMessage =
-            "Favorite place already exist for this placeId: " + dto.getPlaceId() + " and user with email: " +
-                userEmail;
+            "Favorite place already exist for this placeId: " + dto.getPlaceId() + " and user with id: " +
+                userId;
         String actualMessage = exception.getMessage();
 
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
@@ -105,13 +101,11 @@ class FavoritePlaceServiceImplTest {
 
         FavoritePlaceDto actual = favoritePlaceService.save(dto, userId);
 
-        verify(restClient, times(1)).findIdByEmail(userEmail);
         verify(placeService, times(1)).existsById(any());
         verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserId(anyLong(), anyLong());
         verify(favoritePlaceRepo, times(1)).save(any(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlaceDto.class), eq(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlace.class), eq(FavoritePlaceDto.class));
-        verify(restClient, times(1)).findIdByEmail(anyString());
 
         assertEquals(dto, actual);
     }

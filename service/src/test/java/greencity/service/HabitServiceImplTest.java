@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendHabitInviteDto;
@@ -13,6 +14,7 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -30,6 +32,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.CustomHabitMapper;
 import greencity.mapping.CustomToDoListMapper;
 import greencity.mapping.CustomToDoListResponseDtoMapper;
@@ -171,6 +174,9 @@ class HabitServiceImplTest {
 
     @Mock
     LanguageService languageService;
+
+    @Mock
+    UserRemoteClient userRemoteClient;
 
     static final CustomHabitDtoResponse RESPONSE = new CustomHabitDtoResponse();
 
@@ -614,7 +620,7 @@ class HabitServiceImplTest {
             habitTranslationUa.setLanguageCode(languageEn.getCode()),
             habitTranslationUa.setLanguageCode(languageUa.getCode()));
 
-        // when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDtoEN), "ua"))
@@ -635,9 +641,9 @@ class HabitServiceImplTest {
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, null, TestConst.USER_ID));
+            habitService.addCustomHabit(addCustomHabitDtoRequest, null, user.getId()));
 
-        // verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -928,7 +934,7 @@ class HabitServiceImplTest {
         when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.empty());
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(nullable(Habit.class));
 
-        assertThrows(WrongEmailException.class,
+        assertThrows(WrongIdException.class,
             () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, TestConst.USER_ID));
 
         verify(userRepo).findById(TestConst.USER_ID);
@@ -1077,7 +1083,7 @@ class HabitServiceImplTest {
         when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.empty());
         when(habitRepo.save(customHabitMapper.convert(customHabitDtoRequest))).thenReturn(nullable(Habit.class));
 
-        assertThrows(WrongEmailException.class,
+        assertThrows(WrongIdException.class,
             () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, TestConst.USER_ID, null));
 
         verify(userRepo).findById(TestConst.USER_ID);
@@ -1217,14 +1223,14 @@ class HabitServiceImplTest {
         toDelete.setUserId(1L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
-        // when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, 1L))
             .thenReturn(List.of(habitAssign.getId()));
 
         habitService.deleteCustomHabit(customHabitId, user.getId());
 
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
-        // verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo).findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, 1L);
     }
 
@@ -1242,16 +1248,17 @@ class HabitServiceImplTest {
     @Test
     void deleteCustomHabitThrowsWrongEmailExceptionTest() {
         Long customHabitId = 1L;
-        String userEmail = "email@gmail.com";
         Habit toDelete = ModelUtils.getHabitWithCustom();
-        toDelete.setUserId(1L);
+        toDelete.setUserId(TestConst.USER_ID);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
+        when(userRepo.findById(TestConst.USER_ID))
+                .thenReturn(Optional.empty());
 
-        WrongEmailException exception = assertThrows(WrongEmailException.class,
+        WrongIdException exception = assertThrows(WrongIdException.class,
             () -> habitService.deleteCustomHabit(customHabitId, TestConst.USER_ID));
 
-        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail, exception.getMessage());
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + TestConst.USER_ID, exception.getMessage());
         verify(habitRepo, times(0)).save(any(Habit.class));
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
     }
@@ -1261,18 +1268,17 @@ class HabitServiceImplTest {
         Long customHabitId = 1L;
         Habit toDelete = ModelUtils.getHabitWithCustom();
         User user = ModelUtils.getUser();
-        // String userEmail = user.getEmail();
         toDelete.setUserId(4L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
-        // when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         UserHasNoPermissionToAccessException exception = assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> habitService.deleteCustomHabit(customHabitId, TestConst.USER_ID));
+            () -> habitService.deleteCustomHabit(customHabitId, user.getId()));
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
-        // verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
         verify(habitRepo, times(0)).save(any(Habit.class));
     }
 
@@ -1645,11 +1651,20 @@ class HabitServiceImplTest {
         Pageable pageable = mock(Pageable.class);
         Long habitId = 100L;
         UserVO userVO = getUserVO();
-
         List<Tuple> tuples = getUserFriendInviteHabitDtoTuple2();
+        List<Long> userIds = tuples.stream()
+                .map(tuple -> tuple.get("id", Long.class))
+                .toList();
+        List<UserEmailDto> userEmailDtos = tuples.stream()
+                        .map(tuple -> new UserEmailDto(
+                                tuple.get("id", Long.class),
+                                tuple.get("email", String.class)
+                        )).toList();
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
             .thenReturn(tuples);
+        when(userRemoteClient.findUserEmailsByUserIds(userIds))
+                .thenReturn(userEmailDtos);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO.getId(), null, pageable, habitId);
@@ -1677,9 +1692,19 @@ class HabitServiceImplTest {
         Long habitId = 100L;
         UserVO userVO = getUserVO();
         List<Tuple> tuples = getUserFriendInviteHabitDtoTuple1();
+        List<Long> userIds = tuples.stream()
+                .map(tuple -> tuple.get("id", Long.class))
+                .toList();
+        List<UserEmailDto> userEmailDtos = tuples.stream()
+                .map(tuple -> new UserEmailDto(
+                        tuple.get("id", Long.class),
+                        tuple.get("email", String.class)
+                )).toList();
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "Jo", habitId, pageable))
             .thenReturn(tuples);
+        when(userRemoteClient.findUserEmailsByUserIds(userIds))
+                .thenReturn(userEmailDtos);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO.getId(), "Jo", pageable, habitId);

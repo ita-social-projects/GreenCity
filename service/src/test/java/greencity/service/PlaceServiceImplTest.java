@@ -746,7 +746,7 @@ class PlaceServiceImplTest {
         User user = ModelUtils.getUser();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
         when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
@@ -755,10 +755,10 @@ class PlaceServiceImplTest {
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceResponse.class)).thenReturn(placeResponse);
 
-        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, TestConst.USER_ID, null));
+        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, user.getId(), null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findById(TestConst.USER_ID);
+        verify(userRepo).findById(user.getId());
         verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
         verify(modelMapper).map(placeResponse, Place.class);
         verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);

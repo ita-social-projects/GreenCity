@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     private final FavoritePlaceRepo favoritePlaceRepo;
-    private final RestClient restClient;
     private final PlaceService placeService;
     private final ModelMapper modelMapper;
 

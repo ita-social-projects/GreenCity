@@ -901,7 +901,7 @@ class EcoNewsServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 ecoNewsService.addToFavorites(1L, userId));
 
-        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + TestConst.EMAIL, exception.getMessage());
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + TestConst.USER_ID, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
         verify(userRepo).findById(userId);
     }
@@ -963,7 +963,7 @@ class EcoNewsServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () ->
                 ecoNewsService.removeFromFavorites(1L, userId));
 
-        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + TestConst.EMAIL, exception.getMessage());
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + TestConst.USER_ID, exception.getMessage());
         verify(ecoNewsRepo).findById(1L);
         verify(userRepo).findById(userId);
     }

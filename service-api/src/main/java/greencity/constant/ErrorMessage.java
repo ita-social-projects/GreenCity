@@ -128,7 +128,7 @@ public class ErrorMessage {
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String PLACE_ALREADY_EXISTS = "Place with lat: %.4f and lng: %.4f already exists";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
-        "Favorite place already exist for this placeId: %d and user with email: %s";
+        "Favorite place already exist for this placeId: %d and user with id: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String USER_TO_DO_LIST_ITEMS_STATUS_IS_ALREADY_DONE =
         "The status of this to-do list item is already done ";

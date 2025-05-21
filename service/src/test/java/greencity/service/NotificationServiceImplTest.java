@@ -232,7 +232,7 @@ class NotificationServiceImplTest {
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotificationInvites(captor.capture()));
         ScheduledEmailMessage capturedMessage = captor.getValue();
-        assertEquals(notificationDto.getTargetUser().getEmail(), capturedMessage.getUserId());
+        assertEquals(notificationDto.getTargetUser().getId(), capturedMessage.getUserId());
         assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
     }
 
