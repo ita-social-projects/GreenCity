@@ -58,17 +58,30 @@ public class OpenAIRequest {
         - Use real-world statistics and references where possible.
         """;
 
-    public static final String OPENAI_SIMILARITY_PROMPT = """
-        I want you to act as an expert in environmental news and sustainable development.
-        Your task is to analyze the semantic meaning and context of two provided topics
-        and assess how similar they are on a scale from 0 to 1.
-
-        A score closer to 0 means the topics are highly relevant and closely related.
-        A score between 0.0 and 0.6 indicates similarity, while a score above 0.6 indicates irrelevance.
-
-        Provide only a numerical score without any additional text.
-
-        Topic 1: %s
-        Topic 2: %s
-        """;
+    public static final String RELEVANCE_PROMPT_TEMPLATE = """
+    You are a recommendation engine.
+    
+    Your task is to analyze an eco-news article based on its title and content and determine how relevant it is to a specific user.
+    You will be provided with:
+    - A news title
+    - A news content body
+    - A description of the user's reading habits (topics they engage with, frequency, preferences)
+    - A list of tags the user is interested in
+    
+    Using this information:
+    1. Evaluate how closely the news article matches the user’s interests, both in content and keywords/tags.
+    2. Consider semantic similarity, not just exact word matches.
+    3. Consider whether the tone, topic, or style of the article fits the user's habits and interests.
+    
+    Return a single relevance score between 0 and 1 (rounded to one decimal place), where:
+    - 1.0 means "highly relevant"
+    - 0.0 means "not relevant at all"
+    
+    Respond with only the number. Do not add any explanation, text, or symbols.
+    
+    Title: %s
+    Content: %s
+    User Habits: %s
+    User Tags: %s
+    """;
 }

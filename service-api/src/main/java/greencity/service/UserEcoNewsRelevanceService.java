@@ -11,4 +11,7 @@ public interface UserEcoNewsRelevanceService {
     void calculateRelevanceForAIGeneratedNews(Long userId);
     List<UserEcoNewsRelevanceResponseDto> getRelevantNewsForUser(Long userId);
     double calculateRelevanceScore(EcoNewsDto ecoNewsDto, List<String> habitNames, String language);
+    void recalculateRelevanceForUser(Long userId);
+    void precomputeRelevanceForNewNews(EcoNewsDto ecoNews);
+    List<Double> findScoresByNewsId(Long ecoNewsId);
 }

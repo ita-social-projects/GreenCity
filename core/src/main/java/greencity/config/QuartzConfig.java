@@ -48,14 +48,12 @@ public class QuartzConfig {
         return jobFactory;
     }
 
-
     @Bean
     public Scheduler scheduler(SchedulerFactoryBean factoryBean) throws SchedulerException {
         Scheduler scheduler = factoryBean.getScheduler();
         scheduler.getListenerManager().addJobListener(new LoggingJobListener());
         return scheduler;
     }
-
 
     @Bean
     public JobDetail ecoNewsGenerationJobDetail() {

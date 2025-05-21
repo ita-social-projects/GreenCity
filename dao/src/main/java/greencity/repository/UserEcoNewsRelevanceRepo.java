@@ -51,4 +51,8 @@ public interface UserEcoNewsRelevanceRepo extends JpaRepository<UserEcoNewsRelev
     Optional<UserEcoNewsRelevance> findByUserIdAndEcoNewsId(
         @Param("userId") Long userId,
         @Param("ecoNewsId") Long ecoNewsId);
+
+    @Query("SELECT r.relevance FROM UserEcoNewsRelevance r WHERE r.ecoNews.id = :ecoNewsId")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    List<Double> findRelevanceScoresByEcoNewsId(@Param("ecoNewsId") Long ecoNewsId);
 }

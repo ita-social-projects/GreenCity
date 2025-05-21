@@ -1,5 +1,6 @@
 package greencity.constant;
 
+import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -37,8 +38,6 @@ public class OpenAIConstants {
     public static final String ERROR_LONG_VALUE_MUST_BE_POSITIVE = "Long input must be greater than zero.";
     public static final String ERROR_PARSING_JSON_AFTER_ATTEMPTS = "Failed to parse JSON response after multiple attempts.";
     public static final String ERROR_NO_TAGS_FOUND = "No tags found for AI-generated content.";
-    public static final String ERROR_INVALID_RELEVANCE_SCORE = "Invalid relevance score received from OpenAI.";
-    public static final String ERROR_RELEVANCE_SCORE_PARSE_FAILURE = "Failed to parse relevance score from OpenAI response.";
     public static final String ERROR_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type - ";
     public static final String ERROR_JSON_KEY_NOT_FOUND = "Expected key " + RESPONSE_JSON_CONTENT_KEY + " not found in JSON.";
 
@@ -69,10 +68,12 @@ public class OpenAIConstants {
     public static final String REGEX_MD_HEADERS = "(^|\\s)#{1,6}(\\s|$)";
     public static final String REGEX_ASTERISKS = "\\*";
     public static final String REGEX_MARKDOWN_ASTERISKS = "\\*+";
+    public static final Pattern SCORE_PATTERN = Pattern.compile("^[0-1]\\.\\d+$");
 
     public static final String AI_USER_NAME = "AI Generated";
     public static final String AI_USER_EMAIL = "ai.generated@example.com";
     public static final String AI_MOCKED_REFRESH_TOKEN = "mocked-refresh-token-key";
+
 
     public static final int MAX_JSON_PARSE_ATTEMPTS = 3;
 }

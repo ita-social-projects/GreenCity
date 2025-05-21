@@ -4,7 +4,6 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class GrammarCheckConstants {
-    public static final String EMPTY_STRING = "";
     public static final String ENGLISH_PREFIX = "en";
     public static final String LANGUAGE_CACHE_NAME = "languageCache";
     public static final String GRAMMAR_CACHE_NAME = "grammarCache";
