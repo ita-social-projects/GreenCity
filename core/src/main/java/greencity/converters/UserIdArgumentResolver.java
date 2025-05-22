@@ -27,7 +27,7 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(@NonNull MethodParameter parameter,
+    public Long resolveArgument(@NonNull MethodParameter parameter,
         ModelAndViewContainer mavContainer,
         @NonNull NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory) {
