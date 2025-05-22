@@ -8,7 +8,6 @@ import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
-import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserRoleStatisticDto;
@@ -173,24 +172,6 @@ public class UserRemoteClient {
             .uri(path)
             .retrieve()
             .bodyToMono(Long.class)
-            .block();
-    }
-
-    /**
-     * Get user notification preferences by user id.
-     *
-     * @param id user id
-     * @return list of {@link UserNotificationPreferenceVO}
-     */
-    public List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(Long id) {
-        String path = "/user-notification-preference";
-        return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
-                .queryParam(ID_QUERY_PARAM, id)
-                .build())
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<List<UserNotificationPreferenceVO>>() {
-            })
             .block();
     }
 
@@ -478,7 +459,6 @@ public class UserRemoteClient {
      *                                      {@link SocialNetworkImageResponseDTO}.
      * @param file                          of {@link MultipartFile}.
      */
-
     public void updateSocialImage(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile file) {
         String path = "/management/socialnetworkimages/";
 
@@ -544,15 +524,5 @@ public class UserRemoteClient {
             .bodyToMono(new ParameterizedTypeReference<List<UserEmailDto>>() {
             })
             .block();
-    }
-
-    private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
-        MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
-
-        for (MultipartFile multipartFile : multipartFiles) {
-            multipartBodyBuilder.part(partName, multipartFile.getResource());
-        }
-
-        return BodyInserters.fromMultipartData(multipartBodyBuilder.build());
     }
 }

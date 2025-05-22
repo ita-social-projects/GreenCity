@@ -7,7 +7,6 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.user.UserClaims;
-import greencity.dto.useraction.UserActionVO;
 import greencity.enums.AchievementStatus;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -136,25 +135,5 @@ public class AchievementController {
     @GetMapping("/user-achievements/{userId}")
     public ResponseEntity<List<UserAchievementVO>> findAllUserAchievementsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok().body(achievementService.findAllUserAchievementsByUserId(userId));
-    }
-
-    /**
-     * Method returns all user actions by user id.
-     *
-     * @param userId id of the user
-     *
-     * @return list of {@link UserActionVO}
-     */
-    @Operation(summary = "Get all user actions by user id.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
-    })
-    @GetMapping("/user-actions/{userId}")
-    public ResponseEntity<List<UserActionVO>> findAllUserActionsByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok().body(achievementService.findAllUserActionsByUserId(userId));
     }
 }

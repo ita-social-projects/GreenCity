@@ -91,6 +91,7 @@ public class SecurityConfig {
     public static final String USERS = "/users";
     private static final String DISLIKE_V2 = "/dislikeV2";
     private static final String LIKE_V2 = "/likeV2";
+    private static final String FILES = "/files";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -223,6 +224,8 @@ public class SecurityConfig {
                     ACHIEVEMENTS,
                     ACHIEVEMENTS + COUNT,
                     ACHIEVEMENTS + CATEGORIES,
+                    ACHIEVEMENTS + "/all",
+                    ACHIEVEMENTS + "/user-achievements/**",
                     CUSTOM_TO_DO_LIST_ITEMS,
                     CUSTOM_TO_DO_LIST,
                     CUSTOM_TO_DO_LIST_URL,
@@ -298,7 +301,7 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    USERS + "/picturePath",
+                    USERS + "/**",
                     "/ai/**")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
@@ -330,7 +333,8 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
-                    "/files",
+                    FILES,
+                    FILES + "/single",
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
@@ -399,7 +403,9 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend",
                     HABIT_INVITE + INVITATION_ID + "/accept",
-                    USERS + "/update")
+                    USERS + "/{id}/location",
+                    USERS + "/rating",
+                    USERS + "/credo")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
@@ -430,7 +436,8 @@ public class SecurityConfig {
                     "/ownSecurity/user",
                     NOTIFICATIONS + NOTIFICATION_ID,
                     HABIT_INVITE + INVITATION_ID + "/reject",
-                    EVENTS + EVENT_ID + "/removeFromRequested")
+                    EVENTS + EVENT_ID + "/removeFromRequested",
+                    FILES)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,
