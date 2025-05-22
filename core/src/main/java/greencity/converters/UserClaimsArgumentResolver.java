@@ -2,7 +2,6 @@ package greencity.converters;
 
 import greencity.annotations.CurrentUserClaims;
 import greencity.dto.user.UserClaims;
-import greencity.exception.exceptions.NoJwtException;
 import greencity.security.jwt.JwtTool;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +28,7 @@ public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver
         ModelAndViewContainer mavContainer,
         @NonNull NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory) throws Exception {
-        String jwt;
-        try {
-            jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
-        } catch (NoJwtException e) {
-            return null;
-        }
+        String jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
         return jwtTool.extractUserClaims(jwt);
     }
 }
