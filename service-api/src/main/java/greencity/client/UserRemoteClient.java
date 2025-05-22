@@ -460,7 +460,6 @@ public class UserRemoteClient {
      *                                      {@link SocialNetworkImageResponseDTO}.
      * @param file                          of {@link MultipartFile}.
      */
-
     public void updateSocialImage(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile file) {
         String path = "/management/socialnetworkimages/";
 
