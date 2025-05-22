@@ -90,6 +90,7 @@ public class SecurityConfig {
     public static final String USERS = "/users";
     private static final String DISLIKE_V2 = "/dislikeV2";
     private static final String LIKE_V2 = "/likeV2";
+    private static final String FILES = "/files";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -329,7 +330,8 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
-                    "/files",
+                    FILES,
+                    FILES + "/single",
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
@@ -431,7 +433,8 @@ public class SecurityConfig {
                     "/ownSecurity/user",
                     NOTIFICATIONS + NOTIFICATION_ID,
                     HABIT_INVITE + INVITATION_ID + "/reject",
-                    EVENTS + EVENT_ID + "/removeFromRequested")
+                    EVENTS + EVENT_ID + "/removeFromRequested",
+                    FILES)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,
