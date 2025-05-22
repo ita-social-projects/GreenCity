@@ -391,23 +391,31 @@ class UserServiceImplTest {
 
     @Test
     void updateUserProfilePictureTest() {
-        User user = getUser();
+        Long userId = 1L;
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath)).thenReturn(1);
+        when(userRepo.existsById(userId))
+            .thenReturn(true);
 
-        userService.updateUserProfilePicture(1L, profilePicturePath);
+        userService.updateUserProfilePicture(userId, profilePicturePath);
 
-        verify(userRepo).updateUserProfilePictureByUserId(1L, profilePicturePath);
+        verify(userRepo).existsById(userId);
+        verify(userRepo).updateUserProfilePictureByUserId(userId, profilePicturePath);
     }
 
     @Test
     void updateUserProfilePictureUserNotFoundTest() {
+        Long userId = 1L;
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.updateUserProfilePictureByUserId(999L, profilePicturePath)).thenReturn(0);
+        when(userRepo.existsById(userId))
+            .thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> userService.updateUserProfilePicture(999L, profilePicturePath));
+        assertThrows(
+            NotFoundException.class,
+            () -> userService.updateUserProfilePicture(userId, profilePicturePath));
+        verify(userRepo).existsById(userId);
+        verify(userRepo, never()).updateUserProfilePictureByUserId(any(), any());
     }
 
     @Test

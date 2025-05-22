@@ -775,11 +775,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param userId             the id of the user
      * @param profilePicturePath the new profile picture path
-     * @return the number of affected rows (1 if updated, 0 if user not found)
      */
     @Modifying
     @Query("UPDATE User u SET u.profilePicturePath =:profilePicturePath WHERE u.id =:userId")
-    int updateUserProfilePictureByUserId(@Param("userId") Long userId,
+    void updateUserProfilePictureByUserId(@Param("userId") Long userId,
         @Param("profilePicturePath") String profilePicturePath);
 
     /**

@@ -6,7 +6,6 @@ import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
 import java.util.List;

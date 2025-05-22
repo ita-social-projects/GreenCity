@@ -8,7 +8,6 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.BadCategoryRequestException;
@@ -41,7 +40,6 @@ import java.util.stream.Collectors;
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
     private final ModelMapper modelMapper;
-    private final UserService userService;
     private final UserAchievementRepo userAchievementRepo;
     private final SimpMessagingTemplate messagingTemplate;
     private final AchievementCategoryRepo achievementCategoryRepo;

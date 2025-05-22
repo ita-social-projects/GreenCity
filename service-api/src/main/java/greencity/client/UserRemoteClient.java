@@ -8,7 +8,6 @@ import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
-import greencity.dto.user.UserNotificationPreferenceVO;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserRoleStatisticDto;

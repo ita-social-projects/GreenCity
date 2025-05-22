@@ -7,7 +7,6 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.user.UserClaims;
-import greencity.dto.useraction.UserActionVO;
 import greencity.enums.AchievementStatus;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
