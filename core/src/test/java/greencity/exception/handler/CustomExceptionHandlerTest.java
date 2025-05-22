@@ -290,12 +290,14 @@ class CustomExceptionHandlerTest {
         var noJwtException = new NoJwtException();
         ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
         exceptionResponse.setMessage(ErrorMessage.UNAUTHORIZED_RESPONSE);
-        ResponseEntity<ExceptionResponse> expectedResult = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+        ResponseEntity<ExceptionResponse> expectedResult =
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
 
         when(errorAttributes.getErrorAttributes(eq(webRequest), any(ErrorAttributeOptions.class)))
-                .thenReturn(objectMap);
+            .thenReturn(objectMap);
 
-        ResponseEntity<ExceptionResponse> actualResult = customExceptionHandler.handleNoJwtException(noJwtException, webRequest);
+        ResponseEntity<ExceptionResponse> actualResult =
+            customExceptionHandler.handleNoJwtException(noJwtException, webRequest);
 
         assertEquals(expectedResult, actualResult);
     }
