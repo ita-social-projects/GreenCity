@@ -712,4 +712,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
     }
+
+    @ExceptionHandler(NoJwtException.class)
+    public ResponseEntity<ExceptionResponse> handleNoJwtException(NoJwtException ex, WebRequest webRequest) {
+        log.warn(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(webRequest));
+        exceptionResponse.setMessage(ErrorMessage.UNAUTHORIZED_RESPONSE);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
 }

@@ -1,5 +1,6 @@
 package greencity.config;
 
+import greencity.constant.ErrorMessage;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.filters.XSSFilter;
 import greencity.security.jwt.JwtTool;
@@ -131,7 +132,7 @@ public class SecurityConfig {
             .addFilterBefore(new XSSFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
-                .sendError(SC_UNAUTHORIZED, "Authorize first."))
+                .sendError(SC_UNAUTHORIZED, ErrorMessage.UNAUTHORIZED_RESPONSE))
                 .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities.")))
             .authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

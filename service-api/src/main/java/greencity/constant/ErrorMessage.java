@@ -260,4 +260,5 @@ public class ErrorMessage {
     public static final String USER_DID_NOT_SET_ANY_CITY = "User did not set any city";
     public static final String USER_ALREADY_REGISTERED_WITH_THIS_ID = "User with id %s is already registered";
     public static final String NO_JWT_TOKEN_FOUND = "No JWT found in request header";
+    public static final String UNAUTHORIZED_RESPONSE = "Authorize first.";
 }
