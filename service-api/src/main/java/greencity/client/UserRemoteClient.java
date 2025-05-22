@@ -545,14 +545,4 @@ public class UserRemoteClient {
             })
             .block();
     }
-
-    private BodyInserters.MultipartInserter multipartInserter(String partName, MultipartFile... multipartFiles) {
-        MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
-
-        for (MultipartFile multipartFile : multipartFiles) {
-            multipartBodyBuilder.part(partName, multipartFile.getResource());
-        }
-
-        return BodyInserters.fromMultipartData(multipartBodyBuilder.build());
-    }
 }
