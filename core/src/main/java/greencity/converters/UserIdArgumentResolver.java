@@ -1,6 +1,7 @@
 package greencity.converters;
 
 import greencity.annotations.CurrentUserId;
+import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NoJwtException;
 import greencity.security.jwt.JwtTool;
 import lombok.NonNull;
@@ -34,8 +35,19 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
         try {
             jwt = jwtTool.extractJwtFromNativeWebRequest(webRequest);
         } catch (NoJwtException e) {
+            if (required(parameter)) {
+                throw e;
+            }
             return null;
         }
         return jwtTool.extractUserId(jwt);
+    }
+
+    private boolean required(MethodParameter parameter) {
+        var currentUserId = parameter.getParameterAnnotation(CurrentUserId.class);
+        if (currentUserId == null) {
+            throw new IllegalArgumentException(ErrorMessage.ANNOTATION_ARGUMENT_NOT_SUPPORTED);
+        }
+        return currentUserId.required();
     }
 }

@@ -199,6 +199,7 @@ public class ErrorMessage {
         "Error during processing xss escaping of multipart file";
     public static final String STATUSES_REQUIRE_USER_ID =
         "JOINED, CREATED and SAVED statuses required user-id parameter";
+    public static final String ANNOTATION_ARGUMENT_NOT_SUPPORTED = "Annotation argument not supported";
     public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
     public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
     public static final String RATING_POINTS_NOT_FOUND_BY_NAME =
