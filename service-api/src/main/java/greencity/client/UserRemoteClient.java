@@ -177,24 +177,6 @@ public class UserRemoteClient {
     }
 
     /**
-     * Get user notification preferences by user id.
-     *
-     * @param id user id
-     * @return list of {@link UserNotificationPreferenceVO}
-     */
-    public List<UserNotificationPreferenceVO> findAllUserNotificationPreferencesByUserId(Long id) {
-        String path = "/user-notification-preference";
-        return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
-                .queryParam(ID_QUERY_PARAM, id)
-                .build())
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<List<UserNotificationPreferenceVO>>() {
-            })
-            .block();
-    }
-
-    /**
      * Check is user notification preference exists by params in EmailPreferenceDto.
      *
      * @param emailPreferenceDto email preference data
