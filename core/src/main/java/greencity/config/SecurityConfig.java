@@ -223,6 +223,8 @@ public class SecurityConfig {
                     ACHIEVEMENTS,
                     ACHIEVEMENTS + COUNT,
                     ACHIEVEMENTS + CATEGORIES,
+                    ACHIEVEMENTS + "/all",
+                    ACHIEVEMENTS + "/user-achievements/**",
                     CUSTOM_TO_DO_LIST_ITEMS,
                     CUSTOM_TO_DO_LIST,
                     CUSTOM_TO_DO_LIST_URL,
