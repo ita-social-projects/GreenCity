@@ -395,7 +395,7 @@ class UserServiceImplTest {
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
         when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath))
-                .thenReturn(1);
+            .thenReturn(1);
 
         userService.updateUserProfilePicture(userId, profilePicturePath);
 
@@ -408,7 +408,7 @@ class UserServiceImplTest {
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
         when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath))
-                .thenReturn(0);
+            .thenReturn(0);
 
         assertThrows(
             NotFoundException.class,
