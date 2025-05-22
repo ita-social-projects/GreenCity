@@ -1,5 +1,6 @@
 package greencity.exception.handler;
 
+import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.*;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
@@ -282,5 +283,22 @@ class CustomExceptionHandlerTest {
             customExceptionHandler.handleUserAlreadyExistsException(actualException, webRequest);
 
         assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    void handleNoJwtExceptionTest() {
+        var noJwtException = new NoJwtException();
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        exceptionResponse.setMessage(ErrorMessage.UNAUTHORIZED_RESPONSE);
+        ResponseEntity<ExceptionResponse> expectedResult =
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+
+        when(errorAttributes.getErrorAttributes(eq(webRequest), any(ErrorAttributeOptions.class)))
+            .thenReturn(objectMap);
+
+        ResponseEntity<ExceptionResponse> actualResult =
+            customExceptionHandler.handleNoJwtException(noJwtException, webRequest);
+
+        assertEquals(expectedResult, actualResult);
     }
 }

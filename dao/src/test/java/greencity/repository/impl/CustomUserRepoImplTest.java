@@ -54,7 +54,7 @@ class CustomUserRepoImplTest {
         customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
         verify(query).setParameter("userId", userId);
-        verify(query).setParameter("users", userIds);
+        verify(query).setParameter("greencity_users", userIds);
         verify(userRemoteClient).findUserEmailsByUserIds(userIds);
     }
 
@@ -117,7 +117,7 @@ class CustomUserRepoImplTest {
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users);
 
         verify(query).setParameter("userId", userId);
-        verify(query).setParameter("users", userIds);
+        verify(query).setParameter("greencity_users", userIds);
         verify(userRemoteClient).findUserEmailsByUserIds(userIds);
 
         assertEquals(3, result.size());

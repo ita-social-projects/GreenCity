@@ -199,6 +199,7 @@ public class ErrorMessage {
         "Error during processing xss escaping of multipart file";
     public static final String STATUSES_REQUIRE_USER_ID =
         "JOINED, CREATED and SAVED statuses required user-id parameter";
+    public static final String ANNOTATION_ARGUMENT_NOT_SUPPORTED = "Annotation argument not supported";
     public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
     public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
     public static final String RATING_POINTS_NOT_FOUND_BY_NAME =
@@ -259,4 +260,5 @@ public class ErrorMessage {
     public static final String USER_DID_NOT_SET_ANY_CITY = "User did not set any city";
     public static final String USER_ALREADY_REGISTERED_WITH_THIS_ID = "User with id %s is already registered";
     public static final String NO_JWT_TOKEN_FOUND = "No JWT found in request header";
+    public static final String UNAUTHORIZED_RESPONSE = "Authorize first.";
 }
