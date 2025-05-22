@@ -64,16 +64,6 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserActionVO> findAllUserActionsByUserId(Long userId) {
-        return userActionRepo.findAllByUserId(userId).stream()
-            .map(userAction -> modelMapper.map(userAction, UserActionVO.class))
-            .toList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<AchievementVO> findAll() {
         return achievementRepo.findAll().stream()
             .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
