@@ -10,7 +10,6 @@ import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UpdateUserCredoDto;
-import greencity.dto.user.UpdateUserDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
@@ -28,7 +27,6 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.enums.UserUpdateType;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.InsufficientLocationDataException;
 import greencity.exception.exceptions.LowRoleLevelException;
@@ -36,7 +34,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
-import greencity.mapping.UpdateUserDtoUserMapper;
 import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserLocationRepo;
 import greencity.repository.UserRepo;
@@ -55,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -71,7 +67,6 @@ public class UserServiceImpl implements UserService {
     private final UserRemoteClient userRemoteClient;
     private final UserLocationRepo userLocationRepo;
     private final GoogleApiService googleApiService;
-    private final UpdateUserDtoUserMapper updateUserDtoUserMapper;
 
     @Value("300000")
     private long timeAfterLastActivity;
@@ -474,28 +469,6 @@ public class UserServiceImpl implements UserService {
         List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
 
         return new PageInfoDto(currentPage, totalPages, pageNumbers);
-    }
-
-    /***
-     * {@inheritDoc}
-     */
-    public boolean update(UpdateUserDto updateUserDto) {
-        User user;
-        System.out.println(updateUserDto.getUserUpdateType());
-        if (!Objects.equals(updateUserDto.getUserUpdateType(), UserUpdateType.CREATE)) {
-            user = userRepo.findById(updateUserDto.getId()).orElseThrow(
-                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + updateUserDto.getId()));
-            updateUserDtoUserMapper.merge(updateUserDto, user);
-        } else {
-            user = User.builder()
-                .id(updateUserDto.getId())
-                .name(updateUserDto.getName())
-                .rating(AppConstant.DEFAULT_RATING)
-                .eventOrganizerRating(AppConstant.DEFAULT_RATING)
-                .build();
-        }
-        userRepo.save(user);
-        return true;
     }
 
     /**

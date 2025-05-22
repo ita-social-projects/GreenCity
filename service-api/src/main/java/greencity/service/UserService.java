@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UpdateUserCredoDto;
-import greencity.dto.user.UpdateUserDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
@@ -217,15 +216,6 @@ public interface UserService {
      * @return {@link List} of friends ids
      */
     List<Long> getSixFriendsIdsWithTheHighestRating(Long userId);
-
-    /**
-     * Method to synchronize GreenCity user entity with GreenCityUser entity.
-     *
-     * @param updateUserDto {@link UpdateUserDto} - represents new values for user
-     *                      {@link UserVO} entity.
-     * @return {@link Boolean} - represents update state.
-     */
-    boolean update(UpdateUserDto updateUserDto);
 
     /**
      * Method that allows to find {@link UserVOAdvancedDto} by id.
