@@ -297,7 +297,7 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    USERS + "/picturePath",
+                    USERS + "/**",
                     "/ai/**")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
@@ -398,7 +398,9 @@ public class SecurityConfig {
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend",
                     HABIT_INVITE + INVITATION_ID + "/accept",
-                    USERS + "/update")
+                    USERS + "/{id}/location",
+                    USERS + "/rating",
+                    USERS + "/credo")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
