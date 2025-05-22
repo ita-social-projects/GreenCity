@@ -40,7 +40,7 @@ public class CustomUserRepoImpl implements CustomUserRepo {
 
         List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
 
-        query.setParameter("users", userIds);
+        query.setParameter("greencity_users", userIds);
 
         List<UserFriendDto> resultList = query.getResultList();
 
