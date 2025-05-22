@@ -778,7 +778,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query("UPDATE User u SET u.profilePicturePath =:profilePicturePath WHERE u.id =:userId")
-    void updateUserProfilePictureByUserId(@Param("userId") Long userId,
+    int updateUserProfilePictureByUserId(@Param("userId") Long userId,
         @Param("profilePicturePath") String profilePicturePath);
 
     /**

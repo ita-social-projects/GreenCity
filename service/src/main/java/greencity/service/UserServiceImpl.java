@@ -527,10 +527,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateUserProfilePicture(Long userId, String profilePicturePath) {
-        if (!userRepo.existsById(userId)) {
+        int updatedRows = userRepo.updateUserProfilePictureByUserId(userId, profilePicturePath);
+        if (updatedRows == 0) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
-        userRepo.updateUserProfilePictureByUserId(userId, profilePicturePath);
     }
 
     /**

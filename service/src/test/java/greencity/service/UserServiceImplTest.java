@@ -394,12 +394,11 @@ class UserServiceImplTest {
         Long userId = 1L;
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.existsById(userId))
-            .thenReturn(true);
+        when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath))
+                .thenReturn(1);
 
         userService.updateUserProfilePicture(userId, profilePicturePath);
 
-        verify(userRepo).existsById(userId);
         verify(userRepo).updateUserProfilePictureByUserId(userId, profilePicturePath);
     }
 
@@ -408,14 +407,12 @@ class UserServiceImplTest {
         Long userId = 1L;
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.existsById(userId))
-            .thenReturn(false);
+        when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath))
+                .thenReturn(0);
 
         assertThrows(
             NotFoundException.class,
             () -> userService.updateUserProfilePicture(userId, profilePicturePath));
-        verify(userRepo).existsById(userId);
-        verify(userRepo, never()).updateUserProfilePictureByUserId(any(), any());
     }
 
     @Test
