@@ -550,8 +550,10 @@ public class UserServiceImpl implements UserService {
     public List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds) {
         var greenCityProfiles = userRepo.findGreenCityUserProfilesByUserIds(userIds);
         greenCityProfiles.forEach(greenCityProfile -> {
-            UserLocationDto userLocationDto = findUserLocationDtoByUserId(greenCityProfile.getUserId());
-            greenCityProfile.setUserLocationDto(userLocationDto);
+            userLocationRepo.findAllUsersCities(greenCityProfile.getUserId()).ifPresent(userLocation -> {
+                UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                greenCityProfile.setUserLocationDto(userLocationDto);
+            });
         });
         return greenCityProfiles;
     }
