@@ -416,6 +416,32 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUserNameTest() {
+        Long userId = 1L;
+        String userName = "userName";
+
+        when(userRepo.updateUserName(userId, userName))
+                .thenReturn(1);
+
+        userService.updateUserName(userId, userName);
+
+        verify(userRepo).updateUserName(userId, userName);
+    }
+
+    @Test
+    void updateUserNameWhenUserNotFoundTest() {
+        Long userId = 1L;
+        String userName = "userName";
+
+        when(userRepo.updateUserName(userId, userName))
+                .thenReturn(0);
+
+        assertThrows(
+                NotFoundException.class,
+                () -> userService.updateUserName(userId, userName));
+    }
+
+    @Test
     void getProfilePicturePathTest() {
         User user = getUser();
         String profilePicturePath = "http://testprofilepicture.com.ua";
