@@ -161,6 +161,14 @@ public interface UserService {
     void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest);
 
     /**
+     * Get the rating of the user by user id.
+     *
+     * @param userId id of the user
+     * @return {@link Double} rating of the user
+     */
+    Double findUserRating(Long userId);
+
+    /**
      * Increase user rating by amount specified in {@link UserAddRatingDto}.
      *
      * @param userAddRatingDto contains rating data.

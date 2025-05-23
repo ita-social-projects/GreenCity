@@ -359,6 +359,14 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public Double findUserRating(Long userId) {
+        return userRepo.findRatingById(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void increaseUserRating(UserAddRatingDto userAddRatingDto) {
         User user = findUserById(userAddRatingDto.getId());
         user.setRating(user.getRating() + userAddRatingDto.getRating());

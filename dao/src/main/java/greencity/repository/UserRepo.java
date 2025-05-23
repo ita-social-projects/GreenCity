@@ -759,6 +759,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         """)
     List<User> getSixFriendsWithTheHighestRating(Long userId);
 
+    @Query(nativeQuery = true, value = """
+        SELECT rating FROM greencity_users WHERE greencity_users.id = :userId
+        """)
+    Double findRatingById(Long userId);
+
     @Modifying
     @Query("UPDATE User SET userCredo =:userCredo WHERE id =:userId")
     void updateUserCredo(Long userId, String userCredo);
