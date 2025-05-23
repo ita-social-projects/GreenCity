@@ -543,4 +543,15 @@ public class UserServiceImpl implements UserService {
         }
         return userRepo.findProfilePicturePathByUserId(userId);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUserName(Long userId, String userName) {
+        int updatedRows = userRepo.updateUserName(userId, userName);
+        if (updatedRows == 0) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+    }
 }

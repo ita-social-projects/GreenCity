@@ -261,4 +261,12 @@ public interface UserService {
      * @return {@link String} - user's profilePicturePath.
      */
     String getProfilePicturePath(Long userId);
+
+    /**
+     * Method for updating user's name.
+     *
+     * @param userId   - {@link Long} of user's id.
+     * @param userName - new user's name.
+     */
+    void updateUserName(Long userId, String userName);
 }
