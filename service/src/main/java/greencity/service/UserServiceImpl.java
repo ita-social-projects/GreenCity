@@ -50,7 +50,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -549,6 +553,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds) {
         var greenCityProfiles = userRepo.findGreenCityUserProfilesByUserIds(userIds);
+
+        int expectedSize = userIds.size();
+        int resultSize = greenCityProfiles.size();
+
+        if (resultSize < expectedSize) {
+            List<Long> resultIds = greenCityProfiles.stream()
+                    .map(GreenCityUserProfileDtoResponse::getUserId)
+                    .toList();
+            List<Long> notFoundIds = userIds.stream()
+                    .filter(userId -> !resultIds.contains(userId))
+                    .toList();
+            String notFoundIdsStr = notFoundIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
+            throw new NotFoundException(ErrorMessage.USERS_NOT_FOUND_BY_IDS + notFoundIdsStr);
+        }
+
         greenCityProfiles.forEach(greenCityProfile -> {
             userLocationRepo.findAllUsersCities(greenCityProfile.getUserId()).ifPresent(userLocation -> {
                 UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);

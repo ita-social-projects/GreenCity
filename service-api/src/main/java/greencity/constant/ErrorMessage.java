@@ -80,6 +80,7 @@ public class ErrorMessage {
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
+    public static final String USERS_NOT_FOUND_BY_IDS = "Users do not exist by these ids: ";
     public static final String USER_ID_NULL = "User ID cannot be null";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
     public static final String USER_HAS_NO_TO_DO_LIST_ITEMS =
