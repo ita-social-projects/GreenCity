@@ -167,14 +167,6 @@ public interface UserService {
     void increaseUserRating(UserAddRatingDto userAddRatingDto);
 
     /**
-     * Get the rating of the user by user id.
-     *
-     * @param userId id of the user
-     * @return {@link Double} rating of the user
-     */
-    Double findUserRating(Long userId);
-
-    /**
      * Find list of {@link UserVO}'s by emails.
      *
      * @param emails user emails.
@@ -244,8 +236,6 @@ public interface UserService {
      */
     Boolean createUser(CreateGreenCityUserDto createUserDto);
 
-    String findUserCredoByUserId(Long userId);
-
     /**
      * Method for updating user's profilePicturePath.
      *
@@ -253,14 +243,6 @@ public interface UserService {
      * @param profilePicturePath - new picturePath.
      */
     void updateUserProfilePicture(Long userId, String profilePicturePath);
-
-    /**
-     * Method for getting user's profilePicturePath.
-     *
-     * @param userId - {@link Long} of user's id.
-     * @return {@link String} - user's profilePicturePath.
-     */
-    String getProfilePicturePath(Long userId);
 
     /**
      * Method for updating user's name.

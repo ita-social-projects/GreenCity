@@ -758,14 +758,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         """)
     List<User> getSixFriendsWithTheHighestRating(Long userId);
 
-    @Query(nativeQuery = true, value = """
-        SELECT rating FROM greencity_users WHERE greencity_users.id = :userId
-        """)
-    Double findRatingById(Long userId);
-
-    @Query(nativeQuery = true, value = "SELECT user_credo FROM greencity_users WHERE id =:userId")
-    String findUserCredoByUserId(Long userId);
-
     @Modifying
     @Query("UPDATE User SET userCredo =:userCredo WHERE id =:userId")
     void updateUserCredo(Long userId, String userCredo);
@@ -798,13 +790,4 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return true if a user with the given id exists, false otherwise
      */
     boolean existsById(@NotNull @Param("userId") Long userId);
-
-    /**
-     * Retrieves the profile picture path of a user by their id.
-     *
-     * @param userId the id of the user
-     * @return the profile picture path, or null if not set
-     */
-    @Query("SELECT u.profilePicturePath FROM User u WHERE u.id =:userId")
-    String findProfilePicturePathByUserId(@Param("userId") Long userId);
 }

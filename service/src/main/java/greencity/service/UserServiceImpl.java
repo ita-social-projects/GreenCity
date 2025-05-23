@@ -368,14 +368,6 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Double findUserRating(Long userId) {
-        return userRepo.findRatingById(userId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public UserCityDto findAllUsersCities(Long userId) {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
@@ -392,14 +384,12 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userLocation, UserLocationDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateUserCredo(UpdateUserCredoDto updateUserCredoDto) {
         userRepo.updateUserCredo(updateUserCredoDto.userId(), updateUserCredoDto.userCredo());
-    }
-
-    @Override
-    public String findUserCredoByUserId(Long userId) {
-        return userRepo.findUserCredoByUserId(userId);
     }
 
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
@@ -531,17 +521,6 @@ public class UserServiceImpl implements UserService {
         if (updatedRows == 0) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getProfilePicturePath(Long userId) {
-        if (!userRepo.existsById(userId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
-        }
-        return userRepo.findProfilePicturePathByUserId(userId);
     }
 
     /**
