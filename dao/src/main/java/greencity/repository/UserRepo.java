@@ -798,15 +798,18 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean existsById(@NotNull @Param("userId") Long userId);
 
     /**
-     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing information about user
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
+     * information about user.
      *
      * @param userIds ids of users for whom to fetch the data
-     * @return list of {@link GreenCityUserProfileDtoResponse} containing information about user
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing
+     *         information about user
      */
     @Query("""
-        SELECT new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.profilePicturePath, u.userCredo, u.rating)
-        FROM User u
-        WHERE u.id IN :userIds
-    """)
+            SELECT
+            new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.profilePicturePath, u.userCredo, u.rating)
+            FROM User u
+            WHERE u.id IN :userIds
+        """)
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
 }

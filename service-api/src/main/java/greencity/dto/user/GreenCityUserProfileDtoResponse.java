@@ -15,7 +15,8 @@ public class GreenCityUserProfileDtoResponse {
     @Nullable
     private UserLocationDto userLocationDto;
 
-    public GreenCityUserProfileDtoResponse(Long userId, String profilePicturePath, String userCredo, Double userRating) {
+    public GreenCityUserProfileDtoResponse(Long userId, String profilePicturePath, String userCredo,
+        Double userRating) {
         this.userId = userId;
         this.profilePicturePath = profilePicturePath;
         this.userCredo = userCredo;
