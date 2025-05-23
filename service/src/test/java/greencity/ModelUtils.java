@@ -3614,10 +3614,9 @@ public class ModelUtils {
 
     public static GreenCityUserProfileDtoResponse getGreenCityUserProfileDtoResponse(Long userId) {
         return new GreenCityUserProfileDtoResponse(
-                userId,
-                TestConst.PICTURE_PATH,
-                "user credo",
-                0.
-        );
+            userId,
+            TestConst.PICTURE_PATH,
+            "user credo",
+            0.);
     }
 }

@@ -177,8 +177,8 @@ class UserControllerTest {
         String userIdsStr = userIds.stream().map(String::valueOf).collect(Collectors.joining(","));
 
         mockMvc.perform(get(userLink + "/profiles")
-                .queryParam("userIds", userIdsStr))
-                .andExpect(status().isOk());
+            .queryParam("userIds", userIdsStr))
+            .andExpect(status().isOk());
 
         verify(userService).findGreenCityUserProfilesByUserIds(userIds);
     }
@@ -190,11 +190,11 @@ class UserControllerTest {
         String userIdsStr = userIds.stream().map(String::valueOf).collect(Collectors.joining(","));
 
         when(userService.findGreenCityUserProfilesByUserIds(userIds))
-                .thenThrow(new NotFoundException());
+            .thenThrow(new NotFoundException());
 
         mockMvc.perform(get(userLink + "/profiles")
-                        .queryParam("userIds", userIdsStr))
-                .andExpect(status().isNotFound());
+            .queryParam("userIds", userIdsStr))
+            .andExpect(status().isNotFound());
 
         verify(userService).findGreenCityUserProfilesByUserIds(userIds);
     }

@@ -436,13 +436,13 @@ class UserServiceImplTest {
     void findGreenCityUserProfilesByUserIdsTest() {
         List<Long> userIds = List.of(1L, 2L);
         var greenCityProfiles = userIds.stream()
-                .map(ModelUtils::getGreenCityUserProfileDtoResponse)
-                .toList();
+            .map(ModelUtils::getGreenCityUserProfileDtoResponse)
+            .toList();
 
         when(userRepo.findGreenCityUserProfilesByUserIds(userIds))
-                .thenReturn(greenCityProfiles);
+            .thenReturn(greenCityProfiles);
         when(userLocationRepo.findAllUsersCities(anyLong()))
-                .thenReturn(Optional.of(new UserLocation()));
+            .thenReturn(Optional.of(new UserLocation()));
 
         userService.findGreenCityUserProfilesByUserIds(userIds);
 
@@ -454,18 +454,17 @@ class UserServiceImplTest {
     void findGreenCityUserProfilesByUserIdsWhenUsersNotFoundTest() {
         List<Long> userIds = List.of(1L, 2L, 3L, 7L);
         var greenCityProfiles = userIds.stream()
-                .map(ModelUtils::getGreenCityUserProfileDtoResponse)
-                .limit(2)
-                .toList();
+            .map(ModelUtils::getGreenCityUserProfileDtoResponse)
+            .limit(2)
+            .toList();
         String expectedExceptionMessage = ErrorMessage.USERS_NOT_FOUND_BY_IDS + "3, 7";
 
         when(userRepo.findGreenCityUserProfilesByUserIds(userIds))
-                .thenReturn(greenCityProfiles);
+            .thenReturn(greenCityProfiles);
 
         NotFoundException notFoundException = assertThrows(
-                NotFoundException.class,
-                () -> userService.findGreenCityUserProfilesByUserIds(userIds)
-        );
+            NotFoundException.class,
+            () -> userService.findGreenCityUserProfilesByUserIds(userIds));
         String actualExceptionMessage = notFoundException.getMessage();
 
         assertEquals(expectedExceptionMessage, actualExceptionMessage);
