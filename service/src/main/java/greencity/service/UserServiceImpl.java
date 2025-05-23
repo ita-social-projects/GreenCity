@@ -9,6 +9,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
@@ -532,5 +533,18 @@ public class UserServiceImpl implements UserService {
         if (updatedRows == 0) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds) {
+        var greenCityProfiles = userRepo.findGreenCityUserProfilesByUserIds(userIds);
+        greenCityProfiles.forEach(greenCityProfile -> {
+            UserLocationDto userLocationDto = findUserLocationDtoByUserId(greenCityProfile.getUserId());
+            greenCityProfile.setUserLocationDto(userLocationDto);
+        });
+        return greenCityProfiles;
     }
 }

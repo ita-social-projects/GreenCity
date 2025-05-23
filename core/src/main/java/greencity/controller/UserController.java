@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
@@ -257,5 +258,27 @@ public class UserController {
     public ResponseEntity<Void> updateUserName(@PathVariable Long userId, @RequestParam String userName) {
         userService.updateUserName(userId, userName);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing information about user
+     *
+     * @param userIds ids of users for whom to fetch the data
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing information about user
+     */
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/profiles")
+    public ResponseEntity<List<GreenCityUserProfileDtoResponse>> findGreenCityUserProfilesByUserIds(
+            @RequestParam List<Long> userIds
+    ) {
+        return ResponseEntity.ok(userService.findGreenCityUserProfilesByUserIds(userIds));
     }
 }

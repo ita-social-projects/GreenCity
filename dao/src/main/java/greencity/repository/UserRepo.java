@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -790,4 +791,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return true if a user with the given id exists, false otherwise
      */
     boolean existsById(@NotNull @Param("userId") Long userId);
+
+    /**
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing information about user
+     *
+     * @param userIds ids of users for whom to fetch the data
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing information about user
+     */
+    @Query("""
+        SELECT new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.profilePicturePath, u.userCredo, u.rating)
+        FROM User u
+        WHERE u.id IN :userIds
+    """)
+    List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
 }
