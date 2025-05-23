@@ -23,11 +23,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -159,5 +161,40 @@ class UserControllerTest {
             .andReturn();
 
         verify(userService).getProfilePicturePath(userId);
+    }
+
+    @Test
+    void updateUserNameTest() throws Exception {
+        Long userId = 1L;
+        String userName = "username";
+        String url = UriComponentsBuilder.fromPath(userLink + "/{userId}/name")
+            .buildAndExpand(userId)
+            .toUriString();
+
+        doNothing().when(userService).updateUserName(userId, userName);
+
+        mockMvc.perform(patch(url).queryParam("userName", userName))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(userService).updateUserName(userId, userName);
+    }
+
+    @Test
+    void updateUserNameWhenUserIsNotFoundTest() throws Exception {
+        Long userId = 1L;
+        String userName = "username";
+        String url = UriComponentsBuilder.fromPath(userLink + "/{userId}/name")
+            .buildAndExpand(userId)
+            .toUriString();
+
+        doThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId))
+            .when(userService).updateUserName(userId, userName);
+
+        mockMvc.perform(patch(url).queryParam("userName", userName))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+        verify(userService).updateUserName(userId, userName);
     }
 }

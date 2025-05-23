@@ -299,4 +299,25 @@ public class UserController {
     public ResponseEntity<String> getPicturePath(@RequestParam(name = "userId") Long userId) {
         return ResponseEntity.ok(userService.getProfilePicturePath(userId));
     }
+
+    /**
+     * Method for updating user's name.
+     *
+     * @param userId   - {@link Long} of user's id.
+     * @param userName - new user's name.
+     */
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PatchMapping("/{userId}/name")
+    public ResponseEntity<Void> updateUserName(@PathVariable Long userId, @RequestParam String userName) {
+        userService.updateUserName(userId, userName);
+        return ResponseEntity.ok().build();
+    }
 }
