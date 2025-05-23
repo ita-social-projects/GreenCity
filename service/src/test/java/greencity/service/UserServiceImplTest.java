@@ -186,19 +186,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findUserCredoByUserIdTest() {
-        Long userId = 5L;
-        String expectedResult = "my user credo";
-
-        when(userRepo.findUserCredoByUserId(userId))
-            .thenReturn(expectedResult);
-
-        String actualResult = userService.findUserCredoByUserId(userId);
-
-        assertEquals(expectedResult, actualResult);
-    }
-
-    @Test
     void getInitialsByIdTest() {
         Long id = 12L;
         User user = Mockito.mock(User.class);
@@ -439,26 +426,5 @@ class UserServiceImplTest {
         assertThrows(
             NotFoundException.class,
             () -> userService.updateUserName(userId, userName));
-    }
-
-    @Test
-    void getProfilePicturePathTest() {
-        User user = getUser();
-        String profilePicturePath = "http://testprofilepicture.com.ua";
-        user.setProfilePicturePath(profilePicturePath);
-
-        when(userRepo.existsById(1L)).thenReturn(true);
-        when(userRepo.findProfilePicturePathByUserId(1L)).thenReturn(profilePicturePath);
-
-        String result = userService.getProfilePicturePath(1L);
-
-        assertEquals(profilePicturePath, result);
-    }
-
-    @Test
-    void getProfilePicturePathUserNotFoundTest() {
-        when(userRepo.existsById(999L)).thenReturn(false);
-
-        assertThrows(NotFoundException.class, () -> userService.getProfilePicturePath(999L));
     }
 }

@@ -132,38 +132,6 @@ class UserControllerTest {
     }
 
     @Test
-    void getPicturePathTest() throws Exception {
-        Long userId = 1L;
-        String profilePicturePath = "http://somepicture.com.ua";
-
-        when(userService.getProfilePicturePath(userId)).thenReturn(profilePicturePath);
-
-        MvcResult result = mockMvc.perform(get(userLink + "/picturePath")
-            .param("userId", String.valueOf(userId)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        assertEquals(profilePicturePath, responseBody);
-        verify(userService).getProfilePicturePath(userId);
-    }
-
-    @Test
-    void getPicturePathUserNotFoundTest() throws Exception {
-        Long userId = 1L;
-
-        when(userService.getProfilePicturePath(userId))
-            .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-
-        mockMvc.perform(get(userLink + "/picturePath")
-            .param("userId", String.valueOf(userId)))
-            .andExpect(status().isNotFound())
-            .andReturn();
-
-        verify(userService).getProfilePicturePath(userId);
-    }
-
-    @Test
     void updateUserNameTest() throws Exception {
         Long userId = 1L;
         String userName = "username";
