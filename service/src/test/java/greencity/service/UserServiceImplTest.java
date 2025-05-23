@@ -421,7 +421,7 @@ class UserServiceImplTest {
         String userName = "userName";
 
         when(userRepo.updateUserName(userId, userName))
-                .thenReturn(1);
+            .thenReturn(1);
 
         userService.updateUserName(userId, userName);
 
@@ -434,11 +434,11 @@ class UserServiceImplTest {
         String userName = "userName";
 
         when(userRepo.updateUserName(userId, userName))
-                .thenReturn(0);
+            .thenReturn(0);
 
         assertThrows(
-                NotFoundException.class,
-                () -> userService.updateUserName(userId, userName));
+            NotFoundException.class,
+            () -> userService.updateUserName(userId, userName));
     }
 
     @Test

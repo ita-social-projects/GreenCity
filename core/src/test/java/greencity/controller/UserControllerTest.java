@@ -168,14 +168,14 @@ class UserControllerTest {
         Long userId = 1L;
         String userName = "username";
         String url = UriComponentsBuilder.fromPath(userLink + "/{userId}/name")
-                .buildAndExpand(userId)
-                .toUriString();
+            .buildAndExpand(userId)
+            .toUriString();
 
         doNothing().when(userService).updateUserName(userId, userName);
 
         mockMvc.perform(patch(url).queryParam("userName", userName))
-                .andExpect(status().isOk())
-                .andReturn();
+            .andExpect(status().isOk())
+            .andReturn();
 
         verify(userService).updateUserName(userId, userName);
     }
@@ -185,15 +185,15 @@ class UserControllerTest {
         Long userId = 1L;
         String userName = "username";
         String url = UriComponentsBuilder.fromPath(userLink + "/{userId}/name")
-                .buildAndExpand(userId)
-                .toUriString();
+            .buildAndExpand(userId)
+            .toUriString();
 
         doThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId))
-                .when(userService).updateUserName(userId, userName);
+            .when(userService).updateUserName(userId, userName);
 
         mockMvc.perform(patch(url).queryParam("userName", userName))
-                .andExpect(status().isNotFound())
-                .andReturn();
+            .andExpect(status().isNotFound())
+            .andReturn();
 
         verify(userService).updateUserName(userId, userName);
     }
