@@ -351,9 +351,8 @@ class CommentServiceImplTest {
         doReturn(null).when(spyCommentService).getArticleAuthor(articleType, articleId);
 
         NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> spyCommentService.save(articleType, articleId, addCommentDtoRequest, images, userVO, locale)
-        );
+            NotFoundException.class,
+            () -> spyCommentService.save(articleType, articleId, addCommentDtoRequest, images, userVO, locale));
 
         assertEquals("Article author not found", exception.getMessage());
     }
@@ -644,9 +643,8 @@ class CommentServiceImplTest {
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
 
         BadRequestException badRequestException = assertThrows(
-                BadRequestException.class,
-                () -> commentService.getCommentById(articleType, commentId, userVO.getId())
-        );
+            BadRequestException.class,
+            () -> commentService.getCommentById(articleType, commentId, userVO.getId()));
 
         assertEquals(badRequestException.getMessage(),
             "Comment with id: " + 1 + " doesn't belong to " + articleType.getLink());
@@ -871,9 +869,8 @@ class CommentServiceImplTest {
             .thenReturn(Optional.of(comment));
 
         UserHasNoPermissionToAccessException noAccessException = assertThrows(
-                UserHasNoPermissionToAccessException.class,
-                () -> commentService.update(editedText, commentId, userVO.getId())
-        );
+            UserHasNoPermissionToAccessException.class,
+            () -> commentService.update(editedText, commentId, userVO.getId()));
 
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, noAccessException.getMessage());
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
@@ -1370,9 +1367,8 @@ class CommentServiceImplTest {
         when(eventRepo.findById(eventId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(
-                NotFoundException.class,
-                () -> commentService.checkArticleExists(articleType, eventId)
-        );
+            NotFoundException.class,
+            () -> commentService.checkArticleExists(articleType, eventId));
 
         assertEquals("Event doesn't exist by this id: " + eventId, exception.getMessage());
     }
