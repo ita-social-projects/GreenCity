@@ -887,6 +887,7 @@ class HabitServiceImplTest {
     @Test
     void addCustomHabitNotFoundExceptionWithNotExistingLanguage() throws IOException {
         User user = ModelUtils.getUser();
+        Long userId = user.getId();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
         MultipartFile image = ModelUtils.getFile();
@@ -901,7 +902,7 @@ class HabitServiceImplTest {
         addCustomHabitDtoRequest.setHabitTranslations(List.of(habitTranslationWithUnsupportedId));
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTestUk();
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitTranslationMapper.mapAllToList(addCustomHabitDtoRequest.getHabitTranslations(), "ua"))
@@ -912,9 +913,9 @@ class HabitServiceImplTest {
         when(habitRepo.save(any(Habit.class))).thenReturn(habit);
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(RESPONSE);
         assertThrows(NotFoundException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, user.getId()));
+            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, userId));
 
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(userId);
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
         verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
         verify(tagsRepo).findById(20L);
@@ -1266,17 +1267,18 @@ class HabitServiceImplTest {
         Long customHabitId = 1L;
         Habit toDelete = ModelUtils.getHabitWithCustom();
         User user = ModelUtils.getUser();
+        Long userId = user.getId();
         toDelete.setUserId(4L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         UserHasNoPermissionToAccessException exception = assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> habitService.deleteCustomHabit(customHabitId, user.getId()));
+            () -> habitService.deleteCustomHabit(customHabitId, userId));
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(userId);
         verify(habitRepo, times(0)).save(any(Habit.class));
     }
 

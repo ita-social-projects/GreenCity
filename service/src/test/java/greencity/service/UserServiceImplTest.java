@@ -159,15 +159,15 @@ class UserServiceImplTest {
 
     @Test
     void checkUpdatableUserTest() {
-        Long userId = 1L;
         User user = getUser();
+        Long userId = user.getId();
         UserLocation userLocation = user.getUserLocation();
         UserLocationDto userLocationDto = new UserLocationDto();
 
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(modelMapper.map(userLocation, UserLocationDto.class)).thenReturn(userLocationDto);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
-            userService.checkUpdatableUser(userId, user.getId());
+            userService.checkUpdatableUser(userId, userId);
         });
         assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
     }

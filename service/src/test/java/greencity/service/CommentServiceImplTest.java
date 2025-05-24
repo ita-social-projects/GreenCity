@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -455,7 +456,6 @@ class CommentServiceImplTest {
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
             .id(5L)
-            // .email("test@email.com")
             .build()));
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
@@ -639,12 +639,11 @@ class CommentServiceImplTest {
         ArticleType articleType = ArticleType.ECO_NEWS;
         Comment comment = new Comment();
         comment.setArticleType(ArticleType.HABIT);
-        UserVO userVO = getUserVO();
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
 
         BadRequestException badRequestException = assertThrows(
             BadRequestException.class,
-            () -> commentService.getCommentById(articleType, commentId, userVO.getId()));
+            () -> commentService.getCommentById(articleType, commentId, TestConst.USER_ID));
 
         assertEquals(badRequestException.getMessage(),
             "Comment with id: " + 1 + " doesn't belong to " + articleType.getLink());
@@ -790,13 +789,12 @@ class CommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = getUserVO();
         Long habitId = 1L;
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> commentService.getAllActiveComments(pageable, userVO.getId(), habitId, ArticleType.HABIT));
+            () -> commentService.getAllActiveComments(pageable, TestConst.USER_ID, habitId, ArticleType.HABIT));
 
         assertEquals(HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
 
@@ -808,13 +806,12 @@ class CommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = getUserVO();
         Long ecoNewsId = 1L;
 
         when(econewsRepo.findById(ecoNewsId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> commentService.getAllActiveComments(pageable, userVO.getId(), ecoNewsId, ArticleType.ECO_NEWS));
+            () -> commentService.getAllActiveComments(pageable, TestConst.USER_ID, ecoNewsId, ArticleType.ECO_NEWS));
 
         assertEquals(ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId, exception.getMessage());
 
@@ -840,7 +837,6 @@ class CommentServiceImplTest {
 
     @Test
     void updateCommentThatDoesntExistsThrowException() {
-        UserVO userVO = getUserVO();
         Long commentId = 1L;
         String editedText = "edited text";
 
@@ -848,7 +844,7 @@ class CommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> commentService.update(editedText, commentId, userVO.getId()));
+                () -> commentService.update(editedText, commentId, TestConst.USER_ID));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
@@ -857,7 +853,6 @@ class CommentServiceImplTest {
     @Test
     void updateCommentThatDoesntBelongsToUserThrowException() {
         User user = ModelUtils.getUser();
-        UserVO userVO = getUserVO();
         user.setId(2L);
 
         Long commentId = 1L;
@@ -870,7 +865,7 @@ class CommentServiceImplTest {
 
         UserHasNoPermissionToAccessException noAccessException = assertThrows(
             UserHasNoPermissionToAccessException.class,
-            () -> commentService.update(editedText, commentId, userVO.getId()));
+            () -> commentService.update(editedText, commentId, TestConst.USER_ID));
 
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, noAccessException.getMessage());
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
@@ -897,7 +892,6 @@ class CommentServiceImplTest {
     @Test
     void deleteCommentUserHasNoPermissionThrowException() {
         Long commentId = 1L;
-
         User user = getUser();
         user.setId(2L);
         UserVO userToDeleteVO = getUserVO();
@@ -1003,12 +997,11 @@ class CommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
 
         when(commentRepo.findById(parentCommentId)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class,
-            () -> commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId()));
+            () -> commentService.getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID));
         verify(commentRepo).findById(parentCommentId);
     }
 

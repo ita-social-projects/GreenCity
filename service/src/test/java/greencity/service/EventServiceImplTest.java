@@ -1008,11 +1008,12 @@ class EventServiceImplTest {
     void rateEventUserRatesOwnEventUserHasNoPermissionToAccessExceptionThrownTest() {
         Event event = ModelUtils.getEventWithFinishedDate();
         User user = event.getOrganizer();
+        Long userId = user.getId();
         Long eventId = event.getId();
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> eventService.rateEvent(eventId, user.getId(), 2))
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userId, 2))
             .isInstanceOf(UserHasNoPermissionToAccessException.class)
             .hasMessage(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
 
@@ -1024,11 +1025,12 @@ class EventServiceImplTest {
     void rateEventUserRatesNotFinishedEventYetBadRequestExceptionThrownTest() {
         Event event = ModelUtils.getEventNotStartedYet();
         User user = ModelUtils.getTestUser();
+        Long userId = user.getId();
         Long eventId = event.getId();
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> eventService.rateEvent(eventId, user.getId(), 2))
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userId, 2))
             .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.EVENT_IS_NOT_FINISHED);
 
         verify(eventRepo, times(0)).save(event);
@@ -1039,11 +1041,12 @@ class EventServiceImplTest {
     void rateEventUserNotEventSubscriberBadRequestExceptionThrownTest() {
         Event event = ModelUtils.getEventWithFinishedDate();
         User user = ModelUtils.getTestUser();
+        Long userId = user.getId();
         Long eventId = event.getId();
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> eventService.rateEvent(eventId, user.getId(), 2))
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userId, 2))
             .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
 
         verify(eventRepo, times(0)).save(event);
@@ -1054,13 +1057,14 @@ class EventServiceImplTest {
     void rateEventUserAlreadyRatedEventBadRequestExceptionThrownTest() {
         Event event = ModelUtils.getEventWithFinishedDate();
         User userWhoRatesEvent = ModelUtils.getTestUser();
+        Long userWhoRatesEventId = userWhoRatesEvent.getId();
         Long eventId = event.getId();
         event.setAttenders(Set.of(userWhoRatesEvent));
         event.setEventGrades(List.of(EventGrade.builder().grade(2).event(event).user(userWhoRatesEvent).build()));
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(userRepo.findById(userWhoRatesEvent.getId())).thenReturn(Optional.of(userWhoRatesEvent));
+        when(userRepo.findById(userWhoRatesEventId)).thenReturn(Optional.of(userWhoRatesEvent));
 
-        assertThatThrownBy(() -> eventService.rateEvent(eventId, userWhoRatesEvent.getId(), 2))
+        assertThatThrownBy(() -> eventService.rateEvent(eventId, userWhoRatesEventId, 2))
             .isInstanceOf(BadRequestException.class).hasMessage(ErrorMessage.HAVE_ALREADY_RATED);
 
         verify(eventRepo, times(0)).save(event);
@@ -1685,11 +1689,10 @@ class EventServiceImplTest {
     @Test
     void checkIsEventLikedByUserTest_ThrowNotFoundException_Test() {
         Event event = getEvent();
-        UserVO userVO = getUserVO();
         Long eventId = event.getId();
 
         NotFoundException exception =
-            assertThrows(NotFoundException.class, () -> eventService.isEventLikedByUser(eventId, userVO.getId()));
+            assertThrows(NotFoundException.class, () -> eventService.isEventLikedByUser(eventId, TestConst.USER_ID));
         assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
 
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));
@@ -1715,11 +1718,10 @@ class EventServiceImplTest {
     @Test
     void checkIsEventDislikedByUserTest_ThrowNotFoundException_Test() {
         Event event = getEvent();
-        UserVO userVO = getUserVO();
         Long eventId = event.getId();
 
         NotFoundException exception =
-            assertThrows(NotFoundException.class, () -> eventService.isEventDislikedByUser(eventId, userVO.getId()));
+            assertThrows(NotFoundException.class, () -> eventService.isEventDislikedByUser(eventId, TestConst.USER_ID));
         assertEquals(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId(), exception.getMessage());
 
         assertTrue(exception.getMessage().contains(ErrorMessage.EVENT_NOT_FOUND_BY_ID + event.getId()));

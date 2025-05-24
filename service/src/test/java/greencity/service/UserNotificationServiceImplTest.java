@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
@@ -659,10 +660,11 @@ class UserNotificationServiceImplTest {
     @Test
     void deleteNonExistentNotificationAndGetNotFoundExceptionTest() {
         Long notificationId = 1L;
-        when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(false);
+        Long userId = TestConst.USER_ID;
+        when(notificationRepo.existsByIdAndTargetUserId(notificationId, userId)).thenReturn(false);
 
         assertThrows(NotFoundException.class,
-            () -> userNotificationService.deleteNotification(testUserVo.getId(), notificationId));
+            () -> userNotificationService.deleteNotification(userId, notificationId));
     }
 
     @Test
