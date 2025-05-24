@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
@@ -160,19 +161,19 @@ public interface UserService {
     void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest);
 
     /**
-     * Increase user rating by amount specified in {@link UserAddRatingDto}.
-     *
-     * @param userAddRatingDto contains rating data.
-     */
-    void increaseUserRating(UserAddRatingDto userAddRatingDto);
-
-    /**
      * Get the rating of the user by user id.
      *
      * @param userId id of the user
      * @return {@link Double} rating of the user
      */
     Double findUserRating(Long userId);
+
+    /**
+     * Increase user rating by amount specified in {@link UserAddRatingDto}.
+     *
+     * @param userAddRatingDto contains rating data.
+     */
+    void increaseUserRating(UserAddRatingDto userAddRatingDto);
 
     /**
      * Find list of {@link UserVO}'s by emails.
@@ -244,8 +245,6 @@ public interface UserService {
      */
     Boolean createUser(CreateGreenCityUserDto createUserDto);
 
-    String findUserCredoByUserId(Long userId);
-
     /**
      * Method for updating user's profilePicturePath.
      *
@@ -255,18 +254,20 @@ public interface UserService {
     void updateUserProfilePicture(Long userId, String profilePicturePath);
 
     /**
-     * Method for getting user's profilePicturePath.
-     *
-     * @param userId - {@link Long} of user's id.
-     * @return {@link String} - user's profilePicturePath.
-     */
-    String getProfilePicturePath(Long userId);
-
-    /**
      * Method for updating user's name.
      *
      * @param userId   - {@link Long} of user's id.
      * @param userName - new user's name.
      */
     void updateUserName(Long userId, String userName);
+
+    /**
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing.
+     * information about user
+     *
+     * @param userIds ids of users for whom to fetch the data
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing
+     *         information about user
+     */
+    List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
 }

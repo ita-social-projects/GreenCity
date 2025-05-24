@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -763,9 +764,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         """)
     Double findRatingById(Long userId);
 
-    @Query(nativeQuery = true, value = "SELECT user_credo FROM greencity_users WHERE id =:userId")
-    String findUserCredoByUserId(Long userId);
-
     @Modifying
     @Query("UPDATE User SET userCredo =:userCredo WHERE id =:userId")
     void updateUserCredo(Long userId, String userCredo);
@@ -800,11 +798,18 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean existsById(@NotNull @Param("userId") Long userId);
 
     /**
-     * Retrieves the profile picture path of a user by their id.
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
+     * information about user.
      *
-     * @param userId the id of the user
-     * @return the profile picture path, or null if not set
+     * @param userIds ids of users for whom to fetch the data
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing
+     *         information about user
      */
-    @Query("SELECT u.profilePicturePath FROM User u WHERE u.id =:userId")
-    String findProfilePicturePathByUserId(@Param("userId") Long userId);
+    @Query("""
+            SELECT
+            new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.profilePicturePath, u.userCredo, u.rating)
+            FROM User u
+            WHERE u.id IN :userIds
+        """)
+    List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
 }

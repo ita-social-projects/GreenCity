@@ -9,6 +9,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageInfoDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
@@ -358,18 +359,18 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void increaseUserRating(UserAddRatingDto userAddRatingDto) {
-        User user = findUserById(userAddRatingDto.getId());
-        user.setRating(user.getRating() + userAddRatingDto.getRating());
-        userRepo.save(user);
+    public Double findUserRating(Long userId) {
+        return userRepo.findRatingById(userId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Double findUserRating(Long userId) {
-        return userRepo.findRatingById(userId);
+    public void increaseUserRating(UserAddRatingDto userAddRatingDto) {
+        User user = findUserById(userAddRatingDto.getId());
+        user.setRating(user.getRating() + userAddRatingDto.getRating());
+        userRepo.save(user);
     }
 
     /**
@@ -392,14 +393,12 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userLocation, UserLocationDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateUserCredo(UpdateUserCredoDto updateUserCredoDto) {
         userRepo.updateUserCredo(updateUserCredoDto.userId(), updateUserCredoDto.userCredo());
-    }
-
-    @Override
-    public String findUserCredoByUserId(Long userId) {
-        return userRepo.findUserCredoByUserId(userId);
     }
 
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
@@ -537,21 +536,40 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public String getProfilePicturePath(Long userId) {
-        if (!userRepo.existsById(userId)) {
+    public void updateUserName(Long userId, String userName) {
+        int updatedRows = userRepo.updateUserName(userId, userName);
+        if (updatedRows == 0) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
-        return userRepo.findProfilePicturePathByUserId(userId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void updateUserName(Long userId, String userName) {
-        int updatedRows = userRepo.updateUserName(userId, userName);
-        if (updatedRows == 0) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+    public List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds) {
+        var greenCityProfiles = userRepo.findGreenCityUserProfilesByUserIds(userIds);
+
+        int expectedSize = userIds.size();
+        int resultSize = greenCityProfiles.size();
+
+        if (resultSize < expectedSize) {
+            List<Long> resultIds = greenCityProfiles.stream()
+                .map(GreenCityUserProfileDtoResponse::getUserId)
+                .toList();
+            List<Long> notFoundIds = userIds.stream()
+                .filter(userId -> !resultIds.contains(userId))
+                .toList();
+            String notFoundIdsStr = notFoundIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
+            throw new NotFoundException(ErrorMessage.USERS_NOT_FOUND_BY_IDS + notFoundIdsStr);
         }
+
+        greenCityProfiles.forEach(greenCityProfile -> {
+            userLocationRepo.findAllUsersCities(greenCityProfile.getUserId()).ifPresent(userLocation -> {
+                UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+                greenCityProfile.setUserLocationDto(userLocationDto);
+            });
+        });
+        return greenCityProfiles;
     }
 }

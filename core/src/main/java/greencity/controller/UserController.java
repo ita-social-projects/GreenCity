@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
@@ -175,27 +176,6 @@ public class UserController {
     }
 
     /**
-     * Method to get user rating by user id.
-     *
-     * @param userId user id.
-     * @return {@link String} user rating.
-     */
-    @Operation(summary = "Get user rating")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("/{id}/rating")
-    public ResponseEntity<Double> findUserRatingByUserId(@PathVariable("id") Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findUserRating(userId));
-    }
-
-    /**
      * Method to update user credo by user id.
      *
      * @param updateUserCredoDto containing update information.
@@ -214,27 +194,6 @@ public class UserController {
     public ResponseEntity<Void> updateUserCredoByUserId(@RequestBody UpdateUserCredoDto updateUserCredoDto) {
         userService.updateUserCredo(updateUserCredoDto);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    /**
-     * Method to get user credo by user id.
-     *
-     * @param userId user id.
-     * @return {@link String} user credo.
-     */
-    @Operation(summary = "Get user credo")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("/{id}/credo")
-    public ResponseEntity<String> findUserCredoByUserId(@PathVariable("id") Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findUserCredoByUserId(userId));
     }
 
     /**
@@ -281,26 +240,6 @@ public class UserController {
     }
 
     /**
-     * Method to get user's picture path. Used by GreenCityRemoteClient on the
-     * GreenCityUser microservice as a remote endpoint.
-     *
-     */
-    @Operation(summary = "Gets user's picture path")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
-    })
-    @GetMapping("/picturePath")
-    public ResponseEntity<String> getPicturePath(@RequestParam(name = "userId") Long userId) {
-        return ResponseEntity.ok(userService.getProfilePicturePath(userId));
-    }
-
-    /**
      * Method for updating user's name.
      *
      * @param userId   - {@link Long} of user's id.
@@ -319,5 +258,28 @@ public class UserController {
     public ResponseEntity<Void> updateUserName(@PathVariable Long userId, @RequestParam String userName) {
         userService.updateUserName(userId, userName);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
+     * information about user.
+     *
+     * @param userIds ids of users for whom to fetch the data
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing
+     *         information about user
+     */
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/profiles")
+    public ResponseEntity<List<GreenCityUserProfileDtoResponse>> findGreenCityUserProfilesByUserIds(
+        @RequestParam List<Long> userIds) {
+        return ResponseEntity.ok(userService.findGreenCityUserProfilesByUserIds(userIds));
     }
 }

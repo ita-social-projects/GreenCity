@@ -7,6 +7,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
@@ -24,6 +25,7 @@ import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.enums.UserStatus;
 import greencity.mapping.UserManagementVOMapper;
+import greencity.repository.UserLocationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import org.junit.jupiter.api.Test;
@@ -79,6 +81,8 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    UserLocationRepo userLocationRepo;
     @Mock
     UserManagementVOMapper userManagementVOMapper;
 
@@ -183,19 +187,6 @@ class UserServiceImplTest {
         userService.updateUserCredo(updateUserCredoDto);
 
         verify(userRepo).updateUserCredo(userId, userCredo);
-    }
-
-    @Test
-    void findUserCredoByUserIdTest() {
-        Long userId = 5L;
-        String expectedResult = "my user credo";
-
-        when(userRepo.findUserCredoByUserId(userId))
-            .thenReturn(expectedResult);
-
-        String actualResult = userService.findUserCredoByUserId(userId);
-
-        assertEquals(expectedResult, actualResult);
     }
 
     @Test
@@ -442,23 +433,42 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getProfilePicturePathTest() {
-        User user = getUser();
-        String profilePicturePath = "http://testprofilepicture.com.ua";
-        user.setProfilePicturePath(profilePicturePath);
+    void findGreenCityUserProfilesByUserIdsTest() {
+        List<Long> userIds = List.of(1L, 2L);
+        var greenCityProfiles = userIds.stream()
+            .map(ModelUtils::getGreenCityUserProfileDtoResponse)
+            .toList();
 
-        when(userRepo.existsById(1L)).thenReturn(true);
-        when(userRepo.findProfilePicturePathByUserId(1L)).thenReturn(profilePicturePath);
+        when(userRepo.findGreenCityUserProfilesByUserIds(userIds))
+            .thenReturn(greenCityProfiles);
+        when(userLocationRepo.findAllUsersCities(anyLong()))
+            .thenReturn(Optional.of(new UserLocation()));
 
-        String result = userService.getProfilePicturePath(1L);
+        userService.findGreenCityUserProfilesByUserIds(userIds);
 
-        assertEquals(profilePicturePath, result);
+        verify(userRepo).findGreenCityUserProfilesByUserIds(userIds);
+        verify(userLocationRepo, times(userIds.size())).findAllUsersCities(anyLong());
     }
 
     @Test
-    void getProfilePicturePathUserNotFoundTest() {
-        when(userRepo.existsById(999L)).thenReturn(false);
+    void findGreenCityUserProfilesByUserIdsWhenUsersNotFoundTest() {
+        List<Long> userIds = List.of(1L, 2L, 3L, 7L);
+        var greenCityProfiles = userIds.stream()
+            .map(ModelUtils::getGreenCityUserProfileDtoResponse)
+            .limit(2)
+            .toList();
+        String expectedExceptionMessage = ErrorMessage.USERS_NOT_FOUND_BY_IDS + "3, 7";
 
-        assertThrows(NotFoundException.class, () -> userService.getProfilePicturePath(999L));
+        when(userRepo.findGreenCityUserProfilesByUserIds(userIds))
+            .thenReturn(greenCityProfiles);
+
+        NotFoundException notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.findGreenCityUserProfilesByUserIds(userIds));
+        String actualExceptionMessage = notFoundException.getMessage();
+
+        assertEquals(expectedExceptionMessage, actualExceptionMessage);
+        verify(userRepo).findGreenCityUserProfilesByUserIds(userIds);
+        verify(userLocationRepo, never()).findAllUsersCities(anyLong());
     }
 }

@@ -130,6 +130,7 @@ import greencity.dto.todolistitem.ToDoListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserFilterDto;
@@ -3609,5 +3610,13 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .profilePicturePath(TestConst.PICTURE_PATH)
             .build();
+    }
+
+    public static GreenCityUserProfileDtoResponse getGreenCityUserProfileDtoResponse(Long userId) {
+        return new GreenCityUserProfileDtoResponse(
+            userId,
+            TestConst.PICTURE_PATH,
+            "user credo",
+            0.);
     }
 }

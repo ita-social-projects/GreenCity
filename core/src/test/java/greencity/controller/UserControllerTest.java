@@ -9,6 +9,7 @@ import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.exception.helper.EndpointValidationHelper;
 import greencity.service.UserService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -132,38 +136,6 @@ class UserControllerTest {
     }
 
     @Test
-    void getPicturePathTest() throws Exception {
-        Long userId = 1L;
-        String profilePicturePath = "http://somepicture.com.ua";
-
-        when(userService.getProfilePicturePath(userId)).thenReturn(profilePicturePath);
-
-        MvcResult result = mockMvc.perform(get(userLink + "/picturePath")
-            .param("userId", String.valueOf(userId)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        assertEquals(profilePicturePath, responseBody);
-        verify(userService).getProfilePicturePath(userId);
-    }
-
-    @Test
-    void getPicturePathUserNotFoundTest() throws Exception {
-        Long userId = 1L;
-
-        when(userService.getProfilePicturePath(userId))
-            .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-
-        mockMvc.perform(get(userLink + "/picturePath")
-            .param("userId", String.valueOf(userId)))
-            .andExpect(status().isNotFound())
-            .andReturn();
-
-        verify(userService).getProfilePicturePath(userId);
-    }
-
-    @Test
     void updateUserNameTest() throws Exception {
         Long userId = 1L;
         String userName = "username";
@@ -196,5 +168,34 @@ class UserControllerTest {
             .andReturn();
 
         verify(userService).updateUserName(userId, userName);
+    }
+
+    @Test
+    @SneakyThrows
+    void findGreenCityUserProfilesByUserIdsTest() {
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        String userIdsStr = userIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+
+        mockMvc.perform(get(userLink + "/profiles")
+            .queryParam("userIds", userIdsStr))
+            .andExpect(status().isOk());
+
+        verify(userService).findGreenCityUserProfilesByUserIds(userIds);
+    }
+
+    @Test
+    @SneakyThrows
+    void findGreenCityUserProfilesByUserIdsWhenUsersNotFoundTest() {
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        String userIdsStr = userIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+
+        when(userService.findGreenCityUserProfilesByUserIds(userIds))
+            .thenThrow(new NotFoundException());
+
+        mockMvc.perform(get(userLink + "/profiles")
+            .queryParam("userIds", userIdsStr))
+            .andExpect(status().isNotFound());
+
+        verify(userService).findGreenCityUserProfilesByUserIds(userIds);
     }
 }
