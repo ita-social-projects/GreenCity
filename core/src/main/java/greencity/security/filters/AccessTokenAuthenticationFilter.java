@@ -69,7 +69,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
             try {
                 Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null));
-                UserVO user = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
+                userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
                 log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (ExpiredJwtException e) {
