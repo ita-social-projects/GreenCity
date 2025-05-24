@@ -7,7 +7,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.User;
 import greencity.enums.Role;
-import greencity.enums.UserStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

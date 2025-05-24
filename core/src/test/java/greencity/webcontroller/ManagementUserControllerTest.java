@@ -54,7 +54,6 @@ import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
 import static greencity.TestConst.USER_ID;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

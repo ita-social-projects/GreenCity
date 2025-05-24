@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ManagementSocialNetworkImagesControllerTest {
+class ManagementSocialNetworkImagesControllerTest {
     private static final String managementSocialNetworkImagesLink = "/management/socialnetworkimages";
 
     private MockMvc mockMvc;

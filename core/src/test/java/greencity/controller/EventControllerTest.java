@@ -460,9 +460,6 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void checkIsEventLikedByUserTest() {
-        UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
-
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes", EVENT_ID)
             .principal(principal))
             .andExpect(status().isOk());
@@ -473,9 +470,6 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void checkIsEventDislikedByUserTest() {
-        UserVO userVO = getUserVO();
-        // when(userService.findByEmail(anyString())).thenReturn(userVO);
-
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/dislikes", EVENT_ID)
             .principal(principal))
             .andExpect(status().isOk());
@@ -910,14 +904,11 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void getAllUserAssignedReturnsPaginatedUserAssignedEventsForValidUserTest() {
-        // UserVO userVO = ModelUtils.getUserVO();
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/user-data/getAllUserAssigned")
             .principal(principal)
             .param("page", "0")
             .param("size", "2"))
             .andExpect(status().isOk());
-        // verify(userService, times(1)).findByEmail(principal.getName());
         verify(eventService, times(1))
             .getPageableAllEventsAttendedByUser(PageRequest.of(0, 2), TestConst.USER_ID);
     }

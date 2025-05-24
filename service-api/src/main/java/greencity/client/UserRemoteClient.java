@@ -52,9 +52,8 @@ public class UserRemoteClient {
      * @return {@link Optional} of {@link UserVO}.
      */
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        String path = "/user/findNotDeactivatedByEmail";
         UserVO userVO = webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByEmail")
                 .queryParam(USER_EMAIL_QUERY_PARAM, email)
                 .build())
             .retrieve()
@@ -70,9 +69,8 @@ public class UserRemoteClient {
      * @return {@link Optional} of found {@link UserVO}.
      */
     public Optional<UserVO> findNotDeactivatedById(Long id) {
-        String path = "/user/findNotDeactivatedById";
         UserVO userVO = webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedById")
                 .queryParam(ID_QUERY_PARAM, id)
                 .build())
             .retrieve()
@@ -88,9 +86,8 @@ public class UserRemoteClient {
      * @return {@link Optional} of updated {@link UserStatusDto}
      */
     public Optional<UserStatusDto> updateUserStatus(UserStatusDto userStatusDto) {
-        String path = "/user/status";
         UserStatusDto updatedStatus = webClient.patch()
-            .uri(path)
+            .uri("/user/status")
             .bodyValue(userStatusDto)
             .retrieve()
             .bodyToMono(UserStatusDto.class)
@@ -106,9 +103,8 @@ public class UserRemoteClient {
      * @return {@link Optional} of updated {@link UserRoleDto}
      */
     public Optional<UserRoleDto> updateUserRole(Long id, Map<String, String> body) {
-        String path = "/user/{id}/role";
         UserRoleDto updatedRole = webClient.patch()
-            .uri(uriBuilder -> uriBuilder.path(path).build(id))
+            .uri(uriBuilder -> uriBuilder.path("/user/{id}/role").build(id))
             .bodyValue(body)
             .retrieve()
             .bodyToMono(UserRoleDto.class)
@@ -122,9 +118,8 @@ public class UserRemoteClient {
      * @return List of {@link UserRoleStatisticDto}
      */
     public List<UserRoleStatisticDto> getUserRolesDistribution() {
-        String path = "/user/roles-distribution";
         return webClient.get()
-            .uri(path)
+            .uri("/user/roles-distribution")
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<UserRoleStatisticDto>>() {
             })
@@ -137,9 +132,8 @@ public class UserRemoteClient {
      * @return List of {@link UserStatusStatisticDto}
      */
     public List<UserStatusStatisticDto> getUserStatusesDistribution() {
-        String path = "/user/statuses-distribution";
         return webClient.get()
-            .uri(path)
+            .uri("/user/statuses-distribution")
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<UserStatusStatisticDto>>() {
             })
@@ -152,9 +146,8 @@ public class UserRemoteClient {
      * @return List of {@link UserEmailPreferencesStatisticDto}
      */
     public List<UserEmailPreferencesStatisticDto> getUserEmailPreferencesDistribution() {
-        String path = "/user/email-preferences-distribution";
         return webClient.get()
-            .uri(path)
+            .uri("/user/email-preferences-distribution")
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<UserEmailPreferencesStatisticDto>>() {
             })
@@ -167,9 +160,8 @@ public class UserRemoteClient {
      * @return count of active users
      */
     public Long countActiveUsers() {
-        String path = "/user/count-active-users";
         return webClient.get()
-            .uri(path)
+            .uri("/user/count-active-users")
             .retrieve()
             .bodyToMono(Long.class)
             .block();
@@ -182,9 +174,8 @@ public class UserRemoteClient {
      * @return boolean of whether UserNotificationPreference exists
      */
     public Boolean searchUserNotificationPreference(EmailPreferenceDto emailPreferenceDto) {
-        String path = "/user-notification-preference/search";
         return webClient.post()
-            .uri(path)
+            .uri("/user-notification-preference/search")
             .bodyValue(emailPreferenceDto)
             .retrieve()
             .bodyToMono(Boolean.class)
@@ -198,9 +189,8 @@ public class UserRemoteClient {
      * @return boolean of whether user by that id is online.
      */
     public Boolean checkIfTheUserIsOnline(Long userId) {
-        String path = "/user/isOnline/{userId}/";
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path).build(userId))
+            .uri(uriBuilder -> uriBuilder.path("/user/isOnline/{userId}/").build(userId))
             .retrieve()
             .bodyToMono(Boolean.class)
             .block();
@@ -215,9 +205,8 @@ public class UserRemoteClient {
      */
     public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
         String emailPreference, String periodicity) {
-        String path = "/user/email";
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/user/email")
                 .queryParam("email-preference", emailPreference)
                 .queryParam("email-periodicity", periodicity)
                 .build())
@@ -237,9 +226,8 @@ public class UserRemoteClient {
      */
     public List<UserRegistrationStatisticDto> getUserRegistrationsByDateRange(
         LocalDateTime startDate, LocalDateTime endDate, DateGranularity granularity) {
-        String path = "/user/registration-statistics";
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/user/registration-statistics")
                 .queryParam("start-date", startDate)
                 .queryParam("end-date", endDate)
                 .queryParam("granularity", granularity.name())
@@ -260,10 +248,9 @@ public class UserRemoteClient {
      *         users
      */
     public List<Long> getActivatedUsersIds(List<Long> ids) {
-        String path = "/user/activated-ids";
         return webClient.get()
             .uri(uriBuilder -> {
-                uriBuilder = uriBuilder.path(path);
+                uriBuilder = uriBuilder.path("/user/activated-ids");
                 if (ids != null && !ids.isEmpty()) {
                     uriBuilder = uriBuilder.queryParam("ids", ids);
                 }
@@ -283,10 +270,8 @@ public class UserRemoteClient {
      * @return {@link Optional} of {@link UserVOAdvancedDto}.
      */
     public Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(Long id) {
-        String path = "/user/findNotDeactivatedByIdAdvanced";
-
         UserVOAdvancedDto userVO = webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByIdAdvanced")
                 .queryParam(ID_QUERY_PARAM, id)
                 .build())
             .retrieve()
@@ -303,10 +288,8 @@ public class UserRemoteClient {
      * @return {@link PageableDto} of {@link SocialNetworkImageResponseDTO}.
      */
     public PageableDto<SocialNetworkImageResponseDTO> getAllSocialNetworkImagesRemote(Pageable pageable) {
-        String path = "/management/socialnetworkimages/get-all-remote";
-
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/management/socialnetworkimages/get-all-remote")
                 .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
                 .queryParam(PAGE_SIZE_QUERY_PARAM, pageable.getPageSize())
                 .build())
@@ -327,7 +310,6 @@ public class UserRemoteClient {
 
     public SocialNetworkImageResponseDTO saveSocialImageRemote(
         SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile file) {
-        String path = "/management/socialnetworkimages/save-remote";
 
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("socialNetworkImageRequestDTO",
@@ -337,7 +319,7 @@ public class UserRemoteClient {
             bodyBuilder.part("file", file.getResource());
         }
         return webClient.post()
-            .uri(path)
+            .uri("/management/socialnetworkimages/save-remote")
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
             .retrieve()
@@ -352,10 +334,8 @@ public class UserRemoteClient {
      * @return {@link Long} id og the deleted image
      */
     public Long deleteSocialImage(Long id) {
-        String path = "/management/socialnetworkimages/delete";
-
         return webClient.delete()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/management/socialnetworkimages/delete")
                 .queryParam(ID_QUERY_PARAM, id)
                 .build())
             .retrieve()
@@ -370,10 +350,8 @@ public class UserRemoteClient {
      * @return {@link List} of the deleted image ids
      */
     public List<Long> deleteAllImages(List<Long> listId) {
-        String path = "/management/socialnetworkimages/deleteAll";
-
         return webClient.method(HttpMethod.DELETE)
-            .uri(path)
+            .uri("/management/socialnetworkimages/deleteAll")
             .bodyValue(listId)
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<Long>>() {
@@ -388,10 +366,8 @@ public class UserRemoteClient {
      * @return {@link SocialNetworkImageResponseDTO} instance.
      */
     public SocialNetworkImageResponseDTO getEcoNewsById(Long id) {
-        String path = "/management/socialnetworkimages/find";
-
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/management/socialnetworkimages/find")
                 .queryParam(ID_QUERY_PARAM, id)
                 .build())
             .retrieve()
@@ -406,10 +382,8 @@ public class UserRemoteClient {
      * @return {@link List} of {@link LanguageDTO}
      */
     public List<LanguageDTO> getAllLanguages() {
-        String path = "/lang";
-
         return webClient.get()
-            .uri(path)
+            .uri("/lang")
             .retrieve()
             .bodyToFlux(LanguageDTO.class)
             .toStream()
@@ -424,10 +398,8 @@ public class UserRemoteClient {
      * @return language {@link LanguageDTO}
      */
     public LanguageDTO findLanguageByCode(String code) throws NotFoundException {
-        String path = "/lang/codes/{code}";
-
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path).build(code))
+            .uri(uriBuilder -> uriBuilder.path("/lang/codes/{code}").build(code))
             .retrieve()
             .onStatus(httpStatusCode -> httpStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND),
                 clientResponse -> Mono
@@ -442,10 +414,8 @@ public class UserRemoteClient {
      * @return {@link List} of {@link String} language codes
      */
     public List<String> findAllLanguageCodes() {
-        String path = "/lang/codes";
-
         return webClient.get()
-            .uri(path)
+            .uri("/lang/codes")
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<String>>() {
             })
@@ -460,8 +430,6 @@ public class UserRemoteClient {
      * @param file                          of {@link MultipartFile}.
      */
     public void updateSocialImage(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile file) {
-        String path = "/management/socialnetworkimages/";
-
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("socialNetworkImageResponseDTO",
             socialNetworkImageResponseDTO, MediaType.APPLICATION_JSON);
@@ -470,7 +438,7 @@ public class UserRemoteClient {
             bodyBuilder.part("file", file.getResource());
         }
 
-        webClient.put().uri(path).contentType(MediaType.MULTIPART_FORM_DATA)
+        webClient.put().uri("/management/socialnetworkimages/").contentType(MediaType.MULTIPART_FORM_DATA)
             .body(BodyInserters.fromMultipartData(bodyBuilder.build())).retrieve()
             .bodyToMono(Void.class).block();
     }
@@ -482,11 +450,10 @@ public class UserRemoteClient {
      * @return list of {@link UserVO}.
      */
     public List<UserVO> findAllByEmailIn(List<String> emails) {
-        String path = "/user/email/findAll";
         String emailsListQueryParam = "emails";
 
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/user/email/findAll")
                 .queryParam(emailsListQueryParam, emails)
                 .build())
             .retrieve()
@@ -514,10 +481,8 @@ public class UserRemoteClient {
      *         email
      */
     public List<UserEmailDto> findUserEmailsByUserIds(List<Long> userIds) {
-        String path = "/user/email/findByIds";
-
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path(path)
+            .uri(uriBuilder -> uriBuilder.path("/user/email/findByIds")
                 .queryParam("userIds", userIds)
                 .build())
             .retrieve()

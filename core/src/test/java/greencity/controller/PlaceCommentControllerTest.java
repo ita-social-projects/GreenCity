@@ -67,7 +67,6 @@ class PlaceCommentControllerTest {
     @Test
     void saveTest() throws Exception {
         Principal principal = ModelUtils.getPrincipal();
-        User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
 
         userVO.setUserStatus(UserStatus.ACTIVATED);

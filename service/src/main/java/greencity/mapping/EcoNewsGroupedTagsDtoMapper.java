@@ -22,12 +22,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoNewsGroupedTagsDto> {
     private final CommentService commentService;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public EcoNewsGroupedTagsDtoMapper(@Lazy CommentService commentService, @Lazy ModelMapper modelMapper) {
+    public EcoNewsGroupedTagsDtoMapper(@Lazy CommentService commentService) {
         this.commentService = commentService;
-        this.modelMapper = modelMapper;
     }
 
     /**

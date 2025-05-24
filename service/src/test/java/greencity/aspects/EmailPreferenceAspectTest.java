@@ -8,7 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.ScheduledEmailMessage;
-import greencity.service.UserServiceImpl;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +24,6 @@ import static org.mockito.Mockito.when;
 class EmailPreferenceAspectTest {
     @Mock
     private UserRemoteClient userRemoteClient;
-    @Mock
-    private UserServiceImpl userServiceImpl;
     @Mock
     private CheckEmailPreference checkEmailPreference;
     @Mock
@@ -47,7 +44,6 @@ class EmailPreferenceAspectTest {
 
         EmailPreferenceDto emailPreferenceDto =
             new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
-        // when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
         when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(true);
@@ -74,8 +70,6 @@ class EmailPreferenceAspectTest {
 
         EmailPreferenceDto emailPreferenceDto =
             new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
-
-        // when(userServiceImpl.findByEmail("test@gmail.com")).thenReturn(user);
 
         when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(false);

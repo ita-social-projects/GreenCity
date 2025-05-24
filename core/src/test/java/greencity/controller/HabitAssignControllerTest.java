@@ -188,7 +188,6 @@ class HabitAssignControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail(principal.getName());
         verify(habitAssignService).getAllMutualHabitAssignsWithUserAndStatusNotCancelled(friendId, userVO.getId(),
             PageRequest.of(0, 20));
     }
@@ -200,7 +199,6 @@ class HabitAssignControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        // verify(userService).findByEmail(principal.getName());
         verify(habitAssignService).getMyHabitsOfCurrentUserAndStatusNotCancelled(friendId, userVO.getId(),
             PageRequest.of(0, 20));
     }

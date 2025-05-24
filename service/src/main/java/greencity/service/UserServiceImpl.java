@@ -564,12 +564,12 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException(ErrorMessage.USERS_NOT_FOUND_BY_IDS + notFoundIdsStr);
         }
 
-        greenCityProfiles.forEach(greenCityProfile -> {
+        greenCityProfiles.forEach(greenCityProfile ->
             userLocationRepo.findAllUsersCities(greenCityProfile.getUserId()).ifPresent(userLocation -> {
                 UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
                 greenCityProfile.setUserLocationDto(userLocationDto);
-            });
-        });
+            })
+        );
         return greenCityProfiles;
     }
 }

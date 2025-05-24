@@ -3,13 +3,11 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.dto.language.LanguageDTO;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
