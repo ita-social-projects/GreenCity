@@ -61,7 +61,6 @@ import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 public class UserNotificationServiceImpl implements UserNotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
-    private final UserService userService;
     private final NotificationService notificationService;
     private final HabitInvitationService habitInvitationService;
     private final NotificationFriendService notificationFriendService;

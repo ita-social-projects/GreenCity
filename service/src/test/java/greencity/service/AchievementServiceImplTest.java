@@ -96,7 +96,6 @@ class AchievementServiceImplTest {
 
     @Test
     void findAllWithEmptyListTest() {
-        // when(userService.findByEmail("email@gmail.com")).thenReturn(getUserVO());
         when(userAchievementRepo.getUserAchievementByUserId(anyLong())).thenReturn(Collections.emptyList());
         when(achievementRepo.searchAchievementsUnAchieved(anyLong())).thenReturn(Collections.emptyList());
         when(achievementCategoryRepo.findByName("HABIT")).thenReturn(Optional.of(getAchievementCategory()));
@@ -105,7 +104,6 @@ class AchievementServiceImplTest {
         when(userActionRepo.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
         List<AchievementVO> findAllResult = achievementService.findAllByTypeAndCategory(getUserVO().getId(), "email@gmail.com", null, null);
         assertTrue(findAllResult.isEmpty());
-        // verify(userService).findByEmail("email@gmail.com");
         verify(userAchievementRepo).getUserAchievementByUserId(anyLong());
         verify(achievementRepo).searchAchievementsUnAchieved(anyLong());
         verify(achievementCategoryRepo).findByName("HABIT");

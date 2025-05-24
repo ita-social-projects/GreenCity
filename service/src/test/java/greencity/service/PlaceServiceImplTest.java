@@ -65,7 +65,6 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -132,7 +131,6 @@ class PlaceServiceImplTest {
     private final User user =
         User.builder()
             .id(1L)
-            // .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .build();
     private final UserVO userVO =
@@ -743,11 +741,11 @@ class PlaceServiceImplTest {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         Place place = getPlace();
-        User user = ModelUtils.getUser();
+        User placeUser = ModelUtils.getUser();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
+        when(userRepo.findById(placeUser.getId())).thenReturn(Optional.of(placeUser));
+        when(modelMapper.map(placeUser, UserVO.class)).thenReturn(ModelUtils.getUserVO());
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
         when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
         when(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class))
@@ -755,10 +753,10 @@ class PlaceServiceImplTest {
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceResponse.class)).thenReturn(placeResponse);
 
-        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, user.getId(), null));
+        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, placeUser.getId(), null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findById(user.getId());
+        verify(userRepo).findById(placeUser.getId());
         verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
         verify(modelMapper).map(placeResponse, Place.class);
         verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);
@@ -768,14 +766,14 @@ class PlaceServiceImplTest {
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
         when(fileService.upload(multipartFile)).thenReturn("/url1");
         assertEquals(placeResponse,
-            placeService.addPlaceFromUi(dto, user.getId(),
+            placeService.addPlaceFromUi(dto, placeUser.getId(),
                 new MultipartFile[] {multipartFile}));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
         when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
         when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
         assertEquals(placeResponse,
-            placeService.addPlaceFromUi(dto, user.getId(), multipartFiles));
+            placeService.addPlaceFromUi(dto, placeUser.getId(), multipartFiles));
         verify(fileService, times(3)).upload(any(MultipartFile.class));
     }
 

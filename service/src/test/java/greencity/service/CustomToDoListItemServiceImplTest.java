@@ -13,10 +13,7 @@ import greencity.entity.HabitAssign;
 import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
-import greencity.enums.EmailNotification;
-import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
-import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -33,7 +30,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;

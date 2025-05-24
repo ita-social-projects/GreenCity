@@ -62,16 +62,16 @@ class GoogleApiServiceTest {
         AddressLatLngResponse expected = ModelUtils.getAddressLatLngResponse();
         LatLng latLng = new LatLng(expected.getLatitude(), expected.getLongitude());
         try (MockedStatic<GeocodingApi> geocodingApiMockedStatic = mockStatic(GeocodingApi.class)) {
-            GeocodingApiRequest request = mock(GeocodingApiRequest.class);
+            GeocodingApiRequest geocodingApiRequest = mock(GeocodingApiRequest.class);
             GeocodingApiRequest requestEn = mock(GeocodingApiRequest.class);
-            when(GeocodingApi.newRequest(context)).thenReturn(request);
-            when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
-            when(request.language(Locale.of("en").getLanguage())).thenReturn(requestEn);
-            when(request.await()).thenReturn(ModelUtils.getGeocodingResultUk());
+            when(GeocodingApi.newRequest(context)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.latlng(latLng)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.language(Locale.of("uk").getLanguage())).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.language(Locale.of("en").getLanguage())).thenReturn(requestEn);
+            when(geocodingApiRequest.await()).thenReturn(ModelUtils.getGeocodingResultUk());
             when(requestEn.await()).thenReturn(ModelUtils.getGeocodingResultEn());
             assertEquals(expected, googleApiService.getResultFromGeoCodeByCoordinates(latLng));
-            verify(request, times(1)).await();
+            verify(geocodingApiRequest, times(1)).await();
             verify(requestEn, times(1)).await();
         }
     }
@@ -82,13 +82,13 @@ class GoogleApiServiceTest {
         AddressLatLngResponse expected = ModelUtils.getAddressLatLngResponse();
         LatLng latLng = new LatLng(expected.getLatitude(), expected.getLongitude());
         try (MockedStatic<GeocodingApi> geocodingApiMockedStatic = mockStatic(GeocodingApi.class)) {
-            GeocodingApiRequest request = mock(GeocodingApiRequest.class);
-            when(GeocodingApi.newRequest(context)).thenReturn(request);
-            when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
-            when(request.await()).thenThrow(ApiException.class);
+            GeocodingApiRequest geocodingApiRequest = mock(GeocodingApiRequest.class);
+            when(GeocodingApi.newRequest(context)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.latlng(latLng)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.language(Locale.of("uk").getLanguage())).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.await()).thenThrow(ApiException.class);
             assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
-            verify(request, times(1)).await();
+            verify(geocodingApiRequest, times(1)).await();
         }
     }
 
@@ -97,17 +97,17 @@ class GoogleApiServiceTest {
         throws IOException, InterruptedException, ApiException {
         LatLng latLng = new LatLng(0.0, 0.0);
         try (MockedStatic<GeocodingApi> geocodingApiMockedStatic = mockStatic(GeocodingApi.class)) {
-            GeocodingApiRequest request = mock(GeocodingApiRequest.class);
-            when(GeocodingApi.newRequest(context)).thenReturn(request);
-            when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
-            when(request.await()).thenReturn(new GeocodingResult[0]);
+            GeocodingApiRequest geocodingApiRequest = mock(GeocodingApiRequest.class);
+            when(GeocodingApi.newRequest(context)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.latlng(latLng)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.language(Locale.of("uk").getLanguage())).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.await()).thenReturn(new GeocodingResult[0]);
 
             assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
 
-            verify(request).latlng(latLng);
-            verify(request).language(Locale.of("uk").getLanguage());
-            verify(request).await();
+            verify(geocodingApiRequest).latlng(latLng);
+            verify(geocodingApiRequest).language(Locale.of("uk").getLanguage());
+            verify(geocodingApiRequest).await();
         }
     }
 
@@ -116,17 +116,17 @@ class GoogleApiServiceTest {
         throws IOException, InterruptedException, ApiException {
         LatLng latLng = new LatLng(0.0, 0.0);
         try (MockedStatic<GeocodingApi> geocodingApiMockedStatic = mockStatic(GeocodingApi.class)) {
-            GeocodingApiRequest request = mock(GeocodingApiRequest.class);
-            when(GeocodingApi.newRequest(context)).thenReturn(request);
-            when(request.latlng(latLng)).thenReturn(request);
-            when(request.language(Locale.of("uk").getLanguage())).thenReturn(request);
-            when(request.await()).thenReturn(null);
+            GeocodingApiRequest geocodingApiRequest = mock(GeocodingApiRequest.class);
+            when(GeocodingApi.newRequest(context)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.latlng(latLng)).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.language(Locale.of("uk").getLanguage())).thenReturn(geocodingApiRequest);
+            when(geocodingApiRequest.await()).thenReturn(null);
 
             assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
 
-            verify(request).latlng(latLng);
-            verify(request).language(Locale.of("uk").getLanguage());
-            verify(request).await();
+            verify(geocodingApiRequest).latlng(latLng);
+            verify(geocodingApiRequest).language(Locale.of("uk").getLanguage());
+            verify(geocodingApiRequest).await();
         }
     }
 

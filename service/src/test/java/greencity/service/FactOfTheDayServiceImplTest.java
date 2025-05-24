@@ -30,7 +30,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,8 +51,6 @@ class FactOfTheDayServiceImplTest {
     @Mock
     private FactOfTheDayRepo factOfTheDayRepo;
 
-    @Mock
-    private FactOfTheDayService service;
     @Mock
     private TagsRepo tagsRepo;
 
@@ -120,7 +117,6 @@ class FactOfTheDayServiceImplTest {
 
     @Test
     void updateFactOfTheDayAndTranslationsTest() {
-        LanguageDTO languageDTO = ModelUtils.getLanguageDTO();
         FactOfTheDay dbFact = ModelUtils.getFactOfTheDay();
         Set<Tag> tagDtos = Set.of(ModelUtils.getTag());
 

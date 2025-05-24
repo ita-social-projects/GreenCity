@@ -591,13 +591,9 @@ class EventServiceImplTest {
 
     private static Stream<Arguments> provideUserVOForDeleteEventTest() {
         return Stream.of(
-            Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()));/*
-                                                                         * ,
-                                                                         * Arguments.of(ModelUtils.getUserVO().setRole(
-                                                                         * Role.ROLE_ADMIN).setId(1L),
-                                                                         * ModelUtils.getUser().setRole(Role.ROLE_ADMIN)
-                                                                         * .setId(1L)));
-                                                                         */
+            Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()),
+                Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(1L),
+                        Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(1L))));
     }
 
     @Test

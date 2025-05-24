@@ -1,7 +1,6 @@
 package greencity.webcontroller;
 
 import greencity.TestConst;
-import greencity.config.CustomPageableHandlerMethodArgumentResolver;
 import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;

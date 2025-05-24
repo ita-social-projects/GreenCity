@@ -7,7 +7,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
-import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
@@ -45,9 +44,7 @@ import static greencity.ModelUtils.getUnSortedPageable;
 import static greencity.ModelUtils.getUserFilterDto;
 import static greencity.ModelUtils.getUserManagementVOPage;
 import static greencity.ModelUtils.getUserPage;
-import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.testEmail;
-import static greencity.ModelUtils.testEmail2;
 import static greencity.ModelUtils.testUser;
 import static greencity.ModelUtils.testUserRoleUser;
 import static greencity.ModelUtils.testUserStatusDto;
@@ -63,7 +60,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -164,12 +160,10 @@ class UserServiceImplTest {
     @Test
     void checkUpdatableUserTest() {
         Long userId = 1L;
-        String email = "email";
         User user = getUser();
         UserLocation userLocation = user.getUserLocation();
         UserLocationDto userLocationDto = new UserLocationDto();
 
-        // when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
         when(modelMapper.map(userLocation, UserLocationDto.class)).thenReturn(userLocationDto);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {

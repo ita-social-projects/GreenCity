@@ -1,8 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.TestConst;
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
