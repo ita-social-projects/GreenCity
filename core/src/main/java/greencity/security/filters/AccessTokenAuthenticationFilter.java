@@ -1,6 +1,5 @@
 package greencity.security.filters;
 
-import greencity.dto.user.UserVO;
 import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;

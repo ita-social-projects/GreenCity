@@ -257,7 +257,7 @@ class AchievementServiceImplTest {
         List<AchievementVO> findAllResult =
             achievementService.findAllByTypeAndCategory(userId, "email@gmail.com", ACHIEVED,
                 achievementCategory.getId());
-        assertEquals(userId, (long) findAllResult.getFirst().getId());
+        assertEquals(1L, (long) findAllResult.getFirst().getId());
         verify(achievementCategoryRepo).findById(anyLong());
         verify(userAchievementRepo).findAllByUserIdAndAchievement_AchievementCategoryId(anyLong(), anyLong());
         verify(achievementRepo).findById(anyLong());

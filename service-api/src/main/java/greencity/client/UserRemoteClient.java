@@ -310,7 +310,6 @@ public class UserRemoteClient {
 
     public SocialNetworkImageResponseDTO saveSocialImageRemote(
         SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile file) {
-
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("socialNetworkImageRequestDTO",
             socialNetworkImageRequestDTO, MediaType.APPLICATION_JSON);

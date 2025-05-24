@@ -1,6 +1,7 @@
 package greencity.webcontroller;
 
 import greencity.TestConst;
+import greencity.config.CustomPageableHandlerMethodArgumentResolver;
 import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
@@ -78,8 +79,9 @@ class ManagementPlacesControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementPlacesController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setCustomArgumentResolvers(new UserIdArgumentResolver(jwtTool))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .build();
     }
 
@@ -94,7 +96,8 @@ class ManagementPlacesControllerTest {
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
         this.mockMvc.perform(get("/management/places")
-            .param("page", "0"))
+            .param("page", "0")
+            .param("size", "1"))
             .andExpect(view().name("core/management_places"))
             .andExpect(model().attribute("pageable", adminPlaceDtoPageableDto))
             .andExpect(status().isOk());
@@ -159,9 +162,9 @@ class ManagementPlacesControllerTest {
         String json = objectMapper.writeValueAsString(placeUpdateDto);
 
         when(jwtTool.extractJwtFromNativeWebRequest(any(NativeWebRequest.class)))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(TestConst.USER_ID);
+            .thenReturn(TestConst.USER_ID);
 
         MockMultipartFile placeUpdateDtoPart = new MockMultipartFile(
             "placeUpdateDto",
