@@ -9,6 +9,7 @@ import greencity.dto.CoordinatesDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
@@ -1088,8 +1089,9 @@ class UserServiceImplTest {
         when(userLocationRepo.findAllUsersCities(anyLong()))
             .thenReturn(Optional.of(new UserLocation()));
 
-        userService.findGreenCityUserProfilesByUserIds(userIds);
+        List<GreenCityUserProfileDtoResponse> actualResult = userService.findGreenCityUserProfilesByUserIds(userIds);
 
+        assertEquals(greenCityProfiles, actualResult);
         verify(userRepo).findGreenCityUserProfilesByUserIds(userIds);
         verify(userLocationRepo, times(userIds.size())).findAllUsersCities(anyLong());
     }
