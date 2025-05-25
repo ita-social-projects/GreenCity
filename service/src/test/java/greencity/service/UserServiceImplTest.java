@@ -272,16 +272,16 @@ class UserServiceImplTest {
         int pageNumber = 0;
         int pageSize = 5;
         PageableAdvancedDto<Long> expectedResult = PageableAdvancedDto.<Long>builder()
-                .page(userFriendIds.getContent())
-                .totalElements(userFriendIds.getTotalElements())
-                .currentPage(pageNumber)
-                .totalPages(userFriendIds.getTotalPages())
-                .number(pageNumber)
-                .hasPrevious(userFriendIds.hasPrevious())
-                .hasNext(userFriendIds.hasNext())
-                .first(userFriendIds.isFirst())
-                .last(userFriendIds.isLast())
-                .build();
+            .page(userFriendIds.getContent())
+            .totalElements(userFriendIds.getTotalElements())
+            .currentPage(pageNumber)
+            .totalPages(userFriendIds.getTotalPages())
+            .number(pageNumber)
+            .hasPrevious(userFriendIds.hasPrevious())
+            .hasNext(userFriendIds.hasNext())
+            .first(userFriendIds.isFirst())
+            .last(userFriendIds.isLast())
+            .build();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         when(userRepo.existsById(userId))

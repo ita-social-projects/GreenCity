@@ -133,7 +133,8 @@ public class UserController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/{id}/friends")
-    public ResponseEntity<PageableAdvancedDto<Long>> getAllUserFriendsIds(@PathVariable("id") Long userId, Pageable pageable) {
+    public ResponseEntity<PageableAdvancedDto<Long>> getAllUserFriendsIds(@PathVariable("id") Long userId,
+        Pageable pageable) {
         return ResponseEntity.ok(userService.getAllUserFriendsIds(userId, pageable));
     }
 

@@ -292,16 +292,16 @@ public class UserServiceImpl implements UserService {
         Page<Long> page = userRepo.getAllUserFriendsIds(userId, pageable);
 
         return PageableAdvancedDto.<Long>builder()
-                .page(page.getContent())
-                .totalElements(page.getTotalElements())
-                .currentPage(pageable.getPageNumber())
-                .totalPages(page.getTotalPages())
-                .number(pageable.getPageNumber())
-                .hasPrevious(page.hasPrevious())
-                .hasNext(page.hasNext())
-                .first(page.isFirst())
-                .last(page.isLast())
-                .build();
+            .page(page.getContent())
+            .totalElements(page.getTotalElements())
+            .currentPage(pageable.getPageNumber())
+            .totalPages(page.getTotalPages())
+            .number(pageable.getPageNumber())
+            .hasPrevious(page.hasPrevious())
+            .hasNext(page.hasNext())
+            .first(page.isFirst())
+            .last(page.isLast())
+            .build();
     }
 
     /**
