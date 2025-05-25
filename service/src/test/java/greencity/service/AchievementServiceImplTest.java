@@ -21,6 +21,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserVO;
@@ -50,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -93,6 +95,43 @@ class AchievementServiceImplTest {
     private HabitTranslationRepo habitTranslationRepo;
     @Mock
     private RatingPointsService ratingPointsService;
+
+    @Test
+    void findAllUserAchievementsByUserIdTest() {
+        Long userId = TestConst.USER_ID;
+        List<UserAchievement> userAchievements = List.of(ModelUtils.getUserAchievement(), ModelUtils.getUserAchievement());
+        UserAchievementVO userAchievementVO = ModelUtils.getUserAchievementVO();
+        List<UserAchievementVO> userAchievementVOs = List.of(userAchievementVO, userAchievementVO);
+
+        when(userAchievementRepo.getUserAchievementByUserId(userId))
+                .thenReturn(userAchievements);
+        when(modelMapper.map(any(UserAchievement.class), eq(UserAchievementVO.class)))
+                .thenReturn(userAchievementVO);
+
+        List<UserAchievementVO> actualResult = achievementService.findAllUserAchievementsByUserId(userId);
+
+        assertEquals(userAchievementVOs, actualResult);
+        verify(userAchievementRepo).getUserAchievementByUserId(userId);
+        verify(modelMapper, times(userAchievements.size())).map(any(UserAchievement.class), eq(UserAchievementVO.class));
+    }
+
+    @Test
+    void findAllTest() {
+        List<Achievement> achievements = List.of(ModelUtils.getAchievement(), ModelUtils.getAchievement());
+        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        List<AchievementVO> achievementVOs = List.of(achievementVO, achievementVO);
+
+        when(achievementRepo.findAll())
+                .thenReturn(achievements);
+        when(modelMapper.map(any(Achievement.class), eq(AchievementVO.class)))
+                .thenReturn(achievementVO);
+
+        List<AchievementVO> actualResult = achievementService.findAll();
+
+        assertEquals(achievementVOs, actualResult);
+        verify(achievementRepo).findAll();
+        verify(modelMapper, times(achievements.size())).map(any(Achievement.class), eq(AchievementVO.class));
+    }
 
     @Test
     void findAllWithEmptyListTest() {

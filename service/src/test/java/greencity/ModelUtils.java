@@ -478,7 +478,7 @@ public class ModelUtils {
             "regionEn", "regionUk",
             "countryEn", "countryUk",
             0., 0.,
-            List.of(user)));
+            new ArrayList<>(List.of(user))));
         return user;
     }
 

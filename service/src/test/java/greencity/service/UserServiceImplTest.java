@@ -430,6 +430,51 @@ class UserServiceImplTest {
     }
 
     @Test
+    void setLocationForUserWhenMultipleUsersHaveSameLocationTest() {
+        Long userId = TestConst.USER_ID;
+        var request = ModelUtils.getUserProfileDtoRequest();
+        var user = spy(ModelUtils.getUserWithUserLocation());
+        var userLocation = user.getUserLocation();
+        userLocation.getUsers().add(new User());
+        var savedUserLocation = userLocation.setId(3L);
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageUa, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageEn, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+        when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude())).thenReturn(Optional.of(userLocation));
+        when(userLocationRepo.save(userLocation))
+                .thenReturn(savedUserLocation);
+
+        userService.setLocationForUser(userId, request);
+
+        verify(userRepo).findById(userId);
+        verify(googleApiService).getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageUa, addressTypes);
+        verify(googleApiService).getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageEn, addressTypes);
+        verify(userLocationRepo).getUserLocationByLatitudeAndLongitude(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude());
+        verify(userLocationRepo).save(userLocation);
+        verify(user).setUserLocation(savedUserLocation);
+        verify(userRepo).save(user);
+    }
+
+    @Test
     void saveUserProfileUpdatesWithNullValuesTest() {
         Long userId = TestConst.USER_ID;
         UserProfileDtoRequest request = new UserProfileDtoRequest();

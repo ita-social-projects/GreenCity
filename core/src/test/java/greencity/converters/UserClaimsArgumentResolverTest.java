@@ -1,7 +1,6 @@
 package greencity.converters;
 
 import greencity.ModelUtils;
-import greencity.annotations.CurrentUserClaims;
 import greencity.dto.user.UserClaims;
 import greencity.exception.exceptions.NoJwtException;
 import greencity.security.jwt.JwtTool;
@@ -15,7 +14,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import java.lang.annotation.Annotation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
