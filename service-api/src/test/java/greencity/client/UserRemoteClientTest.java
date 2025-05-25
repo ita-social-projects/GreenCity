@@ -343,8 +343,8 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertEquals(emailPreference, recordedRequest.getRequestUrl().queryParameter("email-preference"));
-        assertEquals(periodicity, recordedRequest.getRequestUrl().queryParameter("email-periodicity"));
+        assertEquals(emailPreference.name(), recordedRequest.getRequestUrl().queryParameter("email-preference"));
+        assertEquals(periodicity.name(), recordedRequest.getRequestUrl().queryParameter("email-periodicity"));
     }
 
     @Test
