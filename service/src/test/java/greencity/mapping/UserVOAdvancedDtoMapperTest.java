@@ -52,7 +52,7 @@ class UserVOAdvancedDtoMapperTest {
         when(userRemoteClient.findNotDeactivatedByIdAdvanced(userToConvert.getId()))
             .thenReturn(Optional.of(toConvert));
         when(modelMapper.map(userLocation, UserLocationDto.class))
-                .thenReturn(ModelUtils.getUserLocationDto());
+            .thenReturn(ModelUtils.getUserLocationDto());
 
         assertEquals(expected, mapper.convert(userToConvert));
     }

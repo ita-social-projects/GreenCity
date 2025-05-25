@@ -475,13 +475,12 @@ public class ModelUtils {
     public static User getUserWithUserLocation() {
         User user = getUser();
         user.setUserLocation(new UserLocation(
-                1L,
-                "cityEn", "cityUk",
-                "regionEn", "regionUk",
-                "countryEn", "countryUk",
-                0., 0.,
-                List.of(user)
-        ));
+            1L,
+            "cityEn", "cityUk",
+            "regionEn", "regionUk",
+            "countryEn", "countryUk",
+            0., 0.,
+            List.of(user)));
         return user;
     }
 
@@ -738,23 +737,21 @@ public class ModelUtils {
 
     public static UserLocation getUserLocation() {
         return new UserLocation(
-                1L,
-                "cityEn", "cityUk",
-                "regionEn", "regionUk",
-                "countryEn", "countryUk",
-                0., 0.,
-                List.of(getUser())
-        );
+            1L,
+            "cityEn", "cityUk",
+            "regionEn", "regionUk",
+            "countryEn", "countryUk",
+            0., 0.,
+            List.of(getUser()));
     }
 
     public static UserLocationDto getUserLocationDto() {
         return new UserLocationDto(
-                1L,
-                "cityEn", "cityUk",
-                "regionEn", "regionUk",
-                "countryEn", "countryUk",
-                0., 0.
-        );
+            1L,
+            "cityEn", "cityUk",
+            "regionEn", "regionUk",
+            "countryEn", "countryUk",
+            0., 0.);
     }
 
     public static HabitAssignDto getHabitAssignDtoWithFriendsIds() {
@@ -1907,36 +1904,36 @@ public class ModelUtils {
 
     public static UserProfileDtoRequest getUserProfileDtoRequest() {
         return UserProfileDtoRequest.builder()
-                .name("Name")
-                .userCredo("userCredo")
-                .socialNetworks(List.of(
-                        "https://www.facebook.com",
-                        "https://www.instagram.com",
-                        "https://www.youtube.com",
-                        "https://www.gmail.com",
-                        "https://www.google.com"))
-                .coordinates(new CoordinatesDto(1.0d, 1.0d))
-                .showLocation(ProfilePrivacyPolicy.PUBLIC)
-                .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
-                .showToDoList(ProfilePrivacyPolicy.PUBLIC)
-                .emailPreferences(Set.of(
-                        UserNotificationPreferenceVO.builder()
-                                .emailPreference(EmailPreference.SYSTEM)
-                                .periodicity(EmailPreferencePeriodicity.IMMEDIATELY)
-                                .build(),
-                        UserNotificationPreferenceVO.builder()
-                                .emailPreference(EmailPreference.COMMENTS)
-                                .periodicity(EmailPreferencePeriodicity.TWICE_A_DAY)
-                                .build(),
-                        UserNotificationPreferenceVO.builder()
-                                .emailPreference(EmailPreference.LIKES)
-                                .periodicity(EmailPreferencePeriodicity.NEVER)
-                                .build(),
-                        UserNotificationPreferenceVO.builder()
-                                .emailPreference(EmailPreference.INVITES)
-                                .periodicity(EmailPreferencePeriodicity.MONTHLY)
-                                .build()))
-                .build();
+            .name("Name")
+            .userCredo("userCredo")
+            .socialNetworks(List.of(
+                "https://www.facebook.com",
+                "https://www.instagram.com",
+                "https://www.youtube.com",
+                "https://www.gmail.com",
+                "https://www.google.com"))
+            .coordinates(new CoordinatesDto(1.0d, 1.0d))
+            .showLocation(ProfilePrivacyPolicy.PUBLIC)
+            .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+            .showToDoList(ProfilePrivacyPolicy.PUBLIC)
+            .emailPreferences(Set.of(
+                UserNotificationPreferenceVO.builder()
+                    .emailPreference(EmailPreference.SYSTEM)
+                    .periodicity(EmailPreferencePeriodicity.IMMEDIATELY)
+                    .build(),
+                UserNotificationPreferenceVO.builder()
+                    .emailPreference(EmailPreference.COMMENTS)
+                    .periodicity(EmailPreferencePeriodicity.TWICE_A_DAY)
+                    .build(),
+                UserNotificationPreferenceVO.builder()
+                    .emailPreference(EmailPreference.LIKES)
+                    .periodicity(EmailPreferencePeriodicity.NEVER)
+                    .build(),
+                UserNotificationPreferenceVO.builder()
+                    .emailPreference(EmailPreference.INVITES)
+                    .periodicity(EmailPreferencePeriodicity.MONTHLY)
+                    .build()))
+            .build();
     }
 
     public static GeocodingResult getGeocodingResultWithInsufficientData() {

@@ -760,7 +760,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<User> getSixFriendsWithTheHighestRating(Long userId);
 
     /**
-     * Method to get six friend ids with highest rating
+     * Method to get six friend ids with highest rating.
      *
      * @param userId id of user
      * @return list of friend ids

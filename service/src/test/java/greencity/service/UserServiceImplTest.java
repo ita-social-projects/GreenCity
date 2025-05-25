@@ -113,7 +113,7 @@ class UserServiceImplTest {
         .userStatus(ACTIVATED)
         .build();
     private final AddressType[] addressTypes =
-            {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
+        {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
     private final String languageUa = "uk"; // language for GeocodingApi it gets uk not ua.
     private final String languageEn = "en";
 
@@ -190,7 +190,7 @@ class UserServiceImplTest {
         Double rate = 3.;
 
         when(userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate))
-                .thenReturn(1);
+            .thenReturn(1);
 
         assertDoesNotThrow(() -> userService.updateEventOrganizerRating(eventOrganizerId, rate));
 
@@ -204,12 +204,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + eventOrganizerId;
 
         when(userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate))
-                .thenReturn(0);
+            .thenReturn(0);
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.updateEventOrganizerRating(eventOrganizerId, rate)
-        );
+            WrongIdException.class,
+            () -> userService.updateEventOrganizerRating(eventOrganizerId, rate));
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).updateUserEventOrganizerRating(eventOrganizerId, rate);
@@ -222,11 +221,11 @@ class UserServiceImplTest {
         List<UserVO> userVOs = List.of(ModelUtils.getUserVO());
 
         when(userRemoteClient.findAllByEmailPreferenceAndEmailPeriodicity(
-                emailPreference.name(),
-                emailPreferencePeriodicity.name()
-        )).thenReturn(userVOs);
+            emailPreference.name(),
+            emailPreferencePeriodicity.name())).thenReturn(userVOs);
 
-        List<UserVO> actualResult = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, emailPreferencePeriodicity);
+        List<UserVO> actualResult =
+            userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, emailPreferencePeriodicity);
 
         assertEquals(userVOs, actualResult);
     }
@@ -237,9 +236,9 @@ class UserServiceImplTest {
         List<Long> userFriendIds = List.of(1L, 2L, 3L);
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userRepo.getAllUserFriendsIds(userId))
-                .thenReturn(userFriendIds);
+            .thenReturn(userFriendIds);
 
         List<Long> actualResult = userService.getAllUserFriendsIds(userId);
 
@@ -254,12 +253,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.existsById(userId))
-                .thenReturn(false);
+            .thenReturn(false);
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.getAllUserFriendsIds(userId)
-        );
+            WrongIdException.class,
+            () -> userService.getAllUserFriendsIds(userId));
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).existsById(userId);
@@ -273,9 +271,9 @@ class UserServiceImplTest {
         Pageable pageable = PageRequest.of(0, 5);
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userRepo.getAllUserFriendsIds(userId, pageable))
-                .thenReturn(userFriendIds);
+            .thenReturn(userFriendIds);
 
         Page<Long> actualResult = userService.getAllUserFriendsIds(userId, pageable);
 
@@ -291,12 +289,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.existsById(userId))
-                .thenReturn(false);
+            .thenReturn(false);
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.getAllUserFriendsIds(userId, pageable)
-        );
+            WrongIdException.class,
+            () -> userService.getAllUserFriendsIds(userId, pageable));
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).existsById(userId);
@@ -309,9 +306,9 @@ class UserServiceImplTest {
         List<Long> userFriendIds = List.of(1L, 2L, 3L, 4L, 5L, 6L);
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userRepo.getSixFriendsIdsWithTheHighestRating(userId))
-                .thenReturn(userFriendIds);
+            .thenReturn(userFriendIds);
 
         List<Long> actualResult = userService.getSixFriendsIdsWithTheHighestRating(userId);
 
@@ -326,12 +323,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.existsById(userId))
-                .thenReturn(false);
+            .thenReturn(false);
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.getSixFriendsIdsWithTheHighestRating(userId)
-        );
+            WrongIdException.class,
+            () -> userService.getSixFriendsIdsWithTheHighestRating(userId));
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).existsById(userId);
@@ -348,36 +344,35 @@ class UserServiceImplTest {
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageUa, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageEn, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
         when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude())
-        ).thenReturn(Optional.of(userLocation));
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude())).thenReturn(Optional.of(userLocation));
         when(userLocationRepo.save(userLocation))
-                .thenReturn(savedUserLocation);
+            .thenReturn(savedUserLocation);
 
         userService.setLocationForUser(userId, request);
 
         verify(userRepo).findById(userId);
         verify(googleApiService).getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageUa, addressTypes);
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes);
         verify(googleApiService).getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageEn, addressTypes);
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes);
         verify(userLocationRepo).getUserLocationByLatitudeAndLongitude(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude());
         verify(userLocationRepo).save(userLocation);
         verify(user).setUserLocation(savedUserLocation);
         verify(userRepo).save(user);
@@ -395,11 +390,11 @@ class UserServiceImplTest {
         request.getCoordinates().setLongitude(null);
 
         when(userRepo.findById(userId))
-                .thenReturn(Optional.of(user));
+            .thenReturn(Optional.of(user));
         when(user.getUserLocation())
-                .thenReturn(userLocation);
+            .thenReturn(userLocation);
         when(userLocation.getUsers())
-                .thenReturn(users);
+            .thenReturn(users);
 
         userService.setLocationForUser(userId, request);
 
@@ -415,19 +410,19 @@ class UserServiceImplTest {
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageUa, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResultWithInsufficientData());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResultWithInsufficientData());
 
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageEn, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResultWithInsufficientData());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResultWithInsufficientData());
 
         assertThrows(InsufficientLocationDataException.class,
-                () -> userService.setLocationForUser(userId, request));
+            () -> userService.setLocationForUser(userId, request));
 
         verify(userRepo).findById(userId);
         verify(googleApiService, times(2)).getLocationByCoordinates(any(), any(), anyString(), aryEq(addressTypes));
@@ -507,9 +502,8 @@ class UserServiceImplTest {
         when(userRepo.findById(userId)).thenReturn(Optional.empty());
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.setLocationForUser(userId, request)
-        );
+            WrongIdException.class,
+            () -> userService.setLocationForUser(userId, request));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, wrongIdException.getMessage());
         verify(userRepo).findById(userId);
@@ -526,30 +520,30 @@ class UserServiceImplTest {
         user.getUserLocation().setUsers(Collections.singletonList(user));
 
         when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
-                request.getCoordinates().getLatitude(), request.getCoordinates().getLongitude()))
-                .thenReturn(Optional.of(user.getUserLocation()));
+            request.getCoordinates().getLatitude(), request.getCoordinates().getLongitude()))
+            .thenReturn(Optional.of(user.getUserLocation()));
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.save(user)).thenReturn(user);
         when(userLocationRepo.save(user.getUserLocation())).thenReturn(user.getUserLocation());
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageUa, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageEn, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
 
         userService.setLocationForUser(userId, request);
 
         verify(userRepo).findById(userId);
         verify(userLocationRepo).getUserLocationByLatitudeAndLongitude(
-                request.getCoordinates().getLatitude(), request.getCoordinates().getLongitude());
+            request.getCoordinates().getLatitude(), request.getCoordinates().getLongitude());
         verify(googleApiService, times(2)).getLocationByCoordinates(
-                eq(request.getCoordinates().getLatitude()), eq(request.getCoordinates().getLongitude()), anyString(),
-                aryEq(addressTypes));
+            eq(request.getCoordinates().getLatitude()), eq(request.getCoordinates().getLongitude()), anyString(),
+            aryEq(addressTypes));
         verify(userLocationRepo).save(any());
         verify(userRepo).save(user);
         verify(userLocationRepo, never()).delete(any());
@@ -561,9 +555,9 @@ class UserServiceImplTest {
         Double rating = 1.;
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userRepo.findRatingById(userId))
-                .thenReturn(rating);
+            .thenReturn(rating);
 
         Double actualResult = userService.findUserRating(userId);
 
@@ -578,12 +572,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.existsById(userId))
-                .thenReturn(false);
+            .thenReturn(false);
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.findUserRating(userId)
-        );
+            WrongIdException.class,
+            () -> userService.findUserRating(userId));
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).existsById(userId);
@@ -598,7 +591,7 @@ class UserServiceImplTest {
         Double userRating = user.getRating();
 
         when(userRepo.findById(userId))
-                .thenReturn(Optional.of(user));
+            .thenReturn(Optional.of(user));
 
         userService.increaseUserRating(userAddRatingDto);
 
@@ -614,12 +607,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.findById(userId))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.increaseUserRating(userAddRatingDto)
-        );
+            WrongIdException.class,
+            () -> userService.increaseUserRating(userAddRatingDto));
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).findById(userId);
@@ -633,11 +625,11 @@ class UserServiceImplTest {
         UserCityDto userCityDto = new UserCityDto();
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userLocationRepo.findAllUsersCities(userId))
-                .thenReturn(Optional.of(userLocation));
+            .thenReturn(Optional.of(userLocation));
         when(modelMapper.map(userLocation, UserCityDto.class))
-                .thenReturn(userCityDto);
+            .thenReturn(userCityDto);
 
         UserCityDto actualResult = userService.findAllUsersCities(userId);
 
@@ -654,14 +646,13 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_DID_NOT_SET_ANY_CITY;
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userLocationRepo.findAllUsersCities(userId))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         var notFoundException = assertThrows(
-                NotFoundException.class,
-                () -> userService.findAllUsersCities(userId)
-        );
+            NotFoundException.class,
+            () -> userService.findAllUsersCities(userId));
 
         assertEquals(expectedExceptionMessage, notFoundException.getMessage());
         verify(userRepo).existsById(userId);
@@ -676,12 +667,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.existsById(userId))
-                .thenReturn(false);
+            .thenReturn(false);
 
         var notFoundException = assertThrows(
-                WrongIdException.class,
-                () -> userService.findAllUsersCities(userId)
-        );
+            WrongIdException.class,
+            () -> userService.findAllUsersCities(userId));
 
         assertEquals(expectedExceptionMessage, notFoundException.getMessage());
         verify(userRepo).existsById(userId);
@@ -696,11 +686,11 @@ class UserServiceImplTest {
         UserLocationDto userLocationDto = new UserLocationDto();
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userLocationRepo.findAllUsersCities(userId))
-                .thenReturn(Optional.of(userLocation));
+            .thenReturn(Optional.of(userLocation));
         when(modelMapper.map(userLocation, UserLocationDto.class))
-                .thenReturn(userLocationDto);
+            .thenReturn(userLocationDto);
 
         UserLocationDto actualResult = userService.findUserLocationDtoByUserId(userId);
 
@@ -717,14 +707,13 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_DID_NOT_SET_ANY_CITY;
 
         when(userRepo.existsById(userId))
-                .thenReturn(true);
+            .thenReturn(true);
         when(userLocationRepo.findAllUsersCities(userId))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         var notFoundException = assertThrows(
-                NotFoundException.class,
-                () -> userService.findAllUsersCities(userId)
-        );
+            NotFoundException.class,
+            () -> userService.findAllUsersCities(userId));
 
         assertEquals(expectedExceptionMessage, notFoundException.getMessage());
         verify(userRepo).existsById(userId);
@@ -739,12 +728,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.existsById(userId))
-                .thenReturn(false);
+            .thenReturn(false);
 
         var notFoundException = assertThrows(
-                WrongIdException.class,
-                () -> userService.findAllUsersCities(userId)
-        );
+            WrongIdException.class,
+            () -> userService.findAllUsersCities(userId));
 
         assertEquals(expectedExceptionMessage, notFoundException.getMessage());
         verify(userRepo).existsById(userId);
@@ -843,7 +831,7 @@ class UserServiceImplTest {
         Map<String, String> body = Map.of("role", role.name());
 
         when(userRemoteClient.updateUserRole(userId, body))
-                .thenReturn(Optional.of(expectedResult));
+            .thenReturn(Optional.of(expectedResult));
 
         UserRoleDto actualResult = userService.updateRole(userId, role, email);
         assertEquals(expectedResult, actualResult);
@@ -858,12 +846,11 @@ class UserServiceImplTest {
         Map<String, String> body = Map.of("role", role.name());
 
         when(userRemoteClient.updateUserRole(userId, body))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.updateRole(userId, role, email)
-        );
+            WrongIdException.class,
+            () -> userService.updateRole(userId, role, email));
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
     }
 
@@ -1009,9 +996,9 @@ class UserServiceImplTest {
         Long userId = TestConst.USER_ID;
 
         when(userRepo.findById(userId))
-                .thenReturn(Optional.of(user));
+            .thenReturn(Optional.of(user));
         when(modelMapper.map(user, UserVOAdvancedDto.class))
-                .thenReturn(userVOAdvancedDto);
+            .thenReturn(userVOAdvancedDto);
 
         UserVOAdvancedDto actualResult = userService.findByIdAdvanced(userId);
 
@@ -1026,12 +1013,11 @@ class UserServiceImplTest {
         String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + userId;
 
         when(userRepo.findById(userId))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         var wrongIdException = assertThrows(
-                WrongIdException.class,
-                () -> userService.findByIdAdvanced(userId)
-        );
+            WrongIdException.class,
+            () -> userService.findByIdAdvanced(userId));
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).findById(userId);

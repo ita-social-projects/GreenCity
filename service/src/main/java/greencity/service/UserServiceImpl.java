@@ -309,10 +309,6 @@ public class UserServiceImpl implements UserService {
     public void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest) {
         User user = findUserById(userId);
         if (shouldSkipLocationUpdate(user, userProfileDtoRequest)) {
-            System.out.println("ABOBA");
-            System.out.println("ABOBA");
-            System.out.println("ABOBA");
-            System.out.println("ABOBA");
             return;
         }
 
@@ -582,7 +578,7 @@ public class UserServiceImpl implements UserService {
             throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
         return modelMapper.map(userLocation, clazz);
     }
 }
