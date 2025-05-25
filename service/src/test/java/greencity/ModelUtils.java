@@ -10,6 +10,7 @@ import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.RankBy;
 import com.google.maps.model.PriceLevel;
 import greencity.constant.AppConstant;
+import greencity.dto.CoordinatesDto;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
@@ -137,6 +138,8 @@ import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserNotificationPreferenceVO;
+import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
@@ -190,11 +193,14 @@ import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.ArticleType;
 import greencity.enums.CommentStatus;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.InvitationStatus;
 import greencity.enums.PlaceStatus;
+import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.enums.ToDoListItemStatus;
@@ -452,7 +458,7 @@ public class ModelUtils {
     }
 
     public static User getUser() {
-        return User.builder()
+        User user = User.builder()
             .id(1L)
             .name(TestConst.NAME)
             .rating(10.)
@@ -462,6 +468,17 @@ public class ModelUtils {
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
             .build();
+
+        user.setUserLocation(new UserLocation(
+                1L,
+                "cityEn", "cityUk",
+                "regionEn", "regionUk",
+                "countryEn", "countryUk",
+                0., 0.,
+                List.of(user)
+        ));
+
+        return user;
     }
 
     public static User getUserNotCommentOwner() {
@@ -1882,6 +1899,50 @@ public class ModelUtils {
     public static MultipartFile[] getMultipartFiles() {
         return new MultipartFile[] {new MockMultipartFile("firstFile.tmp", "Hello World".getBytes()),
             new MockMultipartFile("secondFile.tmp", "Hello World".getBytes())};
+    }
+
+    public static UserProfileDtoRequest getUserProfileDtoRequest() {
+        return UserProfileDtoRequest.builder()
+                .name("Name")
+                .userCredo("userCredo")
+                .socialNetworks(List.of(
+                        "https://www.facebook.com",
+                        "https://www.instagram.com",
+                        "https://www.youtube.com",
+                        "https://www.gmail.com",
+                        "https://www.google.com"))
+                .coordinates(new CoordinatesDto(1.0d, 1.0d))
+                .showLocation(ProfilePrivacyPolicy.PUBLIC)
+                .showEcoPlace(ProfilePrivacyPolicy.PUBLIC)
+                .showToDoList(ProfilePrivacyPolicy.PUBLIC)
+                .emailPreferences(Set.of(
+                        UserNotificationPreferenceVO.builder()
+                                .emailPreference(EmailPreference.SYSTEM)
+                                .periodicity(EmailPreferencePeriodicity.IMMEDIATELY)
+                                .build(),
+                        UserNotificationPreferenceVO.builder()
+                                .emailPreference(EmailPreference.COMMENTS)
+                                .periodicity(EmailPreferencePeriodicity.TWICE_A_DAY)
+                                .build(),
+                        UserNotificationPreferenceVO.builder()
+                                .emailPreference(EmailPreference.LIKES)
+                                .periodicity(EmailPreferencePeriodicity.NEVER)
+                                .build(),
+                        UserNotificationPreferenceVO.builder()
+                                .emailPreference(EmailPreference.INVITES)
+                                .periodicity(EmailPreferencePeriodicity.MONTHLY)
+                                .build()))
+                .build();
+    }
+
+    public static GeocodingResult getGeocodingResultWithInsufficientData() {
+        GeocodingResult geocodingResult = new GeocodingResult();
+        AddressComponent locality = new AddressComponent();
+        locality.longName = "fake data";
+        locality.types = new AddressComponentType[] {AddressComponentType.UNKNOWN};
+        geocodingResult.addressComponents = new AddressComponent[] {locality};
+
+        return geocodingResult;
     }
 
     public static MultipartFile[] getMultipartImageFiles() {

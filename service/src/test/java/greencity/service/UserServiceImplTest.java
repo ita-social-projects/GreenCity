@@ -1,9 +1,11 @@
 package greencity.service;
 
+import com.google.maps.model.AddressType;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
+import greencity.dto.CoordinatesDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -12,6 +14,7 @@ import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -23,6 +26,7 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.InsufficientLocationDataException;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
@@ -44,9 +48,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+
 import static greencity.ModelUtils.getListUserManagementVO;
 import static greencity.ModelUtils.getSortedPageable;
 import static greencity.ModelUtils.getUnSortedPageable;
@@ -68,8 +77,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
@@ -92,6 +103,9 @@ class UserServiceImplTest {
     UserLocationRepo userLocationRepo;
     @Mock
     UserManagementVOMapper userManagementVOMapper;
+
+    @Mock
+    GoogleApiService googleApiService;
 
     private final UserVO userVO = UserVO.builder()
         .id(1L)
@@ -322,10 +336,250 @@ class UserServiceImplTest {
         verify(userRepo, never()).getSixFriendsWithTheHighestRating(any());
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private final AddressType[] addressTypes =
+            {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
+    private final String languageUa = "uk"; // language for GeocodingApi it gets uk not ua.
+    private final String languageEn = "en";
+
     @Test
     void setLocationForUserTest() {
-        throw new RuntimeException("not implemented");
+        Long userId = TestConst.USER_ID;
+        var request = ModelUtils.getUserProfileDtoRequest();
+        var user = spy(ModelUtils.getUser());
+        var userLocation = ModelUtils.getUserLocation();
+        var savedUserLocation = userLocation.setId(3L);
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageUa, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageEn, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+        when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude())
+        ).thenReturn(Optional.of(userLocation));
+        when(userLocationRepo.save(userLocation))
+                .thenReturn(savedUserLocation);
+
+        userService.setLocationForUser(userId, request);
+
+        verify(userRepo).findById(userId);
+        verify(googleApiService).getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageUa, addressTypes);
+        verify(googleApiService).getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageEn, addressTypes);
+        verify(userLocationRepo).getUserLocationByLatitudeAndLongitude(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude());
+        verify(userLocationRepo).save(userLocation);
+        verify(user).setUserLocation(savedUserLocation);
+        verify(userRepo).save(user);
     }
+
+    @Test
+    void saveUserProfileWithUnusualLongitudeAndLatitudeTest() {
+        Long userId = TestConst.USER_ID;
+        var request = ModelUtils.getUserProfileDtoRequest();
+        var user = ModelUtils.getUser();
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageUa, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResultWithInsufficientData());
+
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageEn, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResultWithInsufficientData());
+
+        assertThrows(InsufficientLocationDataException.class,
+                () -> userService.setLocationForUser(userId, request));
+
+        verify(userRepo).findById(userId);
+        verify(googleApiService, times(2)).getLocationByCoordinates(any(), any(), anyString(), aryEq(addressTypes));
+    }
+
+    @Test
+    void saveUserProfileUpdatesWithNullValuesTest() {
+        Long userId = TestConst.USER_ID;
+        UserProfileDtoRequest request = new UserProfileDtoRequest();
+        request.setName(null);
+        request.setUserCredo(null);
+        request.setSocialNetworks(null);
+        request.setShowLocation(null);
+        request.setShowEcoPlace(null);
+        request.setShowToDoList(null);
+        request.setCoordinates(CoordinatesDto.builder().latitude(null).longitude(null).build());
+
+        var user = ModelUtils.getUser();
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepo.save(user)).thenReturn(user);
+
+        userService.setLocationForUser(userId, request);
+
+        verify(userRepo).findById(userId);
+        verify(userRepo, never()).save(user);
+    }
+
+    @Test
+    void saveUserProfileUpdatesWithNullLatitudeTest() {
+        Long userId = TestConst.USER_ID;
+        UserProfileDtoRequest request = new UserProfileDtoRequest();
+        request.setName(null);
+        request.setUserCredo(null);
+        request.setSocialNetworks(null);
+        request.setShowLocation(null);
+        request.setShowEcoPlace(null);
+        request.setShowToDoList(null);
+        request.setCoordinates(CoordinatesDto.builder().latitude(null).longitude(1.0d).build());
+
+        var myUser = ModelUtils.getUser();
+        when(userRepo.findById(userId)).thenReturn(Optional.of(myUser));
+        when(userRepo.save(myUser)).thenReturn(myUser);
+
+        userService.setLocationForUser(userId, request);
+
+        verify(userRepo).findById(userId);
+        verify(userRepo, never()).save(myUser);
+    }
+
+    @Test
+    void saveUserProfileUpdatesWithNullLongitudeTest() {
+        Long userId = TestConst.USER_ID;
+        UserProfileDtoRequest request = new UserProfileDtoRequest();
+        request.setName(null);
+        request.setUserCredo(null);
+        request.setSocialNetworks(null);
+        request.setShowLocation(null);
+        request.setShowEcoPlace(null);
+        request.setShowToDoList(null);
+        request.setCoordinates(CoordinatesDto.builder().latitude(1.0d).longitude(null).build());
+
+        var myUser = ModelUtils.getUser();
+        when(userRepo.findById(userId)).thenReturn(Optional.of(myUser));
+        when(userRepo.save(myUser)).thenReturn(myUser);
+
+        userService.setLocationForUser(userId, request);
+
+        verify(userRepo).findById(userId);
+        verify(userRepo, never()).save(myUser);
+    }
+
+    @Test
+    void saveUserProfileThrowWrongEmailExceptionTest() {
+        Long userId = TestConst.USER_ID;
+        var request = UserProfileDtoRequest.builder().build();
+
+        when(userRepo.findById(userId)).thenReturn(Optional.empty());
+
+        var wrongIdException = assertThrows(
+                WrongIdException.class,
+                () -> userService.setLocationForUser(userId, request)
+        );
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, wrongIdException.getMessage());
+        verify(userRepo).findById(userId);
+    }
+
+    @Test
+    void saveUserProfileWhenLocationIsNotUpdatedTest() {
+        Long userId = TestConst.USER_ID;
+        UserProfileDtoRequest request = new UserProfileDtoRequest();
+        request.setName("Dmutro");
+        CoordinatesDto coordinates = new CoordinatesDto(20.0000, 20.0000);
+        request.setCoordinates(coordinates);
+        var user = ModelUtils.getUser();
+        user.getUserLocation().setUsers(Collections.singletonList(user));
+
+        when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
+                request.getCoordinates().getLatitude(), request.getCoordinates().getLongitude()))
+                .thenReturn(Optional.of(user.getUserLocation()));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepo.save(user)).thenReturn(user);
+        when(userLocationRepo.save(user.getUserLocation())).thenReturn(user.getUserLocation());
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageUa, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+        when(googleApiService.getLocationByCoordinates(
+                request.getCoordinates().getLatitude(),
+                request.getCoordinates().getLongitude(),
+                languageEn, addressTypes))
+                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+
+        userService.setLocationForUser(userId, request);
+
+        verify(userRepo).findById(userId);
+        verify(userLocationRepo).getUserLocationByLatitudeAndLongitude(
+                request.getCoordinates().getLatitude(), request.getCoordinates().getLongitude());
+        verify(googleApiService, times(2)).getLocationByCoordinates(
+                eq(request.getCoordinates().getLatitude()), eq(request.getCoordinates().getLongitude()), anyString(),
+                aryEq(addressTypes));
+        verify(userLocationRepo).save(any());
+        verify(userRepo).save(user);
+        verify(userLocationRepo, never()).delete(any());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     void findUserRatingTest() {

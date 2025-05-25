@@ -309,6 +309,10 @@ public class UserServiceImpl implements UserService {
     public void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest) {
         User user = findUserById(userId);
         if (shouldSkipLocationUpdate(user, userProfileDtoRequest)) {
+            System.out.println("ABOBA");
+            System.out.println("ABOBA");
+            System.out.println("ABOBA");
+            System.out.println("ABOBA");
             return;
         }
 
