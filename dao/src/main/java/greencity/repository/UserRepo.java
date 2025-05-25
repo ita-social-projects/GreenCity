@@ -44,7 +44,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Modifying
     @Transactional
     @Query(value = "UPDATE User SET eventOrganizerRating=:rate WHERE id=:userId")
-    void updateUserEventOrganizerRating(Long userId, Double rate);
+    int updateUserEventOrganizerRating(Long userId, Double rate);
 
     /**
      * Find user by user id and friend id when their status is Friend.
@@ -758,6 +758,20 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         ORDER BY greencity_users.rating DESC LIMIT 6;\
         """)
     List<User> getSixFriendsWithTheHighestRating(Long userId);
+
+    /**
+     * Method to get six friend ids with highest rating
+     *
+     * @param userId id of user
+     * @return list of friend ids
+     */
+    @Query(nativeQuery = true, value = """
+        SELECT id FROM greencity_users WHERE greencity_users.id IN ( \
+        (SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND') \
+        UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND')) \
+        ORDER BY greencity_users.rating DESC LIMIT 6;\
+        """)
+    List<Long> getSixFriendsIdsWithTheHighestRating(Long userId);
 
     @Query(nativeQuery = true, value = """
         SELECT rating FROM greencity_users WHERE greencity_users.id = :userId

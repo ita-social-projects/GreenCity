@@ -180,6 +180,7 @@ import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
+import greencity.entity.UserLocation;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
@@ -453,7 +454,6 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            // .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .rating(10.)
             .profilePicturePath("image path")
@@ -467,7 +467,6 @@ public class ModelUtils {
     public static User getUserNotCommentOwner() {
         return User.builder()
             .id(2L)
-            // .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .subscribedEvents(new HashSet<>())
             .favoriteEcoNews(new HashSet<>())
@@ -478,7 +477,6 @@ public class ModelUtils {
     public static User getAttenderUser() {
         return User.builder()
             .id(2L)
-            // .email("danylo@gmail.com")
             .name("Danylo")
             .build();
     }
@@ -494,7 +492,7 @@ public class ModelUtils {
     public static User getTestUser() {
         return User.builder()
             .id(2L)
-            // .email("user@email.com")
+            .rating(1.)
             .build();
     }
 
@@ -715,6 +713,27 @@ public class ModelUtils {
             .createDateTime(ZonedDateTime.now())
             .habit(HabitDto.builder().id(1L).build())
             .userId(1L).build();
+    }
+
+    public static UserLocation getUserLocation() {
+        return new UserLocation(
+                1L,
+                "cityEn", "cityUk",
+                "regionEn", "regionUk",
+                "countryEn", "countryUk",
+                0., 0.,
+                List.of(getUser())
+        );
+    }
+
+    public static UserLocationDto getUserLocationDto() {
+        return new UserLocationDto(
+                1L,
+                "cityEn", "cityUk",
+                "regionEn", "regionUk",
+                "countryEn", "countryUk",
+                0., 0.
+        );
     }
 
     public static HabitAssignDto getHabitAssignDtoWithFriendsIds() {
@@ -1695,7 +1714,6 @@ public class ModelUtils {
     private static User createUserRoleUser() {
         return User.builder()
             .id(2L)
-            // .email("test2@mail.com")
             .build();
     }
 
@@ -1710,7 +1728,6 @@ public class ModelUtils {
     private static User createUser() {
         return User.builder()
             .id(1L)
-            // .email("test@mail.com")
             .build();
     }
 
@@ -3506,6 +3523,7 @@ public class ModelUtils {
         advancedDto.setUserFriends(getUserFriends());
         advancedDto.setSocialNetworks(getSocialNetworkVOs());
         advancedDto.setRating(10.0);
+        advancedDto.setUserLocation(getUserLocationDto());
 
         return advancedDto;
     }
@@ -3578,6 +3596,7 @@ public class ModelUtils {
             .build());
         advancedDto.setLanguageVO(getLanguageDTO());
         advancedDto.setSocialNetworks(getSocialNetworkVOs());
+        advancedDto.setUserLocation(getUserLocationDto());
 
         return advancedDto;
     }

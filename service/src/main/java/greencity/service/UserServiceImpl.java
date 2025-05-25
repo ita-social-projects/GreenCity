@@ -206,7 +206,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateEventOrganizerRating(Long eventOrganizerId, Double rate) {
-        userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate);
+        int updatedRows = userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate);
+        if (updatedRows == 0) {
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + eventOrganizerId);
+        }
     }
 
     /**
@@ -234,7 +237,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserRating(Long userId, Double rating) {
         if (userRepo.findById(userId).isEmpty()) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
         userRepo.updateUserRating(userId, rating);
     }
@@ -271,6 +274,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<Long> getAllUserFriendsIds(Long userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
         return userRepo.getAllUserFriendsIds(userId);
     }
 
@@ -279,6 +285,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Page<Long> getAllUserFriendsIds(Long userId, Pageable pageable) {
+        if (!userRepo.existsById(userId)) {
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
         return userRepo.getAllUserFriendsIds(userId, pageable);
     }
 
@@ -287,9 +296,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<Long> getSixFriendsIdsWithTheHighestRating(Long userId) {
-        return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
-            .map(User::getId)
-            .toList();
+        if (!userRepo.existsById(userId)) {
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+        return userRepo.getSixFriendsIdsWithTheHighestRating(userId);
     }
 
     /**
@@ -360,6 +370,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Double findUserRating(Long userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
         return userRepo.findRatingById(userId);
     }
 
@@ -378,9 +391,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserCityDto findAllUsersCities(Long userId) {
-        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
-        return modelMapper.map(userLocation, UserCityDto.class);
+        return findUserLocation(userId, UserCityDto.class);
     }
 
     /**
@@ -388,9 +399,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserLocationDto findUserLocationDtoByUserId(Long userId) {
-        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
-        return modelMapper.map(userLocation, UserLocationDto.class);
+        return findUserLocation(userId, UserLocationDto.class);
     }
 
     /**
@@ -476,15 +485,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVOAdvancedDto findByIdAdvanced(Long id) {
         return userRepo.findById(id)
-            .map(user -> {
-                UserVOAdvancedDto userVOAdvancedDto = modelMapper.map(user, UserVOAdvancedDto.class);
-                UserLocation userLocation = user.getUserLocation();
-                if (userLocation != null) {
-                    UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
-                    userVOAdvancedDto.setUserLocation(userLocationDto);
-                }
-                return userVOAdvancedDto;
-            })
+            .map(user -> modelMapper.map(user, UserVOAdvancedDto.class))
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
@@ -570,5 +571,14 @@ public class UserServiceImpl implements UserService {
                 greenCityProfile.setUserLocationDto(userLocationDto);
             }));
         return greenCityProfiles;
+    }
+
+    private <T> T findUserLocation(Long userId, Class<T> clazz) {
+        if (!userRepo.existsById(userId)) {
+            throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+        UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
+        return modelMapper.map(userLocation, clazz);
     }
 }
