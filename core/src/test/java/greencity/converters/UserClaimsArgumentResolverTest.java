@@ -83,13 +83,4 @@ class UserClaimsArgumentResolverTest {
         verify(jwtTool).extractJwtFromNativeWebRequest(any(NativeWebRequest.class));
         verify(jwtTool, never()).extractUserId(jwt);
     }
-
-    private CurrentUserClaims buildCurrentUserClaims() {
-        return new CurrentUserClaims() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return CurrentUserClaims.class;
-            }
-        };
-    }
 }

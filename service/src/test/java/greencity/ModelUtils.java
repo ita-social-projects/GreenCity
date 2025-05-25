@@ -458,7 +458,7 @@ public class ModelUtils {
     }
 
     public static User getUser() {
-        User user = User.builder()
+        return User.builder()
             .id(1L)
             .name(TestConst.NAME)
             .rating(10.)
@@ -468,8 +468,6 @@ public class ModelUtils {
             .favoriteEcoNews(new HashSet<>())
             .favoriteEvents(new HashSet<>())
             .build();
-
-        return user;
     }
 
     public static User getUserWithUserLocation() {
