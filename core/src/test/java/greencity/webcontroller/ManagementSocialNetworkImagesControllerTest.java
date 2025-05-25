@@ -149,16 +149,16 @@ class ManagementSocialNetworkImagesControllerTest {
         Gson gson = new Gson();
         String json = gson.toJson(imageToSave);
         MockMultipartFile dtoPart = new MockMultipartFile(
-                "socialNetworkImageRequestDTO",
-                "socialNetworkImageRequestDTO.json",
-                MediaType.APPLICATION_JSON_VALUE,
-                json.getBytes(StandardCharsets.UTF_8));
+            "socialNetworkImageRequestDTO",
+            "socialNetworkImageRequestDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
 
         mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
-                .file(dtoPart)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .file(dtoPart)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
 
         verify(socialNetworkImageService, never()).save(any(), any());
     }

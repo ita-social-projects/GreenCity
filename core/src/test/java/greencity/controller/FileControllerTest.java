@@ -57,8 +57,8 @@ class FileControllerTest {
     void uploadTest() {
         MockMultipartFile file = new MockMultipartFile("file", "image", MediaType.IMAGE_JPEG_VALUE, new byte[1]);
         mockMvc.perform(multipart(baseUrl + "/single")
-                        .file(file))
-                .andExpect(status().isOk());
+            .file(file))
+            .andExpect(status().isOk());
 
         verify(fileService).upload(file);
     }
@@ -70,9 +70,9 @@ class FileControllerTest {
         String pathsJson = objectMapper.writeValueAsString(paths);
 
         mockMvc.perform(delete(baseUrl)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(pathsJson))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(pathsJson))
+            .andExpect(status().isOk());
 
         verify(fileService).deleteAll(paths);
     }

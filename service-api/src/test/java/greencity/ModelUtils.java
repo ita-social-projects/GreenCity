@@ -270,8 +270,8 @@ public class ModelUtils {
 
             @Override
             public ContainerElementNodeBuilderCustomizableContext addContainerElementNode(String name,
-                                                                                          Class<?> containerType,
-                                                                                          Integer typeArgumentIndex) {
+                Class<?> containerType,
+                Integer typeArgumentIndex) {
                 return null;
             }
 
