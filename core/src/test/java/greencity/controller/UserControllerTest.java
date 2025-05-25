@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.user.UpdateUserCredoDto;
@@ -320,8 +321,7 @@ class UserControllerTest {
     void getAllUserFriendsIdsPageTest() throws Exception {
         Long userId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
-        List<Long> friendsIds = List.of(2L, 3L, 4L);
-        Page<Long> friendsPage = new PageImpl<>(friendsIds, pageable, friendsIds.size());
+        PageableAdvancedDto<Long> friendsPage = new PageableAdvancedDto<>();
 
         when(userService.getAllUserFriendsIds(userId, pageable)).thenReturn(friendsPage);
 

@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
@@ -208,7 +209,7 @@ public interface UserService {
      * @param pageable pageable configuration.
      * @return {@link Page}
      */
-    Page<Long> getAllUserFriendsIds(Long userId, Pageable pageable);
+    PageableAdvancedDto<Long> getAllUserFriendsIds(Long userId, Pageable pageable);
 
     /**
      * Get top 6 friends ids with the highest rating.

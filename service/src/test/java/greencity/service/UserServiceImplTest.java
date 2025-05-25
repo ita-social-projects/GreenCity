@@ -6,6 +6,7 @@ import greencity.TestConst;
 import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.CoordinatesDto;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -49,7 +50,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -269,16 +269,29 @@ class UserServiceImplTest {
     void getAllUserFriendsIdsPageableTest() {
         Long userId = TestConst.USER_ID;
         Page<Long> userFriendIds = new PageImpl<>(List.of(1L, 2L, 3L));
-        Pageable pageable = PageRequest.of(0, 5);
+        int pageNumber = 0;
+        int pageSize = 5;
+        PageableAdvancedDto<Long> expectedResult = PageableAdvancedDto.<Long>builder()
+                .page(userFriendIds.getContent())
+                .totalElements(userFriendIds.getTotalElements())
+                .currentPage(pageNumber)
+                .totalPages(userFriendIds.getTotalPages())
+                .number(pageNumber)
+                .hasPrevious(userFriendIds.hasPrevious())
+                .hasNext(userFriendIds.hasNext())
+                .first(userFriendIds.isFirst())
+                .last(userFriendIds.isLast())
+                .build();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         when(userRepo.existsById(userId))
             .thenReturn(true);
         when(userRepo.getAllUserFriendsIds(userId, pageable))
             .thenReturn(userFriendIds);
 
-        Page<Long> actualResult = userService.getAllUserFriendsIds(userId, pageable);
+        PageableAdvancedDto<Long> actualResult = userService.getAllUserFriendsIds(userId, pageable);
 
-        assertEquals(userFriendIds, actualResult);
+        assertEquals(expectedResult, actualResult);
         verify(userRepo).existsById(userId);
         verify(userRepo).getAllUserFriendsIds(userId, pageable);
     }

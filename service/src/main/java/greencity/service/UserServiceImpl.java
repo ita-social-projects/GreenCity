@@ -7,6 +7,7 @@ import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageInfoDto;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
@@ -284,11 +285,23 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Page<Long> getAllUserFriendsIds(Long userId, Pageable pageable) {
+    public PageableAdvancedDto<Long> getAllUserFriendsIds(Long userId, Pageable pageable) {
         if (!userRepo.existsById(userId)) {
             throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
-        return userRepo.getAllUserFriendsIds(userId, pageable);
+        Page<Long> page = userRepo.getAllUserFriendsIds(userId, pageable);
+
+        return PageableAdvancedDto.<Long>builder()
+                .page(page.getContent())
+                .totalElements(page.getTotalElements())
+                .currentPage(pageable.getPageNumber())
+                .totalPages(page.getTotalPages())
+                .number(pageable.getPageNumber())
+                .hasPrevious(page.hasPrevious())
+                .hasNext(page.hasNext())
+                .first(page.isFirst())
+                .last(page.isLast())
+                .build();
     }
 
     /**
