@@ -2,15 +2,29 @@ package greencity.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import greencity.ModelUtils;
+import greencity.dto.PageableDto;
+import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.user.UserEmailDto;
+import greencity.dto.user.UserEmailPreferencesStatisticDto;
+import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserRoleStatisticDto;
 import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
+import greencity.enums.DateGranularity;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
+import greencity.exception.exceptions.LanguageNotFoundException;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -21,27 +35,36 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class UserRemoteClientTest {
-
     static MockWebServer mockWebServer;
     UserRemoteClient userRemoteClient;
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     String emailQueryParam = "email";
+    String idQueryParam = "id";
+    String pageQueryParam = "page";
+    String pageSizeQueryParam = "size";
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -195,7 +218,10 @@ class UserRemoteClientTest {
     @Test
     @SneakyThrows
     void getUserStatusesDistributionTest() {
-        List<UserStatusStatisticDto> statusStats = List.of(ModelUtils.getUserStatusStatisticDto());
+        List<UserStatusStatisticDto> statusStats = List.of(
+                new UserStatusStatisticDto(UserStatus.ACTIVATED, 10L),
+                new UserStatusStatisticDto(UserStatus.CREATED, 5L)
+        );
         String statusStatsJson = toJson(statusStats);
         String expectedRequestPath = "/user/statuses-distribution";
         String expectedRequestMethod = HttpMethod.GET.name();
@@ -217,7 +243,9 @@ class UserRemoteClientTest {
     @Test
     @SneakyThrows
     void getUserEmailPreferencesDistributionTest() {
-        List<UserEmailPreferencesStatisticDto> emailPrefsStats = List.of(ModelUtils.getUserEmailPreferencesStatisticDto());
+        List<UserEmailPreferencesStatisticDto> emailPrefsStats = List.of(
+                new UserEmailPreferencesStatisticDto(EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY, 10L)
+        );
         String emailPrefsStatsJson = toJson(emailPrefsStats);
         String expectedRequestPath = "/user/email-preferences-distribution";
         String expectedRequestMethod = HttpMethod.GET.name();
@@ -260,7 +288,7 @@ class UserRemoteClientTest {
     @Test
     @SneakyThrows
     void searchUserNotificationPreferenceTest() {
-        EmailPreferenceDto emailPreferenceDto = ModelUtils.getEmailPreferenceDto();
+        EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(10L, EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY);
         Boolean searchResult = true;
         String emailPreferenceDtoJson = toJson(emailPreferenceDto);
         String expectedRequestPath = "/user-notification-preference/search";
@@ -335,7 +363,7 @@ class UserRemoteClientTest {
         LocalDateTime startDate = LocalDateTime.of(2023, 1, 1, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(2023, 12, 31, 23, 59);
         DateGranularity granularity = DateGranularity.DAY;
-        List<UserRegistrationStatisticDto> registrationStats = List.of(ModelUtils.getUserRegistrationStatisticDto());
+        List<UserRegistrationStatisticDto> registrationStats = List.of(new UserRegistrationStatisticDto(startDate, 10L));
         String registrationStatsJson = toJson(registrationStats);
         String expectedRequestPath = "/user/registration-statistics?start-date=" + startDate + "&end-date=" + endDate + "&granularity=" + granularity.name();
         String expectedRequestMethod = HttpMethod.GET.name();
@@ -377,7 +405,7 @@ class UserRemoteClientTest {
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertTrue(recordedRequest.getPath().startsWith("/user/activated-ids"));
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter("ids"));
     }
 
@@ -434,7 +462,12 @@ class UserRemoteClientTest {
     @SneakyThrows
     void getAllSocialNetworkImagesRemoteTest() {
         Pageable pageable = PageRequest.of(0, 10);
-        PageableDto<SocialNetworkImageResponseDTO> pageableDto = ModelUtils.getPageableDtoSocialNetworkImage();
+        PageableDto<SocialNetworkImageResponseDTO> pageableDto = new PageableDto<>(
+                List.of(ModelUtils.getSocialNetworkImageResponseDTO()),
+                1L,
+                0,
+                1
+        );
         String pageableDtoJson = toJson(pageableDto);
         String expectedRequestPath = "/management/socialnetworkimages/get-all-remote?page=" + pageable.getPageNumber() + "&size=" + pageable.getPageSize();
         String expectedRequestMethod = HttpMethod.GET.name();
@@ -458,9 +491,9 @@ class UserRemoteClientTest {
     @Test
     @SneakyThrows
     void saveSocialImageRemoteTest() {
-        SocialNetworkImageRequestDTO requestDto = ModelUtils.getSocialNetworkImageRequestDTO();
+        SocialNetworkImageRequestDTO requestDto = new SocialNetworkImageRequestDTO("image path", "host path");
         SocialNetworkImageResponseDTO responseDto = ModelUtils.getSocialNetworkImageResponseDTO();
-        MultipartFile file = ModelUtils.getMultipartFile();
+        MultipartFile file = new MockMultipartFile("name", "content".getBytes());
         String responseDtoJson = toJson(responseDto);
         String expectedRequestPath = "/management/socialnetworkimages/save-remote";
         String expectedRequestMethod = HttpMethod.POST.name();
@@ -598,6 +631,25 @@ class UserRemoteClientTest {
 
     @Test
     @SneakyThrows
+    void findLanguageByCodeWhenLanguageNotFoundTest() {
+        String code = "en";
+        String expectedRequestPath = "/lang/codes/" + code;
+        String expectedRequestMethod = HttpMethod.GET.name();
+
+        mockWebServer.enqueue(new MockResponse().setResponseCode(404));
+
+        assertThrows(
+                LanguageNotFoundException.class,
+                () -> userRemoteClient.findLanguageByCode(code)
+        );
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
     void findAllLanguageCodesTest() {
         List<String> languageCodes = List.of("en", "uk", "de");
         String languageCodesJson = toJson(languageCodes);
@@ -622,7 +674,7 @@ class UserRemoteClientTest {
     @SneakyThrows
     void updateSocialImageTest() {
         SocialNetworkImageResponseDTO responseDto = ModelUtils.getSocialNetworkImageResponseDTO();
-        MultipartFile file = ModelUtils.getMultipartFile();
+        MultipartFile file = new MockMultipartFile("name", "content".getBytes());
         String expectedRequestPath = "/management/socialnetworkimages/";
         String expectedRequestMethod = HttpMethod.PUT.name();
 
@@ -645,6 +697,7 @@ class UserRemoteClientTest {
         List<UserVO> users = List.of(ModelUtils.getUserVO());
         String usersJson = toJson(users);
         String expectedRequestPath = "/user/email/findAll?emails=" + String.join("&emails=", emails);
+        System.out.println("expectedRequestPath: " + expectedRequestPath);
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
@@ -658,7 +711,7 @@ class UserRemoteClientTest {
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertTrue(recordedRequest.getPath().startsWith("/user/email/findAll"));
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter("emails"));
     }
 
@@ -666,6 +719,7 @@ class UserRemoteClientTest {
     @SneakyThrows
     void userExistsByEmailTest() {
         String email = "email@email.com";
+        String expectedRequestPath = "/user/findNotDeactivatedByEmail?email=" + email;
         UserVO userVO = ModelUtils.getUserVO();
         String userVOJson = toJson(userVO);
 
@@ -680,7 +734,7 @@ class UserRemoteClientTest {
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(HttpMethod.GET.name(), recordedRequest.getMethod());
-        assertTrue(recordedRequest.getPath().contains("/user/findNotDeactivatedByEmail"));
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
         assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
     }
 
@@ -688,7 +742,10 @@ class UserRemoteClientTest {
     @SneakyThrows
     void findUserEmailsByUserIdsTest() {
         List<Long> userIds = List.of(1L, 2L, 3L);
-        List<UserEmailDto> userEmails = List.of(ModelUtils.getUserEmailDto());
+        List<UserEmailDto> userEmails = List.of(
+                new UserEmailDto(1L, "email1"),
+                new UserEmailDto(2L, "email2")
+        );
         String userEmailsJson = toJson(userEmails);
         String expectedRequestPath = "/user/email/findByIds?userIds=" + String.join("&userIds=", userIds.stream().map(String::valueOf).toArray(String[]::new));
         String expectedRequestMethod = HttpMethod.GET.name();
@@ -704,7 +761,7 @@ class UserRemoteClientTest {
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertTrue(recordedRequest.getPath().startsWith("/user/email/findByIds"));
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter("userIds"));
     }
 
