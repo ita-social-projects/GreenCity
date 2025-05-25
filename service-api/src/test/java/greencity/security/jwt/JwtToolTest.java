@@ -80,19 +80,19 @@ class JwtToolTest {
         SecretKey key = Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes());
 
         String actualEmail = Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(accessToken)
-                .getPayload()
-                .getSubject();
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(accessToken)
+            .getPayload()
+            .getSubject();
         assertEquals(expectedEmail, actualEmail);
         @SuppressWarnings({"unchecked, rawtype"})
         List<String> authorities = (List<String>) Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(accessToken)
-                .getPayload()
-                .get(ROLE);
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(accessToken)
+            .getPayload()
+            .get(ROLE);
         List<Role> actualRoles = authorities.stream().map(Role::valueOf).toList();
         assertEquals(expectedRoles, actualRoles);
     }
@@ -104,7 +104,7 @@ class JwtToolTest {
         String authHeader = "Bearer " + token;
 
         when(nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(authHeader);
+            .thenReturn(authHeader);
 
         String actualResult = jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest);
 
@@ -118,12 +118,11 @@ class JwtToolTest {
         String expectedExceptionMessage = ErrorMessage.NO_JWT_TOKEN_FOUND;
 
         when(nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(authHeader);
+            .thenReturn(authHeader);
 
         var ex = assertThrows(
-                NoJwtException.class,
-                () -> jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest)
-        );
+            NoJwtException.class,
+            () -> jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest));
         assertEquals(expectedExceptionMessage, ex.getMessage());
     }
 
@@ -134,12 +133,11 @@ class JwtToolTest {
         String expectedExceptionMessage = ErrorMessage.NO_JWT_TOKEN_FOUND;
 
         when(nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(authHeader);
+            .thenReturn(authHeader);
 
         var ex = assertThrows(
-                NoJwtException.class,
-                () -> jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest)
-        );
+            NoJwtException.class,
+            () -> jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest));
         assertEquals(expectedExceptionMessage, ex.getMessage());
     }
 

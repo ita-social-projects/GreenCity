@@ -440,35 +440,35 @@ class UserServiceImplTest {
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageUa, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
         when(googleApiService.getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageEn, addressTypes))
-                .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
         when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude())).thenReturn(Optional.of(userLocation));
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude())).thenReturn(Optional.of(userLocation));
         when(userLocationRepo.save(userLocation))
-                .thenReturn(savedUserLocation);
+            .thenReturn(savedUserLocation);
 
         userService.setLocationForUser(userId, request);
 
         verify(userRepo).findById(userId);
         verify(googleApiService).getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageUa, addressTypes);
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes);
         verify(googleApiService).getLocationByCoordinates(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude(),
-                languageEn, addressTypes);
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes);
         verify(userLocationRepo).getUserLocationByLatitudeAndLongitude(
-                request.getCoordinates().getLatitude(),
-                request.getCoordinates().getLongitude());
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude());
         verify(userLocationRepo).save(userLocation);
         verify(user).setUserLocation(savedUserLocation);
         verify(userRepo).save(user);

@@ -99,20 +99,22 @@ class AchievementServiceImplTest {
     @Test
     void findAllUserAchievementsByUserIdTest() {
         Long userId = TestConst.USER_ID;
-        List<UserAchievement> userAchievements = List.of(ModelUtils.getUserAchievement(), ModelUtils.getUserAchievement());
+        List<UserAchievement> userAchievements =
+            List.of(ModelUtils.getUserAchievement(), ModelUtils.getUserAchievement());
         UserAchievementVO userAchievementVO = ModelUtils.getUserAchievementVO();
         List<UserAchievementVO> userAchievementVOs = List.of(userAchievementVO, userAchievementVO);
 
         when(userAchievementRepo.getUserAchievementByUserId(userId))
-                .thenReturn(userAchievements);
+            .thenReturn(userAchievements);
         when(modelMapper.map(any(UserAchievement.class), eq(UserAchievementVO.class)))
-                .thenReturn(userAchievementVO);
+            .thenReturn(userAchievementVO);
 
         List<UserAchievementVO> actualResult = achievementService.findAllUserAchievementsByUserId(userId);
 
         assertEquals(userAchievementVOs, actualResult);
         verify(userAchievementRepo).getUserAchievementByUserId(userId);
-        verify(modelMapper, times(userAchievements.size())).map(any(UserAchievement.class), eq(UserAchievementVO.class));
+        verify(modelMapper, times(userAchievements.size())).map(any(UserAchievement.class),
+            eq(UserAchievementVO.class));
     }
 
     @Test
@@ -122,9 +124,9 @@ class AchievementServiceImplTest {
         List<AchievementVO> achievementVOs = List.of(achievementVO, achievementVO);
 
         when(achievementRepo.findAll())
-                .thenReturn(achievements);
+            .thenReturn(achievements);
         when(modelMapper.map(any(Achievement.class), eq(AchievementVO.class)))
-                .thenReturn(achievementVO);
+            .thenReturn(achievementVO);
 
         List<AchievementVO> actualResult = achievementService.findAll();
 
