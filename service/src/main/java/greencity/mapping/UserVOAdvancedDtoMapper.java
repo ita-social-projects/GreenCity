@@ -5,19 +5,28 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.exception.exceptions.WrongIdException;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 
 @Component
-@RequiredArgsConstructor
 public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvancedDto> {
     private final UserRemoteClient userRemoteClient;
+    private final ModelMapper modelMapper;
+
+    @Lazy
+    public UserVOAdvancedDtoMapper(UserRemoteClient userRemoteClient, ModelMapper modelMapper) {
+        this.userRemoteClient = userRemoteClient;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     protected UserVOAdvancedDto convert(User user) {
@@ -55,6 +64,12 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
         userVOAdvancedDto.setRating(user.getRating());
         userVOAdvancedDto.setUserCredo(user.getUserCredo());
         userVOAdvancedDto.setProfilePicturePath(user.getProfilePicturePath());
+
+        UserLocation userLocation = user.getUserLocation();
+        if (userLocation != null) {
+            UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
+            userVOAdvancedDto.setUserLocation(userLocationDto);
+        }
 
         return userVOAdvancedDto;
     }
