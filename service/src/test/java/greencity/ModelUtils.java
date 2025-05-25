@@ -469,6 +469,11 @@ public class ModelUtils {
             .favoriteEvents(new HashSet<>())
             .build();
 
+        return user;
+    }
+
+    public static User getUserWithUserLocation() {
+        User user = getUser();
         user.setUserLocation(new UserLocation(
                 1L,
                 "cityEn", "cityUk",
@@ -477,7 +482,6 @@ public class ModelUtils {
                 0., 0.,
                 List.of(user)
         ));
-
         return user;
     }
 

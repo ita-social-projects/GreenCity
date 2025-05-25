@@ -49,12 +49,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static greencity.ModelUtils.getListUserManagementVO;
 import static greencity.ModelUtils.getSortedPageable;
@@ -71,7 +70,6 @@ import static greencity.ModelUtils.userVORoleUser;
 import static greencity.ModelUtils.getUser;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.CREATED;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -114,6 +112,10 @@ class UserServiceImplTest {
         .role(Role.ROLE_USER)
         .userStatus(ACTIVATED)
         .build();
+    private final AddressType[] addressTypes =
+            {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
+    private final String languageUa = "uk"; // language for GeocodingApi it gets uk not ua.
+    private final String languageEn = "en";
 
     @Test
     void findByIdTest() {
@@ -336,32 +338,6 @@ class UserServiceImplTest {
         verify(userRepo, never()).getSixFriendsWithTheHighestRating(any());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private final AddressType[] addressTypes =
-            {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
-    private final String languageUa = "uk"; // language for GeocodingApi it gets uk not ua.
-    private final String languageEn = "en";
-
     @Test
     void setLocationForUserTest() {
         Long userId = TestConst.USER_ID;
@@ -405,6 +381,30 @@ class UserServiceImplTest {
         verify(userLocationRepo).save(userLocation);
         verify(user).setUserLocation(savedUserLocation);
         verify(userRepo).save(user);
+    }
+
+    @Test
+    void setLocationForUserRemoveOldLocationTest() {
+        Long userId = TestConst.USER_ID;
+        User user = spy(ModelUtils.getUserWithUserLocation());
+        UserLocation userLocation = spy(user.getUserLocation());
+        List<User> users = spy(new ArrayList<>(List.of(user)));
+
+        var request = ModelUtils.getUserProfileDtoRequest();
+        request.getCoordinates().setLatitude(null);
+        request.getCoordinates().setLongitude(null);
+
+        when(userRepo.findById(userId))
+                .thenReturn(Optional.of(user));
+        when(user.getUserLocation())
+                .thenReturn(userLocation);
+        when(userLocation.getUsers())
+                .thenReturn(users);
+
+        userService.setLocationForUser(userId, request);
+
+        verify(userRepo).findById(userId);
+        verify(user).setUserLocation(null);
     }
 
     @Test
@@ -522,7 +522,7 @@ class UserServiceImplTest {
         request.setName("Dmutro");
         CoordinatesDto coordinates = new CoordinatesDto(20.0000, 20.0000);
         request.setCoordinates(coordinates);
-        var user = ModelUtils.getUser();
+        var user = ModelUtils.getUserWithUserLocation();
         user.getUserLocation().setUsers(Collections.singletonList(user));
 
         when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
@@ -554,32 +554,6 @@ class UserServiceImplTest {
         verify(userRepo).save(user);
         verify(userLocationRepo, never()).delete(any());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     void findUserRatingTest() {
