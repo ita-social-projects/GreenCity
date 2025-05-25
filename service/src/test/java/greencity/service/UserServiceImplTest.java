@@ -222,8 +222,8 @@ class UserServiceImplTest {
         List<UserVO> userVOs = List.of(ModelUtils.getUserVO());
 
         when(userRemoteClient.findAllByEmailPreferenceAndEmailPeriodicity(
-            emailPreference.name(),
-            emailPreferencePeriodicity.name())).thenReturn(userVOs);
+            emailPreference,
+            emailPreferencePeriodicity)).thenReturn(userVOs);
 
         List<UserVO> actualResult =
             userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, emailPreferencePeriodicity);

@@ -323,12 +323,12 @@ class UserRemoteClientTest {
     @Test
     @SneakyThrows
     void findAllByEmailPreferenceAndEmailPeriodicityTest() {
-        String emailPreference = "DAILY";
-        String periodicity = "WEEKLY";
+        EmailPreference emailPreference = EmailPreference.LIKES;
+        EmailPreferencePeriodicity periodicity = EmailPreferencePeriodicity.WEEKLY;
         List<UserVO> users = List.of(ModelUtils.getUserVO());
         String usersJson = toJson(users);
         String expectedRequestPath =
-            "/user/email?email-preference=" + emailPreference + "&email-periodicity=" + periodicity;
+            "/user/email?email-preference=" + emailPreference.name() + "&email-periodicity=" + periodicity.name();
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()

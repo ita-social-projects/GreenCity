@@ -16,6 +16,8 @@ import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
+import greencity.enums.EmailPreference;
+import greencity.enums.EmailPreferencePeriodicity;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
 import org.springframework.data.domain.Pageable;
@@ -204,11 +206,11 @@ public class UserRemoteClient {
      * @return list of {@link UserVO}
      */
     public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
-        String emailPreference, String periodicity) {
+        EmailPreference emailPreference, EmailPreferencePeriodicity periodicity) {
         return webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/email")
-                .queryParam("email-preference", emailPreference)
-                .queryParam("email-periodicity", periodicity)
+                .queryParam("email-preference", emailPreference.name())
+                .queryParam("email-periodicity", periodicity.name())
                 .build())
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {

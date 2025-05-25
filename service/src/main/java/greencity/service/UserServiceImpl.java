@@ -267,7 +267,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserVO> getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference emailPreference,
         EmailPreferencePeriodicity periodicity) {
-        return userRemoteClient.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference.name(), periodicity.name());
+        return userRemoteClient.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity);
     }
 
     /**
