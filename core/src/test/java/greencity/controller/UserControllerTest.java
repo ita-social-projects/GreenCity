@@ -84,11 +84,11 @@ class UserControllerTest {
         when(userService.createUser(userDto)).thenReturn(true);
 
         mockMvc.perform(post(userLink + "/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(userDto))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("true"));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(userDto))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andExpect(content().string("true"));
 
         verify(userService).createUser(userDto);
     }
@@ -98,13 +98,13 @@ class UserControllerTest {
         CreateGreenCityUserDto userDto = ModelUtils.getCreateGreenCityDto();
 
         when(userService.createUser(userDto))
-                .thenThrow(new UserAlreadyExistsException(HttpStatus.CONFLICT, "User already registered with this email"));
+            .thenThrow(new UserAlreadyExistsException(HttpStatus.CONFLICT, "User already registered with this email"));
         MvcResult result = mockMvc.perform(post(userLink + "/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(userDto))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict())
-                .andReturn();
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(userDto))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isConflict())
+            .andReturn();
 
         String responseBody = result.getResponse().getContentAsString();
         assertTrue(responseBody.contains("User already registered with this email"));
@@ -120,9 +120,9 @@ class UserControllerTest {
         doNothing().when(userService).updateUserProfilePicture(userId, profilePicturePath);
 
         mockMvc.perform(put(userLink + "/picturePath")
-                        .param("profilePicturePath", profilePicturePath)
-                        .param("userId", String.valueOf(userId)))
-                .andExpect(status().isOk());
+            .param("profilePicturePath", profilePicturePath)
+            .param("userId", String.valueOf(userId)))
+            .andExpect(status().isOk());
 
         verify(userService).updateUserProfilePicture(userId, profilePicturePath);
     }
@@ -133,12 +133,12 @@ class UserControllerTest {
         String profilePicturePath = "http://somepicture.com.ua";
 
         doThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId))
-                .when(userService).updateUserProfilePicture(userId, profilePicturePath);
+            .when(userService).updateUserProfilePicture(userId, profilePicturePath);
 
         mockMvc.perform(put(userLink + "/picturePath")
-                        .param("profilePicturePath", profilePicturePath)
-                        .param("userId", String.valueOf(userId)))
-                .andExpect(status().isNotFound());
+            .param("profilePicturePath", profilePicturePath)
+            .param("userId", String.valueOf(userId)))
+            .andExpect(status().isNotFound());
 
         verify(userService).updateUserProfilePicture(userId, profilePicturePath);
     }
@@ -148,14 +148,14 @@ class UserControllerTest {
         Long userId = 1L;
         String userName = "username";
         String url = UriComponentsBuilder.fromPath(userLink + "/{userId}/name")
-                .buildAndExpand(userId)
-                .toUriString();
+            .buildAndExpand(userId)
+            .toUriString();
 
         doNothing().when(userService).updateUserName(userId, userName);
 
         mockMvc.perform(patch(url).queryParam("userName", userName))
-                .andExpect(status().isOk())
-                .andReturn();
+            .andExpect(status().isOk())
+            .andReturn();
 
         verify(userService).updateUserName(userId, userName);
     }
@@ -165,15 +165,15 @@ class UserControllerTest {
         Long userId = 1L;
         String userName = "username";
         String url = UriComponentsBuilder.fromPath(userLink + "/{userId}/name")
-                .buildAndExpand(userId)
-                .toUriString();
+            .buildAndExpand(userId)
+            .toUriString();
 
         doThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId))
-                .when(userService).updateUserName(userId, userName);
+            .when(userService).updateUserName(userId, userName);
 
         mockMvc.perform(patch(url).queryParam("userName", userName))
-                .andExpect(status().isNotFound())
-                .andReturn();
+            .andExpect(status().isNotFound())
+            .andReturn();
 
         verify(userService).updateUserName(userId, userName);
     }
@@ -185,8 +185,8 @@ class UserControllerTest {
         String userIdsStr = userIds.stream().map(String::valueOf).collect(Collectors.joining(","));
 
         mockMvc.perform(get(userLink + "/profiles")
-                        .queryParam("userIds", userIdsStr))
-                .andExpect(status().isOk());
+            .queryParam("userIds", userIdsStr))
+            .andExpect(status().isOk());
 
         verify(userService).findGreenCityUserProfilesByUserIds(userIds);
     }
@@ -198,11 +198,11 @@ class UserControllerTest {
         String userIdsStr = userIds.stream().map(String::valueOf).collect(Collectors.joining(","));
 
         when(userService.findGreenCityUserProfilesByUserIds(userIds))
-                .thenThrow(new NotFoundException());
+            .thenThrow(new NotFoundException());
 
         mockMvc.perform(get(userLink + "/profiles")
-                        .queryParam("userIds", userIdsStr))
-                .andExpect(status().isNotFound());
+            .queryParam("userIds", userIdsStr))
+            .andExpect(status().isNotFound());
 
         verify(userService).findGreenCityUserProfilesByUserIds(userIds);
     }
@@ -215,7 +215,7 @@ class UserControllerTest {
         when(userService.findAllUsersCities(userId)).thenReturn(userCityDto);
 
         mockMvc.perform(get(userLink + "/{id}/cities", userId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(userService).findAllUsersCities(userId);
     }
@@ -225,10 +225,10 @@ class UserControllerTest {
         Long userId = 999L;
 
         when(userService.findAllUsersCities(userId))
-                .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         mockMvc.perform(get(userLink + "/{id}/cities", userId))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
 
         verify(userService).findAllUsersCities(userId);
     }
@@ -241,7 +241,7 @@ class UserControllerTest {
         when(userService.findUserLocationDtoByUserId(userId)).thenReturn(userLocationDto);
 
         mockMvc.perform(get(userLink + "/{id}/location", userId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(userService).findUserLocationDtoByUserId(userId);
     }
@@ -251,10 +251,10 @@ class UserControllerTest {
         Long userId = 999L;
 
         when(userService.findUserLocationDtoByUserId(userId))
-                .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         mockMvc.perform(get(userLink + "/{id}/location", userId))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
 
         verify(userService).findUserLocationDtoByUserId(userId);
     }
@@ -267,9 +267,9 @@ class UserControllerTest {
         doNothing().when(userService).setLocationForUser(userId, userProfileDtoRequest);
 
         mockMvc.perform(patch(userLink + "/{id}/location", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userProfileDtoRequest)))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userProfileDtoRequest)))
+            .andExpect(status().isOk());
 
         verify(userService).setLocationForUser(userId, userProfileDtoRequest);
     }
@@ -280,12 +280,12 @@ class UserControllerTest {
         UserProfileDtoRequest userProfileDtoRequest = new UserProfileDtoRequest();
 
         doThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId))
-                .when(userService).setLocationForUser(userId, userProfileDtoRequest);
+            .when(userService).setLocationForUser(userId, userProfileDtoRequest);
 
         mockMvc.perform(patch(userLink + "/{id}/location", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userProfileDtoRequest)))
-                .andExpect(status().isNotFound());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userProfileDtoRequest)))
+            .andExpect(status().isNotFound());
 
         verify(userService).setLocationForUser(userId, userProfileDtoRequest);
     }
@@ -298,7 +298,7 @@ class UserControllerTest {
         when(userService.getAllUserFriendsIds(userId)).thenReturn(friendsIds);
 
         mockMvc.perform(get(userLink + "/{id}/all-friends", userId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(userService).getAllUserFriendsIds(userId);
     }
@@ -308,10 +308,10 @@ class UserControllerTest {
         Long userId = 999L;
 
         when(userService.getAllUserFriendsIds(userId))
-                .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         mockMvc.perform(get(userLink + "/{id}/all-friends", userId))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
 
         verify(userService).getAllUserFriendsIds(userId);
     }
@@ -326,9 +326,9 @@ class UserControllerTest {
         when(userService.getAllUserFriendsIds(userId, pageable)).thenReturn(friendsPage);
 
         mockMvc.perform(get(userLink + "/{id}/friends", userId)
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk());
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(status().isOk());
 
         verify(userService).getAllUserFriendsIds(userId, pageable);
     }
@@ -339,12 +339,12 @@ class UserControllerTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         when(userService.getAllUserFriendsIds(userId, pageable))
-                .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         mockMvc.perform(get(userLink + "/{id}/friends", userId)
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isNotFound());
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(status().isNotFound());
 
         verify(userService).getAllUserFriendsIds(userId, pageable);
     }
@@ -357,7 +357,7 @@ class UserControllerTest {
         when(userService.getSixFriendsIdsWithTheHighestRating(userId)).thenReturn(topFriendsIds);
 
         mockMvc.perform(get(userLink + "/{id}/top-friends", userId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(userService).getSixFriendsIdsWithTheHighestRating(userId);
     }
@@ -367,10 +367,10 @@ class UserControllerTest {
         Long userId = 999L;
 
         when(userService.getSixFriendsIdsWithTheHighestRating(userId))
-                .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         mockMvc.perform(get(userLink + "/{id}/top-friends", userId))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
 
         verify(userService).getSixFriendsIdsWithTheHighestRating(userId);
     }
@@ -382,9 +382,9 @@ class UserControllerTest {
         doNothing().when(userService).increaseUserRating(userAddRatingDto);
 
         mockMvc.perform(patch(userLink + "/rating")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userAddRatingDto)))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userAddRatingDto)))
+            .andExpect(status().isOk());
 
         verify(userService).increaseUserRating(userAddRatingDto);
     }
@@ -394,12 +394,12 @@ class UserControllerTest {
         UserAddRatingDto userAddRatingDto = new UserAddRatingDto();
 
         doThrow(new NotFoundException("User not found"))
-                .when(userService).increaseUserRating(userAddRatingDto);
+            .when(userService).increaseUserRating(userAddRatingDto);
 
         mockMvc.perform(patch(userLink + "/rating")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userAddRatingDto)))
-                .andExpect(status().isNotFound());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userAddRatingDto)))
+            .andExpect(status().isNotFound());
 
         verify(userService).increaseUserRating(userAddRatingDto);
     }
@@ -411,9 +411,9 @@ class UserControllerTest {
         doNothing().when(userService).updateUserCredo(updateUserCredoDto);
 
         mockMvc.perform(patch(userLink + "/credo")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateUserCredoDto)))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateUserCredoDto)))
+            .andExpect(status().isOk());
 
         verify(userService).updateUserCredo(updateUserCredoDto);
     }
@@ -423,12 +423,12 @@ class UserControllerTest {
         UpdateUserCredoDto updateUserCredoDto = new UpdateUserCredoDto(TestConst.USER_ID, "credo");
 
         doThrow(new NotFoundException("User not found"))
-                .when(userService).updateUserCredo(updateUserCredoDto);
+            .when(userService).updateUserCredo(updateUserCredoDto);
 
         mockMvc.perform(patch(userLink + "/credo")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateUserCredoDto)))
-                .andExpect(status().isNotFound());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateUserCredoDto)))
+            .andExpect(status().isNotFound());
 
         verify(userService).updateUserCredo(updateUserCredoDto);
     }

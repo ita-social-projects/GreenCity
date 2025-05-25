@@ -21,20 +21,20 @@ class UserCityDtoMapperTest {
     @Test
     void convertTest() {
         UserLocation userLocation = UserLocation.builder()
-                .id(1L)
-                .cityEn("cityEn").cityUk("cityUk")
-                .regionEn("regionEn").regionUk("regionEn")
-                .countryEn("countryEn").countryUk("countryUk")
-                .latitude(1.).longitude(2.)
-                .users(List.of(ModelUtils.getUser()))
-                .build();
+            .id(1L)
+            .cityEn("cityEn").cityUk("cityUk")
+            .regionEn("regionEn").regionUk("regionEn")
+            .countryEn("countryEn").countryUk("countryUk")
+            .latitude(1.).longitude(2.)
+            .users(List.of(ModelUtils.getUser()))
+            .build();
         UserCityDto expectedResult = UserCityDto.builder()
-                .id(userLocation.getId())
-                .cityEn(userLocation.getCityEn())
-                .cityUk(userLocation.getCityUk())
-                .latitude(userLocation.getLatitude())
-                .longitude(userLocation.getLongitude())
-                .build();
+            .id(userLocation.getId())
+            .cityEn(userLocation.getCityEn())
+            .cityUk(userLocation.getCityUk())
+            .latitude(userLocation.getLatitude())
+            .longitude(userLocation.getLongitude())
+            .build();
 
         UserCityDto actualResult = userCityDtoMapper.convert(userLocation);
 

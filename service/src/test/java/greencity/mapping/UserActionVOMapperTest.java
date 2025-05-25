@@ -34,16 +34,16 @@ class UserActionVOMapperTest {
         AchievementCategory achievementCategory = userAction.getAchievementCategory();
         AchievementCategoryVO achievementCategoryVO = ModelUtils.getAchievementCategoryVO();
         UserActionVO expectedResult = UserActionVO.builder()
-                .id(userAction.getId())
-                .user(userVO)
-                .achievementCategory(achievementCategoryVO)
-                .count(userAction.getCount())
-                .build();
+            .id(userAction.getId())
+            .user(userVO)
+            .achievementCategory(achievementCategoryVO)
+            .count(userAction.getCount())
+            .build();
 
         when(modelMapper.map(user, UserVO.class))
-                .thenReturn(userVO);
+            .thenReturn(userVO);
         when(modelMapper.map(achievementCategory, AchievementCategoryVO.class))
-                .thenReturn(achievementCategoryVO);
+            .thenReturn(achievementCategoryVO);
 
         UserActionVO actualResult = userActionVOMapper.convert(userAction);
 

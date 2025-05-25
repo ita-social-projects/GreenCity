@@ -45,16 +45,15 @@ class UserClaimsArgumentResolverTest {
         WebDataBinderFactory webDataBinderFactory = mock(WebDataBinderFactory.class);
 
         when(jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserClaims(jwt))
-                .thenReturn(userClaims);
+            .thenReturn(userClaims);
 
         UserClaims actualResult = userClaimsArgumentResolver.resolveArgument(
-                methodParameter,
-                modelAndViewContainer,
-                nativeWebRequest,
-                webDataBinderFactory
-        );
+            methodParameter,
+            modelAndViewContainer,
+            nativeWebRequest,
+            webDataBinderFactory);
 
         assertEquals(userClaims, actualResult);
         verify(jwtTool).extractJwtFromNativeWebRequest(any(NativeWebRequest.class));
@@ -71,17 +70,15 @@ class UserClaimsArgumentResolverTest {
         WebDataBinderFactory webDataBinderFactory = mock(WebDataBinderFactory.class);
 
         when(jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest))
-                .thenThrow(new NoJwtException());
+            .thenThrow(new NoJwtException());
 
         assertThrows(
-                NoJwtException.class,
-                () -> userClaimsArgumentResolver.resolveArgument(
-                        methodParameter,
-                        modelAndViewContainer,
-                        nativeWebRequest,
-                        webDataBinderFactory
-                )
-        );
+            NoJwtException.class,
+            () -> userClaimsArgumentResolver.resolveArgument(
+                methodParameter,
+                modelAndViewContainer,
+                nativeWebRequest,
+                webDataBinderFactory));
 
         verify(jwtTool).extractJwtFromNativeWebRequest(any(NativeWebRequest.class));
         verify(jwtTool, never()).extractUserId(jwt);

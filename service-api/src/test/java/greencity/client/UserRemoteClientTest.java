@@ -59,8 +59,8 @@ class UserRemoteClientTest {
     static MockWebServer mockWebServer;
     UserRemoteClient userRemoteClient;
     ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        .registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     String emailQueryParam = "email";
     String idQueryParam = "id";
     String pageQueryParam = "page";
@@ -93,9 +93,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(userVOJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(userVOJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Optional<UserVO> actualResult = userRemoteClient.findNotDeactivatedByEmail(email);
         assertTrue(actualResult.isPresent());
@@ -119,9 +118,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(userVOJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(userVOJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Optional<UserVO> actualResult = userRemoteClient.findNotDeactivatedById(id);
 
@@ -147,9 +145,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.PATCH.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(updatedStatusDtoJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(updatedStatusDtoJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Optional<UserStatusDto> actualResult = userRemoteClient.updateUserStatus(userStatusDto);
 
@@ -175,9 +172,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.PATCH.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(userRoleDtoJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(userRoleDtoJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Optional<UserRoleDto> actualResult = userRemoteClient.updateUserRole(id, body);
 
@@ -195,16 +191,15 @@ class UserRemoteClientTest {
     @SneakyThrows
     void getUserRolesDistributionTest() {
         List<UserRoleStatisticDto> roleStats = List.of(
-                new UserRoleStatisticDto(Role.ROLE_USER, 10L),
-                new UserRoleStatisticDto(Role.ROLE_ADMIN, 20L));
+            new UserRoleStatisticDto(Role.ROLE_USER, 10L),
+            new UserRoleStatisticDto(Role.ROLE_ADMIN, 20L));
         String roleStatsJson = toJson(roleStats);
         String expectedRequestPath = "/user/roles-distribution";
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(roleStatsJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(roleStatsJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<UserRoleStatisticDto> actualResult = userRemoteClient.getUserRolesDistribution();
 
@@ -219,17 +214,15 @@ class UserRemoteClientTest {
     @SneakyThrows
     void getUserStatusesDistributionTest() {
         List<UserStatusStatisticDto> statusStats = List.of(
-                new UserStatusStatisticDto(UserStatus.ACTIVATED, 10L),
-                new UserStatusStatisticDto(UserStatus.CREATED, 5L)
-        );
+            new UserStatusStatisticDto(UserStatus.ACTIVATED, 10L),
+            new UserStatusStatisticDto(UserStatus.CREATED, 5L));
         String statusStatsJson = toJson(statusStats);
         String expectedRequestPath = "/user/statuses-distribution";
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(statusStatsJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(statusStatsJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<UserStatusStatisticDto> actualResult = userRemoteClient.getUserStatusesDistribution();
 
@@ -244,16 +237,14 @@ class UserRemoteClientTest {
     @SneakyThrows
     void getUserEmailPreferencesDistributionTest() {
         List<UserEmailPreferencesStatisticDto> emailPrefsStats = List.of(
-                new UserEmailPreferencesStatisticDto(EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY, 10L)
-        );
+            new UserEmailPreferencesStatisticDto(EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY, 10L));
         String emailPrefsStatsJson = toJson(emailPrefsStats);
         String expectedRequestPath = "/user/email-preferences-distribution";
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(emailPrefsStatsJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(emailPrefsStatsJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<UserEmailPreferencesStatisticDto> actualResult = userRemoteClient.getUserEmailPreferencesDistribution();
 
@@ -272,9 +263,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(activeUsersCount.toString())
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(activeUsersCount.toString())
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Long actualResult = userRemoteClient.countActiveUsers();
 
@@ -288,16 +278,16 @@ class UserRemoteClientTest {
     @Test
     @SneakyThrows
     void searchUserNotificationPreferenceTest() {
-        EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(10L, EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY);
+        EmailPreferenceDto emailPreferenceDto =
+            new EmailPreferenceDto(10L, EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY);
         Boolean searchResult = true;
         String emailPreferenceDtoJson = toJson(emailPreferenceDto);
         String expectedRequestPath = "/user-notification-preference/search";
         String expectedRequestMethod = HttpMethod.POST.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(searchResult.toString())
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(searchResult.toString())
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Boolean actualResult = userRemoteClient.searchUserNotificationPreference(emailPreferenceDto);
 
@@ -318,9 +308,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(isOnline.toString())
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(isOnline.toString())
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Boolean actualResult = userRemoteClient.checkIfTheUserIsOnline(userId);
 
@@ -338,15 +327,16 @@ class UserRemoteClientTest {
         String periodicity = "WEEKLY";
         List<UserVO> users = List.of(ModelUtils.getUserVO());
         String usersJson = toJson(users);
-        String expectedRequestPath = "/user/email?email-preference=" + emailPreference + "&email-periodicity=" + periodicity;
+        String expectedRequestPath =
+            "/user/email?email-preference=" + emailPreference + "&email-periodicity=" + periodicity;
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(usersJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(usersJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
-        List<UserVO> actualResult = userRemoteClient.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity);
+        List<UserVO> actualResult =
+            userRemoteClient.findAllByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity);
 
         assertEquals(users, actualResult);
 
@@ -363,17 +353,19 @@ class UserRemoteClientTest {
         LocalDateTime startDate = LocalDateTime.of(2023, 1, 1, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(2023, 12, 31, 23, 59);
         DateGranularity granularity = DateGranularity.DAY;
-        List<UserRegistrationStatisticDto> registrationStats = List.of(new UserRegistrationStatisticDto(startDate, 10L));
+        List<UserRegistrationStatisticDto> registrationStats =
+            List.of(new UserRegistrationStatisticDto(startDate, 10L));
         String registrationStatsJson = toJson(registrationStats);
-        String expectedRequestPath = "/user/registration-statistics?start-date=" + startDate + "&end-date=" + endDate + "&granularity=" + granularity.name();
+        String expectedRequestPath = "/user/registration-statistics?start-date=" + startDate + "&end-date=" + endDate
+            + "&granularity=" + granularity.name();
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(registrationStatsJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(registrationStatsJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
-        List<UserRegistrationStatisticDto> actualResult = userRemoteClient.getUserRegistrationsByDateRange(startDate, endDate, granularity);
+        List<UserRegistrationStatisticDto> actualResult =
+            userRemoteClient.getUserRegistrationsByDateRange(startDate, endDate, granularity);
 
         assertEquals(registrationStats, actualResult);
 
@@ -391,13 +383,13 @@ class UserRemoteClientTest {
         List<Long> ids = List.of(1L, 2L, 3L);
         List<Long> activatedIds = List.of(1L, 3L);
         String activatedIdsJson = toJson(activatedIds);
-        String expectedRequestPath = "/user/activated-ids?ids=" + String.join("&ids=", ids.stream().map(String::valueOf).toArray(String[]::new));
+        String expectedRequestPath =
+            "/user/activated-ids?ids=" + String.join("&ids=", ids.stream().map(String::valueOf).toArray(String[]::new));
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(activatedIdsJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(activatedIdsJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<Long> actualResult = userRemoteClient.getActivatedUsersIds(ids);
 
@@ -418,9 +410,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(activatedIdsJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(activatedIdsJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<Long> actualResult = userRemoteClient.getActivatedUsersIds(null);
 
@@ -441,9 +432,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(userVOAdvancedJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(userVOAdvancedJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Optional<UserVOAdvancedDto> actualResult = userRemoteClient.findNotDeactivatedByIdAdvanced(id);
 
@@ -463,29 +453,31 @@ class UserRemoteClientTest {
     void getAllSocialNetworkImagesRemoteTest() {
         Pageable pageable = PageRequest.of(0, 10);
         PageableDto<SocialNetworkImageResponseDTO> pageableDto = new PageableDto<>(
-                List.of(ModelUtils.getSocialNetworkImageResponseDTO()),
-                1L,
-                0,
-                1
-        );
+            List.of(ModelUtils.getSocialNetworkImageResponseDTO()),
+            1L,
+            0,
+            1);
         String pageableDtoJson = toJson(pageableDto);
-        String expectedRequestPath = "/management/socialnetworkimages/get-all-remote?page=" + pageable.getPageNumber() + "&size=" + pageable.getPageSize();
+        String expectedRequestPath = "/management/socialnetworkimages/get-all-remote?page=" + pageable.getPageNumber()
+            + "&size=" + pageable.getPageSize();
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(pageableDtoJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(pageableDtoJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
-        PageableDto<SocialNetworkImageResponseDTO> actualResult = userRemoteClient.getAllSocialNetworkImagesRemote(pageable);
+        PageableDto<SocialNetworkImageResponseDTO> actualResult =
+            userRemoteClient.getAllSocialNetworkImagesRemote(pageable);
 
         assertEquals(pageableDto, actualResult);
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertEquals(String.valueOf(pageable.getPageNumber()), recordedRequest.getRequestUrl().queryParameter(pageQueryParam));
-        assertEquals(String.valueOf(pageable.getPageSize()), recordedRequest.getRequestUrl().queryParameter(pageSizeQueryParam));
+        assertEquals(String.valueOf(pageable.getPageNumber()),
+            recordedRequest.getRequestUrl().queryParameter(pageQueryParam));
+        assertEquals(String.valueOf(pageable.getPageSize()),
+            recordedRequest.getRequestUrl().queryParameter(pageSizeQueryParam));
     }
 
     @Test
@@ -499,9 +491,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.POST.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(responseDtoJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(responseDtoJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         SocialNetworkImageResponseDTO actualResult = userRemoteClient.saveSocialImageRemote(requestDto, file);
 
@@ -521,9 +512,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.DELETE.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(id.toString())
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(id.toString())
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Long actualResult = userRemoteClient.deleteSocialImage(id);
 
@@ -545,9 +535,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.DELETE.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(listIdJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(listIdJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<Long> actualResult = userRemoteClient.deleteAllImages(listId);
 
@@ -569,9 +558,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(responseDtoJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(responseDtoJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         SocialNetworkImageResponseDTO actualResult = userRemoteClient.getEcoNewsById(id);
 
@@ -593,9 +581,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(languagesJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(languagesJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<LanguageDTO> actualResult = userRemoteClient.getAllLanguages();
 
@@ -616,9 +603,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(languageDtoJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(languageDtoJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         LanguageDTO actualResult = userRemoteClient.findLanguageByCode(code);
 
@@ -639,9 +625,8 @@ class UserRemoteClientTest {
         mockWebServer.enqueue(new MockResponse().setResponseCode(404));
 
         assertThrows(
-                LanguageNotFoundException.class,
-                () -> userRemoteClient.findLanguageByCode(code)
-        );
+            LanguageNotFoundException.class,
+            () -> userRemoteClient.findLanguageByCode(code));
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
@@ -657,9 +642,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(languageCodesJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(languageCodesJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<String> actualResult = userRemoteClient.findAllLanguageCodes();
 
@@ -679,8 +663,7 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.PUT.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         userRemoteClient.updateSocialImage(responseDto, file);
 
@@ -701,9 +684,8 @@ class UserRemoteClientTest {
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(usersJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(usersJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<UserVO> actualResult = userRemoteClient.findAllByEmailIn(emails);
 
@@ -724,9 +706,8 @@ class UserRemoteClientTest {
         String userVOJson = toJson(userVO);
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(userVOJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(userVOJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         boolean actualResult = userRemoteClient.userExistsByEmail(email);
 
@@ -743,17 +724,16 @@ class UserRemoteClientTest {
     void findUserEmailsByUserIdsTest() {
         List<Long> userIds = List.of(1L, 2L, 3L);
         List<UserEmailDto> userEmails = List.of(
-                new UserEmailDto(1L, "email1"),
-                new UserEmailDto(2L, "email2")
-        );
+            new UserEmailDto(1L, "email1"),
+            new UserEmailDto(2L, "email2"));
         String userEmailsJson = toJson(userEmails);
-        String expectedRequestPath = "/user/email/findByIds?userIds=" + String.join("&userIds=", userIds.stream().map(String::valueOf).toArray(String[]::new));
+        String expectedRequestPath = "/user/email/findByIds?userIds="
+            + String.join("&userIds=", userIds.stream().map(String::valueOf).toArray(String[]::new));
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
-                .setBody(userEmailsJson)
-                .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        );
+            .setBody(userEmailsJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         List<UserEmailDto> actualResult = userRemoteClient.findUserEmailsByUserIds(userIds);
 

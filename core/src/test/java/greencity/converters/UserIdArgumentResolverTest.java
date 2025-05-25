@@ -46,16 +46,15 @@ class UserIdArgumentResolverTest {
         WebDataBinderFactory webDataBinderFactory = mock(WebDataBinderFactory.class);
 
         when(jwtTool.extractJwtFromNativeWebRequest(any(NativeWebRequest.class)))
-                .thenReturn(jwt);
+            .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
-                .thenReturn(userId);
+            .thenReturn(userId);
 
         Long actualResult = userIdArgumentResolver.resolveArgument(
-                methodParameter,
-                modelAndViewContainer,
-                nativeWebRequest,
-                webDataBinderFactory
-        );
+            methodParameter,
+            modelAndViewContainer,
+            nativeWebRequest,
+            webDataBinderFactory);
 
         assertEquals(userId, actualResult);
         verify(jwtTool).extractJwtFromNativeWebRequest(any(NativeWebRequest.class));
@@ -73,19 +72,17 @@ class UserIdArgumentResolverTest {
         CurrentUserId currentUserId = buildCurrentUserId(true);
 
         when(jwtTool.extractJwtFromNativeWebRequest(any(NativeWebRequest.class)))
-                .thenThrow(new NoJwtException());
+            .thenThrow(new NoJwtException());
         when(methodParameter.getParameterAnnotation(CurrentUserId.class))
-                .thenReturn(currentUserId);
+            .thenReturn(currentUserId);
 
         assertThrows(
-                NoJwtException.class,
-                () -> userIdArgumentResolver.resolveArgument(
-                        methodParameter,
-                        modelAndViewContainer,
-                        nativeWebRequest,
-                        webDataBinderFactory
-                )
-        );
+            NoJwtException.class,
+            () -> userIdArgumentResolver.resolveArgument(
+                methodParameter,
+                modelAndViewContainer,
+                nativeWebRequest,
+                webDataBinderFactory));
 
         verify(jwtTool).extractJwtFromNativeWebRequest(any(NativeWebRequest.class));
         verify(jwtTool, never()).extractUserId(jwt);
@@ -103,19 +100,17 @@ class UserIdArgumentResolverTest {
         String expectedExceptionMessage = ErrorMessage.ANNOTATION_ARGUMENT_NOT_SUPPORTED;
 
         when(jwtTool.extractJwtFromNativeWebRequest(any(NativeWebRequest.class)))
-                .thenThrow(new NoJwtException());
+            .thenThrow(new NoJwtException());
         when(methodParameter.getParameterAnnotation(CurrentUserId.class))
-                .thenReturn(currentUserId);
+            .thenReturn(currentUserId);
 
         IllegalArgumentException illegalArgumentException = assertThrows(
-                IllegalArgumentException.class,
-                () -> userIdArgumentResolver.resolveArgument(
-                        methodParameter,
-                        modelAndViewContainer,
-                        nativeWebRequest,
-                        webDataBinderFactory
-                )
-        );
+            IllegalArgumentException.class,
+            () -> userIdArgumentResolver.resolveArgument(
+                methodParameter,
+                modelAndViewContainer,
+                nativeWebRequest,
+                webDataBinderFactory));
 
         assertEquals(expectedExceptionMessage, illegalArgumentException.getMessage());
         verify(jwtTool).extractJwtFromNativeWebRequest(any(NativeWebRequest.class));
@@ -133,16 +128,15 @@ class UserIdArgumentResolverTest {
         CurrentUserId currentUserId = buildCurrentUserId(false);
 
         when(jwtTool.extractJwtFromNativeWebRequest(any(NativeWebRequest.class)))
-                .thenThrow(new NoJwtException());
+            .thenThrow(new NoJwtException());
         when(methodParameter.getParameterAnnotation(CurrentUserId.class))
-                .thenReturn(currentUserId);
+            .thenReturn(currentUserId);
 
         Long actualResult = userIdArgumentResolver.resolveArgument(
-                methodParameter,
-                modelAndViewContainer,
-                nativeWebRequest,
-                webDataBinderFactory
-        );
+            methodParameter,
+            modelAndViewContainer,
+            nativeWebRequest,
+            webDataBinderFactory);
 
         assertNull(actualResult);
         verify(jwtTool).extractJwtFromNativeWebRequest(any(NativeWebRequest.class));
