@@ -21,7 +21,6 @@ import java.util.List;
 public class AchievementCategoryServiceImpl implements AchievementCategoryService {
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final UserAchievementRepo userAchievementRepo;
-    private final UserService userService;
     private final AchievementService achievementService;
     private final ModelMapper modelMapper;
 

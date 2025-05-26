@@ -6,6 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.service.SocialNetworkImageService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -42,7 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ManagementSocialNetworkImagesControllerTest {
+class ManagementSocialNetworkImagesControllerTest {
     private static final String managementSocialNetworkImagesLink = "/management/socialnetworkimages";
 
     private MockMvc mockMvc;
@@ -136,6 +139,28 @@ public class ManagementSocialNetworkImagesControllerTest {
 
         verify(socialNetworkImageService).save(imageToSave, null);
         assertEquals(expected, responseDTO);
+    }
+
+    @Test
+    @SneakyThrows
+    void saveWhenBindingResultHasErrorsTest() {
+        SocialNetworkImageRequestDTO imageToSave = ModelUtils.getSocialNetworkImageRequestDTO();
+        imageToSave.setImagePath(null);
+        Gson gson = new Gson();
+        String json = gson.toJson(imageToSave);
+        MockMultipartFile dtoPart = new MockMultipartFile(
+            "socialNetworkImageRequestDTO",
+            "socialNetworkImageRequestDTO.json",
+            MediaType.APPLICATION_JSON_VALUE,
+            json.getBytes(StandardCharsets.UTF_8));
+
+        mockMvc.perform(multipart(managementSocialNetworkImagesLink + "/")
+            .file(dtoPart)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+
+        verify(socialNetworkImageService, never()).save(any(), any());
     }
 
     @Test

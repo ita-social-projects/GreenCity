@@ -30,9 +30,7 @@ import greencity.entity.RatingPoints;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.NotificationType;
-import greencity.enums.Role;
 import greencity.enums.TagType;
-import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -49,7 +47,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -635,7 +632,6 @@ class EcoNewsServiceImplTest {
         tags.add("news");
 
         User mockUser = ModelUtils.getUser();
-        // when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Root<EcoNews> root = mock(Root.class);
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
@@ -687,7 +683,6 @@ class EcoNewsServiceImplTest {
         when(root.<EcoNews, User>join("followers")).thenReturn(followersJoin);
         when(followersJoin.<Long>get("id")).thenReturn(userIdPath);
         when(criteriaBuilder.equal(userIdPath, mockUser.getId())).thenReturn(favoritePredicate);
-        // when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Predicate result = ecoNewsService.getPredicate(
             root,
@@ -713,7 +708,6 @@ class EcoNewsServiceImplTest {
         List<EcoNews> ecoNewsList = Collections.singletonList(getEcoNews());
         Page<EcoNews> page = new PageImpl<>(ecoNewsList, pageable, ecoNewsList.size());
 
-        // when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
         when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
 
         ecoNewsService.find(pageable, null, null, null, false, mockUser.getId());
@@ -799,7 +793,6 @@ class EcoNewsServiceImplTest {
         User author = ModelUtils.getUser();
         User action = User.builder()
             .id(2L)
-            // .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .subscribedEvents(new HashSet<>())
             .favoriteEvents(new HashSet<>())

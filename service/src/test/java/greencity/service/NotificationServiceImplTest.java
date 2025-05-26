@@ -8,12 +8,10 @@ import static greencity.ModelUtils.getSubscriberDto;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 
-import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
-import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;

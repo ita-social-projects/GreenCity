@@ -44,7 +44,6 @@ import static greencity.ModelUtils.getPageableCommentDtos;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
@@ -273,19 +272,15 @@ class EventCommentControllerTest {
     @SneakyThrows
     void findAllActiveRepliesWithNonexistentIdNotFoundTest() {
         Long parentCommentId = 1L;
-
         int pageNumber = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        UserVO userVO = getUserVO();
-        // when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         String errorMessage = "ErrorMessage";
 
         doThrow(new NotFoundException(errorMessage))
             .when(commentService)
-            .getAllActiveReplies(pageable, parentCommentId, userVO.getId());
+            .getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID);
 
         Assertions.assertThatThrownBy(
             () -> mockMvc

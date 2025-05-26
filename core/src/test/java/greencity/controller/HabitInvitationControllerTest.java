@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.TestConst;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserIdArgumentResolver;
-import greencity.dto.user.UserVO;
 import greencity.security.jwt.JwtTool;
 import greencity.service.HabitInvitationService;
 import lombok.SneakyThrows;
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

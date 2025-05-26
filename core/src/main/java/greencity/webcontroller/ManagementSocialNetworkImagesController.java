@@ -74,7 +74,7 @@ public class ManagementSocialNetworkImagesController {
     })
     @ResponseBody
     @PostMapping("/")
-    public ResponseEntity<?> save(@Valid @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+    public ResponseEntity<Object> save(@Valid @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {

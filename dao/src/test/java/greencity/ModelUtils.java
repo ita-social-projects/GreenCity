@@ -7,8 +7,6 @@ import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.entity.User;
 import greencity.enums.EventType;
-import greencity.enums.Role;
-import greencity.enums.UserStatus;
 
 import java.time.*;
 import java.util.List;

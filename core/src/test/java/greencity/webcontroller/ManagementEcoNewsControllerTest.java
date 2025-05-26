@@ -3,10 +3,8 @@ package greencity.webcontroller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import greencity.ModelUtils;
-import greencity.TestConst;
 import greencity.converters.UserArgumentResolver;
 import greencity.converters.UserClaimsArgumentResolver;
-import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
@@ -26,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

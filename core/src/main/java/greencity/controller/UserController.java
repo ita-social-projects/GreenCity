@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
@@ -132,7 +133,8 @@ public class UserController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/{id}/friends")
-    public ResponseEntity<Page<Long>> getAllUserFriendsIds(@PathVariable("id") Long userId, Pageable pageable) {
+    public ResponseEntity<PageableAdvancedDto<Long>> getAllUserFriendsIds(@PathVariable("id") Long userId,
+        Pageable pageable) {
         return ResponseEntity.ok(userService.getAllUserFriendsIds(userId, pageable));
     }
 

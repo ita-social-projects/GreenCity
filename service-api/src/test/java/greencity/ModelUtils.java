@@ -1,5 +1,8 @@
 package greencity;
 
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.InterestingEcoNewsDto;
@@ -8,7 +11,12 @@ import greencity.dto.event.EventDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
@@ -16,21 +24,23 @@ import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -193,6 +203,131 @@ public class ModelUtils {
             .baseLink("test")
             .userId(getUserVO().getId())
             .build();
+    }
+
+    public static UserVOAdvancedDto getUserVOAdvancedDto() {
+        UserVOAdvancedDto advancedDto = new UserVOAdvancedDto();
+
+        advancedDto.setFirstName(TestConst.NAME);
+        advancedDto.setDateOfRegistration(LocalDateTime.of(2025, 4, 20, 13, 30));
+        advancedDto.setId(1L);
+        advancedDto.setName(TestConst.NAME);
+        advancedDto.setEmail(TestConst.EMAIL);
+        advancedDto.setRole(Role.ROLE_USER);
+        advancedDto.setUserCredo(TestConst.CREDO);
+        advancedDto.setUserStatus(ACTIVATED);
+        advancedDto.setUserLocation(UserLocationDto.builder()
+            .latitude(1d)
+            .longitude(1d)
+            .build());
+        advancedDto.setLanguageVO(getLanguageDTO());
+        advancedDto.setUserAchievements(List.of(getUserAchievementVO()));
+        advancedDto.setUserFriends(getUserFriends());
+        advancedDto.setSocialNetworks(getSocialNetworkVOs());
+        advancedDto.setRating(10.0);
+
+        return advancedDto;
+    }
+
+    public static LanguageDTO getLanguageDTO() {
+        return new LanguageDTO(1L, "en");
+    }
+
+    public static UserAchievementVO getUserAchievementVO() {
+        return new UserAchievementVO(1L, getUserVoShort(), getAchievementVOWithAchievementCategory(), false);
+    }
+
+    public static List<UserVO> getUserFriends() {
+        UserVO firstFriend = UserVO.builder()
+            .id(3L)
+            .name("Sasha")
+            .build();
+
+        UserVO secondFriend = UserVO.builder()
+            .id(4L)
+            .name("Masha")
+            .build();
+
+        return List.of(firstFriend, secondFriend);
+    }
+
+    public static ConstraintValidatorContext.ConstraintViolationBuilder getConstraintViolationBuilder() {
+        return new ConstraintValidatorContext.ConstraintViolationBuilder() {
+            @Override
+            public NodeBuilderDefinedContext addNode(String name) {
+                return null;
+            }
+
+            @Override
+            public NodeBuilderCustomizableContext addPropertyNode(String name) {
+                return null;
+            }
+
+            @Override
+            public LeafNodeBuilderCustomizableContext addBeanNode() {
+                return null;
+            }
+
+            @Override
+            public ContainerElementNodeBuilderCustomizableContext addContainerElementNode(String name,
+                Class<?> containerType,
+                Integer typeArgumentIndex) {
+                return null;
+            }
+
+            @Override
+            public NodeBuilderDefinedContext addParameterNode(int index) {
+                return null;
+            }
+
+            @Override
+            public ConstraintValidatorContext addConstraintViolation() {
+                return null;
+            }
+        };
+    }
+
+    public static List<SocialNetworkVO> getSocialNetworkVOs() {
+        SocialNetworkVO socialNetworkVO1 = SocialNetworkVO.builder()
+            .id(9L)
+            .url("http://test.com.ua")
+            .user(getUserVoShort())
+            .socialNetworkImage(getOneSocialNetworkImageVO())
+            .build();
+
+        SocialNetworkVO socialNetworkVO2 = SocialNetworkVO.builder()
+            .id(10L)
+            .url("http://test-test.com.ua")
+            .user(getUserVoShort())
+            .socialNetworkImage(getOneSocialNetworkImageVO())
+            .build();
+
+        return List.of(socialNetworkVO1, socialNetworkVO2);
+    }
+
+    public static UserVO getUserVoShort() {
+        return UserVO.builder()
+            .id(1L)
+            .email("taras@gmail.com")
+            .build();
+    }
+
+    public static SocialNetworkImageVO getOneSocialNetworkImageVO() {
+        return SocialNetworkImageVO.builder()
+            .id(13L)
+            .imagePath("http://test-test.com.ua")
+            .hostPath("hostPath2")
+            .build();
+    }
+
+    public static AchievementVO getAchievementVOWithAchievementCategory() {
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", new AchievementCategoryVO(1L, "CREATE_NEWS"), null,
+            null, null);
+    }
+
+    public static SocialNetworkImageResponseDTO getSocialNetworkImageResponseDTO() {
+        return new SocialNetworkImageResponseDTO(1L, "image path", "host path");
     }
 
     public static UserStatusDto getUserStatusDto() {

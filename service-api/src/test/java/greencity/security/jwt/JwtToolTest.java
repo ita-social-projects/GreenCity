@@ -3,11 +3,14 @@ package greencity.security.jwt;
 import static greencity.constant.AppConstant.ROLE;
 
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserClaims;
 import greencity.enums.Role;
+import greencity.exception.exceptions.NoJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
 import javax.crypto.SecretKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,9 +19,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * @author Yurii Koval
@@ -42,7 +51,6 @@ class JwtToolTest {
         String expectedEmail = "test@gmail.com";
         Role expectedRole = Role.ROLE_USER;
         final String accessToken = jwtTool.createAccessToken(expectedEmail, expectedRole);
-        System.out.println(accessToken);
 
         SecretKey key = Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes());
 
@@ -61,6 +69,76 @@ class JwtToolTest {
             .getPayload()
             .get(ROLE);
         assertEquals(expectedRole, Role.valueOf(authorities.getFirst()));
+    }
+
+    @Test
+    void createAccessTokenMultipleRolesTest() {
+        String expectedEmail = "test@gmail.com";
+        List<Role> expectedRoles = List.of(Role.ROLE_USER, Role.ROLE_ADMIN);
+        String accessToken = jwtTool.createAccessToken(expectedEmail, expectedRoles);
+
+        SecretKey key = Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes());
+
+        String actualEmail = Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(accessToken)
+            .getPayload()
+            .getSubject();
+        assertEquals(expectedEmail, actualEmail);
+        @SuppressWarnings({"unchecked, rawtype"})
+        List<String> authorities = (List<String>) Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(accessToken)
+            .getPayload()
+            .get(ROLE);
+        List<Role> actualRoles = authorities.stream().map(Role::valueOf).toList();
+        assertEquals(expectedRoles, actualRoles);
+    }
+
+    @Test
+    void extractJwtFromNativeWebRequestTest() {
+        NativeWebRequest nativeWebRequest = mock(NativeWebRequest.class);
+        String token = "token";
+        String authHeader = "Bearer " + token;
+
+        when(nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION))
+            .thenReturn(authHeader);
+
+        String actualResult = jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest);
+
+        assertEquals(token, actualResult);
+    }
+
+    @Test
+    void extractJwtFromNativeWebRequestWhenNoJwtTest() {
+        NativeWebRequest nativeWebRequest = mock(NativeWebRequest.class);
+        String authHeader = "Invalid bearer token";
+        String expectedExceptionMessage = ErrorMessage.NO_JWT_TOKEN_FOUND;
+
+        when(nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION))
+            .thenReturn(authHeader);
+
+        var ex = assertThrows(
+            NoJwtException.class,
+            () -> jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest));
+        assertEquals(expectedExceptionMessage, ex.getMessage());
+    }
+
+    @Test
+    void extractJwtFromNativeWebRequestWhenAuthHeaderNullTest() {
+        NativeWebRequest nativeWebRequest = mock(NativeWebRequest.class);
+        String authHeader = null;
+        String expectedExceptionMessage = ErrorMessage.NO_JWT_TOKEN_FOUND;
+
+        when(nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION))
+            .thenReturn(authHeader);
+
+        var ex = assertThrows(
+            NoJwtException.class,
+            () -> jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest));
+        assertEquals(expectedExceptionMessage, ex.getMessage());
     }
 
     @Test

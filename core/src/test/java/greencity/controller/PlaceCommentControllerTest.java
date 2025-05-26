@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
 import greencity.enums.UserStatus;
 import greencity.service.PlaceCommentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +18,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
 
 import static greencity.ModelUtils.getUserVO;
@@ -67,7 +65,6 @@ class PlaceCommentControllerTest {
     @Test
     void saveTest() throws Exception {
         Principal principal = ModelUtils.getPrincipal();
-        User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
 
         userVO.setUserStatus(UserStatus.ACTIVATED);

@@ -1,6 +1,5 @@
 package greencity.controller;
 
-import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.converters.UserIdArgumentResolver;
 import greencity.security.jwt.JwtTool;

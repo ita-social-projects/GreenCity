@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
-public class SocialNetworkImageServiceImplTest {
+class SocialNetworkImageServiceImplTest {
     @Mock
     UserRemoteClient userRemoteClient;
 
