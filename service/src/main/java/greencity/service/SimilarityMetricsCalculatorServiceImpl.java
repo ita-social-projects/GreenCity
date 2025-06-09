@@ -3,6 +3,7 @@ package greencity.service;
 import static greencity.constant.SimilarityMetricsCalculatorConstants.RELEVANCE_THRESHOLD;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,8 @@ public class SimilarityMetricsCalculatorServiceImpl implements SimilarityMetrics
      * Counts similar matches between two sets using string similarity
      */
     @Override
-    public int countMatches(Set<String> set1, Set<String> set2) {
+    public int countMatches(Set<String> set1, Set<String> set2, String language)
+        throws ExecutionException, InterruptedException {
         if (set1 == null || set2 == null) {
             return 0;
         }
@@ -52,7 +54,7 @@ public class SimilarityMetricsCalculatorServiceImpl implements SimilarityMetrics
         for (String item1 : set1) {
             for (String item2 : set2) {
                 if (item1.equals(item2) ||
-                    stringSimilarityCalculatorService.calculateWordSimilarity(item1, item2)
+                    stringSimilarityCalculatorService.calculateWordSimilarity(item1, item2, language)
                         > RELEVANCE_THRESHOLD) {
                     matches++;
                     break;

@@ -1,9 +1,14 @@
 package greencity.service;
 
 import greencity.entity.SemanticScoreResult;
+import greencity.entity.cache.MutableSemanticResult;
+import greencity.entity.cache.Pair;
+import greencity.entity.cache.ScorePair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,53 +17,85 @@ import org.springframework.stereotype.Service;
 public class SemanticScoreCalculatorServiceImpl implements SemanticScoreCalculatorService {
     private final StringSimilarityCalculatorService stringSimilarityCalculatorService;
 
-    /**
-     * Calculates semantic similarity score between content words and habit names
-     */
+    @Override
     public double calculateSemanticScore(Set<String> contentWords, Set<String> habitNames,
-                                         double minScore, double maxScore) {
-        if (contentWords.isEmpty() || habitNames.isEmpty()) {
+                                         String language, double minScore, double maxScore) {
+        if (contentWords == null || habitNames == null || contentWords.isEmpty() || habitNames.isEmpty()) {
             return minScore;
         }
 
         List<String> contentList = new ArrayList<>(contentWords);
         List<String> habitList = new ArrayList<>(habitNames);
-        int totalPairs = contentList.size() * habitList.size();
 
-        if (totalPairs == 0) {
+        List<Pair<String, String>> filteredPairs = preFilterPairs(contentList, habitList);
+
+        if (filteredPairs.isEmpty()) {
             return minScore;
         }
 
-        SemanticScoreResult result = computeSemanticScores(contentList, habitList);
-        double normalizedScore = result.totalScore() / totalPairs;
+        SemanticScoreResult result = computeSemanticScores(filteredPairs, language);
+        double normalizedScore = result.totalScore() / (contentList.size() * habitList.size());
 
-        // Penalty for weak matches
         if (result.strongMatches() == 0 && result.totalScore() > 0) {
             normalizedScore *= 0.7;
         }
 
-        // Size weighting
         double sizeWeight = 0.7 + 0.3 * Math.min(1.0, Math.max(contentList.size(), habitList.size()) / 30.0);
         double finalScore = normalizedScore * sizeWeight;
 
         return clamp(finalScore, minScore, maxScore);
     }
 
-    private SemanticScoreResult computeSemanticScores(List<String> contentList, List<String> habitList) {
-        double totalScore = 0.0;
-        int strongMatches = 0;
-
+    private List<Pair<String, String>> preFilterPairs(List<String> contentList, List<String> habitList) {
+        List<Pair<String, String>> pairs = new ArrayList<>();
         for (String contentWord : contentList) {
             for (String habitWord : habitList) {
-                double score = stringSimilarityCalculatorService.calculateWordSimilarity(contentWord, habitWord);
-                totalScore += score;
-                if (score > 0.7) {
-                    strongMatches++;
+                if (shouldComparePair(contentWord, habitWord)) {
+                    pairs.add(new Pair<>(contentWord, habitWord));
                 }
             }
         }
+        return pairs;
+    }
 
-        return new SemanticScoreResult(totalScore, strongMatches);
+    private boolean shouldComparePair(String word1, String word2) {
+        int lengthDiff = Math.abs(word1.length() - word2.length());
+        if (lengthDiff <= 1) return true;
+
+        int minLen = Math.min(word1.length(), word2.length());
+        if (minLen >= 3) {
+            String prefix1 = word1.substring(0, 3);
+            String prefix2 = word2.substring(0, 3);
+            if (prefix1.equals(prefix2)) return true;
+        }
+
+        return lengthDiff <= Math.max(word1.length(), word2.length()) * 0.5;
+    }
+
+    private SemanticScoreResult computeSemanticScores(List<Pair<String, String>> pairs, String language) {
+        Stream<Pair<String, String>> stream = pairs.size() > 50 ? pairs.parallelStream() : pairs.stream();
+        return stream
+            .map(pair -> {
+                double score;
+                try {
+                    score =
+                        stringSimilarityCalculatorService.calculateWordSimilarity(pair.first(), pair.second(), language);
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                return new ScorePair(score, score > 0.7 ? 1 : 0);
+            })
+            .collect(
+                MutableSemanticResult::new,
+                (acc, scorePair) -> {
+                    acc.addScore(scorePair.score());
+                    acc.addStrongMatch(scorePair.strongMatch());
+                },
+                (acc1, acc2) -> {
+                    acc1.addScore(acc2.getTotalScore());
+                    acc1.addStrongMatch(acc2.getStrongMatches());
+                }
+            ).toResult();
     }
 
     private double clamp(double value, double min, double max) {
