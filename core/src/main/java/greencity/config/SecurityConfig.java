@@ -451,31 +451,31 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/user/filter",
-                        FILES + "/single",
-                        USERS + "/create")
+                    FILES + "/single",
+                    USERS + "/create")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
                     "/user/status",
                     "/user/role",
                     "/user/update/role",
-                        USERS + "/{id}/location",
-                        USERS + "/rating",
-                        USERS + "/credo",
-                        USERS + "/{userId}/name")
+                    USERS + "/{id}/location",
+                    USERS + "/rating",
+                    USERS + "/credo",
+                    USERS + "/{userId}/name")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     COMMENTS,
-                        FILES)
+                    FILES)
                 .hasAnyRole(ADMIN)
-                    .requestMatchers(HttpMethod.GET,
-                            ACHIEVEMENTS + "/all",
-                            ACHIEVEMENTS + "/user-achievements/**",
-                            USERS + "/**")
-                    .hasAnyRole(ADMIN)
-                    .requestMatchers(HttpMethod.PUT,
-                            USERS + "/picturePath")
-                    .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.GET,
+                    ACHIEVEMENTS + "/all",
+                    ACHIEVEMENTS + "/user-achievements/**",
+                    USERS + "/**")
+                .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.PUT,
+                    USERS + "/picturePath")
+                .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))
             .logout(logout -> logout.logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
