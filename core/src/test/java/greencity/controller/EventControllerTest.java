@@ -233,6 +233,24 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
+    void saveBadRequestWithNotValidDescriptionTest() {
+        AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequestBadDescription();
+
+        String json = objectMapper.writeValueAsString(addEventDtoRequest);
+
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+
+        mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK)
+                .file(jsonFile)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
     void saveV2Test() {
         AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
 
@@ -672,6 +690,30 @@ class EventControllerTest {
             {
                 "title":"string",
                 "description":"stringstringstringstringstringstringstringstring",
+                "open":true,
+                "datesLocations":[
+                    {
+                        "startDate":"2023-05-27T15:00:00Z",
+                        "finishDate":"2023-05-27T17:00:00Z",
+                        "coordinates":{
+                            "latitude":1,
+                            "longitude":1
+                        },
+                        "onlineLink":"http://localhost:8080/swagger-ui.html#/events-controller"
+                    }
+                ],
+                "tags":["Social"]
+            }""";
+
+        return objectMapper.readValue(json, AddEventDtoRequest.class);
+    }
+
+    @SneakyThrows
+    private AddEventDtoRequest getAddEventDtoRequestBadDescription() {
+        String json = """
+            {
+                "title":"string",
+                "description":" stringstringstringstringstringstringstringstring",
                 "open":true,
                 "datesLocations":[
                     {
