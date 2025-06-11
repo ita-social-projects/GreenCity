@@ -224,8 +224,6 @@ public class SecurityConfig {
                     ACHIEVEMENTS,
                     ACHIEVEMENTS + COUNT,
                     ACHIEVEMENTS + CATEGORIES,
-                    ACHIEVEMENTS + "/all",
-                    ACHIEVEMENTS + "/user-achievements/**",
                     CUSTOM_TO_DO_LIST_ITEMS,
                     CUSTOM_TO_DO_LIST,
                     CUSTOM_TO_DO_LIST_URL,
@@ -301,7 +299,6 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    USERS + "/**",
                     "/ai/**")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
@@ -334,7 +331,6 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
                     FILES,
-                    FILES + "/single",
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
@@ -366,8 +362,7 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + DISLIKE_V2,
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS + COMMENTS + LIKE_V2,
-                    LOGS,
-                    USERS + "/create")
+                    LOGS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
@@ -382,7 +377,6 @@ public class SecurityConfig {
                     HABIT_ASSIGN_ID + "/update-habit-duration",
                     "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
                     HABIT_ASSIGN_ID + "/allUserAndCustomList",
-                    USERS + "/picturePath",
                     "/habit/assign/{habitAssignId}/update-status-and-duration")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PATCH,
@@ -402,10 +396,7 @@ public class SecurityConfig {
                     "/user/deleteProfilePicture",
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend",
-                    HABIT_INVITE + INVITATION_ID + "/accept",
-                    USERS + "/{id}/location",
-                    USERS + "/rating",
-                    USERS + "/credo")
+                    HABIT_INVITE + INVITATION_ID + "/accept")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.DELETE,
                     ECO_NEWS + ECO_NEWS_ID,
@@ -436,8 +427,7 @@ public class SecurityConfig {
                     "/ownSecurity/user",
                     NOTIFICATIONS + NOTIFICATION_ID,
                     HABIT_INVITE + INVITATION_ID + "/reject",
-                    EVENTS + EVENT_ID + "/removeFromRequested",
-                    FILES)
+                    EVENTS + EVENT_ID + "/removeFromRequested")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     COMMENTS,
@@ -460,16 +450,31 @@ public class SecurityConfig {
                     "/place")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
-                    "/user/filter")
+                    "/user/filter",
+                    FILES + "/single",
+                    USERS + "/create")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
                     "/user/status",
                     "/user/role",
-                    "/user/update/role")
+                    "/user/update/role",
+                    USERS + "/{id}/location",
+                    USERS + "/rating",
+                    USERS + "/credo",
+                    USERS + "/{userId}/name")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
-                    COMMENTS)
+                    COMMENTS,
+                    FILES)
+                .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.GET,
+                    ACHIEVEMENTS + "/all",
+                    ACHIEVEMENTS + "/user-achievements/**",
+                    USERS + "/**")
+                .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.PUT,
+                    USERS + "/picturePath")
                 .hasAnyRole(ADMIN)
                 .anyRequest().hasAnyRole(ADMIN))
             .logout(logout -> logout.logoutUrl("/logout")
