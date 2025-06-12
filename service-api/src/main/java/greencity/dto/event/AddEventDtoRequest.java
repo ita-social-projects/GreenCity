@@ -24,7 +24,7 @@ public class AddEventDtoRequest {
      * 10-63206 chars. No leading/trailing whitespace. No consecutive spaces.
      */
     @Pattern(
-        regexp = "^(?!.* {2,})(?!\\s)(?!.*\\s$).{10,63206}$",
+        regexp = "^[^\\s][^\\s](?:[^ ]| (?! )){6,63202}[^\\s][^\\s]$",
         message = "Description must be between 10 and 63206 characters, must not be blank, "
             + "contain leading/trailing spaces, or consecutive spaces.")
     private String description;
