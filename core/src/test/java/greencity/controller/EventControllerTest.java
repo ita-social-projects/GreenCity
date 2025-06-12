@@ -1,6 +1,5 @@
 package greencity.controller;
 
-
 import static greencity.ModelUtils.getCreateJsonFile;
 import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
 import static greencity.ModelUtils.getPrincipal;
