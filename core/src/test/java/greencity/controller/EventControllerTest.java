@@ -1,12 +1,26 @@
 package greencity.controller;
 
-import static greencity.ModelUtils.*;
+
+import static greencity.ModelUtils.getCreateJsonFile;
+import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUserVO;
 import static greencity.TestConst.EVENT_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -988,7 +1002,7 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void getAllUserAssignedReturnsPaginatedUserAssignedEventsForValidUserTest() {
-        UserVO userVO = ModelUtils.getUserVO();
+        UserVO userVO = getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/user-data/getAllUserAssigned")
             .principal(principal)
@@ -1003,7 +1017,7 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void getRelevantAddressesTest() {
-        UserVO userVO = ModelUtils.getUserVO();
+        UserVO userVO = getUserVO();
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses/get-relevant")
             .principal(principal))
