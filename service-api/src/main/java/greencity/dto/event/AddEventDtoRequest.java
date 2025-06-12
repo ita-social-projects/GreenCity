@@ -1,9 +1,7 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import greencity.annotations.DecodedSize;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
@@ -16,8 +14,13 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode
 public class AddEventDtoRequest {
-    @NotBlank
-    @DecodedSize(min = 1, max = 70)
+    /**
+     * 1-70 chars. No leading/trailing whitespace. No consecutive spaces.
+     */
+    @Pattern(
+        regexp = "^[^\\s](?:[^ ]| (?! )){0,68}[^\\s]?$",
+        message = "Title must be between 1 and 70 characters, must not be blank, "
+            + "contain leading/trailing spaces, or consecutive spaces.")
     private String title;
 
     /**

@@ -243,6 +243,26 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
+    void saveBadRequestWithNotValidTitleTest() {
+        AddEventDtoRequest addEventDtoRequest = buildAddEventDto(" Title", "description for testing title");
+
+        String json = objectMapper.writeValueAsString(addEventDtoRequest);
+
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+
+        mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK)
+                .file(jsonFile)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest());
+
+        verify(eventService, times(0)).save(any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
     void saveV2Test() {
         AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequest();
 
@@ -289,6 +309,25 @@ class EventControllerTest {
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest());
+
+        verify(eventService, times(0)).save(any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    void saveV2BadRequestWithNotValidTitleTest() {
+        AddEventDtoRequest addEventDtoRequest = buildAddEventDto(" Title V2", "description for testing Title V2");
+
+        String json = objectMapper.writeValueAsString(addEventDtoRequest);
+
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+        mockMvc.perform(multipart("/events/createV2")
+                .file(jsonFile)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
 
         verify(eventService, times(0)).save(any(), any(), any());
