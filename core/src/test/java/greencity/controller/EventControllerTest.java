@@ -278,7 +278,7 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void saveV2BadRequestWithNotValidDescriptionTest() {
-        AddEventDtoRequest addEventDtoRequest = buildAddEventDto("String", " Example of description for testing");
+        AddEventDtoRequest addEventDtoRequest = buildAddEventDto("String V2", " Example of description for testing V2");
 
         String json = objectMapper.writeValueAsString(addEventDtoRequest);
 
