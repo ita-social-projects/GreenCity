@@ -106,10 +106,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, String> httpClientResponseBody;
         if (exceptionBody.startsWith("[")) {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(),
-                new TypeReference<List<Map<String, String>>>() {})
+                new TypeReference<List<Map<String, String>>>() {
+                })
                 .getFirst();
         } else {
-            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), new TypeReference<>() {});
+            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), new TypeReference<>() {
+            });
         }
 
         return httpClientResponseBody;
@@ -536,7 +538,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         Map<String, Object> attributes = new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
-            ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE, ErrorAttributeOptions.Include.STACK_TRACE)));
+            ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE,
+                ErrorAttributeOptions.Include.STACK_TRACE)));
         if (webRequest instanceof ServletWebRequest servletWebRequest) {
             attributes.put("path", servletWebRequest.getRequest().getRequestURI());
         }
