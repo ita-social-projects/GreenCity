@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import lombok.*;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -20,6 +21,11 @@ public class AddEventDtoRequest {
     @DecodedSize(min = 1, max = 70)
     private String title;
 
+    /**
+     * 10-63206 chars.
+     * No leading/trailing whitespace.
+     * No consecutive spaces.
+     */
     @Pattern(
         regexp = "^(?!.* {2,})(?!\\s)(?!.*\\s$).{10,63206}$",
         message = "Description must be between 10 and 63206 characters, must not be blank, "

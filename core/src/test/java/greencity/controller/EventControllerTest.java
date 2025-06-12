@@ -1,11 +1,23 @@
 package greencity.controller;
 
+import static greencity.ModelUtils.*;
+import static greencity.TestConst.EVENT_ID;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.*;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
+import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EventStatus;
@@ -36,28 +48,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static greencity.ModelUtils.getCreateJsonFile;
-import static greencity.ModelUtils.getEventDtoPageableAdvancedDto;
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUserVO;
-import static greencity.TestConst.EVENT_ID;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -234,7 +224,7 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void saveBadRequestWithNotValidDescriptionTest() {
-        AddEventDtoRequest addEventDtoRequest = getAddEventDtoRequestBadDescription();
+        AddEventDtoRequest addEventDtoRequest = buildAddEventDto("String", " Example of description for testing");
 
         String json = objectMapper.writeValueAsString(addEventDtoRequest);
 
@@ -247,6 +237,8 @@ class EventControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
+
+        verify(eventService, times(0)).save(any(), any(), any());
     }
 
     @Test
@@ -281,6 +273,25 @@ class EventControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void saveV2BadRequestWithNotValidDescriptionTest() {
+        AddEventDtoRequest addEventDtoRequest = buildAddEventDto("String", " Example of description for testing");
+
+        String json = objectMapper.writeValueAsString(addEventDtoRequest);
+
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+        mockMvc.perform(multipart("/events/createV2")
+                .file(jsonFile)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isBadRequest());
+
+        verify(eventService, times(0)).save(any(), any(), any());
     }
 
     @Test
@@ -709,11 +720,11 @@ class EventControllerTest {
     }
 
     @SneakyThrows
-    private AddEventDtoRequest getAddEventDtoRequestBadDescription() {
-        String json = """
+    private AddEventDtoRequest buildAddEventDto (String title, String description) {
+        String json = String.format("""
             {
-                "title":"string",
-                "description":" stringstringstringstringstringstringstringstring",
+                "title":"%s",
+                "description":"%s",
                 "open":true,
                 "datesLocations":[
                     {
@@ -727,7 +738,7 @@ class EventControllerTest {
                     }
                 ],
                 "tags":["Social"]
-            }""";
+            }""", title, description);
 
         return objectMapper.readValue(json, AddEventDtoRequest.class);
     }
