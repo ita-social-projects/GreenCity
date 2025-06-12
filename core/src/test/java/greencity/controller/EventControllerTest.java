@@ -252,10 +252,10 @@ class EventControllerTest {
             new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
 
         mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK)
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
 
         verify(eventService, times(0)).save(any(), any(), any());
@@ -324,10 +324,10 @@ class EventControllerTest {
         MockMultipartFile jsonFile =
             new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
         mockMvc.perform(multipart("/events/createV2")
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
 
         verify(eventService, times(0)).save(any(), any(), any());
