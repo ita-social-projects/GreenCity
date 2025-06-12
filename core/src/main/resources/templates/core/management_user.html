@@ -76,9 +76,11 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.email}]]</label>
-                                                    <input type="email" class="form-control" name="email" required>
-                                                    <div class="invalid-feedback">
+                                                    <input id="emailField" type="email" class="form-control" name="email" required>
+                                                    <div id="emailBootstrapError" class="invalid-feedback">
                                                         [[#{greenCity.user.page.email.validation.error}]]
+                                                    </div>
+                                                    <div id="serverEmailError" class="invalid-feedback" style="display: none">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
