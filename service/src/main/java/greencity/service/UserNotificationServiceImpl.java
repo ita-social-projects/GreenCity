@@ -111,7 +111,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * @param viewed            whether to filter by viewed status
      * @return the total number of notifications
      */
-    private long calculateTotalElements(Long userId, Principal principal, String language, List<NotificationType> notificationTypes,
+    private long calculateTotalElements(Long userId, Principal principal, String language,
+        List<NotificationType> notificationTypes,
         Boolean viewed) {
         try (ExecutorService executorService = Executors.newFixedThreadPool(NOTIFICATION_SOURCES_COUNT)) {
             CompletableFuture<Long> greenCityTotalFuture = CompletableFuture.supplyAsync(() -> {
@@ -276,7 +277,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * @return a list of unread notifications sorted by time (newest first)
      */
     private List<NotificationDto> getUnreadNotifications(Long userId, Principal principal, String language,
-                                                         List<NotificationType> notificationTypes, int limit) {
+        List<NotificationType> notificationTypes, int limit) {
         try (ExecutorService executorService = Executors.newFixedThreadPool(NOTIFICATION_SOURCES_COUNT)) {
             CompletableFuture<List<NotificationDto>> greenCityFuture = CompletableFuture.supplyAsync(
                 () -> loadNotificationsFromSource(limit, limit,
