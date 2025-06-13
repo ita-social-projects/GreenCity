@@ -108,7 +108,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(),
                 new TypeReference<List<Map<String, String>>>() {
                 })
-                .getFirst();
+                .get(0);
         } else {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), new TypeReference<>() {
             });

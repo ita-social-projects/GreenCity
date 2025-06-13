@@ -183,12 +183,11 @@ function showEmailError(message, $block) {
     $block.text(message).show();
     $emailField.addClass('is-invalid');
     $emailField.get(0).setCustomValidity(message);
-    $('#addUserForm').addClass('was-validated');
 }
 
 function clearEmailErrors() {
     $('#serverEmailError').hide();
-    $('#emailSyntaxError').hide();
+    $('#emailServerError').hide();
     $('#emailField').removeClass('is-invalid').get(0).setCustomValidity('');
 }
 
@@ -264,26 +263,36 @@ $(document).ready(function () {
 
         clearEmailErrors();
 
-        if (!$emailField.get(0).checkValidity()) {
-            showEmailError($emailBootstrapError.text(), $emailBootstrapError);
-            return;
+        if (!$form.get(0).checkValidity()) {
+            if (!$emailField.get(0).checkValidity()) {
+                showEmailError($emailBootstrapError.text(), $emailBootstrapError);
+            }
+        } else {
+            $.ajax({
+                url: $form.attr('action'),
+                method: $form.attr('method'),
+                data: $form.serialize(),
+                success: function () {
+                    window.location.href = '/management/users';
+                },
+                error: function (response) {
+                    let serverError;
+                    try {
+                        serverError = JSON.parse(response.responseText);
+                    } catch (e) {
+                        serverError = {
+                            message: response.responseText
+                        };
+                    }
+                    const message = Array.isArray(serverError)
+                        ? serverError[0]?.message || 'Undefined error'
+                        : serverError?.message || 'Undefined error';
+                    showEmailError(message, $serverEmailErrorBlock);
+                }
+            });
         }
 
-        $.ajax({
-            url: $form.attr('action'),
-            method: $form.attr('method'),
-            data: $form.serialize(),
-            success: function () {
-                window.location.href = '/management/users';
-            },
-            error: function (response) {
-                let serverError = JSON.parse(response.responseText);
-                const message = Array.isArray(serverError)
-                    ? serverError[0]?.message || 'Undefined error'
-                    : serverError?.message || 'Undefined error';
-                showEmailError(message, $serverEmailErrorBlock);
-            }
-        });
+        $form.addClass('was-validated');
     });
 
     $('#emailField').on('input', function () {
