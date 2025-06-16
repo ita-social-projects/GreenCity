@@ -161,7 +161,7 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
 
         if (shouldUseAIBackup(components)) {
             return aiEcoNewsRelevanceService
-                .calculateAIRelevanceScore(ecoNews, habitNames, ecoNews.getTags());
+                .calculateAIRelevanceScore(ecoNews, habitNames, ecoNews.getTagsEn());
         }
         return components.algoScore();
     }

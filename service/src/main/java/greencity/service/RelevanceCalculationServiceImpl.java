@@ -32,7 +32,7 @@ public class RelevanceCalculationServiceImpl implements RelevanceCalculationServ
         if (news == null || habits == null || habits.isEmpty()) {
             return defaultScore;
         }
-        return calculateAIRelevanceScore(news, habits, news.getTags());
+        return calculateAIRelevanceScore(news, habits, news.getTagsEn());
     }
 
     @Override

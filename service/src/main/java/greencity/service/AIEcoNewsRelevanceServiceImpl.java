@@ -62,7 +62,7 @@ public class AIEcoNewsRelevanceServiceImpl implements AIEcoNewsRelevanceService 
                     try {
                         List<String> habitNames = habitAssignRepo.fetchHabitNamesByUserId(user.getId());
                         double score = relevanceCalculationService.calculateAIRelevanceScore(
-                            ecoNews, habitNames, ecoNews.getTags());
+                            ecoNews, habitNames, ecoNews.getTagsEn());
                         relevancePersistenceService.updateRelevanceForUser(user.getId(), ecoNews, score, minScore, maxScore);
                     } catch (Exception e) {
                         status.setRollbackOnly();
@@ -93,7 +93,7 @@ public class AIEcoNewsRelevanceServiceImpl implements AIEcoNewsRelevanceService 
                 for (EcoNewsDto ecoNews : batch) {
                     try {
                         double score = relevanceCalculationService.calculateAIRelevanceScore(
-                            ecoNews, habitNames, ecoNews.getTags());
+                            ecoNews, habitNames, ecoNews.getTagsEn());
                         relevancePersistenceService.updateRelevanceForUser(userId, ecoNews, score, minScore, maxScore);
                     } catch (Exception e) {
                         status.setRollbackOnly();

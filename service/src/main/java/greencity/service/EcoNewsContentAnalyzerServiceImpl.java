@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class EcoNewsContentAnalyzerServiceImpl implements EcoNewsContentAnalyzerService {
     @Override
     public Set<String> extractTags(EcoNewsDto ecoNews) {
-        return ecoNews.getTags().stream()
+        return ecoNews.getTagsEn().stream()
             .map(String::toLowerCase)
             .collect(Collectors.toSet());
     }
