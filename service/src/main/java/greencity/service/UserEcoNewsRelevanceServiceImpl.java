@@ -68,7 +68,7 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
 
     @Override
     @Transactional
-    public void calculateRelevanceForAIGeneratedNews(Long userId) throws ExecutionException, InterruptedException {
+    public void calculateRelevanceForAIGeneratedNews(Long userId) {
         String language = resolveLanguageForUser();
         String targetLanguage = UK_LANGUAGE_CODE.equals(language) ? UK_LANGUAGE_CODE : language;
         List<EcoNewsDto> aiGeneratedNewsDtos = prepareAIGeneratedNewsDtos(targetLanguage);
@@ -93,8 +93,7 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
     }
 
     @Override
-    public double calculateRelevanceScore(EcoNewsDto ecoNews, List<String> habitNames, String language)
-        throws ExecutionException, InterruptedException {
+    public double calculateRelevanceScore(EcoNewsDto ecoNews, List<String> habitNames, String language) {
         Set<String> habitSet = contentAnalyzer.toLowerCaseSet(habitNames);
         return calculateRelevanceScore(ecoNews, habitNames, habitSet, language);
     }
@@ -122,15 +121,15 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
         List<CompletableFuture<Void>> futures = newsDtos.stream()
             .map(dto -> CompletableFuture.runAsync(() -> {
                 double score;
-                try {
+//                try {
                     score = calculateRelevanceScore(dto, cachedHabits.habitNames(),
                         cachedHabits.habitSet(), language);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Interrupted while calculating relevance score", e);
-                } catch (ExecutionException e) {
-                    throw new RuntimeException("Error calculating relevance score", e);
-                }
+//                } catch (InterruptedException e) {
+//                    Thread.currentThread().interrupt();
+//                    throw new RuntimeException("Interrupted while calculating relevance score", e);
+//                } catch (ExecutionException e) {
+//                    throw new RuntimeException("Error calculating relevance score", e);
+//                }
                 relevancePersistenceService
                     .updateRelevanceForUser(userId, dto, score, minScore, maxScore);
             }))
@@ -139,7 +138,7 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
     }
 
     private void processNewsSequentially(Long userId, List<EcoNewsDto> newsDtos,
-                                         CachedUserHabits cachedHabits, String language) throws ExecutionException, InterruptedException
+                                         CachedUserHabits cachedHabits, String language)
     {
         for (EcoNewsDto dto : newsDtos) {
             double score = calculateRelevanceScore(dto, cachedHabits.habitNames(),
@@ -149,8 +148,7 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
     }
 
     private double calculateRelevanceScore(EcoNewsDto ecoNews, List<String> habitNames,
-                                           Set<String> habitSet, String language)
-        throws ExecutionException, InterruptedException {
+                                           Set<String> habitSet, String language) {
         if (ecoNews == null || habitNames == null || habitNames.isEmpty()) {
             return minScore;
         }
@@ -173,7 +171,7 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
                                                              Set<String> tagNames,
                                                              Set<String> habitSet,
                                                              String language,
-                                                             ZonedDateTime creationDate) throws ExecutionException, InterruptedException
+                                                             ZonedDateTime creationDate)
     {
         int totalMatches = similarityCalculator.countMatches(contentKeywords, habitSet, language);
         double tagScore = similarityCalculator.calculateJaccardSimilarity(tagNames, habitSet);

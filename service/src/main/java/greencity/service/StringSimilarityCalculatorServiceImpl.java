@@ -53,7 +53,12 @@ public class StringSimilarityCalculatorServiceImpl implements StringSimilarityCa
             similarityCache.synchronous().put(pair, 0.0);
             return 0.0;
         }
-        score = computeSimilarityScore(lengthInfo.trimmed1(), lengthInfo.trimmed2(), lengthInfo.minLength(), lengthInfo.maxLength());
+        score = computeSimilarityScore(
+            lengthInfo.trimmed1(),
+            lengthInfo.trimmed2(),
+            lengthInfo.minLength(),
+            lengthInfo.maxLength()
+        );
         score = applyLengthWeight(score, lengthInfo.maxLength());
         similarityCache.synchronous().put(pair, score);
         return score;
@@ -73,7 +78,12 @@ public class StringSimilarityCalculatorServiceImpl implements StringSimilarityCa
         if (checkLengthDifference(lengthInfo.minLength(), lengthInfo.maxLength())) {
             return 0.0;
         }
-        score = computeSimilarityScore(lengthInfo.trimmed1(), lengthInfo.trimmed2(), lengthInfo.minLength(), lengthInfo.maxLength());
+        score = computeSimilarityScore(
+            lengthInfo.trimmed1(),
+            lengthInfo.trimmed2(),
+            lengthInfo.minLength(),
+            lengthInfo.maxLength()
+        );
         return applyLengthWeight(score, lengthInfo.maxLength());
     }
 
@@ -103,7 +113,7 @@ public class StringSimilarityCalculatorServiceImpl implements StringSimilarityCa
     private String[] trimStrings(String word1, String word2) {
         String trimmed1 = word1.length() > MAX_STRING_LENGTH ? word1.substring(0, MAX_STRING_LENGTH) : word1;
         String trimmed2 = word2.length() > MAX_STRING_LENGTH ? word2.substring(0, MAX_STRING_LENGTH) : word2;
-        return new String[]{trimmed1, trimmed2};
+        return new String[] {trimmed1, trimmed2};
     }
 
     private boolean checkLengthDifference(int minLength, int maxLength) {
@@ -139,7 +149,8 @@ public class StringSimilarityCalculatorServiceImpl implements StringSimilarityCa
     }
 
     private double applyLengthWeight(double score, int maxLength) {
-        double lengthWeight = BASE_LENGTH_WEIGHT + Math.min(MAX_LENGTH_WEIGHT_ADJUSTMENT, maxLength / LENGTH_WEIGHT_DENOMINATOR);
+        double lengthWeight = BASE_LENGTH_WEIGHT
+            + Math.min(MAX_LENGTH_WEIGHT_ADJUSTMENT, maxLength / LENGTH_WEIGHT_DENOMINATOR);
         return score * lengthWeight;
     }
 
@@ -150,7 +161,8 @@ public class StringSimilarityCalculatorServiceImpl implements StringSimilarityCa
         if (windowSize > 0 && word1.regionMatches(0, word2, 0, windowSize)) {
             score = Math.max(score, PREFIX_MATCH_WEIGHT * lengthRatio);
         }
-        if (windowSize > 0 && word1.regionMatches(word1.length() - windowSize, word2, word2.length() - windowSize, windowSize)) {
+        if (windowSize > 0
+            && word1.regionMatches(word1.length() - windowSize, word2, word2.length() - windowSize, windowSize)) {
             score = Math.max(score, SUFFIX_MATCH_WEIGHT * lengthRatio);
         }
         return score;

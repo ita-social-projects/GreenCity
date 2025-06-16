@@ -77,12 +77,12 @@ public class SemanticScoreCalculatorServiceImpl implements SemanticScoreCalculat
         return stream
             .map(pair -> {
                 double score;
-                try {
+//                try {
                     score =
                         stringSimilarityCalculatorService.calculateWordSimilarity(pair.first(), pair.second(), language);
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+//                } catch (ExecutionException | InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
                 return new ScorePair(score, score > 0.7 ? 1 : 0);
             })
             .collect(
