@@ -64,7 +64,7 @@ public class AIController {
     }
 
     /**
-     * Endpoint for generating eco news based on the user's habits.
+     * Endpoint for generating basic eco news.
      * <p>
      * This method:
      * <ul>
@@ -75,7 +75,7 @@ public class AIController {
      *
      * @return a ResponseEntity containing the generated eco news text
      */
-    @Operation(summary = "Generate eco news based on habits")
+    @Operation(summary = "Generate basic eco news")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = String.class))),

@@ -118,7 +118,7 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Generates default general eco news content.
+     * Generates basic eco news content.
      * <p>
      * The method performs the following:
      * <ul>
