@@ -18,12 +18,12 @@ import org.slf4j.MDC;
 @Component
 @Slf4j
 public class QuartzLoggingAspect {
-
-    @Value("${cron.sendContentToSubscribers}")
+    @Value("${cron.generateEcoNews}")
     private String cronExpression;
 
     @Pointcut("execution(* greencity.config.QuartzConfig.ecoNewsGenerationTrigger(..))")
-    public void ecoNewsGenerationTriggerMethods() {}
+    public void ecoNewsGenerationTriggerMethods() {
+    }
 
     @After("ecoNewsGenerationTriggerMethods()")
     public void logCronExpressionWarning() {

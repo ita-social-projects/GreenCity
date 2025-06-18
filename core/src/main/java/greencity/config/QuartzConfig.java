@@ -6,12 +6,12 @@ import greencity.exception.exceptions.InvalidCronException;
 import greencity.exception.exceptions.TriggerException;
 import greencity.quartz.AutowiringSpringBeanJobFactory;
 import greencity.scheduler.EcoNewsGenerationJob;
-import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,17 +28,13 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 @Slf4j
 @RequiredArgsConstructor
 public class QuartzConfig {
-    @Value("${cron.sendContentToSubscribers}")
+    @Value("${cron.generateEcoNews}")
     private String cronExpression;
-    private final DataSource dataSource;
     private final ApplicationContext applicationContext;
 
     @Bean
-    public SchedulerFactoryBean schedulerFactoryBean(SpringBeanJobFactory jobFactory) {
-        SchedulerFactoryBean factoryBean = new SchedulerFactoryBean();
-        factoryBean.setDataSource(dataSource);
-        factoryBean.setJobFactory(jobFactory);
-        return factoryBean;
+    public SchedulerFactoryBeanCustomizer customizer(SpringBeanJobFactory jobFactory) {
+        return factory -> factory.setJobFactory(jobFactory);
     }
 
     @Bean
@@ -49,9 +45,18 @@ public class QuartzConfig {
     }
 
     @Bean
-    public Scheduler scheduler(SchedulerFactoryBean factoryBean) throws SchedulerException {
+    public Scheduler scheduler(SchedulerFactoryBean factoryBean,
+                               Trigger ecoNewsGenerationTrigger,
+                               JobDetail ecoNewsGenerationJobDetail) throws SchedulerException {
         Scheduler scheduler = factoryBean.getScheduler();
         scheduler.getListenerManager().addJobListener(new LoggingJobListener());
+
+        if (!scheduler.checkExists(ecoNewsGenerationJobDetail.getKey())) {
+            scheduler.scheduleJob(ecoNewsGenerationJobDetail, ecoNewsGenerationTrigger);
+        } else if (!scheduler.checkExists(ecoNewsGenerationTrigger.getKey())) {
+            scheduler.scheduleJob(ecoNewsGenerationTrigger);
+        }
+
         return scheduler;
     }
 
@@ -64,11 +69,11 @@ public class QuartzConfig {
     }
 
     @Bean
-    public Trigger ecoNewsGenerationTrigger() {
+    public Trigger ecoNewsGenerationTrigger(JobDetail ecoNewsGenerationJobDetail) {
         String fixedCron = fixCronExpression(cronExpression);
         try {
             return TriggerBuilder.newTrigger()
-                .forJob(ecoNewsGenerationJobDetail())
+                .forJob(ecoNewsGenerationJobDetail)
                 .withIdentity(ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
                 .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
                 .build();
