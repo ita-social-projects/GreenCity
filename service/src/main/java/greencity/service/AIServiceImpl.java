@@ -60,15 +60,10 @@ public class AIServiceImpl implements AIService {
     public String getForecast(Long userId, String language) {
         validateInputs(userId, language);
 
-        List<HabitAssign> habitAssigns = fetchHabitAssignsByUserId(userId);
-        String forecastResponse;
-
-        if (habitAssigns.isEmpty()) {
-            forecastResponse = getAdvice(userId, language);
-        } else {
-            forecastResponse = fetchForecast(language, habitAssigns);
-        }
-
+        List<HabitAssign> habitAssigns = habitAssignRepo.findAllByUserId(userId);
+        String forecastResponse = habitAssigns.isEmpty()
+                ? getAdvice(userId, language)
+                : fetchForecast(language, habitAssigns);
         try {
             forecastResponse = grammarChecker.checkGrammar(forecastResponse);
         } catch (IOException e) {
@@ -89,7 +84,7 @@ public class AIServiceImpl implements AIService {
     @Override
     public String getAdvice(Long userId, String language) {
         validateInputs(userId, language);
-        Habit habit = fetchRandomHabit();
+        Habit habit = habitRepo.findRandomHabit();
         String adviceResponse = fetchAdvice(language, habit);
 
         try {
@@ -123,7 +118,7 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Generates eco news content in the specified language based on the user's habits.
+     * Generates default general eco news content.
      * <p>
      * The method performs the following:
      * <ul>
@@ -141,13 +136,13 @@ public class AIServiceImpl implements AIService {
      * @throws GrammarCheckException if grammar correction fails
      */
     @Override
-    public String generateEcoNewsBasedOnHabits(String language) {
+    public String generateEcoNews(String language) {
         validateInputs(language);
         if (!isWeekPassed()) {
             throw new EcoNewsGenerationLimitException(MESSAGE_ECO_NEWS_LIMIT);
         }
 
-        String jsonResponse = fetchNewsWithoutQuery(language);
+        String jsonResponse = openAIService.makeRequest(language + NEWS_WITHOUT_QUERY);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
         ecoNews = ecoNewsRepo.save(ecoNews);
         String ecoNewsText = ecoNews.getText();
@@ -255,8 +250,8 @@ public class AIServiceImpl implements AIService {
         int end = Math.min(start + pageable.getPageSize(), sortedNews.size());
 
         return sortedNews.subList(start, end).stream()
-            .map(this::convertToGenericDto)
-            .toList();
+                .map(news -> modelMapper.map(news, EcoNewsGenericDto.class))
+                .toList();
     }
 
     private List<EcoNewsDto> mergeRelevantAndGeneralNews(
@@ -303,25 +298,6 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Fetches all habit assignments for a user by their ID.
-     *
-     * @param userId the ID of the user.
-     * @return a list of {@link HabitAssign} entities assigned to the user.
-     */
-    private List<HabitAssign> fetchHabitAssignsByUserId(Long userId) {
-        return habitAssignRepo.findAllByUserId(userId);
-    }
-
-    /**
-     * Fetches a random habit from the repository.
-     *
-     * @return a {@link Habit} entity representing a random habit.
-     */
-    private Habit fetchRandomHabit() {
-        return habitRepo.findRandomHabit();
-    }
-
-    /**
      * Creates a request string for fetching news based on language and query.
      *
      * @param language the language in which the news should be fetched.
@@ -346,29 +322,9 @@ public class AIServiceImpl implements AIService {
      */
     private String fetchForecast(String language, List<HabitAssign> habitAssigns) {
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
-            .map(this::mapToDurationHabitDto)
-            .toList();
+                .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class))
+                .toList();
         return openAIService.makeRequest(language + FORECAST + durationHabitDtos);
-    }
-
-    /**
-     * Maps a {@link HabitAssign} entity to a {@link DurationHabitDto}.
-     *
-     * @param habitAssign the habit assignment to map.
-     * @return a {@link DurationHabitDto} containing the mapped data.
-     */
-    private DurationHabitDto mapToDurationHabitDto(HabitAssign habitAssign) {
-        return modelMapper.map(habitAssign, DurationHabitDto.class);
-    }
-
-    /**
-     * Converts an {@link EcoNewsDto} to an {@link EcoNewsGenericDto}.
-     *
-     * @param ecoNewsDto the eco news DTO to convert.
-     * @return a {@link EcoNewsGenericDto} containing the converted data.
-     */
-    private EcoNewsGenericDto convertToGenericDto(EcoNewsDto ecoNewsDto) {
-        return modelMapper.map(ecoNewsDto, EcoNewsGenericDto.class);
     }
 
     /**
@@ -381,16 +337,6 @@ public class AIServiceImpl implements AIService {
     private String fetchAdvice(String language, Habit habit) {
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
         return openAIService.makeRequest(language + ADVICE + shortHabitDto);
-    }
-
-    /**
-     * Fetches news content without a query based on language.
-     *
-     * @param language the language in which the news should be fetched.
-     * @return a string containing the news content.
-     */
-    private String fetchNewsWithoutQuery(String language) {
-        return openAIService.makeRequest(language + NEWS_WITHOUT_QUERY);
     }
 
     /**
@@ -444,9 +390,9 @@ public class AIServiceImpl implements AIService {
      * @return an {@link ObjectNode} with extracted "title" and "content".
      */
     private static @NotNull ObjectNode getJsonNodes(String sanitizedResponse) {
-        String[] parts = splitResponse(sanitizedResponse);
-        String title = extractTitle(parts);
-        String content = extractContent(parts);
+        String[] parts = sanitizedResponse.split(FORMAT_NEW_LINE, 2);
+        String title = parts[0].replace(FORMAT_TITLE_PREFIX, FORMAT_EMPTY_STRING).trim();
+        String content = parts.length > 1 ? parts[1].trim() : FORMAT_EMPTY_STRING;
 
         return createJsonNode(title, content);
     }
@@ -467,36 +413,6 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Splits a response string using a predefined new line format into title and content parts.
-     *
-     * @param response the response string to split.
-     * @return String array: first element is title, second (optional) is content.
-     */
-    private static String[] splitResponse(String response) {
-        return response.split(FORMAT_NEW_LINE, 2);
-    }
-
-    /**
-     * Extracts and sanitizes the title from split response parts.
-     *
-     * @param parts array containing the title at index 0.
-     * @return sanitized title string.
-     */
-    private static String extractTitle(String[] parts) {
-        return parts[0].replace(FORMAT_TITLE_PREFIX, FORMAT_EMPTY_STRING).trim();
-    }
-
-    /**
-     * Extracts content from split response parts if available.
-     *
-     * @param parts array with potential content at index 1.
-     * @return content string or empty string if not present.
-     */
-    private static String extractContent(String[] parts) {
-        return parts.length > 1 ? parts[1].trim() : FORMAT_EMPTY_STRING;
-    }
-
-    /**
      * Constructs an {@link EcoNews} instance from a raw JSON response.
      *
      * @param jsonResponse the raw JSON response string.
@@ -504,9 +420,10 @@ public class AIServiceImpl implements AIService {
      */
     private EcoNews createEcoNewsInstance(String jsonResponse) {
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
-        String title = extractTitleFromJson(jsonNode);
-        String content = extractContentFromJsonNode(jsonNode);
-        User aiGeneratedUser = fetchOrCreateAiGeneratedUser();
+        String title = jsonNode.get(FORMAT_TITLE_KEY).asText();
+        String content = jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
+        User aiGeneratedUser = userRepo.findByEmail(AI_USER_EMAIL)
+                .orElseGet(this::createAiGeneratedUser);
         List<Tag> tags = tagsRepo.findTagsByType(ECO_NEWS);
 
         if (tags.isEmpty()) {
@@ -515,36 +432,6 @@ public class AIServiceImpl implements AIService {
 
         Tag tag = tags.getFirst();
         return buildEcoNews(title, content, aiGeneratedUser, tag);
-    }
-
-    /**
-     * Fetches an AI-generated user from the database or creates a new one if not found.
-     *
-     * @return {@link User} representing the AI system.
-     */
-    private User fetchOrCreateAiGeneratedUser() {
-        return userRepo.findByEmail(AI_USER_EMAIL)
-            .orElseGet(this::createAiGeneratedUser);
-    }
-
-    /**
-     * Extracts the "title" field from a JSON node.
-     *
-     * @param jsonNode the JSON node containing content.
-     * @return title string.
-     */
-    private String extractTitleFromJson(JsonNode jsonNode) {
-        return jsonNode.get(FORMAT_TITLE_KEY).asText();
-    }
-
-    /**
-     * Extracts the "content" field from a JSON node.
-     *
-     * @param jsonNode the JSON node containing content.
-     * @return content string.
-     */
-    private String extractContentFromJsonNode(JsonNode jsonNode) {
-        return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
     }
 
     /**

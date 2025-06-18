@@ -88,9 +88,9 @@ public class AIController {
     })
     @ApiLocale
     @PostMapping("/generate")
-    public ResponseEntity<String> generateEcoNewsBasedOnHabits() {
+    public ResponseEntity<String> generateEcoNews() {
         String language = acceptLanguageDisplayService.resolveLanguage();
         return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.generateEcoNewsBasedOnHabits(language));
+            .body(aiService.generateEcoNews(language));
     }
 }

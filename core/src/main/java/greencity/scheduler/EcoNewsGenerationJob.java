@@ -19,7 +19,7 @@ public class EcoNewsGenerationJob implements Job {
         if (!hasExecuted) {
             String language = acceptLanguageDisplayService.resolveLanguage();
             if (language != null && !language.isEmpty()) {
-                aiService.generateEcoNewsBasedOnHabits(language);
+                aiService.generateEcoNews(language);
                 hasExecuted = true;
             }
         }
