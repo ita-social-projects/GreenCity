@@ -69,7 +69,7 @@
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.userName}]]</label>
                                                     <input type="text" class="form-control" name="name"
-                                                           minlength="6" maxlength="30" required>
+                                                           pattern=".{6,30}" required>
                                                     <div class="invalid-feedback">
                                                         [[#{greenCity.user.page.name.validation.error}]]
                                                     </div>
