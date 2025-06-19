@@ -339,16 +339,6 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
-<script type="text/javascript" th:inline="javascript">
-    function updateCheckBoxCount(chInt) {
-        let chBox = $('#checkbox' + chInt);
-        let deleteBtn = $("#btnDelete");
-        chBox.is(":checked") ? checkedCh++ : checkedCh--;
-        if (checkedCh === 0) {
-            deleteBtn.addClass("disabled");
-        } else deleteBtn.removeClass("disabled");
-    }
-</script>
 </body>
 </html>
 
