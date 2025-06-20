@@ -1,6 +1,7 @@
 package greencity.service;
 
 import static greencity.constant.OpenAIConstants.*;
+import greencity.enums.Language;
 import java.util.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @SuppressWarnings("checkstyle:WhitespaceAround")
     @Override
-    public String makeRequest(String language, String prompt) {
+    public String makeRequest(Language language, String prompt) {
         String validationError = validateRequestParameters(prompt);
         if (validationError != null) {
             return validationError;
@@ -75,7 +76,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         }
     }
 
-    private Map<String, Object> createRequestBody(String language, String prompt) {
+    private Map<String, Object> createRequestBody(Language language, String prompt) {
         Map<String, Object> body = new HashMap<>();
         body.put(REQUEST_MODEL_KEY, OPENAI_MODEL_NAME);
 
@@ -84,7 +85,12 @@ public class OpenAIServiceImpl implements OpenAIService {
             RESPONSE_ROLE_KEY,
             ROLE_SYSTEM,
             RESPONSE_JSON_CONTENT_KEY,
-            String.join(" ", AI_ROLE_POLICY, AI_LANGUAGE_POLICY.formatted(language), AI_MAX_TOKENS_POLICY)
+            String.join(" ",
+                AI_ROLE_POLICY,
+                AI_LANGUAGE_POLICY.formatted(language.getDisplayName()),
+                AI_MAX_TOKENS_POLICY,
+                AI_HEADINGS_POLICY
+            )
         ));
         messages.add(Map.of(RESPONSE_ROLE_KEY, ROLE_USER, RESPONSE_JSON_CONTENT_KEY, prompt));
         body.put(REQUEST_MESSAGES_KEY, messages);

@@ -14,6 +14,7 @@ import greencity.dto.habit.ShortHabitDto;
 import greencity.entity.*;
 import static greencity.enums.Role.ROLE_USER;
 import static greencity.enums.TagType.ECO_NEWS;
+import greencity.enums.Language;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class AIServiceImpl implements AIService {
         List<HabitAssign> habitAssigns = habitAssignRepo.findAllByUserId(userId);
         String forecastResponse = habitAssigns.isEmpty()
                 ? getAdvice(userId, language)
-                : fetchForecast(language, habitAssigns);
+                : fetchForecast(Language.fromCode(language), habitAssigns);
         try {
             forecastResponse = grammarChecker.checkGrammar(forecastResponse);
         } catch (IOException e) {
@@ -85,7 +86,7 @@ public class AIServiceImpl implements AIService {
     public String getAdvice(Long userId, String language) {
         validateInputs(userId, language);
         Habit habit = habitRepo.findRandomHabit();
-        String adviceResponse = fetchAdvice(language, habit);
+        String adviceResponse = fetchAdvice(Language.fromCode(language), habit);
 
         try {
             adviceResponse = grammarChecker.checkGrammar(adviceResponse);
@@ -106,7 +107,7 @@ public class AIServiceImpl implements AIService {
     @Override
     public String getNews(String language, String query) {
         validateInputs(language);
-        String jsonResponse = openAIService.makeRequest(language, createNewsRequest(query));
+        String jsonResponse = openAIService.makeRequest(Language.fromCode(language), createNewsRequest(query));
         String newResponse = extractContentFromJson(jsonResponse);
 
         try {
@@ -142,7 +143,7 @@ public class AIServiceImpl implements AIService {
             throw new EcoNewsGenerationLimitException(MESSAGE_ECO_NEWS_LIMIT);
         }
 
-        String jsonResponse = openAIService.makeRequest(language, NEWS_WITHOUT_QUERY);
+        String jsonResponse = openAIService.makeRequest(Language.fromCode(language), NEWS_WITHOUT_QUERY);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
         ecoNews = ecoNewsRepo.save(ecoNews);
         String ecoNewsText = ecoNews.getText();
@@ -318,7 +319,7 @@ public class AIServiceImpl implements AIService {
      * @param habitAssigns  the list of habit assignments to include in the forecast.
      * @return a string containing the forecast.
      */
-    private String fetchForecast(String language, List<HabitAssign> habitAssigns) {
+    private String fetchForecast(Language language, List<HabitAssign> habitAssigns) {
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
                 .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class))
                 .toList();
@@ -332,7 +333,7 @@ public class AIServiceImpl implements AIService {
      * @param habit    the habit to base the advice on.
      * @return a string containing the advice.
      */
-    private String fetchAdvice(String language, Habit habit) {
+    private String fetchAdvice(Language language, Habit habit) {
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
         return openAIService.makeRequest(language, ADVICE.formatted(shortHabitDto));
     }

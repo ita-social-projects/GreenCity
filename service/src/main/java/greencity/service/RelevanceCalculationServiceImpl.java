@@ -50,7 +50,7 @@ public class RelevanceCalculationServiceImpl implements RelevanceCalculationServ
             habits.isEmpty() ? NONE_STRING : String.join(COMMA_SEPARATOR, habits),
             tags.isEmpty() ? NONE_STRING : String.join(COMMA_SEPARATOR, tags)
         );
-        String aiResponse = openAIService.makeRequest(Language.ENGLISH.getDisplayName(), prompt);
+        String aiResponse = openAIService.makeRequest(Language.ENGLISH, prompt);
         return parseScoreFromResponse(aiResponse);
     }
 
