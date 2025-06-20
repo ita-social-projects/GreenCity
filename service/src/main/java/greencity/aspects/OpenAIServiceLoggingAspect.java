@@ -12,9 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class OpenAIServiceLoggingAspect {
 
-    @Before("execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..)) && args(prompt)")
-    public void logBeforeMakeRequest(String prompt) {
-        log.info(OPENAI_REQUEST_INITIATED, prompt);
+    @Before(value = "execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..)) && args(language, prompt)",
+        argNames = "language,prompt")
+    public void logBeforeMakeRequest(String language, String prompt) {
+        log.info(OPENAI_REQUEST_INITIATED, language, prompt);
         log.debug(OPENAI_REQUEST_PARAMETER_VALIDATION);
         log.trace(START_REQUEST_PARAMETER_VALIDATION, prompt);
     }
@@ -33,8 +34,9 @@ public class OpenAIServiceLoggingAspect {
         log.trace(COMPLETE_EXCEPTION_STACK_TRACE, exception);
     }
 
-    @Around("execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..)) && args(prompt)")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint, String prompt) throws Throwable {
+    @Around(value = "execution(public * greencity.service.OpenAIServiceImpl.makeRequest(..)) && args(language, prompt)",
+        argNames = "joinPoint,language,prompt")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint, String language, String prompt) throws Throwable {
         long startTime = System.currentTimeMillis();
         log.trace(METHOD_EXECUTION_STARTED, LocalDateTime.now());
 
@@ -44,7 +46,7 @@ public class OpenAIServiceLoggingAspect {
         long duration = endTime - startTime;
 
         log.info(METHOD_EXECUTED_IN_MS, duration);
-        log.debug(EXECUTION_TIME_FOR_METHOD, duration, prompt);
+        log.debug(EXECUTION_TIME_FOR_METHOD, duration, language, prompt);
 
         return result;
     }

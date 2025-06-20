@@ -106,7 +106,7 @@ public class AIServiceImpl implements AIService {
     @Override
     public String getNews(String language, String query) {
         validateInputs(language);
-        String jsonResponse = openAIService.makeRequest(createNewsRequest(language, query));
+        String jsonResponse = openAIService.makeRequest(language, createNewsRequest(query));
         String newResponse = extractContentFromJson(jsonResponse);
 
         try {
@@ -142,7 +142,7 @@ public class AIServiceImpl implements AIService {
             throw new EcoNewsGenerationLimitException(MESSAGE_ECO_NEWS_LIMIT);
         }
 
-        String jsonResponse = openAIService.makeRequest(language + NEWS_WITHOUT_QUERY);
+        String jsonResponse = openAIService.makeRequest(language, NEWS_WITHOUT_QUERY);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
         ecoNews = ecoNewsRepo.save(ecoNews);
         String ecoNewsText = ecoNews.getText();
@@ -300,17 +300,15 @@ public class AIServiceImpl implements AIService {
     /**
      * Creates a request string for fetching news based on language and query.
      *
-     * @param language the language in which the news should be fetched.
      * @param query    the query to filter news content.
      * @return a formatted request string.
      */
-    private String createNewsRequest(String language, String query) {
+    private String createNewsRequest(String query) {
         String baseRequest = query == null
             ? NEWS_WITHOUT_QUERY
-            : NEWS_BY_QUERY + query;
+            : NEWS_BY_QUERY.formatted(query);
 
-        return language + baseRequest + MESSAGE_JSON_VALIDATION_HINT
-            + REQUEST_MAX_TOKENS_KEY + MAX_ALLOWED_TOKENS;
+        return String.join(" ", baseRequest, MESSAGE_JSON_VALIDATION_HINT);
     }
 
     /**
@@ -324,7 +322,7 @@ public class AIServiceImpl implements AIService {
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
                 .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class))
                 .toList();
-        return openAIService.makeRequest(language + FORECAST + durationHabitDtos);
+        return openAIService.makeRequest(language, FORECAST.formatted(durationHabitDtos));
     }
 
     /**
@@ -336,7 +334,7 @@ public class AIServiceImpl implements AIService {
      */
     private String fetchAdvice(String language, Habit habit) {
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
-        return openAIService.makeRequest(language + ADVICE + shortHabitDto);
+        return openAIService.makeRequest(language, ADVICE.formatted(shortHabitDto));
     }
 
     /**

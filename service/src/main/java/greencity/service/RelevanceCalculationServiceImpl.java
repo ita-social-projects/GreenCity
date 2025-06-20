@@ -5,6 +5,7 @@ import static greencity.constant.AIEcoNewsRelevanceConstants.NONE_STRING;
 import static greencity.constant.OpenAIConstants.SCORE_PATTERN;
 import static greencity.constant.OpenAIRequest.RELEVANCE_PROMPT_TEMPLATE;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.enums.Language;
 import greencity.exception.exceptions.OpenAIServiceException;
 import greencity.repository.UserEcoNewsRelevanceRepo;
 import java.util.List;
@@ -49,7 +50,7 @@ public class RelevanceCalculationServiceImpl implements RelevanceCalculationServ
             habits.isEmpty() ? NONE_STRING : String.join(COMMA_SEPARATOR, habits),
             tags.isEmpty() ? NONE_STRING : String.join(COMMA_SEPARATOR, tags)
         );
-        String aiResponse = openAIService.makeRequest(prompt);
+        String aiResponse = openAIService.makeRequest(Language.ENGLISH.getDisplayName(), prompt);
         return parseScoreFromResponse(aiResponse);
     }
 

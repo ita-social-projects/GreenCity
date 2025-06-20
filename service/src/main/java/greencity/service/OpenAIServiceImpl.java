@@ -29,14 +29,14 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @SuppressWarnings("checkstyle:WhitespaceAround")
     @Override
-    public String makeRequest(String prompt) {
+    public String makeRequest(String language, String prompt) {
         String validationError = validateRequestParameters(prompt);
         if (validationError != null) {
             return validationError;
         }
 
         HttpHeaders headers = createHttpHeaders();
-        Map<String, Object> body = createRequestBody(prompt);
+        Map<String, Object> body = createRequestBody(language, prompt);
 
         return sendRequest(headers, body);
     }
@@ -75,12 +75,17 @@ public class OpenAIServiceImpl implements OpenAIService {
         }
     }
 
-    private Map<String, Object> createRequestBody(String prompt) {
+    private Map<String, Object> createRequestBody(String language, String prompt) {
         Map<String, Object> body = new HashMap<>();
         body.put(REQUEST_MODEL_KEY, OPENAI_MODEL_NAME);
 
         List<Map<String, String>> messages = new ArrayList<>();
-        messages.add(Map.of(RESPONSE_ROLE_KEY, ROLE_SYSTEM, RESPONSE_JSON_CONTENT_KEY, AI_LANGUAGE_POLICY));
+        messages.add(Map.of(
+            RESPONSE_ROLE_KEY,
+            ROLE_SYSTEM,
+            RESPONSE_JSON_CONTENT_KEY,
+            String.join(" ", AI_ROLE_POLICY, AI_LANGUAGE_POLICY.formatted(language), AI_MAX_TOKENS_POLICY)
+        ));
         messages.add(Map.of(RESPONSE_ROLE_KEY, ROLE_USER, RESPONSE_JSON_CONTENT_KEY, prompt));
         body.put(REQUEST_MESSAGES_KEY, messages);
         body.put(REQUEST_MAX_TOKENS_KEY, 1000);

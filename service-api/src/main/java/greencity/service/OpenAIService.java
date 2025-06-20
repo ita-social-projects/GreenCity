@@ -8,8 +8,9 @@ public interface OpenAIService {
     /**
      * Sends a request to the OpenAI API and returns the response as a string.
      *
+     * @param language The language in which the request should be made.
      * @param request The request as a string to be sent to the OpenAI API.
      * @return The response from the service as a string.
      */
-    String makeRequest(String request);
+    String makeRequest(String language, String request);
 }

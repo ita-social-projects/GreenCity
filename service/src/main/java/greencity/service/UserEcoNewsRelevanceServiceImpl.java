@@ -7,7 +7,6 @@ import greencity.dto.econews.UserEcoNewsRelevanceResponseDto;
 import greencity.entity.EcoNews;
 import greencity.entity.cache.CachedAINews;
 import greencity.entity.cache.CachedUserHabits;
-import greencity.enums.Language;
 import greencity.model.RelevanceComponents;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.HabitAssignRepo;
@@ -15,7 +14,6 @@ import greencity.repository.UserEcoNewsRelevanceRepo;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -34,7 +32,7 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
     private final UserEcoNewsRelevanceRepo userEcoNewsRelevanceRepo;
     private final EcoNewsRepo ecoNewsRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final AcceptLanguageDisplayService acceptLanguageDisplayService;
+//    private final AcceptLanguageDisplayService acceptLanguageDisplayService;
     private final AIEcoNewsRelevanceService aiEcoNewsRelevanceService;
     private final RelevancePersistenceService relevancePersistenceService;
     private final EcoNewsContentAnalyzerService contentAnalyzer;
@@ -69,9 +67,8 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
     @Override
     @Transactional
     public void calculateRelevanceForAIGeneratedNews(Long userId) {
-        String language = resolveLanguageForUser();
-        String targetLanguage = UK_LANGUAGE_CODE.equals(language) ? UK_LANGUAGE_CODE : language;
-        List<EcoNewsDto> aiGeneratedNewsDtos = prepareAIGeneratedNewsDtos(targetLanguage);
+        String language = "uk";
+        List<EcoNewsDto> aiGeneratedNewsDtos = prepareAIGeneratedNewsDtos(language);
         CachedUserHabits cachedHabits = userHabitsCache.get(userId).join();
         if (aiGeneratedNewsDtos.size() > ASYNC_THRESHOLD) {
             processNewsInParallel(userId, aiGeneratedNewsDtos, cachedHabits, language).join();
@@ -192,10 +189,10 @@ public class UserEcoNewsRelevanceServiceImpl implements UserEcoNewsRelevanceServ
             || components.confidence() < MIN_CONFIDENCE_THRESHOLD;
     }
 
-    private String resolveLanguageForUser() {
-        String languageCode = acceptLanguageDisplayService.resolveLanguage();
-        return Language.fromCode(languageCode).getCode();
-    }
+//    private String resolveLanguageForUser() {
+//        String languageCode = acceptLanguageDisplayService.resolveLanguage();
+//        return Language.fromCode(languageCode).getCode();
+//    }
 
     private List<EcoNews> fetchAIGeneratedNewsFromRepo() {
         return ecoNewsRepo.findAllAIGeneratedSince(AI_USER_EMAIL,

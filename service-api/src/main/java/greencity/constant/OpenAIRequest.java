@@ -11,6 +11,8 @@ public class OpenAIRequest {
         water conservation, or waste minimization. The response should be clear, concise, and presented as plain
         text without bullet points, asterisks, numbers, or any additional symbols. Ensure the output contains
         only clean, readable text with appropriate punctuation and no special formatting.
+        
+        Person's habits: %s;
         """;
 
     public static final String ADVICE = """
@@ -19,6 +21,8 @@ public class OpenAIRequest {
         and highlights the environmental and personal benefits.
         Use real-world examples and persuasive language to encourage adoption.
         The response should be clear, concise, and informative.
+        
+        Person's habit, on which the advice should be based: %s;
         """;
 
     public static final String NEWS_BY_QUERY = """
@@ -37,7 +41,7 @@ public class OpenAIRequest {
         - "content" is fact-based, engaging, and informative.
         - Keep total content length within 2000 characters.
         
-        Topic:
+        Topic: "%s";
         """;
 
     public static final String NEWS_WITHOUT_QUERY = """
@@ -79,9 +83,9 @@ public class OpenAIRequest {
     
     Respond with only the number. Do not add any explanation, text, or symbols.
     
-    Title: %s
-    Content: %s
-    User Habits: %s
-    User Tags: %s
+    Title: "%s";
+    Content: %s;
+    User Habits: %s;
+    User Tags: %s;
     """;
 }

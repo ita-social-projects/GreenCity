@@ -45,7 +45,10 @@ public class OpenAIConstants {
     public static final String MESSAGE_ECO_NEWS_LIMIT = "Eco-news can only be generated once per week.";
     public static final String MESSAGE_JSON_VALIDATION_HINT = "Ensure the JSON response is complete and properly formatted.";
 
-    public static final String AI_LANGUAGE_POLICY = "You are an AI assistant. Always respond in the language provided by the user.";
+    public static final String AI_ROLE_POLICY = "You are an AI assistant.";
+    public static final String AI_LANGUAGE_POLICY = "Always respond in language: %s.";
+    public static final String AI_MAX_TOKENS_POLICY = "You can generate a maximum of %d tokens in your response."
+        .formatted(MAX_ALLOWED_TOKENS);
 
     public static final String FORMAT_TITLE_PREFIX = "Title: ";
     public static final String FORMAT_EMPTY_STRING = "";
