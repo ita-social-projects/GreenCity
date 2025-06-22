@@ -17,7 +17,7 @@ public class EcoNewsGenerationJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) {
         if (!hasExecuted) {
             String language = "uk";
-            aiService.generateEcoNews(language);
+            aiService.generateAndSaveEcoNews(language);
             hasExecuted = true;
         }
     }

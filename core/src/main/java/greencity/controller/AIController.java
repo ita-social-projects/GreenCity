@@ -67,7 +67,7 @@ public class AIController {
     }
 
     /**
-     * Endpoint for generating basic eco news.
+     * Endpoint for generating basic eco news without saving.
      * <p>
      * This method:
      * <ul>
@@ -78,7 +78,7 @@ public class AIController {
      *
      * @return a ResponseEntity containing the generated eco news text
      */
-    @Operation(summary = "Generate basic eco news")
+    @Operation(summary = "Generate eco news based on user habits")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = String.class))),
@@ -89,10 +89,11 @@ public class AIController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PostMapping("/generate")
+    @GetMapping("/generate")
     @ApiLocale
-    public ResponseEntity<String> generateEcoNews(@Parameter(hidden = true) @ValidLanguage Locale locale) {
+    public ResponseEntity<String> generateEcoNewsByUserHabits(@Parameter(hidden = true) @ValidLanguage Locale locale,
+                                                  @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.generateEcoNews(locale.getLanguage()));
+            .body(aiService.generateEcoNewsByUserHabits(userVO.getId(),locale.getLanguage()));
     }
 }

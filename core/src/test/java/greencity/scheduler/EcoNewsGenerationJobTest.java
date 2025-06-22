@@ -30,7 +30,7 @@ class EcoNewsGenerationJobTest {
         String expectedLanguage = "en";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(expectedLanguage);
         ecoNewsGenerationJob.execute(jobExecutionContext);
-        verify(aiService).generateEcoNews(expectedLanguage);
+        verify(aiService).generateAndSaveEcoNews(expectedLanguage);
     }
 
     @Test
@@ -38,7 +38,7 @@ class EcoNewsGenerationJobTest {
         String language = "en";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(language);
         doThrow(new EcoNewsGenerationLimitException("Too soon"))
-            .when(aiService).generateEcoNews(language);
+            .when(aiService).generateAndSaveEcoNews(language);
 
         assertThrows(EcoNewsGenerationLimitException.class, () ->
             ecoNewsGenerationJob.execute(jobExecutionContext));
@@ -58,7 +58,7 @@ class EcoNewsGenerationJobTest {
         String language = "ua";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(language);
         ecoNewsGenerationJob.execute(jobExecutionContext);
-        verify(aiService).generateEcoNews(language);
+        verify(aiService).generateAndSaveEcoNews(language);
     }
 
     @Test
@@ -66,7 +66,7 @@ class EcoNewsGenerationJobTest {
         String language = "en";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(language);
         assertDoesNotThrow(() -> ecoNewsGenerationJob.execute(jobExecutionContext));
-        verify(aiService).generateEcoNews(language);
+        verify(aiService).generateAndSaveEcoNews(language);
         verifyNoMoreInteractions(aiService);
     }
 
@@ -75,7 +75,7 @@ class EcoNewsGenerationJobTest {
         String language = "en";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(language);
         assertDoesNotThrow(() -> ecoNewsGenerationJob.execute(null));
-        verify(aiService).generateEcoNews(language);
+        verify(aiService).generateAndSaveEcoNews(language);
     }
 
     @Test
@@ -84,7 +84,7 @@ class EcoNewsGenerationJobTest {
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(language);
         GrammarCheckException exception =
             new GrammarCheckException("Grammar check failed", new Throwable("Some cause"));
-        doThrow(exception).when(aiService).generateEcoNews(language);
+        doThrow(exception).when(aiService).generateAndSaveEcoNews(language);
         assertThrows(GrammarCheckException.class, () -> ecoNewsGenerationJob.execute(jobExecutionContext));
     }
 
@@ -92,7 +92,7 @@ class EcoNewsGenerationJobTest {
     void testExecute_ShouldThrowException_WhenSavingEcoNewsFails() {
         String language = "en";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(language);
-        doThrow(new RuntimeException("Database error")).when(aiService).generateEcoNews(language);
+        doThrow(new RuntimeException("Database error")).when(aiService).generateAndSaveEcoNews(language);
         assertThrows(RuntimeException.class, () -> ecoNewsGenerationJob.execute(jobExecutionContext));
     }
 
@@ -101,7 +101,7 @@ class EcoNewsGenerationJobTest {
         String invalidLanguage = "zz";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(invalidLanguage);
         assertDoesNotThrow(() -> ecoNewsGenerationJob.execute(jobExecutionContext));
-        verify(aiService).generateEcoNews(invalidLanguage);
+        verify(aiService).generateAndSaveEcoNews(invalidLanguage);
     }
 
     @Test
@@ -109,7 +109,7 @@ class EcoNewsGenerationJobTest {
         String languageWithSpecialChars = "en-US";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(languageWithSpecialChars);
         assertDoesNotThrow(() -> ecoNewsGenerationJob.execute(jobExecutionContext));
-        verify(aiService).generateEcoNews(languageWithSpecialChars);
+        verify(aiService).generateAndSaveEcoNews(languageWithSpecialChars);
     }
 
     @Test
@@ -117,14 +117,14 @@ class EcoNewsGenerationJobTest {
         String language = "de";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(language);
         ecoNewsGenerationJob.execute(jobExecutionContext);
-        verify(aiService).generateEcoNews(language);
+        verify(aiService).generateAndSaveEcoNews(language);
     }
 
     @Test
     void testExecute_ShouldNotCallGenerateEcoNewsBasedOnHabits_WhenLanguageIsEmpty() {
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn("");
         assertDoesNotThrow(() -> ecoNewsGenerationJob.execute(jobExecutionContext));
-        verify(aiService, never()).generateEcoNews(anyString());
+        verify(aiService, never()).generateAndSaveEcoNews(anyString());
     }
 
     @Test
@@ -132,7 +132,7 @@ class EcoNewsGenerationJobTest {
         String languageWithDialect = "en-GB";
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(languageWithDialect);
         ecoNewsGenerationJob.execute(jobExecutionContext);
-        verify(aiService).generateEcoNews(languageWithDialect);
+        verify(aiService).generateAndSaveEcoNews(languageWithDialect);
     }
 
     @Test
@@ -140,10 +140,10 @@ class EcoNewsGenerationJobTest {
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn("en");
         ecoNewsGenerationJob.execute(jobExecutionContext);
         verify(aiService, times(1))
-            .generateEcoNews("en");
+            .generateAndSaveEcoNews("en");
         ecoNewsGenerationJob.execute(jobExecutionContext);
         verify(aiService, times(1))
-            .generateEcoNews("en");
+            .generateAndSaveEcoNews("en");
     }
 
     @Test
@@ -151,7 +151,7 @@ class EcoNewsGenerationJobTest {
         when(acceptLanguageDisplayService.resolveLanguage()).thenReturn(null);
 
         assertDoesNotThrow(() -> ecoNewsGenerationJob.execute(jobExecutionContext));
-        verify(aiService, never()).generateEcoNews(any());
+        verify(aiService, never()).generateAndSaveEcoNews(any());
     }
 
     @Test
@@ -161,6 +161,6 @@ class EcoNewsGenerationJobTest {
             .thenReturn(language);
         ecoNewsGenerationJob.execute(jobExecutionContext);
         ecoNewsGenerationJob.execute(jobExecutionContext);
-        verify(aiService, times(1)).generateEcoNews(language);
+        verify(aiService, times(1)).generateAndSaveEcoNews(language);
     }
 }

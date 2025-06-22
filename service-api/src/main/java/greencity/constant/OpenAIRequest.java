@@ -88,4 +88,13 @@ public class OpenAIRequest {
     User Habits: %s;
     User Tags: %s;
     """;
+    public static final String NEWS_BY_USER_HABITS = """
+            Create a relevant and up-to-date eco-article on a current environmental topic,
+            based on user habits
+            - "title" is compelling and engaging (max 100 characters).
+            - "content" is fact-based, engaging, and informative.
+            - Keep total content length within 2000 characters.
+            
+            User Habits: %s;
+            """;
 }

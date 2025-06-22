@@ -118,7 +118,44 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Generates basic eco news content.
+     * Generates AI-based eco news content, performs grammar correction,
+     * and saves the final result to the database.
+     * <p>
+     * The method performs the following:
+     * <ul>
+     *   <li>Validates input language</li>
+     *   <li>Checks if a week has passed since the last generation (rate limiting)</li>
+     *   <li>Fetches AI-generated eco news without a specific query</li>
+     *   <li>Fetches AI-generated eco news without a specific query</li>
+     *   <li>Performs grammar correction on the generated text</li>
+     * </ul>
+     * If grammar correction fails, the eco news is not saved and a {@link GrammarCheckException} is thrown.
+     *
+     * @param language the language code (e.g., "en", "uk") for content generation
+     * @throws EcoNewsGenerationLimitException if the generation limit (1 per week) is exceeded
+     * @throws GrammarCheckException if grammar correction fails
+     */
+    @Override
+    public void generateAndSaveEcoNews(String language) {
+        validateInputs(language);
+        if (!isWeekPassed()) {
+            throw new EcoNewsGenerationLimitException(MESSAGE_ECO_NEWS_LIMIT);
+        }
+
+        String jsonResponse = openAIService.makeRequest(language, NEWS_WITHOUT_QUERY);
+        EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
+        String ecoNewsText = ecoNews.getText();
+
+        try {
+            ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
+        } catch (IOException e) {
+            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
+        }
+        ecoNews.setText(ecoNewsText);
+        ecoNewsRepo.save(ecoNews);
+    }
+    /**
+     * Generates basic eco news content and return it to user without saving in database.
      * <p>
      * The method performs the following:
      * <ul>
@@ -136,23 +173,23 @@ public class AIServiceImpl implements AIService {
      * @throws GrammarCheckException if grammar correction fails
      */
     @Override
-    public String generateEcoNews(String language) {
-        validateInputs(language);
-        if (!isWeekPassed()) {
-            throw new EcoNewsGenerationLimitException(MESSAGE_ECO_NEWS_LIMIT);
+    public String generateEcoNewsByUserHabits(Long userId, String language) {
+        validateInputs(userId, language);
+
+        List<HabitAssign> habitAssigns = habitAssignRepo.findAllByUserId(userId);
+        String forecastResponse;
+        if (!habitAssigns.isEmpty()) {
+            forecastResponse = openAIService.makeRequest(language, NEWS_BY_USER_HABITS.formatted(habitAssigns));
+        } else {
+            throw new UserHasNoHabitsException(ERROR_USER_HAS_NO_HABITS);
         }
-
-        String jsonResponse = openAIService.makeRequest(language, NEWS_WITHOUT_QUERY);
-        EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
-        ecoNews = ecoNewsRepo.save(ecoNews);
-        String ecoNewsText = ecoNews.getText();
-
         try {
-            ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
+            forecastResponse = grammarChecker.checkGrammar(forecastResponse);
         } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
         }
-        return ecoNewsText;
+
+        return forecastResponse;
     }
 
     /**
@@ -576,7 +613,7 @@ public class AIServiceImpl implements AIService {
      */
     private boolean isWeekPassed() {
         Optional<EcoNews> latestEcoNews =
-            ecoNewsRepo.findTopByAuthorIdOrderByCreationDateDesc(5L);
+            ecoNewsRepo.findTopByAuthorEmailOrderByCreationDateDesc("ai.generated@example.com");
         return latestEcoNews
             .map(news -> news.getCreationDate().toLocalDate().
                 isBefore(LocalDate.now().minusWeeks(1)))

@@ -40,6 +40,7 @@ public class OpenAIConstants {
     public static final String ERROR_NO_TAGS_FOUND = "No tags found for AI-generated content.";
     public static final String ERROR_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type - ";
     public static final String ERROR_JSON_KEY_NOT_FOUND = "Expected key " + RESPONSE_JSON_CONTENT_KEY + " not found in JSON.";
+    public static final String ERROR_USER_HAS_NO_HABITS = "User does not have any habits.";
 
     public static final Integer MAX_ALLOWED_TOKENS = 2048;
     public static final String MESSAGE_ECO_NEWS_LIMIT = "Eco-news can only be generated once per week.";

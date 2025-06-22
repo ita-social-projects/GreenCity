@@ -188,7 +188,7 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
     List<Object[]> getEcoNewsTagsStatistics(Long languageId);
 
     @EntityGraph(attributePaths = {"tags", "author"})
-    Optional<EcoNews> findTopByAuthorIdOrderByCreationDateDesc(Long authorId);
+    Optional<EcoNews> findTopByAuthorEmailOrderByCreationDateDesc(String email);
 
     @EntityGraph(value = "EcoNews.withAuthorAndTags")
     @Query(

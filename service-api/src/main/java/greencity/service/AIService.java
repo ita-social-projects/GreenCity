@@ -43,9 +43,9 @@ public interface AIService {
      *
      * @param language The preferred language for the eco-news response.
      *
-     * @return The generated eco-news as a string in the specified language.
      */
-    String generateEcoNews(String language);
+    void generateAndSaveEcoNews(String language);
+    String generateEcoNewsByUserHabits(Long userId, String language);
 
     List<EcoNewsDto> getRelevantEcoNewsForUser(Long userId, String language, List<String> tags, String title, Long authorId, boolean favorite);
 
