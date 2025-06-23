@@ -69,16 +69,18 @@
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.userName}]]</label>
                                                     <input type="text" class="form-control" name="name"
-                                                           minlength="6" maxlength="30" required>
+                                                           pattern=".{6,30}" required>
                                                     <div class="invalid-feedback">
                                                         [[#{greenCity.user.page.name.validation.error}]]
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.email}]]</label>
-                                                    <input type="email" class="form-control" name="email" required>
-                                                    <div class="invalid-feedback">
+                                                    <input id="emailField" type="email" class="form-control" name="email" required>
+                                                    <div id="emailBootstrapError" class="invalid-feedback">
                                                         [[#{greenCity.user.page.email.validation.error}]]
+                                                    </div>
+                                                    <div id="serverEmailError" class="invalid-feedback" style="display: none">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
