@@ -80,7 +80,7 @@ public class GrammarChecker implements GrammarCheckerService {
      */
     @Cacheable(value = "languageCache", key = "#text")
     @Override
-    public String checkGrammar(String text) throws IOException {
+    public String checkGrammar(String text) {
         try {
             String detectedLanguage = detectLanguage(text);
             JLanguageTool languageTool = getLanguageTool(detectedLanguage);
@@ -90,7 +90,7 @@ public class GrammarChecker implements GrammarCheckerService {
                 return text;
             }
             return applyCorrections(text, matches);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new GrammarCheckException(ERROR_GRAMMAR_CHECKING_MESSAGE, e);
         }
     }

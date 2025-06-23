@@ -21,9 +21,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
@@ -32,7 +31,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -65,11 +63,7 @@ public class AIServiceImpl implements AIService {
         String forecastResponse = habitAssigns.isEmpty()
                 ? getAdvice(userId, language)
                 : fetchForecast(Language.fromCode(language), habitAssigns);
-        try {
-            forecastResponse = grammarChecker.checkGrammar(forecastResponse);
-        } catch (IOException e) {
-            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
-        }
+        forecastResponse = grammarChecker.checkGrammar(forecastResponse);
 
         return sanitizeJsonResponse(forecastResponse);
     }
@@ -88,11 +82,7 @@ public class AIServiceImpl implements AIService {
         Habit habit = habitRepo.findRandomHabit();
         String adviceResponse = fetchAdvice(Language.fromCode(language), habit);
 
-        try {
-            adviceResponse = grammarChecker.checkGrammar(adviceResponse);
-        } catch (IOException e) {
-            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
-        }
+        adviceResponse = grammarChecker.checkGrammar(adviceResponse);
         return adviceResponse;
     }
 
@@ -110,11 +100,7 @@ public class AIServiceImpl implements AIService {
         String jsonResponse = openAIService.makeRequest(Language.fromCode(language), createNewsRequest(query));
         String newResponse = extractContentFromJson(jsonResponse);
 
-        try {
-            newResponse = grammarChecker.checkGrammar(newResponse);
-        } catch (IOException e) {
-            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
-        }
+        newResponse = grammarChecker.checkGrammar(newResponse);
         return newResponse;
     }
 
@@ -147,11 +133,7 @@ public class AIServiceImpl implements AIService {
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
         String ecoNewsText = ecoNews.getText();
 
-        try {
-            ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
-        } catch (IOException e) {
-            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
-        }
+        ecoNewsText = grammarChecker.checkGrammar(ecoNewsText);
         ecoNews.setText(ecoNewsText);
         ecoNewsRepo.save(ecoNews);
     }
@@ -178,17 +160,16 @@ public class AIServiceImpl implements AIService {
         validateInputs(userId, language);
 
         List<HabitAssign> habitAssigns = habitAssignRepo.findAllByUserId(userId);
-        String forecastResponse;
+        HabitAssign randomHabit;
         if (!habitAssigns.isEmpty()) {
-            forecastResponse = openAIService.makeRequest(Language.fromCode(language), NEWS_BY_USER_HABITS.formatted(habitAssigns));
+            Random random = new Random();
+            randomHabit = habitAssigns.get(random.nextInt(habitAssigns.size()));
         } else {
             throw new UserHasNoHabitsException(ERROR_USER_HAS_NO_HABITS);
         }
-        try {
-            forecastResponse = grammarChecker.checkGrammar(forecastResponse);
-        } catch (IOException e) {
-            throw new GrammarCheckException(ERROR_GRAMMAR_CHECK_FAILURE, e);
-        }
+        String randomHabitName = randomHabit.getHabit().getHabitTranslations().get(0).getName();
+        String forecastResponse = openAIService.makeRequest(Language.fromCode(language), NEWS_BY_USER_HABITS.formatted(randomHabitName));
+        forecastResponse = grammarChecker.checkGrammar(forecastResponse);
 
         return forecastResponse;
     }
@@ -561,6 +542,8 @@ public class AIServiceImpl implements AIService {
      * @return the "content" value if parsing is successful.
      * @throws JsonResponseParseException if maximum retry attempts are exceeded or parsing fails.
      */
+
+    // TODO
     private String extractContentFromJson(String jsonResponse) {
         for (int retryCount = 0; retryCount < MAX_JSON_PARSE_ATTEMPTS; retryCount++) {
             try {

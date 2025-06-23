@@ -95,6 +95,6 @@ public class OpenAIRequest {
             - "content" is fact-based, engaging, and informative.
             - Keep total content length within 2000 characters.
             
-            User Habits: %s;
+            User Habit: %s;
             """;
 }
