@@ -4,6 +4,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <include file="db/changelog/logs/ch-add-table-user_location-Midianyi.xml"/>
+    <include file="db/changelog/logs/ch-add-table-greencity-users-Kozak.xml"/>
     <include file="db/changelog/logs/liquibase-outputChangeLog.xml"/>
     <include file="db/changelog/logs/ch-change-tables-names-1.xml"/>
     <include file="db/changelog/logs/ch-habit-dictionary-kuzenko-1.xml"/>
@@ -145,8 +147,6 @@
     <include file="db/changelog/logs/ch-update-values-shopping-list-items-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement_categories-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-add-table-user_location-Midianyi.xml"/>
-    <include file="db/changelog/logs/ch-add-column-userLocation-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-update-online-link-column-length-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-add-column-user_actions-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-table-notification-Mladonov.xml"/>
@@ -210,6 +210,5 @@
     <include file="/db/changelog/logs/ch-habits-add-created-at-column.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-requesters-Pitsyk.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-Bulhakova.xml"/>
-    <include file="db/changelog/logs/ch-add-table-greencity-users-Kozak.xml"/>
     <include file="db/changelog/logs/ch-change-column-language_id-to-language_code.xml"/>
 </databaseChangeLog>
