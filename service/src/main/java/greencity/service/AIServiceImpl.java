@@ -180,7 +180,7 @@ public class AIServiceImpl implements AIService {
         List<HabitAssign> habitAssigns = habitAssignRepo.findAllByUserId(userId);
         String forecastResponse;
         if (!habitAssigns.isEmpty()) {
-            forecastResponse = openAIService.makeRequest(language, NEWS_BY_USER_HABITS.formatted(habitAssigns));
+            forecastResponse = openAIService.makeRequest(Language.fromCode(language), NEWS_BY_USER_HABITS.formatted(habitAssigns));
         } else {
             throw new UserHasNoHabitsException(ERROR_USER_HAS_NO_HABITS);
         }
