@@ -24,17 +24,20 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="BIGINT">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="achievement_id" type="BIGINT">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="achievement_status" type="varchar(12)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet id="18" author="Yuriy O.">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_achievements" constraintName="FK_user_user_achievements" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_achievements"
+                                 constraintName="FK_user_user_achievements" deferrable="false" initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="users"/>
     </changeSet>
 </databaseChangeLog>

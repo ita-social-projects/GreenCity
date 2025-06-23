@@ -6,7 +6,6 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <include file="db/changelog/logs/liquibase-outputChangeLog.xml"/>
     <include file="db/changelog/logs/ch-change-tables-names-1.xml"/>
-    <include file="db/changelog/logs/ch-add-column-Koval-1.xml"/>
     <include file="db/changelog/logs/ch-habit-dictionary-kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-habits-turko-1.xml"/>
     <include file="db/changelog/logs/ch-habit-statistics-olkhovskyi-1.xml"/>
@@ -29,19 +28,14 @@
     <include file="db/changelog/logs/ch-eco-news-localization-Kopylchak-1.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-1.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-2.xml"/>
-    <include file="db/changelog/logs/ch-change-table-users-Yurchuk-1.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-3.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-4.xml"/>
-    <include file="db/changelog/logs/ch-change-users-addColumn-datsko.xml"/>
     <include file="db/changelog/logs/ch-change-fact-translations-Patsula.xml"/>
     <include file="db/changelog/logs/ch-add-tips-and-tricks-Ostriychuk-1.xml"/>
     <include file="db/changelog/logs/ch-add-econews-comment-Patsula.xml"/>
     <include file="db/changelog/logs/ch-users-friends-Datsko.xml"/>
-    <include file="db/changelog/logs/ch-change-users-rating-Datsko.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-Ostriychuk.xml"/>
-    <include file="db/changelog/logs/ch-add-column-Zhurakovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-add-tipsandtricks-comment-Beshlei.xml"/>
-    <include file="db/changelog/logs/ch-user-profile-Datsko.xml.xml"/>
     <include file="db/changelog/logs/ch-merge-tags-Ostriychuk.xml"/>
     <include file="db/changelog/logs/ch-habit-status-Beshlei-2.xml"/>
     <include file="db/changelog/logs/ch-habits-Beshlei-1.xml"/>
@@ -49,9 +43,7 @@
     <include file="db/changelog/logs/ch-primarykey-eco-news-tags-Lehkyi-1.xml"/>
     <include file="db/changelog/logs/ch-primarykey-tips-and-tricks-tags-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch-fact-of-the-day-Lehkyi.xml"/>
-    <include file="db/changelog/logs/ch-social-network-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch_rating_statictics_Dovganyuk.xml"/>
-    <include file="/db/changelog/logs/ch-user-username-column-type.xml"/>
     <include file="/db/changelog/logs/ch-tips-and-tricks-translations-Petryshak.xml"/>
     <include file="db/changelog/logs/ch-habits-refactor-Kravchenko.xml"/>
     <include file="/db/changelog/logs/ch-change-column-name-goals-Petryshak.xml"/>
@@ -72,7 +64,6 @@
     <include file="db/changelog/logs/ch-change-user-action-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-change-user-achievements-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-Novosad.xml"/>
-    <include file="db/changelog/logs/ch-add-column-Bilonizhka.xml"/>
     <include file="db/changelog/logs/ch-add-all-ubs-tables-Bilonizhka.xml"/>
     <include file="db/changelog/logs/ch-change-habit-goal-id-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-change-habit-goal-add-status-Diakiv.xml"/>
@@ -87,17 +78,14 @@
     <include file="db/changelog/logs/ch-change-ubs-columns-Bilonizhka.xml"/>
     <include file="db/changelog/logs/ch-add-column-fileType-to-chatMessages-Bezrukavyy.xml"/>
     <include file="db/changelog/logs/ch-rename-column-imageName-in-fileName-Bezrukavyy.xml"/>
-    <include file="db/changelog/logs/ch-add-reasons-for-user-deactivatiom-table-Pikhotskyi.xml"/>
     <include file="db/changelog/logs/ch-ubs-database-seperation.xml"/>
     <include file="db/changelog/logs/ch-add-table-message-likes-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-add-constraints-to-habits-assign-table-Struk.xml"/>
-    <include file="db/changelog/logs/ch-drop-column-last_visit-in-users-table-Levko.xml"/>
     <include file="db/changelog/logs/ch-add-column-file-url-to-chat-message-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-update-column-habit-id-at-habit-status-calendar-Veremchuk.xml"/>
     <include file="db/changelog/logs/ch-add-table-Hutei.xml"/>
     <include file="db/changelog/logs/ch-add-column-Hutei.xml"/>
     <include file="db/changelog/logs/ch-add-column-habit-complexity-Levko.xml"/>
-    <include file="db/changelog/logs/ch-add-column-phone-to-user-Struk.xml"/>
     <include file="db/changelog/logs/ch-drop-constraint-habits-assign-table-Volianskyi.xml"/>
     <include file="db/changelog/logs/ch-add-column-to-crat-room-fedorkiv.xml"/>
     <include file="db/changelog/logs/ch-update-column-status-in-users_friends.xml"/>
@@ -116,13 +104,11 @@
     <include file="db/changelog/logs/ch-insert-into-tags-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Kozak.xml"/>
     <include file="db/changelog/logs/ch-modify-function-Hlynskyi.xml"/>
-    <include file="db/changelog/logs/ch-insert-table-users-service-account-Yezenitskyi.xml"/>
     <include file="db/changelog/logs/ch-change-events-and-create-eventsdate-table-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-change-events-events-location-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-event-tags-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-drop-all-tips-and-tricks-tables-Yezenitskyi.xml"/>
     <include file="db/changelog/logs/ch-change-event-date-to-zoned-type-Hlynskyi.xml"/>
-    <include file="db/changelog/logs/ch-changed-user-role-to-varchar.xml"/>
     <include file="db/changelog/logs/ch-add-places-tags.xml"/>
     <include file="db/changelog/logs/ch-change-events-location-add-addresses-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-table-filters-Hural.xml"/>
@@ -137,7 +123,6 @@
     <include file="db/changelog/logs/ch-add-table-positions-Korzh.xml"/>
     <include file="db/changelog/logs/ch-add-table-positions-authorities-mapping-Korzh.xml"/>
     <include file="db/changelog/logs/ch-insert-into-positions-authorities-mapping-Korzh.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-users-Korzh.xml"/>
     <include file="db/changelog/logs/ch-insert-into-employee-authority-mapping-Korzh.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tags-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-change-tag-translations-column-name-Mokhnatska.xml"/>
@@ -183,13 +168,10 @@
     <include file="db/changelog/logs/ch-update-values-shopping-list-items-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement_categories-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-users-admin-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-table-user_location-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-add-column-userLocation-Midianyi.xml"/>
-    <include file="db/changelog/logs/ch-drop-column-city-in-users-table-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-update-online-link-column-length-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-add-column-user_actions-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-update-users-set-new-main-email-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-add-table-notification-Mladonov.xml"/>
     <include file="db/changelog/logs/ch-add-new-column-to-habits-is-deleted-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-delete-from-positions_authorities_mapping-authority-for-admin-position-Kizerov.xml"/>
@@ -214,7 +196,6 @@
     <include file="db/changelog/logs/ch-add-values-achievement-categories-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-column-is-shared-with-friends-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-add-new-tag-Holotsvan.xml"/>
-    <include file="/db/changelog/logs/ch-add-user_email_preferences-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tags-Chekhovska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Chekhovska.xml"/>
     <include file="db/changelog/logs/ch-add-table-fact-of-the-day-tags-and-assign-tag-Chekhovska.xml"/>
@@ -238,8 +219,6 @@
     <include file="db/changelog/logs/ch-move-data-from-events_comments-to-comments.xml"/>
     <include file="db/changelog/logs/ch-delete-tables-related-to-event-comments.xml"/>
     <include file="db/changelog/logs/ch-add-table-rating_points-Chekhovska.xml"/>
-    <include file="db/changelog/logs/ch-add-column-user_email_preferences-Herchanivska-8.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-user_email_preferences-Herchanivska-9.xml"/>
     <include file="db/changelog/logs/ch-add-column-status-to-rating_points-table-Chekhovska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-achievement-categories-Kasarab.xml"/>
     <include file="db/changelog/logs/ch-insert-into-rating-points-Kasarab.xml"/>
@@ -258,8 +237,6 @@
     <include file="db/changelog/logs/ch-add-invitee-id-and-inviter-id-to-habit-invite-table.xml"/>
     <include file="/db/changelog/logs/ch-habits-followers-add-created-at-column.xml"/>
     <include file="/db/changelog/logs/ch-habits-add-created-at-column.xml"/>
-    <include file="db/changelog/logs/ch-change-user-profile-columns-type-Haliara.xml"/>
-    <include file="db/changelog/logs/ch-add-default-value-userprofile-confidentiality-Haliara.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-requesters-Pitsyk.xml"/>
     <include file="db/changelog/logs/ch-insert-into-empolyee-authority-Haliara.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-Bulhakova.xml"/>
