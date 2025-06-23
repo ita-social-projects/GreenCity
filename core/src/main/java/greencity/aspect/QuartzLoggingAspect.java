@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.slf4j.MDC;
@@ -47,8 +49,8 @@ public class QuartzLoggingAspect {
         log.debug(METHOD_COMPLETED_EXECUTION, methodName, Arrays.toString(joinPoint.getArgs()));
     }
 
-    @Around("ecoNewsGenerationTriggerMethods()")
-    public Object logAroundEcoNewsGenerationTrigger(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("execution(* greencity.config.QuartzConfig.scheduler(..))")
+    public Object logAroundScheduler(ProceedingJoinPoint joinPoint) throws Throwable {
         String requestId = UUID.randomUUID().toString();
         MDC.put(MDC_REQUEST_ID, requestId);
 
@@ -65,7 +67,8 @@ public class QuartzLoggingAspect {
         try {
             result = joinPoint.proceed();
 
-            if (result instanceof Trigger trigger) {
+            if (result instanceof Scheduler scheduler) {
+                Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey("ecoNewsGenerationTrigger"));
                 Date next = trigger.getNextFireTime();
                 Date previous = trigger.getPreviousFireTime();
 
