@@ -37,7 +37,7 @@
     <changeSet author="Mamchuk Orest" id="Mamchuk-2">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_actions"
                                  constraintName="user_actions_users_id_fk" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
 </databaseChangeLog>

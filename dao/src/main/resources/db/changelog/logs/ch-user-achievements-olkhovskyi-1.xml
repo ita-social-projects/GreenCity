@@ -38,6 +38,6 @@
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_achievements"
                                  constraintName="FK_user_user_achievements" deferrable="false" initiallyDeferred="false"
                                  onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 </databaseChangeLog>

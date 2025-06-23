@@ -30,7 +30,7 @@
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_comment_user"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="events_comment"
@@ -46,7 +46,7 @@
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_events_comment_user"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
 
         <dropForeignKeyConstraint baseTableName="events_comment"

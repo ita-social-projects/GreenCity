@@ -27,7 +27,7 @@
                                  onDelete="RESTRICT"
                                  onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
 </databaseChangeLog>

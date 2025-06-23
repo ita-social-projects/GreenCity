@@ -24,7 +24,7 @@
         <addForeignKeyConstraint baseTableName="eco_news_followers"
                                  baseColumnNames="users_id"
                                  constraintName="fk_eco_news_followers_users_id"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

@@ -13,7 +13,7 @@
                                  constraintName="fk_message_id" referencedTableName="chat_messages"
                                  referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="message_like" baseColumnNames="participant_id" constraintName="fk_participant_id"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
         <addNotNullConstraint tableName="message_like" columnName="message_id" constraintName="message_id_not_null_constraint"/>
         <addNotNullConstraint tableName="message_like" columnName="participant_id" constraintName="participant_id_not_null_constraint"/>

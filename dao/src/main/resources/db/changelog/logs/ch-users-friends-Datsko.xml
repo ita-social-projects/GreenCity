@@ -15,10 +15,10 @@
     <changeSet id="1571227598d316-105" author="Marian Datsko">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_friends"
                                  constraintName="FK_user_users" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
         <addForeignKeyConstraint baseColumnNames="friend_id" baseTableName="users_friends"
                                  constraintName="FK_user_userFriend" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet id="1571227598d316-106" author="Yurii Savchenko">
         <addPrimaryKey columnNames="user_id, friend_id"

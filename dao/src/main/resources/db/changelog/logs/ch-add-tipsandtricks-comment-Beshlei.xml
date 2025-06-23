@@ -43,7 +43,7 @@
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_comment_user"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
@@ -69,7 +69,7 @@
         <addForeignKeyConstraint baseTableName="tipsandtricks_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_tipsandtricks_comment_user"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
 
         <dropForeignKeyConstraint baseTableName="tipsandtricks_comment"
@@ -105,7 +105,7 @@
                                  constraintName="fk_users_liked"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
     <changeSet id="23.09.20.Lehkyi-4_Beshlei-4" author="Mykola Lehkyi">
@@ -125,7 +125,7 @@
                                  constraintName="fk_tipsandtricks_comment_users_liked_users"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
     <changeSet id="Beshlei-5" author="Taras Beshlei">

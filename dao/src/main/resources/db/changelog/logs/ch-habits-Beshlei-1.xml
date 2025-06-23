@@ -38,7 +38,7 @@
                                  constraintName="fk_users_id"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
     <changeSet id="23.09.20.Lehkyi-5_Beshlei-13" author="Mykola Lehkyi">
@@ -58,7 +58,7 @@
                                  constraintName="fk_habits_users_assign_users"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
     <changeSet id="Beshlei-14" author="Taras Beshlei">

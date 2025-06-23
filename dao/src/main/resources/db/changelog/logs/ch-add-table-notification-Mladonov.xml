@@ -18,7 +18,7 @@
             <column name="time" type="TIMESTAMP" />
             <column name="viewed" type="BOOLEAN" />
             <column name="target_user_id" type="BIGINT">
-                <constraints foreignKeyName="FK_notification_target_user" references="users (id)" />
+                <constraints foreignKeyName="FK_notification_target_user" references="greencity_users (id)" />
             </column>
         </createTable>
 
@@ -27,7 +27,7 @@
                 <constraints foreignKeyName="FK_event_action_user_id" references="notifications (id)"/>
             </column>
             <column name="user_id"  type="BIGINT">
-                <constraints foreignKeyName="FK_action_user_notifications" references="users (id)"/>
+                <constraints foreignKeyName="FK_action_user_notifications" references="greencity_users (id)"/>
             </column>
         </createTable>
     </changeSet>

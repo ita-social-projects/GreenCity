@@ -21,6 +21,6 @@
         <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="eco_news"
                                  constraintName="FK_eco_news_users"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 </databaseChangeLog>

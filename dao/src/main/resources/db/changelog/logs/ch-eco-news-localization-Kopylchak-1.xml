@@ -30,10 +30,5 @@
                                  constraintName="FK_ecp_news_eco_news_translations"
                                  onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
                                  referencedTableName="eco_news"/>
-
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="eco_news_translations"
-                                 constraintName="FK_language_eco_news_translations"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="languages"/>
     </changeSet>
 </databaseChangeLog>

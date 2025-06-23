@@ -13,14 +13,14 @@
         <addForeignKeyConstraint
                 baseTableName="habit_invitations"
                 baseColumnNames="inviter_id"
-                referencedTableName="users"
+                referencedTableName="greencity_users"
                 referencedColumnNames="id"
                 constraintName="fk_habit_invitations_inviter_user"/>
 
         <addForeignKeyConstraint
                 baseTableName="habit_invitations"
                 baseColumnNames="invitee_id"
-                referencedTableName="users"
+                referencedTableName="greencity_users"
                 referencedColumnNames="id"
                 constraintName="fk_habit_invitations_invitee_user"/>
     </changeSet>

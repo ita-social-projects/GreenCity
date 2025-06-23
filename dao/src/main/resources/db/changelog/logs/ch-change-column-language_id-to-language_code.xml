@@ -4,12 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="ch-change-column-language_id-to-language_code-0" author="Maksym Kozak">
-        <dropForeignKeyConstraint baseTableName="fact_of_the_day_translations" constraintName="FK_language_fact_of_the_day_translations" />
-        <dropForeignKeyConstraint baseTableName="habit_translation" constraintName="FK_habit_dictionary_translation" />
-        <dropForeignKeyConstraint baseTableName="to_do_list_item_translations" constraintName="FK_language_goal_translations" />
-        <dropForeignKeyConstraint baseTableName="tag_translations" constraintName="FK_tag_translations_languages" />
-    </changeSet>
 
     <changeSet id="ch-change-column-language_id-to-language_code-1" author="Maksym Kozak">
         <modifyDataType tableName="fact_of_the_day_translations" columnName="language_id" newDataType="varchar(5)" />

@@ -170,19 +170,19 @@
         <addForeignKeyConstraint baseColumnNames="orders_id" baseTableName="users_orders" constraintName="fk2lnf5jw8p8q0ytkr8dp0mlx6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="orders"/>
     </changeSet>
     <changeSet author="Oleh B. (generated)" id="1611329116503-35">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="change_of_points_mapping" constraintName="fk77v8r6rgf8obsgkrp9rtriacu" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="change_of_points_mapping" constraintName="fk77v8r6rgf8obsgkrp9rtriacu" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet author="Oleh B. (generated)" id="1611329116503-37">
         <addForeignKeyConstraint baseColumnNames="address_id" baseTableName="ubs_user" constraintName="fkc5cw0lrmhx6mbwqnklkyudhse" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="address"/>
     </changeSet>
     <changeSet author="Oleh B. (generated)" id="1611329116503-39">
-        <addForeignKeyConstraint baseColumnNames="users_id" baseTableName="orders" constraintName="fke6k45xxoin4fylnwg2jkehwjf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="users_id" baseTableName="orders" constraintName="fke6k45xxoin4fylnwg2jkehwjf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet author="Oleh B. (generated)" id="1611329116503-41">
-        <addForeignKeyConstraint baseColumnNames="users_id" baseTableName="ubs_user" constraintName="fkfce5nygk074yf9qm7ofjo7em2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="users_id" baseTableName="ubs_user" constraintName="fkfce5nygk074yf9qm7ofjo7em2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet author="Oleh B. (generated)" id="1611329116503-42">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_orders" constraintName="fkms88pdhtsiuuusjpeij73f6df" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_orders" constraintName="fkms88pdhtsiuuusjpeij73f6df" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet author="Oleh B. (generated)" id="1611329116503-43">
         <addForeignKeyConstraint baseColumnNames="certificate_code" baseTableName="orders" constraintName="fkmu3q308of5895kb6flm0777nj" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="code" referencedTableName="certificate"/>
@@ -191,6 +191,6 @@
         <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_bag_mapping" constraintName="fkpkamv5em3c345mcyo3b6gr50a" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="orders"/>
     </changeSet>
     <changeSet author="Oleh B. (generated)" id="1611329116503-45">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_ubs_users" constraintName="fkrxcrvbobq146pmg2k1qym0lkb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_ubs_users" constraintName="fkrxcrvbobq146pmg2k1qym0lkb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
 </databaseChangeLog>

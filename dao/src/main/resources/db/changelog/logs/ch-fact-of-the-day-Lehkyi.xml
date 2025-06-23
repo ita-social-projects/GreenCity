@@ -16,23 +16,23 @@
         </createTable>
     </changeSet>
 
-   <changeSet id="Lehkyi-6" author="Mykola Lehkyi">
-       <createTable tableName="fact_of_the_day_translations">
-           <column name="id" autoIncrement="true" startWith="100" type="BIGINT">
-               <constraints primaryKey="true"/>
-           </column>
+    <changeSet id="Lehkyi-6" author="Mykola Lehkyi">
+        <createTable tableName="fact_of_the_day_translations">
+            <column name="id" autoIncrement="true" startWith="100" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
 
-           <column name="content" type="varchar(300)"/>
+            <column name="content" type="varchar(300)"/>
 
-           <column name="fact_of_the_day_id" type="BIGINT">
-               <constraints nullable="false"/>
-           </column>
+            <column name="fact_of_the_day_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
 
-           <column name="language_id" type="BIGINT">
-               <constraints nullable="false"/>
-           </column>
-       </createTable>
-   </changeSet>
+            <column name="language_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
     <changeSet id="Lehkyi-7" author="Mykola Lehkyi">
         <addForeignKeyConstraint baseColumnNames="fact_of_the_day_id"
@@ -42,12 +42,6 @@
                                  onUpdate="CASCADE"
                                  referencedColumnNames="id"
                                  referencedTableName="fact_of_the_day"
-        />
-
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="fact_of_the_day_translations"
-                                 constraintName="FK_language_fact_of_the_day_translations"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="languages"
         />
     </changeSet>
 </databaseChangeLog>
