@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.user.UserVO;
 import greencity.service.AIService;
@@ -47,20 +48,19 @@ public class AIController {
 
     @Operation(summary = "Generates news content based on the specified language and query")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
-            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+                    content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @ApiLocale
     @GetMapping("/generate/eco-news")
-    public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) Locale locale,
-        @RequestParam(required = false) String query) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(
-                aiService.getNews(locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage(), query));
+    @ApiLocale
+    public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) @ValidLanguage Locale locale,
+                                                  @RequestParam(required = false) String query) {
+        String news = aiService.getNews(locale.getLanguage(), query);
+        return ResponseEntity.status(HttpStatus.OK).body(news);
     }
 }

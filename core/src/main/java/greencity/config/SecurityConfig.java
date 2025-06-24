@@ -297,7 +297,7 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    "/ai/**")
+                    "/ai/forecast")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -431,7 +431,8 @@ public class SecurityConfig {
                     COMMENTS,
                     COMMENTS + "/{id}",
                     "/user/all",
-                    "/user/roles")
+                    "/user/roles",
+                    "/ai/generate/eco-news")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/place/filter/predicate")

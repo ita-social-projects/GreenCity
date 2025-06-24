@@ -1,17 +1,24 @@
 package greencity.service;
 
-import greencity.constant.OpenAIRequest;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import static greencity.constant.OpenAIRequest.*;
+
 import greencity.dto.habit.DurationHabitDto;
+import static greencity.constant.OpenAIConstants.*;
 import greencity.dto.habit.ShortHabitDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
+import greencity.entity.*;
+import greencity.enums.Language;
+import greencity.exception.exceptions.*;
+import greencity.repository.*;
+import java.util.*;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
 
 @Slf4j
 @Service
@@ -21,6 +28,7 @@ public class AIServiceImpl implements AIService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public String getForecast(Long userId, String language) {
@@ -30,19 +38,160 @@ public class AIServiceImpl implements AIService {
         }
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
             .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class)).toList();
-        return openAIService.makeRequest(language + OpenAIRequest.FORECAST + durationHabitDtos);
+        String forecastResponse = openAIService.makeRequest(Language.fromCode(language), FORECAST.formatted(durationHabitDtos));
+        return sanitizeJsonResponse(forecastResponse);
     }
 
     @Override
     public String getAdvice(Long userId, String language) {
         Habit habit = habitRepo.findRandomHabit();
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
-        return openAIService.makeRequest(language + OpenAIRequest.ADVICE + shortHabitDto);
+        String forecastResponse = openAIService.makeRequest(Language.fromCode(language), ADVICE.formatted(shortHabitDto));
+        return sanitizeJsonResponse(forecastResponse);
     }
 
+    /**
+     * Fetches news content based on a language and query.
+     *
+     * @param language the language in which the news should be fetched.
+     * @param query    the query to filter news content.
+     * @return a string containing the news content.
+     */
     @Override
     public String getNews(String language, String query) {
-        return query == null ? openAIService.makeRequest(language + OpenAIRequest.NEWS_WITHOUT_QUERY)
-            : openAIService.makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query);
+        validateInputs(language);
+        String jsonResponse = openAIService.makeRequest(Language.fromCode(language), createNewsRequest(query));
+
+        return extractContentFromJson(jsonResponse);
+    }
+    /**
+     * Creates a request string for fetching news based on language and query.
+     *
+     * @param query    the query to filter news content.
+     * @return a formatted request string.
+     */
+    private String createNewsRequest(String query) {
+        String baseRequest = query == null
+                ? NEWS_WITHOUT_QUERY
+                : NEWS_BY_QUERY.formatted(query);
+
+        return String.join(" ", baseRequest, MESSAGE_JSON_VALIDATION_HINT);
+    }
+
+    private String extractContentFromJson(String jsonResponse) {
+        int retryCount = 0;
+        while (retryCount < MAX_JSON_PARSE_ATTEMPTS) {
+            try {
+                jsonResponse = sanitizeJsonResponse(jsonResponse);
+
+                if (!isJsonResponseComplete(jsonResponse)) {
+                    if (retryCount == MAX_JSON_PARSE_ATTEMPTS - 1) {
+                        throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
+                                + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX);
+                    }
+                    retryCount++;
+                    continue;
+                }
+
+                return parseContentFromJson(jsonResponse);
+            } catch (IncompleteJsonException e) {
+                if (retryCount == MAX_JSON_PARSE_ATTEMPTS - 1) {
+                    throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
+                            + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX, e);
+                }
+            } catch (Exception e) {
+                throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS, e);
+            }
+            retryCount++;
+        }
+        throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS);
+    }
+
+    /**
+     * Sanitizes a raw JSON response string by removing or replacing unwanted formatting characters.
+     *
+     * @param jsonResponse the raw response to sanitize.
+     * @return cleaned and standardized JSON string.
+     */
+    private String sanitizeJsonResponse(String jsonResponse) {
+        jsonResponse = jsonResponse.trim()
+                .replaceAll(FORMAT_BOLD_PATTERN, TEXT_FORMAT_REPLACEMENT)
+                .replaceAll(FORMAT_ITALIC_PATTERN, TEXT_FORMAT_REPLACEMENT)
+                .replaceAll(FORMAT_JSON_BLOCK_PATTERN, EMPTY_REPLACEMENT)
+                .replaceAll(FORMAT_CODE_BLOCK_PATTERN, EMPTY_REPLACEMENT)
+                .replaceAll(FORMAT_QUOTES_PATTERN, QUOTES_REPLACEMENT);
+        return jsonResponse;
+    }
+    /**
+     * Parses a sanitized JSON string to extract the "content" field.
+     *
+     * @param jsonResponse sanitized JSON string.
+     * @return extracted content string.
+     * @throws JsonResponseParseException if parsing fails or content key is missing.
+     */
+    private String parseContentFromJson(String jsonResponse) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(jsonResponse);
+            if (jsonNode.has(RESPONSE_JSON_CONTENT_KEY)) {
+                return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
+            } else {
+                throw new JsonResponseParseException(ERROR_JSON_KEY_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new JsonResponseParseException(ERROR_JSON_PARSE_FAILURE, e);
+        }
+    }
+    /**
+     * Validates if a given JSON string contains both required "title" and "content" fields.
+     *
+     * @param jsonResponse the JSON response string to check.
+     * @return true if both keys are present and contain textual values, false otherwise.
+     * @throws InvalidJsonFormatException if JSON parsing fails.
+     */
+    private boolean isJsonResponseComplete(String jsonResponse) {
+        try {
+            jsonResponse = jsonResponse.trim();
+            if (!jsonResponse.startsWith(OPENING_CURLY_BRACE) ||
+                    !jsonResponse.endsWith(CLOSING_CURLY_BRACE))
+            {
+                jsonResponse = OPENING_CURLY_BRACE + jsonResponse + CLOSING_CURLY_BRACE;
+            }
+            JsonNode jsonNode = objectMapper.readTree(jsonResponse);
+
+            boolean hasTitle = jsonNode.path(FORMAT_TITLE_KEY).isTextual();
+            boolean hasContent = jsonNode.path(RESPONSE_JSON_CONTENT_KEY).isTextual();
+
+            return hasTitle && hasContent;
+        } catch (JsonParseException e) {
+            throw new InvalidJsonFormatException(ERROR_JSON_INVALID_FORMAT, e);
+        } catch (Exception e) {
+            throw new InvalidJsonFormatException(ERROR_JSON_VALIDATION_FAILURE, e);
+        }
+    }
+
+    /**
+     * Validates the input parameters to ensure they are not null or invalid.
+     *
+     * @param inputs the input parameters to validate.
+     * @throws InvalidInputException if any input is null, empty, or invalid.
+     */
+    private void validateInputs(Object... inputs) {
+        for (Object input : inputs) {
+            switch (input) {
+                case null -> throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
+                case String s -> {
+                    if (s.isBlank()) {
+                        throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
+                    }
+                }
+                case Long l -> {
+                    if (l <= 0) {
+                        throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
+                    }
+                }
+                default -> throw new InvalidInputException(ERROR_UNSUPPORTED_INPUT_TYPE + input.getClass().getName());
+            }
+        }
     }
 }
