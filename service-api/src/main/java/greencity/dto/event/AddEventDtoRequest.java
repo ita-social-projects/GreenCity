@@ -1,19 +1,16 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import greencity.annotations.DecodedSize;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import lombok.NoArgsConstructor;
+import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Builder;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,16 +19,22 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 public class AddEventDtoRequest {
-    @NotBlank
-    @DecodedSize(min = 1, max = 70)
+    /**
+     * 1-70 chars. No leading/trailing whitespace. No consecutive spaces.
+     */
+    @Pattern(
+        regexp = "^[^\\s](?:[^ ]| (?! )){0,68}[^\\s]?$",
+        message = "Title must be between 1 and 70 characters, must not be blank, "
+            + "contain leading/trailing spaces, or consecutive spaces.")
     private String title;
 
-    @NotBlank
-    @Size(min = 10, max = 63206)
+    /**
+     * 10-63206 chars. No leading/trailing whitespace. No consecutive spaces.
+     */
     @Pattern(
-        regexp = "^(?!\\S*\\s{2,})\\S.{8,}\\S$",
-        message = "Description must be at least 10 characters long (excluding leading / trailing spaces) "
-            + "and must not contain consecutive spaces.")
+        regexp = "^[^\\s][^\\s](?:[^ ]| (?! )){6,63202}[^\\s][^\\s]$",
+        message = "Description must be between 10 and 63206 characters, must not be blank, "
+            + "contain leading/trailing spaces, or consecutive spaces.")
     private String description;
 
     @NotEmpty

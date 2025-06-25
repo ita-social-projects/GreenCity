@@ -52,6 +52,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
@@ -101,10 +102,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Map<String, String> jsonHttpClientErrorExceptionToMap(
         HttpClientErrorException ex) throws JsonProcessingException {
-        TypeReference<Map<String, String>> responseType = new TypeReference<>() {
-        };
+        String exceptionBody = ex.getResponseBodyAsString();
         Map<String, String> httpClientResponseBody;
-        httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), responseType);
+        if (exceptionBody.startsWith("[")) {
+            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(),
+                new TypeReference<List<Map<String, String>>>() {
+                })
+                .get(0);
+        } else {
+            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), new TypeReference<>() {
+            });
+        }
 
         return httpClientResponseBody;
     }
@@ -529,8 +537,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
-        return new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
-            ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)));
+        Map<String, Object> attributes = new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
+            ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE,
+                ErrorAttributeOptions.Include.STACK_TRACE)));
+        if (webRequest instanceof ServletWebRequest servletWebRequest) {
+            attributes.put("path", servletWebRequest.getRequest().getRequestURI());
+        }
+        return attributes;
     }
 
     /**
