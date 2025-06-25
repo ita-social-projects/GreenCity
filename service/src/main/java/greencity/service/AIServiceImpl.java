@@ -76,11 +76,6 @@ public class AIServiceImpl implements AIService {
         return extractContentFromJson(jsonResponse);
     }
 
-    @Override
-    public void generateAndSaveEcoNews(String language) {
-
-    }
-
     /**
      * Generates AI-based eco news content, performs grammar correction,
      * and saves the final result to the database.
