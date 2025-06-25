@@ -31,4 +31,6 @@ public interface AIService {
      * @return The generated news as a string in the specified language.
      */
     String getNews(String language, String query);
+    void generateAndSaveEcoNews(String language);
+
 }
