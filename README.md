@@ -125,7 +125,7 @@ For example, `UPDATE users SET role = 1 WHERE id = <your_user_id>;`.
 
 ### Additional note for adding new endpoints
 
-If you add a new endpoint, ensure that it is also added to the configuration file (`application.property`) for proper functioning.
+If you add a new endpoint, ensure that it is also added to the configuration file ("application.property") for proper functioning.
 
 ### 4.5. Connect with front-end
 
