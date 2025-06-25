@@ -64,6 +64,12 @@ public class AIServiceImpl implements AIService {
 
         return extractContentFromJson(jsonResponse);
     }
+
+    @Override
+    public void generateAndSaveEcoNews(String language) {
+
+    }
+
     /**
      * Creates a request string for fetching news based on language and query.
      *
