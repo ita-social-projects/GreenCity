@@ -43,7 +43,7 @@
         <addForeignKeyConstraint baseTableName="econews_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_comment_user"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="econews_comment"
@@ -69,7 +69,7 @@
         <addForeignKeyConstraint baseTableName="econews_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_econews_comment_user"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
 
         <dropForeignKeyConstraint baseTableName="econews_comment"
@@ -106,7 +106,7 @@
                                  constraintName="fk_users_liked"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
     <changeSet id="23.09.20.Lehkyi-3_Patsula-8" author="Mykola Lehkyi">
@@ -126,7 +126,7 @@
                                  constraintName="fk_econews_comment_users_liked_users"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
     <changeSet id="Patsula-10" author="Yurii Patsula">

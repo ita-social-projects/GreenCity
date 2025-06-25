@@ -46,13 +46,6 @@
                                  referencedColumnNames="id"
                                  referencedTableName="tips_and_tricks"
         />
-
-        <addForeignKeyConstraint baseColumnNames="language_id"
-                                 baseTableName="title_translations"
-                                 constraintName="FK_language_title_translations"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="languages"
-        />
     </changeSet>
     <changeSet id="Petryshak-4" author="Olena Petryshak">
         <addForeignKeyConstraint baseColumnNames="tips_and_tricks_id"
@@ -62,13 +55,6 @@
                                  onUpdate="CASCADE"
                                  referencedColumnNames="id"
                                  referencedTableName="tips_and_tricks"
-        />
-
-        <addForeignKeyConstraint baseColumnNames="language_id"
-                                 baseTableName="text_translations"
-                                 constraintName="FK_language_text_translations"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="languages"
         />
     </changeSet>
     <changeSet id="Petryshak-5" author="Olena Petryshak">

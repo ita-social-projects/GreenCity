@@ -35,7 +35,7 @@
         <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="chat_messages"
                                  constraintName="fk_sender_users_user_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
         <addForeignKeyConstraint baseColumnNames="room_id" baseTableName="chat_messages"
                                  constraintName="fk_messages_room_chat_rooms_id" deferrable="false"
                                  initiallyDeferred="false"
@@ -63,7 +63,7 @@
         <addForeignKeyConstraint baseColumnNames="participant_id" baseTableName="chat_rooms_participants"
                                  constraintName="fk_participant_users_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
         <addForeignKeyConstraint baseColumnNames="room_id" baseTableName="chat_rooms_participants"
                                  constraintName="fk_room_chat_rooms_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"

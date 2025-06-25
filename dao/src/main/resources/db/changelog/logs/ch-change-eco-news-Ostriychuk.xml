@@ -13,7 +13,4 @@
                               columnName="text"
                               tableName="eco_news"/>
     </changeSet>
-    <changeSet id="olesyaostriychuk7" author="Olesya Ostriychuk">
-        <modifyDataType tableName="users" columnName="name" newDataType="varchar(20)"/>
-    </changeSet>
 </databaseChangeLog>

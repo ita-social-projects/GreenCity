@@ -98,7 +98,7 @@
         <addForeignKeyConstraint
                 baseTableName="comments"
                 baseColumnNames="user_id"
-                referencedTableName="users"
+                referencedTableName="greencity_users"
                 referencedColumnNames="id"
                 onDelete="RESTRICT"
                 onUpdate="RESTRICT"

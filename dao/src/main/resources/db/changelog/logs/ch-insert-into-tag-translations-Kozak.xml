@@ -16,12 +16,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="id">3</column>
-            <column name="name">Новости</column>
-            <column name="tag_id">1</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="id">4</column>
             <column name="name">Події</column>
             <column name="tag_id">2</column>
@@ -32,12 +26,6 @@
             <column name="name">Events</column>
             <column name="tag_id">2</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="id">6</column>
-            <column name="name">События</column>
-            <column name="tag_id">2</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="tag_translations">
             <column name="id">7</column>
@@ -52,12 +40,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="id">9</column>
-            <column name="name">Курсы</column>
-            <column name="tag_id">3</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="id">10</column>
             <column name="name">Ініціативи</column>
             <column name="tag_id">4</column>
@@ -68,12 +50,6 @@
             <column name="name">Initiatives</column>
             <column name="tag_id">4</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="id">12</column>
-            <column name="name">Инициативы</column>
-            <column name="tag_id">4</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="tag_translations">
             <column name="id">13</column>
@@ -88,12 +64,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="id">15</column>
-            <column name="name">Реклама</column>
-            <column name="tag_id">5</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="id">16</column>
             <column name="name">Лайфхаки</column>
             <column name="tag_id">6</column>
@@ -104,12 +74,6 @@
             <column name="name">Lifehacks</column>
             <column name="tag_id">6</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="id">18</column>
-            <column name="name">Лайфхаки</column>
-            <column name="tag_id">6</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="tag_translations">
             <column name="id">19</column>
@@ -124,12 +88,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="id">21</column>
-            <column name="name">Зеленое мышление</column>
-            <column name="tag_id">7</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="id">22</column>
             <column name="name">Нульові відходи</column>
             <column name="tag_id">8</column>
@@ -140,12 +98,6 @@
             <column name="name">Zero waste</column>
             <column name="tag_id">8</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="id">24</column>
-            <column name="name">Нулевые отходи</column>
-            <column name="tag_id">8</column>
-            <column name="language_id">3</column>
         </insert>
         <insert tableName="tag_translations">
             <column name="id">25</column>
@@ -160,12 +112,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="id">27</column>
-            <column name="name">3 р'с</column>
-            <column name="tag_id">9</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="id">28</column>
             <column name="name">Еко-місто</column>
             <column name="tag_id">10</column>
@@ -178,12 +124,6 @@
             <column name="language_id">2</column>
         </insert>
         <insert tableName="tag_translations">
-            <column name="id">30</column>
-            <column name="name">Эко-город</column>
-            <column name="tag_id">10</column>
-            <column name="language_id">3</column>
-        </insert>
-        <insert tableName="tag_translations">
             <column name="id">31</column>
             <column name="name">Тестування</column>
             <column name="tag_id">11</column>
@@ -194,12 +134,6 @@
             <column name="name">Testing</column>
             <column name="tag_id">11</column>
             <column name="language_id">2</column>
-        </insert>
-        <insert tableName="tag_translations">
-            <column name="id">33</column>
-            <column name="name">Тестирование</column>
-            <column name="tag_id">11</column>
-            <column name="language_id">3</column>
         </insert>
     </changeSet>
 </databaseChangeLog>

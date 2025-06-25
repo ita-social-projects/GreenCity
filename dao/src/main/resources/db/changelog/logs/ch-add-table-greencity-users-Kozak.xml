@@ -21,16 +21,10 @@
             <column name="event_organizer_rating" type="DOUBLE" />
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="users"
+        <addForeignKeyConstraint baseTableName="greencity_users"
                                  baseColumnNames="user_location"
                                  constraintName="fk_greencity_user_location"
                                  referencedTableName="user_location"
                                  referencedColumnNames="id"/>
-    </changeSet>
-    <changeSet id="fill-greencity-user-table" author="Maksym Kozak">
-        <sql>
-            INSERT INTO greencity_users
-            SELECT id, name, profile_picture, user_credo, rating, user_location, language_id, event_organizer_rating FROM users;
-        </sql>
     </changeSet>
 </databaseChangeLog>

@@ -28,7 +28,7 @@
                                  onDelete="RESTRICT"
                                  onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 
     <changeSet id="Spodaryk-11" author="Oksana Spodaryk">

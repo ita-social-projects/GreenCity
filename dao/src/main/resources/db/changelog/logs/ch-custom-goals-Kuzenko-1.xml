@@ -26,6 +26,6 @@
                                  baseTableName="custom_goals"
                                  constraintName="FK_users"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 </databaseChangeLog>

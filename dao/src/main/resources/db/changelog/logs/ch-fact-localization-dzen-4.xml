@@ -25,11 +25,6 @@
     </changeSet>
 
     <changeSet author="Vitaliy Dzen" id="4651326844-10">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="fact_translations"
-                                 constraintName="FK_fact_translations_language"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="languages"/>
-
         <addForeignKeyConstraint baseColumnNames="habit_fact_id" baseTableName="fact_translations"
                                  constraintName="FK_fact_translation_fact"
                                  onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"

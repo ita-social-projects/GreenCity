@@ -24,7 +24,7 @@
         <addForeignKeyConstraint baseTableName="habits_followers"
                                  baseColumnNames="user_id"
                                  constraintName="fk_habits_followers_user_id"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
