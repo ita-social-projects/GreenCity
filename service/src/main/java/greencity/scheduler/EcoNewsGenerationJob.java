@@ -4,6 +4,7 @@ import greencity.service.AIService;
 import lombok.RequiredArgsConstructor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,12 +12,15 @@ import org.springframework.stereotype.Component;
 public class EcoNewsGenerationJob implements Job {
     private final AIService aiService;
     private boolean hasExecuted = false;
+    @Value("${spring.quartz.properties.generation.languages}")
+    private String[] generatedLanguages;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         if (!hasExecuted) {
-            String language = "uk";
-            aiService.generateAndSaveEcoNews(language);
+            for (String language : generatedLanguages) {
+                aiService.generateAndSaveEcoNews(language);
+            }
             hasExecuted = true;
         }
     }

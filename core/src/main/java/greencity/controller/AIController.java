@@ -38,12 +38,10 @@ public class AIController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @ApiLocale
     @GetMapping("/forecast")
-    public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) Locale locale) {
+    public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.getForecast(userVO.getId(), locale.getDisplayLanguage()));
+            .body(aiService.getForecast(userVO.getId(), userVO.getLanguageVO().getCode()));
     }
 
     @Operation(summary = "Generates news content based on the specified language and query")
@@ -57,10 +55,9 @@ public class AIController {
                     content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/generate/eco-news")
-    @ApiLocale
-    public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) @ValidLanguage Locale locale,
+    public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) @CurrentUser UserVO userVO,
                                                   @RequestParam(required = false) String query) {
-        String news = aiService.getNews(locale.getLanguage(), query);
+        String news = aiService.getNews(userVO.getLanguageVO().getCode(), query);
         return ResponseEntity.status(HttpStatus.OK).body(news);
     }
 }
