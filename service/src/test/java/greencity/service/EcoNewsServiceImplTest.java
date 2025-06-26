@@ -149,7 +149,7 @@ class EcoNewsServiceImplTest {
     @Test
     void save() throws MalformedURLException {
         MultipartFile image = ModelUtils.getFile();
-        LanguageDTO dto = new LanguageDTO(1L, "en");
+        LanguageDTO dto = new LanguageDTO(1L, "en", "English");
         List<Tag> tags = ModelUtils.getTags();
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
