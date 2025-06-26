@@ -33,6 +33,7 @@ public class OpenAIConstants {
     public static final String ERROR_INVALID_OPENAI_RESPONSE = "Received an invalid response from OpenAI.";
     public static final String ERROR_NO_OPENAI_RESPONSE = "No response received from OpenAI.";
     public static final String ERROR_JSON_INVALID_FORMAT = "Invalid JSON format in OpenAI response.";
+    public static final String ERROR_INVALID_TITLE_OR_CONTENT = "JSON format is invalid: missing 'title' or 'content'.";
     public static final String ERROR_JSON_PARSE_FAILURE = "Failed to parse OpenAI JSON response: {}";
     public static final String ERROR_INPUT_CANNOT_BE_NULL = "Input value cannot be null.";
     public static final String ERROR_STRING_CANNOT_BE_EMPTY = "String input cannot be blank.";
@@ -43,6 +44,8 @@ public class OpenAIConstants {
     public static final String ERROR_USER_HAS_NO_HABITS = "User does not have any habits.";
     public static final String ERROR_MAX_ATTEMPTS_REACHED = "Maximum number of attempts reached.";
     public static final String ERROR_ATTEMPTING_STOPPED = "Critical error - Attempting stopped.";
+    public static final String ERROR_ECO_NEWS_CREATION_FAILED = "Eco-news creation failed.";
+    public static final String OPEN_AI_REQUEST_FAILURE = "OpenAI request failure: {}";
 
     public static final Integer MAX_REQUEST_ATTEMPTS = 3;
     public static final String MESSAGE_CURRENT_ATTEMPT = "Current attempt: {}";

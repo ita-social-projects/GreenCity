@@ -138,6 +138,7 @@ public class AIServiceImpl implements AIService {
                 log.error(ERROR_JSON_PARSE_FAILURE, e.getMessage());
                 log.error(MESSAGE_CURRENT_ATTEMPT, i);
             } catch (OpenAIRequestException e) {
+                log.error(OPEN_AI_REQUEST_FAILURE, e.getMessage());
                 if (e.getMessage().equals(ERROR_NO_OPENAI_RESPONSE)) {
                     throw e;
                 }
@@ -185,15 +186,18 @@ public class AIServiceImpl implements AIService {
             boolean hasContent = jsonNode.path(RESPONSE_JSON_CONTENT_KEY).isTextual();
 
             if (!hasTitle || !hasContent) {
-                throw new JsonResponseParseException(ERROR_JSON_INVALID_FORMAT);
+                log.error(ERROR_INVALID_TITLE_OR_CONTENT);
+                throw new JsonResponseParseException(ERROR_INVALID_TITLE_OR_CONTENT);
             }
 
             if (jsonNode.has(RESPONSE_JSON_CONTENT_KEY)) {
                 return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
             } else {
+                log.error(ERROR_JSON_KEY_NOT_FOUND);
                 throw new JsonResponseParseException(ERROR_JSON_KEY_NOT_FOUND);
             }
         } catch (JsonParseException | JsonProcessingException e) {
+            log.error(ERROR_JSON_INVALID_FORMAT);
             throw new JsonResponseParseException(ERROR_JSON_INVALID_FORMAT, e);
         }
     }
@@ -213,6 +217,7 @@ public class AIServiceImpl implements AIService {
         List<Tag> tags = tagsRepo.findTagsByType(TagType.ECO_NEWS);
 
         if (tags.isEmpty()) {
+            log.error(ERROR_NO_TAGS_FOUND);
             throw new EcoNewsCreationException(ERROR_NO_TAGS_FOUND);
         }
 
@@ -323,6 +328,7 @@ public class AIServiceImpl implements AIService {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readTree(sanitizedResponse);
         } catch (Exception e) {
+            log.error(ERROR_ECO_NEWS_CREATION_FAILED);
             throw new EcoNewsCreationException(ERROR_JSON_INVALID_FORMAT + sanitizedResponse, e);
         }
     }
