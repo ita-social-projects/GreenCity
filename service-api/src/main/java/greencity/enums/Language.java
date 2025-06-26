@@ -1,6 +1,8 @@
 package greencity.enums;
 
 import static greencity.constant.LanguageServiceConstants.*;
+
+import greencity.exception.exceptions.InvalidInputException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +46,9 @@ public enum Language {
      * @return the corresponding {@link Language} enum value, or {@link Language#ENGLISH} if the code is not recognized.
      */
     public static Language fromCode(String code) {
+        if (code == null) {
+            throw new InvalidInputException("Code cannot be null");
+        }
         for (Language language : values()) {
             if (language.code.equalsIgnoreCase(code)) {
                 return language;

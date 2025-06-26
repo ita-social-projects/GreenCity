@@ -70,7 +70,6 @@ public class AIServiceImpl implements AIService {
      */
     @Override
     public String getNews(String language, String query) {
-        validateInputs(language);
         String jsonResponse = openAIService.makeRequest(Language.fromCode(language), createNewsRequest(query));
 
         return extractContentFromJson(jsonResponse);
@@ -93,8 +92,6 @@ public class AIServiceImpl implements AIService {
      */
     @Override
     public void generateAndSaveEcoNews(String language) {
-        validateInputs(language);
-
         String jsonResponse = openAIService.makeRequest(Language.fromCode(language), NEWS_WITHOUT_QUERY);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
 
@@ -206,30 +203,6 @@ public class AIServiceImpl implements AIService {
         }
     }
 
-    /**
-     * Validates the input parameters to ensure they are not null or invalid.
-     *
-     * @param inputs the input parameters to validate.
-     * @throws InvalidInputException if any input is null, empty, or invalid.
-     */
-    private void validateInputs(Object... inputs) {
-        for (Object input : inputs) {
-            switch (input) {
-                case null -> throw new InvalidInputException(ERROR_INPUT_CANNOT_BE_NULL);
-                case String s -> {
-                    if (s.isBlank()) {
-                        throw new InvalidInputException(ERROR_STRING_CANNOT_BE_EMPTY);
-                    }
-                }
-                case Long l -> {
-                    if (l <= 0) {
-                        throw new InvalidInputException(ERROR_LONG_VALUE_MUST_BE_POSITIVE);
-                    }
-                }
-                default -> throw new InvalidInputException(ERROR_UNSUPPORTED_INPUT_TYPE + input.getClass().getName());
-            }
-        }
-    }
 
     /**
      * Constructs an {@link EcoNews} instance from a raw JSON response.

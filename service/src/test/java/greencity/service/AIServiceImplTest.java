@@ -1,43 +1,62 @@
 package greencity.service;
 
-import greencity.constant.OpenAIRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitTranslation;
+import greencity.entity.*;
 import greencity.enums.HabitAssignStatus;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
+import greencity.enums.Language;
+import greencity.enums.TagType;
+import greencity.exception.exceptions.*;
+import greencity.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
 import static greencity.ModelUtils.getHabitAssign;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.times;
+import static greencity.constant.OpenAIConstants.*;
+import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {
+
+    @InjectMocks
+    private AIServiceImpl aiService;
+
     @Mock
     private OpenAIService openAIService;
+
+    @Mock
+    private EcoNewsRepo ecoNewsRepo;
+
     @Mock
     private HabitAssignRepo habitAssignRepo;
+
+    @Mock
+    private TagsRepo tagsRepo;
+
+    @Mock
+    private UserRepo userRepo;
+
     @Mock
     private HabitRepo habitRepo;
+
     @Mock
     private ModelMapper modelMapper;
-    @InjectMocks
-    private AIServiceImpl aiServiceImpl;
+    @Mock
+    private ObjectMapper objectMapper;
+
     private HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);
     private DurationHabitDto durationHabitDto = new DurationHabitDto("", 0L);
     private Long id = 1L;
@@ -46,112 +65,187 @@ class AIServiceImplTest {
     private final HabitTranslation habitTranslation = HabitTranslation.builder().name(habitTranslationName).build();
 
     private final Habit habit = Habit.builder()
-        .id(id)
-        .habitTranslations(Collections.singletonList(habitTranslation))
-        .build();
+            .id(id)
+            .habitTranslations(Collections.singletonList(habitTranslation))
+            .build();
     private final ShortHabitDto shortHabitDto = new ShortHabitDto(id, habitTranslationName);
 
     @Test
-    void getForecastReturnsResponseFromOpenAIServiceTest() {
-        when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
-        when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
-        when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
-                .thenReturn("Forecast Response");
+    void getForecast_whenHabitAssignsAreEmpty_shouldCallGetAdvice() {
 
-        String result = aiServiceImpl.getForecast(id, language);
-
-        assertThat(result).isEqualTo("Forecast Response");
-        verify(habitAssignRepo).findAllByUserId(id);
-        verify(modelMapper).map(habitAssign, DurationHabitDto.class);
-        verify(openAIService).makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto));
-    }
-
-    @Test
-    void getForecastThrowsExceptionWhenOpenAIServiceFailsTest() {
-        when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
-        when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
-        when(openAIService.makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto)))
-                .thenThrow(new RuntimeException("OpenAI Service Failed"));
-
-        assertThrows(RuntimeException.class, () -> aiServiceImpl.getForecast(id, language));
-
-        verify(habitAssignRepo).findAllByUserId(id);
-        verify(modelMapper).map(habitAssign, DurationHabitDto.class);
-        verify(openAIService).makeRequest("en" + OpenAIRequest.FORECAST + List.of(durationHabitDto));
-    }
-
-    @Test
-    void getForecastCallsGetAdviceWhenHabitAssignsIsEmptyTest() {
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(Collections.emptyList());
+
+
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
-        when(openAIService.makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto))
-                .thenReturn("Advice Response");
+        when(openAIService.makeRequest(any(), anyString())).thenReturn("{\"content\": \"advice\"}");
 
-        String result = aiServiceImpl.getForecast(id, language);
+        String result = aiService.getForecast(id, language);
 
-        assertThat(result).isEqualTo("Advice Response");
-        verify(habitAssignRepo).findAllByUserId(id);
+        assertTrue(result.contains("advice"));
         verify(habitRepo).findRandomHabit();
-        verify(modelMapper).map(habit, ShortHabitDto.class);
-        verify(openAIService).makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto);
+        verify(openAIService).makeRequest(any(), contains("advice"));
     }
 
     @Test
-    void getAdviceReturnsResponseFromOpenAIServiceTest() {
+    void getForecast_whenHabitsExist_shouldReturnSanitizedForecast() {
+        when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
+        when(openAIService.makeRequest(any(), anyString())).thenReturn("{\"content\": \"forecast \\n text\"}");
+
+        String result = aiService.getForecast(id, language);
+
+        assertTrue(result.contains("forecast"));
+        verify(openAIService).makeRequest(any(), anyString());
+    }
+    @Test
+    void getAdvice_shouldReturnSanitizedResponse() {
+
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
-        when(openAIService.makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto))
-                .thenReturn("Advice Response");
+        when(openAIService.makeRequest(any(), anyString())).thenReturn("{\"content\": \"some advice\\n\"}");
 
-        String result = aiServiceImpl.getAdvice(id, language);
+        String result = aiService.getAdvice(id, language);
 
-        assertThat(result).isEqualTo("Advice Response");
+        assertTrue(result.contains("some advice"));
         verify(habitRepo).findRandomHabit();
         verify(modelMapper).map(habit, ShortHabitDto.class);
-        verify(openAIService).makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto);
+        verify(openAIService).makeRequest(any(), anyString());
+    }
+    @Test
+    void getNews_validJson_shouldReturnParsedContent() throws Exception {
+        String query = "climate";
+        String jsonResponse = "{\"title\":\"Test title\",\"content\":\"Test content\"}";
+
+        when(openAIService.makeRequest(any(), anyString())).thenReturn(jsonResponse);
+        when(objectMapper.readTree(anyString())).thenReturn(
+                new ObjectMapper().readTree(jsonResponse)
+        );
+
+        String result = aiService.getNews("en", query);
+
+        assertEquals("Test content", result);
+        verify(openAIService).makeRequest(eq(Language.ENGLISH), contains(query));
+    }
+
+
+    @Test
+    void getNews_jsonWithoutContent_shouldThrowJsonParseException() throws Exception {
+        String jsonResponse = "{\"title\":\"Only title\"}";
+
+        when(openAIService.makeRequest(any(), anyString())).thenReturn(jsonResponse);
+        when(objectMapper.readTree(anyString())).thenReturn(
+                new ObjectMapper().readTree(jsonResponse)
+        );
+
+        assertThrows(JsonResponseParseException.class,
+                () -> aiService.getNews("en", "anything"));
     }
 
     @Test
-    void getAdviceThrowsExceptionWhenOpenAIServiceFailsTest() {
-        when(habitRepo.findRandomHabit()).thenReturn(habit);
-        when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
-        when(openAIService.makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto))
-                .thenThrow(new RuntimeException("OpenAI Service Failed"));
+    void generateAndSaveEcoNews_validLanguage_shouldCallMakeRequestAndSave() {
+        String language = "en";
+        String jsonResponse = "{\"title\":\"Some title\",\"content\":\"Some content\"}";
 
-        assertThrows(RuntimeException.class, () -> aiServiceImpl.getAdvice(id, language));
+        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(jsonResponse);
 
-        verify(habitRepo).findRandomHabit();
-        verify(modelMapper).map(habit, ShortHabitDto.class);
-        verify(openAIService).makeRequest("en" + OpenAIRequest.ADVICE + shortHabitDto);
+        User mockUser = new User();
+        Tag mockTag = new Tag();
+
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(mockUser));
+        when(tagsRepo.findTagsByType(any())).thenReturn(List.of(mockTag));
+
+        aiService.generateAndSaveEcoNews(language);
+
+        verify(openAIService).makeRequest(Language.fromCode(language), NEWS_WITHOUT_QUERY);
+        verify(ecoNewsRepo).save(any(EcoNews.class));
     }
 
     @Test
-    void getNewsShouldReturnWithoutQueryWhenQueryIsNullTest() {
-        String expectedResponse = "Mocked Response";
-        when(openAIService.makeRequest(language + OpenAIRequest.NEWS_WITHOUT_QUERY))
-            .thenReturn(expectedResponse);
+    void generateAndSaveEcoNews_noTagsFound_shouldThrowEcoNewsCreationException() {
+        String language = "en";
+        String json = "{\"title\":\"Some Title\",\"content\":\"Some content\"}";
 
-        String actualResponse = aiServiceImpl.getNews(language, null);
+        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(json);
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(new User()));
+        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
 
-        assertEquals(expectedResponse, actualResponse);
-        verify(openAIService, times(1))
-            .makeRequest(language + OpenAIRequest.NEWS_WITHOUT_QUERY);
-        verifyNoMoreInteractions(openAIService);
+        assertThrows(EcoNewsCreationException.class, () -> aiService.generateAndSaveEcoNews(language));
+
+        verify(ecoNewsRepo, never()).save(any());
     }
 
     @Test
-    void getNewsShouldReturnWithQueryWhenQueryIsNotNullTest() {
-        String query = "climate change";
-        String expectedResponse = "Mocked Response";
-        when(openAIService.makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query))
-            .thenReturn(expectedResponse);
+    void generateAndSaveEcoNews_titlePrefix_shouldUseGetJsonNodesAndSaveEcoNews() {
+        String language = "en";
+        String jsonResponse = "Title: Save the Planet\nThis is eco content generated by AI";
 
-        String actualResponse = aiServiceImpl.getNews(language, query);
+        User mockUser = new User();
+        Tag mockTag = new Tag();
 
-        assertEquals(expectedResponse, actualResponse);
-        verify(openAIService, times(1))
-            .makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query);
-        verifyNoMoreInteractions(openAIService);
+        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(jsonResponse);
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(mockUser));
+        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(mockTag));
+
+        aiService.generateAndSaveEcoNews(language);
+
+        ArgumentCaptor<EcoNews> captor = ArgumentCaptor.forClass(EcoNews.class);
+        verify(ecoNewsRepo).save(captor.capture());
+
+        EcoNews saved = captor.getValue();
+        assertEquals("Save the Planet", saved.getTitle());
+        assertEquals("This is eco content generated by AI", saved.getText());
+        assertEquals(mockUser, saved.getAuthor());
+        assertEquals(List.of(mockTag), saved.getTags());
     }
+
+    @Test
+    void generateAndSaveEcoNews_shouldCreateAiUserWhenMissing() {
+        String language = "en";
+        String jsonResponse = "Title: Eco AI\nGenerated eco content";
+
+        Tag mockTag = new Tag();
+        User savedUser = new User();
+
+        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(jsonResponse);
+        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.save(any(User.class))).thenReturn(savedUser);
+        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(mockTag));
+
+        aiService.generateAndSaveEcoNews(language);
+
+        verify(userRepo).save(argThat(user -> AI_USER_EMAIL.equals(user.getEmail())));
+        verify(ecoNewsRepo).save(any(EcoNews.class));
+    }
+
+    @Test
+    void getNews_withMalformedJson_shouldThrowJsonResponseParseException_withInvalidJsonFormatCause() {
+        String invalidJson = "{ invalid json";
+
+        when(openAIService.makeRequest(any(), any())).thenReturn(invalidJson);
+
+        JsonResponseParseException ex = assertThrows(
+                JsonResponseParseException.class,
+                () -> aiService.getNews("en", "query")
+        );
+
+        assertInstanceOf(InvalidJsonFormatException.class, ex.getCause());
+    }
+
+    @Test
+    void getNews_withNullJson_shouldThrowJsonResponseParseException_withNullPointerCause() {
+        when(openAIService.makeRequest(any(), any())).thenReturn(null);
+
+        JsonResponseParseException ex = assertThrows(
+                JsonResponseParseException.class,
+                () -> aiService.getNews("en", "query")
+        );
+
+        assertInstanceOf(NullPointerException.class, ex.getCause());
+    }
+
+
+
+
+
 }
