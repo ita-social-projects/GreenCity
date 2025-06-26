@@ -13,6 +13,7 @@ import static greencity.constant.OpenAIConstants.*;
 
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.entity.*;
 import greencity.entity.Language;
 import greencity.enums.*;
@@ -72,8 +73,10 @@ public class AIServiceImpl implements AIService {
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
                 .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class)).toList();
         LanguageDTO languageDTO = languageService.findByCode(language);
-        String forecastResponse = openAIService.makeRequest(languageDTO, FORECAST.formatted(durationHabitDtos));
-        return sanitizeJsonResponse(forecastResponse);
+        OpenAIResponseDTO forecastResponse = openAIService.makeRequest(languageDTO,
+            FORECAST.formatted(durationHabitDtos),
+            OpenAIResponseFormat.TEXT);
+        return sanitizeJsonResponse(forecastResponse.getContent());
     }
 
     /**
@@ -99,8 +102,10 @@ public class AIServiceImpl implements AIService {
         Habit habit = habitRepo.findRandomHabit();
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
         LanguageDTO languageDTO = languageService.findByCode(language);
-        String forecastResponse = openAIService.makeRequest(languageDTO, ADVICE.formatted(shortHabitDto));
-        return sanitizeJsonResponse(forecastResponse);
+        OpenAIResponseDTO forecastResponse = openAIService.makeRequest(languageDTO,
+            ADVICE.formatted(shortHabitDto),
+            OpenAIResponseFormat.TEXT);
+        return sanitizeJsonResponse(forecastResponse.getContent());
     }
 
     /**
@@ -140,8 +145,9 @@ public class AIServiceImpl implements AIService {
     @Override
     public void generateAndSaveEcoNews(String language) {
         LanguageDTO languageDTO = languageService.findByCode(language);
-        String jsonResponse = openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY);
-        EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
+        OpenAIResponseDTO jsonResponse = openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY,
+            OpenAIResponseFormat.JSON_SCHEMA);
+        EcoNews ecoNews = createEcoNewsInstance(jsonResponse.getContent());
 
         ecoNewsRepo.save(ecoNews);
     }
@@ -186,8 +192,10 @@ public class AIServiceImpl implements AIService {
 
         for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
             try {
-                String response = openAIService.makeRequest(languageDTO, createNewsRequest(query));
-                String jsonResponse = sanitizeJsonResponse(response);
+                OpenAIResponseDTO response = openAIService.makeRequest(languageDTO,
+                    createNewsRequest(query),
+                    OpenAIResponseFormat.JSON_SCHEMA);
+                String jsonResponse = sanitizeJsonResponse(response.getContent());
                 return parseContentFromJson(jsonResponse);
             } catch (JsonResponseParseException e) {
                 log.error(ERROR_JSON_PARSE_FAILURE, e.getMessage());

@@ -695,8 +695,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @return {@code ResponseEntity} which contains the HTTP status and body with
      *         the exception message.
      */
-    @ExceptionHandler(OpenAIResponseException.class)
-    public final ResponseEntity<Object> handleOpenAIResponseException(OpenAIResponseException ex, WebRequest request) {
+    @ExceptionHandler(OpenAIRequestException.class)
+    public final ResponseEntity<Object> handleOpenAIResponseException(OpenAIRequestException ex, WebRequest request) {
         log.error(ex.getMessage(), ex);
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());

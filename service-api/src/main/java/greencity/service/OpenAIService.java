@@ -1,6 +1,8 @@
 package greencity.service;
 
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.openai.OpenAIResponseDTO;
+import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
 
 /**
@@ -9,12 +11,14 @@ import greencity.exception.exceptions.OpenAIRequestException;
  */
 public interface OpenAIService {
     /**
-     * Sends a request to the OpenAI API and returns the response as a string.
+     * Makes a request to the OpenAI API using the provided language and request.
      *
-     * @param request The request as a string to be sent to the OpenAI API.
+     * @param language the language settings for the request
+     * @param request  the prompt to send to the OpenAI API
+     * @param responseType the format of the response
      * @throws OpenAIRequestException If the request is invalid or the OpenAI
      *                                service is unavailable.
      * @return The response from the service as a string.
      */
-    String makeRequest(LanguageDTO language, String request);
+    OpenAIResponseDTO makeRequest(LanguageDTO language, String request, OpenAIResponseFormat responseType);
 }

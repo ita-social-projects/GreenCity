@@ -100,6 +100,7 @@ import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
+import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
@@ -189,19 +190,7 @@ import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.localization.ToDoListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
-import greencity.enums.EventType;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.InvitationStatus;
-import greencity.enums.PlaceStatus;
-import greencity.enums.ProfilePrivacyPolicy;
-import greencity.enums.Role;
-import greencity.enums.TagType;
-import greencity.enums.ToDoListItemStatus;
-import greencity.enums.UserStatus;
+import greencity.enums.*;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import org.hibernate.sql.results.internal.TupleElementImpl;
@@ -3612,6 +3601,17 @@ public class ModelUtils {
             .habitItem(habitItemUk)
             .name(habitTranslationNameUk)
             .languageCode("ua")
+            .build();
+    }
+
+    public static OpenAIResponseDTO getOpenAIResponseDTO() {
+        return OpenAIResponseDTO.builder()
+            .content("content")
+            .id("id")
+            .responseDateTime(LocalDateTime.now())
+            .responseFormat(OpenAIResponseFormat.TEXT)
+            .usedInputTokens(0)
+            .usedOutputTokens(0)
             .build();
     }
 }

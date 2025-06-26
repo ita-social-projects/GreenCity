@@ -6,7 +6,6 @@ import lombok.experimental.UtilityClass;
 //TODO clear unused
 @UtilityClass
 public class OpenAIConstants {
-    public static final String OPENAI_MODEL_NAME = "gpt-4o-mini";
     public static final String OPENAI_AUTH_HEADER = "Authorization";
     public static final String OPENAI_BEARER_PREFIX = "Bearer ";
     public static final String OPENAI_CONTENT_TYPE_HEADER = "Content-Type";
@@ -14,13 +13,19 @@ public class OpenAIConstants {
 
     public static final String REQUEST_MODEL_KEY = "model";
     public static final String REQUEST_MESSAGES_KEY = "messages";
-    public static final String REQUEST_MAX_TOKENS_KEY = "max_tokens";
+    public static final String REQUEST_MAX_TOKENS_KEY = "max_completion_tokens";
     public static final String REQUEST_TEMPERATURE_KEY = "temperature";
+    public static final String REQUEST_RESPONSE_FORMAT_KEY = "response_format";
 
+    public static final String RESPONSE_ID_KEY = "id";
     public static final String RESPONSE_JSON_CONTENT_KEY = "content";
     public static final String RESPONSE_ROLE_KEY = "role";
     public static final String RESPONSE_CHOICES_KEY = "choices";
     public static final String RESPONSE_MESSAGE_KEY = "message";
+    public static final String RESPONSE_USAGE_KEY = "usage";
+    public static final String RESPONSE_PROMPT_TOKENS_KEY = "prompt_tokens";
+    public static final String RESPONSE_COMPLETION_TOKENS_KEY = "completion_tokens";
+    public static final String RESPONSE_CREATED_KEY = "created";
 
     public static final String ROLE_SYSTEM = "system";
     public static final String ROLE_USER = "user";
@@ -49,14 +54,11 @@ public class OpenAIConstants {
 
     public static final Integer MAX_REQUEST_ATTEMPTS = 3;
     public static final String MESSAGE_CURRENT_ATTEMPT = "Current attempt: {}";
-    public static final Integer MAX_ALLOWED_TOKENS = 2048;
     public static final String MESSAGE_ECO_NEWS_LIMIT = "Eco-news can only be generated once per week.";
     public static final String MESSAGE_JSON_VALIDATION_HINT = "Ensure the JSON response is complete and properly formatted.";
 
     public static final String AI_ROLE_POLICY = "You are an AI assistant.";
     public static final String AI_LANGUAGE_POLICY = "Answer in specified language: %s.";
-    public static final String AI_MAX_TOKENS_POLICY = "You can generate a maximum of %d tokens in your response."
-            .formatted(MAX_ALLOWED_TOKENS);
     public static final String AI_HEADINGS_POLICY = "Do not use headings, titles, or formatting styles to divide sections. " +
             "Present all content in plain text, using full sentences and \\n\\n to separate ideas.";
 

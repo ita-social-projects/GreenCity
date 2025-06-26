@@ -1,5 +1,7 @@
 package greencity.constant;
 
+import java.util.List;
+import java.util.Map;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -27,13 +29,6 @@ public class OpenAIRequest {
 
     public static final String NEWS_BY_QUERY = """
         Generate a detailed and structured eco-news article.
-        The response **must** be in **valid JSON format**.
-        
-        JSON Structure:
-        {
-            "title": "string (max 100 characters)",
-            "content": "string (5-10 paragraphs, each 3+ sentences)"
-        }
     
         Ensure:
         - The response is a properly formatted JSON object.
@@ -46,13 +41,6 @@ public class OpenAIRequest {
 
     public static final String NEWS_WITHOUT_QUERY = """
         Generate a relevant and up-to-date eco-news article on a trending environmental topic.
-        The response **must** be in **valid JSON format**.
-
-        JSON Structure:
-        {
-            "title": "string (max 100 characters)",
-            "content": "string (5-10 paragraphs, each 10+ sentences)"
-        }
 
         Ensure:
         - The response is a properly formatted JSON object.
@@ -61,4 +49,23 @@ public class OpenAIRequest {
         - Keep total content length within 2000 characters.
         - Use real-world statistics and references where possible.
         """;
+
+    public static final Map<String, Object> JSON_SCHEMA = Map.of(
+        "name", "EcoNews",
+        "schema", Map.of(
+            "type", "object",
+            "properties", Map.of(
+                "title", Map.of(
+                    "type", "string",
+                    "maxLength", 100,
+                    "description", "Title of the article, max 100 characters"
+                ),
+                "content", Map.of(
+                    "type", "string",
+                    "description", "Article body, 5–10 paragraphs, each with 10+ sentences"
+                )
+            ),
+            "required", List.of("title", "content")
+        )
+    );
 }

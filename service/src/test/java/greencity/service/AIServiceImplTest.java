@@ -5,7 +5,9 @@ import greencity.ModelUtils;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.entity.*;
+import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
@@ -68,6 +70,7 @@ class AIServiceImplTest {
     private ShortHabitDto shortHabitDto;
     private HabitAssign habitAssign;
     private DurationHabitDto durationHabitDto;
+    private OpenAIResponseDTO openAIResponseDTO;
 
     @BeforeEach
     void init() {
@@ -78,6 +81,7 @@ class AIServiceImplTest {
         shortHabitDto = ModelUtils.getShortHabitDto();
         habitAssign = ModelUtils.getHabitAssign();
         durationHabitDto = ModelUtils.getDurationHabitDto();
+        openAIResponseDTO = ModelUtils.getOpenAIResponseDTO();
 
         ReflectionTestUtils.setField(aiService, "objectMapper", new ObjectMapper());
 
@@ -86,12 +90,14 @@ class AIServiceImplTest {
     @Test
     void getForecast_whenHabitAssignsAreEmpty_shouldReturnAdvice() {
         String responseJson = "{\"content\": \"advice\"}";
+        openAIResponseDTO.setContent(responseJson);
 
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(Collections.emptyList());
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(responseJson);
+        when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.TEXT)))
+            .thenReturn(openAIResponseDTO);
 
         String result = aiService.getForecast(id, language);
 
@@ -99,17 +105,20 @@ class AIServiceImplTest {
         verify(habitAssignRepo).findAllByUserId(id);
         verify(habitRepo).findRandomHabit();
         verify(modelMapper).map(habit, ShortHabitDto.class);
-        verify(openAIService).makeRequest(eq(languageDTO), contains(shortHabitDto.toString()));
+        verify(openAIService).makeRequest(eq(languageDTO), contains(shortHabitDto.toString()),
+            eq(OpenAIResponseFormat.TEXT));
     }
 
     @Test
     void getForecast_whenHabitAssignsExist_shouldReturnForecast() {
         String responseJson = "{\"content\": \"forecast\"}";
+        openAIResponseDTO.setContent(responseJson);
 
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(responseJson);
+        when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.TEXT)))
+            .thenReturn(openAIResponseDTO);
 
         String result = aiService.getForecast(id, language);
 
@@ -117,7 +126,8 @@ class AIServiceImplTest {
         verify(habitAssignRepo).findAllByUserId(id);
         verify(modelMapper).map(habitAssign, DurationHabitDto.class);
         verify(languageService).findByCode(language);
-        verify(openAIService).makeRequest(eq(languageDTO), contains(durationHabitDto.toString()));
+        verify(openAIService).makeRequest(eq(languageDTO), contains(durationHabitDto.toString()),
+            eq(OpenAIResponseFormat.TEXT));
     }
 
 
@@ -129,9 +139,11 @@ class AIServiceImplTest {
                         "content": "This is the eco news content."
                     }
                 """;
+        openAIResponseDTO.setContent(jsonResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(jsonResponse);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
+            .thenReturn(openAIResponseDTO);
         when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(user));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
@@ -157,9 +169,11 @@ class AIServiceImplTest {
                         "content": "News content"
                     }
                 """;
+        openAIResponseDTO.setContent(jsonResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(jsonResponse);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
+            .thenReturn(openAIResponseDTO);
         when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(new User()));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
 
@@ -175,16 +189,17 @@ class AIServiceImplTest {
                     "content": "This is the eco news content."
                 }
                 """;
+        openAIResponseDTO.setContent(openAiRawResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(eq(languageDTO), contains(query)))
-                .thenReturn(openAiRawResponse);
+        when(openAIService.makeRequest(eq(languageDTO), contains(query), eq(OpenAIResponseFormat.JSON_SCHEMA)))
+                .thenReturn(openAIResponseDTO);
 
         String result = aiService.getNews(language, query);
 
         assertEquals("This is the eco news content.", result);
         verify(languageService).findByCode(language);
-        verify(openAIService).makeRequest(eq(languageDTO), contains(query));
+        verify(openAIService).makeRequest(eq(languageDTO), contains(query), eq(OpenAIResponseFormat.JSON_SCHEMA));
     }
 
     @Test
@@ -196,15 +211,17 @@ class AIServiceImplTest {
                         "content": "AI-generated eco news content."
                     }
                 """;
+        openAIResponseDTO.setContent(openAiResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(openAiResponse);
+        when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
+            .thenReturn(openAIResponseDTO);
 
         String result = aiService.getNews(language, query);
 
         assertEquals("AI-generated eco news content.", result);
         verify(languageService).findByCode(language);
-        verify(openAIService).makeRequest(eq(languageDTO), anyString());
+        verify(openAIService).makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
     }
 
     @Test
@@ -212,9 +229,11 @@ class AIServiceImplTest {
         String query = "climate";
 
         String invalidJson = "not a valid json";
+        openAIResponseDTO.setContent(invalidJson);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(invalidJson);
+        when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
+            .thenReturn(openAIResponseDTO);
 
         JsonResponseParseException thrown = assertThrows(
                 JsonResponseParseException.class,
@@ -224,7 +243,7 @@ class AIServiceImplTest {
         assertEquals(ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
 
         verify(openAIService, times(MAX_REQUEST_ATTEMPTS))
-                .makeRequest(eq(languageDTO), anyString());
+                .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
     }
 
     @Test
@@ -233,7 +252,7 @@ class AIServiceImplTest {
         LanguageDTO languageDTO = new LanguageDTO();
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(eq(languageDTO), anyString()))
+        when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
                 .thenThrow(new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE));
 
         OpenAIRequestException thrown = assertThrows(
@@ -243,7 +262,8 @@ class AIServiceImplTest {
 
         assertEquals(ERROR_NO_OPENAI_RESPONSE, thrown.getMessage());
 
-        verify(openAIService, times(1)).makeRequest(eq(languageDTO), anyString());
+        verify(openAIService, times(1))
+            .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
     }
 
     @Test
@@ -257,10 +277,12 @@ class AIServiceImplTest {
                     "content": "New eco content"
                 }
                 """;
+        openAIResponseDTO.setContent(jsonResponse);
 
 
         when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(jsonResponse);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
+            .thenReturn(openAIResponseDTO);
 
         when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.empty());
         when(languageService.findByCode("ua")).thenReturn(languageDTO);
@@ -289,10 +311,12 @@ class AIServiceImplTest {
                  Title: Clean Energy Future
                 Governments around the world invest in renewables.
                 """;
+        openAIResponseDTO.setContent(response);
 
 
         when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(response);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
+            .thenReturn(openAIResponseDTO);
         when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(user));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
