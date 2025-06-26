@@ -679,7 +679,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      *         the exception message.
      */
     @ExceptionHandler(JsonResponseParseException.class)
-    public final ResponseEntity<Object> handleJsonResponseParseException(JsonResponseParseException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleJsonResponseParseException(JsonResponseParseException ex,
+        WebRequest request) {
         log.error(ex.getMessage(), ex);
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());

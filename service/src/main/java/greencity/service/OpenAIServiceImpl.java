@@ -1,7 +1,5 @@
 package greencity.service;
 
-import static greencity.constant.OpenAIConstants.*;
-
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
@@ -17,8 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-
 import java.util.*;
+import static greencity.constant.OpenAIConstants.*;
 
 @Setter
 @Slf4j
@@ -44,12 +42,13 @@ public class OpenAIServiceImpl implements OpenAIService {
     /**
      * Makes a request to the OpenAI API using the provided language and request.
      *
-     * @param language the language settings for the request
-     * @param request   the prompt to send to the OpenAI API
+     * @param language       the language settings for the request
+     * @param request        the prompt to send to the OpenAI API
      * @param responseFormat the format of the response
      * @return the response from the OpenAI API as a String
-     * @throws OpenAIRequestException if there is a validation error, server is unavailable
-     *                                or the maximum number of request attempts is reached
+     * @throws OpenAIRequestException if there is a validation error, server is
+     *                                unavailable or the maximum number of request
+     *                                attempts is reached
      */
     @Override
     public OpenAIResponseDTO makeRequest(LanguageDTO language, String request, OpenAIResponseFormat responseFormat) {
@@ -79,28 +78,25 @@ public class OpenAIServiceImpl implements OpenAIService {
     }
 
     private Map<String, Object> createRequestBody(LanguageDTO language,
-                                                  String prompt,
-                                                  OpenAIResponseFormat responseFormat) {
+        String prompt,
+        OpenAIResponseFormat responseFormat) {
         Map<String, Object> body = new HashMap<>();
         body.put(REQUEST_MODEL_KEY, model);
 
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of(
-                RESPONSE_ROLE_KEY,
-                ROLE_SYSTEM,
-                RESPONSE_JSON_CONTENT_KEY,
-                String.join(" ",
-                        AI_ROLE_POLICY,
-                        AI_HEADINGS_POLICY,
-                        AI_LANGUAGE_POLICY.formatted(language.getName())
-                )
-        ));
+            RESPONSE_ROLE_KEY,
+            ROLE_SYSTEM,
+            RESPONSE_JSON_CONTENT_KEY,
+            String.join(" ",
+                AI_ROLE_POLICY,
+                AI_HEADINGS_POLICY,
+                AI_LANGUAGE_POLICY.formatted(language.getName()))));
         messages.add(Map.of(
             RESPONSE_ROLE_KEY,
             ROLE_USER,
             RESPONSE_JSON_CONTENT_KEY,
-            String.join(" ", prompt, AI_LANGUAGE_POLICY.formatted(language.getName()))
-        ));
+            String.join(" ", prompt, AI_LANGUAGE_POLICY.formatted(language.getName()))));
         body.put(REQUEST_MESSAGES_KEY, messages);
         body.put(REQUEST_MAX_TOKENS_KEY, maxCompletionTokens);
         body.put(REQUEST_TEMPERATURE_KEY, temperature);
@@ -123,11 +119,11 @@ public class OpenAIServiceImpl implements OpenAIService {
         validationResults.put(prompt, ERROR_PROMPT_MISSING);
 
         return validationResults.entrySet().stream()
-                .filter(entry -> Objects.isNull(entry.getKey()) ||
-                        entry.getKey().toString().isEmpty())
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
+            .filter(entry -> Objects.isNull(entry.getKey())
+                || entry.getKey().toString().isEmpty())
+            .map(Map.Entry::getValue)
+            .findFirst()
+            .orElse(null);
     }
 
     /**
@@ -141,11 +137,12 @@ public class OpenAIServiceImpl implements OpenAIService {
      */
     private OpenAIResponseDTO sendRequest(HttpHeaders headers, Map<String, Object> body) throws OpenAIRequestException {
         Map<String, Object> responseBody = restClient.post()
-                .uri(apiUrl)
-                .headers(headersConsumer -> headersConsumer.addAll(headers))
-                .body(body)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+            .uri(apiUrl)
+            .headers(headersConsumer -> headersConsumer.addAll(headers))
+            .body(body)
+            .retrieve()
+            .body(new ParameterizedTypeReference<>() {
+            });
 
         if (responseBody == null) {
             throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
@@ -178,8 +175,7 @@ public class OpenAIServiceImpl implements OpenAIService {
             openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_COMPLETION_TOKENS_KEY));
 
             openAIResponseDTO.setResponseDateTime(LocalDateTime.ofEpochSecond(
-                ((Integer) responseBody.get(RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC)
-            );
+                ((Integer) responseBody.get(RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC));
         } catch (NullPointerException | ClassCastException e) {
             throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE, e);
         }

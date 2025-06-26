@@ -9,7 +9,6 @@ import org.quartz.JobListener;
 
 @Slf4j
 public class LoggingJobListener implements JobListener {
-
     @Override
     public String getName() {
         return JOB_LISTENER_NAME;

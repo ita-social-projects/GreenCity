@@ -1,7 +1,5 @@
 package greencity.aspects;
 
-import static greencity.constant.QuartzConstants.*;
-
 import java.util.Date;
 import java.util.UUID;
 import java.util.Arrays;
@@ -15,6 +13,7 @@ import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.slf4j.MDC;
+import static greencity.constant.QuartzConstants.*;
 
 @Aspect
 @Component

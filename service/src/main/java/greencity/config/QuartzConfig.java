@@ -20,9 +20,11 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 /**
  * Quartz configuration for the EcoNews generation job.
+ *
  * <p>
- * Uses a cron expression from the configuration file and automatically fixes
- * it if both day-of-month and day-of-week are specified, which is not supported by Quartz.
+ * Uses a cron expression from the configuration file and automatically fixes it
+ * if both day-of-month and day-of-week are specified, which is not supported by
+ * Quartz.
  */
 @Configuration
 @RequiredArgsConstructor
@@ -45,8 +47,8 @@ public class QuartzConfig {
 
     @Bean
     public Scheduler scheduler(SchedulerFactoryBean factoryBean,
-                               Trigger ecoNewsGenerationTrigger,
-                               JobDetail ecoNewsGenerationJobDetail) throws SchedulerException {
+        Trigger ecoNewsGenerationTrigger,
+        JobDetail ecoNewsGenerationJobDetail) throws SchedulerException {
         Scheduler scheduler = factoryBean.getScheduler();
         scheduler.getListenerManager().addJobListener(new LoggingJobListener());
 

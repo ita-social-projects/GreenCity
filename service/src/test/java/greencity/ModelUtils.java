@@ -688,12 +688,13 @@ public class ModelUtils {
     }
 
     public static Language getLanguage() {
-        return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME ,Collections.emptyList(), Collections.emptyList(),
+        return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+            Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList());
     }
 
     public static Language getLanguageUa() {
-        return new Language(2L, "ua", "Ukrainian" ,Collections.emptyList(), Collections.emptyList(),
+        return new Language(2L, "ua", "Ukrainian", Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList());
     }
 
@@ -743,7 +744,8 @@ public class ModelUtils {
         return ToDoListItemTranslation.builder()
             .id(2L)
             .language(
-                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME, Collections.emptyList(), Collections.emptyList(),
+                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+                    Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
             .toDoListItem(
                 new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -1070,7 +1072,8 @@ public class ModelUtils {
         return Arrays.asList(
             ToDoListItemTranslation.builder()
                 .id(2L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME, Collections.emptyList(),
+                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+                    Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .toDoListItem(
@@ -1078,7 +1081,8 @@ public class ModelUtils {
                 .build(),
             ToDoListItemTranslation.builder()
                 .id(11L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,Collections.emptyList(),
+                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+                    Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
                 .toDoListItem(
@@ -1091,7 +1095,7 @@ public class ModelUtils {
             List.of(ModelUtils.getFactOfTheDayTranslation(), FactOfTheDayTranslation.builder()
                 .id(2L)
                 .content("Контент")
-                .language(new Language(2L, "ua","Ukrainian", Collections.emptyList(), Collections.emptyList(),
+                .language(new Language(2L, "ua", "Ukrainian", Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
                 .factOfTheDay(null)
                 .build()),
@@ -1683,18 +1687,17 @@ public class ModelUtils {
 
     public static ShortHabitDto getShortHabitDto() {
         return ShortHabitDto.builder()
-                .id(1L)
-                .description("ShortHabitDto description")
-                .build();
+            .id(1L)
+            .description("ShortHabitDto description")
+            .build();
     }
 
     public static DurationHabitDto getDurationHabitDto() {
         return DurationHabitDto.builder()
-                .description("DurationHabitDto description")
-                .duration(1L)
-                .build();
+            .description("DurationHabitDto description")
+            .duration(1L)
+            .build();
     }
-
 
     public static ToDoListItem getToDoListItem() {
         return ToDoListItem.builder()
@@ -2802,7 +2805,8 @@ public class ModelUtils {
                 .name("name")
                 .description("")
                 .habitItem("")
-                .language(new Language(1L, "en", AppConstant.DEFAULT_LANGUAGE_NAME, Collections.emptyList(), Collections.emptyList(),
+                .language(new Language(1L, "en", AppConstant.DEFAULT_LANGUAGE_NAME, Collections.emptyList(),
+                    Collections.emptyList(),
                     Collections.emptyList()))
                 .build()))
             .usersLiked(new HashSet<>())

@@ -58,8 +58,7 @@ class OpenAIServiceImplTest {
         long epoch = Instant.now().getEpochSecond();
         Map<String, Object> usage = Map.of(
             "prompt_tokens", 2,
-            "completion_tokens", 3
-        );
+            "completion_tokens", 3);
         Map<String, Object> message = Map.of("content", "world");
         Map<String, Object> choice = Map.of("message", message);
         Map<String, Object> body = new HashMap<>();
@@ -83,8 +82,7 @@ class OpenAIServiceImplTest {
     void makeRequestForNullPromptTest() {
         OpenAIRequestException ex = assertThrows(
             OpenAIRequestException.class,
-            () -> openAIService.makeRequest(language, null, OpenAIResponseFormat.TEXT)
-        );
+            () -> openAIService.makeRequest(language, null, OpenAIResponseFormat.TEXT));
 
         assertEquals(ERROR_PROMPT_MISSING, ex.getMessage());
         verify(restClient, never()).post();
@@ -110,8 +108,7 @@ class OpenAIServiceImplTest {
 
         OpenAIRequestException ex = assertThrows(
             OpenAIRequestException.class,
-            () -> openAIService.makeRequest(language, "hello", OpenAIResponseFormat.TEXT)
-        );
+            () -> openAIService.makeRequest(language, "hello", OpenAIResponseFormat.TEXT));
 
         assertEquals(ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
         verify(restClient, times(MAX_REQUEST_ATTEMPTS)).post();
@@ -125,8 +122,7 @@ class OpenAIServiceImplTest {
 
         OpenAIRequestException ex = assertThrows(
             OpenAIRequestException.class,
-            () -> openAIService.makeRequest(language, "hello", OpenAIResponseFormat.TEXT)
-        );
+            () -> openAIService.makeRequest(language, "hello", OpenAIResponseFormat.TEXT));
 
         assertEquals(ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
         verify(restClient, times(MAX_REQUEST_ATTEMPTS)).post();

@@ -130,15 +130,14 @@ class AIServiceImplTest {
             eq(OpenAIResponseFormat.TEXT));
     }
 
-
     @Test
     void generateAndSaveEcoNews_shouldCreateAndSaveEcoNews() {
         String jsonResponse = """
-                    {
-                        "title": "AI-generated Title",
-                        "content": "This is the eco news content."
-                    }
-                """;
+                {
+                    "title": "AI-generated Title",
+                    "content": "This is the eco news content."
+                }
+            """;
         openAIResponseDTO.setContent(jsonResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
@@ -161,14 +160,12 @@ class AIServiceImplTest {
 
     @Test
     void generateAndSaveEcoNews_whenNoTagsFound_shouldThrowException() {
-        String language = "en";
-        LanguageDTO languageDTO = new LanguageDTO();
         String jsonResponse = """
-                    {
-                        "title": "Sample",
-                        "content": "News content"
-                    }
-                """;
+                {
+                    "title": "Sample",
+                    "content": "News content"
+                }
+            """;
         openAIResponseDTO.setContent(jsonResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
@@ -184,16 +181,16 @@ class AIServiceImplTest {
     void getNews_whenValidJsonReturned_shouldReturnParsedContent() {
         String query = "climate";
         String openAiRawResponse = """
-                {
-                    "title": "Eco News Title",
-                    "content": "This is the eco news content."
-                }
-                """;
+            {
+                "title": "Eco News Title",
+                "content": "This is the eco news content."
+            }
+            """;
         openAIResponseDTO.setContent(openAiRawResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(eq(languageDTO), contains(query), eq(OpenAIResponseFormat.JSON_SCHEMA)))
-                .thenReturn(openAIResponseDTO);
+            .thenReturn(openAIResponseDTO);
 
         String result = aiService.getNews(language, query);
 
@@ -204,20 +201,19 @@ class AIServiceImplTest {
 
     @Test
     void getNews_whenQueryIsNull_shouldReturnParsedContent() {
-        String query = null;
         String openAiResponse = """
-                    {
-                        "title": "AI Title",
-                        "content": "AI-generated eco news content."
-                    }
-                """;
+                {
+                    "title": "AI Title",
+                    "content": "AI-generated eco news content."
+                }
+            """;
         openAIResponseDTO.setContent(openAiResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
             .thenReturn(openAIResponseDTO);
 
-        String result = aiService.getNews(language, query);
+        String result = aiService.getNews(language, null);
 
         assertEquals("AI-generated eco news content.", result);
         verify(languageService).findByCode(language);
@@ -236,29 +232,26 @@ class AIServiceImplTest {
             .thenReturn(openAIResponseDTO);
 
         JsonResponseParseException thrown = assertThrows(
-                JsonResponseParseException.class,
-                () -> aiService.getNews(language, query)
-        );
+            JsonResponseParseException.class,
+            () -> aiService.getNews(language, query));
 
         assertEquals(ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
 
         verify(openAIService, times(MAX_REQUEST_ATTEMPTS))
-                .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
+            .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
     }
 
     @Test
     void getNews_whenOpenAIRespondsWithNoResponse_shouldThrowImmediately() {
         String query = "pollution";
-        LanguageDTO languageDTO = new LanguageDTO();
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
-                .thenThrow(new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE));
+            .thenThrow(new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE));
 
         OpenAIRequestException thrown = assertThrows(
-                OpenAIRequestException.class,
-                () -> aiService.getNews(language, query)
-        );
+            OpenAIRequestException.class,
+            () -> aiService.getNews(language, query));
 
         assertEquals(ERROR_NO_OPENAI_RESPONSE, thrown.getMessage());
 
@@ -268,19 +261,16 @@ class AIServiceImplTest {
 
     @Test
     void generateAndSaveEcoNews_whenAiUserNotExists_shouldCreateAndUseNewUser() {
-        String languageCode = "en";
-        LanguageDTO languageDTO = new LanguageDTO();
         Language mappedLanguage = new Language();
         String jsonResponse = """
-                {
-                    "title": "New Title",
-                    "content": "New eco content"
-                }
-                """;
+            {
+                "title": "New Title",
+                "content": "New eco content"
+            }
+            """;
         openAIResponseDTO.setContent(jsonResponse);
 
-
-        when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
 
@@ -291,7 +281,7 @@ class AIServiceImplTest {
 
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
-        aiService.generateAndSaveEcoNews(languageCode);
+        aiService.generateAndSaveEcoNews(language);
 
         ArgumentCaptor<EcoNews> newsCaptor = ArgumentCaptor.forClass(EcoNews.class);
         verify(ecoNewsRepo).save(newsCaptor.capture());
@@ -308,11 +298,10 @@ class AIServiceImplTest {
     void generateAndSaveEcoNews_whenTitleAndContentInText_shouldParseViaGetJsonNodes() {
         String languageCode = "en";
         String response = """
-                 Title: Clean Energy Future
-                Governments around the world invest in renewables.
-                """;
+             Title: Clean Energy Future
+            Governments around the world invest in renewables.
+            """;
         openAIResponseDTO.setContent(response);
-
 
         when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
@@ -332,8 +321,3 @@ class AIServiceImplTest {
         assertTrue(saved.getTags().contains(tag));
     }
 }
-
-
-
-
-
