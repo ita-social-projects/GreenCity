@@ -8,14 +8,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import greencity.dto.habit.DurationHabitDto;
 import static greencity.constant.OpenAIConstants.*;
 import greencity.dto.habit.ShortHabitDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.entity.*;
-import greencity.enums.Language;
-import greencity.enums.Role;
-import greencity.enums.TagType;
+import greencity.enums.*;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -40,6 +38,7 @@ public class AIServiceImpl implements AIService {
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
+    private final LanguageService languageService;
 
     @Override
     public String getForecast(Long userId, String language) {
@@ -49,7 +48,8 @@ public class AIServiceImpl implements AIService {
         }
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
             .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class)).toList();
-        String forecastResponse = openAIService.makeRequest(Language.fromCode(language), FORECAST.formatted(durationHabitDtos));
+        LanguageDTO languageDTO = languageService.findByCode(language);
+        String forecastResponse = openAIService.makeRequest(languageDTO, FORECAST.formatted(durationHabitDtos));
         return sanitizeJsonResponse(forecastResponse);
     }
 
@@ -57,7 +57,8 @@ public class AIServiceImpl implements AIService {
     public String getAdvice(Long userId, String language) {
         Habit habit = habitRepo.findRandomHabit();
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
-        String forecastResponse = openAIService.makeRequest(Language.fromCode(language), ADVICE.formatted(shortHabitDto));
+        LanguageDTO languageDTO = languageService.findByCode(language);
+        String forecastResponse = openAIService.makeRequest(languageDTO, ADVICE.formatted(shortHabitDto));
         return sanitizeJsonResponse(forecastResponse);
     }
 
@@ -71,7 +72,8 @@ public class AIServiceImpl implements AIService {
     @Override
     public String getNews(String language, String query) {
         validateInputs(language);
-        String jsonResponse = openAIService.makeRequest(Language.fromCode(language), createNewsRequest(query));
+        LanguageDTO languageDTO = languageService.findByCode(language);
+        String jsonResponse = openAIService.makeRequest(languageDTO, createNewsRequest(query));
 
         return extractContentFromJson(jsonResponse);
     }
@@ -94,8 +96,8 @@ public class AIServiceImpl implements AIService {
     @Override
     public void generateAndSaveEcoNews(String language) {
         validateInputs(language);
-
-        String jsonResponse = openAIService.makeRequest(Language.fromCode(language), NEWS_WITHOUT_QUERY);
+        LanguageDTO languageDTO = languageService.findByCode(language);
+        String jsonResponse = openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY);
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse);
 
         ecoNewsRepo.save(ecoNews);
@@ -281,6 +283,7 @@ public class AIServiceImpl implements AIService {
                 .email(AI_USER_EMAIL)
                 .role(Role.ROLE_USER)
                 .refreshTokenKey(AI_MOCKED_REFRESH_TOKEN)
+                .language(modelMapper.map(languageService.findByCode("ua"), Language.class))
                 .build();
         return userRepo.save(user);
     }

@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.enums.Language;
+import greencity.dto.language.LanguageDTO;
 
 /**
  * Interface for interacting with the OpenAI API. The purpose of this interface
@@ -13,5 +13,5 @@ public interface OpenAIService {
      * @param request The request as a string to be sent to the OpenAI API.
      * @return The response from the service as a string.
      */
-    String makeRequest(Language language, String request);
+    String makeRequest(LanguageDTO language, String request);
 }

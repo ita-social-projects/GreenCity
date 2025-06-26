@@ -2,7 +2,7 @@ package greencity.service;
 
 import static greencity.constant.OpenAIConstants.*;
 
-import greencity.enums.Language;
+import greencity.dto.language.LanguageDTO;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -32,7 +32,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @SuppressWarnings("checkstyle:WhitespaceAround")
     @Override
-    public String makeRequest(Language language, String prompt) {
+    public String makeRequest(LanguageDTO language, String prompt) {
         String validationError = validateRequestParameters(prompt);
         if (validationError != null) {
             return validationError;
@@ -76,7 +76,8 @@ public class OpenAIServiceImpl implements OpenAIService {
             return ERROR_NO_OPENAI_RESPONSE;
         }
     }
-    private Map<String, Object> createRequestBody(Language language, String prompt) {
+
+    private Map<String, Object> createRequestBody(LanguageDTO language, String prompt) {
         Map<String, Object> body = new HashMap<>();
         body.put(REQUEST_MODEL_KEY, OPENAI_MODEL_NAME);
 
@@ -89,10 +90,15 @@ public class OpenAIServiceImpl implements OpenAIService {
                         AI_ROLE_POLICY,
                         AI_MAX_TOKENS_POLICY,
                         AI_HEADINGS_POLICY,
-                        AI_LANGUAGE_POLICY.formatted(language.getDisplayName())
+                        AI_LANGUAGE_POLICY.formatted(language.getName())
                 )
         ));
-        messages.add(Map.of(RESPONSE_ROLE_KEY, ROLE_USER, RESPONSE_JSON_CONTENT_KEY, String.join(" ", prompt, AI_LANGUAGE_POLICY.formatted(language.getDisplayName()))));
+        messages.add(Map.of(
+            RESPONSE_ROLE_KEY,
+            ROLE_USER,
+            RESPONSE_JSON_CONTENT_KEY,
+            String.join(" ", prompt, AI_LANGUAGE_POLICY.formatted(language.getName()))
+        ));
         body.put(REQUEST_MESSAGES_KEY, messages);
         body.put(REQUEST_MAX_TOKENS_KEY, 1000);
         body.put(REQUEST_TEMPERATURE_KEY, 0.5);
