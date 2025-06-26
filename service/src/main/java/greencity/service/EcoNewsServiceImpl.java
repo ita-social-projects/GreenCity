@@ -695,6 +695,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             predicates.add(criteriaBuilder.equal(followers.get(ECO_NEWS_AUTHOR_ID), currentUserId));
         }
 
+        predicates.add(criteriaBuilder.equal(root.get("hidden"), false));
+
         Predicate result;
         if (predicates.size() == 1) {
             result = predicates.getFirst();
