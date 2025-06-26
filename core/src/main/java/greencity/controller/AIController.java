@@ -1,8 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
-import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.user.UserVO;
 import greencity.service.AIService;
@@ -44,7 +42,7 @@ public class AIController {
             .body(aiService.getForecast(userVO.getId(), userVO.getLanguageVO().getCode()));
     }
 
-    @Operation(summary = "Generates news content based on the specified language and query")
+    @Operation(summary = "Generates news content based on query")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
