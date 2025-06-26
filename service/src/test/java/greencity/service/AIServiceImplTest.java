@@ -1,14 +1,15 @@
 package greencity.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.ModelUtils;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.entity.*;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.Language;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -16,12 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static greencity.ModelUtils.getHabitAssign;
 import static greencity.constant.OpenAIConstants.*;
 import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +37,9 @@ class AIServiceImplTest {
 
     @Mock
     private OpenAIService openAIService;
+
+    @Mock
+    private LanguageService languageService;
 
     @Mock
     private EcoNewsRepo ecoNewsRepo;
@@ -54,198 +58,258 @@ class AIServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private ObjectMapper objectMapper;
 
-    private HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);
-    private DurationHabitDto durationHabitDto = new DurationHabitDto("", 0L);
-    private Long id = 1L;
-    private String language = "en";
-    private final String habitTranslationName = "Test Habit";
-    private final HabitTranslation habitTranslation = HabitTranslation.builder().name(habitTranslationName).build();
+    private final Long id = 1L;
+    private final String language = "en";
+    private LanguageDTO languageDTO;
+    private User user;
+    private Tag tag;
+    private Habit habit;
+    private ShortHabitDto shortHabitDto;
+    private HabitAssign habitAssign;
+    private DurationHabitDto durationHabitDto;
 
-    private final Habit habit = Habit.builder()
-            .id(id)
-            .habitTranslations(Collections.singletonList(habitTranslation))
-            .build();
-    private final ShortHabitDto shortHabitDto = new ShortHabitDto(id, habitTranslationName);
+    @BeforeEach
+    void init() {
+        languageDTO = ModelUtils.getLanguageDTO();
+        user = ModelUtils.getUser();
+        tag = ModelUtils.getTag();
+        habit = ModelUtils.getHabit();
+        shortHabitDto = ModelUtils.getShortHabitDto();
+        habitAssign = ModelUtils.getHabitAssign();
+        durationHabitDto = ModelUtils.getDurationHabitDto();
+
+        ReflectionTestUtils.setField(aiService, "objectMapper", new ObjectMapper());
+
+    }
 
     @Test
-    void getForecast_whenHabitAssignsAreEmpty_shouldCallGetAdvice() {
+    void getForecast_whenHabitAssignsAreEmpty_shouldReturnAdvice() {
+        String responseJson = "{\"content\": \"advice\"}";
 
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(Collections.emptyList());
-
-
         when(habitRepo.findRandomHabit()).thenReturn(habit);
         when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
-        when(openAIService.makeRequest(any(), anyString())).thenReturn("{\"content\": \"advice\"}");
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(responseJson);
 
         String result = aiService.getForecast(id, language);
 
         assertTrue(result.contains("advice"));
+        verify(habitAssignRepo).findAllByUserId(id);
         verify(habitRepo).findRandomHabit();
-        verify(openAIService).makeRequest(any(), contains("advice"));
+        verify(modelMapper).map(habit, ShortHabitDto.class);
+        verify(openAIService).makeRequest(eq(languageDTO), contains(shortHabitDto.toString()));
     }
 
     @Test
-    void getForecast_whenHabitsExist_shouldReturnSanitizedForecast() {
+    void getForecast_whenHabitAssignsExist_shouldReturnForecast() {
+        String responseJson = "{\"content\": \"forecast\"}";
+
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign, DurationHabitDto.class)).thenReturn(durationHabitDto);
-        when(openAIService.makeRequest(any(), anyString())).thenReturn("{\"content\": \"forecast \\n text\"}");
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(responseJson);
 
         String result = aiService.getForecast(id, language);
 
         assertTrue(result.contains("forecast"));
-        verify(openAIService).makeRequest(any(), anyString());
-    }
-    @Test
-    void getAdvice_shouldReturnSanitizedResponse() {
-
-        when(habitRepo.findRandomHabit()).thenReturn(habit);
-        when(modelMapper.map(habit, ShortHabitDto.class)).thenReturn(shortHabitDto);
-        when(openAIService.makeRequest(any(), anyString())).thenReturn("{\"content\": \"some advice\\n\"}");
-
-        String result = aiService.getAdvice(id, language);
-
-        assertTrue(result.contains("some advice"));
-        verify(habitRepo).findRandomHabit();
-        verify(modelMapper).map(habit, ShortHabitDto.class);
-        verify(openAIService).makeRequest(any(), anyString());
-    }
-    @Test
-    void getNews_validJson_shouldReturnParsedContent() throws Exception {
-        String query = "climate";
-        String jsonResponse = "{\"title\":\"Test title\",\"content\":\"Test content\"}";
-
-        when(openAIService.makeRequest(any(), anyString())).thenReturn(jsonResponse);
-        when(objectMapper.readTree(anyString())).thenReturn(
-                new ObjectMapper().readTree(jsonResponse)
-        );
-
-        String result = aiService.getNews("en", query);
-
-        assertEquals("Test content", result);
-        verify(openAIService).makeRequest(eq(Language.ENGLISH), contains(query));
+        verify(habitAssignRepo).findAllByUserId(id);
+        verify(modelMapper).map(habitAssign, DurationHabitDto.class);
+        verify(languageService).findByCode(language);
+        verify(openAIService).makeRequest(eq(languageDTO), contains(durationHabitDto.toString()));
     }
 
 
     @Test
-    void getNews_jsonWithoutContent_shouldThrowJsonParseException() throws Exception {
-        String jsonResponse = "{\"title\":\"Only title\"}";
+    void generateAndSaveEcoNews_shouldCreateAndSaveEcoNews() {
+        String jsonResponse = """
+                    {
+                        "title": "AI-generated Title",
+                        "content": "This is the eco news content."
+                    }
+                """;
 
-        when(openAIService.makeRequest(any(), anyString())).thenReturn(jsonResponse);
-        when(objectMapper.readTree(anyString())).thenReturn(
-                new ObjectMapper().readTree(jsonResponse)
-        );
-
-        assertThrows(JsonResponseParseException.class,
-                () -> aiService.getNews("en", "anything"));
-    }
-
-    @Test
-    void generateAndSaveEcoNews_validLanguage_shouldCallMakeRequestAndSave() {
-        String language = "en";
-        String jsonResponse = "{\"title\":\"Some title\",\"content\":\"Some content\"}";
-
-        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(jsonResponse);
-
-        User mockUser = new User();
-        Tag mockTag = new Tag();
-
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(mockUser));
-        when(tagsRepo.findTagsByType(any())).thenReturn(List.of(mockTag));
-
-        aiService.generateAndSaveEcoNews(language);
-
-        verify(openAIService).makeRequest(Language.fromCode(language), NEWS_WITHOUT_QUERY);
-        verify(ecoNewsRepo).save(any(EcoNews.class));
-    }
-
-    @Test
-    void generateAndSaveEcoNews_noTagsFound_shouldThrowEcoNewsCreationException() {
-        String language = "en";
-        String json = "{\"title\":\"Some Title\",\"content\":\"Some content\"}";
-
-        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(json);
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(new User()));
-        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
-
-        assertThrows(EcoNewsCreationException.class, () -> aiService.generateAndSaveEcoNews(language));
-
-        verify(ecoNewsRepo, never()).save(any());
-    }
-
-    @Test
-    void generateAndSaveEcoNews_titlePrefix_shouldUseGetJsonNodesAndSaveEcoNews() {
-        String language = "en";
-        String jsonResponse = "Title: Save the Planet\nThis is eco content generated by AI";
-
-        User mockUser = new User();
-        Tag mockTag = new Tag();
-
-        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(jsonResponse);
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(mockUser));
-        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(mockTag));
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(jsonResponse);
+        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(user));
+        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
         aiService.generateAndSaveEcoNews(language);
 
         ArgumentCaptor<EcoNews> captor = ArgumentCaptor.forClass(EcoNews.class);
         verify(ecoNewsRepo).save(captor.capture());
 
-        EcoNews saved = captor.getValue();
-        assertEquals("Save the Planet", saved.getTitle());
-        assertEquals("This is eco content generated by AI", saved.getText());
-        assertEquals(mockUser, saved.getAuthor());
-        assertEquals(List.of(mockTag), saved.getTags());
+        EcoNews savedNews = captor.getValue();
+        assertEquals("AI-generated Title", savedNews.getTitle());
+        assertEquals("This is the eco news content.", savedNews.getText());
+        assertEquals(user, savedNews.getAuthor());
+        assertTrue(savedNews.getTags().contains(tag));
     }
 
     @Test
-    void generateAndSaveEcoNews_shouldCreateAiUserWhenMissing() {
+    void generateAndSaveEcoNews_whenNoTagsFound_shouldThrowException() {
         String language = "en";
-        String jsonResponse = "Title: Eco AI\nGenerated eco content";
+        LanguageDTO languageDTO = new LanguageDTO();
+        String jsonResponse = """
+                    {
+                        "title": "Sample",
+                        "content": "News content"
+                    }
+                """;
 
-        Tag mockTag = new Tag();
-        User savedUser = new User();
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(jsonResponse);
+        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(new User()));
+        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
 
-        when(openAIService.makeRequest(any(), eq(NEWS_WITHOUT_QUERY))).thenReturn(jsonResponse);
+        assertThrows(EcoNewsCreationException.class, () -> aiService.generateAndSaveEcoNews(language));
+    }
+
+    @Test
+    void getNews_whenValidJsonReturned_shouldReturnParsedContent() {
+        String query = "climate";
+        String openAiRawResponse = """
+                {
+                    "title": "Eco News Title",
+                    "content": "This is the eco news content."
+                }
+                """;
+
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(eq(languageDTO), contains(query)))
+                .thenReturn(openAiRawResponse);
+
+        String result = aiService.getNews(language, query);
+
+        assertEquals("This is the eco news content.", result);
+        verify(languageService).findByCode(language);
+        verify(openAIService).makeRequest(eq(languageDTO), contains(query));
+    }
+
+    @Test
+    void getNews_whenQueryIsNull_shouldReturnParsedContent() {
+        String query = null;
+        String openAiResponse = """
+                    {
+                        "title": "AI Title",
+                        "content": "AI-generated eco news content."
+                    }
+                """;
+
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(openAiResponse);
+
+        String result = aiService.getNews(language, query);
+
+        assertEquals("AI-generated eco news content.", result);
+        verify(languageService).findByCode(language);
+        verify(openAIService).makeRequest(eq(languageDTO), anyString());
+    }
+
+    @Test
+    void getNews_whenJsonResponseParseException_shouldRetryAndEventuallyThrow() {
+        String query = "climate";
+
+        String invalidJson = "not a valid json";
+
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(eq(languageDTO), anyString())).thenReturn(invalidJson);
+
+        JsonResponseParseException thrown = assertThrows(
+                JsonResponseParseException.class,
+                () -> aiService.getNews(language, query)
+        );
+
+        assertEquals(ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
+
+        verify(openAIService, times(MAX_REQUEST_ATTEMPTS))
+                .makeRequest(eq(languageDTO), anyString());
+    }
+
+    @Test
+    void getNews_whenOpenAIRespondsWithNoResponse_shouldThrowImmediately() {
+        String query = "pollution";
+        LanguageDTO languageDTO = new LanguageDTO();
+
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(eq(languageDTO), anyString()))
+                .thenThrow(new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE));
+
+        OpenAIRequestException thrown = assertThrows(
+                OpenAIRequestException.class,
+                () -> aiService.getNews(language, query)
+        );
+
+        assertEquals(ERROR_NO_OPENAI_RESPONSE, thrown.getMessage());
+
+        verify(openAIService, times(1)).makeRequest(eq(languageDTO), anyString());
+    }
+
+    @Test
+    void generateAndSaveEcoNews_whenAiUserNotExists_shouldCreateAndUseNewUser() {
+        String languageCode = "en";
+        LanguageDTO languageDTO = new LanguageDTO();
+        Language mappedLanguage = new Language();
+        String jsonResponse = """
+                {
+                    "title": "New Title",
+                    "content": "New eco content"
+                }
+                """;
+
+
+        when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(jsonResponse);
+
         when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.empty());
-        when(userRepo.save(any(User.class))).thenReturn(savedUser);
-        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(mockTag));
+        when(languageService.findByCode("ua")).thenReturn(languageDTO);
+        when(modelMapper.map(languageDTO, Language.class)).thenReturn(mappedLanguage);
+        when(userRepo.save(any(User.class))).thenReturn(user);
 
-        aiService.generateAndSaveEcoNews(language);
+        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
-        verify(userRepo).save(argThat(user -> AI_USER_EMAIL.equals(user.getEmail())));
-        verify(ecoNewsRepo).save(any(EcoNews.class));
+        aiService.generateAndSaveEcoNews(languageCode);
+
+        ArgumentCaptor<EcoNews> newsCaptor = ArgumentCaptor.forClass(EcoNews.class);
+        verify(ecoNewsRepo).save(newsCaptor.capture());
+
+        EcoNews savedNews = newsCaptor.getValue();
+        assertEquals("New Title", savedNews.getTitle());
+        assertEquals("New eco content", savedNews.getText());
+        assertEquals(user, savedNews.getAuthor());
+
+        verify(userRepo).save(any(User.class));
     }
 
     @Test
-    void getNews_withMalformedJson_shouldThrowJsonResponseParseException_withInvalidJsonFormatCause() {
-        String invalidJson = "{ invalid json";
+    void generateAndSaveEcoNews_whenTitleAndContentInText_shouldParseViaGetJsonNodes() {
+        String languageCode = "en";
+        String response = """
+                 Title: Clean Energy Future
+                Governments around the world invest in renewables.
+                """;
 
-        when(openAIService.makeRequest(any(), any())).thenReturn(invalidJson);
 
-        JsonResponseParseException ex = assertThrows(
-                JsonResponseParseException.class,
-                () -> aiService.getNews("en", "query")
-        );
+        when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY)).thenReturn(response);
+        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(user));
+        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
-        assertInstanceOf(InvalidJsonFormatException.class, ex.getCause());
+        aiService.generateAndSaveEcoNews(languageCode);
+
+        ArgumentCaptor<EcoNews> newsCaptor = ArgumentCaptor.forClass(EcoNews.class);
+        verify(ecoNewsRepo).save(newsCaptor.capture());
+
+        EcoNews saved = newsCaptor.getValue();
+        assertEquals("Clean Energy Future", saved.getTitle());
+        assertEquals("Governments around the world invest in renewables.", saved.getText());
+        assertEquals(user, saved.getAuthor());
+        assertTrue(saved.getTags().contains(tag));
     }
-
-    @Test
-    void getNews_withNullJson_shouldThrowJsonResponseParseException_withNullPointerCause() {
-        when(openAIService.makeRequest(any(), any())).thenReturn(null);
-
-        JsonResponseParseException ex = assertThrows(
-                JsonResponseParseException.class,
-                () -> aiService.getNews("en", "query")
-        );
-
-        assertInstanceOf(NullPointerException.class, ex.getCause());
-    }
-
-
-
-
-
 }
+
+
+
+
+
