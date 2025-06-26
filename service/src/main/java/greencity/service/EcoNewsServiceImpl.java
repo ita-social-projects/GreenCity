@@ -154,12 +154,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String email) {
         Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
 
-        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
-            ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))),
-                currentUserId)
-            : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
+        return buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
                 (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
                     currentUserId),
                 PageRequest.of(page.getPageNumber(), page.getPageSize(),
