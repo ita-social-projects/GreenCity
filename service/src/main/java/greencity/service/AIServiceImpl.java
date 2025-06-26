@@ -3,11 +3,14 @@ package greencity.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static greencity.constant.OpenAIRequest.*;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import greencity.dto.habit.DurationHabitDto;
+
 import static greencity.constant.OpenAIConstants.*;
+
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.*;
@@ -56,9 +59,9 @@ public class AIServiceImpl implements AIService {
      * @param userId   the ID of the user for whom the forecast is generated
      * @param language the language code (e.g. "en", "ua") in which the advice should be generated
      * @return a sanitized string response containing either a personalized forecast or fallback advice
-     * @throws OpenAIRequestException if the OpenAI API call fails (e.g. no response or internal error)
+     * @throws OpenAIRequestException    if the OpenAI API call fails (e.g. no response or internal error)
      * @throws LanguageNotFoundException if the specified language code is not found in the system
-     * @throws NullPointerException or MappingException if required mapping data is missing
+     * @throws NullPointerException      or MappingException if required mapping data is missing
      */
     @Override
     public String getForecast(Long userId, String language) {
@@ -67,7 +70,7 @@ public class AIServiceImpl implements AIService {
             return getAdvice(userId, language);
         }
         List<DurationHabitDto> durationHabitDtos = habitAssigns.stream()
-            .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class)).toList();
+                .map(habitAssign -> modelMapper.map(habitAssign, DurationHabitDto.class)).toList();
         LanguageDTO languageDTO = languageService.findByCode(language);
         String forecastResponse = openAIService.makeRequest(languageDTO, FORECAST.formatted(durationHabitDtos));
         return sanitizeJsonResponse(forecastResponse);
@@ -87,9 +90,9 @@ public class AIServiceImpl implements AIService {
      * @param userId   the ID of the user requesting advice (not used internally but part of the method signature for consistency)
      * @param language the language code (e.g. "en", "ua") in which the advice should be generated
      * @return a sanitized string containing the generated ecological advice
-     * @throws OpenAIRequestException if the OpenAI service fails to generate a response
+     * @throws OpenAIRequestException    if the OpenAI service fails to generate a response
      * @throws LanguageNotFoundException if the given language code is not supported
-     * @throws NullPointerException or MappingException if habit mapping fails or the habit is null
+     * @throws NullPointerException      or MappingException if habit mapping fails or the habit is null
      */
     @Override
     public String getAdvice(Long userId, String language) {
@@ -112,8 +115,8 @@ public class AIServiceImpl implements AIService {
      * @param query    an optional keyword or phrase to guide news generation; if {@code null}, a generic request is used
      * @return a string containing the parsed and cleaned news content
      * @throws JsonResponseParseException if the JSON content is invalid or cannot be parsed after all retries
-     * @throws OpenAIRequestException if OpenAI does not return a usable response
-     * @throws LanguageNotFoundException if the given language code does not exist in the system
+     * @throws OpenAIRequestException     if OpenAI does not return a usable response
+     * @throws LanguageNotFoundException  if the given language code does not exist in the system
      */
     @Override
     public String getNews(String language, String query) {
@@ -129,9 +132,9 @@ public class AIServiceImpl implements AIService {
      * to the database via {@link EcoNewsRepo}.
      *
      * @param language the language code (e.g. "en", "ua") in which the eco-news should be generated
-     * @throws LanguageNotFoundException if the specified language code is not recognized
-     * @throws OpenAIRequestException if the OpenAI service fails to respond with valid data
-     * @throws EcoNewsCreationException if required metadata (e.g. tags) is missing or the JSON format is invalid
+     * @throws LanguageNotFoundException  if the specified language code is not recognized
+     * @throws OpenAIRequestException     if the OpenAI service fails to respond with valid data
+     * @throws EcoNewsCreationException   if required metadata (e.g. tags) is missing or the JSON format is invalid
      * @throws JsonResponseParseException if the OpenAI response cannot be parsed into valid JSON
      */
     @Override
@@ -142,6 +145,7 @@ public class AIServiceImpl implements AIService {
 
         ecoNewsRepo.save(ecoNews);
     }
+
     /**
      * Builds a news generation prompt for the OpenAI service based on an optional user query.
      * <p>
@@ -173,7 +177,6 @@ public class AIServiceImpl implements AIService {
      * @param language the language code (e.g. "en", "ua") for the news generation request
      * @param query    an optional keyword or phrase to customize the news content; if {@code null}, a generic prompt is used
      * @return the textual content extracted from the AI-generated JSON response
-     *
      * @throws JsonResponseParseException if the response is malformed or parsing fails after all retries
      * @throws OpenAIRequestException     if OpenAI fails to respond and retrying is not possible
      * @throws LanguageNotFoundException  if the language code is not recognized by {@code languageService}
@@ -230,16 +233,14 @@ public class AIServiceImpl implements AIService {
      *
      * @param jsonResponse the sanitized JSON string to be parsed
      * @return the textual content from the {@code "content"} field of the parsed JSON
-     *
      * @throws JsonResponseParseException if the JSON is malformed, missing required fields,
-     *                                     or cannot be parsed into a valid structure
+     *                                    or cannot be parsed into a valid structure
      */
     private String parseContentFromJson(String jsonResponse) {
         try {
             jsonResponse = jsonResponse.trim();
             if (!jsonResponse.startsWith(OPENING_CURLY_BRACE) ||
-                    !jsonResponse.endsWith(CLOSING_CURLY_BRACE))
-            {
+                    !jsonResponse.endsWith(CLOSING_CURLY_BRACE)) {
                 jsonResponse = OPENING_CURLY_BRACE + jsonResponse + CLOSING_CURLY_BRACE;
             }
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
@@ -273,8 +274,7 @@ public class AIServiceImpl implements AIService {
      *
      * @param jsonResponse the raw JSON string containing eco-news data
      * @return a fully constructed {@link EcoNews} entity ready to be saved
-     *
-     * @throws EcoNewsCreationException if no eco-news tags are found or the JSON format is invalid
+     * @throws EcoNewsCreationException   if no eco-news tags are found or the JSON format is invalid
      * @throws JsonResponseParseException if parsing the JSON response fails
      */
     private EcoNews createEcoNewsInstance(String jsonResponse) {
@@ -293,6 +293,7 @@ public class AIServiceImpl implements AIService {
         Tag tag = tags.getFirst();
         return buildEcoNews(title, content, aiGeneratedUser, tag);
     }
+
     /**
      * Parses the given raw JSON response string into a {@link JsonNode}.
      * <p>
@@ -315,6 +316,7 @@ public class AIServiceImpl implements AIService {
             return parseJsonString(sanitizedResponse);
         }
     }
+
     /**
      * Creates and persists a system user representing the AI-generated content author.
      * <p>
@@ -334,6 +336,7 @@ public class AIServiceImpl implements AIService {
                 .build();
         return userRepo.save(user);
     }
+
     /**
      * Constructs a new {@link EcoNews} entity with the specified title, content, author, and tag.
      * <p>
@@ -348,8 +351,7 @@ public class AIServiceImpl implements AIService {
     private EcoNews buildEcoNews(String title,
                                  String content,
                                  User aiGeneratedUser,
-                                 Tag tag)
-    {
+                                 Tag tag) {
         return EcoNews.builder()
                 .creationDate(ZonedDateTime.now())
                 .author(aiGeneratedUser)
@@ -358,6 +360,7 @@ public class AIServiceImpl implements AIService {
                 .tags(List.of(tag))
                 .build();
     }
+
     /**
      * Parses a sanitized response string into a JSON object node containing title and content.
      * <p>
@@ -375,6 +378,7 @@ public class AIServiceImpl implements AIService {
 
         return createJsonNode(title, content);
     }
+
     /**
      * Creates a JSON object node with specified title and content fields.
      *
@@ -389,6 +393,7 @@ public class AIServiceImpl implements AIService {
         jsonNode.put(RESPONSE_JSON_CONTENT_KEY, content);
         return jsonNode;
     }
+
     /**
      * Parses a sanitized JSON string into a {@link JsonNode}.
      * <p>
