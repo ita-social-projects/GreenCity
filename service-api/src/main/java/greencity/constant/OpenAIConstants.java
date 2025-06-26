@@ -3,6 +3,7 @@ package greencity.constant;
 import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 
+//TODO clear unused
 @UtilityClass
 public class OpenAIConstants {
     public static final String OPENAI_MODEL_NAME = "gpt-4o-mini";
@@ -32,16 +33,19 @@ public class OpenAIConstants {
     public static final String ERROR_INVALID_OPENAI_RESPONSE = "Received an invalid response from OpenAI.";
     public static final String ERROR_NO_OPENAI_RESPONSE = "No response received from OpenAI.";
     public static final String ERROR_JSON_INVALID_FORMAT = "Invalid JSON format in OpenAI response.";
-    public static final String ERROR_JSON_PARSE_FAILURE = "Failed to parse OpenAI JSON response.";
+    public static final String ERROR_JSON_PARSE_FAILURE = "Failed to parse OpenAI JSON response: {}";
     public static final String ERROR_INPUT_CANNOT_BE_NULL = "Input value cannot be null.";
     public static final String ERROR_STRING_CANNOT_BE_EMPTY = "String input cannot be blank.";
     public static final String ERROR_LONG_VALUE_MUST_BE_POSITIVE = "Long input must be greater than zero.";
-    public static final String ERROR_PARSING_JSON_AFTER_ATTEMPTS = "Failed to parse JSON response after multiple attempts.";
     public static final String ERROR_NO_TAGS_FOUND = "No tags found for AI-generated content.";
     public static final String ERROR_UNSUPPORTED_INPUT_TYPE = "Error: Unsupported input type - ";
     public static final String ERROR_JSON_KEY_NOT_FOUND = "Expected key " + RESPONSE_JSON_CONTENT_KEY + " not found in JSON.";
     public static final String ERROR_USER_HAS_NO_HABITS = "User does not have any habits.";
+    public static final String ERROR_MAX_ATTEMPTS_REACHED = "Maximum number of attempts reached.";
+    public static final String ERROR_ATTEMPTING_STOPPED = "Critical error - Attempting stopped.";
 
+    public static final Integer MAX_REQUEST_ATTEMPTS = 3;
+    public static final String MESSAGE_CURRENT_ATTEMPT = "Current attempt: {}";
     public static final Integer MAX_ALLOWED_TOKENS = 2048;
     public static final String MESSAGE_ECO_NEWS_LIMIT = "Eco-news can only be generated once per week.";
     public static final String MESSAGE_JSON_VALIDATION_HINT = "Ensure the JSON response is complete and properly formatted.";
@@ -79,8 +83,5 @@ public class OpenAIConstants {
     public static final String AI_USER_NAME = "AI Generated";
     public static final String AI_USER_EMAIL = "ai.generated@example.com";
     public static final String AI_MOCKED_REFRESH_TOKEN = "mocked-refresh-token-key";
-
-
-    public static final int MAX_JSON_PARSE_ATTEMPTS = 3;
 }
 

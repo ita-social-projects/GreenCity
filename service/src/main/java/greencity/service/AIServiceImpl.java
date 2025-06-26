@@ -1,5 +1,6 @@
 package greencity.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static greencity.constant.OpenAIRequest.*;
@@ -72,10 +73,7 @@ public class AIServiceImpl implements AIService {
      */
     @Override
     public String getNews(String language, String query) {
-        LanguageDTO languageDTO = languageService.findByCode(language);
-        String jsonResponse = openAIService.makeRequest(languageDTO, createNewsRequest(query));
-
-        return extractContentFromJson(jsonResponse);
+        return makeRequestWithJsonAnswer(language, query);
     }
 
     /**
@@ -115,33 +113,39 @@ public class AIServiceImpl implements AIService {
         return String.join(" ", baseRequest, MESSAGE_JSON_VALIDATION_HINT);
     }
 
-    private String extractContentFromJson(String jsonResponse) {
-        int retryCount = 0;
-        while (retryCount < MAX_JSON_PARSE_ATTEMPTS) {
+    /**
+     * Makes a request to the OpenAI API to fetch news content based on the provided language and query,
+     * and returns the parsed content from the JSON response.
+     * <p>
+     * The method attempts to fetch the news content multiple times if necessary and handles exceptions
+     * related to JSON parsing and API response issues.
+     *
+     * @param language the language in which the news should be fetched.
+     * @param query    the query to filter news content.
+     * @return the parsed news content as a string.
+     * @throws JsonResponseParseException if the JSON response cannot be parsed or the content key is missing.
+     * @throws OpenAIRequestException if the API request fails due to server issues or validation errors.
+     */
+    private String makeRequestWithJsonAnswer(String language, String query) {
+        LanguageDTO languageDTO = languageService.findByCode(language);
+
+        for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
             try {
-                jsonResponse = sanitizeJsonResponse(jsonResponse);
-
-                if (!isJsonResponseComplete(jsonResponse)) {
-                    if (retryCount == MAX_JSON_PARSE_ATTEMPTS - 1) {
-                        throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
-                                + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX);
-                    }
-                    retryCount++;
-                    continue;
-                }
-
+                String response = openAIService.makeRequest(languageDTO, createNewsRequest(query));
+                String jsonResponse = sanitizeJsonResponse(response);
                 return parseContentFromJson(jsonResponse);
-            } catch (IncompleteJsonException e) {
-                if (retryCount == MAX_JSON_PARSE_ATTEMPTS - 1) {
-                    throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS
-                            + MAX_JSON_PARSE_ATTEMPTS + FORMAT_ATTEMPTS_SUFFIX, e);
+            } catch (JsonResponseParseException e) {
+                log.error(ERROR_JSON_PARSE_FAILURE, e.getMessage());
+                log.error(MESSAGE_CURRENT_ATTEMPT, i);
+            } catch (OpenAIRequestException e) {
+                if (e.getMessage().equals(ERROR_NO_OPENAI_RESPONSE)) {
+                    throw e;
                 }
-            } catch (Exception e) {
-                throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS, e);
             }
-            retryCount++;
         }
-        throw new JsonResponseParseException(ERROR_PARSING_JSON_AFTER_ATTEMPTS);
+
+        log.error(ERROR_MAX_ATTEMPTS_REACHED);
+        throw new JsonResponseParseException(ERROR_MAX_ATTEMPTS_REACHED);
     }
 
     /**
@@ -159,6 +163,7 @@ public class AIServiceImpl implements AIService {
                 .replaceAll(FORMAT_QUOTES_PATTERN, QUOTES_REPLACEMENT);
         return jsonResponse;
     }
+
     /**
      * Parses a sanitized JSON string to extract the "content" field.
      *
@@ -167,26 +172,6 @@ public class AIServiceImpl implements AIService {
      * @throws JsonResponseParseException if parsing fails or content key is missing.
      */
     private String parseContentFromJson(String jsonResponse) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(jsonResponse);
-            if (jsonNode.has(RESPONSE_JSON_CONTENT_KEY)) {
-                return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
-            } else {
-                throw new JsonResponseParseException(ERROR_JSON_KEY_NOT_FOUND);
-            }
-        } catch (Exception e) {
-            throw new JsonResponseParseException(ERROR_JSON_PARSE_FAILURE, e);
-        }
-    }
-    /**
-     * Validates if a given JSON string contains both required "title" and "content" fields.
-     *
-     * @param jsonResponse the JSON response string to check.
-     * @return true if both keys are present and contain textual values, false otherwise.
-     * @throws InvalidJsonFormatException if JSON parsing fails.
-     */
-    private boolean isJsonResponseComplete(String jsonResponse) {
         try {
             jsonResponse = jsonResponse.trim();
             if (!jsonResponse.startsWith(OPENING_CURLY_BRACE) ||
@@ -199,14 +184,19 @@ public class AIServiceImpl implements AIService {
             boolean hasTitle = jsonNode.path(FORMAT_TITLE_KEY).isTextual();
             boolean hasContent = jsonNode.path(RESPONSE_JSON_CONTENT_KEY).isTextual();
 
-            return hasTitle && hasContent;
-        } catch (JsonParseException e) {
-            throw new InvalidJsonFormatException(ERROR_JSON_INVALID_FORMAT, e);
-        } catch (Exception e) {
-            throw new InvalidJsonFormatException(ERROR_JSON_VALIDATION_FAILURE, e);
+            if (!hasTitle || !hasContent) {
+                throw new JsonResponseParseException(ERROR_JSON_INVALID_FORMAT);
+            }
+
+            if (jsonNode.has(RESPONSE_JSON_CONTENT_KEY)) {
+                return jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
+            } else {
+                throw new JsonResponseParseException(ERROR_JSON_KEY_NOT_FOUND);
+            }
+        } catch (JsonParseException | JsonProcessingException e) {
+            throw new JsonResponseParseException(ERROR_JSON_INVALID_FORMAT, e);
         }
     }
-
 
     /**
      * Constructs an {@link EcoNews} instance from a raw JSON response.
