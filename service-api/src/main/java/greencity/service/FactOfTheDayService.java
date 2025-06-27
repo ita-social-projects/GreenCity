@@ -1,10 +1,16 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.dailyfact.AddDailyFactDto;
+import greencity.dto.dailyfact.DailyFactDto;
+import greencity.dto.dailyfact.DailyFactDtoResponse;
+import greencity.dto.dailyfact.UpdateDailyFactDto;
 import greencity.dto.factoftheday.*;
 import greencity.dto.tag.TagDto;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 public interface FactOfTheDayService {
@@ -98,4 +104,12 @@ public interface FactOfTheDayService {
      *         the day
      */
     Set<TagDto> getAllFactOfTheDayTags();
+
+    DailyFactDtoResponse getFreshDailyFactForUser(String email, Locale locale);
+
+    Optional<DailyFactDto> getDailyFactForUser(String email);
+
+    DailyFactDto updateDailyFact(UpdateDailyFactDto dailyFactDto);
+
+    DailyFactDto saveDailyFact(AddDailyFactDto dailyFactDto);
 }
