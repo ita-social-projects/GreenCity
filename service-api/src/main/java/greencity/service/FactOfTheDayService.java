@@ -106,6 +106,14 @@ public interface FactOfTheDayService {
      */
     Set<TagDto> getAllFactOfTheDayTags();
 
+    /**
+     * Retrieves the daily eco fact for the given user and locale. If a fact for today
+     * already exists, it is returned; otherwise, a new one is generated and saved.
+     *
+     * @param email  the email of the user
+     * @param locale the {@link Locale} used to determine the language of the fact
+     * @return a {@link DailyFactDtoResponse} containing the eco fact in the appropriate language
+     */
     DailyFactDtoResponse getDailyFactForUser(String email, Locale locale);
 
     /**
