@@ -3,4 +3,5 @@ package greencity.exception.exceptions;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class EcoNewsCreationException extends RuntimeException {}
+public class EcoNewsCreationException extends RuntimeException {
+}

@@ -67,12 +67,12 @@ public class QuartzLoggingAspect {
             result = joinPoint.proceed();
 
             if (result instanceof Scheduler scheduler) {
-                Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey("ecoNewsGenerationTrigger"));
+                Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(ECO_NEWS_GENERATION_TRIGGER_IDENTITY));
                 Date next = trigger.getNextFireTime();
                 Date previous = trigger.getPreviousFireTime();
 
-                log.info("🔁 Next fire time: {}", next != null ? next : "null");
-                log.info("✅ Previous fire time: {}", previous != null ? previous : "Never executed yet");
+                log.info("[SCHEDULED] Next fire time: {}", next != null ? next : "null");
+                log.info("[EXECUTED] Previous fire time: {}", previous != null ? previous : "Never executed yet");
             }
 
             long endTime = System.currentTimeMillis();

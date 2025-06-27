@@ -3,4 +3,5 @@ package greencity.exception.exceptions;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class OpenAIResponseException extends RuntimeException {}
+public class OpenAIResponseException extends RuntimeException {
+}

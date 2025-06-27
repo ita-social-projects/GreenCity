@@ -55,7 +55,7 @@ public class QuartzConfig {
         if (!scheduler.checkExists(ecoNewsGenerationJobDetail.getKey())) {
             scheduler.scheduleJob(ecoNewsGenerationJobDetail, ecoNewsGenerationTrigger);
         } else if (!scheduler.checkExists(ecoNewsGenerationTrigger.getKey())) {
-            scheduler.scheduleJob(ecoNewsGenerationTrigger);
+            scheduler.rescheduleJob(ecoNewsGenerationTrigger.getKey(), ecoNewsGenerationTrigger);
         }
 
         return scheduler;
@@ -78,7 +78,7 @@ public class QuartzConfig {
                 .withIdentity(ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
                 .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
                 .build();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
         }
     }
