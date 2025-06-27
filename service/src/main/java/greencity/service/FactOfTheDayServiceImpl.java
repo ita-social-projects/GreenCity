@@ -3,23 +3,29 @@ package greencity.service;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.dailyfact.AddDailyFactDto;
+import greencity.dto.dailyfact.DailyFactDto;
+import greencity.dto.dailyfact.DailyFactDtoResponse;
+import greencity.dto.dailyfact.UpdateDailyFactDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.tag.TagDto;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.Language;
-import greencity.entity.Tag;
+import greencity.entity.*;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.repository.DailyFactRepo;
 import greencity.repository.FactOfTheDayRepo;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import greencity.repository.TagsRepo;
+import greencity.repository.UserRepo;
 import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -39,10 +45,13 @@ import static greencity.enums.TagType.FACT_OF_THE_DAY;
 @Scope(proxyMode = ScopedProxyMode.INTERFACES)
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final FactOfTheDayRepo factOfTheDayRepo;
+    private final DailyFactRepo dailyFactRepo;
+    private final UserRepo userRepo;
     private final ModelMapper modelMapper;
     private final LanguageService languageService;
     private final FactOfTheDayTranslationService factOfTheDayTranslationService;
     private final TagsRepo tagsRepo;
+    private final AIService aiService;
     @Resource
     private FactOfTheDayService self;
 
@@ -217,5 +226,72 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     @Override
     public Set<TagDto> getAllFactOfTheDayTags() {
         return factOfTheDayRepo.findAllFactOfTheDayAndHabitTags();
+    }
+
+    public DailyFactDtoResponse getDailyFactForUser(String email, Locale locale) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+
+        Optional<DailyFact> dailyFactOptional = dailyFactRepo.findByEmail(email);
+        ZonedDateTime today =
+            ZonedDateTime.now(ZoneId.systemDefault()).toLocalDate().atStartOfDay(ZoneId.systemDefault());
+
+        if (dailyFactOptional.isPresent()) {
+            DailyFact dailyFact = dailyFactOptional.get();
+            if (dailyFact.getCreatedAt().toLocalDate().equals(today.toLocalDate())) {
+                return buildDailyFactResponse(modelMapper.map(dailyFact, DailyFactDto.class), locale);
+            }
+            String ecoFact = aiService.getEcoFact(user.getId(), locale.getDisplayLanguage());
+            UpdateDailyFactDto updateDailyFactDto = UpdateDailyFactDto.builder()
+                .id(dailyFact.getId())
+                .factEn(ecoFact)
+                .factUk(ecoFact)
+                .build();
+            DailyFactDto dailyFactDto = updateDailyFact(updateDailyFactDto);
+            return buildDailyFactResponse(dailyFactDto, locale);
+        }
+
+        String ecoFact = aiService.getEcoFact(user.getId(), locale.getDisplayLanguage());
+        AddDailyFactDto addDailyFactDto = AddDailyFactDto.builder()
+            .email(email)
+            .factUk(ecoFact)
+            .factEn(ecoFact)
+            .build();
+        DailyFactDto dailyFactDto = saveDailyFact(addDailyFactDto);
+        return buildDailyFactResponse(dailyFactDto, locale);
+    }
+
+    public DailyFactDto updateDailyFact(UpdateDailyFactDto dailyFactDto) {
+        DailyFact existingDailyFact = dailyFactRepo.findById(dailyFactDto.getId()).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.DAILY_FACT_NOT_FOUND + dailyFactDto.getId()));
+
+        DailyFact dailyFact = DailyFact.builder()
+            .id(existingDailyFact.getId())
+            .email(existingDailyFact.getEmail())
+            .factUk(dailyFactDto.getFactUk())
+            .factEn(dailyFactDto.getFactEn())
+            .build();
+
+        return modelMapper.map(dailyFactRepo.save(dailyFact), DailyFactDto.class);
+    }
+
+    public DailyFactDto saveDailyFact(AddDailyFactDto dailyFactDto) {
+        if (dailyFactRepo.existsByEmail(dailyFactDto.getEmail())) {
+            throw new IllegalArgumentException(
+                ErrorMessage.DAILY_FACT_ALREADY_EXISTS_BY_EMAIL + dailyFactDto.getEmail());
+        }
+
+        DailyFact dailyFact = DailyFact.builder()
+            .email(dailyFactDto.getEmail())
+            .factUk(dailyFactDto.getFactUk())
+            .factEn(dailyFactDto.getFactEn())
+            .build();
+
+        return modelMapper.map(dailyFactRepo.save(dailyFact), DailyFactDto.class);
+    }
+
+    private DailyFactDtoResponse buildDailyFactResponse(DailyFactDto dailyFactDto, Locale locale) {
+        String fact = locale.getLanguage().equals("uk") ? dailyFactDto.getFactUk() : dailyFactDto.getFactEn();
+        return new DailyFactDtoResponse(fact);
     }
 }
