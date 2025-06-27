@@ -110,6 +110,17 @@ class AIServiceImplTest {
     }
 
     @Test
+    void getForecast_whenHabitAssignsIsNull_shouldThrowNotFoundException() {
+        when(habitRepo.findRandomHabit()).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> aiService.getForecast(id, language));
+
+        verify(habitRepo).findRandomHabit();
+        verify(openAIService, never()).makeRequest(eq(languageDTO), contains(shortHabitDto.toString()),
+            eq(OpenAIResponseFormat.TEXT));
+    }
+
+    @Test
     void getForecast_whenHabitAssignsExist_shouldReturnForecast() {
         String responseJson = "{\"content\": \"forecast\"}";
         openAIResponseDTO.setContent(responseJson);
@@ -230,6 +241,24 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
             .thenReturn(openAIResponseDTO);
+
+        JsonResponseParseException thrown = assertThrows(
+            JsonResponseParseException.class,
+            () -> aiService.getNews(language, query));
+
+        assertEquals(ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
+
+        verify(openAIService, times(MAX_REQUEST_ATTEMPTS))
+            .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
+    }
+
+    @Test
+    void getNews_whenOpenAIRequestException_shouldRetryAndEventuallyThrow() {
+        String query = "climate";
+
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
+            .thenThrow(new OpenAIRequestException(ERROR_INVALID_OPENAI_RESPONSE));
 
         JsonResponseParseException thrown = assertThrows(
             JsonResponseParseException.class,

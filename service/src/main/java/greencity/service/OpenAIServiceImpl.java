@@ -120,7 +120,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         return validationResults.entrySet().stream()
             .filter(entry -> Objects.isNull(entry.getKey())
-                || entry.getKey().toString().isEmpty())
+                || entry.getKey().toString().trim().isEmpty())
             .map(Map.Entry::getValue)
             .findFirst()
             .orElse(null);

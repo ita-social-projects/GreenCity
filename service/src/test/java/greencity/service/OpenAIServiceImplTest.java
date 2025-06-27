@@ -14,6 +14,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -83,6 +85,17 @@ class OpenAIServiceImplTest {
         OpenAIRequestException ex = assertThrows(
             OpenAIRequestException.class,
             () -> openAIService.makeRequest(language, null, OpenAIResponseFormat.TEXT));
+
+        assertEquals(ERROR_PROMPT_MISSING, ex.getMessage());
+        verify(restClient, never()).post();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    void makeRequestForEmptyPromptTest(String prompt) {
+        OpenAIRequestException ex = assertThrows(
+            OpenAIRequestException.class,
+            () -> openAIService.makeRequest(language, prompt, OpenAIResponseFormat.TEXT));
 
         assertEquals(ERROR_PROMPT_MISSING, ex.getMessage());
         verify(restClient, never()).post();
