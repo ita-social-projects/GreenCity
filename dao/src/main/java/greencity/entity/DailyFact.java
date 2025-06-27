@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.ZonedDateTime;
 
 @Entity

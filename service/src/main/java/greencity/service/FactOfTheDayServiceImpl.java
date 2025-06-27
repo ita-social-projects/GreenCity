@@ -228,6 +228,9 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         return factOfTheDayRepo.findAllFactOfTheDayAndHabitTags();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public DailyFactDtoResponse getDailyFactForUser(String email, Locale locale) {
         User user = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
@@ -261,6 +264,9 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         return buildDailyFactResponse(dailyFactDto, locale);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public DailyFactDto updateDailyFact(UpdateDailyFactDto dailyFactDto) {
         DailyFact existingDailyFact = dailyFactRepo.findById(dailyFactDto.getId()).orElseThrow(
             () -> new NotFoundException(ErrorMessage.DAILY_FACT_NOT_FOUND + dailyFactDto.getId()));
@@ -275,6 +281,9 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         return modelMapper.map(dailyFactRepo.save(dailyFact), DailyFactDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public DailyFactDto saveDailyFact(AddDailyFactDto dailyFactDto) {
         if (dailyFactRepo.existsByEmail(dailyFactDto.getEmail())) {
             throw new IllegalArgumentException(

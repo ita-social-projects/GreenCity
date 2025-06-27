@@ -7,6 +7,8 @@ import greencity.dto.dailyfact.DailyFactDtoResponse;
 import greencity.dto.dailyfact.UpdateDailyFactDto;
 import greencity.dto.factoftheday.*;
 import greencity.dto.tag.TagDto;
+import greencity.dto.dailyfact.DailyFactVO;
+import greencity.exception.exceptions.NotFoundException;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Locale;
@@ -106,7 +108,22 @@ public interface FactOfTheDayService {
 
     DailyFactDtoResponse getDailyFactForUser(String email, Locale locale);
 
+    /**
+     * Updates an existing {@link DailyFactVO} record with new fact content.
+     *
+     * @param dailyFactDto the {@link UpdateDailyFactDto} containing updated fact data
+     * @return the updated {@link DailyFactDto} after persistence in the database
+     * @throws NotFoundException if the fact with the specified ID does not exist
+     */
     DailyFactDto updateDailyFact(UpdateDailyFactDto dailyFactDto);
 
+    /**
+     * Saves a new {@link DailyFactVO} for a user. If a fact already exists for the given email,
+     * an exception is thrown.
+     *
+     * @param dailyFactDto the {@link AddDailyFactDto} containing new fact data
+     * @return the saved {@link DailyFactDto} after persistence in the database
+     * @throws IllegalArgumentException if a fact already exists for the given email address
+     */
     DailyFactDto saveDailyFact(AddDailyFactDto dailyFactDto);
 }
