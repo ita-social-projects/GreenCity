@@ -1,5 +1,7 @@
 package greencity.service;
 
+import java.util.Optional;
+
 /**
  * Interface for interacting with an AI-based forecasting service.
  */
@@ -31,4 +33,8 @@ public interface AIService {
      * @return The generated news as a string in the specified language.
      */
     String getNews(String language, String query);
+
+    String getEcoFact(Long userId, String language);
+
+    String getEcoFact(String language, String query);
 }
