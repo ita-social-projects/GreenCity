@@ -634,7 +634,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusIsInProgress(userId);
         if (habitAssignList.isEmpty()) {
             throw new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS + userId);
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_IN_PROGRESS_STATUS + userId);
         }
         return habitAssignList.stream()
             .map(habitAssign -> UserToDoAndCustomToDoListsDto

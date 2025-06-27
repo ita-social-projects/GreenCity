@@ -1,7 +1,5 @@
 package greencity.dto.dailyfact;
 
-import greencity.constant.ServiceValidationConstants;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -10,20 +8,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @EqualsAndHashCode
 public class UpdateDailyFactDto {
     @NotNull
     @Positive
     Long id;
-
-    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP)
-    private String email;
 
     @NotBlank
     @Length(max = 300)
