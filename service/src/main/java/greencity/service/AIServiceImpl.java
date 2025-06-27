@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,5 +45,21 @@ public class AIServiceImpl implements AIService {
     public String getNews(String language, String query) {
         return query == null ? openAIService.makeRequest(language + OpenAIRequest.NEWS_WITHOUT_QUERY)
             : openAIService.makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query);
+    }
+
+    @Override
+    public String getEcoFact(Long userId, String language) {
+        List<ShortHabitDto> shortHabitDtos = habitAssignRepo.findAllByUserId(userId).stream()
+            .map((habitAssign -> modelMapper.map(habitAssign.getHabit(), ShortHabitDto.class))).toList();
+        if (shortHabitDtos.isEmpty()) {
+            return openAIService.makeRequest(language + OpenAIRequest.ECO_FACT);
+        }
+        return openAIService.makeRequest(language + OpenAIRequest.ECO_FACT_BY_HABITS + shortHabitDtos);
+    }
+
+    @Override
+    public String getEcoFact(String language, String query) {
+        return query == null ? openAIService.makeRequest(language + OpenAIRequest.ECO_FACT)
+            : openAIService.makeRequest(language + OpenAIRequest.ECO_FACT_BY_QUERY + query);
     }
 }
