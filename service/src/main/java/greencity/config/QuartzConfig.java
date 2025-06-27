@@ -25,6 +25,7 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
  * Uses a cron expression from the configuration file and automatically fixes it
  * if both day-of-month and day-of-week are specified, which is not supported by
  * Quartz.
+ * </p>
  */
 @Configuration
 @RequiredArgsConstructor

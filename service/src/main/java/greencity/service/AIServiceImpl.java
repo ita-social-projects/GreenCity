@@ -23,7 +23,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
 import static greencity.constant.OpenAIRequest.*;
 import static greencity.constant.OpenAIConstants.*;
@@ -51,11 +50,13 @@ public class AIServiceImpl implements AIService {
      * {@link DurationHabitDto}, and a forecast prompt is created and sent to the
      * OpenAI service. The response from OpenAI is sanitized to remove any markdown
      * or formatting artifacts before returning.
+     * </p>
      *
      * <p>
      * If the user has no assigned habits, this method falls back to
      * {@link #getAdvice(Long, String)}, which generates general ecological advice
      * based on a randomly selected habit.
+     * </p>
      *
      * @param userId   the ID of the user for whom the forecast is generated
      * @param language the language code (e.g. "en", "ua") in which the advice
@@ -93,10 +94,12 @@ public class AIServiceImpl implements AIService {
      * and sends it to the OpenAI service to generate human-like advice content. The
      * response is then sanitized to remove any unnecessary formatting or markdown
      * artifacts before returning.
+     * </p>
      *
      * <p>
      * This method is typically used as a fallback when the user has no assigned
      * habits, or when personalized forecasting is not possible.
+     * </p>
      *
      * @param userId   the ID of the user requesting advice (not used internally but
      *                 part of the method signature for consistency)
@@ -134,6 +137,7 @@ public class AIServiceImpl implements AIService {
      * the returned JSON response to extract the content field. The method includes
      * retry logic for failed or malformed responses and sanitizes the response
      * before parsing.
+     * </p>
      *
      * @param language the language code (e.g. "en", "ua") in which the news content
      *                 should be generated
@@ -161,6 +165,7 @@ public class AIServiceImpl implements AIService {
      * extract the title and content, then constructs a new {@link EcoNews} entity
      * using a system AI-generated user and the first available eco-news tag. The
      * generated news is then saved to the database via {@link EcoNewsRepo}.
+     * </p>
      *
      * @param language the language code (e.g. "en", "ua") in which the eco-news
      *                 should be generated
@@ -194,6 +199,7 @@ public class AIServiceImpl implements AIService {
      * {@link String#formatted(Object...)}. In both cases, a JSON validation hint is
      * appended to the end of the prompt to increase the likelihood of receiving
      * well-structured JSON from OpenAI.
+     * </p>
      *
      * @param query an optional user-defined search phrase for generating eco-news;
      *              if {@code null}, a generic prompt will be used
@@ -218,6 +224,7 @@ public class AIServiceImpl implements AIService {
      * or OpenAI does not respond correctly, the request is retried up to a fixed
      * number of attempts. If all attempts fail, a
      * {@link JsonResponseParseException} is thrown.
+     * </p>
      *
      * @param language the language code (e.g. "en", "ua") for the news generation
      *                 request
@@ -264,6 +271,7 @@ public class AIServiceImpl implements AIService {
      * This includes cleaning up markdown artifacts such as bold, italic, code
      * blocks, quoted formatting, and custom JSON formatting hints. The purpose is
      * to ensure that the JSON is clean and easier to parse reliably.
+     * </p>
      *
      * @param jsonResponse the raw JSON string received from OpenAI
      * @return a sanitized version of the JSON string, free from formatting
@@ -289,6 +297,7 @@ public class AIServiceImpl implements AIService {
      * of both the title and content fields. If the required fields are missing,
      * invalid, or the structure is malformed, a {@link JsonResponseParseException}
      * is thrown.
+     * </p>
      *
      * @param jsonResponse the sanitized JSON string to be parsed
      * @return the textual content from the {@code "content"} field of the parsed
@@ -336,6 +345,7 @@ public class AIServiceImpl implements AIService {
      * If no tags are found, throws an {@link EcoNewsCreationException}. Finally,
      * constructs and returns a new {@link EcoNews} object with the extracted data,
      * author, and tag.
+     * </p>
      *
      * @param jsonResponse the raw JSON string containing eco-news data
      * @return a fully constructed {@link EcoNews} entity ready to be saved
@@ -369,6 +379,7 @@ public class AIServiceImpl implements AIService {
      * as a formatted title-content block using {@link #getJsonNodes(String)};
      * otherwise, it parses the string as a regular JSON object via
      * {@link #parseJsonString(String)}.
+     * </p>
      *
      * @param jsonResponse the raw JSON response string to parse
      * @return a {@link JsonNode} representing the parsed JSON structure
@@ -393,6 +404,7 @@ public class AIServiceImpl implements AIService {
      * <p>
      * This user has predefined attributes such as a fixed name, email, role, and
      * language ("ua"). The user is saved in the repository and returned.
+     * </p>
      *
      * @return the newly created and saved {@link User} entity representing the AI
      *         author
@@ -415,6 +427,7 @@ public class AIServiceImpl implements AIService {
      *
      * <p>
      * Sets the creation date to the current date and time.
+     * </p>
      *
      * @param title           the title of the eco-news article
      * @param content         the body text of the eco-news article
@@ -444,6 +457,7 @@ public class AIServiceImpl implements AIService {
      * Splits the response by the first newline. The first part is treated as the
      * title (after removing the title prefix), and the second part as the content.
      * Both are trimmed before being added to the JSON node.
+     * </p>
      *
      * @param sanitizedResponse the sanitized string containing a title and content
      *                          separated by a newline
@@ -479,6 +493,7 @@ public class AIServiceImpl implements AIService {
      * markers, title prefixes, escaped asterisks, markdown asterisks, and markdown
      * headers to ensure clean JSON. If parsing fails, logs an error and throws an
      * {@link EcoNewsCreationException}.
+     * </p>
      *
      * @param sanitizedResponse the JSON string cleaned of formatting artifacts
      * @return the parsed {@link JsonNode} representing the JSON structure
