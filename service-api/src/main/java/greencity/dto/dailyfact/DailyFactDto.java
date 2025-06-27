@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-import java.time.ZonedDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,6 +30,4 @@ public class DailyFactDto {
     @NotBlank
     @Length(max = 300)
     private String factUk;
-
-    private ZonedDateTime createdAt;
 }
