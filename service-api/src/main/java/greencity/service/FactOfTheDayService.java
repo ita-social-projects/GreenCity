@@ -10,7 +10,6 @@ import greencity.dto.tag.TagDto;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 
 public interface FactOfTheDayService {
