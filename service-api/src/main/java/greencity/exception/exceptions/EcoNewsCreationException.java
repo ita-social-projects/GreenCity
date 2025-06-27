@@ -1,11 +1,6 @@
 package greencity.exception.exceptions;
 
-public class EcoNewsCreationException extends RuntimeException {
-    public EcoNewsCreationException(String message) {
-        super(message);
-    }
+import lombok.experimental.StandardException;
 
-    public EcoNewsCreationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+@StandardException
+public class EcoNewsCreationException extends RuntimeException {}

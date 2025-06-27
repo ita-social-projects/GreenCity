@@ -22,6 +22,7 @@ public class ErrorMessage {
         "User has reached the limit of active habit assigns: ";
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
     public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
+    public static final String HABIT_NOT_FOUND = "No habits found in the system.";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
     public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
     public static final String TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND =

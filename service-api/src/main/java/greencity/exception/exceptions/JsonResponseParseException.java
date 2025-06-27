@@ -1,11 +1,6 @@
 package greencity.exception.exceptions;
 
-public class JsonResponseParseException extends RuntimeException {
-    public JsonResponseParseException(String message) {
-        super(message);
-    }
+import lombok.experimental.StandardException;
 
-    public JsonResponseParseException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+@StandardException
+public class JsonResponseParseException extends RuntimeException {}

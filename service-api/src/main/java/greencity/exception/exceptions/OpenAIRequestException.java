@@ -1,11 +1,6 @@
 package greencity.exception.exceptions;
 
-public class OpenAIRequestException extends RuntimeException {
-    public OpenAIRequestException(String message) {
-        super(message);
-    }
+import lombok.experimental.StandardException;
 
-    public OpenAIRequestException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+@StandardException
+public class OpenAIRequestException extends RuntimeException {}

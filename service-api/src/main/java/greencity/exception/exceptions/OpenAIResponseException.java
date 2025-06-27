@@ -1,11 +1,6 @@
 package greencity.exception.exceptions;
 
-public class OpenAIResponseException extends RuntimeException {
-    public OpenAIResponseException(String message) {
-        super(message);
-    }
+import lombok.experimental.StandardException;
 
-    public OpenAIResponseException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+@StandardException
+public class OpenAIResponseException extends RuntimeException {}

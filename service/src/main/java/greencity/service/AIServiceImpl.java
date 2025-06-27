@@ -22,6 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
 import static greencity.constant.OpenAIRequest.*;
 import static greencity.constant.OpenAIConstants.*;
 
@@ -109,6 +112,10 @@ public class AIServiceImpl implements AIService {
     @Override
     public String getAdvice(Long userId, String language) {
         Habit habit = habitRepo.findRandomHabit();
+        if (habit == null) {
+            log.error(HABIT_NOT_FOUND);
+            throw new NotFoundException(HABIT_NOT_FOUND);
+        }
         ShortHabitDto shortHabitDto = modelMapper.map(habit, ShortHabitDto.class);
         LanguageDTO languageDTO = languageService.findByCode(language);
         OpenAIResponseDTO forecastResponse = openAIService.makeRequest(languageDTO,
@@ -166,6 +173,7 @@ public class AIServiceImpl implements AIService {
      * @throws JsonResponseParseException if the OpenAI response cannot be parsed
      *                                    into valid JSON
      */
+    @Transactional
     @Override
     public void generateAndSaveEcoNews(String language) {
         LanguageDTO languageDTO = languageService.findByCode(language);
@@ -441,7 +449,7 @@ public class AIServiceImpl implements AIService {
      *                          separated by a newline
      * @return an {@link ObjectNode} with "title" and "content" fields populated
      */
-    private static @NotNull ObjectNode getJsonNodes(String sanitizedResponse) {
+    private @NotNull ObjectNode getJsonNodes(String sanitizedResponse) {
         String[] parts = sanitizedResponse.split(FORMAT_NEW_LINE, 2);
         String title = parts[0].replace(FORMAT_TITLE_PREFIX, FORMAT_EMPTY_STRING).trim();
         String content = parts.length > 1 ? parts[1].trim() : FORMAT_EMPTY_STRING;
@@ -456,8 +464,7 @@ public class AIServiceImpl implements AIService {
      * @param content the content text to set in the JSON node
      * @return an {@link ObjectNode} containing the title and content fields
      */
-    private static ObjectNode createJsonNode(String title, String content) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectNode createJsonNode(String title, String content) {
         ObjectNode jsonNode = objectMapper.createObjectNode();
         jsonNode.put(FORMAT_TITLE_KEY, title);
         jsonNode.put(RESPONSE_JSON_CONTENT_KEY, content);
@@ -490,7 +497,7 @@ public class AIServiceImpl implements AIService {
                 .trim();
 
             return objectMapper.readTree(sanitizedResponse);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             log.error(ERROR_ECO_NEWS_CREATION_FAILED);
             throw new EcoNewsCreationException(ERROR_JSON_INVALID_FORMAT + sanitizedResponse, e);
         }
