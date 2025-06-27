@@ -12,7 +12,8 @@ import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.ZonedDateTime;
 
 @Entity
@@ -37,7 +38,7 @@ public class DailyFact {
     @Column(name = "fact_uk", nullable = false, length = 300)
     private String factUk;
 
-    @CreationTimestamp
+    @UpdateTimestamp
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 }
