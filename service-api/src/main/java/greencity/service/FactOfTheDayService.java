@@ -105,9 +105,7 @@ public interface FactOfTheDayService {
      */
     Set<TagDto> getAllFactOfTheDayTags();
 
-    DailyFactDtoResponse getFreshDailyFactForUser(String email, Locale locale);
-
-    Optional<DailyFactDto> getDailyFactForUser(String email);
+    DailyFactDtoResponse getDailyFactForUser(String email, Locale locale);
 
     DailyFactDto updateDailyFact(UpdateDailyFactDto dailyFactDto);
 
