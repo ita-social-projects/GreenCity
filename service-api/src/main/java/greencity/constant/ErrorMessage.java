@@ -47,6 +47,8 @@ public class ErrorMessage {
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
     public static final String FACT_OF_THE_DAY_PROPERTY_NOT_FOUND =
         "For type Fact of the day  not found this property :";
+    public static final String DAILY_FACT_NOT_FOUND = "The daily fact does not exist by id: ";
+    public static final String DAILY_FACT_ALREADY_EXISTS_BY_EMAIL = "The daily fact already exists by this email: ";
     public static final String SUBSCRIPTION_EXIST =
         "Subscriber with this email address and subscription type is exists.";
     public static final String UBSCRIPTION_BY_TOKEN_NOT_FOUND = "Subscriber with this token not found.";
@@ -59,8 +61,8 @@ public class ErrorMessage {
         "There is no habit assign for current user and such habit with id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID =
         "There is no habit assign for current user and such habit assign id: ";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS =
-        "There is no inprogress habit assign for current user: ";
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_IN_PROGRESS_STATUS =
+        "There is no in progress habit assign for current user: ";
     public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
         "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
     public static final String HABIT_ASSIGN_ENROLL_RANGE_REACHED =
