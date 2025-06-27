@@ -14,7 +14,10 @@ public class OpenAIRequest {
         + "(maximum length 1350 characters) on the topic:";
     public static final String NEWS_WITHOUT_QUERY = "generate a real and relevant eco-news story on any topic according"
         + " to the latest trends in the world (maximum length 1350 characters)";
-    public static final String ECO_FACT = "";
-    public static final String ECO_FACT_BY_QUERY = "";
-    public static final String ECO_FACT_BY_HABITS = "";
+    public static final String ECO_FACT =
+        "generate a concise and relevant eco fact (maximum length 300 characters) about a general environmental topic.";
+    public static final String ECO_FACT_BY_QUERY =
+        "generate a concise and relevant eco fact (maximum length 300 characters) based on the topic: ";
+    public static final String ECO_FACT_BY_HABITS =
+        "generate a concise and personalized eco fact (maximum length 300 characters) based on the user's habits: ";
 }
