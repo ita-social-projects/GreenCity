@@ -246,6 +246,7 @@ public class SecurityConfig {
                     "/habit/statistic/acquired/count",
                     "/habit/statistic/in-progress/count",
                     FACT_OF_THE_DAY + RANDOM + "/by-tags",
+                    FACT_OF_THE_DAY + "/personalized",
                     "/place/{status}",
                     "/place/v2/filteredPlacesCategories",
                     "/social-networks/image",
