@@ -1,6 +1,9 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
+import greencity.dto.dailyfact.DailyFactDtoResponse;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.service.FactOfTheDayService;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
+import java.util.Locale;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,5 +63,31 @@ public class FactOfTheDayController {
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDayByTags(
         @Parameter(hidden = true) Principal principal) {
         return ResponseEntity.ok(factOfTheDayService.getRandomFactOfTheDayForUser(principal.getName()));
+    }
+
+    /**
+     * Returns a personalized eco fact for the authenticated user and requested
+     * locale.
+     *
+     * @param principal the authenticated user's principal
+     * @param locale    the requested {@link Locale} used for language selection
+     * @return a {@link ResponseEntity} containing the localized eco fact of the
+     *         day.
+     */
+    @Operation(summary = "Get personalized daily eco fact.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = DailyFactDtoResponse.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/personalized")
+    @ApiLocale
+    public ResponseEntity<DailyFactDtoResponse> getDailyFactOfTheDay(
+        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        return ResponseEntity.ok(factOfTheDayService.getDailyFactForUser(principal.getName(), locale));
     }
 }
