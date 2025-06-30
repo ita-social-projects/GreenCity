@@ -82,7 +82,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -683,11 +683,17 @@ class EcoNewsServiceImplTest {
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
         Join<EcoNews, User> followersJoin = mock(Join.class);
         Path<Long> userIdPath = mock(Path.class);
+        Path<Object> hiddenPath = mock(Path.class);
         Predicate favoritePredicate = mock(Predicate.class);
+        Predicate hiddenPredicate = mock(Predicate.class);
+        Predicate combinedPredicate = mock(Predicate.class);
 
         when(root.<EcoNews, User>join("followers")).thenReturn(followersJoin);
         when(followersJoin.<Long>get("id")).thenReturn(userIdPath);
+        when(root.get("hidden")).thenReturn(hiddenPath);
         when(criteriaBuilder.equal(userIdPath, mockUser.getId())).thenReturn(favoritePredicate);
+        when(criteriaBuilder.equal(hiddenPath, false)).thenReturn(hiddenPredicate);
+        when(criteriaBuilder.and(any(Predicate[].class))).thenReturn(combinedPredicate);
         when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
 
         Predicate result = ecoNewsService.getPredicate(
@@ -704,7 +710,7 @@ class EcoNewsServiceImplTest {
         verify(criteriaBuilder, times(1)).equal(userIdPath, mockUser.getId());
 
         assertNotNull(result);
-        assertThat(result, is(favoritePredicate));
+        assertThat(result, is(combinedPredicate));
     }
 
     @Test
@@ -715,11 +721,11 @@ class EcoNewsServiceImplTest {
         Page<EcoNews> page = new PageImpl<>(ecoNewsList, pageable, ecoNewsList.size());
 
         when(userRepo.findByEmail("user@example.com")).thenReturn(Optional.of(mockUser));
-        when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
+        when(ecoNewsRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
         ecoNewsService.find(pageable, null, null, null, false, "user@example.com");
 
-        verify(ecoNewsRepo, times(1)).findAll(any(Pageable.class));
+        verify(ecoNewsRepo, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
