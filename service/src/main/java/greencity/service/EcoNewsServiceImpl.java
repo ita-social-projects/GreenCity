@@ -155,11 +155,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
 
         return buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
-                    currentUserId),
-                PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))),
-                currentUserId);
+            (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
+                currentUserId),
+            PageRequest.of(page.getPageNumber(), page.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "creationDate"))),
+            currentUserId);
     }
 
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
