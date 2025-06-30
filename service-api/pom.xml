@@ -114,5 +114,11 @@
             <version>2.2.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.deepl.api</groupId>
+            <artifactId>deepl-java</artifactId>
+            <version>1.9.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
