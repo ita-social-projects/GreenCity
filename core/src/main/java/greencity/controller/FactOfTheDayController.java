@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.dailyfact.DailyFactDtoResponse;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -87,7 +86,7 @@ public class FactOfTheDayController {
     @ApiLocale
     public ResponseEntity<DailyFactDtoResponse> getDailyFactOfTheDay(
         @Parameter(hidden = true) Principal principal,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) Locale locale) {
         return ResponseEntity.ok(factOfTheDayService.getDailyFactForUser(principal.getName(), locale));
     }
 }
