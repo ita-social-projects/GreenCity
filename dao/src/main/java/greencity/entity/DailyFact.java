@@ -2,15 +2,19 @@ package greencity.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.ToString;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.ZonedDateTime;
@@ -22,14 +26,15 @@ import java.time.ZonedDateTime;
 @Setter
 @Builder
 @EqualsAndHashCode(exclude = {"createdAt"})
+@ToString(exclude = {"createdAt"})
 @Table(name = "daily_fact")
 public class DailyFact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private User user;
 
     @Column(name = "fact_en", nullable = false, length = 300)
     private String factEn;
