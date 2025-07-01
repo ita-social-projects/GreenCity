@@ -59,8 +59,13 @@ public class DeepLTranslationService implements TranslationService {
             TextResult textResult =
                 deeplClient.translateText(text, sourceLanguage, targetLanguage, textTranslationOptions);
             return textResult.getText();
-        } catch (DeepLException | InterruptedException exception) {
+        } catch (DeepLException exception) {
             log.error("An error occurred during translation, reason: {}", exception.getMessage());
+            throw new TranslationException(
+                String.format(ErrorMessage.TRANSLATION_PROCESSING_ERROR, sourceLanguage, targetLanguage));
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            log.error("Translation was interrupted, reason: {}", exception.getMessage());
             throw new TranslationException(
                 String.format(ErrorMessage.TRANSLATION_PROCESSING_ERROR, sourceLanguage, targetLanguage));
         }
