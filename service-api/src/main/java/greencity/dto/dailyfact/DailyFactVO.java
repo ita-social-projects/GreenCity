@@ -16,7 +16,6 @@ import java.time.ZonedDateTime;
 @Builder
 @EqualsAndHashCode(exclude = {"createdAt"})
 public class DailyFactVO {
-
     private Long id;
 
     private UserVO userVO;

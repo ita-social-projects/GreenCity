@@ -36,7 +36,7 @@ public class DeepLTranslationServiceTest {
 
         when(result.getText()).thenReturn(expected);
         when(deeplClient.translateText(eq(input), eq("en"), eq("uk"), any()))
-                .thenReturn(result);
+            .thenReturn(result);
 
         String actual = translationService.translateText(input, "en", "uk");
 

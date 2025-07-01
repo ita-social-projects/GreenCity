@@ -1,7 +1,5 @@
 package greencity.service;
 
-import java.util.Optional;
-
 /**
  * Interface for interacting with an AI-based forecasting service.
  */

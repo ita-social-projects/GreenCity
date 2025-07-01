@@ -163,7 +163,7 @@ class AIServiceImplTest {
 
         String expectedResponse = "Eco Fact With Habits";
         when(openAIService.makeRequest(language + OpenAIRequest.ECO_FACT_BY_HABITS + List.of(shortHabitDto)))
-                .thenReturn(expectedResponse);
+            .thenReturn(expectedResponse);
 
         String result = aiServiceImpl.getEcoFact(id, language);
 
@@ -193,7 +193,7 @@ class AIServiceImplTest {
         String query = "plastic";
         String expectedResponse = "Eco Fact about plastic";
         when(openAIService.makeRequest(language + OpenAIRequest.ECO_FACT_BY_QUERY + query))
-                .thenReturn(expectedResponse);
+            .thenReturn(expectedResponse);
 
         String result = aiServiceImpl.getEcoFact(language, query);
 
@@ -205,7 +205,7 @@ class AIServiceImplTest {
     void getEcoFact_WithoutQuery_ReturnsGenericFact() {
         String expectedResponse = "General Eco Fact";
         when(openAIService.makeRequest(language + OpenAIRequest.ECO_FACT))
-                .thenReturn(expectedResponse);
+            .thenReturn(expectedResponse);
 
         String result = aiServiceImpl.getEcoFact(language, null);
 
