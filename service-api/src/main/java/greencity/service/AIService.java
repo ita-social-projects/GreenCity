@@ -34,7 +34,23 @@ public interface AIService {
      */
     String getNews(String language, String query);
 
+    /**
+     * Generates an eco-fact personalized for the user based on their ID and
+     * language.
+     *
+     * @param userId   The ID of the user for whom the eco-fact is being generated.
+     * @param language The preferred language for the eco-fact.
+     * @return The personalized eco-fact as a string in the specified language.
+     */
     String getEcoFact(Long userId, String language);
 
+    /**
+     * Generates a general eco-fact based on the specified language and query.
+     *
+     * @param language The preferred language for the eco-fact.
+     * @param query    The eco-related topic or keyword. If empty, a random eco-fact
+     *                 may be returned.
+     * @return The eco-fact as a string in the specified language.
+     */
     String getEcoFact(String language, String query);
 }

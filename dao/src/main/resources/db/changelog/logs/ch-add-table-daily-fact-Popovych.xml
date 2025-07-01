@@ -9,18 +9,32 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="email" type="VARCHAR">
+
+            <column name="user_id" type="BIGINT">
                 <constraints nullable="false" unique="true"/>
             </column>
+
             <column name="fact_en" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
+
             <column name="fact_uk" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
+
             <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="daily_fact"
+                baseColumnNames="user_id"
+                constraintName="fk_daily_fact_user"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                deferrable="false"
+                initiallyDeferred="false"
+                onDelete="CASCADE"/>
     </changeSet>
 </databaseChangeLog>
