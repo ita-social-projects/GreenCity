@@ -2,7 +2,6 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.constant.HttpStatuses;
-import greencity.dto.dailyfact.DailyFactDtoResponse;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.service.FactOfTheDayService;
@@ -75,8 +74,7 @@ public class FactOfTheDayController {
      */
     @Operation(summary = "Get personalized daily eco fact.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = DailyFactDtoResponse.class))),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
@@ -84,7 +82,7 @@ public class FactOfTheDayController {
     })
     @GetMapping("/personalized")
     @ApiLocale
-    public ResponseEntity<DailyFactDtoResponse> getDailyFactOfTheDay(
+    public ResponseEntity<String> getDailyFactOfTheDay(
         @Parameter(hidden = true) Principal principal,
         @Parameter(hidden = true) Locale locale) {
         return ResponseEntity.ok(factOfTheDayService.getDailyFactForUser(principal.getName(), locale));
