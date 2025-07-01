@@ -38,10 +38,10 @@ class AIServiceImplTest {
     private ModelMapper modelMapper;
     @InjectMocks
     private AIServiceImpl aiServiceImpl;
-    private HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);
-    private DurationHabitDto durationHabitDto = new DurationHabitDto("", 0L);
-    private Long id = 1L;
-    private String language = "en";
+    private final HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);
+    private final DurationHabitDto durationHabitDto = new DurationHabitDto("", 0L);
+    private final Long id = 1L;
+    private final String language = "en";
     private final String habitTranslationName = "Test Habit";
     private final HabitTranslation habitTranslation = HabitTranslation.builder().name(habitTranslationName).build();
 
@@ -157,7 +157,6 @@ class AIServiceImplTest {
 
     @Test
     void getEcoFact_WithHabits_ReturnsExpectedResponse() {
-        HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);
         when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
         when(modelMapper.map(habitAssign.getHabit(), ShortHabitDto.class)).thenReturn(shortHabitDto);
 

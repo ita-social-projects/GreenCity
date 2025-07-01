@@ -21,7 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DeepLTranslationServiceTest {
+class DeepLTranslationServiceTest {
     @Mock
     private DeepLClient deeplClient;
 
