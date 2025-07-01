@@ -1,5 +1,6 @@
 package greencity.dto.dailyfact;
 
+import greencity.dto.user.UserVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ public class DailyFactVO {
 
     private Long id;
 
-    private String email;
+    private UserVO userVO;
 
     private String factEn;
 

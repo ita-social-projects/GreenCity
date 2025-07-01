@@ -1,7 +1,6 @@
 package greencity.dto.dailyfact;
 
-import greencity.constant.ServiceValidationConstants;
-import jakarta.validation.constraints.Email;
+import greencity.dto.user.UserVO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -20,8 +19,8 @@ public class DailyFactDto {
     @NotNull
     private Long id;
 
-    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP)
-    private String email;
+    @NotNull
+    private UserVO userVO;
 
     @NotBlank
     @Length(max = 300)
