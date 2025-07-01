@@ -254,28 +254,13 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                 return locale.equals(Locale.ENGLISH) ? existingDailyFact.getFactEn() : existingDailyFact.getFactUk();
             }
 
-            String ecoFactOriginal = aiService.getEcoFact(user.getId(), locale.getDisplayLanguage());
-            String translatedEcoFact =
-                translationService.translateText(ecoFactOriginal, locale.getLanguage(), targetLanguage);
-
-            DailyFactDto updateDailyFactDto = DailyFactDto.builder()
-                .id(existingDailyFact.getId())
-                .userVO(modelMapper.map(user, UserVO.class))
-                .factEn(targetLanguage.equals("uk") ? ecoFactOriginal : translatedEcoFact)
-                .factUk(targetLanguage.equals("uk") ? translatedEcoFact : ecoFactOriginal)
-                .build();
+            DailyFactDto updateDailyFactDto =
+                generateAndTranslateFact(user, locale, targetLanguage, existingDailyFact.getId());
             DailyFactVO dailyFact = updateDailyFact(updateDailyFactDto);
             return locale.equals(Locale.ENGLISH) ? dailyFact.getFactEn() : dailyFact.getFactUk();
         }
 
-        String ecoFactOriginal = aiService.getEcoFact(user.getId(), locale.getDisplayLanguage());
-        String translatedEcoFact =
-            translationService.translateText(ecoFactOriginal, locale.getLanguage(), targetLanguage);
-        DailyFactDto addDailyFactDto = DailyFactDto.builder()
-            .userVO(modelMapper.map(user, UserVO.class))
-            .factEn(targetLanguage.equals("uk") ? ecoFactOriginal : translatedEcoFact)
-            .factUk(targetLanguage.equals("uk") ? translatedEcoFact : ecoFactOriginal)
-            .build();
+        DailyFactDto addDailyFactDto = generateAndTranslateFact(user, locale, targetLanguage, null);
         DailyFactVO dailyFact = saveDailyFact(addDailyFactDto);
         return locale.equals(Locale.ENGLISH) ? dailyFact.getFactEn() : dailyFact.getFactUk();
     }
@@ -313,5 +298,18 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
             .build();
 
         return modelMapper.map(dailyFactRepo.save(dailyFact), DailyFactVO.class);
+    }
+
+    private DailyFactDto generateAndTranslateFact(User user, Locale locale, String targetLanguage,
+        Long existingFactId) {
+        String ecoFactOriginal = aiService.getEcoFact(user.getId(), locale.getDisplayLanguage());
+        String translatedEcoFact =
+            translationService.translateText(ecoFactOriginal, locale.getLanguage(), targetLanguage);
+        return DailyFactDto.builder()
+            .id(existingFactId)
+            .userVO(modelMapper.map(user, UserVO.class))
+            .factEn(targetLanguage.equals("uk") ? ecoFactOriginal : translatedEcoFact)
+            .factUk(targetLanguage.equals("uk") ? translatedEcoFact : ecoFactOriginal)
+            .build();
     }
 }

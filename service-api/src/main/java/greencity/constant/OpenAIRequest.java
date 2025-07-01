@@ -20,11 +20,11 @@ public class OpenAIRequest {
             + "Ensure the fact is engaging, educational, and no longer than 300 characters. "
             + "Avoid speculation; cite well-established environmental knowledge.";
     public static final String ECO_FACT_BY_QUERY =
-        "generate a concise, fact-based eco insight (max 300 characters) specifically about: {query} "
-            + "in the specified language. Focus on verified environmental science, avoiding opinions.";
+        "generate a concise, fact-based eco insight (max 300 characters) in the specified language. "
+            + "Focus on verified environmental science, avoiding opinions. Fact should be specifically about: ";
     public static final String ECO_FACT_BY_HABITS =
-        "generate a personalized eco fact (max 300 characters) based on these user habits: {habits} "
-            + "in the specified language. Tailor the fact to improve sustainability "
-            + "(e.g., 'Using cold water saves X energy vs. hot.'). "
-            + "If habits are irrelevant/unclear, provide a general eco fact instead.";
+        "generate a personalized eco fact (max 300 characters) in the specified language. "
+            + "Tailor the fact to improve sustainability (e.g., 'Using cold water saves X energy vs. hot.'). "
+            + "If habits are irrelevant/unclear, provide a general eco fact instead. "
+            + "Facts should be based on these user habits: ";
 }

@@ -25,7 +25,7 @@
         <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
         <apache.commons.version>3.13.0</apache.commons.version>
         <io.github.cdimascio.dotenv.version>3.1.0</io.github.cdimascio.dotenv.version>
-        <deepl.version>1.9.0</deepl.version>
+        <deepl.version>1.10.1</deepl.version>
     </properties>
 
     <dependencies>

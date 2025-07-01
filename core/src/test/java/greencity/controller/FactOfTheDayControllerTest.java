@@ -14,7 +14,9 @@ import org.springframework.validation.Validator;
 import java.security.Principal;
 import java.util.Locale;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,5 +58,24 @@ class FactOfTheDayControllerTest {
             .andExpect(status().isOk());
 
         verify(factOfTheDayService).getRandomFactOfTheDayForUser("testUser@example.com");
+    }
+
+    @Test
+    void getDailyFactOfTheDayReturnsResponseTest() throws Exception {
+        Principal mockPrincipal = () -> "testUser@example.com";
+        Locale mockLocale = Locale.ENGLISH;
+        String expectedResponse = "Personalized Eco Fact";
+
+        when(factOfTheDayService.getDailyFactForUser("testUser@example.com", mockLocale))
+            .thenReturn(expectedResponse);
+
+        mockMvc.perform(get(factOfTheDayLink + "/personalized")
+            .principal(mockPrincipal)
+            .locale(mockLocale)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(expectedResponse));
+
+        verify(factOfTheDayService).getDailyFactForUser("testUser@example.com", mockLocale);
     }
 }
