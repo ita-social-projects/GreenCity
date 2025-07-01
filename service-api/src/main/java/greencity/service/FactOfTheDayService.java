@@ -1,13 +1,14 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.dailyfact.AddDailyFactDto;
 import greencity.dto.dailyfact.DailyFactDto;
-import greencity.dto.dailyfact.DailyFactDtoResponse;
-import greencity.dto.dailyfact.UpdateDailyFactDto;
-import greencity.dto.factoftheday.*;
-import greencity.dto.tag.TagDto;
 import greencity.dto.dailyfact.DailyFactVO;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.factoftheday.FactOfTheDayVO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
+import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
+import greencity.dto.tag.TagDto;
 import greencity.exception.exceptions.NotFoundException;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
@@ -107,33 +108,33 @@ public interface FactOfTheDayService {
     Set<TagDto> getAllFactOfTheDayTags();
 
     /**
-     * Retrieves the daily eco fact for the given user and locale. If a fact for today
-     * already exists, it is returned; otherwise, a new one is generated and saved.
+     * Retrieves the daily eco fact for the given user and locale. If a fact for
+     * today already exists, it is returned; otherwise, a new one is generated and
+     * saved.
      *
-     * @param email  the email of the user
-     * @param locale the {@link Locale} used to determine the language of the fact
-     * @return a {@link DailyFactDtoResponse} containing the eco fact in the appropriate language
+     * @param userEmail the email of the user
+     * @param locale    the {@link Locale} used to determine the language of the
+     *                  fact
+     * @return an eco fact as string in the appropriate language
      */
-    DailyFactDtoResponse getDailyFactForUser(String email, Locale locale);
+    String getDailyFactForUser(String userEmail, Locale locale);
 
     /**
      * Updates an existing {@link DailyFactVO} record with new fact content.
      *
-     * @param dailyFactDto the {@link UpdateDailyFactDto} containing updated fact
-     *                     data
-     * @return the updated {@link DailyFactDto} after persistence in the database
+     * @param dailyFactDto the {@link DailyFactDto} containing updated fact data
+     * @return the updated {@link DailyFactVO} after persistence in the database
      * @throws NotFoundException if the fact with the specified ID does not exist
      */
-    DailyFactDto updateDailyFact(UpdateDailyFactDto dailyFactDto);
+    DailyFactVO updateDailyFact(DailyFactDto dailyFactDto);
 
     /**
      * Saves a new {@link DailyFactVO} for a user. If a fact already exists for the
      * given email, an exception is thrown.
      *
-     * @param dailyFactDto the {@link AddDailyFactDto} containing new fact data
-     * @return the saved {@link DailyFactDto} after persistence in the database
-     * @throws IllegalArgumentException if a fact already exists for the given email
-     *                                  address
+     * @param dailyFactDto the {@link DailyFactDto} containing new fact data
+     * @return the saved {@link DailyFactVO} after persistence in the database
+     * @throws IllegalArgumentException if a fact already exists for the given user
      */
-    DailyFactDto saveDailyFact(AddDailyFactDto dailyFactDto);
+    DailyFactVO saveDailyFact(DailyFactDto dailyFactDto);
 }
