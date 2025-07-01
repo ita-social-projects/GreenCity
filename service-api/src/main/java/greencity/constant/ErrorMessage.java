@@ -48,7 +48,7 @@ public class ErrorMessage {
     public static final String FACT_OF_THE_DAY_PROPERTY_NOT_FOUND =
         "For type Fact of the day  not found this property :";
     public static final String DAILY_FACT_NOT_FOUND = "The daily fact does not exist by id: ";
-    public static final String DAILY_FACT_ALREADY_EXISTS_BY_EMAIL = "The daily fact already exists by this email: ";
+    public static final String DAILY_FACT_ALREADY_EXISTS_FOR_USER = "The daily fact already exists for this user: ";
     public static final String TRANSLATION_PROCESSING_ERROR = "Failed to translate a text from %s to %s";
     public static final String SUBSCRIPTION_EXIST =
         "Subscriber with this email address and subscription type is exists.";
