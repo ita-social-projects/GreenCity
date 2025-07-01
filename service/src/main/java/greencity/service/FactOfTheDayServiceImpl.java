@@ -11,7 +11,12 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.entity.Language;
+import greencity.entity.DailyFact;
+import greencity.entity.FactOfTheDayTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.DailyFactRepo;
@@ -235,7 +240,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     public String getDailyFactForUser(String email, Locale locale) {
         User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
         Optional<DailyFact> dailyFactOptional = dailyFactRepo.findByUserId(user.getId());
         ZonedDateTime today =
@@ -297,7 +302,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     public DailyFactVO saveDailyFact(DailyFactDto dailyFactDto) {
         if (dailyFactRepo.existsByUserId(dailyFactDto.getUserVO().getId())) {
-            throw new NotFoundException(
+            throw new IllegalArgumentException(
                 ErrorMessage.DAILY_FACT_ALREADY_EXISTS_FOR_USER + dailyFactDto.getUserVO().getId());
         }
 

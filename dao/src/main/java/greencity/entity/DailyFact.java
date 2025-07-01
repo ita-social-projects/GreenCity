@@ -35,7 +35,8 @@ public class DailyFact {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true, foreignKey = @ForeignKey(name = "fk_daily_fact_user"))
+    @JoinColumn(name = "user_id", nullable = false, unique = true,
+        foreignKey = @ForeignKey(name = "fk_daily_fact_user"))
     private User user;
 
     @Column(name = "fact_en", nullable = false, length = 300)

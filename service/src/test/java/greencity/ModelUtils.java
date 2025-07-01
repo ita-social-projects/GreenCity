@@ -28,6 +28,7 @@ import greencity.dto.comment.AmountCommentLikesDto;
 import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.dto.comment.CommentVO;
+import greencity.dto.dailyfact.DailyFactVO;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.econews.EcoNewsDto;
@@ -145,42 +146,7 @@ import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
-import greencity.entity.BreakTime;
-import greencity.entity.Category;
-import greencity.entity.Comment;
-import greencity.entity.CommentImages;
-import greencity.entity.CustomToDoListItem;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.FavoritePlace;
-import greencity.entity.Filter;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitInvitation;
-import greencity.entity.HabitStatistic;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.Location;
-import greencity.entity.Notification;
-import greencity.entity.OpeningHours;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.PlaceComment;
-import greencity.entity.RatingPoints;
-import greencity.entity.SocialNetworkImage;
-import greencity.entity.Specification;
-import greencity.entity.Tag;
-import greencity.entity.ToDoListItem;
-import greencity.entity.User;
-import greencity.entity.UserAchievement;
-import greencity.entity.UserAction;
-import greencity.entity.UserToDoListItem;
-import greencity.entity.VerifyEmail;
+import greencity.entity.*;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -3596,6 +3562,45 @@ public class ModelUtils {
             .habitItem(habitItemUk)
             .name(habitTranslationNameUk)
             .languageCode("ua")
+            .build();
+    }
+
+    public static DailyFact getDailyFact() {
+        return DailyFact.builder()
+            .id(1L)
+            .factEn("English Fact")
+            .factUk("Факт українською")
+            .user(getUser())
+            .createdAt(ZonedDateTime.now())
+            .build();
+    }
+
+    public static DailyFact getOldDailyFact() {
+        return DailyFact.builder()
+            .id(1L)
+            .factEn("Old English Fact")
+            .factUk("Старий факт")
+            .user(getUser())
+            .createdAt(ZonedDateTime.now(ZoneId.systemDefault()).minusDays(1))
+            .build();
+    }
+
+    public static DailyFact getDailyFactToday() {
+        return DailyFact.builder()
+            .id(1L)
+            .factEn("Today Fact EN")
+            .factUk("Сьогоднішній факт")
+            .user(getUser())
+            .createdAt(ZonedDateTime.now(ZoneId.systemDefault()).withHour(1))
+            .build();
+    }
+
+    public static DailyFactVO getDailyFactVO() {
+        return DailyFactVO.builder()
+            .id(1L)
+            .factEn("English Fact")
+            .factUk("Факт українською")
+            .userVO(getUserVO())
             .build();
     }
 }

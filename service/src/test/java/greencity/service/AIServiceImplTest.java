@@ -154,4 +154,62 @@ class AIServiceImplTest {
             .makeRequest(language + OpenAIRequest.NEWS_BY_QUERY + query);
         verifyNoMoreInteractions(openAIService);
     }
+
+    @Test
+    void getEcoFact_WithHabits_ReturnsExpectedResponse() {
+        HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS);
+        when(habitAssignRepo.findAllByUserId(id)).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(habitAssign.getHabit(), ShortHabitDto.class)).thenReturn(shortHabitDto);
+
+        String expectedResponse = "Eco Fact With Habits";
+        when(openAIService.makeRequest(language + OpenAIRequest.ECO_FACT_BY_HABITS + List.of(shortHabitDto)))
+                .thenReturn(expectedResponse);
+
+        String result = aiServiceImpl.getEcoFact(id, language);
+
+        assertEquals(expectedResponse, result);
+        verify(habitAssignRepo).findAllByUserId(id);
+        verify(modelMapper).map(habitAssign.getHabit(), ShortHabitDto.class);
+        verify(openAIService).makeRequest(language + OpenAIRequest.ECO_FACT_BY_HABITS + List.of(shortHabitDto));
+    }
+
+    @Test
+    void getEcoFact_WithoutHabits_ReturnsGenericEcoFact() {
+        when(habitAssignRepo.findAllByUserId(id)).thenReturn(Collections.emptyList());
+
+        String expectedResponse = "Generic Eco Fact";
+        when(openAIService.makeRequest(language + OpenAIRequest.ECO_FACT))
+                .thenReturn(expectedResponse);
+
+        String result = aiServiceImpl.getEcoFact(id, language);
+
+        assertEquals(expectedResponse, result);
+        verify(habitAssignRepo).findAllByUserId(id);
+        verify(openAIService).makeRequest(language + OpenAIRequest.ECO_FACT);
+    }
+
+    @Test
+    void getEcoFact_WithQuery_ReturnsFactByQuery() {
+        String query = "plastic";
+        String expectedResponse = "Eco Fact about plastic";
+        when(openAIService.makeRequest(language + OpenAIRequest.ECO_FACT_BY_QUERY + query))
+                .thenReturn(expectedResponse);
+
+        String result = aiServiceImpl.getEcoFact(language, query);
+
+        assertEquals(expectedResponse, result);
+        verify(openAIService).makeRequest(language + OpenAIRequest.ECO_FACT_BY_QUERY + query);
+    }
+
+    @Test
+    void getEcoFact_WithoutQuery_ReturnsGenericFact() {
+        String expectedResponse = "General Eco Fact";
+        when(openAIService.makeRequest(language + OpenAIRequest.ECO_FACT))
+                .thenReturn(expectedResponse);
+
+        String result = aiServiceImpl.getEcoFact(language, null);
+
+        assertEquals(expectedResponse, result);
+        verify(openAIService).makeRequest(language + OpenAIRequest.ECO_FACT);
+    }
 }

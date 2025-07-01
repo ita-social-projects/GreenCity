@@ -1,49 +1,72 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.dailyfact.DailyFactDto;
+import greencity.dto.dailyfact.DailyFactVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.FactOfTheDay;
-import greencity.entity.Language;
 import greencity.entity.Tag;
+import greencity.entity.Language;
+import greencity.entity.User;
+import greencity.entity.DailyFact;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.repository.DailyFactRepo;
 import greencity.repository.FactOfTheDayRepo;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import static greencity.enums.TagType.FACT_OF_THE_DAY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import greencity.repository.TagsRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Locale;
+
+import static greencity.enums.TagType.FACT_OF_THE_DAY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FactOfTheDayServiceImplTest {
+    @Mock
+    private DailyFactRepo dailyFactRepo;
+
+    @Mock
+    private UserRepo userRepo;
+
+    @Mock
+    private AIService aiService;
+
+    @Mock
+    private TranslationService translationService;
+
     @Mock
     private ModelMapper modelMapper;
 
@@ -129,8 +152,9 @@ class FactOfTheDayServiceImplTest {
         Set<Tag> tagDtos = Set.of(ModelUtils.getTag());
 
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(dbFact));
-        when(modelMapper.map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class)).thenReturn(
-            ModelUtils.getFactOfTheDayTranslationVO());
+        when(modelMapper.map(dbFact.getFactOfTheDayTranslations().getFirst(), FactOfTheDayTranslationVO.class))
+            .thenReturn(
+                ModelUtils.getFactOfTheDayTranslationVO());
         when(languageService.findByCode("en")).thenReturn(languageDTO);
         when(factOfTheDayTranslationService.saveAll(anyList())).thenReturn(null);
         when(tagsRepo.findTagsById(List.of(25L))).thenReturn(tagDtos);
@@ -143,7 +167,8 @@ class FactOfTheDayServiceImplTest {
         verify(modelMapper, times(1)).map(languageDTO, Language.class);
         verify(factOfTheDayRepo, times(1)).save(any(FactOfTheDay.class));
         verify(factOfTheDayTranslationService, times(1)).saveAll(anyList());
-        verify(modelMapper, times(1)).map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class);
+        verify(modelMapper, times(1)).map(dbFact.getFactOfTheDayTranslations().getFirst(),
+            FactOfTheDayTranslationVO.class);
     }
 
     @Test
@@ -194,7 +219,7 @@ class FactOfTheDayServiceImplTest {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         FactOfTheDayTranslationVO factOfTheDayTranslationVO = ModelUtils.getFactOfTheDayTranslationVO();
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
-        when(modelMapper.map(fact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class))
+        when(modelMapper.map(fact.getFactOfTheDayTranslations().getFirst(), FactOfTheDayTranslationVO.class))
             .thenReturn(factOfTheDayTranslationVO);
 
         assertEquals(idList, factOfTheDayService.deleteAllFactOfTheDayAndTranslations(idList));
@@ -208,7 +233,7 @@ class FactOfTheDayServiceImplTest {
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         FactOfTheDayTranslationVO factOfTheDayTranslationVO = ModelUtils.getFactOfTheDayTranslationVO();
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
-        when(modelMapper.map(fact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class))
+        when(modelMapper.map(fact.getFactOfTheDayTranslations().getFirst(), FactOfTheDayTranslationVO.class))
             .thenReturn(factOfTheDayTranslationVO);
 
         assertEquals(id, factOfTheDayService.deleteFactOfTheDayAndTranslations(id));
@@ -253,9 +278,7 @@ class FactOfTheDayServiceImplTest {
 
         when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            factOfTheDayService.getRandomFactOfTheDayByTags(tagIds);
-        });
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.getRandomFactOfTheDayByTags(tagIds));
     }
 
     @Test
@@ -280,9 +303,7 @@ class FactOfTheDayServiceImplTest {
     void getRandomGeneralFactOfTheDay_noTagsFound() {
         when(tagsRepo.findTagsByType(FACT_OF_THE_DAY)).thenReturn(Collections.emptyList());
 
-        assertThrows(NotFoundException.class, () -> {
-            factOfTheDayService.getRandomGeneralFactOfTheDay();
-        });
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.getRandomGeneralFactOfTheDay());
     }
 
     @Test
@@ -334,5 +355,151 @@ class FactOfTheDayServiceImplTest {
         Set<TagDto> result = factOfTheDayService.getAllFactOfTheDayTags();
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void saveDailyFact_success() {
+        UserVO userVO = ModelUtils.getUserVO();
+        DailyFactDto dto = DailyFactDto.builder()
+            .userVO(userVO)
+            .factEn("en fact")
+            .factUk("uk fact")
+            .build();
+
+        User user = ModelUtils.getUser();
+        DailyFact savedEntity = ModelUtils.getDailyFact();
+        DailyFactVO expected = ModelUtils.getDailyFactVO();
+
+        when(dailyFactRepo.existsByUserId(userVO.getId())).thenReturn(false);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(dailyFactRepo.save(any())).thenReturn(savedEntity);
+        when(modelMapper.map(savedEntity, DailyFactVO.class)).thenReturn(expected);
+
+        DailyFactVO result = factOfTheDayService.saveDailyFact(dto);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void saveDailyFact_whenFactAlreadyExistsForUser_shouldThrowIllegalArgumentException() {
+        UserVO userVO = ModelUtils.getUserVO();
+        DailyFactDto dto = DailyFactDto.builder().userVO(userVO).build();
+        when(dailyFactRepo.existsByUserId(userVO.getId())).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> factOfTheDayService.saveDailyFact(dto));
+
+        String expectedMessage = ErrorMessage.DAILY_FACT_ALREADY_EXISTS_FOR_USER + userVO.getId();
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    void updateDailyFact_success() {
+        DailyFact existing = ModelUtils.getDailyFact();
+        DailyFactDto dto = DailyFactDto.builder()
+            .id(existing.getId())
+            .factEn("updated en")
+            .factUk("updated uk")
+            .build();
+
+        DailyFact updatedEntity = DailyFact.builder()
+            .id(existing.getId())
+            .user(existing.getUser())
+            .factEn(dto.getFactEn())
+            .factUk(dto.getFactUk())
+            .build();
+
+        DailyFactVO expected = ModelUtils.getDailyFactVO();
+
+        when(dailyFactRepo.findById(dto.getId())).thenReturn(Optional.of(existing));
+        when(dailyFactRepo.save(any())).thenReturn(updatedEntity);
+        when(modelMapper.map(updatedEntity, DailyFactVO.class)).thenReturn(expected);
+
+        DailyFactVO result = factOfTheDayService.updateDailyFact(dto);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void updateDailyFact_whenDailyFactNotFound_shouldThrowNotFoundException() {
+        long nonExistentId = 999L;
+        DailyFactDto dto = DailyFactDto.builder()
+            .id(nonExistentId)
+            .factEn("fact EN")
+            .factUk("факт УК")
+            .build();
+        when(dailyFactRepo.findById(999L)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> factOfTheDayService.updateDailyFact(dto));
+
+        String expectedMessage = ErrorMessage.DAILY_FACT_NOT_FOUND + nonExistentId;
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    void getDailyFactForUser_existingSameDayFact_returnsCachedFact() {
+        String email = "test@example.com";
+        User user = ModelUtils.getUser();
+        DailyFact existingFact = ModelUtils.getDailyFactToday();
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(dailyFactRepo.findByUserId(user.getId())).thenReturn(Optional.of(existingFact));
+
+        String result = factOfTheDayService.getDailyFactForUser(email, Locale.ENGLISH);
+        assertEquals(existingFact.getFactEn(), result);
+    }
+
+    @Test
+    void getDailyFactForUser_existingOldFact_returnsNewFact() {
+        String email = "test@example.com";
+        User user = ModelUtils.getUser();
+        DailyFact oldFact = ModelUtils.getOldDailyFact();
+        String ecoFact = "English Fact";
+        String translated = "Факт українською";
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(dailyFactRepo.findByUserId(user.getId())).thenReturn(Optional.of(oldFact));
+        when(aiService.getEcoFact(user.getId(), "English")).thenReturn(ecoFact);
+        when(translationService.translateText(ecoFact, "en", "uk")).thenReturn(translated);
+
+        DailyFactVO savedFactVO = ModelUtils.getDailyFactVO();
+        when(dailyFactRepo.findById(oldFact.getId())).thenReturn(Optional.of(oldFact));
+        when(dailyFactRepo.save(any())).thenReturn(ModelUtils.getDailyFact());
+        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(any(DailyFact.class), eq(DailyFactVO.class))).thenReturn(savedFactVO);
+
+        String result = factOfTheDayService.getDailyFactForUser(email, Locale.ENGLISH);
+        assertEquals(ecoFact, result);
+    }
+
+    @Test
+    void getDailyFactForUser_noExistingFact_createsNew() {
+        String email = "test@example.com";
+        User user = ModelUtils.getUser();
+        String ecoFact = "English Fact";
+        String translated = "Факт українською";
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(dailyFactRepo.findByUserId(user.getId())).thenReturn(Optional.empty());
+        when(aiService.getEcoFact(user.getId(), "English")).thenReturn(ecoFact);
+        when(translationService.translateText(ecoFact, "en", "uk")).thenReturn(translated);
+
+        DailyFactVO savedFactVO = ModelUtils.getDailyFactVO();
+        when(modelMapper.map(any(), eq(UserVO.class))).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
+        when(dailyFactRepo.save(any())).thenReturn(ModelUtils.getDailyFact());
+        when(modelMapper.map(any(DailyFact.class), eq(DailyFactVO.class))).thenReturn(savedFactVO);
+
+        String result = factOfTheDayService.getDailyFactForUser(email, Locale.ENGLISH);
+        assertEquals(ecoFact, result);
+    }
+
+    @Test
+    void getDailyFactForUser_userNotFound_throws() {
+        String unknownEmail = "unknown@example.com";
+        when(userRepo.findByEmail(unknownEmail)).thenReturn(Optional.empty());
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> factOfTheDayService.getDailyFactForUser(unknownEmail, Locale.ENGLISH));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + unknownEmail, exception.getMessage());
     }
 }
