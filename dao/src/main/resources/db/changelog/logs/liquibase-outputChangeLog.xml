@@ -28,23 +28,30 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-3">
-        <createTable tableName="comment">
+        <createTable tableName="comments">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="created_date" type="datetime(6)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified_date" type="datetime(6)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="text" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="estimate_id" type="BIGINT"/>
             <column name="parent_comment_id" type="BIGINT"/>
-            <column name="place_id" type="BIGINT"/>
             <column name="user_id" type="BIGINT"/>
+            <column name="article_type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="article_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="varchar(8000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(30)" defaultValue="ORIGINAL">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-4">
@@ -215,11 +222,6 @@
             <column name="author_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-31">
-        <createIndex indexName="FK8kcum44fvpupyw6f5baccx25c" tableName="comment">
-            <column name="user_id"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-32">
         <createIndex indexName="FK9ygkma6mdptstvup90n9ewptc" tableName="opening_hours">
             <column name="break_time_id"/>
@@ -228,16 +230,6 @@
     <changeSet author="Marian (generated)" id="1571227598316-33">
         <createIndex indexName="FKaxtbydhvr0oeed7oruruf0hn" tableName="place">
             <column name="location_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-34">
-        <createIndex indexName="FKch8bkgqt3v8yjo230lysj668h" tableName="comment">
-            <column name="place_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-35">
-        <createIndex indexName="FKhvh0e2ybgg16bpu229a5teje7" tableName="comment">
-            <column name="parent_comment_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-36">
@@ -275,11 +267,6 @@
             <column name="specification_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-43">
-        <createIndex indexName="FKpeyqdepr1vru2tsghm3sxwhrr" tableName="comment">
-            <column name="estimate_id"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-44">
         <createIndex indexName="FKrm26v5rrc5t54lhcd04dcwkw8" tableName="web_pages_places">
             <column name="web_pages_id"/>
@@ -315,7 +302,7 @@
         <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="estimate"
                                  constraintName="FK4ybp1p4b8005qrgccsrookt9p" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="comment"/>
+                                 referencedColumnNames="id" referencedTableName="comments"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-53">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="estimate"
@@ -326,12 +313,6 @@
     <changeSet author="Marian (generated)" id="1571227598316-54">
         <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="place"
                                  constraintName="FK74l2uk5a5nrjvi94rd9qaviu1" deferrable="false"
-                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="greencity_users"/>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-56">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comment"
-                                 constraintName="FK8kcum44fvpupyw6f5baccx25c" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
@@ -346,18 +327,6 @@
                                  constraintName="FKaxtbydhvr0oeed7oruruf0hn" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="location"/>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-59">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="comment"
-                                 constraintName="FKch8bkgqt3v8yjo230lysj668h" deferrable="false"
-                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="place"/>
-    </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-60">
-        <addForeignKeyConstraint baseColumnNames="parent_comment_id" baseTableName="comment"
-                                 constraintName="FKhvh0e2ybgg16bpu229a5teje7" deferrable="false"
-                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="comment"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-61">
         <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="opening_hours"
@@ -401,12 +370,6 @@
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="specification"/>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-68">
-        <addForeignKeyConstraint baseColumnNames="estimate_id" baseTableName="comment"
-                                 constraintName="FKpeyqdepr1vru2tsghm3sxwhrr" deferrable="false"
-                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="estimate"/>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-69">
         <addForeignKeyConstraint baseColumnNames="web_pages_id" baseTableName="web_pages_places"
                                  constraintName="FKrm26v5rrc5t54lhcd04dcwkw8" deferrable="false"
@@ -429,7 +392,7 @@
         <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="photo"
                                  constraintName="FKsm3nsiqunp5ke6cmkundcw4a1" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="comment"/>
+                                 referencedColumnNames="id" referencedTableName="comments"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-74">
         <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="photo"

@@ -25,6 +25,8 @@
             <column name="event_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="parent_comment_id" type="BIGINT"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="events_comment"
