@@ -643,7 +643,7 @@ public class EventServiceImpl implements EventService {
                 .map(url -> EventImages.builder().event(toUpdate).link(url).build())
                 .collect(Collectors.toList()));
         } else {
-            toUpdate.setAdditionalImages(null);
+            toUpdate.setAdditionalImages(new ArrayList<>());
         }
     }
 
@@ -656,7 +656,7 @@ public class EventServiceImpl implements EventService {
                     .map(url -> EventImages.builder().event(toUpdate).link(url).build())
                     .collect(Collectors.toList()));
             } else {
-                toUpdate.setAdditionalImages(null);
+                toUpdate.setAdditionalImages(new ArrayList<>());
             }
         } else {
             toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
@@ -685,7 +685,7 @@ public class EventServiceImpl implements EventService {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
                 .event(toUpdate).link(url).build()).collect(Collectors.toList()));
         } else {
-            toUpdate.setAdditionalImages(null);
+            toUpdate.setAdditionalImages(new ArrayList<>());
         }
     }
 
