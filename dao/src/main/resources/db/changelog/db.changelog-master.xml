@@ -26,15 +26,10 @@
     <include file="db/changelog/logs/ch-modify-column-Koval-3.xml"/>
     <include file="db/changelog/logs/ch-update-habit-dictionary-turko.xml"/>
     <include file="db/changelog/logs/ch-habit-dictionary-translation-turko.xml"/>
-    <include file="db/changelog/logs/ch-eco-news-localization-Kopylchak-1.xml"/>
-    <include file="db/changelog/logs/ch-eco-news-Kovaliv-1.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-2.xml"/>
-    <include file="db/changelog/logs/ch-eco-news-Kovaliv-3.xml"/>
-    <include file="db/changelog/logs/ch-eco-news-Kovaliv-4.xml"/>
     <include file="db/changelog/logs/ch-change-fact-translations-Patsula.xml"/>
     <include file="db/changelog/logs/ch-add-econews-comment-Patsula.xml"/>
     <include file="db/changelog/logs/ch-users-friends-Datsko.xml"/>
-    <include file="db/changelog/logs/ch-change-eco-news-Ostriychuk.xml"/>
     <include file="db/changelog/logs/ch-habit-status-Beshlei-2.xml"/>
     <include file="db/changelog/logs/ch-habits-Beshlei-1.xml"/>
     <include file="db/changelog/logs/ch-habit-status-calendar-Beshlei-1.xml"/>
@@ -84,7 +79,6 @@
     <include file="db/changelog/logs/ch-drop-constraint-habits-assign-table-Volianskyi.xml"/>
     <include file="db/changelog/logs/ch-add-column-to-crat-room-fedorkiv.xml"/>
     <include file="db/changelog/logs/ch-update-column-status-in-users_friends.xml"/>
-    <include file="db/changelog/logs/ch-add-eco_news-Boiarchuk.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-Bohonko.xml"/>
     <include file="db/changelog/logs/ch-insert-into-categories-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-fact-of-the-day-Kozak.xml"/>
@@ -139,7 +133,6 @@
     <include file="db/changelog/logs/ch-add-unique-constraint-to-include-habit_id-column-in-user_action-table-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-change-content-field-in-chatmessages-table.xml"/>
     <include file="db/changelog/logs/ch-add-table-db_backups-kizerov.xml"/>
-    <include file="db/changelog/logs/ch-add-column-eco-news-Herchanivska.xml"/>
     <include file="db/changelog/logs/ch-modify-function-recommended-eco-news-Herchanivska.xml"/>
     <include file="db/changelog/logs/ch-add-table-place-comments-Fedotov.xml"/>
     <include file="/db/changelog/logs/ch-change-table-estimates-Fedotov.xml"/>
