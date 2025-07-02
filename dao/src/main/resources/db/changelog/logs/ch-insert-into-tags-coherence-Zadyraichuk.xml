@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="insertIntoTagsCoherenceZadyraichuk" author="Rostyslav Zadyraichuk">
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">1</column>
+            <column name="destination_tag_id">1</column>
+            <column name="coherence">1.0</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">12</column>
+            <column name="destination_tag_id">1</column>
+            <column name="coherence">0.6</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">14</column>
+            <column name="destination_tag_id">1</column>
+            <column name="coherence">0.7</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">22</column>
+            <column name="destination_tag_id">1</column>
+            <column name="coherence">0.7</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">23</column>
+            <column name="destination_tag_id">1</column>
+            <column name="coherence">0.6</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">2</column>
+            <column name="destination_tag_id">2</column>
+            <column name="coherence">1.0</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">12</column>
+            <column name="destination_tag_id">2</column>
+            <column name="coherence">0.6</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">13</column>
+            <column name="destination_tag_id">2</column>
+            <column name="coherence">0.6</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">14</column>
+            <column name="destination_tag_id">2</column>
+            <column name="coherence">0.6</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">3</column>
+            <column name="destination_tag_id">3</column>
+            <column name="coherence">1.0</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">12</column>
+            <column name="destination_tag_id">3</column>
+            <column name="coherence">0.7</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">20</column>
+            <column name="destination_tag_id">3</column>
+            <column name="coherence">0.8</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">21</column>
+            <column name="destination_tag_id">3</column>
+            <column name="coherence">0.8</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">24</column>
+            <column name="destination_tag_id">3</column>
+            <column name="coherence">0.9</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">4</column>
+            <column name="destination_tag_id">4</column>
+            <column name="coherence">1.0</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">13</column>
+            <column name="destination_tag_id">4</column>
+            <column name="coherence">0.8</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">20</column>
+            <column name="destination_tag_id">4</column>
+            <column name="coherence">0.7</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">21</column>
+            <column name="destination_tag_id">4</column>
+            <column name="coherence">0.7</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">24</column>
+            <column name="destination_tag_id">4</column>
+            <column name="coherence">0.7</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">5</column>
+            <column name="destination_tag_id">5</column>
+            <column name="coherence">1.0</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">14</column>
+            <column name="destination_tag_id">5</column>
+            <column name="coherence">0.8</column>
+        </insert>
+        <insert tableName="tags_coherence">
+            <column name="source_tag_id">23</column>
+            <column name="destination_tag_id">5</column>
+            <column name="coherence">0.9</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
