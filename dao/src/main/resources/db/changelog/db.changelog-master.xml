@@ -98,11 +98,7 @@
     <include file="db/changelog/logs/ch-add-table-filters-Hural.xml"/>
     <include file="db/changelog/logs/ch-add-event-organizer-raring-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-event-comment-Yashna.xml"/>
-    <include file="db/changelog/logs/ch-update-into-tag-translations-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-create-user-dislikes.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-tags-Mokhnatska.xml"/>
-    <include file="db/changelog/logs/ch-change-tag-translations-column-name-Mokhnatska.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-tag-translations-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-habits-tags-Mokhnatska.xml"/>
     <include file="db/changelog/logs/сh-add-new-columns-habit-Mokhnatska.xml"/>
     <include file="db/changelog/logs/сh-add-new-column-habit-assign-Mokhnatska.xml"/>
@@ -118,7 +114,6 @@
     <include file="db/changelog/logs/ch-delete-from-shopping_list_item_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-habit_translation-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-fact_of_the_day_translations-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-delete-from-tag_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-column-achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-drop-column-user_achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-table-achievement_translations-Spodaryk.xml"/>
@@ -142,9 +137,6 @@
     <include file="db/changelog/logs/ch-add-table-habits-user-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement-categories-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-column-is-shared-with-friends-Holotsvan.xml"/>
-    <include file="db/changelog/logs/ch-add-new-tag-Holotsvan.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-tags-Chekhovska.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-tag-translations-Chekhovska.xml"/>
     <include file="db/changelog/logs/ch-add-table-fact-of-the-day-tags-and-assign-tag-Chekhovska.xml"/>
     <include file="/db/changelog/logs/ch-add-column-type-to-events-Rozhko.xml"/>
     <include file="/db/changelog/logs/ch-create-indexes-Rozhko.xml"/>
