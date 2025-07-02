@@ -246,7 +246,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
         ZonedDateTime today =
             ZonedDateTime.now(ZoneId.systemDefault()).toLocalDate().atStartOfDay(ZoneId.systemDefault());
 
-        String targetLanguage = locale.getLanguage().equals(Locale.ENGLISH.getLanguage()) ? "uk" : "en";
+        String targetLanguage = locale.getLanguage().equals(Locale.ENGLISH.getLanguage()) ? "uk" : "en-GB";
 
         if (dailyFactOptional.isPresent()) {
             DailyFact existingDailyFact = dailyFactOptional.get();
