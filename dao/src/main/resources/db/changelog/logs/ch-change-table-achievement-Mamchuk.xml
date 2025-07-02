@@ -10,22 +10,19 @@
             <column name="name" type="varchar">
                 <constraints nullable="false"/>
             </column>
+            <column name="title_uk" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title_en" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+        <addUniqueConstraint
+                tableName="achievement_categories"
+                columnNames="title_uk, title_en"
+                constraintName="UK_title_and_title_en_achievement_categories"/>
     </changeSet>
 
-    <changeSet author="Orest Mamchuk" id="Mamchuk-2">
-        <addColumn tableName="achievements">
-            <column name="achievement_category_id" type="BIGINT">
-            </column>
-            <column name="condition" type="INTEGER">
-            </column>
-        </addColumn>
-        <dropColumn tableName="achievements">
-            <column name="title"/>
-            <column name="description"/>
-            <column name="message"/>
-        </dropColumn>
-    </changeSet>
 
     <changeSet author="Orest Mamchuk" id="Mamchuk-4">
         <addForeignKeyConstraint baseColumnNames="achievement_category_id" baseTableName="achievements"

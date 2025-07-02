@@ -7,15 +7,23 @@
             <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="achievement_category_id" type="BIGINT">
+            </column>
+            <column name="condition" type="INTEGER">
+            </column>
             <column name="title" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
-            <column name="description" type="varchar(255)">
-                <constraints nullable="false"/>
+            <column name="name_uk" type="VARCHAR(255)">
+                <constraints nullable="true"/>
             </column>
-            <column name="message" type="varchar(255)">
-                <constraints nullable="false"/>
+            <column name="name_en" type="VARCHAR(255)">
+                <constraints nullable="true"/>
             </column>
+            <column name="score" type="INT">
+                <constraints nullable="true"/>
+            </column>
+
         </createTable>
     </changeSet>
     <changeSet id="17" author="Yuriy O.">

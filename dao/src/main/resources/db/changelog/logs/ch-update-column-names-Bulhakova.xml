@@ -20,13 +20,6 @@
         <renameColumn tableName="user_location" oldColumnName="country_ua" newColumnName="country_uk"/>
     </changeSet>
 
-    <changeSet id="rename-achievement-columns" author="Oleksandra Bulhakova">
-        <renameColumn tableName="achievements" oldColumnName="name" newColumnName="name_uk"/>
-        <renameColumn tableName="achievements" oldColumnName="name_eng" newColumnName="name_en"/>
-    </changeSet>
 
-    <changeSet id="rename-achievement-category-columns" author="Oleksandra Bulhakova">
-        <renameColumn tableName="achievement_categories" oldColumnName="title" newColumnName="title_uk"/>
-    </changeSet>
 
 </databaseChangeLog>
