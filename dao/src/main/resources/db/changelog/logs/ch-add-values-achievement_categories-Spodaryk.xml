@@ -74,7 +74,7 @@
         <insert tableName="achievement_categories">
             <column name="id" value="10"/>
             <column name="name" value="LIKE_EVENT"/>
-            <column name="title" value="Лайкай Події."/>
+            <column name="title_uk" value="Лайкай Події."/>
             <column name="title_en" value="Like Events."/>
         </insert>
         <insert tableName="achievement_categories">
