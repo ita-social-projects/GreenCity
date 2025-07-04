@@ -17,7 +17,6 @@ import greencity.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@EnableCaching
 @Slf4j
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;

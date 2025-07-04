@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.dto.econews.EcoNewsAuthorStatisticDto;
 import greencity.entity.EcoNews;
-import java.time.ZonedDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -187,15 +186,6 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
         GROUP BY tags;
         """, nativeQuery = true)
     List<Object[]> getEcoNewsTagsStatistics(Long languageId);
-
-    /**
-     * Method returns list of EcoNews by range of creation date.
-     *
-     * @param startDate start date of search.
-     * @param endDate   end date of search.
-     * @return list of EcoNews.
-     */
-    List<EcoNews> findByCreationDateBetween(ZonedDateTime startDate, ZonedDateTime endDate);
 
     /**
      * Retrieves a list of {@link EcoNews} by a list of IDs.
