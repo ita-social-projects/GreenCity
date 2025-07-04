@@ -316,7 +316,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method interceptor for {@link UnsupportedOperationException},
+     * Method interceptor for {@link UnsupportedOperationException}.
      *
      * @param ex      Exception which should be intercepted.
      * @param request Contains details about the occurred exception.

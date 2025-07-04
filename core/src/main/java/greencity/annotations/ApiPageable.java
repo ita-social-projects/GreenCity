@@ -27,8 +27,8 @@ import java.lang.annotation.Target;
 @Parameter(
     name = "sort",
     in = ParameterIn.QUERY,
-    description = "Sorting criteria in the format: property,(asc|desc). " +
-        "Default sort order is ascending. Supports multiple sort criteria.",
+    description = "Sorting criteria in the format: property,(asc|desc). "
+        + "Default sort order is ascending. Supports multiple sort criteria.",
     array = @ArraySchema(schema = @Schema(type = "string")),
     style = ParameterStyle.FORM,
     explode = Explode.TRUE)
