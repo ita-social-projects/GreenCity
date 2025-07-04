@@ -161,12 +161,7 @@ public class FriendServiceImpl implements FriendService {
         name = name != null ? name : "";
 
         Page<User> users;
-        if (pageable.getSort().isEmpty()) {
-            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
-                filterByFriendsOfFriends, filterByCity, pageable);
-        } else {
-            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-        }
+        users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, filterByFriendsOfFriends, filterByCity, pageable);
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
