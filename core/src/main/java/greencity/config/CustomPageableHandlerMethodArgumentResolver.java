@@ -71,7 +71,7 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
             String[] parts = sortParam.split(",");
             if (parts.length == 2) {
                 String property = parts[0].trim();
-                String direction = parts[1].trim().toUpperCase();
+                String direction = parts[1].trim();
                 Sort.Direction sortDirection = Sort.Direction.fromString(direction);
                 orders.add(new Sort.Order(sortDirection, property));
             } else if (parts.length == 1) {
