@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -78,7 +79,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final RestClient restClient;
     private final ModelMapper modelMapper;
     private final TagsService tagService;
-    private final FileService fileService;
+    private final UserRemoteClient userRemoteClient;
     private final AchievementCalculation achievementCalculation;
     private final RatingCalculation ratingCalculation;
     private final List<String> languageCode = List.of("en", "ua");
@@ -288,8 +289,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 new TypeToken<List<Tag>>() {
                 }.getType()));
         if (image != null) {
-            fileService.delete(toUpdate.getImagePath());
-            toUpdate.setImagePath(fileService.upload(image));
+            userRemoteClient.deleteFile(toUpdate.getImagePath());
+            toUpdate.setImagePath(userRemoteClient.uploadFile(image));
         }
     }
 
@@ -304,8 +305,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
-            fileService.delete(toUpdate.getImagePath());
-            toUpdate.setImagePath(fileService.upload(image));
+            userRemoteClient.deleteFile(toUpdate.getImagePath());
+            toUpdate.setImagePath(userRemoteClient.uploadFile(image));
         }
     }
 
@@ -320,7 +321,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         try {
             ecoNewsRepo.save(toUpdate);
         } catch (Exception e) {
-            fileService.delete(toUpdate.getImagePath());
+            userRemoteClient.deleteFile(toUpdate.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
     }
@@ -340,7 +341,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         try {
             ecoNewsRepo.save(toUpdate);
         } catch (Exception e) {
-            fileService.delete(toUpdate.getImagePath());
+            userRemoteClient.deleteFile(toUpdate.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return getEcoNewsGenericDtoWithAllTags(toUpdate);
@@ -637,7 +638,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         User user = modelMapper.map(byEmail, User.class);
         toSave.setAuthor(user);
         if (image != null) {
-            toSave.setImagePath(fileService.upload(image));
+            toSave.setImagePath(userRemoteClient.uploadFile(image));
         }
 
         Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());
@@ -655,7 +656,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         try {
             ecoNewsRepo.save(toSave);
         } catch (Exception e) {
-            fileService.delete(toSave.getImagePath());
+            userRemoteClient.deleteFile(toSave.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return toSave;

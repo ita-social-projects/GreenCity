@@ -1,5 +1,6 @@
 package greencity.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
@@ -52,6 +53,14 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -61,15 +70,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
  * Implementation of {@link HabitService}.
@@ -89,7 +89,7 @@ public class HabitServiceImpl implements HabitService {
     private final CustomToDoListItemRepo customToDoListItemRepo;
     private final UserRepo userRepo;
     private final TagsRepo tagsRepo;
-    private final FileService fileService;
+    private final ImageConverterImpl imageConverter;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
@@ -345,10 +345,10 @@ public class HabitServiceImpl implements HabitService {
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
-            image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
+            image = imageConverter.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
         }
         if (image != null) {
-            addCustomHabitDtoRequest.setImage(fileService.upload(image));
+            addCustomHabitDtoRequest.setImage(userRemoteClient.uploadFile(image));
         } else {
             addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
         }
@@ -429,10 +429,10 @@ public class HabitServiceImpl implements HabitService {
             saveNewCustomToDoListItemsToUpdate(habitDto, toUpdate, user);
         }
         if (StringUtils.isNotBlank(habitDto.getImage())) {
-            image = fileService.convertToMultipartImage(habitDto.getImage());
+            image = imageConverter.convertToMultipartImage(habitDto.getImage());
         }
         if (image != null) {
-            toUpdate.setImage(fileService.upload(image));
+            toUpdate.setImage(userRemoteClient.uploadFile(image));
         }
         if (isNotEmpty(habitDto.getTagIds())) {
             setTagsIdsToHabit(habitDto, toUpdate);

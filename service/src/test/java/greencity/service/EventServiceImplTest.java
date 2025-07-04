@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -127,7 +128,7 @@ class EventServiceImplTest {
     UserService userService;
 
     @Mock
-    FileService fileService;
+    UserRemoteClient userRemoteClient;
 
     @Mock
     GoogleApiService googleApiService;
@@ -188,14 +189,14 @@ class EventServiceImplTest {
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
 
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
-        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFile)).thenReturn("/url1");
         assertEquals(eventDto,
             eventService.save(addEventDtoRequest, testUserVo.getEmail(),
                 new MultipartFile[] {multipartFile}));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
-        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
-        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        when(userRemoteClient.uploadFile(multipartFiles[0])).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFiles[1])).thenReturn("/url2");
         assertEquals(eventDto,
             eventService.save(addEventDtoRequest, testUserVo.getEmail(), multipartFiles));
     }
@@ -239,8 +240,8 @@ class EventServiceImplTest {
         }.getType())).thenReturn(tags);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
-        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        when(userRemoteClient.uploadFile(multipartFiles[0])).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFiles[1])).thenReturn("/url2");
 
         assertEquals(eventDto,
             eventService.save(addEventDtoRequest, testUserVo.getEmail(), multipartFiles));
@@ -284,14 +285,14 @@ class EventServiceImplTest {
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
 
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
-        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFile)).thenReturn("/url1");
         assertEquals(eventResponseDto,
             eventService.saveV2(addEventDtoRequest, testUserVo.getEmail(),
                 new MultipartFile[] {multipartFile}));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
-        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
-        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        when(userRemoteClient.uploadFile(multipartFiles[0])).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFiles[1])).thenReturn("/url2");
         assertEquals(eventResponseDto,
             eventService.saveV2(addEventDtoRequest, testUserVo.getEmail(), multipartFiles));
     }
@@ -462,7 +463,7 @@ class EventServiceImplTest {
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
 
         when(eventRepo.findAllImagesLinksByEventId(anyLong())).thenReturn(List.of("New addition image"));
-        doNothing().when(fileService).delete(any());
+        doNothing().when(userRemoteClient).deleteFile(any());
 
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
@@ -479,8 +480,8 @@ class EventServiceImplTest {
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
-        when(fileService.upload(multipartFiles[0])).thenReturn("url1");
-        when(fileService.upload(multipartFiles[1])).thenReturn("url2");
+        when(userRemoteClient.uploadFile(multipartFiles[0])).thenReturn("url1");
+        when(userRemoteClient.uploadFile(multipartFiles[1])).thenReturn("url2");
 
         method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
 
@@ -493,7 +494,7 @@ class EventServiceImplTest {
             event.getAdditionalImages().getFirst().getLink());
 
         when(eventRepo.findAllImagesLinksByEventId(anyLong())).thenReturn(new ArrayList<>());
-        doNothing().when(fileService).delete(any());
+        doNothing().when(userRemoteClient).deleteFile(any());
         eventToUpdateDto.setTitleImage("url");
         eventToUpdateDto.setAdditionalImages(List.of("Add img 1", "Add img 2"));
         expectedEvent.setTitleImage("url");
@@ -510,7 +511,7 @@ class EventServiceImplTest {
         eventToUpdateDto.setTitleImage(null);
         expectedEvent.setTitleImage("title url");
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
-        when(fileService.upload(multipartFile)).thenReturn("title url");
+        when(userRemoteClient.uploadFile(multipartFile)).thenReturn("title url");
 
         method.invoke(eventService, event, eventToUpdateDto, new MultipartFile[] {multipartFile});
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());

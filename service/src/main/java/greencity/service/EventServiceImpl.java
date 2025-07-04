@@ -1,8 +1,46 @@
 package greencity.service;
 
+import static greencity.constant.EventTupleConstant.cityEn;
+import static greencity.constant.EventTupleConstant.cityUk;
+import static greencity.constant.EventTupleConstant.countComments;
+import static greencity.constant.EventTupleConstant.countryEn;
+import static greencity.constant.EventTupleConstant.countryUk;
+import static greencity.constant.EventTupleConstant.creationDate;
+import static greencity.constant.EventTupleConstant.currentUserGrade;
+import static greencity.constant.EventTupleConstant.description;
+import static greencity.constant.EventTupleConstant.dislikes;
+import static greencity.constant.EventTupleConstant.eventId;
+import static greencity.constant.EventTupleConstant.finishDate;
+import static greencity.constant.EventTupleConstant.formattedAddressEn;
+import static greencity.constant.EventTupleConstant.formattedAddressUk;
+import static greencity.constant.EventTupleConstant.grade;
+import static greencity.constant.EventTupleConstant.houseNumber;
+import static greencity.constant.EventTupleConstant.isFavorite;
+import static greencity.constant.EventTupleConstant.isOpen;
+import static greencity.constant.EventTupleConstant.isOrganizedByFriend;
+import static greencity.constant.EventTupleConstant.isRelevant;
+import static greencity.constant.EventTupleConstant.isSubscribed;
+import static greencity.constant.EventTupleConstant.languageCode;
+import static greencity.constant.EventTupleConstant.latitude;
+import static greencity.constant.EventTupleConstant.likes;
+import static greencity.constant.EventTupleConstant.longitude;
+import static greencity.constant.EventTupleConstant.onlineLink;
+import static greencity.constant.EventTupleConstant.organizerId;
+import static greencity.constant.EventTupleConstant.organizerName;
+import static greencity.constant.EventTupleConstant.regionEn;
+import static greencity.constant.EventTupleConstant.regionUk;
+import static greencity.constant.EventTupleConstant.startDate;
+import static greencity.constant.EventTupleConstant.streetEn;
+import static greencity.constant.EventTupleConstant.streetUk;
+import static greencity.constant.EventTupleConstant.tagId;
+import static greencity.constant.EventTupleConstant.tagName;
+import static greencity.constant.EventTupleConstant.title;
+import static greencity.constant.EventTupleConstant.titleImage;
+import static greencity.constant.EventTupleConstant.type;
 import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -51,18 +89,6 @@ import greencity.repository.EventRepo;
 import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.sql.Date;
@@ -78,46 +104,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import static greencity.constant.EventTupleConstant.cityEn;
-import static greencity.constant.EventTupleConstant.cityUk;
-import static greencity.constant.EventTupleConstant.countComments;
-import static greencity.constant.EventTupleConstant.countryEn;
-import static greencity.constant.EventTupleConstant.countryUk;
-import static greencity.constant.EventTupleConstant.creationDate;
-import static greencity.constant.EventTupleConstant.currentUserGrade;
-import static greencity.constant.EventTupleConstant.description;
-import static greencity.constant.EventTupleConstant.dislikes;
-import static greencity.constant.EventTupleConstant.eventId;
-import static greencity.constant.EventTupleConstant.finishDate;
-import static greencity.constant.EventTupleConstant.formattedAddressEn;
-import static greencity.constant.EventTupleConstant.formattedAddressUk;
-import static greencity.constant.EventTupleConstant.grade;
-import static greencity.constant.EventTupleConstant.houseNumber;
-import static greencity.constant.EventTupleConstant.isFavorite;
-import static greencity.constant.EventTupleConstant.isOpen;
-import static greencity.constant.EventTupleConstant.isOrganizedByFriend;
-import static greencity.constant.EventTupleConstant.isRelevant;
-import static greencity.constant.EventTupleConstant.isSubscribed;
-import static greencity.constant.EventTupleConstant.languageCode;
-import static greencity.constant.EventTupleConstant.latitude;
-import static greencity.constant.EventTupleConstant.likes;
-import static greencity.constant.EventTupleConstant.longitude;
-import static greencity.constant.EventTupleConstant.onlineLink;
-import static greencity.constant.EventTupleConstant.organizerId;
-import static greencity.constant.EventTupleConstant.organizerName;
-import static greencity.constant.EventTupleConstant.regionEn;
-import static greencity.constant.EventTupleConstant.regionUk;
-import static greencity.constant.EventTupleConstant.startDate;
-import static greencity.constant.EventTupleConstant.streetEn;
-import static greencity.constant.EventTupleConstant.streetUk;
-import static greencity.constant.EventTupleConstant.tagId;
-import static greencity.constant.EventTupleConstant.tagName;
-import static greencity.constant.EventTupleConstant.title;
-import static greencity.constant.EventTupleConstant.titleImage;
-import static greencity.constant.EventTupleConstant.type;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -129,7 +130,7 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper modelMapper;
     private final EventDateLocationDtoMapper eventDateLocationDtoMapper;
     private final RestClient restClient;
-    private final FileService fileService;
+    private final UserRemoteClient userRemoteClient;
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
     private final UserService userService;
@@ -138,6 +139,12 @@ public class EventServiceImpl implements EventService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
+
+    public static List<String> getImagesLinksToDelete(List<String> existingLinks, List<String> newLinks) {
+        return existingLinks.stream()
+            .filter(existingLink -> !newLinks.contains(existingLink))
+            .collect(Collectors.toList());
+    }
 
     /**
      * {@inheritDoc}
@@ -175,11 +182,12 @@ public class EventServiceImpl implements EventService {
 
     private void setEventImages(Event event, MultipartFile[] images) {
         if (images != null && images.length > 0 && images[0] != null) {
-            event.setTitleImage(fileService.upload(images[0]));
+            event.setTitleImage(userRemoteClient.uploadFile(images[0]));
             List<EventImages> eventImages = new ArrayList<>();
             for (int i = 1; i < images.length; i++) {
                 if (images[i] != null) {
-                    eventImages.add(EventImages.builder().event(event).link(fileService.upload(images[i])).build());
+                    eventImages.add(EventImages.builder().event(event).link(userRemoteClient.uploadFile(images[i]))
+                        .build());
                 }
             }
             event.setAdditionalImages(eventImages);
@@ -314,7 +322,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public PageableAdvancedDto<EventDto> getEventsManagement(Pageable page, FilterEventDto filterEventDto,
-        Long userId) {
+                                                             Long userId) {
         if (userId != null) {
             restClient.findById(userId);
         }
@@ -573,7 +581,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventDto.getTags() != null) {
             toUpdate.setTags(modelMapper.map(tagService
-                .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
+                    .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
                 new TypeToken<List<Tag>>() {
                 }.getType()));
         }
@@ -628,12 +636,6 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public static List<String> getImagesLinksToDelete(List<String> existingLinks, List<String> newLinks) {
-        return existingLinks.stream()
-            .filter(existingLink -> !newLinks.contains(existingLink))
-            .collect(Collectors.toList());
-    }
-
     private void changeOldImagesWithoutRemovingAndAdding(Event toUpdate, UpdateEventDto updateEventDto) {
         if (updateEventDto.getTitleImage() != null) {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
@@ -666,7 +668,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void deleteImagesFromServer(List<String> images) {
-        images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(fileService::delete);
+        images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(userRemoteClient::deleteFile);
     }
 
     private void addNewImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
@@ -674,14 +676,14 @@ public class EventServiceImpl implements EventService {
         if (updateEventDto.getTitleImage() != null) {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
         } else {
-            toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
+            toUpdate.setTitleImage(userRemoteClient.uploadFile(images[imagesCounter++]));
         }
         List<String> additionalImagesStr = new ArrayList<>();
         if (updateEventDto.getAdditionalImages() != null) {
             additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
         }
         for (int i = imagesCounter; i < images.length; i++) {
-            additionalImagesStr.add(fileService.upload(images[imagesCounter++]));
+            additionalImagesStr.add(userRemoteClient.uploadFile(images[imagesCounter++]));
         }
         if (!additionalImagesStr.isEmpty()) {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
@@ -759,7 +761,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Long> eventIds, List<Tuple> tuples,
-        Pageable pageable) {
+                                                                   Pageable pageable) {
         return new PageableAdvancedDto<>(
             mapTupleListToEventDtoList(tuples, eventIds.toList()),
             eventIds.getTotalElements(),

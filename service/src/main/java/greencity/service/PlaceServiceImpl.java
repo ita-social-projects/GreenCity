@@ -102,7 +102,6 @@ public class PlaceServiceImpl implements PlaceService {
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
     private final FavoritePlaceRepo favoritePlaceRepo;
-    private final FileService fileService;
     private final UserNotificationService userNotificationService;
     private final RestClient restClient;
     private final PhotoRepo photoRepo;
@@ -607,7 +606,7 @@ public class PlaceServiceImpl implements PlaceService {
                 if (image != null) {
                     Photo newPhoto = Photo.builder()
                         .place(place)
-                        .name(fileService.upload(image))
+                        .name(userRemoteClient.uploadFile(image))
                         .user(user)
                         .build();
                     Photo savedPhoto = photoRepo.save(newPhoto);

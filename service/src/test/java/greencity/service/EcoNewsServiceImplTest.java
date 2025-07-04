@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -109,7 +110,7 @@ class EcoNewsServiceImplTest {
     @Mock
     LanguageService languageService;
     @Mock
-    FileService fileService;
+    UserRemoteClient userRemoteClient;
     @Mock
     HttpServletRequest httpServletRequest;
     @Mock
@@ -160,7 +161,7 @@ class EcoNewsServiceImplTest {
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(dto);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
-        when(fileService.upload(image)).thenReturn(ModelUtils.getUrl().toString());
+        when(userRemoteClient.uploadFile(image)).thenReturn(ModelUtils.getUrl().toString());
 
         assertNotEquals(null, addEcoNewsDtoResponse);
     }
@@ -211,7 +212,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
-        when(fileService.upload(image)).thenReturn(ModelUtils.getUrl().toString());
+        when(userRemoteClient.uploadFile(image)).thenReturn(ModelUtils.getUrl().toString());
 
         assertThrows(NotSavedException.class, () -> ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL));
     }
@@ -222,7 +223,7 @@ class EcoNewsServiceImplTest {
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
+        when(userRemoteClient.uploadFile(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         List<Tag> tags = ModelUtils.getTags();
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
@@ -338,7 +339,7 @@ class EcoNewsServiceImplTest {
         when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
-        when(fileService.upload(file)).thenReturn("https://google.com/");
+        when(userRemoteClient.uploadFile(file)).thenReturn("https://google.com/");
         when(modelMapper.map(ecoNews, EcoNewsGenericDto.class)).thenReturn(ecoNewsDto);
         List<TagVO> tags = ModelUtils.getEcoNewsVO().getTags();
         when(tagService.findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS)).thenReturn(tags);
@@ -374,7 +375,7 @@ class EcoNewsServiceImplTest {
         assertThrows(NotSavedException.class,
             () -> ecoNewsService.update(updateEcoNewsDto, file, userClaims));
 
-        verify(fileService).delete(anyString());
+        verify(userRemoteClient).deleteFile(anyString());
     }
 
     @Test

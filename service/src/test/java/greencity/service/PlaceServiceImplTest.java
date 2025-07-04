@@ -204,8 +204,6 @@ class PlaceServiceImplTest {
     @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
-    private FileService fileService;
-    @Mock
     private UserNotificationService userNotificationService;
     @Mock
     private RestClient restClient;
@@ -224,7 +222,7 @@ class PlaceServiceImplTest {
 
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
-            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo,
             userNotificationService, restClient, photoRepo, userRemoteClient);
     }
 
@@ -764,17 +762,17 @@ class PlaceServiceImplTest {
         verify(modelMapper).map(place, PlaceResponse.class);
 
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
-        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFile)).thenReturn("/url1");
         assertEquals(placeResponse,
             placeService.addPlaceFromUi(dto, placeUser.getId(),
                 new MultipartFile[] {multipartFile}));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
-        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
-        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        when(userRemoteClient.uploadFile(multipartFiles[0])).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFiles[1])).thenReturn("/url2");
         assertEquals(placeResponse,
             placeService.addPlaceFromUi(dto, placeUser.getId(), multipartFiles));
-        verify(fileService, times(3)).upload(any(MultipartFile.class));
+        verify(userRemoteClient, times(3)).uploadFile(any(MultipartFile.class));
     }
 
     @Test

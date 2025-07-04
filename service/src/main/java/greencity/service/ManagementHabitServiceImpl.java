@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableHabitManagementDto;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 public class ManagementHabitServiceImpl implements ManagementHabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
-    private final FileService fileService;
+    private final UserRemoteClient userRemoteClient;
     private final HabitAssignService habitAssignService;
     private final UserActionRepo userActionRepo;
     private final ModelMapper modelMapper;
@@ -139,7 +140,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
         if (image != null && !image.isEmpty()) {
-            habit.setImage(fileService.upload(image));
+            habit.setImage(userRemoteClient.uploadFile(image));
         } else {
             habit.setImage(habitManagementDto.getImage() != null ? habitManagementDto.getImage()
                 : AppConstant.DEFAULT_HABIT_IMAGE);
