@@ -1,0 +1,25 @@
+package greencity.config;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import greencity.cache.CachedUserRelevance;
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableCaching
+public class CacheConfig {
+    @Value("${greencity.cache.relevance.expiration.time}")
+    private int expirationTimeInMinutes;
+
+    @Bean
+    public Cache<Long, CachedUserRelevance> userRelevanceNewsCache() {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(expirationTimeInMinutes, TimeUnit.MINUTES)
+            .maximumSize(10_000)
+            .build();
+    }
+}
