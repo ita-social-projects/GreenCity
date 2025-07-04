@@ -16,7 +16,6 @@
     <include file="db/changelog/logs/ch-update-habit-dictionary-dzen-2.xml"/>
     <include file="db/changelog/logs/ch-habit_facts-dzen-3.xml"/>
     <include file="db/changelog/logs/ch-custom-goals-Kuzenko-1.xml"/>
-    <include file="db/changelog/logs/ch-change-table-Kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-user-achievements-olkhovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-news-subscriber-table-Kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-econews-olkhovskyi-2.xml"/>
@@ -37,9 +36,7 @@
     <include file="db/changelog/logs/ch-fact-of-the-day-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch_rating_statictics_Dovganyuk.xml"/>
     <include file="db/changelog/logs/ch-habits-refactor-Kravchenko.xml"/>
-    <include file="/db/changelog/logs/ch-change-column-name-goals-Petryshak.xml"/>
     <include file="db/changelog/logs/ch-change-custom-goals-Khonko.xml"/>
-    <include file="db/changelog/logs/ch-change-goals-Khonko.xml"/>
     <include file="db/changelog/logs/ch-habits-new-fields-Kravchenko.xml"/>
     <include file="db/changelog/logs/ch-habit-goals-Khonko-1.xml"/>
     <include file="db/changelog/logs/ch-change-column-name-user-goals-Khonko.xml"/>
@@ -111,13 +108,11 @@
     <include file="db/changelog/logs/ch-add-column-eventcomment-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-column-econewscomment-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-drop-column-econewscomment-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-delete-from-shopping_list_item_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-habit_translation-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-fact_of_the_day_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-drop-column-user_achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-table-achievement_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-update-fact-of-the-day-translation-Mokhnatska.xml"/>
-    <include file="db/changelog/logs/ch-update-values-shopping-list-items-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement_categories-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-column-user_actions-Spodaryk.xml"/>

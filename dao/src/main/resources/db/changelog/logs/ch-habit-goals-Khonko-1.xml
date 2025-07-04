@@ -18,7 +18,7 @@
     <changeSet id="dmytrokhonko6" author="Dmytro Khonko">
         <addForeignKeyConstraint baseColumnNames="goal_id" baseTableName="habit_goals"
                                  constraintName="FK_habit_goal_goal" referencedColumnNames="id"
-                                 referencedTableName="goals"/>
+                                 referencedTableName="to_do_list_items"/>
 
         <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_goals"
                                  constraintName="FK_habit_goal_habit" referencedColumnNames="id"
