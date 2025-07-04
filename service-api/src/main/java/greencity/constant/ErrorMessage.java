@@ -241,6 +241,7 @@ public class ErrorMessage {
     public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";
     public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
     public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
+    public static final String INVALID_SORT_VALUE_EXCEPTION = "Invalid sort format: '%s'";
     public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
     public static final String LOG_FILES_NOT_FOUND = "No log files found";
     public static final String LOG_FILE_NOT_FOUND = "No file found with name: %s";
