@@ -38,6 +38,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
+import greencity.mapping.EcoNewsGenericDtoMapper;
+import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.RatingPointsRepo;
@@ -126,11 +128,13 @@ class EcoNewsServiceImplTest {
     @Mock
     private RatingPointsRepo ratingPointsRepo;
     @Mock
-    private CommentService commentService;
+    private UserNotificationService userNotificationService;
+    @Mock
+    private EcoNewsGenericDtoMapper ecoNewsGenericDtoMapper;
+    @Mock
+    private PageableAdvancedDtoMapper<EcoNewsGenericDto> pageableAdvancedDtoMapper;
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
-    @Mock
-    private UserNotificationService userNotificationService;
 
     private EcoNews ecoNews;
     private final AddEcoNewsDtoRequest addEcoNewsDtoRequest = getAddEcoNewsDtoRequest();
@@ -223,7 +227,7 @@ class EcoNewsServiceImplTest {
     void saveEcoNews() throws Exception {
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
-        when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
+        when(ecoNewsGenericDtoMapper.convert(ecoNews)).thenReturn(ecoNewsGenericDto);
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -338,7 +342,7 @@ class EcoNewsServiceImplTest {
         MultipartFile file = ModelUtils.getFile();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
-        when(commentService.countCommentsForEcoNews(ecoNews.getId())).thenReturn(1);
+        when(ecoNewsGenericDtoMapper.convert(ecoNews)).thenReturn(ecoNewsGenericDto);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(file)).thenReturn("https://google.com/");
