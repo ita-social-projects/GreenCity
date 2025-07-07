@@ -2,7 +2,6 @@ package greencity.converters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import org.springframework.stereotype.Component;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Converter(autoApply = true)
 public class FloatArrayConverter implements AttributeConverter<Float[], String> {
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -28,7 +26,7 @@ public class FloatArrayConverter implements AttributeConverter<Float[], String> 
     @Override
     public Float[] convertToEntityAttribute(String dbData) {
         if (dbData == null || dbData.isEmpty()) {
-            return null;
+            return new Float[0];
         }
         try {
             return objectMapper.readValue(dbData, Float[].class);

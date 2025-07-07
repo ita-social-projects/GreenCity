@@ -12,8 +12,8 @@ import lombok.*;
 @Builder
 @Table(name = "eco_news_relevance")
 public class EcoNewsRelevance {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -23,6 +23,4 @@ public class EcoNewsRelevance {
     @Convert(converter = FloatArrayConverter.class)
     @Column(name = "title_vector", columnDefinition = "text")
     private Float[] titleVector;
-
 }
-

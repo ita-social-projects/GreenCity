@@ -34,7 +34,6 @@ import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +43,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Slf4j
 @AllArgsConstructor
-@EnableCaching
 public class SocialNetworkImageServiceImpl implements SocialNetworkImageService {
     private final SocialNetworkImageRepo socialNetworkImageRepo;
     private final FileService fileService;

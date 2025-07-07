@@ -186,4 +186,16 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
         GROUP BY tags;
         """, nativeQuery = true)
     List<Object[]> getEcoNewsTagsStatistics(Long languageId);
+
+    /**
+     * Retrieves a list of {@link EcoNews} by a list of IDs.
+     *
+     * <p>
+     * This method is used with EcoNewsService to find cached EcoNews.
+     * </p>
+     *
+     * @param ids list of IDs
+     * @return list of {@link EcoNews}
+     */
+    List<EcoNews> findByIdIn(List<Long> ids);
 }
