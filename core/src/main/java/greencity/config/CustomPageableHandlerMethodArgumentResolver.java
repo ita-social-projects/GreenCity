@@ -77,7 +77,8 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
             } else if (parts.length == 1) {
                 orders.add(new Sort.Order(Sort.Direction.ASC, parts[0].trim()));
             } else {
-                throw new IllegalArgumentException(String.format(ErrorMessage.INVALID_SORT_VALUE_EXCEPTION, sortParam));
+                throw new IllegalArgumentException(
+                    String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, sortParam));
             }
         }
 
