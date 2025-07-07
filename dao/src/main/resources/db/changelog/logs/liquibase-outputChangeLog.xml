@@ -58,7 +58,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-4">
-        <createTable tableName="discount_value">
+        <createTable tableName="discount_values">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -156,7 +156,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-13">
-        <createTable tableName="specification">
+        <createTable tableName="specifications">
             <column autoIncrement="true" startWith="7" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -203,7 +203,7 @@
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-23">
         <addUniqueConstraint columnNames="name" constraintName="UK_bdpr10axwx0a7ogp5ax531n9f"
-                             tableName="specification"/>
+                             tableName="specifications"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-26">
         <createIndex indexName="FK3297dq7rblawjc9n4kx9htui4" tableName="place">
@@ -246,7 +246,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-38">
-        <createIndex indexName="FKmpd2wxnn6fldh4pilqnkpaqv9" tableName="discount_value">
+        <createIndex indexName="FKmpd2wxnn6fldh4pilqnkpaqv9" tableName="discount_values">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
@@ -266,7 +266,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-42">
-        <createIndex indexName="FKnj78c83w4xmw23jp8etxgcqc5" tableName="discount_value">
+        <createIndex indexName="FKnj78c83w4xmw23jp8etxgcqc5" tableName="discount_values">
             <column name="specification_id"/>
         </createIndex>
     </changeSet>
@@ -344,7 +344,7 @@
                                  referencedColumnNames="id" referencedTableName="place"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-63">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="discount_value"
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="discount_values"
                                  constraintName="FKmpd2wxnn6fldh4pilqnkpaqv9" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="place"/>
@@ -368,10 +368,10 @@
                                  referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-67">
-        <addForeignKeyConstraint baseColumnNames="specification_id" baseTableName="discount_value"
+        <addForeignKeyConstraint baseColumnNames="specification_id" baseTableName="discount_values"
                                  constraintName="FKnj78c83w4xmw23jp8etxgcqc5" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="specification"/>
+                                 referencedColumnNames="id" referencedTableName="specifications"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-69">
         <addForeignKeyConstraint baseColumnNames="web_pages_id" baseTableName="web_pages_places"
