@@ -179,7 +179,7 @@ class CustomPageableHandlerMethodArgumentResolverTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 resolver.resolveArgument(null, null, webRequest, null));
 
-        assertEquals(String.format(ErrorMessage.INVALID_SORT_VALUE_EXCEPTION, "title,asc,extra"), exception.getMessage());
+        assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, "title,asc,extra"), exception.getMessage());
     }
 
     @Test
