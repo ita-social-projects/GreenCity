@@ -8,11 +8,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="Yuriy"
-               id="2">
-        <renameTable newTableName="categories"
-                     oldTableName="category"/>
-    </changeSet>
-    <changeSet author="Yuriy"
                id="4">
         <renameTable newTableName="discount_values"
                      oldTableName="discount_value"/>

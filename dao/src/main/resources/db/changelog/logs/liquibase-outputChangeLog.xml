@@ -17,14 +17,17 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-2">
-        <createTable tableName="category">
+        <createTable tableName="categories">
             <column autoIncrement="true" startWith="11" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="name" type="VARCHAR(100)">
+            <column name="name_en" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="parent_category_id" type="BIGINT"/>
+            <column name="name_uk" type="VARCHAR(100)">
+                <constraints nullable="true" unique="true"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-3">
@@ -186,7 +189,7 @@
         <addUniqueConstraint columnNames="phone" constraintName="UK_1c8hn389trq38f63p3r4mpy33" tableName="place"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-19">
-        <addUniqueConstraint columnNames="name" constraintName="UK_46ccwnsi9409t36lurvtyljak" tableName="category"/>
+        <addUniqueConstraint columnNames="name_en" constraintName="UK_46ccwnsi9409t36lurvtyljak" tableName="categories"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-20">
         <addUniqueConstraint columnNames="web_page" constraintName="UK_663ftdbracrebppaa1smemex8"
@@ -278,7 +281,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-47">
-        <createIndex indexName="FKs2ride9gvilxy2tcuv7witnxc" tableName="category">
+        <createIndex indexName="FKs2ride9gvilxy2tcuv7witnxc" tableName="categories">
             <column name="parent_category_id"/>
         </createIndex>
     </changeSet>
@@ -296,7 +299,7 @@
         <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="place"
                                  constraintName="FK3297dq7rblawjc9n4kx9htui4" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="category"/>
+                                 referencedColumnNames="id" referencedTableName="categories"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-52">
         <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="estimate"
@@ -383,10 +386,10 @@
                                  referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-72">
-        <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="category"
+        <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="categories"
                                  constraintName="FKs2ride9gvilxy2tcuv7witnxc" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="category"/>
+                                 referencedColumnNames="id" referencedTableName="categories"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-73">
         <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="photo"

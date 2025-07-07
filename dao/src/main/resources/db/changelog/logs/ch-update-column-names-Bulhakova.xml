@@ -4,11 +4,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="rename-category-columns" author="Oleksandra Bulhakova">
-        <renameColumn tableName="categories" oldColumnName="name" newColumnName="name_en"/>
-        <renameColumn tableName="categories" oldColumnName="name_ua" newColumnName="name_uk"/>
-    </changeSet>
-
     <changeSet id="rename-location-columns" author="Oleksandra Bulhakova">
         <renameColumn tableName="locations" oldColumnName="address" newColumnName="address_en"/>
         <renameColumn tableName="locations" oldColumnName="address_ua" newColumnName="address_uk"/>

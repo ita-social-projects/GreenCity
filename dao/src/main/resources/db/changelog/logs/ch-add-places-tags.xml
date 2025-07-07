@@ -6,49 +6,44 @@
         http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Categories change" author="">
-        <addColumn tableName="categories">
-            <column name="name_ua" type="VARCHAR(100)">
-                <constraints nullable="true" unique="true"/>
-            </column>
-        </addColumn>
         <update tableName="categories">
-            <column name="name_ua" value="Вегетаріанські продукти"/>
+            <column name="name_uk" value="Вегетаріанські продукти"/>
             <where>id=1</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Зарядні станції"/>
+            <column name="name_uk" value="Зарядні станції"/>
             <where>id=2</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Парковка для мотоциклів"/>
+            <column name="name_uk" value="Парковка для мотоциклів"/>
             <where>id=3</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Велосипедні маршрути"/>
+            <column name="name_uk" value="Велосипедні маршрути"/>
             <where>id=4</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Готелі"/>
+            <column name="name_uk" value="Готелі"/>
             <where>id=5</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Магазини"/>
+            <column name="name_uk" value="Магазини"/>
             <where>id=6</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Ресторани"/>
+            <column name="name_uk" value="Ресторани"/>
             <where>id=7</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Станції приймання"/>
+            <column name="name_uk" value="Станції приймання"/>
             <where>id=8</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Події"/>
+            <column name="name_uk" value="Події"/>
             <where>id=9</where>
         </update>
         <update tableName="categories">
-            <column name="name_ua" value="Оренда мотоциклів"/>
+            <column name="name_uk" value="Оренда мотоциклів"/>
             <where>id=10</where>
         </update>
     </changeSet>
