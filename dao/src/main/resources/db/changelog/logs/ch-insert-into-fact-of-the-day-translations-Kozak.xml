@@ -29,7 +29,7 @@
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">7</column>
-            <column name="content">Тільки американські компанії використовують досить Папери, щоб оточити Землю в 3 рази! (Добре, що компанії переходять до безпаперової рекламі)</column>
+            <column name="content">Тільки американські компанії використовують достатньо паперу, щоб обгорнути Землю 3 рази! (Добре, що компанії переходять до електронного документообігу)</column>
             <column name="fact_of_the_day_id">4</column>
             <column name="language_id">1</column>
         </insert>
@@ -281,7 +281,7 @@
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">70</column>
-            <column name="content">Ми вже знищили 27% наших коралових рифів, на яких мешкає 25% нашої морського життя.</column>
+            <column name="content">Ми вже знищили 27% наших коралових рифів, на яких мешкає 25% нашого морського життя.</column>
             <column name="fact_of_the_day_id">25</column>
             <column name="language_id">1</column>
         </insert>
@@ -341,7 +341,7 @@
         </insert>
         <insert tableName="fact_of_the_day_translations">
             <column name="id">85</column>
-            <column name="content">Пластик назавжди. Він не піддається біологічної класифікації і повертається до природи. Він фоторазлагается на більш дрібні частини себе, постійно забруднюючи навколишнє середовище протягом усього свого життєвого циклу.</column>
+            <column name="content">Пластик назавжди. Він не біорозкладний і залишається в природі. Він фотодеградує на дрібніші частини себе, постійно забруднюючи навколишнє середовище протягом усього свого життєвого циклу.</column>
             <column name="fact_of_the_day_id">30</column>
             <column name="language_id">1</column>
         </insert>
