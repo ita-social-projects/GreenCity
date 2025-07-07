@@ -195,19 +195,22 @@ public class AIServiceImpl implements AIService {
     }
 
     @Transactional
-    public String getRelevanceForEcoNews(Long id) {
-        Optional<EcoNews> ecoNews = ecoNewsRepo.findById(id);
-        if (ecoNews.isEmpty()) {
-            throw new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID);
-        }
-        String title = ecoNews.get().getTitle();
+    public void getRelevanceForEcoNews(Long id) {
+        EcoNews ecoNews = ecoNewsRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID));
+
+        String title = ecoNews.getTitle();
         OpenAIResponseDTO response = openAIService.makeRequestEmbedding(title);
-        EcoNewsRelevance relevance = buildEcoNewsRelevance(ecoNews.get(), response);
+
+        EcoNewsRelevance relevance = EcoNewsRelevance.builder()
+                .id(ecoNews.getId())
+                .ecoNews(ecoNews)
+                .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))// або адаптуй під свій конвертер
+                .build();
 
         ecoNewsRelevanceRepo.save(relevance);
-        return sanitizeJsonResponse(response.getContent());
-
     }
+
 
     /**
      * Builds a news generation prompt for the OpenAI service based on an optional

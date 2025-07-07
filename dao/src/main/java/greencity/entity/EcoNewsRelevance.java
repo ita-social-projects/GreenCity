@@ -13,14 +13,16 @@ import lombok.*;
 @Table(name = "eco_news_relevance")
 public class EcoNewsRelevance {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "eco_news_id", nullable = false)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "eco_news_id", nullable = false, referencedColumnName = "id")
+    @MapsId
+    @JoinColumn(name = "eco_news_id", referencedColumnName = "id")
     private EcoNews ecoNews;
 
     @Convert(converter = FloatArrayConverter.class)
     @Column(name = "title_vector", columnDefinition = "text")
     private Float[] titleVector;
 }
+

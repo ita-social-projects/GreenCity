@@ -1,0 +1,62 @@
+package greencity.aspects;
+
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.service.AIServiceImpl;
+import greencity.service.EcoNewsService;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import org.aspectj.lang.ProceedingJoinPoint;
+
+
+import java.util.Objects;
+
+@Aspect
+@Component
+public class CountEcoNewsTitleRelevanceAspect {
+    private final AIServiceImpl aiServiceImpl;
+    private final EcoNewsService ecoNewsService;
+    public CountEcoNewsTitleRelevanceAspect(AIServiceImpl aiServiceImpl, EcoNewsService ecoNewsService) {
+        this.aiServiceImpl = aiServiceImpl;
+        this.ecoNewsService = ecoNewsService;
+    }
+
+    @AfterReturning(
+            pointcut = "execution(* greencity.controller.EcoNewsController.save(..))",
+            returning = "response"
+    )
+    public void afterSavingEcoNews(Object response) {
+        if (response instanceof ResponseEntity) {
+            Object body = ((ResponseEntity<?>) response).getBody();
+            if (body instanceof EcoNewsGenericDto dto) {
+                Long id = dto.getId();
+                aiServiceImpl.getRelevanceForEcoNews(id);
+            }
+        }
+    }
+
+    @Around("execution(* greencity.controller.EcoNewsController.update(..))")
+    public Object aroundUpdate(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object[] args = joinPoint.getArgs();
+        UpdateEcoNewsDto updateDto = (UpdateEcoNewsDto) args[0];
+        Long ecoNewsId = (Long) args[3];
+        String newTitle = updateDto.getTitle();
+
+        EcoNewsVO oldNews = ecoNewsService.findById(ecoNewsId);
+        String oldTitle = oldNews.getTitle();
+
+        Object result = joinPoint.proceed();
+
+        if (!Objects.equals(oldTitle, newTitle)) {
+            aiServiceImpl.getRelevanceForEcoNews(ecoNewsId);
+        }
+
+        return result;
+    }
+
+
+}

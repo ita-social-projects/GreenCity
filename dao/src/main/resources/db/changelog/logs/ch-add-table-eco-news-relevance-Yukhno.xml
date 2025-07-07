@@ -6,11 +6,9 @@
 
     <changeSet id="Yukhno-eco-news-relevance" author="Dmytro Yukhno">
         <createTable tableName="eco_news_relevance">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
             <column name="eco_news_id" type="BIGINT">
-                <constraints nullable="false"
+                <constraints primaryKey="true"
+                             nullable="false"
                              foreignKeyName="fk_eco_news_relevance_news"
                              references="eco_news(id)"/>
             </column>
@@ -19,3 +17,4 @@
     </changeSet>
 
 </databaseChangeLog>
+
