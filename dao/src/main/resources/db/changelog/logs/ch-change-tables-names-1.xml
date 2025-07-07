@@ -12,9 +12,4 @@
         <renameTable newTableName="locations"
                      oldTableName="location"/>
     </changeSet>
-    <changeSet author="Yuriy"
-               id="8">
-        <renameTable newTableName="photos"
-                     oldTableName="photo"/>
-    </changeSet>
 </databaseChangeLog>

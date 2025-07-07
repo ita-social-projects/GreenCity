@@ -125,7 +125,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-10">
-        <createTable tableName="photo">
+        <createTable tableName="photos">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
@@ -196,7 +196,7 @@
                              tableName="web_pages"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-21">
-        <addUniqueConstraint columnNames="name" constraintName="UK_88inhvpybxm6bqnsthcolx838" tableName="photo"/>
+        <addUniqueConstraint columnNames="name" constraintName="UK_88inhvpybxm6bqnsthcolx838" tableName="photos"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-22">
         <addUniqueConstraint columnNames="email" constraintName="UK_9cbyl8faff3immm5ehnelt18n" tableName="places"/>
@@ -210,11 +210,6 @@
             <column name="category_id"/>
         </createIndex>
     </changeSet>
-<!--    <changeSet author="Marian (generated)" id="1571227598316-27">-->
-<!--        <createIndex indexName="FK4ybp1p4b8005qrgccsrookt9p" tableName="estimates">-->
-<!--            <column name="comment_id"/>-->
-<!--        </createIndex>-->
-<!--    </changeSet>-->
     <changeSet author="Marian (generated)" id="1571227598316-28">
         <createIndex indexName="FK6n25a2qft5y6fb21karg1obh5" tableName="estimates">
             <column name="user_id"/>
@@ -261,7 +256,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-41">
-        <createIndex indexName="FKncp190mcvd1kd21cmnibcm19s" tableName="photo">
+        <createIndex indexName="FKncp190mcvd1kd21cmnibcm19s" tableName="photos">
             <column name="user_id"/>
         </createIndex>
     </changeSet>
@@ -285,13 +280,8 @@
             <column name="parent_category_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-48">
-        <createIndex indexName="FKsm3nsiqunp5ke6cmkundcw4a1" tableName="photo">
-            <column name="comment_id"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-49">
-        <createIndex indexName="FKsv2aa83c398y2xp3j01yi92rh" tableName="photo">
+        <createIndex indexName="FKsv2aa83c398y2xp3j01yi92rh" tableName="photos">
             <column name="place_id"/>
         </createIndex>
     </changeSet>
@@ -301,12 +291,6 @@
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="categories"/>
     </changeSet>
-<!--    <changeSet author="Marian (generated)" id="1571227598316-52">-->
-<!--        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="estimates"-->
-<!--                                 constraintName="FK4ybp1p4b8005qrgccsrookt9p" deferrable="false"-->
-<!--                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"-->
-<!--                                 referencedColumnNames="id" referencedTableName="comments"/>-->
-<!--    </changeSet>-->
     <changeSet author="Marian (generated)" id="1571227598316-53">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="estimates"
                                  constraintName="FK6n25a2qft5y6fb21karg1obh5" deferrable="false"
@@ -362,7 +346,7 @@
                                  referencedColumnNames="id" referencedTableName="places"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-66">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="photo"
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="photos"
                                  constraintName="FKncp190mcvd1kd21cmnibcm19s" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="greencity_users"/>
@@ -391,14 +375,8 @@
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="categories"/>
     </changeSet>
-    <changeSet author="Marian (generated)" id="1571227598316-73">
-        <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="photo"
-                                 constraintName="FKsm3nsiqunp5ke6cmkundcw4a1" deferrable="false"
-                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="comments"/>
-    </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-74">
-        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="photo"
+        <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="photos"
                                  constraintName="FKsv2aa83c398y2xp3j01yi92rh" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="places"/>
