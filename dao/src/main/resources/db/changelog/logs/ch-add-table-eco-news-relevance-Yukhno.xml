@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Yukhno-eco-news-relevance" author="Dmytro Yukhno">
+        <createTable tableName="eco_news_relevance">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="eco_news_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_eco_news_relevance_news"
+                             references="eco_news(id)"/>
+            </column>
+            <column name="title_vector" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
+

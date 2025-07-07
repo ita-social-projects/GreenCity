@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
@@ -10,9 +11,13 @@ import java.time.ZoneOffset;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import java.util.*;
@@ -26,10 +31,16 @@ public class OpenAIServiceImpl implements OpenAIService {
     private String apiKey;
     @Value("${openai.api.url}")
     private String apiUrl;
+    @Value("${openai.api.url.embedding}")
+    private String embeddingApiUrl;
     @Value("${openai.api.model}")
     private String model;
+    @Value("${openai.api.model.embedding}")
+    private String embeddingApiModel;
     @Value("${openai.api.max_completion_tokens}")
     private Integer maxCompletionTokens;
+    @Value("${openai.api.dimensions.tokens}")
+    private Integer dimensionsTokens;
     @Value("${openai.api.temperature}")
     private Double temperature;
 
@@ -76,6 +87,35 @@ public class OpenAIServiceImpl implements OpenAIService {
         log.error(ERROR_MAX_ATTEMPTS_REACHED);
         throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
     }
+
+    @Override
+    public OpenAIResponseDTO makeRequestEmbedding(String title) {
+//        if (ecoNewsDto == null || ecoNewsDto.getTitle() == null || ecoNewsDto.getTitle().isEmpty()) {
+//            throw new OpenAIRequestException("EcoNews title must not be null or empty");
+//        }
+        HttpHeaders headers = createHttpHeaders();
+        Map<String, Object> body = new HashMap<>();
+        body.put("input", title);
+        body.put("model", embeddingApiModel);
+        body.put("dimensions", dimensionsTokens);
+        for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
+            try {
+                return sendEmbeddingRequest(headers, body);
+            } catch (OpenAIResponseException e) {
+                log.error(e.getMessage());
+                log.error(MESSAGE_CURRENT_ATTEMPT, i);
+            } catch (RestClientException e) {
+                log.error(e.getMessage());
+                log.error(ERROR_ATTEMPTING_STOPPED);
+                throw new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE, e);
+            }
+        }
+
+        log.error(ERROR_MAX_ATTEMPTS_REACHED);
+        throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
+    }
+
+
 
     private Map<String, Object> createRequestBody(LanguageDTO language,
         String prompt,
@@ -150,6 +190,21 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         return parseResponse(responseBody);
     }
+    private OpenAIResponseDTO sendEmbeddingRequest(HttpHeaders headers, Map<String, Object> body) throws OpenAIRequestException {
+        Map<String, Object> responseBody = restClient.post()
+                .uri(embeddingApiUrl)
+                .headers(headersConsumer -> headersConsumer.addAll(headers))
+                .body(body)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+
+        if (responseBody == null) {
+            throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
+        }
+
+        return parseResponseEmbedding(responseBody);
+    }
 
     /**
      * Parses the response from the OpenAI API into a {@link OpenAIResponseDTO}
@@ -182,4 +237,34 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         return openAIResponseDTO;
     }
+
+    private OpenAIResponseDTO parseResponseEmbedding(Map<String, Object> responseBody) {
+        OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
+
+        try {
+            // Extract embedding from data[0].embedding
+            var dataList = (List<Map<String, Object>>) responseBody.get("data");
+            if (dataList == null || dataList.isEmpty()) {
+                throw new OpenAIResponseException("No embedding data found in OpenAI response.");
+            }
+
+            var embeddingEntry = dataList.get(0);
+            var embedding = (List<Double>) embeddingEntry.get("embedding");
+            openAIResponseDTO.setContent(embedding.toString());
+
+
+            // Extract usage
+            var usage = (Map<String, Object>) responseBody.get("usage");
+            openAIResponseDTO.setUsedInputTokens((Integer) usage.get("prompt_tokens"));
+            openAIResponseDTO.setUsedOutputTokens((Integer) usage.get("total_tokens"));
+
+            // Optionally: set response time to now
+            openAIResponseDTO.setResponseDateTime(LocalDateTime.now(ZoneOffset.UTC));
+        } catch (NullPointerException | ClassCastException e) {
+            throw new OpenAIResponseException("Invalid OpenAI embedding response format", e);
+        }
+
+        return openAIResponseDTO;
+    }
+
 }

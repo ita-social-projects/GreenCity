@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import greencity.converters.FloatArrayConverter;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
@@ -23,6 +24,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
 import static greencity.constant.OpenAIRequest.*;
 import static greencity.constant.OpenAIConstants.*;
@@ -39,7 +42,9 @@ public class AIServiceImpl implements AIService {
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
+    private final FloatArrayConverter floatArrayConverter;
     private final LanguageService languageService;
+    private final EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
 
     /**
      * Generates a personalized ecological habit forecast for a given user and
@@ -187,6 +192,21 @@ public class AIServiceImpl implements AIService {
         EcoNews ecoNews = createEcoNewsInstance(jsonResponse.getContent());
 
         ecoNewsRepo.save(ecoNews);
+    }
+
+    @Transactional
+    public String getRelevanceForEcoNews(Long id) {
+        Optional<EcoNews> ecoNews = ecoNewsRepo.findById(id);
+        if (ecoNews.isEmpty()) {
+            throw new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID);
+        }
+        String title = ecoNews.get().getTitle();
+        OpenAIResponseDTO response = openAIService.makeRequestEmbedding(title);
+        EcoNewsRelevance relevance = buildEcoNewsRelevance(ecoNews.get(), response);
+
+        ecoNewsRelevanceRepo.save(relevance);
+        return sanitizeJsonResponse(response.getContent());
+
     }
 
     /**
@@ -447,6 +467,14 @@ public class AIServiceImpl implements AIService {
             .text(content)
             .tags(List.of(tag))
             .build();
+    }
+
+    private EcoNewsRelevance buildEcoNewsRelevance(EcoNews ecoNews, OpenAIResponseDTO response) {
+        EcoNewsRelevance relevance = new EcoNewsRelevance();
+        relevance.setEcoNews(ecoNews);
+        relevance.setId(ecoNews.getId());
+        relevance.setTitleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()));
+        return relevance;
     }
 
     /**
