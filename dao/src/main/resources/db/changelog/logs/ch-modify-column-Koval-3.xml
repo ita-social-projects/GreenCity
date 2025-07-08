@@ -11,9 +11,4 @@
                         newDataType="TIMESTAMPTZ"
                         tableName="habit_statistics"/>
     </changeSet>
-    <changeSet id="Yurii-13" author="Yurii Koval">
-        <modifyDataType columnName="create_date"
-                        newDataType="TIMESTAMPTZ"
-                        tableName="habits"/>
-    </changeSet>
 </databaseChangeLog>

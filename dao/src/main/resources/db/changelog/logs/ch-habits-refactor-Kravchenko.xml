@@ -13,16 +13,6 @@
     </changeSet>
 
     <changeSet author="Kravchenko" id="2">
-        <dropColumn tableName="habits">
-            <column name="habit_dictionary_id"/>
-        </dropColumn>
-
-        <addColumn tableName="habits">
-            <column name="image" type="varchar(255)" defaultValue="bag">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-
         <renameColumn tableName="habit_translation"
                       oldColumnName="habit_dictionary_id"
                       newColumnName="habit_id"/>
@@ -52,10 +42,6 @@
     </changeSet>
 
     <changeSet id="6" author="Kravchenko">
-        <dropColumn tableName="habits" columnName="status"/>
-        <dropColumn tableName="habits" columnName="create_date"/>
-
-
         <dropTable tableName="habits_users_assign"/>
 
         <createTable tableName="habit_assign">

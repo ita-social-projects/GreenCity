@@ -57,7 +57,6 @@
     <include file="db/changelog/logs/ch-add-column-file-url-to-chat-message-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-update-column-habit-id-at-habit-status-calendar-Veremchuk.xml"/>
     <include file="db/changelog/logs/ch-add-table-Hutei.xml"/>
-    <include file="db/changelog/logs/ch-add-column-habit-complexity-Levko.xml"/>
     <include file="db/changelog/logs/ch-drop-constraint-habits-assign-table-Volianskyi.xml"/>
     <include file="db/changelog/logs/ch-add-column-to-crat-room-fedorkiv.xml"/>
     <include file="db/changelog/logs/ch-update-column-status-in-users_friends.xml"/>
@@ -81,7 +80,6 @@
     <include file="db/changelog/logs/ch-add-event-organizer-raring-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-create-user-dislikes.xml"/>
     <include file="db/changelog/logs/ch-insert-into-habits-tags-Mokhnatska.xml"/>
-    <include file="db/changelog/logs/сh-add-new-columns-habit-Mokhnatska.xml"/>
     <include file="db/changelog/logs/сh-add-new-column-habit-assign-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-update-habit-translation-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-update-habit-translations-Mokhnatska.xml"/>
@@ -94,7 +92,6 @@
     <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-column-user_actions-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-table-notification-Mladonov.xml"/>
-    <include file="db/changelog/logs/ch-add-new-column-to-habits-is-deleted-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-add-unique-constraint-to-user_id-and-achievement_category_id-to-user_action_table.xml"/>
     <include file="db/changelog/logs/ch-add-unique-constraint-to-include-habit_id-column-in-user_action-table-Sotnik.xml"/>
     <include file="db/changelog/logs/ch-change-content-field-in-chatmessages-table.xml"/>
@@ -106,12 +103,10 @@
     <include file="/db/changelog/logs/ch-add-column-comments-Fedotov.xml"/>
     <include file="/db/changelog/logs/ch-add-table-comments-users-likes-Fedotov.xml"/>
     <include file="db/changelog/logs/ch-add-table-habits-user-likes-Fedotov.xml"/>
-    <include file="db/changelog/logs/ch-add-column-is-shared-with-friends-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-add-table-fact-of-the-day-tags-and-assign-tag-Chekhovska.xml"/>
     <include file="/db/changelog/logs/ch-add-column-type-to-events-Rozhko.xml"/>
     <include file="/db/changelog/logs/ch-create-indexes-Rozhko.xml"/>
     <include file="db/changelog/logs/ch-change-table-habit-assign-Prots.xml"/>
-    <include file="db/changelog/logs/ch-delete-column-from-habit-Prots.xml"/>
     <include file="/db/changelog/logs/ch-add-column-notifications-Herchanivska-4.xml"/>
     <include file="db/changelog/logs/ch-drop-habit_facts-table-and-habit_fact_translations-table.xml"/>
     <include file="db/changelog/logs/ch-add-table-comments-images-Kasarab.xml"/>
