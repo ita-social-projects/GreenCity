@@ -19,7 +19,8 @@
 
         <dropForeignKeyConstraint baseTableName="habit_translation" constraintName="FK_habit_dictionary_translation1"/>
         <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_translation"
-                                 constraintName="fk_habit_translation_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_translation_habits_habit_id" deferrable="false"
+                                 initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>
@@ -31,7 +32,8 @@
 
         <dropForeignKeyConstraint baseTableName="habit_facts" constraintName="FK_habit_facts_habit_dictionary"/>
         <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_facts"
-                                 constraintName="fk_habit_facts_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_facts_habits_habit_id" deferrable="false"
+                                 initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>
@@ -48,30 +50,39 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-
-            <column name="acquired" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
-
             <column name="create_date" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-
-            <column name="suspended" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-
             <column name="user_id" type="bigint" autoIncrement="false"/>
             <column name="habit_id" type="bigint" autoIncrement="false"/>
+            <column name="duration" type="integer" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="habit_streak" type="integer" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="working_days" type="integer" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_enrollment" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(12)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_notification_has_displayed" type="boolean" defaultValue="false"/>
+            <column name="is_private" type="BOOLEAN" defaultValueBoolean="false" />
         </createTable>
 
 
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habit_assign"
-                                 constraintName="fk_habit_assign_users_user_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_assign_users_user_id" deferrable="false"
+                                 initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="greencity_users"/>
         <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_assign"
-                                 constraintName="fk_habit_assign_habits_habit_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_assign_habits_habit_id" deferrable="false"
+                                 initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habits"/>
     </changeSet>
@@ -98,17 +109,18 @@
             <column name="last_enrollment" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            </createTable>
+        </createTable>
 
         <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_status"
-                                 constraintName="fk_habit_status_habit_assign_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_status_habit_assign_id" deferrable="false"
+                                 initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habit_assign"/>
 
     </changeSet>
 
     <changeSet id="8" author="Kravchenko">
-       <dropTable tableName="habit_statistics"/>
+        <dropTable tableName="habit_statistics"/>
 
         <createTable tableName="habit_statistics">
             <column name="id" type="bigint" autoIncrement="true">
@@ -130,7 +142,8 @@
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_statistics"
-                                 constraintName="fk_habit_statistics_habit_assign_id" deferrable="false" initiallyDeferred="false"
+                                 constraintName="fk_habit_statistics_habit_assign_id" deferrable="false"
+                                 initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="habit_assign"/>
     </changeSet>
