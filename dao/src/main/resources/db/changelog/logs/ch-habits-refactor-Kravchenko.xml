@@ -120,13 +120,10 @@
     </changeSet>
 
     <changeSet id="8" author="Kravchenko">
-        <dropTable tableName="habit_statistics"/>
-
         <createTable tableName="habit_statistics">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-
             <column name="rate" type="varchar(10)">
                 <constraints nullable="false"/>
             </column>

@@ -10,7 +10,6 @@
     <include file="db/changelog/logs/ch-change-tables-names-1.xml"/>
     <include file="db/changelog/logs/ch-habit-dictionary-kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-habits-turko-1.xml"/>
-    <include file="db/changelog/logs/ch-habit-statistics-olkhovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-user-goals-skolozdra-1.xml"/>
     <include file="db/changelog/logs/ch-update-habit-dictionary-dzen-2.xml"/>
     <include file="db/changelog/logs/ch-habit_facts-dzen-3.xml"/>
@@ -20,7 +19,6 @@
     <include file="db/changelog/logs/ch-econews-olkhovskyi-2.xml"/>
     <include file="db/changelog/logs/ch-fact-localization-dzen-4.xml"/>
     <include file="db/changelog/logs/ch-goals-localization-Kopylchak-1.xml"/>
-    <include file="db/changelog/logs/ch-modify-column-Koval-3.xml"/>
     <include file="db/changelog/logs/ch-update-habit-dictionary-turko.xml"/>
     <include file="db/changelog/logs/ch-habit-dictionary-translation-turko.xml"/>
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-2.xml"/>
@@ -114,7 +112,6 @@
     <include file="db/changelog/logs/ch-add-habit-invite-table-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-add-table-habit-followers-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-events-users-dislike-table.xml"/>
-    <include file="db/changelog/logs/сh-add-new-column-to-habit-invites-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-comments-users-dislike-table.xml"/>
     <include file="db/changelog/logs/ch-habits-users-dislikes-table.xml"/>
     <include file="db/changelog/logs/сh-update-habit-invitation-statuses.xml"/>
