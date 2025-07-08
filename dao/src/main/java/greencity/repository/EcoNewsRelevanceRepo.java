@@ -1,9 +1,12 @@
 package greencity.repository;
 
 import greencity.dto.econews.RelevantEcoNewsDto;
+import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsRelevance;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.NamedNativeQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,5 +32,16 @@ public interface EcoNewsRelevanceRepo extends JpaRepository<EcoNewsRelevance, Lo
         """)
     List<RelevantEcoNewsDto> findRelevantEcoNewsByCreationDate(@Param("startDate") ZonedDateTime startDate,
                                                                @Param("endDate") ZonedDateTime endDate);
+
+    @Query(value = """
+    SELECT *
+    FROM eco_news_relevance
+    LEFT JOIN eco_news ON eco_news.id = eco_news_relevance.eco_news_id
+    LEFT JOIN eco_news_users_likes ON eco_news.id = eco_news_users_likes.eco_news_id
+    WHERE eco_news_users_likes.users_id = :id
+    ORDER BY eco_news.creation_date DESC
+    LIMIT 10
+""", nativeQuery = true)
+    List<EcoNewsRelevance> findLikedEcoNewsById(@Param("id") Long id);
 }
 

@@ -23,4 +23,12 @@ public class CacheConfig {
             .maximumSize(10_000)
             .build();
     }
+
+    @Bean
+    public Cache<Long, Float[]> averageTitleVectorCache() {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(expirationTimeInMinutes, TimeUnit.MINUTES)
+            .maximumSize(10_000)
+            .build();
+    }
 }
