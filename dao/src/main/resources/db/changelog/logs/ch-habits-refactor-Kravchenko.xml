@@ -34,19 +34,6 @@
                                  referencedTableName="habits"/>
     </changeSet>
 
-    <changeSet id="3" author="Kravchenko">
-        <renameColumn tableName="advices"
-                      oldColumnName="habit_dictionary_id"
-                      newColumnName="habit_id"/>
-
-        <dropForeignKeyConstraint baseTableName="advices" constraintName="FK_advices_habit_dictionary"/>
-
-        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="advices"
-                                 constraintName="fk_habit_advices_habits_habit_id" deferrable="false" initiallyDeferred="false"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="habits"/>
-    </changeSet>
-
     <changeSet id="4" author="Kravchenko">
         <renameColumn tableName="habit_facts"
                       oldColumnName="habit_dictionary_id"

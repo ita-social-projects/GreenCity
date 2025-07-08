@@ -12,14 +12,12 @@
     <include file="db/changelog/logs/ch-habits-turko-1.xml"/>
     <include file="db/changelog/logs/ch-habit-statistics-olkhovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-user-goals-skolozdra-1.xml"/>
-    <include file="db/changelog/logs/ch-advice-dzen-1.xml"/>
     <include file="db/changelog/logs/ch-update-habit-dictionary-dzen-2.xml"/>
     <include file="db/changelog/logs/ch-habit_facts-dzen-3.xml"/>
     <include file="db/changelog/logs/ch-custom-goals-Kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-user-achievements-olkhovskyi-1.xml"/>
     <include file="db/changelog/logs/ch-news-subscriber-table-Kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-econews-olkhovskyi-2.xml"/>
-    <include file="db/changelog/logs/ch-advice-localization-kopylchak-1.xml"/>
     <include file="db/changelog/logs/ch-fact-localization-dzen-4.xml"/>
     <include file="db/changelog/logs/ch-goals-localization-Kopylchak-1.xml"/>
     <include file="db/changelog/logs/ch-modify-column-Koval-3.xml"/>
@@ -126,7 +124,6 @@
     <include file="db/changelog/logs/ch-delete-column-from-habit-Prots.xml"/>
     <include file="/db/changelog/logs/ch-add-column-notifications-Herchanivska-4.xml"/>
     <include file="db/changelog/logs/ch-drop-habit_facts-table-and-habit_fact_translations-table.xml"/>
-    <include file="db/changelog/logs/ch-drop-tables-advices-and-advice_translations-Chekhovska.xml"/>
     <include file="db/changelog/logs/ch-add-table-comments-images-Kasarab.xml"/>
     <include file="db/changelog/logs/ch-move-data-from-events_comments-to-comments.xml"/>
     <include file="db/changelog/logs/ch-delete-tables-related-to-event-comments.xml"/>
