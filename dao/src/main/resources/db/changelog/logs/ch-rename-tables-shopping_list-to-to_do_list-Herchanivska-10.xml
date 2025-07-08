@@ -5,7 +5,6 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="Herchanivska-10" author="Viktoriia Herchanivska">
-        <renameTable oldTableName="custom_shopping_list_items" newTableName="custom_to_do_list_items"/>
         <renameTable oldTableName="habit_shopping_list_items" newTableName="habit_to_do_list_items"/>
 
         <renameColumn tableName="habit_to_do_list_items" oldColumnName="shopping_list_item_id" newColumnName="to_do_list_item_id"/>

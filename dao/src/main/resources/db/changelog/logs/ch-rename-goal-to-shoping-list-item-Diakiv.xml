@@ -12,11 +12,6 @@
         <renameTable oldTableName="habit_goals" newTableName="habit_shopping_list_items"/>
     </changeSet>
 
-    <changeSet id="renameCustom-goal" author="MarianDiakiv">
-        <renameTable oldTableName="custom_goals" newTableName="custom_shopping_list_items"/>
-    </changeSet>
-
-
     <changeSet id="addForeignForeignKey" author="MarianDiakiv">
 
         <addForeignKeyConstraint baseTableName="habit_shopping_list_items" baseColumnNames="shopping_list_item_id"
