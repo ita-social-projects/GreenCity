@@ -16,7 +16,7 @@ public class EcoNewsRelevance {
     @Column(name = "eco_news_id", nullable = false)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "eco_news_id", referencedColumnName = "id")
     private EcoNews ecoNews;

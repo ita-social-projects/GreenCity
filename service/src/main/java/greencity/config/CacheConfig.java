@@ -2,6 +2,7 @@ package greencity.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import greencity.cache.CachedUserProfile;
 import greencity.cache.CachedUserRelevantNews;
 import greencity.cache.RelevantEcoNewsCacheKey;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,7 @@ public class CacheConfig {
     }
 
     @Bean
-    public Cache<Long, Float[]> averageTitleVectorCache() {
+    public Cache<Long, CachedUserProfile> averageUserVectorsCache() {
         return Caffeine.newBuilder()
             .expireAfterWrite(expirationTimeInMinutes, TimeUnit.MINUTES)
             .maximumSize(10_000)

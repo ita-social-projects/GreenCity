@@ -4,10 +4,9 @@ import greencity.dto.econews.EcoNewsAuthorStatisticDto;
 import greencity.entity.EcoNews;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -198,4 +197,16 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
      * @return list of {@link EcoNews}
      */
     List<EcoNews> findByIdIn(List<Long> ids);
+
+    /**
+     * Method for finding all {@link EcoNews} entities with their associated tags
+     * using the given specification and sort.
+     *
+     * @param spec a {@link Specification} to filter the EcoNews entities.
+     * @param sort a {@link Sort} object to specify the sorting order.
+     * @return list of {@link EcoNews} entities with their tags.
+     */
+    @Override
+    @EntityGraph(attributePaths = {"tags"})
+    List<EcoNews> findAll(Specification<EcoNews> spec, Sort sort);
 }
