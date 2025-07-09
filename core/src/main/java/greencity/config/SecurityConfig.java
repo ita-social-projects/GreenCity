@@ -459,7 +459,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     COMMENTS)
                 .hasAnyRole(ADMIN)
-                .anyRequest().hasAnyRole(ADMIN))
+                .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
                 .clearAuthentication(true)
