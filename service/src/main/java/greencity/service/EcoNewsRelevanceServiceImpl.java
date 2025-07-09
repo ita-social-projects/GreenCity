@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -130,25 +131,35 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         EcoNewsSpecification specification = ecoNewsService.getSpecification(request);
         return ecoNewsRepo.findAll(specification, Sort.by(Sort.Direction.DESC, "creationDate"));
     }
-
+//
 //    private void fillPools(UserVO user, List<EcoNews> ecoNews) {
 //        ecoNews.stream().forEach(news -> {
 //
 //        })
 //    }
-//
-//    private List<EcoNews> getResultByRatio(CachedRelevancePools pools, int pageSize) {
-////        double[] normalizedRatio = convertRatioFromString(relevancePoolsRatio);
-//        int[] ratioForPages = Arrays.stream(RELEVANCE_POOLS_RATIO)
-//            .mapToInt(d -> (int) Math.round(d * pageSize))
-//            .toArray();
-//    }
-//
-//    private void loadMoreNews(LinkedList<EcoNews> pool, int neededCount) {
-//        if (pool.size() < neededCount) {
-//
-//        }
-//    }
+
+    private List<EcoNews> getResultByRatio(RelevancePools pools, int pageSize) {
+        int[] ratioForPages = calculateRatioCounts(pageSize, RELEVANCE_POOLS_RATIO);
+
+        List<EcoNews> result = new ArrayList<>();
+
+        result.addAll(pools.relevantWeakNews().stream()
+                .limit(ratioForPages[0])
+                .toList());
+        result.addAll(pools.relevantStrongNews().stream()
+                .limit(ratioForPages[1])
+                .toList());
+        result.addAll(pools.nonRelevantNews().stream()
+                .limit(ratioForPages[2])
+                .toList());
+        return result;
+    }
+
+    private void loadMoreNews(LinkedList<EcoNews> pool, int neededCount) {
+        if (pool.size() < neededCount) {
+
+        }
+    }
 
     private float countRelevanceForUserAndEcoNews(UserVO user, EcoNewsRelevance ecoNewsRelevance) {
         return 0;
@@ -194,6 +205,44 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         }
         return averageVector;
     }
+    private int[] calculateRatioCounts(int pageSize, double[] ratio) {
+        int[] result = new int[ratio.length];
+        double sum = Arrays.stream(ratio).sum();
+
+        double[] exactCounts = new double[ratio.length];
+        int total = 0;
+
+        for (int i = 0; i < ratio.length; i++) {
+            exactCounts[i] = ratio[i] / sum * pageSize;
+            result[i] = (int) Math.floor(exactCounts[i]);
+            total += result[i];
+        }
+
+        int remaining = pageSize - total;
+
+        while (remaining > 0) {
+            int bestIndex = -1;
+            double maxFraction = -1;
+
+            for (int i = 0; i < ratio.length; i++) {
+                double fraction = exactCounts[i] - result[i];
+                if (fraction > maxFraction) {
+                    maxFraction = fraction;
+                    bestIndex = i;
+                }
+            }
+
+            if (bestIndex != -1) {
+                result[bestIndex]++;
+                remaining--;
+            } else {
+                break;
+            }
+        }
+
+        return result;
+    }
+
 
     private record RelevancePools(
         LinkedList<EcoNews> relevantStrongNews,
