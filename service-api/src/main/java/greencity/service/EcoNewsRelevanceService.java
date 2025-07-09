@@ -1,7 +1,7 @@
 package greencity.service;
 
-import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +15,11 @@ public interface EcoNewsRelevanceService {
      * @param title    title to filter
      * @param author   author to filter
      * @param user     currently authorized user
-     * @return list of relevant eco news
+     * @return page of relevant eco news
      */
-    PageableDto<EcoNewsDto> findRelevantEcoNews(Pageable page,
-                                                List<String> tags,
-                                                String title,
-                                                String author,
-                                                UserVO user);
+    PageableAdvancedDto<EcoNewsGenericDto> findRelevantEcoNews(Pageable page,
+                                                               List<String> tags,
+                                                               String title,
+                                                               String author,
+                                                               UserVO user);
 }
