@@ -54,9 +54,7 @@ public class CategoryController {
      */
     @Operation(summary = "View a list of available categories")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved list"),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved list")
     })
     @GetMapping
     public ResponseEntity<List<CategoryDto>> findAllCategory() {
