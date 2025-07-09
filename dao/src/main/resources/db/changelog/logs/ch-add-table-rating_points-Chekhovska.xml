@@ -15,6 +15,9 @@
             <column name="points" type="INT" defaultValue="1">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="varchar(255)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
@@ -458,5 +461,34 @@
                                  referencedTableName="rating_points"
                                  referencedColumnNames="id"/>
 
+    </changeSet>
+    <changeSet id="Insert into rating_points" author="Roman Kasarab">
+        <preConditions onFail="MARK_RAN" onError="HALT">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM public.rating_points
+                WHERE name IN ('LIKE_EVENT', 'UNDO_LIKE_EVENT', 'LIKE_NEWS', 'UNDO_LIKE_NEWS');
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_EVENT"/>
+            <column name="points" value="1"/>
+        </insert>
+
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_EVENT"/>
+            <column name="points" value="-1"/>
+        </insert>
+
+        <insert tableName="rating_points">
+            <column name="name" value="LIKE_NEWS"/>
+            <column name="points" value="1"/>
+        </insert>
+
+        <insert tableName="rating_points">
+            <column name="name" value="UNDO_LIKE_NEWS"/>
+            <column name="points" value="-1"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>
