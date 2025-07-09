@@ -93,17 +93,20 @@
         </createTable>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-7">
-        <createTable tableName="location">
+        <createTable tableName="locations">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="address" type="VARCHAR(255)">
+            <column name="address_en" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="lat" type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
             <column name="lng" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address_uk" type="varchar">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -313,7 +316,7 @@
         <addForeignKeyConstraint baseColumnNames="location_id" baseTableName="places"
                                  constraintName="FKaxtbydhvr0oeed7oruruf0hn" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="location"/>
+                                 referencedColumnNames="id" referencedTableName="locations"/>
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-61">
         <addForeignKeyConstraint baseColumnNames="place_id" baseTableName="opening_hours"

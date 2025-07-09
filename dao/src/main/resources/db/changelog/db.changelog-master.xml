@@ -7,7 +7,6 @@
     <include file="db/changelog/logs/ch-add-table-user_location-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-add-table-greencity-users-Kozak.xml"/>
     <include file="db/changelog/logs/liquibase-outputChangeLog.xml"/>
-    <include file="db/changelog/logs/ch-change-tables-names-1.xml"/>
     <include file="db/changelog/logs/ch-habit-dictionary-kuzenko-1.xml"/>
     <include file="db/changelog/logs/ch-habits-turko-1.xml"/>
     <include file="db/changelog/logs/ch-user-goals-skolozdra-1.xml"/>

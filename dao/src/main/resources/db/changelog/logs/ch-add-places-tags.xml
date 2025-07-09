@@ -47,11 +47,5 @@
             <where>id=10</where>
         </update>
     </changeSet>
-    <changeSet id="location change" author="">
-        <addColumn tableName="locations">
-            <column name="address_ua" type="varchar">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
+
 </databaseChangeLog>
