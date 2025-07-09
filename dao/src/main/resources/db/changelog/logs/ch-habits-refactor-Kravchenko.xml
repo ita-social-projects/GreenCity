@@ -7,18 +7,10 @@
         http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet author="Kravchenko" id="1">
-        <renameTable newTableName="habit_translation"
-                     oldTableName="habit_dictionary_translation"/>
-    </changeSet>
+
 
     <changeSet author="Kravchenko" id="2">
-        <renameColumn tableName="habit_translation"
-                      oldColumnName="habit_dictionary_id"
-                      newColumnName="habit_id"/>
-
-        <dropForeignKeyConstraint baseTableName="habit_translation" constraintName="FK_habit_dictionary_translation1"/>
-        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_translation"
+       <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_translation"
                                  constraintName="fk_habit_translation_habits_habit_id" deferrable="false"
                                  initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
@@ -88,7 +80,6 @@
     </changeSet>
 
     <changeSet id="7" author="Kravchenko">
-        <dropTable tableName="habit_status_calendar"/>
         <dropTable tableName="habit_status"/>
 
         <createTable tableName="habit_status">
@@ -149,23 +140,22 @@
 
         <createTable tableName="habit_status_calendar">
             <column name="id" type="bigint" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="enroll_date" type="date">
                 <constraints nullable="false"/>
             </column>
-            <column name="habit_status_id" type="bigint">
+            <column name="habit_assign_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="habit_status_id" baseTableName="habit_status_calendar"
-                                 constraintName="fk_habit_status_id" deferrable="false" initiallyDeferred="false"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="habit_status"/>
 
     </changeSet>
-
+    <changeSet id="zakhar123" author="ZakharVeremchuk">
+        <addUniqueConstraint columnNames="enroll_date, habit_assign_id"
+                             constraintName="UK_eroll_date_and_habie_assign_id" tableName="habit_status_calendar"/>
+    </changeSet>
     <changeSet id="10" author="Kravchenko">
         <renameTable oldTableName="fact_translations" newTableName="habit_fact_translations"/>
     </changeSet>
