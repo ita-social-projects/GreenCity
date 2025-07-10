@@ -38,7 +38,6 @@
     <include file="db/changelog/logs/ch-table-tag-translations-Derevetskyi.xml"/>
     <include file="db/changelog/logs/ch-add-messages-Kravchenko.xml"/>
     <include file="db/changelog/logs/ch-change-user-action-Mamchuk.xml"/>
-    <include file="db/changelog/logs/ch-change-user-achievements-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-Novosad.xml"/>
     <include file="db/changelog/logs/ch-change-habit-goal-id-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-change-habit-goal-add-status-Diakiv.xml"/>
@@ -74,7 +73,6 @@
     <include file="db/changelog/logs/ch-insert-into-habits-tags-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-followers-Bondar.xml"/>
     <include file="db/changelog/logs/ch-add-columns-events-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-drop-column-user_achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-table-achievement_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement_categories-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>

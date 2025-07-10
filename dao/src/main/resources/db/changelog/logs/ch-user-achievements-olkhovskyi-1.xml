@@ -37,8 +37,9 @@
             <column name="achievement_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="achievement_status" type="varchar(12)">
-                <constraints nullable="false"/>
+            <column name="notified" type="BOOLEAN" defaultValue="false"/>
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>
