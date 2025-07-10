@@ -8,8 +8,6 @@
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="habit_status"/>
         </preConditions>
-        <dropTable tableName="habit_status"
-                   catalogName="greencity"
-                   schemaName="public"/>
+        <dropTable tableName="habit_status"/>
     </changeSet>
 </databaseChangeLog>
