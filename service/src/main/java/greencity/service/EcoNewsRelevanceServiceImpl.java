@@ -94,20 +94,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             title,
             author,
             pageable.getPageSize());
-        CachedUserRelevantNews cachedUserRelevantNews = userRelevanceNewsCache.getIfPresent(key);
-        if (cachedUserRelevantNews == null) {
-            long totalEcoNewsCount = ecoNewsRepo.count();
-            cachedUserRelevantNews = new CachedUserRelevantNews(
-                new CachedRelevancePools(new LinkedList<>(), new LinkedList<>(), new LinkedList<>()),
-                new HashMap<>(),
-                0,
-                (int) (totalEcoNewsCount / pageable.getPageSize()),
-                ZonedDateTime.now()
-            );
-            userRelevanceNewsCache.put(key, cachedUserRelevantNews);
-        }
-
-        CachedRelevancePools cachedPools = cachedUserRelevantNews.getNewsRelevancePools();
+        CachedUserRelevantNews cachedUserRelevantNews = getUserRelevantNewsPools(key);
         Map<Integer, List<Long>> relevantNewsPages = cachedUserRelevantNews.getRelevantNewsPages();
         int page = pageable.getPageNumber();
         List<EcoNews> findResult;
@@ -115,13 +102,9 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         if (relevantNewsPages.containsKey(page)) {
             findResult = ecoNewsRepo.findAllById(relevantNewsPages.get(page));
         } else {
-            RelevancePools pools = getRelevancePoolsFromCache(cachedPools);
-            CachedUserProfile userProfile = userProfileCache.getIfPresent(user.getId());
-            if (userProfile == null) {
-                userProfile = getAverageVectorsByUser(user.getId());
-                userProfileCache.put(user.getId(), userProfile);
-            }
-            findResult = getResultByRatio(key, cachedUserRelevantNews, pools, userProfile);
+            CachedUserProfile userProfile = getAverageVectorsByUser(user.getId());
+            findResult = getResultByRatio(key, cachedUserRelevantNews,
+                cachedUserRelevantNews.getNewsRelevancePools(), userProfile);
             relevantNewsPages.put(page, findResult.stream()
                 .map(EcoNews::getId)
                 .toList());
@@ -135,12 +118,20 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         return pageableAdvancedDtoMapper.convert(pageResult);
     }
 
-    private RelevancePools getRelevancePoolsFromCache(CachedRelevancePools pools) {
-        LinkedList<EcoNews> relevantStrongNews =
-            new LinkedList<>(ecoNewsRepo.findAllById(pools.relevantStrongNewsIds()));
-        LinkedList<EcoNews> relevantWeakNews = new LinkedList<>(ecoNewsRepo.findAllById(pools.relevantWeakNewsIds()));
-        LinkedList<EcoNews> nonRelevantNews = new LinkedList<>(ecoNewsRepo.findAllById(pools.nonRelevantNewsIds()));
-        return new RelevancePools(relevantStrongNews, relevantWeakNews, nonRelevantNews);
+    private CachedUserRelevantNews getUserRelevantNewsPools(RelevantEcoNewsCacheKey key) {
+        CachedUserRelevantNews cachedUserRelevantNews = userRelevanceNewsCache.getIfPresent(key);
+        if (cachedUserRelevantNews == null) {
+            long totalEcoNewsCount = ecoNewsRepo.count();
+            cachedUserRelevantNews = new CachedUserRelevantNews(
+                new CachedRelevancePools(new LinkedList<>(), new LinkedList<>(), new LinkedList<>()),
+                new HashMap<>(),
+                0,
+                (int) (totalEcoNewsCount / key.pageSize()),
+                ZonedDateTime.now()
+            );
+            userRelevanceNewsCache.put(key, cachedUserRelevantNews);
+        }
+        return cachedUserRelevantNews;
     }
 
     private List<EcoNews> getFilteredNews(RelevantEcoNewsCacheKey requestMetadata, ZonedDateTime lastRequestedDate) {
@@ -158,7 +149,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
 
     private List<EcoNews> getResultByRatio(RelevantEcoNewsCacheKey requestMetadata,
                                            CachedUserRelevantNews cachedUserNews,
-                                           RelevancePools pools,
+                                           CachedRelevancePools pools,
                                            CachedUserProfile userProfile) {
         while (!hasEnoughNews(requestMetadata, pools)
             && cachedUserNews.getLastGeneratedPage() < cachedUserNews.getTotalPagesCount()) {
@@ -166,34 +157,22 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             cachedUserNews.setLastGeneratedPage(cachedUserNews.getLastGeneratedPage() + 1);
         }
         int[] ratioForPages = calculateRatioCounts(requestMetadata.pageSize(), relevancePoolsRatio);
-
-        List<EcoNews> result = new ArrayList<>();
-
-        result.addAll(pools.relevantWeakNews().stream()
-                .limit(ratioForPages[0])
-                .toList());
-        result.addAll(pools.relevantStrongNews().stream()
-                .limit(ratioForPages[1])
-                .toList());
-        result.addAll(pools.nonRelevantNews().stream()
-                .limit(ratioForPages[2])
-                .toList());
-        return result;
+        return getNewsFromPoolsByRatio(pools, ratioForPages);
     }
 
     private boolean hasEnoughNews(RelevantEcoNewsCacheKey requestMetadata,
-                                  RelevancePools pools) {
+                                  CachedRelevancePools pools) {
         int[] ratioForPages = Arrays.stream(relevancePoolsRatio)
             .mapToInt(d -> (int) Math.round(d * requestMetadata.pageSize()))
             .toArray();
-        return pools.relevantStrongNews().size() >= ratioForPages[0]
-            && pools.relevantWeakNews().size() >= ratioForPages[1]
-            && pools.nonRelevantNews().size() >= ratioForPages[2];
+        return pools.relevantStrongNewsIds().size() >= ratioForPages[0]
+            && pools.relevantWeakNewsIds().size() >= ratioForPages[1]
+            && pools.nonRelevantNewsIds().size() >= ratioForPages[2];
     }
 
     private void loadMoreNews(RelevantEcoNewsCacheKey requestMetadata,
                               CachedUserRelevantNews cachedUserNews,
-                              RelevancePools pools,
+                              CachedRelevancePools pools,
                               CachedUserProfile userProfile) {
         List<EcoNews> news = getFilteredNews(requestMetadata, cachedUserNews.getLastRequestedDate());
         cachedUserNews.setLastRequestedDate(cachedUserNews.getLastRequestedDate().minusWeeks(1));
@@ -212,11 +191,11 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             .sorted(Comparator.comparingDouble(EcoNewsWithRelevanceVectors::getRelevanceScore))
             .forEach(newsItem -> {
                 if (newsItem.getRelevanceScore() > relevanceScoresStrength[0]) {
-                    pools.relevantStrongNews().add(newsItem.getEcoNews());
+                    pools.relevantWeakNewsIds().add(newsItem.getEcoNews().getId());
                 } else if (newsItem.getRelevanceScore() < relevanceScoresStrength[1]) {
-                    pools.nonRelevantNews().add(newsItem.getEcoNews());
+                    pools.nonRelevantNewsIds().add(newsItem.getEcoNews().getId());
                 } else {
-                    pools.relevantWeakNews().add(newsItem.getEcoNews());
+                    pools.relevantWeakNewsIds().add(newsItem.getEcoNews().getId());
                 }
             });
     }
@@ -261,6 +240,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         }
         return averageVector;
     }
+
     private int[] calculateRatioCounts(int pageSize, double[] ratio) {
         int[] result = new int[ratio.length];
         double sum = Arrays.stream(ratio).sum();
@@ -299,12 +279,18 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         return result;
     }
 
-
-    private record RelevancePools(
-        LinkedList<EcoNews> relevantStrongNews,
-        LinkedList<EcoNews> relevantWeakNews,
-        LinkedList<EcoNews> nonRelevantNews
-    ) {
+    private List<EcoNews> getNewsFromPoolsByRatio(CachedRelevancePools pools, int[] ratioForPages) {
+        List<Long> resultPageIds = new ArrayList<>();
+        for (int i = 0; i < ratioForPages[0]; i++) {
+            resultPageIds.add(pools.relevantStrongNewsIds().poll());
+        }
+        for (int i = 0; i < ratioForPages[1]; i++) {
+            resultPageIds.add(pools.relevantWeakNewsIds().poll());
+        }
+        for (int i = 0; i < ratioForPages[2]; i++) {
+            resultPageIds.add(pools.nonRelevantNewsIds().poll());
+        }
+        return ecoNewsRepo.findAllById(resultPageIds);
     }
 
     @Getter
