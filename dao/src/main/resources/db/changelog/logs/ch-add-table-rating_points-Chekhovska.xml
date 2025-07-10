@@ -441,9 +441,6 @@
     </changeSet>
 
     <changeSet id="replace_event_column_with_rating_points" author="Maryna Chekhovska">
-        <addColumn tableName="rating_statistics">
-            <column name="rating_points_id" type="BIGINT"/>
-        </addColumn>
 
         <sql>
             UPDATE rating_statistics
