@@ -8,15 +8,19 @@ import greencity.entity.localization.TagTranslation;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.CommentService;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import org.modelmapper.AbstractConverter;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
 public class EcoNewsGenericDtoMapper extends AbstractConverter<EcoNews, EcoNewsGenericDto> {
     private final EcoNewsRepo ecoNewsRepo;
     private final CommentService commentService;
+
+    public EcoNewsGenericDtoMapper(@Lazy EcoNewsRepo ecoNewsRepo, @Lazy CommentService commentService) {
+        this.ecoNewsRepo = ecoNewsRepo;
+        this.commentService = commentService;
+    }
 
     @Override
     public EcoNewsGenericDto convert(EcoNews ecoNews) {

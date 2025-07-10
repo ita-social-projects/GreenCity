@@ -14,8 +14,6 @@ import greencity.enums.TagType;
 import greencity.filters.EcoNewsSpecification;
 import greencity.entity.EcoNewsRelevance;
 import greencity.entity.Tag;
-import greencity.mapping.EcoNewsGenericDtoMapper;
-import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.TagsCoherenceRepo;
@@ -29,6 +27,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -52,23 +51,25 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private final Cache<RelevantEcoNewsCacheKey, CachedUserRelevantNews> userRelevanceNewsCache;
     private final Cache<Long, CachedUserProfile> userProfileCache;
     private final ModelMapper modelMapper;
-    private final PageableAdvancedDtoMapper<EcoNewsGenericDto> pageableAdvancedDtoMapper;
-    private final EcoNewsGenericDtoMapper ecoNewsGenericDtoMapper;
-
-    private final List<Tag> ecoNewsTags = tagsRepo.findTagsByType(TagType.ECO_NEWS);
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    @Value("${greencity.relevant.news.ratio}")
+    private String relevancePoolsRatioString;
+    @Value("${greencity.tags.semantic.scores.weights}")
+    private String relevanceScoresWeightsString;
+    @Value("${greencity.relevance.scores.strengths}")
+    private String relevanceScoresStrengthString;
     private double[] relevancePoolsRatio;
     private double[] relevanceScoresWeights;
     private double[] relevanceScoresStrength;
+    private List<Tag> ecoNewsTags;
 
     @PostConstruct
-    public void init(@Value("${greencity.relevant.news.ratio}") String relevancePoolsRatio,
-                     @Value("${greencity.tags.semantic.scores.weights}") String semanticScoresWeights,
-                     @Value("${greencity.relevance.scores.strengths}") String relevanceScoresStrength) {
-        this.relevancePoolsRatio = convertRatioFromString(relevancePoolsRatio);
-        this.relevanceScoresWeights = convertRatioFromString(semanticScoresWeights);
-        this.relevanceScoresStrength = convertRatioFromString(relevanceScoresStrength);
+    public void init() {
+        this.relevancePoolsRatio = convertRatioFromString(relevancePoolsRatioString);
+        this.relevanceScoresWeights = convertRatioFromString(relevanceScoresWeightsString);
+        this.relevanceScoresStrength = convertRatioFromString(relevanceScoresStrengthString);
+        this.ecoNewsTags  = tagsRepo.findTagsByType(TagType.ECO_NEWS);
     }
 
     private double[] convertRatioFromString(String ratio) {
@@ -111,11 +112,11 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         }
 
         Page<EcoNewsGenericDto> pageResult = new PageImpl<>(findResult.stream()
-            .map(ecoNewsGenericDtoMapper::convert)
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsGenericDto.class))
             .toList(),
             pageable,
             cachedUserRelevantNews.getTotalPagesCount());
-        return pageableAdvancedDtoMapper.convert(pageResult);
+        return modelMapper.map(pageResult, new TypeToken<PageableAdvancedDto<EcoNewsGenericDto>>(){}.getType());
     }
 
     private CachedUserRelevantNews getUserRelevantNewsPools(RelevantEcoNewsCacheKey key) {
