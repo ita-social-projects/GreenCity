@@ -310,15 +310,17 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     @Getter
     private class EcoNewsWithRelevanceVectors {
         private final EcoNews ecoNews;
-        private final Float[] tagsVector;
+        private Float[] tagsVector;
         private Float[] titleVector;
         private double relevanceScore;
 
         public EcoNewsWithRelevanceVectors(EcoNews ecoNews,
                                            EcoNewsRelevance ecoNewsRelevance) {
             this.ecoNews = ecoNews;
-            this.tagsVector = new Float[ecoNewsTags.size()];
-            ecoNewsTags.forEach(tag -> tagsVector[ecoNewsTags.indexOf(tag)] = 1f);
+            if (ecoNews.getTags() != null) {
+                this.tagsVector = new Float[ecoNewsTags.size()];
+                ecoNews.getTags().forEach(tag -> tagsVector[ecoNewsTags.indexOf(tag)] = 1f);
+            }
             if (ecoNewsRelevance != null) {
                 this.titleVector = ecoNewsRelevance.getTitleVector();
             }
@@ -328,14 +330,10 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                                            EcoNews ecoNews,
                                            EcoNewsRelevance ecoNewsRelevance) {
             this(ecoNews, ecoNewsRelevance);
-            calculateAndSaveRelevanceScore(userProfile);
-        }
-
-        public void calculateAndSaveRelevanceScore(CachedUserProfile userProfile) {
-            double tagsRelevance = relevanceScoresWeights[0]
-                * getCosineSimilarity(tagsVector, userProfile.tagsPreferencesVector());
+            double tagsRelevance = tagsVector == null ? 0.0 : relevanceScoresWeights[0]
+                    * getCosineSimilarity(tagsVector, userProfile.tagsPreferencesVector());
             double titleRelevance = titleVector == null ? 0.0 : relevanceScoresWeights[1]
-                * getCosineSimilarity(titleVector, userProfile.titlePreferencesVector());
+                    * getCosineSimilarity(titleVector, userProfile.titlePreferencesVector());
             this.relevanceScore = tagsRelevance + titleRelevance;
         }
 
