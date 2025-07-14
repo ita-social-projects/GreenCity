@@ -1,11 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUser;
-import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidEcoNewsDtoRequest;
-import greencity.annotations.ValidLanguage;
+import greencity.annotations.*;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
@@ -23,6 +18,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,6 +56,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
+    private final EcoNewsRelevanceService ecoNewsRelevanceService;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -207,6 +204,26 @@ public class EcoNewsController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
+    }
+
+
+    @Operation(summary = "Find eco news by relevance.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/relevant")
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findRelevantNews(
+        @Parameter(hidden = true) Pageable page,
+        @Parameter(description = "Tags to filter (if do not input tags get all)") @RequestParam(
+            required = false, defaultValue = "") List<String> tags,
+        @RequestParam(required = false, defaultValue = "") String title,
+        @RequestParam(required = false, defaultValue = "", name = "author-name") String author,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ecoNewsRelevanceService.findRelevantEcoNews(page, tags, title, author, userVO));
     }
 
     /**
