@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet id="DeleteForeignKey" author="MarianDiakiv">
-        <dropForeignKeyConstraint baseTableName="habit_goals" constraintName="FK_habit_goal_goal"/>
-    </changeSet>
-
-    <changeSet id="rename_column_in_habit_goals" author="MarianDiakiv">
-        <renameColumn tableName="habit_goals" oldColumnName="goal_id" newColumnName="shopping_list_item_id"
-                      columnDataType="bigint"/>
-    </changeSet>
-    <changeSet id="rename_table_habit_goals" author="MarianDiakiv">
-        <renameTable oldTableName="habit_goals" newTableName="habit_shopping_list_items"/>
-    </changeSet>
 
     <changeSet id="addForeignForeignKey" author="MarianDiakiv">
 
-        <addForeignKeyConstraint baseTableName="habit_shopping_list_items" baseColumnNames="shopping_list_item_id"
+        <addForeignKeyConstraint baseTableName="habit_to_do_list_items" baseColumnNames="to_do_list_item_id"
                                  constraintName="FK_habit_shopping_list_item"
                                  referencedTableName="to_do_list_items"
                                  referencedColumnNames="id"/>

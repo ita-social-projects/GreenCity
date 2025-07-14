@@ -38,8 +38,6 @@
     <include file="db/changelog/logs/ch-table-tag-translations-Derevetskyi.xml"/>
     <include file="db/changelog/logs/ch-change-user-action-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-Novosad.xml"/>
-    <include file="db/changelog/logs/ch-change-habit-goal-id-Diakiv.xml"/>
-    <include file="db/changelog/logs/ch-change-habit-goal-add-status-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-rename-goal-to-shoping-list-item-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-Bohonko.xml"/>
     <include file="db/changelog/logs/ch-insert-into-categories-Kozak.xml"/>
@@ -85,7 +83,6 @@
     <include file="db/changelog/logs/ch-add-table-comments-images-Kasarab.xml"/>
     <include file="db/changelog/logs/ch-add-table-rating_points-Chekhovska.xml"/>
     <include file="db/changelog/logs/ch-add-table-eco-news-followers-Yehor.xml"/>
-    <include file="db/changelog/logs/ch-rename-tables-shopping_list-to-to_do_list-Herchanivska-10.xml"/>
     <include file="db/changelog/logs/ch-add-habit-invite-table-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-add-table-habit-followers-Holotsvan.xml"/>
     <include file="db/changelog/logs/ch-events-users-dislike-table.xml"/>
