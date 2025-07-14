@@ -41,7 +41,6 @@
     <include file="db/changelog/logs/ch-change-habit-goal-id-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-change-habit-goal-add-status-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-rename-goal-to-shoping-list-item-Diakiv.xml"/>
-    <include file="db/changelog/logs/ch-update-column-status-in-users_friends.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-Bohonko.xml"/>
     <include file="db/changelog/logs/ch-insert-into-categories-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-fact-of-the-day-Kozak.xml"/>
@@ -95,8 +94,6 @@
     <include file="db/changelog/logs/сh-update-habit-invitation-statuses.xml"/>
     <include file="db/changelog/logs/ch-remove-duplicates-from-habit-invitations.xml"/>
     <include file="db/changelog/logs/ch-add-invitee-id-and-inviter-id-to-habit-invite-table.xml"/>
-    <include file="/db/changelog/logs/ch-habits-followers-add-created-at-column.xml"/>
-    <include file="/db/changelog/logs/ch-habits-add-created-at-column.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-requesters-Pitsyk.xml"/>
     <include file="db/changelog/logs/ch-change-column-language_id-to-language_code.xml"/>
 </databaseChangeLog>
