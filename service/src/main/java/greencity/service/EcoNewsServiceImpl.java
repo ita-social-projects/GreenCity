@@ -32,6 +32,7 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
+import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.rating.constant.RatingPointsNames;
 import greencity.repository.RatingPointsRepo;
 import greencity.exception.exceptions.BadRequestException;
@@ -80,6 +81,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final UserRepo userRepo;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
+    private final PageableAdvancedDtoMapper<EcoNewsGenericDto> pageableAdvancedDtoMapper;
 
     private static final String ECO_NEWS_TITLE = "title";
     private static final String ECO_NEWS_JOIN_TAG = "tags";
@@ -190,9 +192,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             })
             .toList();
 
-        return modelMapper.map(
-            new PageImpl<>(ecoNewsDtos, ecoNewsPage.getPageable(), ecoNewsPage.getTotalPages()),
-            new TypeToken<PageableAdvancedDto<EcoNewsGenericDto>>(){}.getType());
+        Page<EcoNewsGenericDto> pageResult = new PageImpl<>(ecoNewsDtos, ecoNewsPage.getPageable(),
+            ecoNewsPage.getTotalPages());
+        return pageableAdvancedDtoMapper.convert(pageResult);
     }
 
     /**

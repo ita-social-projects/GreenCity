@@ -14,6 +14,7 @@ import greencity.enums.TagType;
 import greencity.filters.EcoNewsSpecification;
 import greencity.entity.EcoNewsRelevance;
 import greencity.entity.Tag;
+import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.TagsCoherenceRepo;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -51,6 +51,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private final Cache<RelevantEcoNewsCacheKey, CachedUserRelevantNews> userRelevanceNewsCache;
     private final Cache<Long, CachedUserProfile> userProfileCache;
     private final ModelMapper modelMapper;
+    private final PageableAdvancedDtoMapper<EcoNewsGenericDto> pageableAdvancedDtoMapper;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Value("${greencity.relevant.news.ratio}")
@@ -62,14 +63,16 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private double[] relevancePoolsRatio;
     private double[] relevanceScoresWeights;
     private double[] relevanceScoresStrength;
-    private List<Tag> ecoNewsTags;
+    private List<Long> ecoNewsTagsIds;
 
     @PostConstruct
     public void init() {
         this.relevancePoolsRatio = convertRatioFromString(relevancePoolsRatioString);
         this.relevanceScoresWeights = convertRatioFromString(relevanceScoresWeightsString);
         this.relevanceScoresStrength = convertRatioFromString(relevanceScoresStrengthString);
-        this.ecoNewsTags  = tagsRepo.findTagsByType(TagType.ECO_NEWS);
+        this.ecoNewsTagsIds = tagsRepo.findTagsByType(TagType.ECO_NEWS).stream()
+            .map(Tag::getId)
+            .toList();
     }
 
     private double[] convertRatioFromString(String ratio) {
@@ -115,8 +118,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsGenericDto.class))
             .toList(),
             pageable,
-            cachedUserRelevantNews.getTotalPagesCount());
-        return modelMapper.map(pageResult, new TypeToken<PageableAdvancedDto<EcoNewsGenericDto>>(){}.getType());
+            (long) cachedUserRelevantNews.getTotalPagesCount() * pageable.getPageSize());
+        return pageableAdvancedDtoMapper.convert(pageResult);
     }
 
     private CachedUserRelevantNews getUserRelevantNewsPools(RelevantEcoNewsCacheKey key) {
@@ -128,7 +131,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                 new HashMap<>(),
                 0,
                 (int) (totalEcoNewsCount / key.pageSize()),
-                ZonedDateTime.now()
+                ZonedDateTime.now().plusDays(1)
             );
             userRelevanceNewsCache.put(key, cachedUserRelevantNews);
         }
@@ -136,7 +139,6 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     }
 
     private List<EcoNews> getFilteredNews(RelevantEcoNewsCacheKey requestMetadata, ZonedDateTime lastRequestedDate) {
-        //todo check date correctness
         EcoNewsViewDto request = EcoNewsViewDto.builder()
             .title(requestMetadata.title())
             .author(requestMetadata.author())
@@ -163,9 +165,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
 
     private boolean hasEnoughNews(RelevantEcoNewsCacheKey requestMetadata,
                                   CachedRelevancePools pools) {
-        int[] ratioForPages = Arrays.stream(relevancePoolsRatio)
-            .mapToInt(d -> (int) Math.round(d * requestMetadata.pageSize()))
-            .toArray();
+        int[] ratioForPages = calculateRatioCounts(requestMetadata.pageSize(), relevancePoolsRatio);
         return pools.relevantStrongNewsIds().size() >= ratioForPages[0]
             && pools.relevantWeakNewsIds().size() >= ratioForPages[1]
             && pools.nonRelevantNewsIds().size() >= ratioForPages[2];
@@ -189,10 +189,10 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                 ecoNewsRelevanceMap.get(newsItem.getId())))
             .toList();
         newsWithVectors.stream()
-            .sorted(Comparator.comparingDouble(EcoNewsWithRelevanceVectors::getRelevanceScore))
+            .sorted(Comparator.comparingDouble(EcoNewsWithRelevanceVectors::getRelevanceScore).reversed())
             .forEach(newsItem -> {
                 if (newsItem.getRelevanceScore() > relevanceScoresStrength[0]) {
-                    pools.relevantWeakNewsIds().add(newsItem.getEcoNews().getId());
+                    pools.relevantStrongNewsIds().add(newsItem.getEcoNews().getId());
                 } else if (newsItem.getRelevanceScore() < relevanceScoresStrength[1]) {
                     pools.nonRelevantNewsIds().add(newsItem.getEcoNews().getId());
                 } else {
@@ -237,7 +237,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             }
         }
         for (int i = 0; i < dimension; i++) {
-            averageVector[i] /= dimension;
+            averageVector[i] /= vectors.size();
         }
         return averageVector;
     }
@@ -305,8 +305,9 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                                            EcoNewsRelevance ecoNewsRelevance) {
             this.ecoNews = ecoNews;
             if (ecoNews.getTags() != null) {
-                this.tagsVector = new Float[ecoNewsTags.size()];
-                ecoNews.getTags().forEach(tag -> tagsVector[ecoNewsTags.indexOf(tag)] = 1f);
+                this.tagsVector = new Float[ecoNewsTagsIds.size()];
+                Arrays.fill(this.tagsVector, 0.0f);
+                ecoNews.getTags().forEach(tag -> tagsVector[ecoNewsTagsIds.indexOf(tag.getId())] = 1f);
             }
             if (ecoNewsRelevance != null) {
                 this.titleVector = ecoNewsRelevance.getTitleVector();
@@ -317,9 +318,12 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                                            EcoNews ecoNews,
                                            EcoNewsRelevance ecoNewsRelevance) {
             this(ecoNews, ecoNewsRelevance);
-            double tagsRelevance = tagsVector == null ? 0.0 : relevanceScoresWeights[0]
+            boolean isTagsVectorInvalid = tagsVector == null
+                || Arrays.stream(tagsVector).allMatch(value -> value == 0.0);
+            boolean isTitleVectorInvalid = titleVector == null;
+            double tagsRelevance = isTagsVectorInvalid ? 0.0 : relevanceScoresWeights[0]
                     * getCosineSimilarity(tagsVector, userProfile.tagsPreferencesVector());
-            double titleRelevance = titleVector == null ? 0.0 : relevanceScoresWeights[1]
+            double titleRelevance = isTitleVectorInvalid ? 0.0 : relevanceScoresWeights[1]
                     * getCosineSimilarity(titleVector, userProfile.titlePreferencesVector());
             this.relevanceScore = tagsRelevance + titleRelevance;
         }
