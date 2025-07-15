@@ -10,15 +10,13 @@ import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
+import greencity.entity.HabitAssign;
 import greencity.enums.TagType;
 import greencity.filters.EcoNewsSpecification;
 import greencity.entity.EcoNewsRelevance;
 import greencity.entity.Tag;
 import greencity.mapping.PageableAdvancedDtoMapper;
-import greencity.repository.EcoNewsRelevanceRepo;
-import greencity.repository.EcoNewsRepo;
-import greencity.repository.TagsCoherenceRepo;
-import greencity.repository.TagsRepo;
+import greencity.repository.*;
 import jakarta.annotation.PostConstruct;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,6 +45,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private final EcoNewsServiceImpl ecoNewsService;
     private final EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
     private final TagsRepo tagsRepo;
+    private final HabitAssignRepo habitAssignRepo;
     private final TagsCoherenceRepo tagsCoherenceRepo;
     private final Cache<RelevantEcoNewsCacheKey, CachedUserRelevantNews> userRelevanceNewsCache;
     private final Cache<Long, CachedUserProfile> userProfileCache;
@@ -64,6 +63,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private double[] relevanceScoresWeights;
     private double[] relevanceScoresStrength;
     private List<Long> ecoNewsTagsIds;
+    private Map<Long, Integer> ecoNewsTagIdToIndexMap;
+
 
     @PostConstruct
     public void init() {
@@ -73,6 +74,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         this.ecoNewsTagsIds = tagsRepo.findTagsByType(TagType.ECO_NEWS).stream()
             .map(Tag::getId)
             .toList();
+        this.ecoNewsTagIdToIndexMap = buildEcoNewsTagIndexMap(ecoNewsTagsIds);
+
     }
 
     private double[] convertRatioFromString(String ratio) {
@@ -212,12 +215,10 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             .map(relevance -> new EcoNewsWithRelevanceVectors(relevance.getEcoNews(), relevance))
             .toList();
 
+        Float[] averageTagsVector = mergeUserTagsVector(userId);
         Float[] averageTitleVector = averageVectors(likedNewsWithVectors.stream()
-            .map(EcoNewsWithRelevanceVectors::getTitleVector)
-            .toList());
-        Float[] averageTagsVector = averageVectors(likedNewsWithVectors.stream()
-            .map(EcoNewsWithRelevanceVectors::getTagsVector)
-            .toList());
+                .map(EcoNewsWithRelevanceVectors::getTitleVector)
+                .toList());
         cachedUserProfile = new CachedUserProfile(averageTagsVector, averageTitleVector);
         userProfileCache.put(userId, cachedUserProfile);
         return cachedUserProfile;
@@ -293,6 +294,84 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         }
         return ecoNewsRepo.findAllById(resultPageIds);
     }
+    private Float[] mergeUserTagsVector(Long userId) {
+        CachedUserProfile cached = userProfileCache.getIfPresent(userId);
+        if (cached != null && cached.tagsPreferencesVector() != null) {
+            return cached.tagsPreferencesVector();
+        }
+
+        Float[] ecoNewsTagsVector = averageEcoNewsTagsVector(userId);
+        Float[] habitTagsVector = getHabitTagsVectorAsEcoNews(userId);
+
+        if (ecoNewsTagsVector == null) return habitTagsVector;
+        if (habitTagsVector == null) return ecoNewsTagsVector;
+
+        Float[] merged = new Float[ecoNewsTagsVector.length];
+        for (int i = 0; i < merged.length; i++) {
+            merged[i] = (ecoNewsTagsVector[i] + habitTagsVector[i]) / 2;
+        }
+        return merged;
+    }
+    private Float[] averageEcoNewsTagsVector(Long userId) {
+        List<EcoNewsRelevance> lastLikedNews = ecoNewsRelevanceRepo.findLikedEcoNewsById(userId);
+        List<EcoNewsWithRelevanceVectors> likedNewsWithVectors = lastLikedNews.stream()
+                .map(relevance -> new EcoNewsWithRelevanceVectors(relevance.getEcoNews(), relevance))
+                .toList();
+
+        return averageVectors(likedNewsWithVectors.stream()
+                .map(EcoNewsWithRelevanceVectors::getTagsVector)
+                .toList());
+    }
+
+    private Float[] getHabitTagsVectorAsEcoNews(Long userId) {
+        List<Tag> habitTags = extractHabitTagsFromAssignments(userId);
+        if (habitTags.isEmpty()) return null;
+
+        Float[] result = new Float[ecoNewsTagsIds.size()];
+        Arrays.fill(result, 0f);
+
+        for (Long ecoNewsTagId : ecoNewsTagsIds) {
+            for (Tag habitTag : habitTags) {
+                Double weight = tagsCoherenceRepo.findWeightBetweenTags(habitTag.getId(), ecoNewsTagId);
+                if (weight != null) {
+                    Integer index = ecoNewsTagIdToIndexMap.get(ecoNewsTagId);
+                    if (index != null) {
+                        result[index] += weight.floatValue();
+                    }
+                }
+            }
+        }
+
+        float max = Arrays.stream(result).max(Float::compare).orElse(1f);
+        if (max > 0) {
+            for (int i = 0; i < result.length; i++) {
+                result[i] /= max;
+            }
+        }
+
+        return result;
+    }
+
+    private List<Tag> extractHabitTagsFromAssignments(Long userId) {
+        List<HabitAssign> habitAssigns = habitAssignRepo.findAllByUserId(userId);
+        return habitAssigns.stream()
+                .map(HabitAssign::getHabit)
+                .filter(Objects::nonNull)
+                .flatMap(habit -> habit.getTags().stream())
+                .distinct()
+                .toList();
+    }
+    private Map<Long, Integer> buildEcoNewsTagIndexMap(List<Long> tagIds) {
+        Map<Long, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < tagIds.size(); i++) {
+            indexMap.put(tagIds.get(i), i);
+        }
+        return indexMap;
+    }
+
+
+
+
 
     @Getter
     private class EcoNewsWithRelevanceVectors {
