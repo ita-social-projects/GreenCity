@@ -2,15 +2,28 @@ package greencity.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.constant.OpenAIConstants;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.Language;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
+import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.JsonResponseParseException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.TagsRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +38,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static greencity.constant.OpenAIConstants.*;
 import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {
@@ -154,7 +174,7 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(user));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
         aiService.generateAndSaveEcoNews(language);
@@ -182,7 +202,7 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(new User()));
+        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(new User()));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
 
         assertThrows(EcoNewsCreationException.class, () -> aiService.generateAndSaveEcoNews(language));
@@ -246,9 +266,9 @@ class AIServiceImplTest {
             JsonResponseParseException.class,
             () -> aiService.getNews(language, query));
 
-        assertEquals(ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
+        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
 
-        verify(openAIService, times(MAX_REQUEST_ATTEMPTS))
+        verify(openAIService, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS))
             .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
     }
 
@@ -258,15 +278,15 @@ class AIServiceImplTest {
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
-            .thenThrow(new OpenAIRequestException(ERROR_INVALID_OPENAI_RESPONSE));
+            .thenThrow(new OpenAIRequestException(OpenAIConstants.ERROR_INVALID_OPENAI_RESPONSE));
 
         JsonResponseParseException thrown = assertThrows(
             JsonResponseParseException.class,
             () -> aiService.getNews(language, query));
 
-        assertEquals(ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
+        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, thrown.getMessage());
 
-        verify(openAIService, times(MAX_REQUEST_ATTEMPTS))
+        verify(openAIService, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS))
             .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
     }
 
@@ -276,13 +296,13 @@ class AIServiceImplTest {
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA)))
-            .thenThrow(new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE));
+            .thenThrow(new OpenAIRequestException(OpenAIConstants.ERROR_NO_OPENAI_RESPONSE));
 
         OpenAIRequestException thrown = assertThrows(
             OpenAIRequestException.class,
             () -> aiService.getNews(language, query));
 
-        assertEquals(ERROR_NO_OPENAI_RESPONSE, thrown.getMessage());
+        assertEquals(OpenAIConstants.ERROR_NO_OPENAI_RESPONSE, thrown.getMessage());
 
         verify(openAIService, times(1))
             .makeRequest(eq(languageDTO), anyString(), eq(OpenAIResponseFormat.JSON_SCHEMA));
@@ -303,7 +323,7 @@ class AIServiceImplTest {
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
 
-        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.empty());
+        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.empty());
         when(languageService.findByCode("ua")).thenReturn(languageDTO);
         when(modelMapper.map(languageDTO, Language.class)).thenReturn(mappedLanguage);
         when(userRepo.save(any(User.class))).thenReturn(user);
@@ -335,7 +355,7 @@ class AIServiceImplTest {
         when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRepo.findByEmail(AI_USER_EMAIL)).thenReturn(Optional.of(user));
+        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(user));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
 
         aiService.generateAndSaveEcoNews(languageCode);

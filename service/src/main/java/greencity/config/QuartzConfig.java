@@ -1,13 +1,19 @@
 package greencity.config;
 
+import greencity.constant.QuartzConstants;
 import greencity.logging.LoggingJobListener;
-import static greencity.constant.QuartzConstants.*;
 import greencity.exception.exceptions.InvalidCronException;
 import greencity.exception.exceptions.TriggerException;
 import greencity.scheduler.EcoNewsGenerationJob;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -65,7 +71,7 @@ public class QuartzConfig {
     @Bean
     public JobDetail ecoNewsGenerationJobDetail() {
         return JobBuilder.newJob(EcoNewsGenerationJob.class)
-            .withIdentity(ECO_NEWS_GENERATION_JOB_IDENTITY)
+            .withIdentity(QuartzConstants.ECO_NEWS_GENERATION_JOB_IDENTITY)
             .storeDurably()
             .build();
     }
@@ -76,37 +82,37 @@ public class QuartzConfig {
         try {
             return TriggerBuilder.newTrigger()
                 .forJob(ecoNewsGenerationJobDetail)
-                .withIdentity(ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
+                .withIdentity(QuartzConstants.ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
                 .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
                 .build();
         } catch (RuntimeException e) {
-            throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
+            throw new TriggerException(QuartzConstants.CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
         }
     }
 
     private String fixCronExpression(String cron) {
-        String[] fields = cron.trim().split(CRON_FIELD_SPLIT_REGEX);
-        if (fields.length != CRON_FIELDS_COUNT_EXPECTED) {
-            throw new InvalidCronException(INVALID_CRON_EXPRESSION_ERROR + cron);
+        String[] fields = cron.trim().split(QuartzConstants.CRON_FIELD_SPLIT_REGEX);
+        if (fields.length != QuartzConstants.CRON_FIELDS_COUNT_EXPECTED) {
+            throw new InvalidCronException(QuartzConstants.INVALID_CRON_EXPRESSION_ERROR + cron);
         }
 
         if (shouldFixDayOfMonth(fields)) {
-            fields[CRON_FIELD_DAY_OF_MONTH_INDEX] = CRON_DAY_OF_MONTH_PLACEHOLDER;
+            fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX] = QuartzConstants.CRON_DAY_OF_MONTH_PLACEHOLDER;
         }
 
-        return String.join(CRON_SPACE_SEPARATOR, fields);
+        return String.join(QuartzConstants.CRON_SPACE_SEPARATOR, fields);
     }
 
     private boolean shouldFixDayOfMonth(String[] fields) {
-        boolean hasDayOfMonth = !fields[CRON_FIELD_DAY_OF_MONTH_INDEX]
-            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
-            && !fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
-        boolean hasDayOfWeek = !fields[CRON_FIELD_DAY_OF_WEEK_INDEX]
-            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
-            && !fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_WILDCARD);
+        boolean hasDayOfMonth = !fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX]
+            .equals(QuartzConstants.CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX].equals(QuartzConstants.CRON_WILDCARD);
+        boolean hasDayOfWeek = !fields[QuartzConstants.CRON_FIELD_DAY_OF_WEEK_INDEX]
+            .equals(QuartzConstants.CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[QuartzConstants.CRON_FIELD_DAY_OF_WEEK_INDEX].equals(QuartzConstants.CRON_WILDCARD);
 
         return (hasDayOfMonth && hasDayOfWeek)
-            || fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
+            || fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX].equals(QuartzConstants.CRON_WILDCARD);
     }
 
     @RequiredArgsConstructor

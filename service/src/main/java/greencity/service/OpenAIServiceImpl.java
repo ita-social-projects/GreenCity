@@ -1,6 +1,7 @@
 package greencity.service;
 
 import com.google.common.base.CaseFormat;
+import greencity.constant.OpenAIConstants;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.EcoNewsLocation;
@@ -11,6 +12,11 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,8 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import java.util.*;
-import static greencity.constant.OpenAIConstants.*;
 
 @Setter
 @Slf4j
@@ -70,69 +74,70 @@ public class OpenAIServiceImpl implements OpenAIService {
         HttpHeaders headers = createHttpHeaders();
         Map<String, Object> body = createRequestBody(language, request, responseFormat);
 
-        for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
+        for (int i = 1; i <= OpenAIConstants.MAX_REQUEST_ATTEMPTS; i++) {
             try {
                 return sendRequest(headers, body);
             } catch (OpenAIResponseException e) {
                 log.error(e.getMessage());
-                log.error(MESSAGE_CURRENT_ATTEMPT, i);
+                log.error(OpenAIConstants.MESSAGE_CURRENT_ATTEMPT, i);
             } catch (RestClientException e) {
                 log.error(e.getMessage());
-                log.error(ERROR_ATTEMPTING_STOPPED);
-                throw new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE, e);
+                log.error(OpenAIConstants.ERROR_ATTEMPTING_STOPPED);
+                throw new OpenAIRequestException(OpenAIConstants.ERROR_NO_OPENAI_RESPONSE, e);
             }
         }
 
-        log.error(ERROR_MAX_ATTEMPTS_REACHED);
-        throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
+        log.error(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED);
+        throw new OpenAIRequestException(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED);
     }
 
     private Map<String, Object> createRequestBody(LanguageDTO language,
         String prompt,
         OpenAIResponseFormat responseFormat) {
         Map<String, Object> body = new HashMap<>();
-        body.put(REQUEST_MODEL_KEY, model);
+        body.put(OpenAIConstants.REQUEST_MODEL_KEY, model);
 
         List<Map<String, String>> messages = new ArrayList<>();
         EcoNewsLocation ecoNewsLocation = EcoNewsLocation.values()[random.nextInt(EcoNewsLocation.values().length)];
         String ecoNewsLocationString = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, ecoNewsLocation.name());
         LocalDateTime currentDateTime = LocalDateTime.now(ZoneOffset.UTC);
         messages.add(Map.of(
-            RESPONSE_ROLE_KEY,
-            ROLE_SYSTEM,
-            RESPONSE_JSON_CONTENT_KEY,
+            OpenAIConstants.RESPONSE_ROLE_KEY,
+            OpenAIConstants.ROLE_SYSTEM,
+            OpenAIConstants.RESPONSE_JSON_CONTENT_KEY,
             String.join(" ",
-                AI_ROLE_POLICY,
-                AI_FORMATTING_POLICY,
-                AI_LANGUAGE_POLICY.formatted(language.getName()))));
+                OpenAIConstants.AI_ROLE_POLICY,
+                OpenAIConstants.AI_FORMATTING_POLICY,
+                OpenAIConstants.AI_LANGUAGE_POLICY.formatted(language.getName()))));
         messages.add(Map.of(
-            RESPONSE_ROLE_KEY,
-            ROLE_USER,
-            RESPONSE_JSON_CONTENT_KEY,
-            String.join(" ", prompt, AI_REQUEST_NEWS_LOCATION.formatted(ecoNewsLocationString),
-                AI_REQUEST_KNOWLEDGE_CUT_DATE.formatted(monthYearFormat.format(currentDateTime)),
-                AI_REQUEST_IDENTIFIER.formatted(fullDateTimeFormat.format(currentDateTime)),
-                AI_LANGUAGE_POLICY.formatted(language.getName()))));
-        body.put(REQUEST_MESSAGES_KEY, messages);
-        body.put(REQUEST_MAX_TOKENS_KEY, maxCompletionTokens);
-        body.put(REQUEST_TEMPERATURE_KEY, temperature);
-        body.put(REQUEST_RESPONSE_FORMAT_KEY, responseFormat.getFormat());
+            OpenAIConstants.RESPONSE_ROLE_KEY,
+            OpenAIConstants.ROLE_USER,
+            OpenAIConstants.RESPONSE_JSON_CONTENT_KEY,
+            String.join(" ", prompt,
+                OpenAIConstants.AI_REQUEST_NEWS_LOCATION.formatted(ecoNewsLocationString),
+                OpenAIConstants.AI_REQUEST_KNOWLEDGE_CUT_DATE.formatted(monthYearFormat.format(currentDateTime)),
+                OpenAIConstants.AI_REQUEST_IDENTIFIER.formatted(fullDateTimeFormat.format(currentDateTime)),
+                OpenAIConstants.AI_LANGUAGE_POLICY.formatted(language.getName()))));
+        body.put(OpenAIConstants.REQUEST_MESSAGES_KEY, messages);
+        body.put(OpenAIConstants.REQUEST_MAX_TOKENS_KEY, maxCompletionTokens);
+        body.put(OpenAIConstants.REQUEST_TEMPERATURE_KEY, temperature);
+        body.put(OpenAIConstants.REQUEST_RESPONSE_FORMAT_KEY, responseFormat.getFormat());
 
         return body;
     }
 
     private HttpHeaders createHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(OPENAI_AUTH_HEADER, OPENAI_BEARER_PREFIX + apiKey);
-        headers.add(OPENAI_CONTENT_TYPE_HEADER, OPENAI_APPLICATION_JSON);
+        headers.add(OpenAIConstants.OPENAI_AUTH_HEADER, OpenAIConstants.OPENAI_BEARER_PREFIX + apiKey);
+        headers.add(OpenAIConstants.OPENAI_CONTENT_TYPE_HEADER, OpenAIConstants.OPENAI_APPLICATION_JSON);
         return headers;
     }
 
     private String validateRequestParameters(String prompt) {
         Map<Object, String> validationResults = new HashMap<>();
-        validationResults.put(apiKey, ERROR_API_KEY_MISSING);
-        validationResults.put(apiUrl, ERROR_API_URL_MISSING);
-        validationResults.put(prompt, ERROR_PROMPT_MISSING);
+        validationResults.put(apiKey, OpenAIConstants.ERROR_API_KEY_MISSING);
+        validationResults.put(apiUrl, OpenAIConstants.ERROR_API_URL_MISSING);
+        validationResults.put(prompt, OpenAIConstants.ERROR_PROMPT_MISSING);
 
         return validationResults.entrySet().stream()
             .filter(entry -> Objects.isNull(entry.getKey())
@@ -161,7 +166,7 @@ public class OpenAIServiceImpl implements OpenAIService {
             });
 
         if (responseBody == null) {
-            throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
+            throw new OpenAIResponseException(OpenAIConstants.ERROR_INVALID_OPENAI_RESPONSE);
         }
 
         return parseResponse(responseBody);
@@ -179,21 +184,21 @@ public class OpenAIServiceImpl implements OpenAIService {
         OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
 
         try {
-            openAIResponseDTO.setId((String) responseBody.get(RESPONSE_ID_KEY));
+            openAIResponseDTO.setId((String) responseBody.get(OpenAIConstants.RESPONSE_ID_KEY));
 
-            var choices = (List<Map<String, Object>>) responseBody.get(RESPONSE_CHOICES_KEY);
+            var choices = (List<Map<String, Object>>) responseBody.get(OpenAIConstants.RESPONSE_CHOICES_KEY);
             var choice = choices.get(0);
-            var message = (Map<String, Object>) choice.get(RESPONSE_MESSAGE_KEY);
-            openAIResponseDTO.setContent((String) message.get(RESPONSE_JSON_CONTENT_KEY));
+            var message = (Map<String, Object>) choice.get(OpenAIConstants.RESPONSE_MESSAGE_KEY);
+            openAIResponseDTO.setContent((String) message.get(OpenAIConstants.RESPONSE_JSON_CONTENT_KEY));
 
-            var usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
-            openAIResponseDTO.setUsedInputTokens((Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY));
-            openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_COMPLETION_TOKENS_KEY));
+            var usage = (Map<String, Object>) responseBody.get(OpenAIConstants.RESPONSE_USAGE_KEY);
+            openAIResponseDTO.setUsedInputTokens((Integer) usage.get(OpenAIConstants.RESPONSE_PROMPT_TOKENS_KEY));
+            openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(OpenAIConstants.RESPONSE_COMPLETION_TOKENS_KEY));
 
-            openAIResponseDTO.setResponseDateTime(LocalDateTime.ofEpochSecond(
-                ((Integer) responseBody.get(RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC));
+            openAIResponseDTO.setResponseDateTime(LocalDateTime.ofEpochSecond(((Integer) responseBody
+                .get(OpenAIConstants.RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC));
         } catch (NullPointerException | ClassCastException e) {
-            throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE, e);
+            throw new OpenAIResponseException(OpenAIConstants.ERROR_INVALID_OPENAI_RESPONSE, e);
         }
 
         return openAIResponseDTO;
