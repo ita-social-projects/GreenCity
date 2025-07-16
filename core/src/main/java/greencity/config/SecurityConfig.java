@@ -145,7 +145,7 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**")
                 .permitAll()
-                .requestMatchers("/css/**", "/img/**").permitAll()
+                .requestMatchers("/css/**", "/img/**", "/scripts/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
