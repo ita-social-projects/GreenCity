@@ -91,7 +91,6 @@ public class SecurityConfig {
     public static final String USERS = "/users";
     private static final String DISLIKE_V2 = "/dislikeV2";
     private static final String LIKE_V2 = "/likeV2";
-    private static final String FILES = "/files";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -330,7 +329,6 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
-                    FILES,
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
@@ -451,7 +449,6 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/user/filter",
-                    FILES + "/single",
                     USERS + "/create")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
@@ -465,8 +462,7 @@ public class SecurityConfig {
                     USERS + "/{userId}/name")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
-                    COMMENTS,
-                    FILES)
+                    COMMENTS)
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.GET,
                     ACHIEVEMENTS + "/all",

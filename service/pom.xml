@@ -19,7 +19,6 @@
         <org.springframework.social.version>2.0.3.RELEASE</org.springframework.social.version>
         <google.maps.version>2.2.0</google.maps.version>
         <apache.http.client.version>5.3-alpha1</apache.http.client.version>
-        <azure.storage.blob.version>12.25.0</azure.storage.blob.version>
         <jts.core.version>1.19.0</jts.core.version>
         <commons.collections4.version>4.4</commons.collections4.version>
         <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
@@ -81,11 +80,6 @@
             <artifactId>google-cloud-storage</artifactId>
             <version>${google.cloud.storage.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-storage-blob</artifactId>
-            <version>${azure.storage.blob.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
