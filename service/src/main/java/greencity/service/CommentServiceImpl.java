@@ -89,8 +89,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public AddCommentDtoResponse save(ArticleType articleType, Long articleId,
-                                      AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO,
-                                      Locale locale) {
+        AddCommentDtoRequest addCommentDtoRequest, MultipartFile[] images, UserVO userVO,
+        Locale locale) {
         final User articleAuthor = getArticleAuthor(articleType, articleId);
         if (articleAuthor == null) {
             throw new NotFoundException("Article author not found");
@@ -150,7 +150,7 @@ public class CommentServiceImpl implements CommentService {
      * @param articleAuthor the {@link User} object representing the author of the
      *                      article
      * @return {@code true} if the user is not the author of the article;
-     * {@code false} otherwise
+     *         {@code false} otherwise
      */
     private boolean checkUserIsNotAuthor(final UserVO userVO, final User articleAuthor) {
         return !articleAuthor.getId().equals(userVO.getId());
@@ -340,7 +340,7 @@ public class CommentServiceImpl implements CommentService {
      *                    {@link Locale}.
      */
     private void createCommentLikeNotification(ArticleType articleType, Long articleId, Comment comment,
-                                               UserVO actionUser, Locale locale) {
+        UserVO actionUser, Locale locale) {
         UserVO targetUser = modelMapper.map(comment.getUser(), UserVO.class);
         userNotificationService.createOrUpdateLikeNotification(LikeNotificationDto.builder()
             .targetUserVO(targetUser)
@@ -365,7 +365,7 @@ public class CommentServiceImpl implements CommentService {
      *                    {@link Locale}.
      */
     private void createCommentReplyNotification(ArticleType articleType, Long articleId, Comment comment,
-                                                UserVO sender, UserVO receiver, Locale locale) {
+        UserVO sender, UserVO receiver, Locale locale) {
         long replyCount = notificationRepo
             .countUnviewedRepliesByTargetAndParent(
                 receiver.getId(),
@@ -422,7 +422,7 @@ public class CommentServiceImpl implements CommentService {
      *               {@code null} if the current user's information is not
      *               available.
      * @return a {@link PageableDto} of {@link CommentDto} containing the mapped
-     * {@link CommentDto} objects.
+     *         {@link CommentDto} objects.
      */
     public PageableDto<CommentDto> convertPagesToCommentDtos(Page<Comment> pages, Long userId) {
         List<CommentDto> commentDtos = pages.getContent().stream().map(c -> convertToCommentDto(c, userId)).toList();
@@ -480,7 +480,7 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public PageableDto<CommentDto> getAllActiveComments(Pageable pageable, Long userId, Long articleId,
-                                                        ArticleType articleType) {
+        ArticleType articleType) {
         checkArticleExists(articleType, articleId);
 
         Page<Comment> pages =
@@ -498,7 +498,7 @@ public class CommentServiceImpl implements CommentService {
      * @param userId  the {@link Long} representing the current user id, which is
      *                used to determine if the current user has liked the comment.
      * @return a {@link CommentDto} that contains the mapped information from the
-     * provided {@link Comment} entity.
+     *         provided {@link Comment} entity.
      */
     private CommentDto convertToCommentDto(Comment comment, Long userId) {
         CommentDto commentDto = modelMapper.map(comment, CommentDto.class);

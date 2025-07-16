@@ -322,7 +322,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public PageableAdvancedDto<EventDto> getEventsManagement(Pageable page, FilterEventDto filterEventDto,
-                                                             Long userId) {
+        Long userId) {
         if (userId != null) {
             restClient.findById(userId);
         }
@@ -581,7 +581,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventDto.getTags() != null) {
             toUpdate.setTags(modelMapper.map(tagService
-                    .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
+                .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
                 new TypeToken<List<Tag>>() {
                 }.getType()));
         }
@@ -761,7 +761,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Long> eventIds, List<Tuple> tuples,
-                                                                   Pageable pageable) {
+        Pageable pageable) {
         return new PageableAdvancedDto<>(
             mapTupleListToEventDtoList(tuples, eventIds.toList()),
             eventIds.getTotalElements(),
