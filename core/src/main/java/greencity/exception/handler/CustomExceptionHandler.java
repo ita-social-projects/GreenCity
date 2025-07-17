@@ -726,9 +726,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Method interceptor for server errors-related exceptions which can be thrown
-     * by WebClient during making and receiving requests to the User app such
-     * as {@link GreenCityUserServiceException}, {@link WebClientRequestException}
-     * , {@link WebClientResponseException}.
+     * by WebClient during making and receiving requests to the User app such as
+     * {@link GreenCityUserServiceException}, {@link WebClientRequestException} ,
+     * {@link WebClientResponseException}.
+     *
      * @param request Contains details about the occurred exception.
      * @return ResponseEntity which contains the HTTP status and body with the
      *         message of the exception.

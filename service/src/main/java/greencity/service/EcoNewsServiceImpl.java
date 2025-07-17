@@ -335,8 +335,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (Exception e) {
             try {
                 userRemoteClient.deleteFile(toUpdate.getImagePath());
-            } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+            } catch (WebClientRequestException | WebClientResponseException webException) {
+                log.warn("User service is unavailable: {}", webException.getMessage());
             }
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }

@@ -263,5 +263,4 @@ public class ErrorMessage {
     public static final String NO_JWT_TOKEN_FOUND = "No JWT found in request header";
     public static final String UNAUTHORIZED_RESPONSE = "Authorize first.";
     public static final String USER_APP_UNAVAILABLE = "the User service is unavailable";
-
 }
