@@ -62,6 +62,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -70,12 +71,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Implementation of {@link HabitService}.
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
@@ -348,7 +352,11 @@ public class HabitServiceImpl implements HabitService {
             image = imageConverter.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
         }
         if (image != null) {
-            addCustomHabitDtoRequest.setImage(userRemoteClient.uploadFile(image));
+            try {
+                addCustomHabitDtoRequest.setImage(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         } else {
             addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
         }
@@ -432,7 +440,11 @@ public class HabitServiceImpl implements HabitService {
             image = imageConverter.convertToMultipartImage(habitDto.getImage());
         }
         if (image != null) {
-            toUpdate.setImage(userRemoteClient.uploadFile(image));
+            try {
+                toUpdate.setImage(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         }
         if (isNotEmpty(habitDto.getTagIds())) {
             setTagsIdsToHabit(habitDto, toUpdate);

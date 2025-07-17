@@ -56,6 +56,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -720,5 +722,26 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ErrorMessage.UNAUTHORIZED_RESPONSE);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor for server errors-related exceptions which can be thrown
+     * by WebClient during making and receiving requests to the User app such
+     * as {@link GreenCityUserServiceException}, {@link WebClientRequestException}
+     * , {@link WebClientResponseException}.
+     * @param request Contains details about the occurred exception.
+     * @return ResponseEntity which contains the HTTP status and body with the
+     *         message of the exception.
+     */
+    @ExceptionHandler({GreenCityUserServiceException.class, WebClientRequestException.class,
+        WebClientResponseException.class})
+    public final ResponseEntity<Object> handleUserServiceException(Exception ex, WebRequest request) {
+        if (ex instanceof WebClientRequestException) {
+            Map<String, String> errorBody = Map.of(AppConstant.MESSAGE, ErrorMessage.USER_APP_UNAVAILABLE);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorBody);
+        }
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.error(exceptionResponse.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
 }

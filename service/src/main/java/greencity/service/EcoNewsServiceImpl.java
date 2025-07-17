@@ -49,6 +49,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -69,11 +70,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 @EnableCaching
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final RestClient restClient;
@@ -289,8 +293,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 new TypeToken<List<Tag>>() {
                 }.getType()));
         if (image != null) {
-            userRemoteClient.deleteFile(toUpdate.getImagePath());
-            toUpdate.setImagePath(userRemoteClient.uploadFile(image));
+            try {
+                userRemoteClient.deleteFile(toUpdate.getImagePath());
+                toUpdate.setImagePath(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         }
     }
 
@@ -305,8 +313,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
-            userRemoteClient.deleteFile(toUpdate.getImagePath());
-            toUpdate.setImagePath(userRemoteClient.uploadFile(image));
+            try {
+                userRemoteClient.deleteFile(toUpdate.getImagePath());
+                toUpdate.setImagePath(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         }
     }
 
@@ -321,7 +333,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         try {
             ecoNewsRepo.save(toUpdate);
         } catch (Exception e) {
-            userRemoteClient.deleteFile(toUpdate.getImagePath());
+            try {
+                userRemoteClient.deleteFile(toUpdate.getImagePath());
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
     }
@@ -638,7 +654,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         User user = modelMapper.map(byEmail, User.class);
         toSave.setAuthor(user);
         if (image != null) {
-            toSave.setImagePath(userRemoteClient.uploadFile(image));
+            try {
+                toSave.setImagePath(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         }
 
         Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());

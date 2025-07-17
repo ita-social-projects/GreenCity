@@ -53,6 +53,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -61,9 +62,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentServiceImpl implements CommentService {
     private final HabitRepo habitRepo;
     private final EventRepo eventRepo;
@@ -168,10 +172,14 @@ public class CommentServiceImpl implements CommentService {
             List<CommentImages> commentImages = new ArrayList<>();
             for (MultipartFile image : images) {
                 if (image != null) {
-                    commentImages.add(CommentImages.builder()
-                        .comment(comment)
-                        .link(userRemoteClient.uploadFile(image))
-                        .build());
+                    try {
+                        commentImages.add(CommentImages.builder()
+                            .comment(comment)
+                            .link(userRemoteClient.uploadFile(image))
+                            .build());
+                    } catch (WebClientRequestException | WebClientResponseException e) {
+                        log.warn("User service is unavailable: {}", e.getMessage());
+                    }
                 }
             }
             comment.setAdditionalImages(commentImages);

@@ -17,6 +17,7 @@ import greencity.repository.HabitTranslationRepo;
 import greencity.repository.UserActionRepo;
 import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,12 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Implementation of {@link ManagementHabitService}.
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ManagementHabitServiceImpl implements ManagementHabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
@@ -140,7 +144,11 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
         if (image != null && !image.isEmpty()) {
-            habit.setImage(userRemoteClient.uploadFile(image));
+            try {
+                habit.setImage(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         } else {
             habit.setImage(habitManagementDto.getImage() != null ? habitManagementDto.getImage()
                 : AppConstant.DEFAULT_HABIT_IMAGE);

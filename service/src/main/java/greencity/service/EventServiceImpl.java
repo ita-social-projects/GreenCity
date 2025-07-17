@@ -119,6 +119,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @Service
@@ -182,12 +184,20 @@ public class EventServiceImpl implements EventService {
 
     private void setEventImages(Event event, MultipartFile[] images) {
         if (images != null && images.length > 0 && images[0] != null) {
-            event.setTitleImage(userRemoteClient.uploadFile(images[0]));
+            try {
+                event.setTitleImage(userRemoteClient.uploadFile(images[0]));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
             List<EventImages> eventImages = new ArrayList<>();
             for (int i = 1; i < images.length; i++) {
                 if (images[i] != null) {
-                    eventImages.add(EventImages.builder().event(event).link(userRemoteClient.uploadFile(images[i]))
-                        .build());
+                    try {
+                        eventImages.add(EventImages.builder().event(event).link(userRemoteClient.uploadFile(images[i]))
+                            .build());
+                    } catch (WebClientRequestException | WebClientResponseException e) {
+                        log.warn("User service is unavailable: {}", e.getMessage());
+                    }
                 }
             }
             event.setAdditionalImages(eventImages);
@@ -668,7 +678,11 @@ public class EventServiceImpl implements EventService {
     }
 
     private void deleteImagesFromServer(List<String> images) {
-        images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(userRemoteClient::deleteFile);
+        try {
+            images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(userRemoteClient::deleteFile);
+        } catch (WebClientRequestException | WebClientResponseException e) {
+            log.warn("User service is unavailable: {}", e.getMessage());
+        }
     }
 
     private void addNewImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
@@ -676,14 +690,22 @@ public class EventServiceImpl implements EventService {
         if (updateEventDto.getTitleImage() != null) {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
         } else {
-            toUpdate.setTitleImage(userRemoteClient.uploadFile(images[imagesCounter++]));
+            try {
+                toUpdate.setTitleImage(userRemoteClient.uploadFile(images[imagesCounter++]));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         }
         List<String> additionalImagesStr = new ArrayList<>();
         if (updateEventDto.getAdditionalImages() != null) {
             additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
         }
         for (int i = imagesCounter; i < images.length; i++) {
-            additionalImagesStr.add(userRemoteClient.uploadFile(images[imagesCounter++]));
+            try {
+                additionalImagesStr.add(userRemoteClient.uploadFile(images[imagesCounter++]));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         }
         if (!additionalImagesStr.isEmpty()) {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
