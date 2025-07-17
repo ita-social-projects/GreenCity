@@ -801,12 +801,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         boolean isLiked = ecoNews.getUsersLikedNews().stream()
             .noneMatch(u -> u.getId().equals(userVO.getId()));
 
+        sendNotification(ecoNews, userVO, isLiked);
+
         ecoNews.getUsersLikedNews().add(modelMapper.map(userVO, User.class));
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
 
-        sendNotification(ecoNews, userVO, isLiked);
         return modelMapper.map(ecoNews, EcoNewsDto.class);
     }
 
