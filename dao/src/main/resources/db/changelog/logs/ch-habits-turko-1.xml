@@ -1,34 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                    http://www.liquibase.org/xml/ns/dbchangelog
+                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="Volodymyr" id="1571227598316-76">
         <createTable tableName="habits">
             <column autoIncrement="true" startWith="32" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="image" type="varchar(255)" defaultValue="bag">
+                <constraints nullable="false"/>
+            </column>
+            <column name="default_duration" type="integer" defaultValue="14">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complexity" type="INT" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
             <column name="user_id" type="BIGINT">
-                <constraints nullable="false"/>
             </column>
-            <column name="habit_dictionary_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column name="create_date" type="datetime(6)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="is_custom_habit" type="boolean" defaultValue="false"/>
+            <column name="is_deleted" type="boolean" defaultValue="false"/>
+            <column name="created_at" type="timestamp"/>
         </createTable>
     </changeSet>
+    <changeSet id="Levko3" author="Olha Levko">
+        <sql>
+            ALTER TABLE habits
+                ADD CONSTRAINT complexity_size CHECK (complexity BETWEEN 1 AND 3);
+        </sql>
+    </changeSet>
+
     <changeSet author="Volodymyr" id="1571227598316-77">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habits" constraintName="fk_habits_user"
                                  deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
-    <changeSet author="Volodymyr" id="1571227598316-78">
-        <addForeignKeyConstraint baseColumnNames="habit_dictionary_id" baseTableName="habits"
-                                 constraintName="fk_habits_habits_dictionary" deferrable="false" initiallyDeferred="false"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                                 referencedTableName="habit_dictionary"/>
-    </changeSet>
+
 </databaseChangeLog>

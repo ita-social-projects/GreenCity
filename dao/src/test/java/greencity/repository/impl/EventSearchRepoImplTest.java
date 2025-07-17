@@ -9,6 +9,7 @@ import greencity.entity.event.Event_;
 import greencity.enums.EventTime;
 import greencity.repository.util.PostgresInitializer;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.criteria.*;
 import org.junit.jupiter.api.*;
 import org.modelmapper.ModelMapper;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.ZonedDateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -53,7 +55,17 @@ class EventSearchRepoImplTest extends PostgresInitializer {
     }
 
     @BeforeEach
+    @Transactional
     void setup() {
+        entityManager
+            .createNativeQuery(
+                "INSERT INTO user_location values (1, 'abs', 'abs', 'abs', 'abs', 'abs', 'abs', 1.0, 1.0);")
+            .executeUpdate();
+        entityManager
+            .createNativeQuery(
+                "INSERT INTO greencity_users values(1, 'name', 'profile_picture', 'user_credo', 1.0, 1, 1, 2.3);")
+            .executeUpdate();
+
         ModelUtils.getListEventDto().forEach(dto -> {
             var event = MAPPER.map(dto, Event.class);
             event.getDates().forEach(date -> date.setEvent(event));

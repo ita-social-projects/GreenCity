@@ -4,17 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="Drop-advice_translations-table-if-it-exists" author="Maryna Chekhovska">
+    <changeSet id="dropHabitStatus" author="Oleh Popovych">
         <preConditions onFail="MARK_RAN">
-            <tableExists tableName="advice_translations"/>
+            <tableExists tableName="habit_status"/>
         </preConditions>
-        <dropTable tableName="advice_translations"/>
-    </changeSet>
-
-    <changeSet id="Drop-advices-table-if-it-exists" author="Maryna Chekhovska">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="advices"/>
-        </preConditions>
-        <dropTable tableName="advices"/>
+        <dropTable tableName="habit_status"/>
     </changeSet>
 </databaseChangeLog>

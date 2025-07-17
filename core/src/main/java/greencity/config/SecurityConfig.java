@@ -147,7 +147,7 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**")
                 .permitAll()
-                .requestMatchers("/css/**", "/img/**").permitAll()
+                .requestMatchers("/css/**", "/img/**", "/scripts/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
@@ -472,7 +472,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,
                     USERS + "/picturePath")
                 .hasAnyRole(ADMIN)
-                .anyRequest().hasAnyRole(ADMIN))
+                .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
                 .clearAuthentication(true)

@@ -4,6 +4,15 @@ function clearAllErrorsSpan() {
 
 let checkedCh = 0;
 
+function updateCheckBoxCount(chInt) {
+    let chBox = $('#checkbox' + chInt);
+    let deleteBtn = $("#btnDelete");
+    chBox.is(":checked") ? checkedCh++ : checkedCh--;
+    if (checkedCh === 0) {
+        deleteBtn.addClass("disabled");
+    } else deleteBtn.removeClass("disabled");
+}
+
 $(document).ready(function () {
     let deleteBtn = $("#btnDelete");
     console.log('js...');

@@ -5,10 +5,6 @@
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="add-inviter-invitee-user-columns" author="Ivan Holotsvan">
-        <addColumn tableName="habit_invitations">
-            <column name="inviter_id" type="BIGINT"/>
-            <column name="invitee_id" type="BIGINT"/>
-        </addColumn>
 
         <addForeignKeyConstraint
                 baseTableName="habit_invitations"

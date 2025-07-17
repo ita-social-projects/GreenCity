@@ -158,17 +158,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Long authorId,
         boolean favorite,
         Long currentUserId) {
-        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
-            ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))),
-                currentUserId)
-            : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
-                    currentUserId),
-                PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))),
-                currentUserId);
+        return buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
+            (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
+                currentUserId),
+            PageRequest.of(page.getPageNumber(), page.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "creationDate"))),
+            currentUserId);
     }
 
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
@@ -714,6 +709,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             Join<EcoNews, User> followers = root.join("followers");
             predicates.add(criteriaBuilder.equal(followers.get(ECO_NEWS_AUTHOR_ID), currentUserId));
         }
+
+        predicates.add(criteriaBuilder.equal(root.get("hidden"), false));
 
         Predicate result;
         if (predicates.size() == 1) {
