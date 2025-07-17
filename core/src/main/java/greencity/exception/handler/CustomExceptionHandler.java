@@ -26,7 +26,6 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
-import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -43,6 +42,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -53,6 +53,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
@@ -102,10 +103,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Map<String, String> jsonHttpClientErrorExceptionToMap(
         HttpClientErrorException ex) throws JsonProcessingException {
-        TypeReference<Map<String, String>> responseType = new TypeReference<>() {
-        };
+        String exceptionBody = ex.getResponseBodyAsString();
         Map<String, String> httpClientResponseBody;
-        httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), responseType);
+        if (exceptionBody.startsWith("[")) {
+            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(),
+                new TypeReference<List<Map<String, String>>>() {
+                })
+                .get(0);
+        } else {
+            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), new TypeReference<>() {
+            });
+        }
 
         return httpClientResponseBody;
     }
@@ -310,8 +318,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method interceptor for {@link UnsupportedOperationException},
-     * {@link UnsupportedSortException}.
+     * Method interceptor for {@link UnsupportedOperationException}.
      *
      * @param ex      Exception which should be intercepted.
      * @param request Contains details about the occurred exception.
@@ -526,21 +533,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Customize the response for UnsupportedSortException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(UnsupportedSortException.class)
-    public final ResponseEntity<Object> handleUnsupportedSortException(
-        UnsupportedSortException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
      * Customize the response for WrongIdException.
      *
      * @param ex      the exception
@@ -567,8 +559,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
-        return new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
-            ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)));
+        Map<String, Object> attributes = new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
+            ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE,
+                ErrorAttributeOptions.Include.STACK_TRACE)));
+        if (webRequest instanceof ServletWebRequest servletWebRequest) {
+            attributes.put("path", servletWebRequest.getRequest().getRequestURI());
+        }
+        return attributes;
     }
 
     /**
@@ -720,5 +717,24 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ErrorMessage.UNAUTHORIZED_RESPONSE);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link PropertyReferenceException}. Thrown when
+     * an invalid property is used in the sort parameter for a Pageable request.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(PropertyReferenceException.class)
+    public final ResponseEntity<Object> handlePropertyReferenceException(PropertyReferenceException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(String.format(ErrorMessage.INVALID_SORT_VALUE_EXCEPTION, ex.getPropertyName()));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 }

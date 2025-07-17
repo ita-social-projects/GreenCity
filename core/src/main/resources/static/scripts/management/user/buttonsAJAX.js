@@ -178,6 +178,19 @@ function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
 
+function showEmailError(message, $block) {
+    const $emailField = $('#emailField');
+    $block.text(message).show();
+    $emailField.addClass('is-invalid');
+    $emailField.get(0).setCustomValidity(message);
+}
+
+function clearEmailErrors() {
+    $('#serverEmailError').hide();
+    $('#emailServerError').hide();
+    $('#emailField').removeClass('is-invalid').get(0).setCustomValidity('');
+}
+
 let checkedCh = 0;
 
 function updateCheckBoxCount(chInt) {
@@ -240,13 +253,61 @@ $(document).ready(function () {
 
     // Submit button in addUserModal
     $('#submitAddBtn').on('click', function (event) {
-        let form = document.getElementById("addUserForm");
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
+
+        let $form = $('#addUserForm');
+        let $emailField = $('#emailField');
+        let $emailBootstrapError = $("#emailBootstrapError");
+        let $serverEmailErrorBlock = $('#serverEmailError');
+
+        clearEmailErrors();
+
+        if (!$form.get(0).checkValidity()) {
+            if (!$emailField.get(0).checkValidity()) {
+                showEmailError($emailBootstrapError.text(), $emailBootstrapError);
+            }
+        } else {
+            $.ajax({
+                url: $form.attr('action'),
+                method: $form.attr('method'),
+                data: $form.serialize(),
+                success: function () {
+                    window.location.href = '/management/users';
+                },
+                error: function (response) {
+                    let serverError;
+                    try {
+                        serverError = JSON.parse(response.responseText);
+                    } catch (e) {
+                        serverError = {
+                            message: response.responseText
+                        };
+                    }
+                    const message = Array.isArray(serverError)
+                        ? serverError[0]?.message || 'Undefined error'
+                        : serverError?.message || 'Undefined error';
+                    showEmailError(message, $serverEmailErrorBlock);
+                }
+            });
         }
-        form.classList.add("was-validated");
-    })
+
+        $form.addClass('was-validated');
+    });
+
+    $('#emailField').on('input', function () {
+        let $emailBootstrapError = $('#emailBootstrapError');
+
+        clearEmailErrors();
+
+        if (!$(this).get(0).checkValidity()) {
+            $emailBootstrapError.show();
+            $(this).addClass('is-invalid');
+        } else {
+            $emailBootstrapError.hide();
+            $(this).removeClass('is-invalid');
+        }
+    });
 
     // Edit user button (popup)
     $('td .edit.eBtn').on('click', function (event) {
