@@ -153,7 +153,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Long authorId,
         boolean favorite,
         Long currentUserId) {
-
         return buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
             (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
                 currentUserId),

@@ -713,7 +713,7 @@ class EcoNewsServiceImplTest {
         List<EcoNews> ecoNewsList = Collections.singletonList(getEcoNews());
         Page<EcoNews> page = new PageImpl<>(ecoNewsList, pageable, ecoNewsList.size());
 
-        when(ecoNewsRepo.findAll(any(Pageable.class))).thenReturn(page);
+        when(ecoNewsRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
         ecoNewsService.find(pageable, null, null, null, false, mockUser.getId());
 
