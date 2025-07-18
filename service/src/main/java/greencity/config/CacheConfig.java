@@ -2,9 +2,10 @@ package greencity.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import greencity.cache.CachedUserProfile;
-import greencity.cache.CachedUserRelevantNews;
-import greencity.cache.RelevantEcoNewsCacheKey;
+import greencity.dto.cache.CachedTagsWithCoherence;
+import greencity.dto.cache.CachedUserRelevanceProfile;
+import greencity.dto.cache.CachedUserRelevantNews;
+import greencity.dto.cache.RelevantEcoNewsCacheKey;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
@@ -26,7 +27,15 @@ public class CacheConfig {
     }
 
     @Bean
-    public Cache<Long, CachedUserProfile> averageUserVectorsCache() {
+    public Cache<Long, CachedUserRelevanceProfile> averageUserVectorsCache() {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(expirationTimeInMinutes, TimeUnit.MINUTES)
+            .maximumSize(10_000)
+            .build();
+    }
+
+    @Bean
+    public Cache<Long, CachedTagsWithCoherence> tagsCoherenceCache() {
         return Caffeine.newBuilder()
             .expireAfterWrite(expirationTimeInMinutes, TimeUnit.MINUTES)
             .maximumSize(10_000)

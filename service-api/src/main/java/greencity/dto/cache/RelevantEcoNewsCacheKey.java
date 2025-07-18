@@ -1,4 +1,4 @@
-package greencity.cache;
+package greencity.dto.cache;
 
 /**
  * Cache key for storing relevant eco news for specific user.

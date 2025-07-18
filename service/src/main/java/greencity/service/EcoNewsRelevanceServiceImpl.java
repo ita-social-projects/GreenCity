@@ -1,20 +1,19 @@
 package greencity.service;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import greencity.cache.CachedRelevancePools;
-import greencity.cache.CachedUserProfile;
-import greencity.cache.CachedUserRelevantNews;
-import greencity.cache.RelevantEcoNewsCacheKey;
+import greencity.converters.RatioConverter;
+import greencity.dto.cache.CachedRelevancePools;
+import greencity.dto.cache.CachedTagsWithCoherence;
+import greencity.dto.cache.CachedUserRelevanceProfile;
+import greencity.dto.cache.CachedUserRelevantNews;
+import greencity.dto.cache.RelevantEcoNewsCacheKey;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.relevance.EcoNewsWithRelevanceVectorsDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
-import greencity.entity.HabitAssign;
-import greencity.enums.TagType;
 import greencity.filters.EcoNewsSpecification;
 import greencity.entity.EcoNewsRelevance;
-import greencity.entity.Tag;
 import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.repository.*;
 import jakarta.annotation.PostConstruct;
@@ -23,9 +22,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -44,48 +43,40 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private final EcoNewsRepo ecoNewsRepo;
     private final EcoNewsServiceImpl ecoNewsService;
     private final EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
-    private final TagsRepo tagsRepo;
-    private final HabitAssignRepo habitAssignRepo;
-    private final TagsCoherenceRepo tagsCoherenceRepo;
-    private final Cache<RelevantEcoNewsCacheKey, CachedUserRelevantNews> userRelevanceNewsCache;
-    private final Cache<Long, CachedUserProfile> userProfileCache;
+    private final CacheService cacheService;
     private final ModelMapper modelMapper;
     private final PageableAdvancedDtoMapper<EcoNewsGenericDto> pageableAdvancedDtoMapper;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Value("${greencity.relevant.news.ratio}")
     private String relevancePoolsRatioString;
-    @Value("${greencity.tags.semantic.scores.weights}")
+    @Value("${greencity.titles.tags.scores.weights}")
     private String relevanceScoresWeightsString;
-    @Value("${greencity.relevance.scores.strengths}")
+    @Value("${greencity.relevance.strengths.threshold}")
     private String relevanceScoresStrengthString;
     private double[] relevancePoolsRatio;
     private double[] relevanceScoresWeights;
     private double[] relevanceScoresStrength;
-    private List<Long> ecoNewsTagsIds;
-    private Map<Long, Integer> ecoNewsTagIdToIndexMap;
-
 
     @PostConstruct
     public void init() {
-        this.relevancePoolsRatio = convertRatioFromString(relevancePoolsRatioString);
-        this.relevanceScoresWeights = convertRatioFromString(relevanceScoresWeightsString);
-        this.relevanceScoresStrength = convertRatioFromString(relevanceScoresStrengthString);
-        this.ecoNewsTagsIds = tagsRepo.findTagsByType(TagType.ECO_NEWS).stream()
-            .map(Tag::getId)
-            .toList();
-        this.ecoNewsTagIdToIndexMap = buildEcoNewsTagIndexMap(ecoNewsTagsIds);
+        this.relevancePoolsRatio = RatioConverter.convertRatioFromString(relevancePoolsRatioString);
+        if (relevancePoolsRatio.length != 3) {
+            throw new BeanInitializationException(String.format("Invalid relevance pools ratio parameter value. "
+                + "Expected 3 values, but got %d.", relevancePoolsRatio.length));
+        }
 
-    }
+        this.relevanceScoresWeights = RatioConverter.convertRatioFromString(relevanceScoresWeightsString);
+        if (relevanceScoresWeights.length != 2) {
+            throw new BeanInitializationException(String.format("Invalid relevance scores weights parameter value. "
+                + "Expected 2 values, but got %d.", relevanceScoresWeights.length));
+        }
 
-    private double[] convertRatioFromString(String ratio) {
-        double[] ratioDoubles = Arrays.stream(ratio.split(":"))
-            .mapToDouble(Double::parseDouble)
-            .toArray();
-        double sum = Arrays.stream(ratioDoubles).sum();
-        return sum <= 1 ? ratioDoubles : Arrays.stream(ratioDoubles)
-            .map(d -> d / sum)
-            .toArray();
+        this.relevanceScoresStrength = RatioConverter.convertRatioFromString(relevanceScoresStrengthString);
+        if (relevanceScoresStrength.length != 2) {
+            throw new BeanInitializationException(String.format("Invalid relevance scores strength parameter value. "
+                + "Expected 2 values, but got %d.", relevanceScoresStrength.length));
+        }
     }
 
     @Override
@@ -101,7 +92,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             title,
             author,
             pageable.getPageSize());
-        CachedUserRelevantNews cachedUserRelevantNews = getUserRelevantNewsPools(key);
+        CachedUserRelevantNews cachedUserRelevantNews = cacheService.getUserRelevantNewsFromCache(key);
         Map<Integer, List<Long>> relevantNewsPages = cachedUserRelevantNews.getRelevantNewsPages();
         int page = pageable.getPageNumber();
         List<EcoNews> findResult;
@@ -109,9 +100,10 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         if (relevantNewsPages.containsKey(page)) {
             findResult = ecoNewsRepo.findAllById(relevantNewsPages.get(page));
         } else {
-            CachedUserProfile userProfile = getAverageVectorsByUser(user.getId());
-            findResult = getResultByRatio(key, cachedUserRelevantNews,
-                cachedUserRelevantNews.getNewsRelevancePools(), userProfile);
+            CachedUserRelevanceProfile userProfile = cacheService.getUserProfileFromCache(user.getId());
+            CachedTagsWithCoherence cachedTags = cacheService.getTagsCoherenceFromCacheForUser();
+            findResult = getResultByRatio(key, cachedUserRelevantNews,cachedUserRelevantNews.getNewsRelevancePools(),
+                userProfile, cachedTags);
             relevantNewsPages.put(page, findResult.stream()
                 .map(EcoNews::getId)
                 .toList());
@@ -123,22 +115,6 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             pageable,
             (long) cachedUserRelevantNews.getTotalPagesCount() * pageable.getPageSize());
         return pageableAdvancedDtoMapper.convert(pageResult);
-    }
-
-    private CachedUserRelevantNews getUserRelevantNewsPools(RelevantEcoNewsCacheKey key) {
-        CachedUserRelevantNews cachedUserRelevantNews = userRelevanceNewsCache.getIfPresent(key);
-        if (cachedUserRelevantNews == null) {
-            long totalEcoNewsCount = ecoNewsRepo.count();
-            cachedUserRelevantNews = new CachedUserRelevantNews(
-                new CachedRelevancePools(new LinkedList<>(), new LinkedList<>(), new LinkedList<>()),
-                new HashMap<>(),
-                0,
-                (int) (totalEcoNewsCount / key.pageSize()),
-                ZonedDateTime.now().plusDays(1)
-            );
-            userRelevanceNewsCache.put(key, cachedUserRelevantNews);
-        }
-        return cachedUserRelevantNews;
     }
 
     private List<EcoNews> getFilteredNews(RelevantEcoNewsCacheKey requestMetadata, ZonedDateTime lastRequestedDate) {
@@ -156,10 +132,11 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private List<EcoNews> getResultByRatio(RelevantEcoNewsCacheKey requestMetadata,
                                            CachedUserRelevantNews cachedUserNews,
                                            CachedRelevancePools pools,
-                                           CachedUserProfile userProfile) {
+                                           CachedUserRelevanceProfile userProfile,
+                                           CachedTagsWithCoherence tags) {
         while (!hasEnoughNews(requestMetadata, pools)
             && cachedUserNews.getLastGeneratedPage() < cachedUserNews.getTotalPagesCount()) {
-            loadMoreNews(requestMetadata, cachedUserNews, pools, userProfile);
+            loadMoreNews(requestMetadata, cachedUserNews, pools, userProfile, tags);
             cachedUserNews.setLastGeneratedPage(cachedUserNews.getLastGeneratedPage() + 1);
         }
         int[] ratioForPages = calculateRatioCounts(requestMetadata.pageSize(), relevancePoolsRatio);
@@ -177,7 +154,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     private void loadMoreNews(RelevantEcoNewsCacheKey requestMetadata,
                               CachedUserRelevantNews cachedUserNews,
                               CachedRelevancePools pools,
-                              CachedUserProfile userProfile) {
+                              CachedUserRelevanceProfile userProfile,
+                              CachedTagsWithCoherence tags) {
         List<EcoNews> news = getFilteredNews(requestMetadata, cachedUserNews.getLastRequestedDate());
         cachedUserNews.setLastRequestedDate(cachedUserNews.getLastRequestedDate().minusWeeks(1));
         List<EcoNewsRelevance> ecoNewsRelevanceList = ecoNewsRelevanceRepo.findAllByEcoNewsIdIn(
@@ -187,12 +165,17 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         Map<Long, EcoNewsRelevance> ecoNewsRelevanceMap = ecoNewsRelevanceList.stream()
             .collect(Collectors.toMap(relevance -> relevance.getEcoNews().getId(),
                 Function.identity()));
-        List<EcoNewsWithRelevanceVectors> newsWithVectors = news.stream()
-            .map(newsItem -> new EcoNewsWithRelevanceVectors(userProfile, newsItem,
-                ecoNewsRelevanceMap.get(newsItem.getId())))
+        List<EcoNewsWithRelevanceVectorsDto> newsWithVectors = news.stream()
+            .map(newsItem -> new EcoNewsWithRelevanceVectorsDto(
+                newsItem,
+                ecoNewsRelevanceMap.get(newsItem.getId()),
+                tags.ecoNewsTagsIndexes(),
+                userProfile,
+                relevanceScoresWeights)
+            )
             .toList();
         newsWithVectors.stream()
-            .sorted(Comparator.comparingDouble(EcoNewsWithRelevanceVectors::getRelevanceScore).reversed())
+            .sorted(Comparator.comparingDouble(EcoNewsWithRelevanceVectorsDto::getRelevanceScore).reversed())
             .forEach(newsItem -> {
                 if (newsItem.getRelevanceScore() > relevanceScoresStrength[0]) {
                     pools.relevantStrongNewsIds().add(newsItem.getEcoNews().getId());
@@ -202,45 +185,6 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                     pools.relevantWeakNewsIds().add(newsItem.getEcoNews().getId());
                 }
             });
-    }
-
-    private CachedUserProfile getAverageVectorsByUser(Long userId) {
-        CachedUserProfile cachedUserProfile = userProfileCache.getIfPresent(userId);
-        if (cachedUserProfile != null) {
-            return cachedUserProfile;
-        }
-
-        List<EcoNewsRelevance> lastLikedNews = ecoNewsRelevanceRepo.findLikedEcoNewsById(userId);
-        List<EcoNewsWithRelevanceVectors> likedNewsWithVectors = lastLikedNews.stream()
-            .map(relevance -> new EcoNewsWithRelevanceVectors(relevance.getEcoNews(), relevance))
-            .toList();
-
-        Float[] averageTagsVector = mergeUserTagsVector(userId);
-        Float[] averageTitleVector = averageVectors(likedNewsWithVectors.stream()
-                .map(EcoNewsWithRelevanceVectors::getTitleVector)
-                .toList());
-        cachedUserProfile = new CachedUserProfile(averageTagsVector, averageTitleVector);
-        userProfileCache.put(userId, cachedUserProfile);
-        return cachedUserProfile;
-    }
-
-    private Float[] averageVectors(List<Float[]> vectors) {
-        if (vectors == null || vectors.isEmpty()) {
-            return null;
-        }
-        int dimension = vectors.get(0).length;
-        Float[] averageVector = new Float[dimension];
-        Arrays.fill(averageVector, 0f);
-
-        for (Float[] vector : vectors) {
-            for (int i = 0; i < dimension; i++) {
-                averageVector[i] += vector[i];
-            }
-        }
-        for (int i = 0; i < dimension; i++) {
-            averageVector[i] /= vectors.size();
-        }
-        return averageVector;
     }
 
     private int[] calculateRatioCounts(int pageSize, double[] ratio) {
@@ -293,136 +237,5 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             resultPageIds.add(pools.nonRelevantNewsIds().poll());
         }
         return ecoNewsRepo.findAllById(resultPageIds);
-    }
-    private Float[] mergeUserTagsVector(Long userId) {
-        CachedUserProfile cached = userProfileCache.getIfPresent(userId);
-        if (cached != null && cached.tagsPreferencesVector() != null) {
-            return cached.tagsPreferencesVector();
-        }
-
-        Float[] ecoNewsTagsVector = averageEcoNewsTagsVector(userId);
-        Float[] habitTagsVector = getHabitTagsVectorAsEcoNews(userId);
-
-        if (ecoNewsTagsVector == null) return habitTagsVector;
-        if (habitTagsVector == null) return ecoNewsTagsVector;
-
-        Float[] merged = new Float[ecoNewsTagsVector.length];
-        for (int i = 0; i < merged.length; i++) {
-            merged[i] = (ecoNewsTagsVector[i] + habitTagsVector[i]) / 2;
-        }
-        return merged;
-    }
-    private Float[] averageEcoNewsTagsVector(Long userId) {
-        List<EcoNewsRelevance> lastLikedNews = ecoNewsRelevanceRepo.findLikedEcoNewsById(userId);
-        List<EcoNewsWithRelevanceVectors> likedNewsWithVectors = lastLikedNews.stream()
-                .map(relevance -> new EcoNewsWithRelevanceVectors(relevance.getEcoNews(), relevance))
-                .toList();
-
-        return averageVectors(likedNewsWithVectors.stream()
-                .map(EcoNewsWithRelevanceVectors::getTagsVector)
-                .toList());
-    }
-
-    private Float[] getHabitTagsVectorAsEcoNews(Long userId) {
-        List<Tag> habitTags = extractHabitTagsFromAssignments(userId);
-        if (habitTags.isEmpty()) return null;
-
-        Float[] result = new Float[ecoNewsTagsIds.size()];
-        Arrays.fill(result, 0f);
-
-        for (Long ecoNewsTagId : ecoNewsTagsIds) {
-            for (Tag habitTag : habitTags) {
-                Double weight = tagsCoherenceRepo.findWeightBetweenTags(habitTag.getId(), ecoNewsTagId);
-                if (weight != null) {
-                    Integer index = ecoNewsTagIdToIndexMap.get(ecoNewsTagId);
-                    if (index != null) {
-                        result[index] += weight.floatValue();
-                    }
-                }
-            }
-        }
-
-        float max = Arrays.stream(result).max(Float::compare).orElse(1f);
-        if (max > 0) {
-            for (int i = 0; i < result.length; i++) {
-                result[i] /= max;
-            }
-        }
-
-        return result;
-    }
-
-    private List<Tag> extractHabitTagsFromAssignments(Long userId) {
-        List<HabitAssign> habitAssigns = habitAssignRepo.findAllByUserId(userId);
-        return habitAssigns.stream()
-                .map(HabitAssign::getHabit)
-                .filter(Objects::nonNull)
-                .flatMap(habit -> habit.getTags().stream())
-                .distinct()
-                .toList();
-    }
-    private Map<Long, Integer> buildEcoNewsTagIndexMap(List<Long> tagIds) {
-        Map<Long, Integer> indexMap = new HashMap<>();
-        for (int i = 0; i < tagIds.size(); i++) {
-            indexMap.put(tagIds.get(i), i);
-        }
-        return indexMap;
-    }
-
-
-
-
-
-    @Getter
-    private class EcoNewsWithRelevanceVectors {
-        private final EcoNews ecoNews;
-        private Float[] tagsVector;
-        private Float[] titleVector;
-        private double relevanceScore;
-
-        public EcoNewsWithRelevanceVectors(EcoNews ecoNews,
-                                           EcoNewsRelevance ecoNewsRelevance) {
-            this.ecoNews = ecoNews;
-            if (ecoNews.getTags() != null) {
-                this.tagsVector = new Float[ecoNewsTagsIds.size()];
-                Arrays.fill(this.tagsVector, 0.0f);
-                ecoNews.getTags().forEach(tag -> tagsVector[ecoNewsTagsIds.indexOf(tag.getId())] = 1f);
-            }
-            if (ecoNewsRelevance != null) {
-                this.titleVector = ecoNewsRelevance.getTitleVector();
-            }
-        }
-
-        public EcoNewsWithRelevanceVectors(CachedUserProfile userProfile,
-                                           EcoNews ecoNews,
-                                           EcoNewsRelevance ecoNewsRelevance) {
-            this(ecoNews, ecoNewsRelevance);
-            boolean isTagsVectorInvalid = tagsVector == null
-                || Arrays.stream(tagsVector).allMatch(value -> value == 0.0);
-            boolean isTitleVectorInvalid = titleVector == null;
-            double tagsRelevance = isTagsVectorInvalid ? 0.0 : relevanceScoresWeights[0]
-                    * getCosineSimilarity(tagsVector, userProfile.tagsPreferencesVector());
-            double titleRelevance = isTitleVectorInvalid ? 0.0 : relevanceScoresWeights[1]
-                    * getCosineSimilarity(titleVector, userProfile.titlePreferencesVector());
-            this.relevanceScore = tagsRelevance + titleRelevance;
-        }
-
-        private double getCosineSimilarity(Float[] vector1, Float[] vector2) {
-            if (vector1 == null || vector2 == null || vector1.length != vector2.length) {
-                return 0.0;
-            }
-            double dot = 0.0;
-            double normA = 0.0;
-            double normB = 0.0;
-            for (int i = 0; i < vector1.length; i++) {
-                dot += vector1[i] * vector2[i];
-                normA += vector1[i] * vector1[i];
-                normB += vector2[i] * vector2[i];
-            }
-            if (normA == 0 && normB == 0) {
-                return 0.0;
-            }
-            return dot / (Math.sqrt(normA) * Math.sqrt(normB));
-        }
     }
 }

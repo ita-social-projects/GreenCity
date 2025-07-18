@@ -13,12 +13,13 @@ public interface EcoNewsRelevanceRepo extends JpaRepository<EcoNewsRelevance, Lo
             SELECT enr
             FROM EcoNewsRelevance enr
             JOIN FETCH enr.ecoNews news
+            JOIN FETCH news.tags tags
             JOIN news.usersLikedNews u
             WHERE u.id = :id
             ORDER BY news.creationDate DESC
             LIMIT 10
         """)
-    List<EcoNewsRelevance> findLikedEcoNewsById(@Param("id") Long id);
+    List<EcoNewsRelevance> findLikedEcoNewsByUserId(@Param("id") Long id);
 
     List<EcoNewsRelevance> findAllByEcoNewsIdIn(List<Long> ecoNewsIds);
 }

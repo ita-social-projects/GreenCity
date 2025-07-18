@@ -1,4 +1,4 @@
-package greencity.cache;
+package greencity.dto.cache;
 
 import java.util.LinkedList;
 

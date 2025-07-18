@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
@@ -294,4 +295,15 @@ public interface EventRepo extends EventSearchRepo, JpaRepository<Event, Long>, 
             ) AS combined
             ORDER BY priority, amountOfEvents DESC""")
     List<EventCityDtoProjection> findRelevantCitiesForUser(String userCity);
+
+    @Query("""
+            SELECT e
+            FROM Event e
+            JOIN FETCH e.tags tags
+            JOIN e.usersLikedEvents u
+            WHERE u.id = :userId
+            ORDER BY e.creationDate DESC
+            LIMIT 10
+        """)
+    List<Event> findLikedEventsByUserId(@Param("userId") Long userId);
 }

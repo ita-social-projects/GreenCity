@@ -1,4 +1,4 @@
-package greencity.cache;
+package greencity.dto.cache;
 
 import java.time.ZonedDateTime;
 import java.util.List;
