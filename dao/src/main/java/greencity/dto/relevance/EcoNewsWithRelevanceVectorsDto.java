@@ -43,17 +43,30 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
         if (vector1 == null || vector2 == null || vector1.length != vector2.length) {
             return 0.0;
         }
+
         double dot = 0.0;
         double normA = 0.0;
         double normB = 0.0;
+        boolean hasValidValues = false;
+
         for (int i = 0; i < vector1.length; i++) {
-            dot += vector1[i] * vector2[i];
-            normA += vector1[i] * vector1[i];
-            normB += vector2[i] * vector2[i];
+            Float a = vector1[i];
+            Float b = vector2[i];
+
+            if (a == null || b == null) {
+                continue;
+            }
+
+            dot += a * b;
+            normA += a * a;
+            normB += b * b;
+            hasValidValues = true;
         }
-        if (normA == 0 && normB == 0) {
+
+        if (!hasValidValues || normA == 0.0 || normB == 0.0) {
             return 0.0;
         }
+
         return dot / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 }
