@@ -2,6 +2,7 @@ package greencity.dto.place;
 
 import java.util.HashSet;
 import java.util.Set;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -32,6 +33,19 @@ public class AddPlaceDto {
     @Valid
     @Builder.Default
     @Size(min = 1, message = ServiceValidationConstants.BAD_OPENING_HOURS_LIST_REQUEST)
+    @Schema(example = """
+        [
+         {
+            "openTime": "00:00",
+            "closeTime": "00:00",
+            "weekDay": "MONDAY",
+            "breakTime": {
+             "startTime": "00:00",
+             "endTime": "00:00"
+            }
+         }
+        ]
+        """)
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
     private String locationName;
