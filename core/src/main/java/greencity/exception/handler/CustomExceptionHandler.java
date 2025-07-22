@@ -687,6 +687,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+    }
 
     /**
      * Method intercepts exception {@link PropertyReferenceException}. Thrown when
