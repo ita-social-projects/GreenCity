@@ -110,7 +110,7 @@ class ToDoListItemServiceImplTest {
     private List<ToDoListItemTranslation> toDoListItemTranslations = Arrays.asList(
         ToDoListItemTranslation.builder()
             .id(1L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+            .language(new Language(1L, language, "Ukrainian", Collections.emptyList(), Collections.emptyList(),
                 Collections.emptyList()))
             .content("TEST")
             .toDoListItem(
@@ -118,7 +118,7 @@ class ToDoListItemServiceImplTest {
             .build(),
         ToDoListItemTranslation.builder()
             .id(2L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
+            .language(new Language(1L, language, "Ukrainian", Collections.emptyList(), Collections.emptyList(),
                 Collections.emptyList()))
             .content("TEST")
             .toDoListItem(
