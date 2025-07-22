@@ -5,7 +5,7 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="increase-email-length-in-user-table-to-72" author="Oleh Popovych">
-        <modifyDataType tableName="user" columnName="email" newDataType="VARCHAR(72)"/>
+        <modifyDataType tableName="users" columnName="email" newDataType="VARCHAR(72)"/>
     </changeSet>
     <changeSet id="increase-email-length-in-places-table-to-72" author="Oleh Popovych">
         <modifyDataType tableName="places" columnName="email" newDataType="VARCHAR(72)"/>
