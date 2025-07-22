@@ -56,6 +56,7 @@ public class ServiceValidationConstants {
             + "@"
             + "(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+"
             + "[a-zA-Z]{2,63}|"
-            + "\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\])$";
+            + "\\[(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)"
+            + "(?:\\.(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)){3}\\])$";
     public static final String HABIT_DEFAULT_DURATION = "{greenCity.validation.habit.defaultDuration}";
 }
