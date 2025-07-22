@@ -264,6 +264,7 @@
     <include file="db/changelog/logs/ch-insert-into-empolyee-authority-Haliara.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-Bulhakova.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-positions-Bulhakova.xml"/>
+    <include file="db/changelog/logs/ch-add-quartz-tables.xml"/>
+    <include file="db/changelog/logs/ch-add-column-name_languages-table-Zadyraichuk.xml"/>
     <include file="db/changelog/logs/ch-drop-table-habit-status-Popovych.xml"/>
-
 </databaseChangeLog>

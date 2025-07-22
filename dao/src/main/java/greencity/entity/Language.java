@@ -23,6 +23,9 @@ public class Language {
     @Column(name = "code", nullable = false, unique = true, length = 35)
     private String code;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
 
