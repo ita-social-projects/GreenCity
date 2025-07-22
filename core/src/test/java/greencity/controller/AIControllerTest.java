@@ -1,6 +1,11 @@
 package greencity.controller;
 
+import greencity.ModelUtils;
+import greencity.converters.UserArgumentResolver;
+import greencity.dto.language.LanguageVO;
+import greencity.dto.user.UserVO;
 import greencity.service.AIService;
+import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,18 +14,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
-import java.util.Locale;
 import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,51 +31,46 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AIControllerTest {
     @Mock
     private AIService aiService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private AIController aiController;
+
     private MockMvc mockMvc;
     private Principal principal = getPrincipal();
+    private UserVO userVO = ModelUtils.getUserVO();
+    private LanguageVO languageVO = ModelUtils.getLanguageVO();
 
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(aiController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
             .build();
+        userVO.setLanguageVO(languageVO);
     }
 
     @Test
     void forecastReturnsForecastFromAIServiceTest() throws Exception {
-        Locale testLocale = Locale.forLanguageTag("en");
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(get("/ai/forecast")
-            .principal(principal)
-            .locale(testLocale))
+            .principal(principal))
             .andExpect(status().isOk());
 
-        verify(aiService, times(1)).getForecast(any(), eq(testLocale.getDisplayLanguage()));
+        verify(aiService, times(1)).getForecast(userVO.getId(), userVO.getLanguageVO().getCode());
     }
 
     @Test
     void creatingEcoNewsReturnsEcoNewsFromAIServiceTest() throws Exception {
-        Locale testLocale = Locale.forLanguageTag("en");
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(get("/ai/generate/eco-news")
-            .principal(principal)
-            .locale(testLocale))
+            .principal(principal))
             .andExpect(status().isOk());
 
-        verify(aiService, times(1)).getNews(eq(testLocale.getDisplayLanguage()), any());
-    }
-
-    @Test
-    void creatingEcoNewsReturnsEcoNewsFromAIServiceWithLocaleUATest() throws Exception {
-        Locale testLocale = Locale.forLanguageTag("ua");
-
-        mockMvc.perform(get("/ai/generate/eco-news")
-            .principal(principal)
-            .locale(testLocale))
-            .andExpect(status().isOk());
-
-        verify(aiService, times(1)).getNews(eq("українська"), any());
+        verify(aiService, times(1)).getNews(userVO.getLanguageVO().getCode(), null);
     }
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="languagesUpdateZadyraichuk1" author="Rostyslav Zadyraichuk">
+        <addColumn tableName="languages">
+            <column name="name" type="varchar(255)"/>
+        </addColumn>
+
+        <update tableName="languages">
+            <column name="name" value="Ukrainian"/>
+            <where>code = 'ua'</where>
+        </update>
+
+        <update tableName="languages">
+            <column name="name" value="English"/>
+            <where>code = 'en'</where>
+        </update>
+
+        <addNotNullConstraint tableName="languages" columnName="name"/>
+
+        <rollback>
+            <dropNotNullConstraint tableName="languages" columnName="name"/>
+            <dropColumn tableName="languages" columnName="name"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

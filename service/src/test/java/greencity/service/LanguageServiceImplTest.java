@@ -43,7 +43,7 @@ class LanguageServiceImplTest {
 
     @Test
     void findByCode() {
-        LanguageDTO dto = new LanguageDTO(1L, "en");
+        LanguageDTO dto = new LanguageDTO(1L, "en", "English");
         when(languageRepo.findByCode(language.getCode())).thenReturn(Optional.of(language));
         when(modelMapper.map(language, LanguageDTO.class)).thenReturn(dto);
         assertEquals(dto, languageService.findByCode(language.getCode()));

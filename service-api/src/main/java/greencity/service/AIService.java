@@ -31,4 +31,12 @@ public interface AIService {
      * @return The generated news as a string in the specified language.
      */
     String getNews(String language, String query);
+
+    /**
+     * Generates news content based on the specified language and saves it in the
+     * database.
+     *
+     * @param language The preferred language for the news content.
+     */
+    void generateAndSaveEcoNews(String language);
 }
