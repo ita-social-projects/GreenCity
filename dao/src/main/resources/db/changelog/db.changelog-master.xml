@@ -265,5 +265,6 @@
     <include file="db/changelog/logs/ch-update-column-names-Bulhakova.xml"/>
     <include file="db/changelog/logs/ch-update-column-names-positions-Bulhakova.xml"/>
     <include file="db/changelog/logs/ch-drop-table-habit-status-Popovych.xml"/>
+    <include file="/db/changelog/logs/ch-change-email-column-types-Popovych.xml"/>
 
 </databaseChangeLog>

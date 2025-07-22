@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="increase-email-length-in-user-table-to-72" author="Oleh Popovych">
+        <modifyDataType tableName="user" columnName="email" newDataType="VARCHAR(72)"/>
+    </changeSet>
+    <changeSet id="increase-email-length-in-places-table-to-72" author="Oleh Popovych">
+        <modifyDataType tableName="places" columnName="email" newDataType="VARCHAR(72)"/>
+    </changeSet>
+    <changeSet id="increase-email-length-in-subscriptions-table-to72" author="Oleh Popovych">
+        <modifyDataType tableName="subscriptions" columnName="email" newDataType="VARCHAR(72)"/>
+    </changeSet>
+</databaseChangeLog>
