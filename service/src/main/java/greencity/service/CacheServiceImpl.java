@@ -1,7 +1,7 @@
 package greencity.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import greencity.converters.RatioConverter;
+import greencity.converters.RelevanceWeightUtils;
 import greencity.dto.cache.CachedRelevancePools;
 import greencity.dto.cache.CachedTagsWithCoherence;
 import greencity.dto.cache.CachedUserRelevanceProfile;
@@ -50,7 +50,7 @@ public class CacheServiceImpl implements CacheService {
 
     @PostConstruct
     public void init() {
-        this.tagsWeights = RatioConverter.convertRatioFromString(tagsWeightsString);
+        this.tagsWeights = RelevanceWeightUtils.convertRatioFromString(tagsWeightsString);
         if (tagsWeights.length != 3) {
             throw new BeanInitializationException(String.format("Invalid tags weights parameter value. "
                 + "Expected 3 values, but got %d.", tagsWeights.length));
@@ -156,18 +156,18 @@ public class CacheServiceImpl implements CacheService {
 
         Float[][] vectors = new Float[][]{ecoNewsTagsVector, habitTagsVector, eventTagsVector};
         double[] weights = new double[3];
-        double totalWeight = 0.0;
 
         for (int i = 0; i < 3; i++) {
             if (vectors[i] != null && vectors[i].length == vectorLength) {
                 weights[i] = tagsWeights[i];
-                totalWeight += tagsWeights[i];
             } else {
                 weights[i] = 0.0;
             }
         }
 
-        if (totalWeight == 0.0) {
+        double[] normalizedWeights = RelevanceWeightUtils.normalizeWeights(weights);
+
+        if (Arrays.stream(normalizedWeights).allMatch(w -> w == 0.0)) {
             return new Float[vectorLength];
         }
 
@@ -175,9 +175,12 @@ public class CacheServiceImpl implements CacheService {
         Arrays.fill(merged, 0f);
 
         for (int i = 0; i < 3; i++) {
-            if (weights[i] == 0.0) continue;
+            if (normalizedWeights[i] == 0.0) continue;
+
             Float[] vec = vectors[i];
-            float weight = (float)(weights[i] / totalWeight);
+            if (vec == null || vec.length != vectorLength) continue;
+
+            float weight = (float) normalizedWeights[i];
             for (int j = 0; j < vectorLength; j++) {
                 Float value = vec[j];
                 if (value != null) {
@@ -188,6 +191,7 @@ public class CacheServiceImpl implements CacheService {
 
         return normalizedVector(merged);
     }
+
 
 
 
