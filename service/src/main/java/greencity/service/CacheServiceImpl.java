@@ -23,8 +23,13 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.TagsCoherenceRepo;
 import greencity.repository.TagsRepo;
 import jakarta.annotation.PostConstruct;
-import java.time.ZonedDateTime;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -65,15 +70,16 @@ public class CacheServiceImpl implements CacheService {
             cachedUserRelevantNews = new CachedUserRelevantNews(
                 new CachedRelevancePools(new LinkedList<>(), new LinkedList<>(), new LinkedList<>()),
                 new HashMap<>(),
-                0,
-                (int) (totalEcoNewsCount / key.pageSize()),
-                ZonedDateTime.now().plusDays(1)
+                -1,
+                (int) Math.ceil((double) totalEcoNewsCount / key.pageSize()),
+                totalEcoNewsCount,
+                LocalDate.now().plusDays(1)
             );
             userRelevanceNewsCache.put(key, cachedUserRelevantNews);
         }
         return cachedUserRelevantNews;
     }
-    ///  have to add checking for vectors, if any is null -> give all priority to another one
+
     @Override
     public CachedUserRelevanceProfile getUserProfileFromCache(Long userId) {
         CachedUserRelevanceProfile userProfile = userProfileCache.getIfPresent(userId);
@@ -82,27 +88,26 @@ public class CacheServiceImpl implements CacheService {
 
             List<EcoNewsRelevance> lastLikedNews = ecoNewsRelevanceRepo.findLikedEcoNewsByUserId(userId);
             List<EcoNewsWithRelevanceVectorsDto> ecoNewsWithRelevance = lastLikedNews.stream()
-                    .map(relevance ->
-                            new EcoNewsWithRelevanceVectorsDto(relevance.getEcoNews(), relevance, tags.ecoNewsTagsIndexes()))
-                    .toList();
+                .map(relevance ->
+                    new EcoNewsWithRelevanceVectorsDto(relevance.getEcoNews(), relevance, tags.ecoNewsTagsIndexes()))
+                .toList();
 
             Float[] averageTagsVector = mergeUserTagsVector(userId, ecoNewsWithRelevance, tags);
 
             List<Float[]> titleVectors = ecoNewsWithRelevance.stream()
-                    .map(EcoNewsWithRelevanceVectorsDto::getTitleVector)
-                    .filter(Objects::nonNull)
-                    .toList();
+                .map(EcoNewsWithRelevanceVectorsDto::getTitleVector)
+                .filter(Objects::nonNull)
+                .toList();
 
             Float[] averageTitleVector = titleVectors.isEmpty()
-                    ? new Float[0]
-                    : averageVector(titleVectors);
+                ? new Float[0]
+                : averageVector(titleVectors);
 
             userProfile = new CachedUserRelevanceProfile(averageTagsVector, averageTitleVector);
             userProfileCache.put(userId, userProfile);
         }
         return userProfile;
     }
-
 
     @Override
     public CachedTagsWithCoherence getTagsCoherenceFromCacheForUser() {
@@ -141,6 +146,7 @@ public class CacheServiceImpl implements CacheService {
         }
         return cachedTags;
     }
+
     private Float[] mergeUserTagsVector(Long userId,
                                         List<EcoNewsWithRelevanceVectorsDto> ecoNews,
                                         CachedTagsWithCoherence tags) {
@@ -150,11 +156,11 @@ public class CacheServiceImpl implements CacheService {
 
         Float[] ecoNewsTagsVector = getEcoNewsVector(ecoNews, ecoNewsTagsIndexes);
         Float[] habitTagsVector = getHabitTagsAsEcoNewsVector(userId, ecoNewsTagsIndexes,
-                tags.habitTagsIndexes(), coherenceMatrix);
+            tags.habitTagsIndexes(), coherenceMatrix);
         Float[] eventTagsVector = getEventTagsAsEcoNewsVector(userId, ecoNewsTagsIndexes,
-                tags.eventTagsIndexes(), coherenceMatrix);
+            tags.eventTagsIndexes(), coherenceMatrix);
 
-        Float[][] vectors = new Float[][]{ecoNewsTagsVector, habitTagsVector, eventTagsVector};
+        Float[][] vectors = new Float[][] {ecoNewsTagsVector, habitTagsVector, eventTagsVector};
         double[] weights = new double[3];
 
         for (int i = 0; i < 3; i++) {
@@ -168,7 +174,7 @@ public class CacheServiceImpl implements CacheService {
         double[] normalizedWeights = RelevanceWeightUtils.normalizeWeights(weights);
 
         if (Arrays.stream(normalizedWeights).allMatch(w -> w == 0.0)) {
-            return new Float[vectorLength];
+            return new Float[0];
         }
 
         Float[] merged = new Float[vectorLength];
@@ -191,9 +197,6 @@ public class CacheServiceImpl implements CacheService {
 
         return normalizedVector(merged);
     }
-
-
-
 
     private Float[] getEcoNewsVector(List<EcoNewsWithRelevanceVectorsDto> ecoNews,
                                      Map<Long, Integer> ecoNewsTagsIndexes) {
@@ -221,7 +224,7 @@ public class CacheServiceImpl implements CacheService {
         if (habitAssignTagsVectors.isEmpty()) {
             return new Float[0];
         }
-        
+
         Float[] averageHabitTagsVector = averageVector(habitAssignTagsVectors);
         return convertTagsToEcoNewsTagsVector(averageHabitTagsVector, ecoNewsTagsIndexes,
             habitTagsIndexes, coherenceMatrix);
@@ -246,19 +249,20 @@ public class CacheServiceImpl implements CacheService {
     }
 
     private Float[] convertTagsToEcoNewsTagsVector(Float[] otherTagsVector,
-                                                  Map<Long, Integer> ecoNewsTagsIndexes,
-                                                  Map<Long, Integer> otherTagsIndexes,
-                                                  Map<Long, Map<Long, Float>> coherenceMatrix) {
+                                                   Map<Long, Integer> ecoNewsTagsIndexes,
+                                                   Map<Long, Integer> otherTagsIndexes,
+                                                   Map<Long, Map<Long, Float>> coherenceMatrix) {
         Float[] ecoNewsTagsProjection = new Float[ecoNewsTagsIndexes.size()];
+        Arrays.fill(ecoNewsTagsProjection, 0.0f);
 
-        ecoNewsTagsIndexes.forEach((ecoNewsTagId, ecoNewsTagIndex) -> 
+        ecoNewsTagsIndexes.forEach((ecoNewsTagId, ecoNewsTagIndex) ->
             otherTagsIndexes.forEach((otherTagId, otherTagIndex) -> {
                 Map<Long, Float> destinations = coherenceMatrix.getOrDefault(otherTagId, Map.of());
                 Float weight = destinations.getOrDefault(ecoNewsTagId, 0.0f);
                 ecoNewsTagsProjection[ecoNewsTagIndex] += weight * otherTagsVector[otherTagIndex];
             })
         );
-        
+
         return normalizedVector(ecoNewsTagsProjection);
     }
 
@@ -279,13 +283,12 @@ public class CacheServiceImpl implements CacheService {
 
     private Float[] normalizedVector(Float[] vector) {
         Float[] normalizedVector = new Float[vector.length];
-        Arrays.fill(normalizedVector, 0f);
 
         double sum = Arrays.stream(vector)
             .mapToDouble(Float::doubleValue)
             .sum();
         for (int i = 0; i < vector.length; i++) {
-            vector[i] = (float) (vector[i] / sum);
+            normalizedVector[i] = (float) (vector[i] / sum);
         }
 
         return normalizedVector;
