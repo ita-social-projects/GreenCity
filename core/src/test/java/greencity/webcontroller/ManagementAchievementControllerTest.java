@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
@@ -62,52 +61,45 @@ class ManagementAchievementControllerTest {
 
     @Test
     void getAllAchievementTest() throws Exception {
-        Pageable paging = PageRequest.of(0, 3);
-        Pageable preparedPageable = achievementService.preparePageable(paging, "id", "asc");
         List<AchievementVO> list = Collections.singletonList(ModelUtils.getAchievementVO());
         PageableAdvancedDto<AchievementVO> allAchievements =
             new PageableAdvancedDto<>(list, 3, 0, 3, 0, false, true, true, false);
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
+        List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
 
-        when(achievementService.preparePageable(any(Pageable.class), eq("id"), eq("asc"))).thenReturn(preparedPageable);
-        when(achievementService.findAll(preparedPageable)).thenReturn(allAchievements);
+        when(achievementService.findAll(any(Pageable.class))).thenReturn(allAchievements);
         when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
+        when(languageService.getAllLanguages()).thenReturn(languages);
 
         this.mockMvc.perform(get(link)
             .param("page", "0")
-            .param("size", "3")
-            .param("sortBy", "id")
-            .param("sortDir", "asc"))
+            .param("size", "3"))
             .andExpect(model().attribute("pageable", allAchievements))
             .andExpect(model().attribute("categoryList", achievementCategoryList))
+            .andExpect(model().attribute("languages", languages))
             .andExpect(view().name("core/management_achievement"))
             .andExpect(status().isOk());
 
-        verify(achievementService, atLeastOnce()).preparePageable(any(Pageable.class), eq("id"), eq("asc"));
-        verify(achievementService).findAll(preparedPageable);
+        verify(achievementService).findAll(any(Pageable.class));
         verify(achievementCategoryService).findAllForManagement();
+        verify(languageService).getAllLanguages();
     }
 
     @Test
     void getAllAchievementSearchByQueryTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 3);
-        Pageable preparedPageable = achievementService.preparePageable(pageable, "id", "asc");
         List<AchievementVO> list = Collections.singletonList(new AchievementVO());
         PageableAdvancedDto<AchievementVO> allAchievements =
             new PageableAdvancedDto<>(list, 3, 0, 3, 0, false, true, true, false);
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
         List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
 
-        when(achievementService.preparePageable(any(Pageable.class), eq("id"), eq("asc"))).thenReturn(preparedPageable);
-        when(achievementService.searchAchievementBy(preparedPageable, "query")).thenReturn(allAchievements);
+        when(achievementService.searchAchievementBy(any(Pageable.class), eq("query"))).thenReturn(allAchievements);
         when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
         when(languageService.getAllLanguages()).thenReturn(languages);
 
         this.mockMvc.perform(get(link + "?query=query")
             .param("page", "0")
-            .param("size", "3")
-            .param("sortBy", "id")
-            .param("sortDir", "asc"))
+            .param("size", "3"))
             .andExpect(model().attribute("pageable", allAchievements))
             .andExpect(model().attribute("categoryList", achievementCategoryList))
             .andExpect(model().attribute("languages", languages))
@@ -115,8 +107,7 @@ class ManagementAchievementControllerTest {
             .andExpect(view().name("core/management_achievement"))
             .andExpect(status().isOk());
 
-        verify(achievementService, atLeastOnce()).preparePageable(any(Pageable.class), eq("id"), eq("asc"));
-        verify(achievementService).searchAchievementBy(preparedPageable, "query");
+        verify(achievementService).searchAchievementBy(any(Pageable.class), eq("query"));
         verify(achievementCategoryService).findAllForManagement();
         verify(languageService).getAllLanguages();
     }
