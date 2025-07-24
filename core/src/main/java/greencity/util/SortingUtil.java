@@ -6,7 +6,6 @@ import org.springframework.data.domain.Sort;
  * Utility class for handling sorting operations.
  */
 public final class SortingUtil {
-
     private SortingUtil() {
     }
 
