@@ -153,4 +153,73 @@ class ManagementAchievementControllerTest {
             .andExpect(status().isOk());
         verify(achievementService).update(achievementManagementDto);
     }
+
+    @Test
+    void getAllAchievementWithSortingTest() throws Exception {
+        List<AchievementVO> list = Collections.singletonList(ModelUtils.getAchievementVO());
+        PageableAdvancedDto<AchievementVO> allAchievements =
+            new PageableAdvancedDto<>(list, 3, 0, 3, 0, false, true, true, false);
+        List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
+        List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
+
+        when(achievementService.findAll(any(Pageable.class))).thenReturn(allAchievements);
+        when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
+        when(languageService.getAllLanguages()).thenReturn(languages);
+
+        this.mockMvc.perform(get(link)
+            .param("page", "0")
+            .param("size", "3")
+            .param("sort", "title,asc"))
+            .andExpect(model().attribute("pageable", allAchievements))
+            .andExpect(model().attribute("sortModel", "title,ASC"))
+            .andExpect(status().isOk());
+
+        verify(achievementService).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void getAllAchievementWithEmptyQueryTest() throws Exception {
+        List<AchievementVO> list = Collections.singletonList(ModelUtils.getAchievementVO());
+        PageableAdvancedDto<AchievementVO> allAchievements =
+            new PageableAdvancedDto<>(list, 3, 0, 3, 0, false, true, true, false);
+        List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
+        List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
+
+        when(achievementService.findAll(any(Pageable.class))).thenReturn(allAchievements);
+        when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
+        when(languageService.getAllLanguages()).thenReturn(languages);
+
+        this.mockMvc.perform(get(link + "?query=")
+            .param("page", "0")
+            .param("size", "3"))
+            .andExpect(model().attribute("pageable", allAchievements))
+            .andExpect(status().isOk());
+
+        verify(achievementService).findAll(any(Pageable.class));
+        verify(achievementService, never()).searchAchievementBy(any(Pageable.class), anyString());
+    }
+
+    @Test
+    void getAllAchievementWithMultipleSortingTest() throws Exception {
+        List<AchievementVO> list = Collections.singletonList(ModelUtils.getAchievementVO());
+        PageableAdvancedDto<AchievementVO> allAchievements =
+            new PageableAdvancedDto<>(list, 3, 0, 3, 0, false, true, true, false);
+        List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
+        List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
+
+        when(achievementService.findAll(any(Pageable.class))).thenReturn(allAchievements);
+        when(achievementCategoryService.findAllForManagement()).thenReturn(achievementCategoryList);
+        when(languageService.getAllLanguages()).thenReturn(languages);
+
+        this.mockMvc.perform(get(link)
+            .param("page", "0")
+            .param("size", "3")
+            .param("sort", "title,asc")
+            .param("sort", "id,desc"))
+            .andExpect(model().attribute("pageable", allAchievements))
+            .andExpect(model().attribute("sortModel", "title,ASC&sort=id,DESC"))
+            .andExpect(status().isOk());
+
+        verify(achievementService).findAll(any(Pageable.class));
+    }
 }

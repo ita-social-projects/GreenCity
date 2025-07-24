@@ -13,6 +13,7 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
+import greencity.util.SortingUtil;
 import java.util.Set;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -81,18 +82,9 @@ public class ManagementEcoNewsController {
             model.addAttribute("query", query);
         }
         Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder();
-        if (!sort.isEmpty()) {
-            boolean isFirstSortProperty = true;
-            for (Sort.Order order : sort) {
-                if (isFirstSortProperty) {
-                    orderUrl.append(order.getProperty()).append(",").append(order.getDirection());
-                    isFirstSortProperty = false;
-                } else {
-                    orderUrl.append("&sort=").append(order.getProperty()).append(",").append(order.getDirection());
-                }
-            }
-            model.addAttribute("sortModel", orderUrl.toString());
+        String sortUrl = SortingUtil.buildSortingUrl(sort);
+        if (!sortUrl.isEmpty()) {
+            model.addAttribute("sortModel", sortUrl);
         }
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags(locale.getLanguage()));
         model.addAttribute("pageSize", pageable.getPageSize());

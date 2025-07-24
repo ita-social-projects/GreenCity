@@ -8,6 +8,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
+import greencity.util.SortingUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -60,18 +61,9 @@ public class ManagementAchievementController {
         model.addAttribute("query", query);
 
         Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder();
-        if (!sort.isEmpty()) {
-            boolean isFirstSortProperty = true;
-            for (Sort.Order order : sort) {
-                if (isFirstSortProperty) {
-                    orderUrl.append(order.getProperty()).append(",").append(order.getDirection());
-                    isFirstSortProperty = false;
-                } else {
-                    orderUrl.append("&sort=").append(order.getProperty()).append(",").append(order.getDirection());
-                }
-            }
-            model.addAttribute("sortModel", orderUrl.toString());
+        String sortUrl = SortingUtil.buildSortingUrl(sort);
+        if (!sortUrl.isEmpty()) {
+            model.addAttribute("sortModel", sortUrl);
         }
         model.addAttribute("pageSize", pageable.getPageSize());
 
