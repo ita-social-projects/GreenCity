@@ -143,7 +143,7 @@ class ManagementEcoNewsControllerTest {
         when(ecoNewsService.findDtoByIdAndLanguage(1L, "en")).thenReturn(getEcoNewsDto());
         this.mockMvc.perform(get(managementEcoNewsLink + "/1"))
             .andExpect(view().name("core/management_eco_new"))
-            .andExpect(model().attribute("econew", getEcoNewsDto()))
+            .andExpect(model().attribute("ecoNews", getEcoNewsDto()))
             .andExpect(model().attribute("time", time.format(format)))
             .andExpect(model().attribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en")))
             .andExpect(status().isOk());

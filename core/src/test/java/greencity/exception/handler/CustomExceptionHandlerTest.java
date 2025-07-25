@@ -1,7 +1,5 @@
 package greencity.exception.handler;
 
-import greencity.constant.ErrorMessage;
-import greencity.entity.Place;
 import greencity.exception.exceptions.*;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
@@ -12,9 +10,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.data.mapping.PropertyPath;
-import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.data.util.TypeInformation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +20,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
-
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -239,23 +231,5 @@ class CustomExceptionHandlerTest {
             .thenReturn(objectMap);
         assertEquals(customExceptionHandler.handleConversionFailedException(mismatchException, webRequest),
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
-    }
-
-    @Test
-    void handlePropertyReferenceException() {
-        List<PropertyPath> resolvedPaths = Collections.emptyList();
-        PropertyReferenceException propertyReferenceException =
-            new PropertyReferenceException("string", TypeInformation.of(Place.class), resolvedPaths);
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
-        exceptionResponse.setMessage(String.format(ErrorMessage.INVALID_SORT_VALUE_EXCEPTION, "string"));
-
-        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
-
-        ResponseEntity<Object> actual = customExceptionHandler.handlePropertyReferenceException(
-            propertyReferenceException, webRequest);
-
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse), actual);
     }
 }

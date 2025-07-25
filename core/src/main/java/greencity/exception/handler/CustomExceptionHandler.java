@@ -41,7 +41,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -108,7 +107,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(),
                 new TypeReference<List<Map<String, String>>>() {
                 })
-                .get(0);
+                .getFirst();
         } else {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), new TypeReference<>() {
             });
@@ -687,24 +686,5 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercepts exception {@link PropertyReferenceException}. Thrown when
-     * an invalid property is used in the sort parameter for a Pageable request.
-     *
-     * @param ex      Exception that should be intercepted.
-     * @param request Contains details about the occurred exception.
-     * @return {@code ResponseEntity} which contains the HTTP status and body with
-     *         the exception message.
-     */
-    @ExceptionHandler(PropertyReferenceException.class)
-    public final ResponseEntity<Object> handlePropertyReferenceException(PropertyReferenceException ex,
-        WebRequest request) {
-        log.error(ex.getMessage(), ex);
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        exceptionResponse.setMessage(String.format(ErrorMessage.INVALID_SORT_VALUE_EXCEPTION, ex.getPropertyName()));
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 }
