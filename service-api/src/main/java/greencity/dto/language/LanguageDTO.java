@@ -17,4 +17,7 @@ public class LanguageDTO {
 
     @NotNull
     private String code;
+
+    @NotNull
+    private String name;
 }
