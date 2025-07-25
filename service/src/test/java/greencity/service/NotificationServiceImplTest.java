@@ -382,6 +382,9 @@ class NotificationServiceImplTest {
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_COMMENT_LIKE))
                 .thenReturn(Collections.singletonList(notification));
             when(notificationRepo
+                .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.EVENT_LIKE))
+                .thenReturn(Collections.singletonList(notification));
+            when(notificationRepo
                 .findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(NotificationType.HABIT_LIKE))
                 .thenReturn(Collections.singletonList(notification));
             when(notificationRepo
@@ -399,7 +402,7 @@ class NotificationServiceImplTest {
             notificationService.sendLikeScheduledEmail();
             ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
             await().atMost(5, SECONDS)
-                .untilAsserted(() -> verify(restClient, times(5)).sendScheduledEmailNotification(captor.capture()));
+                .untilAsserted(() -> verify(restClient, times(6)).sendScheduledEmailNotification(captor.capture()));
             List<ScheduledEmailMessage> capturedMessages = captor.getAllValues();
             for (ScheduledEmailMessage capturedMessage : capturedMessages) {
                 assertEquals(notification.getTargetUser().getEmail(), capturedMessage.getEmail());
