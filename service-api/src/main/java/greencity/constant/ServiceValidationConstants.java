@@ -49,6 +49,14 @@ public class ServiceValidationConstants {
     public static final String HABIT_COMPLEXITY = "{greenCity.validation.habit.complexity}";
     public static final String TAG_LIST_MIN_LENGTH = "{greenCity.validation.min.tags}";
     public static final String TAG_LIST_MAX_LENGTH = "{greenCity.validation.max.tags}";
-    public static final String EMAIL_REGEXP = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+    public static final String EMAIL_REGEXP =
+        "^(?=.{3,72}$)"
+            + "([a-zA-Z0-9!#$%&'*+/=?^_{|}~-]+"
+            + "(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_{|}~-]+)*)"
+            + "@"
+            + "(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+"
+            + "[a-zA-Z]{2,63}|"
+            + "\\[(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)"
+            + "(?:\\.(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)){3}\\])$";
     public static final String HABIT_DEFAULT_DURATION = "{greenCity.validation.habit.defaultDuration}";
 }

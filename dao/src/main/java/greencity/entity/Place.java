@@ -37,7 +37,7 @@ public class Place {
     @Column(unique = true, length = 15)
     private String phone;
 
-    @Column(unique = true, length = 50)
+    @Column(unique = true, length = 72)
     private String email;
 
     @Builder.Default
