@@ -90,9 +90,6 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @Override
     public OpenAIResponseDTO makeRequestEmbedding(String title) {
-//        if (ecoNewsDto == null || ecoNewsDto.getTitle() == null || ecoNewsDto.getTitle().isEmpty()) {
-//            throw new OpenAIRequestException("EcoNews title must not be null or empty");
-//        }
         HttpHeaders headers = createHttpHeaders();
         Map<String, Object> body = new HashMap<>();
         body.put("input", title);
@@ -242,7 +239,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
 
         try {
-            // Extract embedding from data[0].embedding
             var dataList = (List<Map<String, Object>>) responseBody.get("data");
             if (dataList == null || dataList.isEmpty()) {
                 throw new OpenAIResponseException("No embedding data found in OpenAI response.");
@@ -253,12 +249,10 @@ public class OpenAIServiceImpl implements OpenAIService {
             openAIResponseDTO.setContent(embedding.toString());
 
 
-            // Extract usage
             var usage = (Map<String, Object>) responseBody.get("usage");
             openAIResponseDTO.setUsedInputTokens((Integer) usage.get("prompt_tokens"));
             openAIResponseDTO.setUsedOutputTokens((Integer) usage.get("total_tokens"));
 
-            // Optionally: set response time to now
             openAIResponseDTO.setResponseDateTime(LocalDateTime.now(ZoneOffset.UTC));
         } catch (NullPointerException | ClassCastException e) {
             throw new OpenAIResponseException("Invalid OpenAI embedding response format", e);

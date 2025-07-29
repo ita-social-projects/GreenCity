@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.converters.RelevanceWeightUtils;
+import greencity.utils.RelevanceWeightUtils;
 import greencity.dto.cache.CachedRelevancePools;
 import greencity.dto.cache.CachedTagsWithCoherence;
 import greencity.dto.cache.CachedUserRelevanceProfile;
@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package greencity.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import greencity.converters.RelevanceWeightUtils;
+import greencity.utils.RelevanceWeightUtils;
 import greencity.dto.cache.CachedRelevancePools;
 import greencity.dto.cache.CachedTagsWithCoherence;
 import greencity.dto.cache.CachedUserRelevanceProfile;

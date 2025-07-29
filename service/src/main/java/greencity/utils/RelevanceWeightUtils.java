@@ -1,4 +1,4 @@
-package greencity.converters;
+package greencity.utils;
 
 import java.util.Arrays;
 import lombok.experimental.UtilityClass;
@@ -28,6 +28,9 @@ public class RelevanceWeightUtils {
     }
 
     public static double[] normalizeWeights(double[] weights) {
+        if (weights == null) {
+            return new double[0];
+        }
         double sum = Arrays.stream(weights).sum();
         if (sum == 0.0) {
             return new double[weights.length];
