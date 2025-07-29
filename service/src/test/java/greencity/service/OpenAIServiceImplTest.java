@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.OpenAIConstants;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
@@ -10,7 +11,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import greencity.exception.exceptions.OpenAIResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +37,8 @@ class OpenAIServiceImplTest {
     private final String apiKey = "mock-api-key";
     private final String apiUrl = "https://api.openai.com/v1/chat/completions";
     private final String model = "gpt-3.5-turbo";
+    private final String embeddingApiUrl = "https://api.openai.com/v1/embeddings";
+    private final String embeddingApiModel = "text-embedding-3-small";
     private final Integer maxCompletionTokens = 100;
     private final Double temperature = 0.5;
     private final LanguageDTO language = ModelUtils.getLanguageDTO();
@@ -53,6 +59,9 @@ class OpenAIServiceImplTest {
         openAIService.setModel(model);
         openAIService.setMaxCompletionTokens(maxCompletionTokens);
         openAIService.setTemperature(temperature);
+        openAIService.setEmbeddingApiModel(embeddingApiModel);
+        openAIService.setEmbeddingApiUrl(embeddingApiUrl);
+
     }
 
     @Test
@@ -141,6 +150,70 @@ class OpenAIServiceImplTest {
         verify(restClient, times(MAX_REQUEST_ATTEMPTS)).post();
     }
 
+    @Test
+    void makeRequestEmbeddingWhenValidResponseTest() {
+        List<Double> embedding = List.of(0.1, 0.2, 0.3);
+        Map<String, Object> embeddingData = Map.of("embedding", embedding, "index", 0, "object", "embedding");
+        Map<String, Object> usage = Map.of(
+                "prompt_tokens", 5,
+                "total_tokens", 5);
+
+        Map<String, Object> apiResponseBody = new HashMap<>();
+        apiResponseBody.put("object", "list");
+        apiResponseBody.put("data", Collections.singletonList(embeddingData));
+        apiResponseBody.put("model", embeddingApiModel);
+        apiResponseBody.put("usage", usage);
+
+        stubEmbeddingRestClient(apiResponseBody);
+
+        OpenAIResponseDTO dto = openAIService.makeRequestEmbedding("test title");
+
+        assertNotNull(dto);
+
+        assertEquals(embedding.toString(), dto.getContent());
+        assertEquals(5, dto.getUsedInputTokens());
+        assertEquals(5, dto.getUsedOutputTokens());
+        assertNotNull(dto.getResponseDateTime());
+        assertNull(dto.getResponseFormat());
+
+        verify(restClient).post();
+        verify(requestBodyUriSpec).uri(eq(embeddingApiUrl));
+        verify(requestBodyUriSpec).headers(any());
+        verify(requestBodyUriSpec).body(nullable(Map.class));
+        verify(requestBodyUriSpec).retrieve();
+        verify(responseSpec).body(any(ParameterizedTypeReference.class));
+    }
+    @Test
+    void makeRequestEmbeddingWhenNullResponseBodyTest() {
+        stubEmbeddingRestClient(null);
+
+        OpenAIRequestException ex = assertThrows(
+                OpenAIRequestException.class,
+                () -> openAIService.makeRequestEmbedding("test title"));
+
+        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
+        verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
+        verify(requestBodyUriSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).uri(anyString());
+        verify(responseSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
+    }
+    @Test
+    void makeRequestEmbeddingWhenInvalidResponseBodyTest() {
+        Map<String, Object> invalidResponse = new HashMap<>();
+        invalidResponse.put("some_other_key", "value");
+
+        stubEmbeddingRestClient(invalidResponse);
+
+        OpenAIRequestException ex = assertThrows(
+                OpenAIRequestException.class,
+                () -> openAIService.makeRequestEmbedding("test title"));
+
+
+        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
+        verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
+        verify(requestBodyUriSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).uri(anyString());
+        verify(responseSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
+    }
+
     private void stubRestClient(Map<String, Object> response) {
         when(restClient.post()).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodyUriSpec);
@@ -149,5 +222,15 @@ class OpenAIServiceImplTest {
         when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.body(any(ParameterizedTypeReference.class)))
             .thenReturn(response);
+    }
+
+    private void stubEmbeddingRestClient(Map<String, Object> response) {
+        when(restClient.post()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(eq(embeddingApiUrl))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.headers(any())).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.body(nullable(Map.class))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.body(any(ParameterizedTypeReference.class)))
+                .thenReturn(response);
     }
 }

@@ -2,6 +2,7 @@ package greencity.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.converters.FloatArrayConverter;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -61,6 +63,12 @@ class AIServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @Mock
+    private FloatArrayConverter floatArrayConverter;
+
+    @Mock
+    private EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
+
     private final Long id = 1L;
     private final String language = "en";
     private LanguageDTO languageDTO;
@@ -71,6 +79,7 @@ class AIServiceImplTest {
     private HabitAssign habitAssign;
     private DurationHabitDto durationHabitDto;
     private OpenAIResponseDTO openAIResponseDTO;
+    private EcoNews ecoNews;
 
     @BeforeEach
     void init() {
@@ -82,6 +91,11 @@ class AIServiceImplTest {
         habitAssign = ModelUtils.getHabitAssign();
         durationHabitDto = ModelUtils.getDurationHabitDto();
         openAIResponseDTO = ModelUtils.getOpenAIResponseDTO();
+        ecoNews = EcoNews.builder()
+                .id(id)
+                .title("Test EcoNews Title")
+                .text("Test EcoNews content.")
+                .build();
 
         ReflectionTestUtils.setField(aiService, "objectMapper", new ObjectMapper());
 
@@ -349,4 +363,33 @@ class AIServiceImplTest {
         assertEquals(user, saved.getAuthor());
         assertTrue(saved.getTags().contains(tag));
     }
+    @Test
+    void getRelevanceForEcoNews_shouldSuccessfullyCalculateAndSaveRelevance() {
+        String ecoNewsTitle = ecoNews.getTitle();
+        Float[] expectedVector = {0.1f, 0.2f, 0.3f, 0.4f};
+        OpenAIResponseDTO embeddingResponse = new OpenAIResponseDTO();
+        embeddingResponse.setContent(Arrays.toString(expectedVector));
+
+        when(ecoNewsRepo.findById(id)).thenReturn(Optional.of(ecoNews));
+        when(openAIService.makeRequestEmbedding(ecoNewsTitle)).thenReturn(embeddingResponse);
+        doReturn(expectedVector).when(floatArrayConverter)
+                .convertToEntityAttribute(Arrays.toString(expectedVector));
+
+        when(ecoNewsRelevanceRepo.save(any(EcoNewsRelevance.class))).thenReturn(null);
+
+        aiService.getRelevanceForEcoNews(id);
+
+        verify(ecoNewsRepo).findById(id);
+        verify(openAIService).makeRequestEmbedding(ecoNewsTitle);
+        verify(floatArrayConverter).convertToEntityAttribute(Arrays.toString(expectedVector));
+        ArgumentCaptor<EcoNewsRelevance> relevanceCaptor = ArgumentCaptor.forClass(EcoNewsRelevance.class);
+        verify(ecoNewsRelevanceRepo).save(relevanceCaptor.capture());
+
+        EcoNewsRelevance savedRelevance = relevanceCaptor.getValue();
+        assertNotNull(savedRelevance);
+        assertEquals(ecoNews.getId(), savedRelevance.getId());
+        assertEquals(ecoNews, savedRelevance.getEcoNews());
+        assertArrayEquals(expectedVector, savedRelevance.getTitleVector());
+    }
+
 }
