@@ -20,6 +20,11 @@ import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.breaktime.BreakTimeDto;
+import greencity.dto.cache.CachedRelevancePools;
+import greencity.dto.cache.CachedTagsWithCoherence;
+import greencity.dto.cache.CachedUserRelevanceProfile;
+import greencity.dto.cache.CachedUserRelevantNews;
+import greencity.dto.cache.RelevantEcoNewsCacheKey;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -157,6 +162,7 @@ import greencity.entity.CommentImages;
 import greencity.entity.CustomToDoListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsRelevance;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.FavoritePlace;
@@ -3617,5 +3623,55 @@ public class ModelUtils {
             .usedInputTokens(0)
             .usedOutputTokens(0)
             .build();
+    }
+
+    public static EcoNewsRelevance getEcoNewsRelevance() {
+        EcoNews ecoNews = getEcoNews();
+        ecoNews.setTags(List.of(getTag()));
+
+        return EcoNewsRelevance.builder()
+            .id(1L)
+            .ecoNews(ecoNews)
+            .titleVector(new Float[]{0.6f, 0.9f, -1.0f, -0.9f, -0.1f, -0.2f, 0.3f, 0.7f, -0.6f, 0.8f})
+            .build();
+    }
+
+    public static RelevantEcoNewsCacheKey getRelevantEcoNewsCacheKey() {
+        return new RelevantEcoNewsCacheKey(1L, "tags", "title", "author", 3);
+    }
+
+    public static CachedRelevancePools getCachedRelevancePools() {
+        LinkedList<Long> strongNewsIds = new LinkedList<>(Arrays.asList(1L, 2L, 3L));
+        LinkedList<Long> weakNewsIds = new LinkedList<>(Arrays.asList(4L, 5L, 6L));
+        LinkedList<Long> nonRelevantNewsIds = new LinkedList<>(Arrays.asList(7L, 8L, 9L));
+        return new CachedRelevancePools(strongNewsIds, weakNewsIds, nonRelevantNewsIds);
+    }
+
+    public static CachedUserRelevantNews getCachedUserRelevantNews() {
+        List<Long> newsIds = new ArrayList<>(Arrays.asList(1L, 4L, 7L));
+        HashMap<Integer, List<Long>> pagesIds = new HashMap<>();
+        pagesIds.put(0, newsIds);
+        return new CachedUserRelevantNews(getCachedRelevancePools(), pagesIds, 0, 3,
+            9L, LocalDate.now().plusDays(1));
+    }
+
+    public static CachedTagsWithCoherence getCachedTagsWithCoherence() {
+        return new CachedTagsWithCoherence(
+            Map.of(1L, 0, 2L, 1, 3L, 2, 4L, 3, 5L, 4),
+            Map.of(6L, 0, 7L, 1, 8L, 2),
+            Map.of(9L, 0, 10L, 1, 11L, 2, 12L, 3),
+            Map.of(
+                7L, Map.of(1L, 0.5f, 3L, 0.2f),
+                9L, Map.of(3L, 0.7f, 5L, 0.1f),
+                12L, Map.of(6L, 1.0f, 8L, 0.4f)
+            )
+        );
+    }
+
+    public static CachedUserRelevanceProfile getCachedUserRelevanceProfile() {
+        return new CachedUserRelevanceProfile(
+            new Float[]{0.1f, 0.2f, 0.3f, 0f, 0.3f},
+            new Float[]{-0.8f, -0.6f, -0.4f, -0.2f, 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f}
+        );
     }
 }
