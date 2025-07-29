@@ -205,7 +205,7 @@ public class AIServiceImpl implements AIService {
         EcoNewsRelevance relevance = EcoNewsRelevance.builder()
                 .id(ecoNews.getId())
                 .ecoNews(ecoNews)
-                .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))// або адаптуй під свій конвертер
+                .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))
                 .build();
 
         ecoNewsRelevanceRepo.save(relevance);
@@ -472,13 +472,6 @@ public class AIServiceImpl implements AIService {
             .build();
     }
 
-    private EcoNewsRelevance buildEcoNewsRelevance(EcoNews ecoNews, OpenAIResponseDTO response) {
-        EcoNewsRelevance relevance = new EcoNewsRelevance();
-        relevance.setEcoNews(ecoNews);
-        relevance.setId(ecoNews.getId());
-        relevance.setTitleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()));
-        return relevance;
-    }
 
     /**
      * Parses a sanitized response string into a JSON object node containing title
