@@ -2,10 +2,10 @@ package greencity.utils;
 
 import java.util.Arrays;
 import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.BeanInitializationException;
 
 @UtilityClass
 public class RelevanceWeightUtils {
-
     /**
      * Converts string ratio divided by ":" to double array.
      *
@@ -18,13 +18,18 @@ public class RelevanceWeightUtils {
      * @return double array representation of the ratio
      */
     public static double[] convertRatioFromString(String ratio) {
-        double[] ratioDoubles = Arrays.stream(ratio.split(":"))
-            .mapToDouble(Double::parseDouble)
-            .toArray();
-        double sum = Arrays.stream(ratioDoubles).sum();
-        return sum <= 1 ? ratioDoubles : Arrays.stream(ratioDoubles)
-            .map(d -> d / sum)
-            .toArray();
+        try {
+            double[] ratioDoubles = Arrays.stream(ratio.split(":"))
+                .mapToDouble(Double::parseDouble)
+                .toArray();
+            double sum = Arrays.stream(ratioDoubles).sum();
+            return sum <= 1 ? ratioDoubles : Arrays.stream(ratioDoubles)
+                .map(d -> d / sum)
+                .toArray();
+        } catch (NumberFormatException e) {
+            throw new BeanInitializationException(String.format("Invalid ratio parameter value. "
+                + "Expected numeric values separated by ':', but got '%s'.", ratio));
+        }
     }
 
     public static double[] normalizeWeights(double[] weights) {
@@ -37,6 +42,7 @@ public class RelevanceWeightUtils {
         }
         return Arrays.stream(weights).map(w -> w / sum).toArray();
     }
+
     public static int[] distributeCounts(int totalCount, double[] normalizedWeights) {
         int[] result = new int[normalizedWeights.length];
         double[] exact = new double[normalizedWeights.length];
@@ -71,6 +77,4 @@ public class RelevanceWeightUtils {
 
         return result;
     }
-
-
 }
