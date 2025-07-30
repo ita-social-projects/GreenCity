@@ -5,12 +5,60 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.BadCategoryRequestException;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadSecretKeyException;
+import greencity.exception.exceptions.BadSocialNetworkLinksException;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.DatabaseMetadataException;
+import greencity.exception.exceptions.DuplicatedTagException;
+import greencity.exception.exceptions.EventDtoValidationException;
+import greencity.exception.exceptions.FileGenerationException;
+import greencity.exception.exceptions.FileReadException;
+import greencity.exception.exceptions.FunctionalityNotAvailableException;
+import greencity.exception.exceptions.ImageUrlParseException;
+import greencity.exception.exceptions.InvalidNumOfTagsException;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.InvalidUnsubscribeToken;
+import greencity.exception.exceptions.JsonResponseParseException;
+import greencity.exception.exceptions.LanguageNotFoundException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.MultipartXSSProcessingException;
+import greencity.exception.exceptions.NotCurrentUserException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.NotSavedException;
+import greencity.exception.exceptions.NotUpdatedException;
+import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.exception.exceptions.OpenAIResponseException;
+import greencity.exception.exceptions.PlaceAlreadyExistsException;
+import greencity.exception.exceptions.PlaceStatusException;
+import greencity.exception.exceptions.ResourceNotFoundException;
+import greencity.exception.exceptions.TagNotFoundException;
+import greencity.exception.exceptions.ToDoListItemNotFoundException;
+import greencity.exception.exceptions.UnauthorizedException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserBlockedException;
+import greencity.exception.exceptions.UserHasNoFriendWithIdException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.exception.exceptions.UserHasNoToDoListItemsException;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
+import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.helper.EndpointValidationHelper;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -31,21 +79,15 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 /**
  * Custom exception handler.
  */
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
-    private ErrorAttributes errorAttributes;
     private final ObjectMapper objectMapper;
     private final EndpointValidationHelper endpointValidationHelper;
+    private ErrorAttributes errorAttributes;
 
     public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper,
         EndpointValidationHelper endpointValidationHelper) {
@@ -460,7 +502,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-        HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -483,7 +526,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-        HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
         List<ValidationExceptionDto> collect =
             ex.getBindingResult().getFieldErrors().stream()
                 .map(ValidationExceptionDto::new)
