@@ -1,6 +1,7 @@
 package greencity.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import greencity.entity.EcoNews;
 import greencity.utils.RelevanceWeightUtils;
 import greencity.dto.cache.CachedRelevancePools;
 import greencity.dto.cache.CachedTagsWithCoherence;
@@ -53,6 +54,10 @@ public class CacheServiceImpl implements CacheService {
     private String tagsWeightsString;
     private double[] tagsWeights;
 
+    /**
+     * Converts tag weights parameter to an array of doubles and checks if the length of the array is 3.
+     * If not, application won't run.
+     */
     @PostConstruct
     public void init() {
         this.tagsWeights = RelevanceWeightUtils.convertRatioFromString(tagsWeightsString);
@@ -62,6 +67,13 @@ public class CacheServiceImpl implements CacheService {
         }
     }
 
+    /**
+     * Get cached relevant news saved for specific user by request filters.
+     * If there is no saved data in cache, it will be created and saved.
+     *
+     * @param key request filters and user specification
+     * @return cached news identifiers and metadata
+     */
     @Override
     public CachedUserRelevantNews getUserRelevantNewsFromCache(RelevantEcoNewsCacheKey key) {
         CachedUserRelevantNews cachedUserRelevantNews = userRelevanceNewsCache.getIfPresent(key);
@@ -73,13 +85,20 @@ public class CacheServiceImpl implements CacheService {
                 -1,
                 (int) Math.ceil((double) totalEcoNewsCount / key.pageSize()),
                 totalEcoNewsCount,
-                LocalDate.now().plusDays(1)
-            );
+                LocalDate.now().plusDays(1));
             userRelevanceNewsCache.put(key, cachedUserRelevantNews);
         }
         return cachedUserRelevantNews;
     }
 
+    /**
+     * Get cached user profile saved for specific user.
+     * If there is no saved data in cache, it will be created and saved.
+     *
+     * @param userId user id
+     * @return an instance of {@link CachedUserRelevanceProfile} containing eco news
+     *     tags and title vectors as user's relevance preferences
+     */
     @Override
     public CachedUserRelevanceProfile getUserProfileFromCache(Long userId) {
         CachedUserRelevanceProfile userProfile = userProfileCache.getIfPresent(userId);
@@ -88,8 +107,8 @@ public class CacheServiceImpl implements CacheService {
 
             List<EcoNewsRelevance> lastLikedNews = ecoNewsRelevanceRepo.findLikedEcoNewsByUserId(userId);
             List<EcoNewsWithRelevanceVectorsDto> ecoNewsWithRelevance = lastLikedNews.stream()
-                .map(relevance ->
-                    new EcoNewsWithRelevanceVectorsDto(relevance.getEcoNews(), relevance, tags.ecoNewsTagsIndexes()))
+                .map(relevance -> new EcoNewsWithRelevanceVectorsDto(relevance.getEcoNews(), relevance,
+                    tags.ecoNewsTagsIndexes()))
                 .toList();
 
             Float[] averageTagsVector = mergeUserTagsVector(userId, ecoNewsWithRelevance, tags);
@@ -106,6 +125,15 @@ public class CacheServiceImpl implements CacheService {
         return userProfile;
     }
 
+    /**
+     * Get cached tags and tags coherence data. If the data is not already
+     * cached, it fetches all the tags and tags coherence from the repository,
+     * constructs the coherence matrix, and caches the result.
+     *
+     * @return an instance of {@link CachedTagsWithCoherence} containing
+     *     indexes for eco news, event, habit tags, and their coherence
+     *     matrix.
+     */
     @Override
     public CachedTagsWithCoherence getTagsCoherenceFromCache() {
         CachedTagsWithCoherence cachedTags = tagsCoherenceCache.getIfPresent(0L);
@@ -131,12 +159,10 @@ public class CacheServiceImpl implements CacheService {
 
             Map<Long, Map<Long, Float>> coherenceMatrix = tagsCoherenceRepo.findAll().stream()
                 .collect(Collectors.groupingBy(
-                        tc -> tc.getSourceTag().getId(),
-                        Collectors.toMap(
-                            tc -> tc.getDestinationTag().getId(),
-                            TagsCoherence::getCoherence)
-                    )
-                );
+                    tc -> tc.getSourceTag().getId(),
+                    Collectors.toMap(
+                        tc -> tc.getDestinationTag().getId(),
+                        TagsCoherence::getCoherence)));
             cachedTags = new CachedTagsWithCoherence(ecoNewsTagsIndexes, eventTagsIndexes,
                 habitTagsIndexes, coherenceMatrix);
             tagsCoherenceCache.put(0L, cachedTags);
@@ -144,6 +170,10 @@ public class CacheServiceImpl implements CacheService {
         return cachedTags;
     }
 
+    /**
+     * Find liked eco news and events by user, and assigned habits, get their tags and
+     * map them to single tags vector, that represents eco news preference by tags.
+     */
     private Float[] mergeUserTagsVector(Long userId,
                                         List<EcoNewsWithRelevanceVectorsDto> ecoNews,
                                         CachedTagsWithCoherence tags) {
@@ -189,8 +219,7 @@ public class CacheServiceImpl implements CacheService {
         List<Float[]> habitAssignTagsVectors = lastActiveHabits.stream()
             .filter(habitAssign -> habitAssign.getHabit().getTags() != null
                 && !habitAssign.getHabit().getTags().isEmpty())
-            .map(habitAssign ->
-                new HabitWithTagsVectorDto(habitAssign.getHabit(), getTagsCoherenceFromCache()))
+            .map(habitAssign -> new HabitWithTagsVectorDto(habitAssign.getHabit(), getTagsCoherenceFromCache()))
             .map(HabitWithTagsVectorDto::getTagsVector)
             .toList();
 
@@ -215,6 +244,9 @@ public class CacheServiceImpl implements CacheService {
             eventTagsIndexes, coherenceMatrix);
     }
 
+    /**
+     * Convert not eco news tags vector to eco news tags vector using tags coherence matrix.
+     */
     private Float[] convertTagsToEcoNewsTagsVector(Float[] otherTagsVector,
                                                    Map<Long, Integer> ecoNewsTagsIndexes,
                                                    Map<Long, Integer> otherTagsIndexes,
@@ -226,13 +258,13 @@ public class CacheServiceImpl implements CacheService {
         Float[] ecoNewsTagsProjection = new Float[ecoNewsTagsIndexes.size()];
         Arrays.fill(ecoNewsTagsProjection, 0.0f);
 
-        ecoNewsTagsIndexes.forEach((ecoNewsTagId, ecoNewsTagIndex) ->
-            otherTagsIndexes.forEach((otherTagId, otherTagIndex) -> {
-                Map<Long, Float> destinations = coherenceMatrix.getOrDefault(otherTagId, Map.of());
-                Float coherence = destinations.getOrDefault(ecoNewsTagId, 0.0f);
-                ecoNewsTagsProjection[ecoNewsTagIndex] += coherence * otherTagsVector[otherTagIndex];
-            })
-        );
+        ecoNewsTagsIndexes
+            .forEach((ecoNewsTagId, ecoNewsTagIndex) -> otherTagsIndexes
+                .forEach((otherTagId, otherTagIndex) -> {
+                    Map<Long, Float> destinations = coherenceMatrix.getOrDefault(otherTagId, Map.of());
+                    Float coherence = destinations.getOrDefault(ecoNewsTagId, 0.0f);
+                    ecoNewsTagsProjection[ecoNewsTagIndex] += coherence * otherTagsVector[otherTagIndex];
+                }));
 
         return ecoNewsTagsProjection;
     }

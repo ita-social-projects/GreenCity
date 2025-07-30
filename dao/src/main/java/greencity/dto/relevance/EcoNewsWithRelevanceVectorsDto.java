@@ -8,9 +8,9 @@ import java.util.Map;
 import lombok.Getter;
 
 /**
- * An EcoNews wrapper class with relevance vectors.
+ * An {@link EcoNews} wrapper class with vectors that represents its content.
  * It contains the news itself, tags vector and title vector if available.
- * It also contains the relevance score which is used for sorting the news by relevance.
+ * It also may contain the relevance score which is used for sorting the news by relevance.
  *
  * @author Rostyslav Zadyraichuk
  */
@@ -21,11 +21,13 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
     private double relevanceScore;
 
     /**
-     * Computes the tags vector for the given ecoNews argument and assigns the title vector if available.
+     * Computes the tags vector for the given ecoNews argument and assigns the title
+     * vector if available.
      *
      * @param ecoNews          the eco news entity
      * @param ecoNewsRelevance the eco news relevance entity if present
-     * @param tagsIndexes      a map that associates tag IDs with their respective positions in the vector
+     * @param tagsIndexes      a map that associates tag IDs with their respective
+     *                         positions in the vector
      */
     public EcoNewsWithRelevanceVectorsDto(EcoNews ecoNews,
                                           EcoNewsRelevance ecoNewsRelevance,
@@ -38,14 +40,17 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
     }
 
     /**
-     * Computes the tags vector for the given ecoNews argument and assigns the title vector if available.
-     * Calculates the relevance score based on the provided user preference profile and weights (weights aren't
-     * rearrangeable that means if either tags or title vector isn't present, news will be considered less relevant).
+     * Computes the tags vector for the given ecoNews argument and assigns the title
+     * vector if available. Calculates the relevance score based on the provided
+     * user preference profile and weights (weights aren't rearrangeable that means
+     * if either tags or title vector isn't present, news will be considered less
+     * relevant).
      *
-     * @param ecoNews          the eco news entity
-     * @param ecoNewsRelevance the eco news relevance entity if present
-     * @param tagsIndexes      a map that associates tag IDs with their respective positions in the vector
-     * @param userProfile      the user preference profile
+     * @param ecoNews                the eco news entity
+     * @param ecoNewsRelevance       the eco news relevance entity if present
+     * @param tagsIndexes            a map that associates tag IDs with their
+     *                               respective positions in the vector
+     * @param userProfile            the user preference profile
      * @param relevanceScoresWeights the weights of tags and title relevance scores
      */
     public EcoNewsWithRelevanceVectorsDto(EcoNews ecoNews,
@@ -56,9 +61,11 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
         this(ecoNews, ecoNewsRelevance, tagsIndexes);
         boolean isTagsVectorInvalid = Arrays.stream(tagsVector).allMatch(value -> value == 0.0);
         boolean isTitleVectorInvalid = titleVector == null;
-        double tagsRelevance = isTagsVectorInvalid ? 0.0 : relevanceScoresWeights[0]
+        double tagsRelevance = isTagsVectorInvalid ? 0.0
+            : relevanceScoresWeights[0]
             * getCosineSimilarity(tagsVector, userProfile.tagsPreferencesVector());
-        double titleRelevance = isTitleVectorInvalid ? 0.0 : relevanceScoresWeights[1]
+        double titleRelevance = isTitleVectorInvalid ? 0.0
+            : relevanceScoresWeights[1]
             * getCosineSimilarity(titleVector, userProfile.titlePreferencesVector());
         this.relevanceScore = tagsRelevance + titleRelevance;
     }
