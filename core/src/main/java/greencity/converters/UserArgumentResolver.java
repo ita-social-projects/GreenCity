@@ -4,6 +4,7 @@ import greencity.annotations.CurrentUser;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.UnauthorizedException;
 import greencity.service.UserService;
+import java.security.Principal;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.MethodParameter;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
-import java.security.Principal;
 
 @Component
 @AllArgsConstructor
@@ -31,7 +30,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterAnnotation(CurrentUser.class) != null
-                && parameter.getParameterType().equals(UserVO.class);
+            && parameter.getParameterType().equals(UserVO.class);
     }
 
     /**
@@ -41,7 +40,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
      */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
 
         if (principal == null) {
