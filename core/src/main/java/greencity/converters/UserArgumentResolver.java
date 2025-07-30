@@ -42,12 +42,13 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
      */
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-        NativeWebRequest webRequest, WebDataBinderFactory binderFactory){
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
 
         if (principal == null) {
             throw new UnauthorizedException("Unauthorized access");
         }
 
-        return userService.findByEmail(principal.getName());    }
+        return userService.findByEmail(principal.getName());
+    }
 }

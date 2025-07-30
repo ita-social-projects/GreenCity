@@ -691,13 +691,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles {@link UnauthorizedException} thrown when a user attempts to access a resource
-     * without proper authentication credentials (e.g., missing or invalid token).
+     * Handles {@link UnauthorizedException} thrown when a user attempts to access a
+     * resource without proper authentication credentials (e.g., missing or invalid
+     * token).
      *
-     * <p>Returns a structured JSON response with HTTP status {@code 401 Unauthorized}.</p>
+     * <p>
+     * Returns a structured JSON response with HTTP status {@code 401 Unauthorized}.
+     * </p>
      *
      * @param ex the thrown {@link UnauthorizedException}
-     * @return a {@link ResponseEntity} containing an error description and HTTP 401 status
+     * @return a {@link ResponseEntity} containing an error description and HTTP 401
+     *         status
      */
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Map<String, String>> handleUnauthorized(UnauthorizedException ex) {
