@@ -58,6 +58,8 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+
+import java.nio.file.AccessDeniedException;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
@@ -686,5 +688,23 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+    }
+
+    /**
+     * Handles {@link UnauthorizedException} thrown when a user attempts to access a resource
+     * without proper authentication credentials (e.g., missing or invalid token).
+     *
+     * <p>Returns a structured JSON response with HTTP status {@code 401 Unauthorized}.</p>
+     *
+     * @param ex the thrown {@link UnauthorizedException}
+     * @return a {@link ResponseEntity} containing an error description and HTTP 401 status
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorized(UnauthorizedException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "unauthorized");
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 }
