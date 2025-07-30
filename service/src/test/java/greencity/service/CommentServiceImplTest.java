@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -105,7 +106,7 @@ class CommentServiceImplTest {
     @Mock
     HabitRepo habitRepo;
     @Mock
-    private FileService fileService;
+    private UserRemoteClient userRemoteClient;
     @Mock
     private HabitTranslationRepo habitTranslationRepo;
     @InjectMocks
@@ -423,7 +424,7 @@ class CommentServiceImplTest {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
@@ -460,7 +461,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(eventRepo.findById(anyLong())).thenReturn(Optional.ofNullable(event));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
@@ -498,7 +499,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(econewsRepo.findById(anyLong())).thenReturn(Optional.ofNullable(ecoNews));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 

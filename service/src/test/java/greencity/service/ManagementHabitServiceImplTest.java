@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableHabitManagementDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -60,7 +61,7 @@ class ManagementHabitServiceImplTest {
     @InjectMocks
     private ManagementHabitServiceImpl managementHabitService;
     @Mock
-    private FileService fileService;
+    private UserRemoteClient userRemoteClient;
     @Mock
     private UserActionRepo userActionRepo;
 
@@ -218,12 +219,12 @@ class ManagementHabitServiceImplTest {
     void successfulUploadImageForHabitTest() {
         HabitManagementDto habitManagementDto = ModelUtils.getHabitManagementDtoWithTranslation();
         MultipartFile imageFile = new MockMultipartFile("image.jpg", "some-image-content".getBytes());
-        when(fileService.upload(imageFile)).thenReturn("image-url");
+        when(userRemoteClient.uploadFile(imageFile)).thenReturn("image-url");
 
         managementHabitService.saveHabitAndTranslations(habitManagementDto, imageFile);
         assertEquals("https://example.com/sample-image.jpg", habitManagementDto.getImage());
 
-        verify(fileService, times(1)).upload(imageFile);
+        verify(userRemoteClient, times(1)).uploadFile(imageFile);
     }
 
     @Test

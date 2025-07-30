@@ -43,4 +43,5 @@ public class AppConstant {
     public static final String EMPTY_STRING = "";
     public static final String GOOGLE_API = "Google API";
     public static final Double DEFAULT_RATING = 0.0;
+    public static final String MESSAGE = "message";
 }

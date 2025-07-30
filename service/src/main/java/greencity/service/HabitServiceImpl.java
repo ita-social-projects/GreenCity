@@ -1,5 +1,6 @@
 package greencity.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
@@ -52,15 +53,6 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,13 +61,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Implementation of {@link HabitService}.
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
@@ -89,7 +93,7 @@ public class HabitServiceImpl implements HabitService {
     private final CustomToDoListItemRepo customToDoListItemRepo;
     private final UserRepo userRepo;
     private final TagsRepo tagsRepo;
-    private final FileService fileService;
+    private final ImageConverterImpl imageConverter;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
@@ -345,10 +349,14 @@ public class HabitServiceImpl implements HabitService {
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
-            image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
+            image = imageConverter.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
         }
         if (image != null) {
-            addCustomHabitDtoRequest.setImage(fileService.upload(image));
+            try {
+                addCustomHabitDtoRequest.setImage(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         } else {
             addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
         }
@@ -429,10 +437,14 @@ public class HabitServiceImpl implements HabitService {
             saveNewCustomToDoListItemsToUpdate(habitDto, toUpdate, user);
         }
         if (StringUtils.isNotBlank(habitDto.getImage())) {
-            image = fileService.convertToMultipartImage(habitDto.getImage());
+            image = imageConverter.convertToMultipartImage(habitDto.getImage());
         }
         if (image != null) {
-            toUpdate.setImage(fileService.upload(image));
+            try {
+                toUpdate.setImage(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn("User service is unavailable: {}", e.getMessage());
+            }
         }
         if (isNotEmpty(habitDto.getTagIds())) {
             setTagsIdsToHabit(habitDto, toUpdate);

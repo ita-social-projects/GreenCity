@@ -1,6 +1,11 @@
 package greencity.service;
 
+import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -35,11 +40,20 @@ import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
-import greencity.repository.NotificationRepo;
-import greencity.repository.UserRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.NotificationRepo;
 import greencity.repository.RatingPointsRepo;
+import greencity.repository.UserRepo;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -47,22 +61,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashSet;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentServiceImpl implements CommentService {
     private final HabitRepo habitRepo;
     private final EventRepo eventRepo;
@@ -73,11 +78,11 @@ public class CommentServiceImpl implements CommentService {
     private final HabitTranslationRepo habitTranslationRepo;
     private final RatingPointsRepo ratingPointsRepo;
     private final ModelMapper modelMapper;
-    private final FileService fileService;
     private final SimpMessagingTemplate messagingTemplate;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
+    private final UserRemoteClient userRemoteClient;
     private final NotificationService notificationService;
     @Value("${client.address}")
     private String clientAddress;
@@ -167,10 +172,14 @@ public class CommentServiceImpl implements CommentService {
             List<CommentImages> commentImages = new ArrayList<>();
             for (MultipartFile image : images) {
                 if (image != null) {
-                    commentImages.add(CommentImages.builder()
-                        .comment(comment)
-                        .link(fileService.upload(image))
-                        .build());
+                    try {
+                        commentImages.add(CommentImages.builder()
+                            .comment(comment)
+                            .link(userRemoteClient.uploadFile(image))
+                            .build());
+                    } catch (WebClientRequestException | WebClientResponseException e) {
+                        log.warn("User service is unavailable: {}", e.getMessage());
+                    }
                 }
             }
             comment.setAdditionalImages(commentImages);

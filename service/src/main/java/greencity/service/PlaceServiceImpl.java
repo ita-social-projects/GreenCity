@@ -78,6 +78,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
 /**
@@ -102,7 +104,6 @@ public class PlaceServiceImpl implements PlaceService {
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
     private final FavoritePlaceRepo favoritePlaceRepo;
-    private final FileService fileService;
     private final UserNotificationService userNotificationService;
     private final RestClient restClient;
     private final PhotoRepo photoRepo;
@@ -605,11 +606,16 @@ public class PlaceServiceImpl implements PlaceService {
             List<Photo> newPhotos = new ArrayList<>();
             for (MultipartFile image : images) {
                 if (image != null) {
-                    Photo newPhoto = Photo.builder()
-                        .place(place)
-                        .name(fileService.upload(image))
-                        .user(user)
-                        .build();
+                    Photo newPhoto = null;
+                    try {
+                        newPhoto = Photo.builder()
+                            .place(place)
+                            .name(userRemoteClient.uploadFile(image))
+                            .user(user)
+                            .build();
+                    } catch (WebClientRequestException | WebClientResponseException e) {
+                        log.warn("User service is unavailable: {}", e.getMessage());
+                    }
                     Photo savedPhoto = photoRepo.save(newPhoto);
                     newPhotos.add(savedPhoto);
                 }

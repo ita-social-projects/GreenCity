@@ -129,7 +129,7 @@ class HabitServiceImplTest {
     HabitTranslationDtoMapper habitTranslationDtoMapper;
 
     @Mock
-    FileService fileService;
+    ImageConverterImpl imageConverter;
 
     @Mock
     ToDoListItemTranslationRepo toDoListItemTranslationRepo;
@@ -636,7 +636,7 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
-        when(fileService.upload(image)).thenReturn(imageToEncode);
+        when(userRemoteClient.uploadFile(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
             habitService.addCustomHabit(addCustomHabitDtoRequest, null, user.getId()));
@@ -653,7 +653,7 @@ class HabitServiceImplTest {
         verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
-        verify(fileService).convertToMultipartImage(any());
+        verify(imageConverter).convertToMultipartImage(any());
         verify(habitAssignService, times(0)).inviteFriendForYourHabitWithEmailNotification(
             any(UserVO.class), anyList(), anyLong(), any(Locale.class));
     }
@@ -710,7 +710,7 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
-        when(fileService.upload(image)).thenReturn(imageToEncode);
+        when(userRemoteClient.uploadFile(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
             habitService.addCustomHabit(addCustomHabitDtoRequest, image, user.getId()));
@@ -728,7 +728,7 @@ class HabitServiceImplTest {
         verify(customToDoListResponseDtoMapper).mapAllToList(List.of(customToDoListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
-        verify(fileService).upload(any(MultipartFile.class));
+        verify(userRemoteClient).uploadFile(any(MultipartFile.class));
         verify(habitAssignService, times(0)).inviteFriendForYourHabitWithEmailNotification(
             any(UserVO.class), anyList(), anyLong(), any(Locale.class));
     }
@@ -784,7 +784,7 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
-        when(fileService.upload(image)).thenReturn(imageToEncode);
+        when(userRemoteClient.uploadFile(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
             habitService.addCustomHabit(addCustomHabitDtoRequest, null, user.getId()));
@@ -860,7 +860,7 @@ class HabitServiceImplTest {
             .thenReturn(List.of(customToDoListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
-        when(fileService.upload(image)).thenReturn(imageToEncode);
+        when(userRemoteClient.uploadFile(image)).thenReturn(imageToEncode);
         when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
         doNothing().when(habitAssignService).inviteFriendForYourHabitWithEmailNotification(
             any(UserVO.class), anyList(), anyLong(), any(Locale.class));
@@ -1057,7 +1057,7 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
         when(habitRepo.save(habit)).thenReturn(habit);
-        when(fileService.upload(image)).thenReturn(imageToEncode);
+        when(userRemoteClient.uploadFile(image)).thenReturn(imageToEncode);
 
         assertEquals(customHabitDtoResponse,
             habitService.updateCustomHabit(customHabitDtoRequest, 1L, user.getId(), image));
@@ -1137,7 +1137,7 @@ class HabitServiceImplTest {
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
         when(habitRepo.save(habit)).thenReturn(habit);
-        when(fileService.upload(image)).thenReturn(imageToEncode);
+        when(userRemoteClient.uploadFile(image)).thenReturn(imageToEncode);
         when(modelMapper.map(habit, CustomHabitDtoResponse.class)).thenReturn(customHabitDtoResponse);
 
         assertEquals(customHabitDtoResponse,
