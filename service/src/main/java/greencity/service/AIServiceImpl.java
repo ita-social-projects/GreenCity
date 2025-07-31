@@ -194,6 +194,24 @@ public class AIServiceImpl implements AIService {
         ecoNewsRepo.save(ecoNews);
     }
 
+    /**
+     * Calculates and stores the title relevance vector for the specified {@link EcoNews} entity.
+     *
+     * <p>Steps performed by this method:
+     * <ul>
+     *     <li>Retrieves the {@link EcoNews} entity by the given ID.</li>
+     *     <li>Sends the news title to the OpenAI service to get an embedding vector.</li>
+     *     <li>Creates an {@link EcoNewsRelevance} entity containing the title vector.</li>
+     *     <li>Saves the relevance entity to the database via {@code ecoNewsRelevanceRepo}.</li>
+     * </ul>
+     *
+     * <p>If no news is found with the specified ID, a {@link NotFoundException} is thrown.
+     *
+     * <p>This method is transactional, ensuring atomicity of the operations.
+     *
+     * @param id the ID of the EcoNews entity for which to calculate title relevance
+     * @throws NotFoundException if the EcoNews entity with the given ID does not exist
+     */
     @Transactional
     public void getRelevanceForEcoNews(Long id) {
         EcoNews ecoNews = ecoNewsRepo.findById(id)

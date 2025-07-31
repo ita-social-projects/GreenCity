@@ -79,6 +79,21 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         }
     }
 
+    /**
+     * Returns a pageable list of eco news relevant to the given user and filter criteria.
+     *
+     * <p>The method uses cached user profiles and relevance results if available. If the user's relevance vectors
+     * are empty, it falls back to a generic search using the provided title, author, and tags. Otherwise, it retrieves
+     * relevant news from cached pages or generates new results by applying the relevance scoring algorithm.
+     *
+     * @param pageable pagination and sorting information
+     * @param tags     list of tags to filter news
+     * @param title    title filter for eco news
+     * @param author   author filter for eco news
+     * @param user     the user for whom the relevance is calculated
+     * @return a pageable DTO containing eco news relevant to the user
+     * @throws EcoNewsRelevanceCalculationException if the requested page exceeds the last generated relevance page
+     */
     @Override
     @Transactional
     public PageableAdvancedDto<EcoNewsGenericDto> findRelevantEcoNews(Pageable pageable,
@@ -136,6 +151,19 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         return pageableAdvancedDtoMapper.convert(pageResult);
     }
 
+    /**
+     * Loads additional eco news and retrieves a list of news items based on relevance pool ratios.
+     *
+     * <p>Ensures that enough news is available in the relevance pools to fill the current page.
+     * If necessary, invokes loading of more news and updates the generated page index.
+     *
+     * @param requestMetadata metadata describing the current relevance request
+     * @param cachedUserNews  the cache entry holding previous results
+     * @param pools           the pools of eco news grouped by relevance strength
+     * @param userProfile     the user's profile containing relevance vectors
+     * @param tags            tag coherence data used for relevance scoring
+     * @return a list of eco news for the current page, selected by configured ratio
+     */
     private List<EcoNews> getResultByRatio(RelevantEcoNewsCacheKey requestMetadata,
                                            CachedUserRelevantNews cachedUserNews,
                                            CachedRelevancePools pools,
@@ -151,6 +179,14 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         return getNewsFromPoolsByRatio(pools, ratioForPages);
     }
 
+    /**
+     * Checks whether the relevance pools contain enough news to fill a full result page,
+     * according to the configured ratio of strong, weak, and non-relevant news.
+     *
+     * @param requestMetadata metadata describing the current request
+     * @param pools           the current state of relevance pools
+     * @return true if each pool has enough items to meet the required ratio for the page; false otherwise
+     */
     private boolean hasEnoughNews(RelevantEcoNewsCacheKey requestMetadata,
                                   CachedRelevancePools pools) {
         double[] normalized = RelevanceWeightUtils.normalizeWeights(relevancePoolsRatio);
@@ -160,6 +196,19 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             && pools.nonRelevantNewsIds().size() >= ratioForPages[2];
     }
 
+    /**
+     * Loads additional eco news items from the repository, evaluates their relevance, and adds them
+     * to the appropriate relevance pool (strong, weak, or non-relevant).
+     *
+     * <p>This method decreases the date window by one week for each call to progressively search older news.
+     * Relevance scores are calculated using vector similarity and configured weights.
+     *
+     * @param requestMetadata metadata describing the current request
+     * @param cachedUserNews  the cache object containing the current request state
+     * @param pools           the target relevance pools to populate
+     * @param userProfile     the user's profile containing relevance vectors
+     * @param tags            tag coherence data used for scoring
+     */
     private void loadMoreNews(RelevantEcoNewsCacheKey requestMetadata,
                               CachedUserRelevantNews cachedUserNews,
                               CachedRelevancePools pools,
@@ -196,6 +245,16 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             });
     }
 
+    /**
+     * Retrieves eco news from the database using the provided filter metadata and date range.
+     *
+     * <p>The filter includes title, author, tags, and a dynamic date window ending at the last requested date.
+     * The start date is calculated by subtracting one week.
+     *
+     * @param requestMetadata    metadata containing filter values
+     * @param lastRequestedDate  the end date of the filtering range
+     * @return a list of eco news matching the specified filters and date range
+     */
     private List<EcoNews> getFilteredNews(RelevantEcoNewsCacheKey requestMetadata, LocalDate lastRequestedDate) {
         EcoNewsViewDto request = EcoNewsViewDto.builder()
             .title(requestMetadata.title())
@@ -208,6 +267,16 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         return ecoNewsRepo.findAll(specification, Sort.by(Sort.Direction.DESC, "creationDate"));
     }
 
+    /**
+     * Retrieves a list of eco news IDs from the relevance pools based on the provided distribution ratio.
+     *
+     * <p>The method polls items from each relevance queue (strong, weak, non-relevant) based on how many items
+     * should be taken from each category according to the ratio.
+     *
+     * @param pools          the current relevance pools
+     * @param ratioForPages  the number of news to retrieve from each pool [strong, weak, non-relevant]
+     * @return a list of eco news entities corresponding to the selected IDs
+     */
     private List<EcoNews> getNewsFromPoolsByRatio(CachedRelevancePools pools, int[] ratioForPages) {
         List<Long> resultPageIds = new ArrayList<>();
         for (int i = 0; i < ratioForPages[0]; i++) {

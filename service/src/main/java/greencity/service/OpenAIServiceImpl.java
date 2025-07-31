@@ -6,8 +6,10 @@ import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
 import greencity.exception.exceptions.OpenAIResponseException;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,7 +22,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+
 import java.util.*;
+
 import static greencity.constant.OpenAIConstants.*;
 
 @Setter
@@ -88,6 +92,17 @@ public class OpenAIServiceImpl implements OpenAIService {
         throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
     }
 
+    /**
+     * Makes a request to the OpenAI API to generate an embedding vector for the given title.
+     *
+     * <p>This method attempts to send a request up to a maximum number of attempts ({@code MAX_REQUEST_ATTEMPTS}).
+     * It uses the embedding model defined in the configuration and sets the specified input and dimensions.
+     *
+     * @param title the input text (typically a news title) for which to generate an embedding vector
+     * @return the response from the OpenAI API wrapped in {@link OpenAIResponseDTO}
+     * @throws OpenAIRequestException if the OpenAI server is unavailable or the maximum number of request
+     *                                attempts is reached
+     */
     @Override
     public OpenAIResponseDTO makeRequestEmbedding(String title) {
         HttpHeaders headers = createHttpHeaders();
@@ -112,28 +127,41 @@ public class OpenAIServiceImpl implements OpenAIService {
         throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
     }
 
-
+    /**
+     * Creates the request body for the OpenAI API completion request.
+     *
+     * <p>The body includes the model name, conversation messages (system and user),
+     * maximum token count, temperature, and desired response format.
+     *
+     * <p>The system message defines the behavior and language constraints of the AI,
+     * while the user message contains the actual prompt to be processed.
+     *
+     * @param language       the language context for the AI response
+     * @param prompt         the user prompt to be processed
+     * @param responseFormat the format in which the AI should respond (e.g., JSON)
+     * @return a map representing the structured request body to be sent to the OpenAI API
+     */
 
     private Map<String, Object> createRequestBody(LanguageDTO language,
-        String prompt,
-        OpenAIResponseFormat responseFormat) {
+                                                  String prompt,
+                                                  OpenAIResponseFormat responseFormat) {
         Map<String, Object> body = new HashMap<>();
         body.put(REQUEST_MODEL_KEY, model);
 
         List<Map<String, String>> messages = new ArrayList<>();
         messages.add(Map.of(
-            RESPONSE_ROLE_KEY,
-            ROLE_SYSTEM,
-            RESPONSE_JSON_CONTENT_KEY,
-            String.join(" ",
-                AI_ROLE_POLICY,
-                AI_HEADINGS_POLICY,
-                AI_LANGUAGE_POLICY.formatted(language.getName()))));
+                RESPONSE_ROLE_KEY,
+                ROLE_SYSTEM,
+                RESPONSE_JSON_CONTENT_KEY,
+                String.join(" ",
+                        AI_ROLE_POLICY,
+                        AI_HEADINGS_POLICY,
+                        AI_LANGUAGE_POLICY.formatted(language.getName()))));
         messages.add(Map.of(
-            RESPONSE_ROLE_KEY,
-            ROLE_USER,
-            RESPONSE_JSON_CONTENT_KEY,
-            String.join(" ", prompt, AI_LANGUAGE_POLICY.formatted(language.getName()))));
+                RESPONSE_ROLE_KEY,
+                ROLE_USER,
+                RESPONSE_JSON_CONTENT_KEY,
+                String.join(" ", prompt, AI_LANGUAGE_POLICY.formatted(language.getName()))));
         body.put(REQUEST_MESSAGES_KEY, messages);
         body.put(REQUEST_MAX_TOKENS_KEY, maxCompletionTokens);
         body.put(REQUEST_TEMPERATURE_KEY, temperature);
@@ -142,6 +170,17 @@ public class OpenAIServiceImpl implements OpenAIService {
         return body;
     }
 
+    /**
+     * Constructs the HTTP headers required for communication with the OpenAI API.
+     *
+     * <p>The headers include:
+     * <ul>
+     *     <li>Authorization header with Bearer token using the configured API key</li>
+     *     <li>Content-Type header specifying JSON format</li>
+     * </ul>
+     *
+     * @return a {@link HttpHeaders} object containing all necessary OpenAI request headers
+     */
     private HttpHeaders createHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.add(OPENAI_AUTH_HEADER, OPENAI_BEARER_PREFIX + apiKey);
@@ -149,6 +188,15 @@ public class OpenAIServiceImpl implements OpenAIService {
         return headers;
     }
 
+    /**
+     * Validates the basic request parameters required to send a prompt to the OpenAI API.
+     *
+     * <p>Checks if the API key, API URL, and prompt are all present and non-empty.
+     * If any of them are invalid or missing, the method returns a corresponding error message.
+     *
+     * @param prompt the prompt to be validated
+     * @return an error message string if any parameter is invalid, or {@code null} if all parameters are valid
+     */
     private String validateRequestParameters(String prompt) {
         Map<Object, String> validationResults = new HashMap<>();
         validationResults.put(apiKey, ERROR_API_KEY_MISSING);
@@ -156,11 +204,11 @@ public class OpenAIServiceImpl implements OpenAIService {
         validationResults.put(prompt, ERROR_PROMPT_MISSING);
 
         return validationResults.entrySet().stream()
-            .filter(entry -> Objects.isNull(entry.getKey())
-                || entry.getKey().toString().trim().isEmpty())
-            .map(Map.Entry::getValue)
-            .findFirst()
-            .orElse(null);
+                .filter(entry -> Objects.isNull(entry.getKey())
+                        || entry.getKey().toString().trim().isEmpty())
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -174,12 +222,12 @@ public class OpenAIServiceImpl implements OpenAIService {
      */
     private OpenAIResponseDTO sendRequest(HttpHeaders headers, Map<String, Object> body) throws OpenAIRequestException {
         Map<String, Object> responseBody = restClient.post()
-            .uri(apiUrl)
-            .headers(headersConsumer -> headersConsumer.addAll(headers))
-            .body(body)
-            .retrieve()
-            .body(new ParameterizedTypeReference<>() {
-            });
+                .uri(apiUrl)
+                .headers(headersConsumer -> headersConsumer.addAll(headers))
+                .body(body)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         if (responseBody == null) {
             throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
@@ -187,6 +235,19 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         return parseResponse(responseBody);
     }
+
+    /**
+     * Sends an HTTP POST request to the OpenAI API to retrieve an embedding vector.
+     *
+     * <p>Uses the provided headers and request body to call the embedding endpoint.
+     * The response is expected to be a structured JSON object, which is then parsed
+     * into a {@link OpenAIResponseDTO} using {@code parseResponseEmbedding()}.
+     *
+     * @param headers the HTTP headers including authorization and content type
+     * @param body    the request body containing input text and model parameters
+     * @return a parsed {@link OpenAIResponseDTO} containing the embedding result
+     * @throws OpenAIRequestException if the response from OpenAI is invalid or cannot be retrieved
+     */
     private OpenAIResponseDTO sendEmbeddingRequest(HttpHeaders headers, Map<String, Object> body) throws OpenAIRequestException {
         Map<String, Object> responseBody = restClient.post()
                 .uri(embeddingApiUrl)
@@ -227,7 +288,7 @@ public class OpenAIServiceImpl implements OpenAIService {
             openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_COMPLETION_TOKENS_KEY));
 
             openAIResponseDTO.setResponseDateTime(LocalDateTime.ofEpochSecond(
-                ((Integer) responseBody.get(RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC));
+                    ((Integer) responseBody.get(RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC));
         } catch (NullPointerException | ClassCastException e) {
             throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE, e);
         }
@@ -235,6 +296,19 @@ public class OpenAIServiceImpl implements OpenAIService {
         return openAIResponseDTO;
     }
 
+    /**
+     * Parses the response body from the OpenAI embedding API into an {@link OpenAIResponseDTO}.
+     *
+     * <p>This method extracts the embedding vector, token usage statistics, and the response timestamp.
+     * The embedding is converted to a string and set as the content of the DTO.
+     *
+     * <p>If the response structure is invalid, missing required fields, or has unexpected types,
+     * an {@link OpenAIResponseException} is thrown.
+     *
+     * @param responseBody the raw response map returned by the OpenAI embedding API
+     * @return a populated {@link OpenAIResponseDTO} containing the embedding data and usage info
+     * @throws OpenAIResponseException if the response is malformed or cannot be parsed
+     */
     private OpenAIResponseDTO parseResponseEmbedding(Map<String, Object> responseBody) {
         OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
 
