@@ -18,6 +18,7 @@ import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
@@ -758,5 +759,16 @@ public class ModelUtils {
 
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
+    }
+
+    public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
+        return UpdateEcoNewsDto.builder()
+            .id(1L)
+            .title("title")
+            .content("texttexttexttexttexttexttexttext")
+            .shortInfo("shortInfo")
+            .tags(Collections.singletonList("tag"))
+            .source("source")
+            .build();
     }
 }

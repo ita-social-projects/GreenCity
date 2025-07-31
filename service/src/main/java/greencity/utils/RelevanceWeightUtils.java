@@ -2,10 +2,10 @@ package greencity.utils;
 
 import java.util.Arrays;
 import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.BeanInitializationException;
 
 @UtilityClass
 public class RelevanceWeightUtils {
-
     /**
      * Converts string ratio divided by ":" to double array.
      *
@@ -18,15 +18,27 @@ public class RelevanceWeightUtils {
      * @return double array representation of the ratio
      */
     public static double[] convertRatioFromString(String ratio) {
-        double[] ratioDoubles = Arrays.stream(ratio.split(":"))
-            .mapToDouble(Double::parseDouble)
-            .toArray();
-        double sum = Arrays.stream(ratioDoubles).sum();
-        return sum <= 1 ? ratioDoubles : Arrays.stream(ratioDoubles)
-            .map(d -> d / sum)
-            .toArray();
+        try {
+            double[] ratioDoubles = Arrays.stream(ratio.split(":"))
+                .mapToDouble(Double::parseDouble)
+                .toArray();
+            double sum = Arrays.stream(ratioDoubles).sum();
+            return sum <= 1 ? ratioDoubles
+                : Arrays.stream(ratioDoubles)
+                    .map(d -> d / sum)
+                    .toArray();
+        } catch (NumberFormatException e) {
+            throw new BeanInitializationException(String.format("Invalid ratio parameter value. "
+                + "Expected numeric values separated by ':', but got '%s'.", ratio));
+        }
     }
 
+    /**
+     * Rescale weights to sum up to 1.
+     *
+     * @param weights weights to normalize (sum of elements may be less than 1)
+     * @return normalized weights (sum of elements is always equal to 1)
+     */
     public static double[] normalizeWeights(double[] weights) {
         if (weights == null) {
             return new double[0];
@@ -37,6 +49,14 @@ public class RelevanceWeightUtils {
         }
         return Arrays.stream(weights).map(w -> w / sum).toArray();
     }
+
+    /**
+     * Rescale counts by ratio to sum up to totalCount.
+     *
+     * @param totalCount final count that must be met
+     * @param normalizedWeights ratio in weights representation
+     * @return counts scaled by ratio and final count
+     */
     public static int[] distributeCounts(int totalCount, double[] normalizedWeights) {
         int[] result = new int[normalizedWeights.length];
         double[] exact = new double[normalizedWeights.length];
@@ -71,6 +91,4 @@ public class RelevanceWeightUtils {
 
         return result;
     }
-
-
 }

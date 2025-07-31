@@ -63,19 +63,19 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         this.relevancePoolsRatio = RelevanceWeightUtils.convertRatioFromString(relevancePoolsRatioString);
         if (relevancePoolsRatio.length != 3) {
             throw new BeanInitializationException(String.format("Invalid relevance pools ratio parameter value. "
-                    + "Expected 3 values, but got %d.", relevancePoolsRatio.length));
+                    + "Expected 3 values in format 'a:b:c', but got %s.", relevancePoolsRatioString));
         }
 
         this.relevanceScoresWeights = RelevanceWeightUtils.convertRatioFromString(relevanceScoresWeightsString);
         if (relevanceScoresWeights.length != 2) {
             throw new BeanInitializationException(String.format("Invalid relevance scores weights parameter value. "
-                    + "Expected 2 values, but got %d.", relevanceScoresWeights.length));
+                    + "Expected 2 values in format 'a:b', but got %s.", relevanceScoresWeightsString));
         }
 
         this.relevanceScoresStrength = RelevanceWeightUtils.convertRatioFromString(relevanceScoresStrengthString);
         if (relevanceScoresStrength.length != 2) {
             throw new BeanInitializationException(String.format("Invalid relevance scores strength parameter value. "
-                    + "Expected 2 values, but got %d.", relevanceScoresStrength.length));
+                    + "Expected 2 values in format 'a:b', but got %s.", relevanceScoresStrengthString));
         }
     }
 
@@ -109,8 +109,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             author,
             pageable.getPageSize());
         CachedUserRelevanceProfile userProfile = cacheService.getUserProfileFromCache(user.getId());
-        CachedUserRelevantNews cachedUserRelevantNews = cacheService.getUserRelevantNewsFromCache(key);
         List<EcoNews> findResult;
+        long totalEcoNewsCount;
 
         if (userProfile.tagsPreferencesVector().length == 0
             && userProfile.titlePreferencesVector().length == 0) {
@@ -119,10 +119,12 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                 .author(author)
                 .tags(tagsString)
                 .build();
-            findResult = ecoNewsRepo
-                .findAll(ecoNewsService.getSpecification(filter), pageable)
-                .getContent();
+            Page<EcoNews> findResultPage = ecoNewsRepo.findAll(ecoNewsService.getSpecification(filter), pageable);
+            findResult = findResultPage.getContent();
+            totalEcoNewsCount = findResultPage.getTotalElements();
         } else {
+            CachedUserRelevantNews cachedUserRelevantNews = cacheService.getUserRelevantNewsFromCache(key);
+            totalEcoNewsCount = cachedUserRelevantNews.getTotalNewsCount();
             Map<Integer, List<Long>> relevantNewsPages = cachedUserRelevantNews.getRelevantNewsPages();
             int page = pageable.getPageNumber();
 
@@ -134,7 +136,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             } else if (relevantNewsPages.containsKey(page)) {
                 findResult = ecoNewsRepo.findAllById(relevantNewsPages.get(page));
             } else {
-                CachedTagsWithCoherence cachedTags = cacheService.getTagsCoherenceFromCacheForUser();
+                CachedTagsWithCoherence cachedTags = cacheService.getTagsCoherenceFromCache();
                 findResult = getResultByRatio(key, cachedUserRelevantNews,
                     cachedUserRelevantNews.getNewsRelevancePools(), userProfile, cachedTags);
                 relevantNewsPages.put(page, findResult.stream()
@@ -147,7 +149,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsGenericDto.class))
             .toList(),
             pageable,
-            cachedUserRelevantNews.getTotalNewsCount());
+            totalEcoNewsCount);
         return pageableAdvancedDtoMapper.convert(pageResult);
     }
 

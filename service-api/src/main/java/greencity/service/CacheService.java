@@ -32,5 +32,5 @@ public interface CacheService {
      *
      * @return cached tags and their coherence
      */
-    CachedTagsWithCoherence getTagsCoherenceFromCacheForUser();
+    CachedTagsWithCoherence getTagsCoherenceFromCache();
 }

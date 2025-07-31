@@ -4,22 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static greencity.ModelUtils.getEcoNewsDto;
 import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUpdateEcoNewsDto;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
+import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
 
 import java.security.Principal;
 
+import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +46,7 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,6 +66,8 @@ class EcoNewsControllerTest {
     private EcoNewsController ecoNewsController;
     @Mock
     private EcoNewsService ecoNewsService;
+    @Mock
+    private EcoNewsRelevanceService ecoNewsRelevanceService;
     @Mock
     private TagsService tagsService;
     @Mock
@@ -401,5 +410,70 @@ class EcoNewsControllerTest {
                         .principal(principal)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateEcoNewsTest() throws Exception {
+        UserVO userVO = getUserVO();
+        UpdateEcoNewsDto updateEcoNewsDto = getUpdateEcoNewsDto();
+        long ecoNewsId = updateEcoNewsDto.getId();
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        String json = OBJECT_MAPPER.writeValueAsString(updateEcoNewsDto);
+        MockMultipartFile jsonFile = new MockMultipartFile(
+            "updateEcoNewsDto", "", "application/json", json.getBytes());
+        mockMvc.perform(multipart(HttpMethod.PUT, ecoNewsLink + "/{ecoNewsId}", ecoNewsId)
+                .file(jsonFile)
+                .principal(principal)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).update(any(UpdateEcoNewsDto.class), isNull(), eq(userVO));
+    }
+
+    @Test
+    void updateEcoNewsWithWrongIdTest() throws Exception {
+        UserVO userVO = getUserVO();
+        UpdateEcoNewsDto updateEcoNewsDto = getUpdateEcoNewsDto();
+        long ecoNewsId = updateEcoNewsDto.getId() + 1;
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        String json = OBJECT_MAPPER.writeValueAsString(updateEcoNewsDto);
+        MockMultipartFile jsonFile = new MockMultipartFile(
+            "updateEcoNewsDto", "", "application/json", json.getBytes());
+        mockMvc.perform(multipart(HttpMethod.PUT, ecoNewsLink + "/{ecoNewsId}", ecoNewsId)
+                .file(jsonFile)
+                .principal(principal)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+
+        verify(ecoNewsService, never()).update(any(UpdateEcoNewsDto.class), isNull(), eq(userVO));
+    }
+
+    @Test
+    void findRelevantNewsTest() throws Exception {
+        UserVO userVO = getUserVO();
+        Pageable pageable = PageRequest.of(0, 20);
+        String title = "Ecology";
+        String author = "John Doe";
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(get(ecoNewsLink + "/relevant")
+                .param("page", String.valueOf(pageable.getPageNumber()))
+                .param("size", String.valueOf(pageable.getPageSize()))
+                .param("tags", "tags")
+                .param("title", title)
+                .param("author-name", author)
+                .principal(principal)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsRelevanceService).findRelevantEcoNews(
+            eq(pageable), anyList(), eq(title), eq(author), eq(userVO));
     }
 }
