@@ -173,7 +173,7 @@ public class OpenAIServiceImpl implements OpenAIService {
             RESPONSE_JSON_CONTENT_KEY,
             String.join(" ",
                 AI_ROLE_POLICY,
-                AI_HEADINGS_POLICY,
+                AI_FORMATTING_POLICY,
                 AI_LANGUAGE_POLICY.formatted(language.getName()))));
         messages.add(Map.of(
             RESPONSE_ROLE_KEY,
