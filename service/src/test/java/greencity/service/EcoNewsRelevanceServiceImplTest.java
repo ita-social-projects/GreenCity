@@ -18,7 +18,6 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -351,6 +350,8 @@ class EcoNewsRelevanceServiceImplTest {
 
         when(ecoNewsRepo.findAll(eq(mockSpecification), any(Sort.class)))
             .thenReturn(initialFilteredNews);
+        when(ecoNewsRepo.countEcoNewsBeforeDate(any(ZonedDateTime.class)))
+            .thenReturn((long) initialFilteredNews.size());
 
         when(ecoNewsRelevanceRepo.findAllByEcoNewsIdIn(anyList()))
             .thenAnswer(invocation -> {
