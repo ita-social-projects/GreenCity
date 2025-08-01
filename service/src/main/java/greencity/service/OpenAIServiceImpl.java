@@ -1,7 +1,6 @@
 package greencity.service;
 
 import com.google.common.base.CaseFormat;
-import greencity.constant.OpenAIConstants;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.EcoNewsLocation;
