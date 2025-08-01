@@ -1,7 +1,13 @@
 package greencity.converters;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,10 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-public class FloatArrayConverterTest {
+class FloatArrayConverterTest {
     private FloatArrayConverter converter;
     private ObjectMapper mockObjectMapper;
-
 
     @BeforeEach
     void setUp() {
@@ -28,7 +33,7 @@ public class FloatArrayConverterTest {
 
     @Test
     void testConvertToDatabaseColumn_ValidArray() {
-        Float[] array = new Float[]{1.1f, 2.2f, 3.3f};
+        Float[] array = new Float[] {1.1f, 2.2f, 3.3f};
         String result = converter.convertToDatabaseColumn(array);
 
         assertEquals("[1.1,2.2,3.3]", result);
@@ -53,7 +58,7 @@ public class FloatArrayConverterTest {
         String json = "[1.1,2.2,3.3]";
         Float[] result = converter.convertToEntityAttribute(json);
 
-        assertArrayEquals(new Float[]{1.1f, 2.2f, 3.3f}, result);
+        assertArrayEquals(new Float[] {1.1f, 2.2f, 3.3f}, result);
     }
 
     @Test
@@ -61,28 +66,30 @@ public class FloatArrayConverterTest {
         String invalidJson = "[1.1, 2.2, not_a_number]";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> converter.convertToEntityAttribute(invalidJson));
+            () -> converter.convertToEntityAttribute(invalidJson));
 
         assertTrue(exception.getMessage().contains("Error converting JSON to Float[]"));
     }
 
     @Test
     void testConvertToDatabaseColumn_InvalidObject() {
-        Float[] arrayWithNull = new Float[]{1.0f, null};
+        Float[] arrayWithNull = new Float[] {1.0f, null};
 
         String result = converter.convertToDatabaseColumn(arrayWithNull);
 
         assertEquals("[1.0,null]", result);
     }
+
     @Test
     void testConvertToDatabaseColumn_ThrowsException() throws Exception {
-        Float[] array = new Float[]{1.1f};
+        Float[] array = new Float[] {1.1f};
 
         when(mockObjectMapper.writeValueAsString(array))
-                .thenThrow(new JsonProcessingException("Serialization error"){});
+            .thenThrow(new JsonProcessingException("Serialization error") {
+            });
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> converter.convertToDatabaseColumn(array));
+            () -> converter.convertToDatabaseColumn(array));
 
         assertTrue(exception.getMessage().contains("Error converting Float[] to JSON"));
         assertNotNull(exception.getCause());

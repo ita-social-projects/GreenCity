@@ -13,8 +13,7 @@ import java.util.Objects;
  */
 public record CachedUserRelevanceProfile(
     Float[] tagsPreferencesVector,
-    Float[] titlePreferencesVector
-) {
+    Float[] titlePreferencesVector) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

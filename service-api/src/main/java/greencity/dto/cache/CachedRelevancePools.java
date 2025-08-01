@@ -12,6 +12,5 @@ import java.util.LinkedList;
 public record CachedRelevancePools(
     LinkedList<Long> relevantStrongNewsIds,
     LinkedList<Long> relevantWeakNewsIds,
-    LinkedList<Long> nonRelevantNewsIds
-) {
+    LinkedList<Long> nonRelevantNewsIds) {
 }

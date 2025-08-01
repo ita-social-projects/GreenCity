@@ -53,7 +53,7 @@ public class RelevanceWeightUtils {
     /**
      * Rescale counts by ratio to sum up to totalCount.
      *
-     * @param totalCount final count that must be met
+     * @param totalCount        final count that must be met
      * @param normalizedWeights ratio in weights representation
      * @return counts scaled by ratio and final count
      */

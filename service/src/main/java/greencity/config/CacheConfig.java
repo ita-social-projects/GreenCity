@@ -22,9 +22,9 @@ public class CacheConfig {
     private int expirationTimeInMinutes;
 
     /**
-     * Caffeine cache for storing metadata and collection of {@link EcoNews}, that has already been
-     * filtered by user's request, sorted by calculated relevance score for specific user
-     * and returned to him.
+     * Caffeine cache for storing metadata and collection of {@link EcoNews}, that
+     * has already been filtered by user's request, sorted by calculated relevance
+     * score for specific user and returned to him.
      *
      * @return Caffeine {@link Cache} with relevant news.
      */
@@ -51,8 +51,9 @@ public class CacheConfig {
     }
 
     /**
-     * Caffeine cache for storing all available {@link Tag}s and {@link TagsCoherence}s in database.
-     * It helps to keep consistency for relevant {@link EcoNews} obtaining.
+     * Caffeine cache for storing all available {@link Tag}s and
+     * {@link TagsCoherence}s in database. It helps to keep consistency for relevant
+     * {@link EcoNews} obtaining.
      *
      * @return Caffeine {@link Cache} with tags and tags coherence.
      */
@@ -60,7 +61,7 @@ public class CacheConfig {
     public Cache<Long, CachedTagsWithCoherence> tagsCoherenceCache() {
         return Caffeine.newBuilder()
             .expireAfterWrite(expirationTimeInMinutes, TimeUnit.MINUTES)
-            .maximumSize(10_000)
+            .maximumSize(1)
             .build();
     }
 }

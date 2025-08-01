@@ -46,11 +46,11 @@ public class ExportToFileServiceImpl implements ExportToFileService {
         headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-        Row header = sheet.createRow(0);
         XSSFFont font = ((XSSFWorkbook) workbook).createFont();
         font.setFontName("Arial");
         font.setFontHeightInPoints((short) 16);
         font.setBold(true);
+        Row header = sheet.createRow(0);
 
         Set<String> raw = data.tableData().getFirst().keySet();
         int cellIndex = 0;

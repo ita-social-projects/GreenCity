@@ -13,8 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import greencity.exception.exceptions.OpenAIResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,10 +24,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+
 import static greencity.constant.OpenAIConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OpenAIServiceImplTest {
@@ -155,8 +163,8 @@ class OpenAIServiceImplTest {
         List<Double> embedding = List.of(0.1, 0.2, 0.3);
         Map<String, Object> embeddingData = Map.of("embedding", embedding, "index", 0, "object", "embedding");
         Map<String, Object> usage = Map.of(
-                "prompt_tokens", 5,
-                "total_tokens", 5);
+            "prompt_tokens", 5,
+            "total_tokens", 5);
 
         Map<String, Object> apiResponseBody = new HashMap<>();
         apiResponseBody.put("object", "list");
@@ -177,25 +185,27 @@ class OpenAIServiceImplTest {
         assertNull(dto.getResponseFormat());
 
         verify(restClient).post();
-        verify(requestBodyUriSpec).uri(eq(embeddingApiUrl));
+        verify(requestBodyUriSpec).uri(embeddingApiUrl);
         verify(requestBodyUriSpec).headers(any());
         verify(requestBodyUriSpec).body(nullable(Map.class));
         verify(requestBodyUriSpec).retrieve();
         verify(responseSpec).body(any(ParameterizedTypeReference.class));
     }
+
     @Test
     void makeRequestEmbeddingWhenNullResponseBodyTest() {
         stubEmbeddingRestClient(null);
 
         OpenAIRequestException ex = assertThrows(
-                OpenAIRequestException.class,
-                () -> openAIService.makeRequestEmbedding("test title"));
+            OpenAIRequestException.class,
+            () -> openAIService.makeRequestEmbedding("test title"));
 
         assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
         verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
         verify(requestBodyUriSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).uri(anyString());
         verify(responseSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
     }
+
     @Test
     void makeRequestEmbeddingWhenInvalidResponseBodyTest() {
         Map<String, Object> invalidResponse = new HashMap<>();
@@ -204,9 +214,8 @@ class OpenAIServiceImplTest {
         stubEmbeddingRestClient(invalidResponse);
 
         OpenAIRequestException ex = assertThrows(
-                OpenAIRequestException.class,
-                () -> openAIService.makeRequestEmbedding("test title"));
-
+            OpenAIRequestException.class,
+            () -> openAIService.makeRequestEmbedding("test title"));
 
         assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
         verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
@@ -226,7 +235,7 @@ class OpenAIServiceImplTest {
 
     private void stubEmbeddingRestClient(Map<String, Object> response) {
         when(restClient.post()).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.uri(eq(embeddingApiUrl))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(embeddingApiUrl)).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.headers(any())).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.body(nullable(Map.class))).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);

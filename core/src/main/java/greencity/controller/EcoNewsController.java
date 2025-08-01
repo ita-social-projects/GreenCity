@@ -1,6 +1,12 @@
 package greencity.controller;
 
-import greencity.annotations.*;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageable;
+import greencity.annotations.ApiPageableWithoutSort;
+import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageValidation;
+import greencity.annotations.ValidEcoNewsDtoRequest;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
@@ -205,7 +211,6 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
     }
-
 
     @Operation(summary = "Find eco news by relevance.")
     @ApiResponses(value = {

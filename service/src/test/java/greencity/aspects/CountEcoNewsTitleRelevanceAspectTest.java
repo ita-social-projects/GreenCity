@@ -11,9 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class CountEcoNewsTitleRelevanceAspectTest {
+class CountEcoNewsTitleRelevanceAspectTest {
     private AIServiceImpl aiService;
     private EcoNewsService ecoNewsService;
     private CountEcoNewsTitleRelevanceAspect aspect;
@@ -25,12 +30,11 @@ public class CountEcoNewsTitleRelevanceAspectTest {
         aspect = new CountEcoNewsTitleRelevanceAspect(aiService, ecoNewsService);
     }
 
-
     @Test
     void testAfterSavingEcoNews_WithEcoNewsGenericDto() {
         EcoNewsGenericDto dto = EcoNewsGenericDto.builder()
-                .id(42L)
-                .build();
+            .id(42L)
+            .build();
 
         ResponseEntity<EcoNewsGenericDto> response = ResponseEntity.ok(dto);
 
@@ -66,7 +70,7 @@ public class CountEcoNewsTitleRelevanceAspectTest {
         EcoNewsVO oldNews = new EcoNewsVO();
         oldNews.setTitle("Old Title");
 
-        Object[] args = new Object[]{updateDto, null, null, ecoNewsId};
+        Object[] args = new Object[] {updateDto, null, null, ecoNewsId};
         when(joinPoint.getArgs()).thenReturn(args);
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
         when(joinPoint.proceed()).thenReturn("result");
@@ -88,7 +92,7 @@ public class CountEcoNewsTitleRelevanceAspectTest {
         EcoNewsVO oldNews = new EcoNewsVO();
         oldNews.setTitle("Same Title");
 
-        Object[] args = new Object[]{updateDto, null, null, ecoNewsId};
+        Object[] args = new Object[] {updateDto, null, null, ecoNewsId};
         when(joinPoint.getArgs()).thenReturn(args);
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
         when(joinPoint.proceed()).thenReturn("result");
@@ -99,4 +103,3 @@ public class CountEcoNewsTitleRelevanceAspectTest {
         assertEquals("result", result);
     }
 }
-

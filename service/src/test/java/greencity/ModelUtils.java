@@ -3632,7 +3632,7 @@ public class ModelUtils {
         return EcoNewsRelevance.builder()
             .id(1L)
             .ecoNews(ecoNews)
-            .titleVector(new Float[]{0.6f, 0.9f, -1.0f, -0.9f, -0.1f, -0.2f, 0.3f, 0.7f, -0.6f, 0.8f})
+            .titleVector(new Float[] {0.6f, 0.9f, -1.0f, -0.9f, -0.1f, -0.2f, 0.3f, 0.7f, -0.6f, 0.8f})
             .build();
     }
 
@@ -3652,7 +3652,7 @@ public class ModelUtils {
         HashMap<Integer, List<Long>> pagesIds = new HashMap<>();
         pagesIds.put(0, newsIds);
         return new CachedUserRelevantNews(getCachedRelevancePools(), pagesIds, 0, 3,
-            9L, LocalDate.now().plusDays(1));
+            9L, ZonedDateTime.now().plusDays(1));
     }
 
     public static CachedTagsWithCoherence getCachedTagsWithCoherence() {
@@ -3663,15 +3663,12 @@ public class ModelUtils {
             Map.of(
                 7L, Map.of(1L, 0.5f, 3L, 0.2f),
                 9L, Map.of(3L, 0.7f, 5L, 0.1f),
-                12L, Map.of(6L, 1.0f, 8L, 0.4f)
-            )
-        );
+                12L, Map.of(6L, 1.0f, 8L, 0.4f)));
     }
 
     public static CachedUserRelevanceProfile getCachedUserRelevanceProfile() {
         return new CachedUserRelevanceProfile(
-            new Float[]{0.1f, 0.2f, 0.3f, 0f, 0.3f},
-            new Float[]{-0.8f, -0.6f, -0.4f, -0.2f, 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f}
-        );
+            new Float[] {0.1f, 0.2f, 0.3f, 0f, 0.3f},
+            new Float[] {-0.8f, -0.6f, -0.4f, -0.2f, 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f});
     }
 }

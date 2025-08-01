@@ -23,4 +23,3 @@ public interface EcoNewsRelevanceRepo extends JpaRepository<EcoNewsRelevance, Lo
 
     List<EcoNewsRelevance> findAllByEcoNewsIdIn(List<Long> ecoNewsIds);
 }
-

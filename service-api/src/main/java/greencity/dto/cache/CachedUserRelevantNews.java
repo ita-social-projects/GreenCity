@@ -1,6 +1,6 @@
 package greencity.dto.cache;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -21,5 +21,5 @@ public class CachedUserRelevantNews {
     private Integer lastGeneratedPage;
     private Integer totalPagesCount;
     private Long totalNewsCount;
-    private LocalDate lastRequestedDate;
+    private ZonedDateTime lastRequestedDate;
 }

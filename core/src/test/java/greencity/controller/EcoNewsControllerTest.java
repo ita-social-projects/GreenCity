@@ -2,18 +2,10 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static greencity.ModelUtils.getEcoNewsDto;
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUpdateEcoNewsDto;
-import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
-
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
-import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
@@ -22,10 +14,7 @@ import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
-
 import java.security.Principal;
-
-import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,10 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import static org.mockito.Mockito.*;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -51,9 +36,28 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static greencity.ModelUtils.getEcoNewsDto;
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUpdateEcoNewsDto;
+import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -280,7 +284,7 @@ class EcoNewsControllerTest {
 
     @Test
     void getContentAndSourceForEcoNewsByIdNot_Found_Request() throws Exception {
-        Mockito.when(ecoNewsService.getContentAndSourceForEcoNewsById(1L)).thenThrow(NotFoundException.class);
+        when(ecoNewsService.getContentAndSourceForEcoNewsById(1L)).thenThrow(NotFoundException.class);
 
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/summary", 1L))
             .andExpect(status().isNotFound());
@@ -424,10 +428,10 @@ class EcoNewsControllerTest {
         MockMultipartFile jsonFile = new MockMultipartFile(
             "updateEcoNewsDto", "", "application/json", json.getBytes());
         mockMvc.perform(multipart(HttpMethod.PUT, ecoNewsLink + "/{ecoNewsId}", ecoNewsId)
-                .file(jsonFile)
-                .principal(principal)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-                .accept(MediaType.APPLICATION_JSON))
+            .file(jsonFile)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
         verify(ecoNewsService).update(any(UpdateEcoNewsDto.class), isNull(), eq(userVO));
@@ -445,10 +449,10 @@ class EcoNewsControllerTest {
         MockMultipartFile jsonFile = new MockMultipartFile(
             "updateEcoNewsDto", "", "application/json", json.getBytes());
         mockMvc.perform(multipart(HttpMethod.PUT, ecoNewsLink + "/{ecoNewsId}", ecoNewsId)
-                .file(jsonFile)
-                .principal(principal)
-                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-                .accept(MediaType.APPLICATION_JSON))
+            .file(jsonFile)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
 
         verify(ecoNewsService, never()).update(any(UpdateEcoNewsDto.class), isNull(), eq(userVO));
@@ -464,13 +468,13 @@ class EcoNewsControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(ecoNewsLink + "/relevant")
-                .param("page", String.valueOf(pageable.getPageNumber()))
-                .param("size", String.valueOf(pageable.getPageSize()))
-                .param("tags", "tags")
-                .param("title", title)
-                .param("author-name", author)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON))
+            .param("page", String.valueOf(pageable.getPageNumber()))
+            .param("size", String.valueOf(pageable.getPageSize()))
+            .param("tags", "tags")
+            .param("title", title)
+            .param("author-name", author)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
         verify(ecoNewsRelevanceService).findRelevantEcoNews(

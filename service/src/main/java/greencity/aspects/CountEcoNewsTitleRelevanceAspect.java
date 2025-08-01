@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import org.aspectj.lang.ProceedingJoinPoint;
-
-
 import java.util.Objects;
 
 @Aspect
@@ -20,22 +18,22 @@ import java.util.Objects;
 public class CountEcoNewsTitleRelevanceAspect {
     private final AIServiceImpl aiServiceImpl;
     private final EcoNewsService ecoNewsService;
+
     public CountEcoNewsTitleRelevanceAspect(AIServiceImpl aiServiceImpl, EcoNewsService ecoNewsService) {
         this.aiServiceImpl = aiServiceImpl;
         this.ecoNewsService = ecoNewsService;
     }
 
     /**
-     * Advice that runs after the successful execution of the {@code save} method
-     * in {@code EcoNewsController}. If the response contains a valid {@link EcoNewsGenericDto},
-     * it triggers title relevance vector generation.
+     * Advice that runs after the successful execution of the {@code save} method in
+     * {@code EcoNewsController}. If the response contains a valid
+     * {@link EcoNewsGenericDto}, it triggers title relevance vector generation.
      *
      * @param response the response object returned by the save method
      */
     @AfterReturning(
-            pointcut = "execution(* greencity.controller.EcoNewsController.save(..))",
-            returning = "response"
-    )
+        pointcut = "execution(* greencity.controller.EcoNewsController.save(..))",
+        returning = "response")
     public void afterSavingEcoNews(Object response) {
         if (response instanceof ResponseEntity) {
             Object body = ((ResponseEntity<?>) response).getBody();
@@ -47,9 +45,10 @@ public class CountEcoNewsTitleRelevanceAspect {
     }
 
     /**
-     * Around advice that wraps the execution of the {@code update} method in {@code EcoNewsController}.
-     * If the eco news title has changed as a result of the update, it triggers recalculation of the
-     * relevance vector for the updated title.
+     * Around advice that wraps the execution of the {@code update} method in
+     * {@code EcoNewsController}. If the eco news title has changed as a result of
+     * the update, it triggers recalculation of the relevance vector for the updated
+     * title.
      *
      * @param joinPoint the join point representing the method call
      * @return the original return value of the update method
@@ -73,6 +72,4 @@ public class CountEcoNewsTitleRelevanceAspect {
 
         return result;
     }
-
-
 }

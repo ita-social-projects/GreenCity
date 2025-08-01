@@ -10,16 +10,16 @@ public interface EcoNewsRelevanceService {
     /**
      * Finds relevant eco news by user.
      *
-     * @param page     page settings
-     * @param tags     tags to filter
-     * @param title    title to filter
-     * @param author   author to filter
-     * @param user     currently authorized user
+     * @param page   page settings
+     * @param tags   tags to filter
+     * @param title  title to filter
+     * @param author author to filter
+     * @param user   currently authorized user
      * @return page of relevant eco news
      */
     PageableAdvancedDto<EcoNewsGenericDto> findRelevantEcoNews(Pageable page,
-                                                               List<String> tags,
-                                                               String title,
-                                                               String author,
-                                                               UserVO user);
+        List<String> tags,
+        String title,
+        String author,
+        UserVO user);
 }

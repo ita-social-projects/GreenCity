@@ -1,8 +1,12 @@
 package greencity.dto.relevance;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import greencity.dto.cache.CachedUserRelevanceProfile;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsRelevance;
@@ -33,7 +37,6 @@ class EcoNewsWithRelevanceVectorsDtoTest {
 
         when(ecoNews.getTags()).thenReturn(tags);
         when(ecoNewsRelevance.getTitleVector()).thenReturn(titleVector);
-
 
         EcoNewsWithRelevanceVectorsDto dto = new EcoNewsWithRelevanceVectorsDto(
             ecoNews, ecoNewsRelevance, tagsIndexes);
@@ -155,8 +158,7 @@ class EcoNewsWithRelevanceVectorsDtoTest {
     static Stream<Arguments> provideInvalidVectors() {
         return Stream.of(
             Arguments.of((Object) new Float[] {}),
-            Arguments.of((Object) new Float[] {null, null})
-        );
+            Arguments.of((Object) new Float[] {null, null}));
     }
 
 }

@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.github.benmanes.caffeine.cache.Cache;
 import greencity.ModelUtils;
 import greencity.utils.RelevanceWeightUtils;
@@ -32,6 +33,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.TagsCoherenceRepo;
 import greencity.repository.TagsRepo;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,8 +46,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.BeanInitializationException;
-
-import java.time.LocalDate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +79,7 @@ class CacheServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(cacheService, "tagsWeights", new double[]{0.6, 0.2, 0.2});
+        ReflectionTestUtils.setField(cacheService, "tagsWeights", new double[] {0.6, 0.2, 0.2});
         ReflectionTestUtils.setField(cacheService, "userRelevanceNewsCache", userRelevanceNewsCache);
         ReflectionTestUtils.setField(cacheService, "userProfileCache", userProfileCache);
         ReflectionTestUtils.setField(cacheService, "tagsCoherenceCache", tagsCoherenceCache);
@@ -134,8 +134,8 @@ class CacheServiceImplTest {
         assertEquals(-1, result.getLastGeneratedPage());
         assertEquals((int) Math.ceil(9.0 / relevantEcoNewsCacheKey.pageSize()), result.getTotalPagesCount());
         assertEquals(9L, result.getTotalNewsCount());
-        assertTrue(result.getLastRequestedDate().isAfter(LocalDate.now()));
-        assertTrue(result.getLastRequestedDate().isBefore(LocalDate.now().plusDays(2)));
+        assertTrue(result.getLastRequestedDate().isAfter(ZonedDateTime.now()));
+        assertTrue(result.getLastRequestedDate().isBefore(ZonedDateTime.now().plusDays(2)));
         verify(userRelevanceNewsCache).put(relevantEcoNewsCacheKey, result);
     }
 
@@ -251,8 +251,7 @@ class CacheServiceImplTest {
             .sourceTag(eventTag)
             .destinationTag(ecoNewsTag)
             .coherence(coherence)
-            .build()
-        ));
+            .build()));
 
         CachedTagsWithCoherence result = cacheService.getTagsCoherenceFromCache();
 

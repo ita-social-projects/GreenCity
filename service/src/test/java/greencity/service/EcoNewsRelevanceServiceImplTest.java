@@ -2,7 +2,11 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.cache.*;
+import greencity.dto.cache.CachedRelevancePools;
+import greencity.dto.cache.CachedTagsWithCoherence;
+import greencity.dto.cache.CachedUserRelevanceProfile;
+import greencity.dto.cache.CachedUserRelevantNews;
+import greencity.dto.cache.RelevantEcoNewsCacheKey;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.relevance.EcoNewsWithRelevanceVectorsDto;
@@ -15,26 +19,49 @@ import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.lang.reflect.Field;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsRelevanceServiceImplTest {
@@ -89,9 +116,9 @@ class EcoNewsRelevanceServiceImplTest {
         double[] scoresWeights = (double[]) getPrivateField(service, "relevanceScoresWeights");
         double[] scoresStrength = (double[]) getPrivateField(service, "relevanceScoresStrength");
 
-        assertArrayEquals(new double[]{0.3, 0.5, 0.2}, poolsRatio);
-        assertArrayEquals(new double[]{0.7, 0.3}, scoresWeights);
-        assertArrayEquals(new double[]{0.6, 0.2}, scoresStrength);
+        assertArrayEquals(new double[] {0.3, 0.5, 0.2}, poolsRatio);
+        assertArrayEquals(new double[] {0.7, 0.3}, scoresWeights);
+        assertArrayEquals(new double[] {0.6, 0.2}, scoresStrength);
     }
 
     @Test
@@ -162,7 +189,6 @@ class EcoNewsRelevanceServiceImplTest {
             return source.getId().equals(100L) ? dto1 : dto2;
         }).when(modelMapper).map(Mockito.any(EcoNews.class), Mockito.<Class<EcoNewsGenericDto>>any());
 
-
         PageableAdvancedDto<EcoNewsGenericDto> expected = mock(PageableAdvancedDto.class);
         when(pageableAdvancedDtoMapper.convert(any(Page.class))).thenReturn(expected);
 
@@ -191,11 +217,7 @@ class EcoNewsRelevanceServiceImplTest {
 
         UserVO user = new UserVO();
         user.setId(userId);
-
         List<Long> newsIds = List.of(100L, 101L);
-        List<EcoNews> ecoNewsList = newsIds.stream()
-            .map(id -> EcoNews.builder().id(id).build())
-            .toList();
 
         CachedUserRelevanceProfile cachedUserRelevanceProfile = ModelUtils.getCachedUserRelevanceProfile();
         CachedUserRelevantNews cachedUserRelevantNews = mock(CachedUserRelevantNews.class);
@@ -229,8 +251,8 @@ class EcoNewsRelevanceServiceImplTest {
 
         List<Long> newsIds = List.of(100L, 101L);
         List<EcoNews> ecoNewsList = newsIds.stream()
-                .map(id -> EcoNews.builder().id(id).build())
-                .toList();
+            .map(id -> EcoNews.builder().id(id).build())
+            .toList();
 
         CachedUserRelevanceProfile cachedUserRelevanceProfile = ModelUtils.getCachedUserRelevanceProfile();
         CachedUserRelevantNews cachedUserRelevantNews = mock(CachedUserRelevantNews.class);
@@ -242,7 +264,6 @@ class EcoNewsRelevanceServiceImplTest {
         when(cachedUserRelevantNews.getRelevantNewsPages()).thenReturn(relevantNewsPages);
         when(ecoNewsRepo.findAllById(newsIds)).thenReturn(ecoNewsList);
 
-
         EcoNewsGenericDto dto1 = mock(EcoNewsGenericDto.class);
         EcoNewsGenericDto dto2 = mock(EcoNewsGenericDto.class);
 
@@ -251,12 +272,11 @@ class EcoNewsRelevanceServiceImplTest {
             return source.getId().equals(100L) ? dto1 : dto2;
         }).when(modelMapper).map(Mockito.any(EcoNews.class), Mockito.<Class<EcoNewsGenericDto>>any());
 
-
         PageableAdvancedDto<EcoNewsGenericDto> expected = mock(PageableAdvancedDto.class);
         when(pageableAdvancedDtoMapper.convert(any(Page.class))).thenReturn(expected);
 
         PageableAdvancedDto<EcoNewsGenericDto> actual = ecoNewsRelevanceService.findRelevantEcoNews(
-                pageable, tags, title, author, user);
+            pageable, tags, title, author, user);
 
         assertEquals(expected, actual);
 
@@ -264,7 +284,7 @@ class EcoNewsRelevanceServiceImplTest {
         verify(cacheService).getUserRelevantNewsFromCache(any());
         verify(ecoNewsRepo).findAllById(newsIds);
         verify(modelMapper, times(2))
-                .map(any(EcoNews.class), (Class<EcoNewsGenericDto>) any(Class.class));
+            .map(any(EcoNews.class), (Class<EcoNewsGenericDto>) any(Class.class));
         verify(pageableAdvancedDtoMapper).convert(any(Page.class));
     }
 
@@ -286,10 +306,10 @@ class EcoNewsRelevanceServiceImplTest {
         when(cachedUserRelevantNews.getRelevantNewsPages()).thenReturn(relevantNewsPages);
         when(cachedUserRelevantNews.getTotalPagesCount()).thenReturn(2);
         when(cachedUserRelevantNews.getLastGeneratedPage()).thenReturn(0);
-        when(cachedUserRelevantNews.getLastRequestedDate()).thenReturn(LocalDate.now());
+        when(cachedUserRelevantNews.getLastRequestedDate()).thenReturn(ZonedDateTime.now());
 
         CachedRelevancePools pools = new CachedRelevancePools(
-                new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
+            new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
         when(cachedUserRelevantNews.getNewsRelevancePools()).thenReturn(pools);
 
         when(cacheService.getUserRelevantNewsFromCache(any())).thenReturn(cachedUserRelevantNews);
@@ -318,32 +338,38 @@ class EcoNewsRelevanceServiceImplTest {
             initialFilteredNews.add(EcoNews.builder().id(currentId++).build());
         }
 
-        expectedNewsIdsInPage.add(200L); expectedNewsIdsInPage.add(201L); expectedNewsIdsInPage.add(202L);
-        expectedNewsIdsInPage.add(203L); expectedNewsIdsInPage.add(204L);
-        expectedNewsIdsInPage.add(205L); expectedNewsIdsInPage.add(206L); expectedNewsIdsInPage.add(207L);
-        expectedNewsIdsInPage.add(208L); expectedNewsIdsInPage.add(209L);
-
+        expectedNewsIdsInPage.add(200L);
+        expectedNewsIdsInPage.add(201L);
+        expectedNewsIdsInPage.add(202L);
+        expectedNewsIdsInPage.add(203L);
+        expectedNewsIdsInPage.add(204L);
+        expectedNewsIdsInPage.add(205L);
+        expectedNewsIdsInPage.add(206L);
+        expectedNewsIdsInPage.add(207L);
+        expectedNewsIdsInPage.add(208L);
+        expectedNewsIdsInPage.add(209L);
 
         when(ecoNewsRepo.findAll(eq(mockSpecification), any(Sort.class)))
-                .thenReturn(initialFilteredNews);
+            .thenReturn(initialFilteredNews);
 
         when(ecoNewsRelevanceRepo.findAllByEcoNewsIdIn(anyList()))
-                .thenAnswer(invocation -> {
-                    List<Long> ids = invocation.getArgument(0);
-                    return ids.stream().map(id -> {
-                        EcoNews ecoNews = initialFilteredNews.stream()
-                                .filter(newsItem -> newsItem.getId().equals(id))
-                                .findFirst()
-                                .orElse(null);
+            .thenAnswer(invocation -> {
+                List<Long> ids = invocation.getArgument(0);
+                return ids.stream().map(id -> {
+                    EcoNews ecoNews = initialFilteredNews.stream()
+                        .filter(newsItem -> newsItem.getId().equals(id))
+                        .findFirst()
+                        .orElse(null);
 
-                        EcoNewsRelevance relevance = new EcoNewsRelevance();
+                    EcoNewsRelevance relevance = new EcoNewsRelevance();
 
-                        relevance.setEcoNews(ecoNews);
-                        return relevance;
-                    }).toList();
-                });
+                    relevance.setEcoNews(ecoNews);
+                    return relevance;
+                }).toList();
+            });
 
-        try (MockedConstruction<EcoNewsWithRelevanceVectorsDto> mockedConstruction = mockConstruction(EcoNewsWithRelevanceVectorsDto.class,
+        try (MockedConstruction<EcoNewsWithRelevanceVectorsDto> mockedConstruction =
+            mockConstruction(EcoNewsWithRelevanceVectorsDto.class,
                 (mock, context) -> {
                     EcoNews newsItem = (EcoNews) context.arguments().get(0);
                     Double scoreToReturn;
@@ -360,25 +386,25 @@ class EcoNewsRelevanceServiceImplTest {
                 })) {
 
             when(ecoNewsRepo.findAllById(anyList()))
-                    .thenAnswer(invocation -> {
-                        List<Long> ids = invocation.getArgument(0);
-                        return ids.stream()
-                                .map(id -> initialFilteredNews.stream()
-                                        .filter(news -> news.getId().equals(id))
-                                        .findFirst()
-                                        .orElse(null))
-                                .collect(Collectors.toList());
-                    });
+                .thenAnswer(invocation -> {
+                    List<Long> ids = invocation.getArgument(0);
+                    return ids.stream()
+                        .map(id -> initialFilteredNews.stream()
+                            .filter(news -> news.getId().equals(id))
+                            .findFirst()
+                            .orElse(null))
+                        .toList();
+                });
 
             EcoNewsGenericDto dtoPlaceholder = mock(EcoNewsGenericDto.class);
             when(modelMapper.map(any(EcoNews.class), Mockito.<Class<EcoNewsGenericDto>>any()))
-                    .thenReturn(dtoPlaceholder);
+                .thenReturn(dtoPlaceholder);
 
             PageableAdvancedDto<EcoNewsGenericDto> expectedDto = mock(PageableAdvancedDto.class);
             when(pageableAdvancedDtoMapper.convert(any(Page.class))).thenReturn(expectedDto);
 
             PageableAdvancedDto<EcoNewsGenericDto> actual = ecoNewsRelevanceService.findRelevantEcoNews(
-                    pageable, tags, title, author, user);
+                pageable, tags, title, author, user);
 
             assertEquals(expectedDto, actual);
 
@@ -390,7 +416,7 @@ class EcoNewsRelevanceServiceImplTest {
             verify(ecoNewsService).getSpecification(any(EcoNewsViewDto.class));
             verify(ecoNewsRepo).findAll(eq(mockSpecification), any(Sort.class));
             verify(ecoNewsRelevanceRepo).findAllByEcoNewsIdIn(
-                    initialFilteredNews.stream().map(EcoNews::getId).toList());
+                initialFilteredNews.stream().map(EcoNews::getId).toList());
 
             assertEquals(initialFilteredNews.size(), mockedConstruction.constructed().size());
 
@@ -399,7 +425,7 @@ class EcoNewsRelevanceServiceImplTest {
             verify(relevantNewsPages).put(pageNumber, expectedNewsIdsInPage);
 
             verify(modelMapper, times(pageSize))
-                    .map(any(EcoNews.class), (Class<EcoNewsGenericDto>) any(Class.class));
+                .map(any(EcoNews.class), (Class<EcoNewsGenericDto>) any(Class.class));
             verify(pageableAdvancedDtoMapper).convert(any(Page.class));
         }
     }
@@ -409,12 +435,10 @@ class EcoNewsRelevanceServiceImplTest {
         field.setAccessible(true);
         field.set(target, value);
     }
+
     private Object getPrivateField(Object target, String fieldName) throws Exception {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(target);
     }
 }
-
-
-

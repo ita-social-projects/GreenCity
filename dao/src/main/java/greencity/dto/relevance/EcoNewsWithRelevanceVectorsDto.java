@@ -8,9 +8,10 @@ import java.util.Map;
 import lombok.Getter;
 
 /**
- * An {@link EcoNews} wrapper class with vectors that represents its content.
- * It contains the news itself, tags vector and title vector if available.
- * It also may contain the relevance score which is used for sorting the news by relevance.
+ * An {@link EcoNews} wrapper class with vectors that represents its content. It
+ * contains the news itself, tags vector and title vector if available. It also
+ * may contain the relevance score which is used for sorting the news by
+ * relevance.
  *
  * @author Rostyslav Zadyraichuk
  */
@@ -30,8 +31,8 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
      *                         positions in the vector
      */
     public EcoNewsWithRelevanceVectorsDto(EcoNews ecoNews,
-                                          EcoNewsRelevance ecoNewsRelevance,
-                                          Map<Long, Integer> tagsIndexes) {
+        EcoNewsRelevance ecoNewsRelevance,
+        Map<Long, Integer> tagsIndexes) {
         super(ecoNews.getTags(), tagsIndexes);
         this.ecoNews = ecoNews;
         if (ecoNewsRelevance != null) {
@@ -54,19 +55,19 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
      * @param relevanceScoresWeights the weights of tags and title relevance scores
      */
     public EcoNewsWithRelevanceVectorsDto(EcoNews ecoNews,
-                                          EcoNewsRelevance ecoNewsRelevance,
-                                          Map<Long, Integer> tagsIndexes,
-                                          CachedUserRelevanceProfile userProfile,
-                                          double[] relevanceScoresWeights) {
+        EcoNewsRelevance ecoNewsRelevance,
+        Map<Long, Integer> tagsIndexes,
+        CachedUserRelevanceProfile userProfile,
+        double[] relevanceScoresWeights) {
         this(ecoNews, ecoNewsRelevance, tagsIndexes);
         boolean isTagsVectorInvalid = Arrays.stream(tagsVector).allMatch(value -> value == 0.0);
         boolean isTitleVectorInvalid = titleVector == null;
-        double tagsRelevance = isTagsVectorInvalid ? 0.0
-            : relevanceScoresWeights[0]
-            * getCosineSimilarity(tagsVector, userProfile.tagsPreferencesVector());
-        double titleRelevance = isTitleVectorInvalid ? 0.0
-            : relevanceScoresWeights[1]
-            * getCosineSimilarity(titleVector, userProfile.titlePreferencesVector());
+        double tagsRelevance = isTagsVectorInvalid
+            ? 0.0
+            : relevanceScoresWeights[0] * getCosineSimilarity(tagsVector, userProfile.tagsPreferencesVector());
+        double titleRelevance = isTitleVectorInvalid
+            ? 0.0
+            : relevanceScoresWeights[1] * getCosineSimilarity(titleVector, userProfile.titlePreferencesVector());
         this.relevanceScore = tagsRelevance + titleRelevance;
     }
 

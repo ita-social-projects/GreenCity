@@ -9,22 +9,37 @@ import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsRelevance;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.Language;
-import greencity.enums.*;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.enums.OpenAIResponseFormat;
+import greencity.enums.Role;
+import greencity.enums.TagType;
+import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.JsonResponseParseException;
+import greencity.exception.exceptions.LanguageNotFoundException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.repository.EcoNewsRelevanceRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.TagsRepo;
+import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
 import static greencity.constant.OpenAIRequest.*;
@@ -195,40 +210,51 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Calculates and stores the title relevance vector for the specified {@link EcoNews} entity.
+     * Calculates and stores the title relevance vector for the specified
+     * {@link EcoNews} entity.
      *
-     * <p>Steps performed by this method:
+     * <p>
+     * Steps performed by this method:
      * <ul>
-     *     <li>Retrieves the {@link EcoNews} entity by the given ID.</li>
-     *     <li>Sends the news title to the OpenAI service to get an embedding vector.</li>
-     *     <li>Creates an {@link EcoNewsRelevance} entity containing the title vector.</li>
-     *     <li>Saves the relevance entity to the database via {@code ecoNewsRelevanceRepo}.</li>
+     * <li>Retrieves the {@link EcoNews} entity by the given ID.</li>
+     * <li>Sends the news title to the OpenAI service to get an embedding
+     * vector.</li>
+     * <li>Creates an {@link EcoNewsRelevance} entity containing the title
+     * vector.</li>
+     * <li>Saves the relevance entity to the database via
+     * {@code ecoNewsRelevanceRepo}.</li>
      * </ul>
+     * </p>
      *
-     * <p>If no news is found with the specified ID, a {@link NotFoundException} is thrown.
+     * <p>
+     * If no news is found with the specified ID, a {@link NotFoundException} is
+     * thrown.
+     * </p>
      *
-     * <p>This method is transactional, ensuring atomicity of the operations.
+     * <p>
+     * This method is transactional, ensuring atomicity of the operations.
+     * </p>
      *
      * @param id the ID of the EcoNews entity for which to calculate title relevance
-     * @throws NotFoundException if the EcoNews entity with the given ID does not exist
+     * @throws NotFoundException if the EcoNews entity with the given ID does not
+     *                           exist
      */
     @Transactional
     public void getRelevanceForEcoNews(Long id) {
         EcoNews ecoNews = ecoNewsRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new NotFoundException(ECO_NEW_NOT_FOUND_BY_ID));
 
         String title = ecoNews.getTitle();
         OpenAIResponseDTO response = openAIService.makeRequestEmbedding(title);
 
         EcoNewsRelevance relevance = EcoNewsRelevance.builder()
-                .id(ecoNews.getId())
-                .ecoNews(ecoNews)
-                .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))
-                .build();
+            .id(ecoNews.getId())
+            .ecoNews(ecoNews)
+            .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))
+            .build();
 
         ecoNewsRelevanceRepo.save(relevance);
     }
-
 
     /**
      * Builds a news generation prompt for the OpenAI service based on an optional
@@ -489,7 +515,6 @@ public class AIServiceImpl implements AIService {
             .tags(List.of(tag))
             .build();
     }
-
 
     /**
      * Parses a sanitized response string into a JSON object node containing title

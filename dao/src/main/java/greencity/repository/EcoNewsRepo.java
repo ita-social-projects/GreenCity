@@ -2,11 +2,18 @@ package greencity.repository;
 
 import greencity.dto.econews.EcoNewsAuthorStatisticDto;
 import greencity.entity.EcoNews;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -209,4 +216,13 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
     @Override
     @EntityGraph(attributePaths = {"tags"})
     List<EcoNews> findAll(Specification<EcoNews> spec, Sort sort);
+
+    /**
+     * Method to count all EcoNews before a specified date.
+     *
+     * @param date the specified {@link LocalDate}.
+     * @return the count of EcoNews.
+     */
+    @Query("SELECT COUNT(e) FROM EcoNews e WHERE e.creationDate < :date")
+    long countEcoNewsBeforeDate(@Param("date") ZonedDateTime date);
 }

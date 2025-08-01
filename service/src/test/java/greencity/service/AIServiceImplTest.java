@@ -7,11 +7,25 @@ import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsRelevance;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.Language;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
+import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.JsonResponseParseException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.repository.EcoNewsRelevanceRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.TagsRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +42,20 @@ import java.util.Optional;
 
 import static greencity.constant.OpenAIConstants.*;
 import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {
@@ -92,10 +116,10 @@ class AIServiceImplTest {
         durationHabitDto = ModelUtils.getDurationHabitDto();
         openAIResponseDTO = ModelUtils.getOpenAIResponseDTO();
         ecoNews = EcoNews.builder()
-                .id(id)
-                .title("Test EcoNews Title")
-                .text("Test EcoNews content.")
-                .build();
+            .id(id)
+            .title("Test EcoNews Title")
+            .text("Test EcoNews content.")
+            .build();
 
         ReflectionTestUtils.setField(aiService, "objectMapper", new ObjectMapper());
 
@@ -363,6 +387,7 @@ class AIServiceImplTest {
         assertEquals(user, saved.getAuthor());
         assertTrue(saved.getTags().contains(tag));
     }
+
     @Test
     void getRelevanceForEcoNews_shouldSuccessfullyCalculateAndSaveRelevance() {
         String ecoNewsTitle = ecoNews.getTitle();
@@ -373,7 +398,7 @@ class AIServiceImplTest {
         when(ecoNewsRepo.findById(id)).thenReturn(Optional.of(ecoNews));
         when(openAIService.makeRequestEmbedding(ecoNewsTitle)).thenReturn(embeddingResponse);
         doReturn(expectedVector).when(floatArrayConverter)
-                .convertToEntityAttribute(Arrays.toString(expectedVector));
+            .convertToEntityAttribute(Arrays.toString(expectedVector));
 
         when(ecoNewsRelevanceRepo.save(any(EcoNewsRelevance.class))).thenReturn(null);
 

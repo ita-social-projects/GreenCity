@@ -1,6 +1,10 @@
 package greencity.dto.relevance;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import greencity.entity.Tag;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +40,7 @@ class EntityWithTagsVectorTest {
 
         TestEntityWithTagsVector entity = new TestEntityWithTagsVector(tags, tagsIndexes);
 
-        assertArrayEquals(new Float[]{1.0f, 1.0f}, entity.getTagsVector());
+        assertArrayEquals(new Float[] {1.0f, 1.0f}, entity.getTagsVector());
     }
 
     @Test
@@ -65,7 +69,7 @@ class EntityWithTagsVectorTest {
 
         TestEntityWithTagsVector entity =
             assertDoesNotThrow(() -> new TestEntityWithTagsVector(tags, tagsIndexes));
-        assertArrayEquals(new Float[]{1.0f, 0.0f}, entity.getTagsVector());
+        assertArrayEquals(new Float[] {1.0f, 0.0f}, entity.getTagsVector());
     }
 
     @Test

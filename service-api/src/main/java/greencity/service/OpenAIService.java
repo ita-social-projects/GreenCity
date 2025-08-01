@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
@@ -22,5 +21,6 @@ public interface OpenAIService {
      *                                service is unavailable.
      */
     OpenAIResponseDTO makeRequest(LanguageDTO language, String request, OpenAIResponseFormat responseType);
+
     OpenAIResponseDTO makeRequestEmbedding(String title);
 }

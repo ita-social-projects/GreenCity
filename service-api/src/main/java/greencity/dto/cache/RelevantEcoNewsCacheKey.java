@@ -15,6 +15,5 @@ public record RelevantEcoNewsCacheKey(
     String tags,
     String title,
     String author,
-    Integer pageSize
-) {
+    Integer pageSize) {
 }
