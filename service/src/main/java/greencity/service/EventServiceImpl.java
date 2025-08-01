@@ -615,14 +615,8 @@ public class EventServiceImpl implements EventService {
     private void checkTitleImageInImagesToDelete(UpdateEventDto updateEventDto, List<String> imagesToDelete) {
         String titleImage = updateEventDto.getTitleImage();
 
-        if (imagesToDelete != null && titleImage != null && imagesToDelete.contains(titleImage)) {
-            List<String> additionalImages = new ArrayList<>(updateEventDto.getAdditionalImages());
-            if (!additionalImages.isEmpty()) {
-                updateEventDto.setTitleImage(additionalImages.removeFirst());
-                updateEventDto.setAdditionalImages(additionalImages);
-            } else {
-                updateEventDto.setTitleImage(null);
-            }
+        if (imagesToDelete != null && titleImage != null) {
+            imagesToDelete.remove(titleImage);
         }
     }
 
@@ -643,7 +637,7 @@ public class EventServiceImpl implements EventService {
                 .map(url -> EventImages.builder().event(toUpdate).link(url).build())
                 .collect(Collectors.toList()));
         } else {
-            toUpdate.setAdditionalImages(null);
+            toUpdate.setAdditionalImages(new ArrayList<>());
         }
     }
 
@@ -656,7 +650,7 @@ public class EventServiceImpl implements EventService {
                     .map(url -> EventImages.builder().event(toUpdate).link(url).build())
                     .collect(Collectors.toList()));
             } else {
-                toUpdate.setAdditionalImages(null);
+                toUpdate.setAdditionalImages(new ArrayList<>());
             }
         } else {
             toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
@@ -685,7 +679,7 @@ public class EventServiceImpl implements EventService {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
                 .event(toUpdate).link(url).build()).collect(Collectors.toList()));
         } else {
-            toUpdate.setAdditionalImages(null);
+            toUpdate.setAdditionalImages(new ArrayList<>());
         }
     }
 

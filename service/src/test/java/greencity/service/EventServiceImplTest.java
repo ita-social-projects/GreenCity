@@ -449,7 +449,9 @@ class EventServiceImplTest {
             event.getAdditionalImages().getFirst().getLink());
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
 
-        when(eventRepo.findAllImagesLinksByEventId(anyLong())).thenReturn(List.of("New addition image"));
+        List<String> imagesList = new ArrayList<>();
+        imagesList.add("New addition image");
+        when(eventRepo.findAllImagesLinksByEventId(anyLong())).thenReturn(imagesList);
         doNothing().when(fileService).delete(any());
 
         method.invoke(eventService, event, eventToUpdateDto, null);
@@ -459,7 +461,7 @@ class EventServiceImplTest {
 
         eventToUpdateDto.setAdditionalImages(null);
         method.invoke(eventService, event, eventToUpdateDto, null);
-        assertNull(event.getAdditionalImages());
+        assertTrue(event.getAdditionalImages().isEmpty());
 
         eventToUpdateDto.setTitleImage(null);
         expectedEvent.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
@@ -494,7 +496,7 @@ class EventServiceImplTest {
         assertEquals("url2", event.getAdditionalImages().get(3).getLink());
 
         eventToUpdateDto.setAdditionalImages(null);
-        expectedEvent.setAdditionalImages(null);
+        expectedEvent.setAdditionalImages(new ArrayList<>());
         eventToUpdateDto.setTitleImage(null);
         expectedEvent.setTitleImage("title url");
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
@@ -502,7 +504,7 @@ class EventServiceImplTest {
 
         method.invoke(eventService, event, eventToUpdateDto, new MultipartFile[] {multipartFile});
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
-        assertNull(event.getAdditionalImages());
+        assertTrue(event.getAdditionalImages().isEmpty());
     }
 
     @Test
@@ -1245,7 +1247,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage("titleImage");
         updateEventDto.setAdditionalImages(List.of("newTitleImage", "additionalImage"));
 
-        List<String> imagesToDelete = List.of("titleImage");
+        List<String> imagesToDelete = new ArrayList<>();
+        imagesToDelete.add("titleImage");
         when(eventRepo.findAllImagesLinksByEventId(updateEventDto.getId())).thenReturn(imagesToDelete);
 
         Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete",
@@ -1253,9 +1256,11 @@ class EventServiceImplTest {
         method.setAccessible(true);
         method.invoke(eventService, updateEventDto, imagesToDelete);
 
-        assertEquals("newTitleImage", updateEventDto.getTitleImage());
-        assertEquals(1, updateEventDto.getAdditionalImages().size());
-        assertEquals("additionalImage", updateEventDto.getAdditionalImages().getFirst());
+        assertEquals("titleImage", updateEventDto.getTitleImage());
+        assertEquals(2, updateEventDto.getAdditionalImages().size());
+        assertTrue(updateEventDto.getAdditionalImages().contains("newTitleImage"));
+        assertTrue(updateEventDto.getAdditionalImages().contains("additionalImage"));
+        assertTrue(imagesToDelete.isEmpty());
     }
 
     @Test
@@ -1264,7 +1269,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage("titleImage");
         updateEventDto.setAdditionalImages(Collections.emptyList());
 
-        List<String> imagesToDelete = List.of("titleImage");
+        List<String> imagesToDelete = new ArrayList<>();
+        imagesToDelete.add("titleImage");
         when(eventRepo.findAllImagesLinksByEventId(updateEventDto.getId())).thenReturn(imagesToDelete);
 
         Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete",
@@ -1272,7 +1278,8 @@ class EventServiceImplTest {
         method.setAccessible(true);
         method.invoke(eventService, updateEventDto, imagesToDelete);
 
-        assertNull(updateEventDto.getTitleImage());
+        assertEquals("titleImage", updateEventDto.getTitleImage());
+        assertTrue(imagesToDelete.isEmpty());
     }
 
     @Test
@@ -1281,7 +1288,8 @@ class EventServiceImplTest {
         updateEventDto.setTitleImage("titleImage");
         updateEventDto.setAdditionalImages(List.of("additionalImage"));
 
-        List<String> imagesToDelete = List.of("additionalImage");
+        List<String> imagesToDelete = new ArrayList<>();
+        imagesToDelete.add("additionalImage");
         when(eventRepo.findAllImagesLinksByEventId(updateEventDto.getId())).thenReturn(imagesToDelete);
 
         Method method = EventServiceImpl.class.getDeclaredMethod("checkTitleImageInImagesToDelete",
@@ -1292,6 +1300,8 @@ class EventServiceImplTest {
         assertEquals("titleImage", updateEventDto.getTitleImage());
         assertEquals(1, updateEventDto.getAdditionalImages().size());
         assertEquals("additionalImage", updateEventDto.getAdditionalImages().getFirst());
+        assertEquals(1, imagesToDelete.size());
+        assertEquals("additionalImage", imagesToDelete.getFirst());
     }
 
     @Test

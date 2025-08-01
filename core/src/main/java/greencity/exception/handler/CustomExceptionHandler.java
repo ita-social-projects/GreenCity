@@ -25,7 +25,6 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
-import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -108,7 +107,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(),
                 new TypeReference<List<Map<String, String>>>() {
                 })
-                .get(0);
+                .getFirst();
         } else {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), new TypeReference<>() {
             });
@@ -317,8 +316,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method interceptor for {@link UnsupportedOperationException},
-     * {@link UnsupportedSortException}.
+     * Method interceptor for {@link UnsupportedOperationException}.
      *
      * @param ex      Exception which should be intercepted.
      * @param request Contains details about the occurred exception.
@@ -490,21 +488,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
         HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
-     * Customize the response for UnsupportedSortException.
-     *
-     * @param ex      the exception
-     * @param request the current request
-     * @return a {@code ResponseEntity} message
-     */
-    @ExceptionHandler(UnsupportedSortException.class)
-    public final ResponseEntity<Object> handleUnsupportedSortException(
-        UnsupportedSortException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);

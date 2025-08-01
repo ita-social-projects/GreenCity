@@ -1,12 +1,17 @@
 package greencity.service;
 
+import com.google.common.base.CaseFormat;
+import greencity.constant.OpenAIConstants;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
+import greencity.enums.EcoNewsLocation;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
 import greencity.exception.exceptions.OpenAIResponseException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,9 +49,15 @@ public class OpenAIServiceImpl implements OpenAIService {
     private Double temperature;
 
     private final RestClient restClient;
+    private final SecureRandom random;
+    private final DateTimeFormatter monthYearFormat;
+    private final DateTimeFormatter fullDateTimeFormat;
 
     public OpenAIServiceImpl(RestClient restClient) {
         this.restClient = restClient;
+        this.random = new SecureRandom();
+        this.monthYearFormat = DateTimeFormatter.ofPattern("yyyy-MM");
+        this.fullDateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     }
 
     /**
@@ -154,6 +165,9 @@ public class OpenAIServiceImpl implements OpenAIService {
         body.put(REQUEST_MODEL_KEY, model);
 
         List<Map<String, String>> messages = new ArrayList<>();
+        EcoNewsLocation ecoNewsLocation = EcoNewsLocation.values()[random.nextInt(EcoNewsLocation.values().length)];
+        String ecoNewsLocationString = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, ecoNewsLocation.name());
+        LocalDateTime currentDateTime = LocalDateTime.now(ZoneOffset.UTC);
         messages.add(Map.of(
             RESPONSE_ROLE_KEY,
             ROLE_SYSTEM,
@@ -166,7 +180,11 @@ public class OpenAIServiceImpl implements OpenAIService {
             RESPONSE_ROLE_KEY,
             ROLE_USER,
             RESPONSE_JSON_CONTENT_KEY,
-            String.join(" ", prompt, AI_LANGUAGE_POLICY.formatted(language.getName()))));
+            String.join(" ", prompt,
+                AI_REQUEST_NEWS_LOCATION.formatted(ecoNewsLocationString),
+                AI_REQUEST_KNOWLEDGE_CUT_DATE.formatted(monthYearFormat.format(currentDateTime)),
+                AI_REQUEST_IDENTIFIER.formatted(fullDateTimeFormat.format(currentDateTime)),
+                AI_LANGUAGE_POLICY.formatted(language.getName()))));
         body.put(REQUEST_MESSAGES_KEY, messages);
         body.put(REQUEST_MAX_TOKENS_KEY, maxCompletionTokens);
         body.put(REQUEST_TEMPERATURE_KEY, temperature);

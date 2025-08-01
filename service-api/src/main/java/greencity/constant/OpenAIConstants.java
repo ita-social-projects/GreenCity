@@ -53,7 +53,11 @@ public class OpenAIConstants {
     public static final String AI_LANGUAGE_POLICY = "Answer in specified language: %s.";
     public static final String AI_HEADINGS_POLICY =
         "Do not use headings, titles, or formatting styles to divide sections. "
-            + "Present all content in plain text, using full sentences and \\n\\n to separate ideas.";
+            + "Present all content in plain text, using full sentences and \\n\\n to separate ideas."
+            + "Use only single quotes inside text blocks.";
+    public static final String AI_REQUEST_NEWS_LOCATION = "Generate eco-news about: %s.";
+    public static final String AI_REQUEST_KNOWLEDGE_CUT_DATE = "Knowledge cut: %s.";
+    public static final String AI_REQUEST_IDENTIFIER = "Request datetime identifier: %s.";
 
     public static final String FORMAT_TITLE_PREFIX = "Title: ";
     public static final String FORMAT_EMPTY_STRING = "";

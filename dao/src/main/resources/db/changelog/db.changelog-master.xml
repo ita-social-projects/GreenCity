@@ -266,6 +266,8 @@
     <include file="db/changelog/logs/ch-update-column-names-positions-Bulhakova.xml"/>
     <include file="db/changelog/logs/ch-add-quartz-tables.xml"/>
     <include file="db/changelog/logs/ch-add-column-name_languages-table-Zadyraichuk.xml"/>
+    <include file="db/changelog/logs/ch-drop-table-habit-status-Popovych.xml"/>
+    <include file="/db/changelog/logs/ch-change-email-column-types-Popovych.xml"/>
     <include file="db/changelog/logs/ch-add-table-tags-coherence-Zadyraichuk.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tags-coherence-Zadyraichuk.xml"/>
     <include file="db/changelog/logs/ch-add-table-eco-news-relevance-Yukhno.xml"/>

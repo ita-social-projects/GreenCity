@@ -1,13 +1,19 @@
 package greencity.config;
 
-import greencity.logging.LoggingJobListener;
 import static greencity.constant.QuartzConstants.*;
+import greencity.logging.LoggingJobListener;
 import greencity.exception.exceptions.InvalidCronException;
 import greencity.exception.exceptions.TriggerException;
 import greencity.scheduler.EcoNewsGenerationJob;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
