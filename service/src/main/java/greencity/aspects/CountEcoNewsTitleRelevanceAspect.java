@@ -25,6 +25,13 @@ public class CountEcoNewsTitleRelevanceAspect {
         this.ecoNewsService = ecoNewsService;
     }
 
+    /**
+     * Advice that runs after the successful execution of the {@code save} method
+     * in {@code EcoNewsController}. If the response contains a valid {@link EcoNewsGenericDto},
+     * it triggers title relevance vector generation.
+     *
+     * @param response the response object returned by the save method
+     */
     @AfterReturning(
             pointcut = "execution(* greencity.controller.EcoNewsController.save(..))",
             returning = "response"
@@ -39,6 +46,15 @@ public class CountEcoNewsTitleRelevanceAspect {
         }
     }
 
+    /**
+     * Around advice that wraps the execution of the {@code update} method in {@code EcoNewsController}.
+     * If the eco news title has changed as a result of the update, it triggers recalculation of the
+     * relevance vector for the updated title.
+     *
+     * @param joinPoint the join point representing the method call
+     * @return the original return value of the update method
+     * @throws Throwable if the underlying method throws any exceptions
+     */
     @Around("execution(* greencity.controller.EcoNewsController.update(..))")
     public Object aroundUpdate(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
