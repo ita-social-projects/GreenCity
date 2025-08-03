@@ -1,6 +1,5 @@
 package greencity.service;
 
-import com.google.api.client.util.NullValue;
 import greencity.ModelUtils;
 import greencity.constant.OpenAIConstants;
 import greencity.dto.language.LanguageDTO;

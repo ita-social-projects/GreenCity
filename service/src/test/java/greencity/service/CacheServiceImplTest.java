@@ -34,8 +34,6 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.TagsCoherenceRepo;
 import greencity.repository.TagsRepo;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
