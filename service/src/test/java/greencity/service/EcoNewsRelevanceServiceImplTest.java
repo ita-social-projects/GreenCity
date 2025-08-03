@@ -124,7 +124,7 @@ class EcoNewsRelevanceServiceImplTest {
     void init_withInvalidPoolsRatio_shouldThrow() throws Exception {
         EcoNewsRelevanceServiceImpl service = new EcoNewsRelevanceServiceImpl(null, null, null, null, null, null);
 
-        setPrivateField(service, "relevancePoolsRatioString", "0.5:0.5"); // 2 значения вместо 3
+        setPrivateField(service, "relevancePoolsRatioString", "0.5:0.5");
         setPrivateField(service, "relevanceScoresWeightsString", "0.7:0.3");
         setPrivateField(service, "relevanceScoresStrengthString", "0.6:0.2");
 
@@ -137,7 +137,7 @@ class EcoNewsRelevanceServiceImplTest {
         EcoNewsRelevanceServiceImpl service = new EcoNewsRelevanceServiceImpl(null, null, null, null, null, null);
 
         setPrivateField(service, "relevancePoolsRatioString", "0.3:0.5:0.2");
-        setPrivateField(service, "relevanceScoresWeightsString", "0.5"); // 1 значение вместо 2
+        setPrivateField(service, "relevanceScoresWeightsString", "0.5");
         setPrivateField(service, "relevanceScoresStrengthString", "0.6:0.2");
 
         BeanInitializationException ex = assertThrows(BeanInitializationException.class, service::init);
@@ -150,7 +150,7 @@ class EcoNewsRelevanceServiceImplTest {
 
         setPrivateField(service, "relevancePoolsRatioString", "0.3:0.5:0.2");
         setPrivateField(service, "relevanceScoresWeightsString", "0.7:0.3");
-        setPrivateField(service, "relevanceScoresStrengthString", "0.6"); // 1 значение вместо 2
+        setPrivateField(service, "relevanceScoresStrengthString", "0.6");
 
         BeanInitializationException ex = assertThrows(BeanInitializationException.class, service::init);
         assertTrue(ex.getMessage().contains("Expected 2 values"));

@@ -22,5 +22,13 @@ public interface OpenAIService {
      */
     OpenAIResponseDTO makeRequest(LanguageDTO language, String request, OpenAIResponseFormat responseType);
 
+
+    /**
+     * Makes a request to the OpenAI Embedding API to generate embeddings for the provided title.
+     *
+     * @param title the text title to generate embeddings for
+     * @return The embedding response from the OpenAI service
+     * @throws OpenAIRequestException If the request is invalid or the OpenAI service is unavailable
+     */
     OpenAIResponseDTO makeRequestEmbedding(String title);
 }

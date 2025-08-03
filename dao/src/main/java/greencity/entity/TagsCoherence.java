@@ -20,11 +20,8 @@ import lombok.ToString;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
-@ToString
-@EqualsAndHashCode
 @Table(name = "tags_coherence")
 public class TagsCoherence {
     @EmbeddedId
@@ -43,8 +40,8 @@ public class TagsCoherence {
     @Column(nullable = false)
     private Float coherence;
 
-    @Data
     @Embeddable
+    @Data
     public static class TagsCoherenceId {
         @Column(name = "source_tag_id", nullable = false)
         private Long sourceTagId;
