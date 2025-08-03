@@ -24,7 +24,7 @@ public class OpenAIConstants {
     public static final String RESPONSE_MESSAGE_KEY = "message";
     public static final String RESPONSE_USAGE_KEY = "usage";
     public static final String RESPONSE_PROMPT_TOKENS_KEY = "prompt_tokens";
-    public static final String RESPONSE_TOTAL_TOKENS_KEY = "prompt_tokens";
+    public static final String RESPONSE_TOTAL_TOKENS_KEY = "total_tokens";
     public static final String RESPONSE_COMPLETION_TOKENS_KEY = "completion_tokens";
     public static final String RESPONSE_CREATED_KEY = "created";
     public static final String RESPONSE_DATA_KEY = "data";
