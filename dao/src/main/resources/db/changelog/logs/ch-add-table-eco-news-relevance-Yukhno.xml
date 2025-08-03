@@ -10,10 +10,14 @@
                 <constraints primaryKey="true"
                              nullable="false"
                              foreignKeyName="fk_eco_news_relevance_news"
-                             references="eco_news(id)"/>
+                             references="eco_news(id)"
+                             deleteCascade="true"/>
             </column>
             <column name="title_vector" type="TEXT"/>
         </createTable>
+        <rollback>
+            <dropTable tableName="eco_news_relevance"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

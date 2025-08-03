@@ -257,4 +257,11 @@ public class ErrorMessage {
     public static final String EMPTY_TABLE = "Table '%s' doesn't contain any row";
     public static final String INVALID_TABLE_NAME = "Table name must contain only lowercase letters "
         + "and single underscores between words. Cannot start or end with an underscore.";
+    public static final String INVALID_RELEVANCE_POOLS = "Invalid relevance pools ratio parameter value.";
+    public static final String INVALID_SCORES_WEIGHTS = "Invalid relevance scores weights parameter value.";
+    public static final String INVALID_SCORES_STRENGTH = "Invalid relevance scores strength parameter value.";
+    public static final String INVALID_TAGS_WEIGHTS = "Invalid tags weights parameter value.";
+    public static final String INVALID_RATIO_FORMAT_OF_THREE = "Expected 3 values in format 'a:b:c', but got %s.";
+    public static final String INVALID_RATIO_FORMAT_OF_TWO = "Expected 2 values in format 'a:b', but got %s.";
+    public static final String INVALID_RATIO_SUM = "Sum of all elements must be equal 1.0, but is %.2f.";
 }

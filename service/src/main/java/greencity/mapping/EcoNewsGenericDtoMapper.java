@@ -47,7 +47,7 @@ public class EcoNewsGenericDtoMapper extends AbstractConverter<EcoNews, EcoNewsG
                 .filter(tag -> tag.matches("^([A-Za-z-])+$"))
                 .toList())
             .tagsUk(tags.stream()
-                .filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$"))
+                .filter(tag -> tag.matches("^([А-Яа-яІіЄєЇїҐґ'-])+$"))
                 .toList())
             .shortInfo(ecoNews.getShortInfo())
             .content(ecoNews.getText())

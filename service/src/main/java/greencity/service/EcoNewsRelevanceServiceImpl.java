@@ -1,5 +1,11 @@
 package greencity.service;
 
+import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT_OF_THREE;
+import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT_OF_TWO;
+import static greencity.constant.ErrorMessage.INVALID_RATIO_SUM;
+import static greencity.constant.ErrorMessage.INVALID_RELEVANCE_POOLS;
+import static greencity.constant.ErrorMessage.INVALID_SCORES_STRENGTH;
+import static greencity.constant.ErrorMessage.INVALID_SCORES_WEIGHTS;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.utils.RelevanceWeightUtils;
@@ -21,6 +27,7 @@ import greencity.mapping.PageableAdvancedDtoMapper;
 import jakarta.annotation.PostConstruct;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -63,20 +70,28 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
     public void init() {
         this.relevancePoolsRatio = RelevanceWeightUtils.convertRatioFromString(relevancePoolsRatioString);
         if (relevancePoolsRatio.length != 3) {
-            throw new BeanInitializationException(String.format("Invalid relevance pools ratio parameter value. "
-                + "Expected 3 values in format 'a:b:c', but got %s.", relevancePoolsRatioString));
+            throw new BeanInitializationException(String.join(" ", INVALID_RELEVANCE_POOLS,
+                INVALID_RATIO_FORMAT_OF_THREE.formatted(relevancePoolsRatioString)));
         }
 
         this.relevanceScoresWeights = RelevanceWeightUtils.convertRatioFromString(relevanceScoresWeightsString);
+        double sumOfRatios = Arrays.stream(relevanceScoresWeights).sum();
         if (relevanceScoresWeights.length != 2) {
-            throw new BeanInitializationException(String.format("Invalid relevance scores weights parameter value. "
-                + "Expected 2 values in format 'a:b', but got %s.", relevanceScoresWeightsString));
+            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_WEIGHTS,
+                INVALID_RATIO_FORMAT_OF_TWO.formatted(relevanceScoresWeightsString)));
+        } else if (sumOfRatios != 1) {
+            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_WEIGHTS,
+                INVALID_RATIO_SUM.formatted(sumOfRatios)));
         }
 
         this.relevanceScoresStrength = RelevanceWeightUtils.convertRatioFromString(relevanceScoresStrengthString);
+        sumOfRatios = Arrays.stream(relevanceScoresStrength).sum();
         if (relevanceScoresStrength.length != 2) {
-            throw new BeanInitializationException(String.format("Invalid relevance scores strength parameter value. "
-                + "Expected 2 values in format 'a:b', but got %s.", relevanceScoresStrengthString));
+            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_STRENGTH,
+                INVALID_RATIO_FORMAT_OF_TWO.formatted(relevanceScoresStrengthString)));
+        } else if (sumOfRatios != 1) {
+            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_STRENGTH,
+                INVALID_RATIO_SUM.formatted(sumOfRatios)));
         }
     }
 

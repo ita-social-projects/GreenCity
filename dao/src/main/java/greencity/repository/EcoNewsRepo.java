@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.dto.econews.EcoNewsAuthorStatisticDto;
 import greencity.entity.EcoNews;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -220,7 +219,7 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
     /**
      * Method to count all EcoNews before a specified date.
      *
-     * @param date the specified {@link LocalDate}.
+     * @param date the specified {@link ZonedDateTime}.
      * @return the count of EcoNews.
      */
     @Query("SELECT COUNT(e) FROM EcoNews e WHERE e.creationDate < :date")

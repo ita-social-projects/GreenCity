@@ -113,5 +113,10 @@
             <column name="destination_tag_id">5</column>
             <column name="coherence">0.9</column>
         </insert>
+        <rollback>
+            <delete tableName="tags_coherence">
+                <where>source_tag_id IN (1,2,3,4,5,12,13,14,20,21,22,23,24)</where>
+            </delete>
+        </rollback>
     </changeSet>
 </databaseChangeLog>

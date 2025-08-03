@@ -192,7 +192,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .toList();
 
         Page<EcoNewsGenericDto> pageResult = new PageImpl<>(ecoNewsDtos, ecoNewsPage.getPageable(),
-            ecoNewsPage.getTotalPages());
+            ecoNewsPage.getTotalElements());
         return pageableAdvancedDtoMapper.convert(pageResult);
     }
 

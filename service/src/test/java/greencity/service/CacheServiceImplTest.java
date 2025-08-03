@@ -34,6 +34,8 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.TagsCoherenceRepo;
 import greencity.repository.TagsRepo;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,7 +92,7 @@ class CacheServiceImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"0:0:0", "0.6:0.2:0.2", "1.0:1.0:1.0"})
+    @ValueSource(strings = {"0.6:0.2:0.2", "1.0:1.0:1.0"})
     void initWithValidWeightsTest(String weightsString) {
         ReflectionTestUtils.setField(cacheService, "tagsWeightsString", weightsString);
         assertDoesNotThrow(() -> cacheService.init());
@@ -99,7 +101,7 @@ class CacheServiceImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"0", "0.6:0.2", "1.0:1.0:1.0:1.0", "a:b:c", "0:0:A"})
+    @ValueSource(strings = {"0", "0:0:0", "0.6:0.2", "1.0:1.0:1.0:1.0", "a:b:c", "0:0:A"})
     void initWithInvalidWeightsTest(String weightsString) {
         ReflectionTestUtils.setField(cacheService, "tagsWeightsString", weightsString);
         assertThrows(BeanInitializationException.class, () -> cacheService.init());
@@ -155,8 +157,14 @@ class CacheServiceImplTest {
     void testGetUserProfileFromCacheWhenNotCached() {
         Long userId = 1L;
         EcoNewsRelevance ecoNewsRelevance = ModelUtils.getEcoNewsRelevance();
-        EcoNewsRelevance ecoNewsRelevanceMuted = ModelUtils.getEcoNewsRelevance();
-        ecoNewsRelevanceMuted.getTitleVector()[0] = 0.0f;
+        EcoNewsRelevance ecoNewsRelevanceZeroValue = ModelUtils.getEcoNewsRelevance();
+        ecoNewsRelevanceZeroValue.getTitleVector()[0] = 0.0f;
+        EcoNewsRelevance ecoNewsRelevanceNullVector = ModelUtils.getEcoNewsRelevance();
+        ecoNewsRelevanceNullVector.setTitleVector(null);
+        EcoNewsRelevance ecoNewsRelevanceEmptyVector = ModelUtils.getEcoNewsRelevance();
+        ecoNewsRelevanceEmptyVector.setTitleVector(new Float[0]);
+        EcoNewsRelevance ecoNewsRelevanceWrongDimension = ModelUtils.getEcoNewsRelevance();
+        ecoNewsRelevanceWrongDimension.setTitleVector(new Float[] {0.6f, 0.9f, -1.0f});
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         Event event = ModelUtils.getEvent();
         prepareTagsCollections(ecoNewsRelevance.getEcoNews(), event, habitAssign.getHabit());
@@ -164,7 +172,7 @@ class CacheServiceImplTest {
         when(userProfileCache.getIfPresent(userId)).thenReturn(null);
         when(tagsCoherenceCache.getIfPresent(any())).thenReturn(cachedTagsWithCoherence);
         when(ecoNewsRelevanceRepo.findLikedEcoNewsByUserId(userId))
-            .thenReturn(List.of(ecoNewsRelevance, ecoNewsRelevanceMuted));
+            .thenReturn(List.of(ecoNewsRelevance, ecoNewsRelevanceZeroValue));
         when(habitAssignRepo.findAllByUserId(userId)).thenReturn(List.of(habitAssign));
         when(eventRepo.findLikedEventsByUserId(userId)).thenReturn(List.of(event));
 
@@ -198,6 +206,27 @@ class CacheServiceImplTest {
         assertEquals(5, result.tagsPreferencesVector().length);
         assertNotNull(result.titlePreferencesVector());
         assertEquals(0, result.titlePreferencesVector().length);
+        verify(userProfileCache).put(eq(userId), any(CachedUserRelevanceProfile.class));
+    }
+
+    @Test
+    void testGetUserProfileFromCacheWhenNotCachedAndInvalidHabitsAndEvents() {
+        Long userId = 1L;
+        EcoNewsRelevance ecoNewsRelevance = ModelUtils.getEcoNewsRelevance();
+
+        when(userProfileCache.getIfPresent(userId)).thenReturn(null);
+        when(tagsCoherenceCache.getIfPresent(any())).thenReturn(cachedTagsWithCoherence);
+        when(ecoNewsRelevanceRepo.findLikedEcoNewsByUserId(userId)).thenReturn(List.of(ecoNewsRelevance));
+        when(habitAssignRepo.findAllByUserId(userId)).thenReturn(List.of());
+        when(eventRepo.findLikedEventsByUserId(userId)).thenReturn(List.of());
+
+        CachedUserRelevanceProfile result = cacheService.getUserProfileFromCache(userId);
+
+        assertNotNull(result);
+        assertNotNull(result.tagsPreferencesVector());
+        assertEquals(5, result.tagsPreferencesVector().length);
+        assertNotNull(result.titlePreferencesVector());
+        assertEquals(10, result.titlePreferencesVector().length);
         verify(userProfileCache).put(eq(userId), any(CachedUserRelevanceProfile.class));
     }
 

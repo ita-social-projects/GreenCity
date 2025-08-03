@@ -27,11 +27,12 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -54,7 +55,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
@@ -64,10 +64,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsRelevanceServiceImplTest {
-    @Spy
-    @InjectMocks
-    private EcoNewsRelevanceServiceImpl ecoNewsRelevanceService;
-
     @Mock
     private CacheService cacheService;
 
@@ -86,6 +82,9 @@ class EcoNewsRelevanceServiceImplTest {
     @Mock
     private PageableAdvancedDtoMapper pageableAdvancedDtoMapper;
 
+    @InjectMocks
+    private EcoNewsRelevanceServiceImpl ecoNewsRelevanceService;
+
     private final double[] relevancePoolsRatio = {0.5, 0.3, 0.2};
     private final double[] relevanceScoresWeights = {0.7, 0.3};
     private final double[] relevanceScoresStrength = {0.8, 0.2};
@@ -93,8 +92,6 @@ class EcoNewsRelevanceServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        lenient().doNothing().when(ecoNewsRelevanceService).init();
-
         ReflectionTestUtils.setField(ecoNewsRelevanceService, "relevancePoolsRatio", relevancePoolsRatio);
         ReflectionTestUtils.setField(ecoNewsRelevanceService, "relevanceScoresWeights", relevanceScoresWeights);
         ReflectionTestUtils.setField(ecoNewsRelevanceService, "relevanceScoresStrength", relevanceScoresStrength);
@@ -107,7 +104,7 @@ class EcoNewsRelevanceServiceImplTest {
 
         setPrivateField(service, "relevancePoolsRatioString", "0.3:0.5:0.2");
         setPrivateField(service, "relevanceScoresWeightsString", "0.7:0.3");
-        setPrivateField(service, "relevanceScoresStrengthString", "0.6:0.2");
+        setPrivateField(service, "relevanceScoresStrengthString", "0.6:0.4");
 
         service.init();
 
@@ -117,7 +114,7 @@ class EcoNewsRelevanceServiceImplTest {
 
         assertArrayEquals(new double[] {0.3, 0.5, 0.2}, poolsRatio);
         assertArrayEquals(new double[] {0.7, 0.3}, scoresWeights);
-        assertArrayEquals(new double[] {0.6, 0.2}, scoresStrength);
+        assertArrayEquals(new double[] {0.6, 0.4}, scoresStrength);
     }
 
     @Test
@@ -132,28 +129,28 @@ class EcoNewsRelevanceServiceImplTest {
         assertTrue(ex.getMessage().contains("Expected 3 values"));
     }
 
-    @Test
-    void init_withInvalidScoresWeights_shouldThrow() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"0.5", "0.5:0.4"})
+    void init_withInvalidScoresWeights_shouldThrow(String scoresWeights) throws Exception {
         EcoNewsRelevanceServiceImpl service = new EcoNewsRelevanceServiceImpl(null, null, null, null, null, null);
 
         setPrivateField(service, "relevancePoolsRatioString", "0.3:0.5:0.2");
-        setPrivateField(service, "relevanceScoresWeightsString", "0.5");
+        setPrivateField(service, "relevanceScoresWeightsString", scoresWeights);
         setPrivateField(service, "relevanceScoresStrengthString", "0.6:0.2");
 
-        BeanInitializationException ex = assertThrows(BeanInitializationException.class, service::init);
-        assertTrue(ex.getMessage().contains("Expected 2 values"));
+        assertThrows(BeanInitializationException.class, service::init);
     }
 
-    @Test
-    void init_withInvalidScoresStrength_shouldThrow() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"0.6", "0.6:0.3"})
+    void init_withInvalidScoresStrength_shouldThrow(String scoresStrength) throws Exception {
         EcoNewsRelevanceServiceImpl service = new EcoNewsRelevanceServiceImpl(null, null, null, null, null, null);
 
         setPrivateField(service, "relevancePoolsRatioString", "0.3:0.5:0.2");
         setPrivateField(service, "relevanceScoresWeightsString", "0.7:0.3");
-        setPrivateField(service, "relevanceScoresStrengthString", "0.6");
+        setPrivateField(service, "relevanceScoresStrengthString", scoresStrength);
 
-        BeanInitializationException ex = assertThrows(BeanInitializationException.class, service::init);
-        assertTrue(ex.getMessage().contains("Expected 2 values"));
+        assertThrows(BeanInitializationException.class, service::init);
     }
 
     @Test

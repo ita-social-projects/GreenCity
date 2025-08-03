@@ -11,7 +11,10 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
@@ -36,8 +39,12 @@ public class TagsCoherence {
     @Column(nullable = false)
     private Float coherence;
 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @EqualsAndHashCode
     @Embeddable
-    @Data
     public static class TagsCoherenceId {
         @Column(name = "source_tag_id", nullable = false)
         private Long sourceTagId;

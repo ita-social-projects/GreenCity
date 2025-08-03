@@ -689,7 +689,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(EcoNewsRelevanceCalculationException.class)
-    public final ResponseEntity<Object> handleOpenAIResponseException(EcoNewsRelevanceCalculationException ex,
+    public final ResponseEntity<Object> handleEcoNewsRelevanceCalculationException(
+        EcoNewsRelevanceCalculationException ex,
         WebRequest request) {
         log.error(ex.getMessage(), ex);
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));

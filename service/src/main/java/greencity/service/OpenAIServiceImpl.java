@@ -115,10 +115,14 @@ public class OpenAIServiceImpl implements OpenAIService {
      */
     @Override
     public OpenAIResponseDTO makeRequestEmbedding(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new OpenAIRequestException(OPEN_AI_EMBEDDING_INPUT_MISSING);
+        }
+
         Map<String, Object> body = new HashMap<>();
-        body.put("input", title);
-        body.put("model", embeddingApiModel);
-        body.put("dimensions", dimensionsTokens);
+        body.put(REQUEST_INPUT_KEY, title);
+        body.put(REQUEST_MODEL_KEY, embeddingApiModel);
+        body.put(REQUEST_DIMENSIONS_KEY, dimensionsTokens);
         HttpHeaders headers = createHttpHeaders();
 
         for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
@@ -355,22 +359,22 @@ public class OpenAIServiceImpl implements OpenAIService {
         OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
 
         try {
-            var dataList = (List<Map<String, Object>>) responseBody.get("data");
+            var dataList = (List<Map<String, Object>>) responseBody.get(RESPONSE_DATA_KEY);
             if (dataList == null || dataList.isEmpty()) {
-                throw new OpenAIResponseException("No embedding data found in OpenAI response.");
+                throw new OpenAIResponseException(ERROR_NO_EMBEDDING_FOUND);
             }
 
             var embeddingEntry = dataList.get(0);
-            var embedding = (List<Double>) embeddingEntry.get("embedding");
+            var embedding = (List<Double>) embeddingEntry.get(RESPONSE_EMBEDDING_KEY);
             openAIResponseDTO.setContent(embedding.toString());
 
-            var usage = (Map<String, Object>) responseBody.get("usage");
-            openAIResponseDTO.setUsedInputTokens((Integer) usage.get("prompt_tokens"));
-            openAIResponseDTO.setUsedOutputTokens((Integer) usage.get("total_tokens"));
+            var usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
+            openAIResponseDTO.setUsedInputTokens((Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY));
+            openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_TOTAL_TOKENS_KEY));
 
             openAIResponseDTO.setResponseDateTime(LocalDateTime.now(ZoneOffset.UTC));
         } catch (NullPointerException | ClassCastException e) {
-            throw new OpenAIResponseException("Invalid OpenAI embedding response format", e);
+            throw new OpenAIResponseException(ERROR_INVALID_EMBEDDING_FORMAT, e);
         }
 
         return openAIResponseDTO;

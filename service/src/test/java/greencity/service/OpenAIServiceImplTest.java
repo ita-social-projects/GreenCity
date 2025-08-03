@@ -1,5 +1,6 @@
 package greencity.service;
 
+import com.google.api.client.util.NullValue;
 import greencity.ModelUtils;
 import greencity.constant.OpenAIConstants;
 import greencity.dto.language.LanguageDTO;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -156,6 +158,14 @@ class OpenAIServiceImplTest {
 
         assertEquals(ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
         verify(restClient, times(MAX_REQUEST_ATTEMPTS)).post();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", " "})
+    void makeRequestEmbeddingWhenInvalidTitle(String title) {
+        assertThrows(OpenAIRequestException.class, () -> openAIService.makeRequestEmbedding(title));
+        verify(restClient, never()).post();
     }
 
     @Test

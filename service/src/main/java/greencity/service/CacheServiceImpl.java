@@ -1,5 +1,8 @@
 package greencity.service;
 
+import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT_OF_THREE;
+import static greencity.constant.ErrorMessage.INVALID_RATIO_SUM;
+import static greencity.constant.ErrorMessage.INVALID_TAGS_WEIGHTS;
 import com.github.benmanes.caffeine.cache.Cache;
 import greencity.utils.RelevanceWeightUtils;
 import greencity.dto.cache.CachedRelevancePools;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,9 +65,13 @@ public class CacheServiceImpl implements CacheService {
     @PostConstruct
     public void init() {
         this.tagsWeights = RelevanceWeightUtils.convertRatioFromString(tagsWeightsString);
+        double sumOfRatios = Arrays.stream(tagsWeights).sum();
         if (tagsWeights.length != 3) {
-            throw new BeanInitializationException(String.format("Invalid tags weights parameter value. "
-                + "Expected 3 values in format 'a:b:c', but got '%s'.", tagsWeightsString));
+            throw new BeanInitializationException(String.join(" ", INVALID_TAGS_WEIGHTS,
+                INVALID_RATIO_FORMAT_OF_THREE.formatted(tagsWeightsString)));
+        } else if (sumOfRatios != 1) {
+            throw new BeanInitializationException(String.join(" ", INVALID_TAGS_WEIGHTS,
+                INVALID_RATIO_SUM.formatted(sumOfRatios)));
         }
     }
 
@@ -274,7 +282,7 @@ public class CacheServiceImpl implements CacheService {
     private double[] rearrangeTagsWeights(double[] tagsWeights, Float[][] tagsVectors, int requiredVectorLength) {
         double[] weights = new double[3];
         for (int i = 0; i < 3; i++) {
-            if (tagsVectors[i] != null && tagsVectors[i].length == requiredVectorLength) {
+            if (tagsVectors[i].length == requiredVectorLength) {
                 weights[i] = tagsWeights[i];
             } else {
                 weights[i] = 0.0;
@@ -292,15 +300,12 @@ public class CacheServiceImpl implements CacheService {
             float weight = (float) normalizedWeights[i];
 
             if (weight == 0.0
-                || vectors[i] == null
                 || vectors[i].length != requiredVectorLength) {
                 continue;
             }
 
             for (int j = 0; j < requiredVectorLength; j++) {
-                if (vectors[i][j] != null) {
-                    merged[j] += vectors[i][j] * weight;
-                }
+                merged[j] += vectors[i][j] * weight;
             }
         }
 
@@ -312,17 +317,24 @@ public class CacheServiceImpl implements CacheService {
             return new Float[0];
         }
 
-        int dimension = vectors.get(0).length;
-        Float[] averageVector = new Float[dimension];
-        Arrays.fill(averageVector, 0f);
+        int dimension = vectors.stream()
+            .filter(vector -> vector != null && vector.length != 0)
+            .map(vector -> vector.length)
+            .collect(Collectors.groupingBy(
+                length -> length,
+                Collectors.counting()))
+            .entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .map(Map.Entry::getKey)
+            .orElse(0);
 
-        for (int i = 0; i < dimension; i++) {
-            for (Float[] vector : vectors) {
-                averageVector[i] += vector[i];
-            }
-            averageVector[i] /= vectors.size();
-        }
-
-        return averageVector;
+        return IntStream.range(0, dimension)
+            .mapToDouble(i -> vectors.stream()
+                .filter(vector -> vector != null && vector.length == dimension)
+                .mapToDouble(vector -> vector[i])
+                .average()
+                .orElse(0.0))
+            .mapToObj(vectorValue -> (float) vectorValue)
+            .toArray(Float[]::new);
     }
 }

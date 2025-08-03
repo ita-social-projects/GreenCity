@@ -14,6 +14,8 @@ public class OpenAIConstants {
     public static final String REQUEST_MAX_TOKENS_KEY = "max_completion_tokens";
     public static final String REQUEST_TEMPERATURE_KEY = "temperature";
     public static final String REQUEST_RESPONSE_FORMAT_KEY = "response_format";
+    public static final String REQUEST_INPUT_KEY = "input";
+    public static final String REQUEST_DIMENSIONS_KEY = "dimensions";
 
     public static final String RESPONSE_ID_KEY = "id";
     public static final String RESPONSE_JSON_CONTENT_KEY = "content";
@@ -22,8 +24,11 @@ public class OpenAIConstants {
     public static final String RESPONSE_MESSAGE_KEY = "message";
     public static final String RESPONSE_USAGE_KEY = "usage";
     public static final String RESPONSE_PROMPT_TOKENS_KEY = "prompt_tokens";
+    public static final String RESPONSE_TOTAL_TOKENS_KEY = "prompt_tokens";
     public static final String RESPONSE_COMPLETION_TOKENS_KEY = "completion_tokens";
     public static final String RESPONSE_CREATED_KEY = "created";
+    public static final String RESPONSE_DATA_KEY = "data";
+    public static final String RESPONSE_EMBEDDING_KEY = "embedding";
 
     public static final String ROLE_SYSTEM = "system";
     public static final String ROLE_USER = "user";
@@ -31,6 +36,7 @@ public class OpenAIConstants {
     public static final String ERROR_API_KEY_MISSING = "OpenAI API key is missing!";
     public static final String ERROR_API_URL_MISSING = "OpenAI API URL is missing!";
     public static final String ERROR_PROMPT_MISSING = "The prompt cannot be empty!";
+    public static final String OPEN_AI_EMBEDDING_INPUT_MISSING = "Input value for embedding cannot be null or empty";
     public static final String ERROR_INVALID_OPENAI_RESPONSE = "Received an invalid response from OpenAI.";
     public static final String ERROR_NO_OPENAI_RESPONSE = "No response received from OpenAI.";
     public static final String ERROR_JSON_INVALID_FORMAT = "Invalid JSON format in OpenAI response.";
@@ -43,6 +49,8 @@ public class OpenAIConstants {
     public static final String ERROR_ATTEMPTING_STOPPED = "Critical error - Attempting stopped.";
     public static final String ERROR_ECO_NEWS_CREATION_FAILED = "Eco-news creation failed.";
     public static final String OPEN_AI_REQUEST_FAILURE = "OpenAI request failure: {}";
+    public static final String ERROR_NO_EMBEDDING_FOUND = "No embedding data found in OpenAI response.";
+    public static final String ERROR_INVALID_EMBEDDING_FORMAT = "Invalid OpenAI embedding response format";
 
     public static final Integer MAX_REQUEST_ATTEMPTS = 3;
     public static final String MESSAGE_CURRENT_ATTEMPT = "Current attempt: {}";
