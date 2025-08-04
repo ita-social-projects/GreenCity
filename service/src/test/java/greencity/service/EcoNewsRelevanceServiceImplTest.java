@@ -142,7 +142,7 @@ class EcoNewsRelevanceServiceImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"0.6", "0.6:0.3"})
+    @ValueSource(strings = {"0.6"})
     void init_withInvalidScoresStrength_shouldThrow(String scoresStrength) throws Exception {
         EcoNewsRelevanceServiceImpl service = new EcoNewsRelevanceServiceImpl(null, null, null, null, null, null);
 

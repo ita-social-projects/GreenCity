@@ -85,13 +85,9 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         }
 
         this.relevanceScoresStrength = RelevanceWeightUtils.convertRatioFromString(relevanceScoresStrengthString);
-        sumOfRatios = Arrays.stream(relevanceScoresStrength).sum();
         if (relevanceScoresStrength.length != 2) {
             throw new BeanInitializationException(String.join(" ", INVALID_SCORES_STRENGTH,
                 INVALID_RATIO_FORMAT_OF_TWO.formatted(relevanceScoresStrengthString)));
-        } else if (sumOfRatios != 1) {
-            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_STRENGTH,
-                INVALID_RATIO_SUM.formatted(sumOfRatios)));
         }
     }
 
