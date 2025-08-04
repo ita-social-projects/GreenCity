@@ -36,7 +36,7 @@ class JwtAuthenticationProviderTest {
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtTool);
     }
 

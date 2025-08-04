@@ -78,7 +78,7 @@ class EcoNewsControllerTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),

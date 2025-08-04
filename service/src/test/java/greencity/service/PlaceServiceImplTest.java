@@ -796,7 +796,6 @@ class PlaceServiceImplTest {
     void addPlaceFromUiThrowsException() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        User user = ModelUtils.getUser();
         user.setUserStatus(UserStatus.BLOCKED);
         String email = user.getEmail();
 

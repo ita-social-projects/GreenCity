@@ -25,7 +25,7 @@ class AchievementStatisticsServiceImplTest {
         new StatisticsDto("Achievement 2", 20L));
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
     }
 

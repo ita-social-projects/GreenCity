@@ -19,7 +19,7 @@ class FactOfTheDayDtoMapperTest {
     private FactOfTheDayDtoMapper factOfTheDayDtoMapper;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
