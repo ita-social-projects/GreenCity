@@ -3,7 +3,9 @@ package greencity.aspects;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.service.AIServiceImpl;
+import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,15 +18,12 @@ import java.util.Objects;
 
 @Aspect
 @Component
+@RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "greencity.relevance", name = "enabled", havingValue = "true")
 public class CountEcoNewsTitleRelevanceAspect {
     private final AIServiceImpl aiServiceImpl;
     private final EcoNewsService ecoNewsService;
-
-    public CountEcoNewsTitleRelevanceAspect(AIServiceImpl aiServiceImpl, EcoNewsService ecoNewsService) {
-        this.aiServiceImpl = aiServiceImpl;
-        this.ecoNewsService = ecoNewsService;
-    }
+    private final EcoNewsRelevanceService ecoNewsRelevanceService;
 
     /**
      * Advice that runs after the successful execution of the {@code save} method in
@@ -49,8 +48,8 @@ public class CountEcoNewsTitleRelevanceAspect {
     /**
      * Around advice that wraps the execution of the {@code update} method in
      * {@code EcoNewsController}. If the eco news title has changed as a result of
-     * the update, it triggers recalculation of the relevance vector for the updated
-     * title.
+     * the update, it sets the relevance of the old title as outdated for future
+     * scheduled recalculation.
      *
      * @param joinPoint the join point representing the method call
      * @return the original return value of the update method
@@ -69,7 +68,8 @@ public class CountEcoNewsTitleRelevanceAspect {
         Object result = joinPoint.proceed();
 
         if (!Objects.equals(oldTitle, newTitle)) {
-            aiServiceImpl.getRelevanceForEcoNews(ecoNewsId);
+//            aiServiceImpl.getRelevanceForEcoNews(ecoNewsId);
+            ecoNewsRelevanceService.markRelevanceAsOutdated(oldNews);
         }
 
         return result;

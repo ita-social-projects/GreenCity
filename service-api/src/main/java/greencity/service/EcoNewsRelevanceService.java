@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,12 @@ public interface EcoNewsRelevanceService {
         String title,
         String author,
         UserVO user);
+
+    /**
+     * Marks relevance of given eco news as outdated.
+     * This method is used after some changes in eco news.
+     *
+     * @param ecoNews eco news to mark relevance as outdated
+     */
+    void markRelevanceAsOutdated(EcoNewsVO ecoNews);
 }

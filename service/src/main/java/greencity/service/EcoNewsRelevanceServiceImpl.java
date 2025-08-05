@@ -6,6 +6,7 @@ import static greencity.constant.ErrorMessage.INVALID_RATIO_SUM;
 import static greencity.constant.ErrorMessage.INVALID_RELEVANCE_POOLS;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_STRENGTH;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_WEIGHTS;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.utils.RelevanceWeightUtils;
@@ -171,6 +172,19 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             pageable,
             totalEcoNewsCount);
         return pageableAdvancedDtoMapper.convert(pageResult);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param ecoNews eco news to mark relevance as outdated
+     */
+    @Override
+    @Transactional
+    public void markRelevanceAsOutdated(EcoNewsVO ecoNews) {
+        if (ecoNews != null) {
+            ecoNewsRelevanceRepo.setOutdatedTrueByEcoNewsId(ecoNews.getId());
+        }
     }
 
     /**

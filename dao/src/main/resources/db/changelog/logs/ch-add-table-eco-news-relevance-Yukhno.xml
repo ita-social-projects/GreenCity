@@ -20,5 +20,16 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="eco-news-relevance-outdated-column-Zadyraichuk" author="Rostyslav Zadyraichuk">
+        <addColumn tableName="eco_news_relevance">
+            <column name="outdated" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="eco_news_relevance" columnName="outdated"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
 

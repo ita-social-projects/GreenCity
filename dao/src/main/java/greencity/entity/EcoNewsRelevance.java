@@ -36,4 +36,7 @@ public class EcoNewsRelevance {
     @Convert(converter = FloatArrayConverter.class)
     @Column(name = "title_vector", columnDefinition = "text")
     private Float[] titleVector;
+
+    @Column(name = "outdated", nullable = false)
+    private Boolean isOutdated;
 }

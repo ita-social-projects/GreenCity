@@ -21,5 +21,18 @@ public interface EcoNewsRelevanceRepo extends JpaRepository<EcoNewsRelevance, Lo
         """)
     List<EcoNewsRelevance> findLikedEcoNewsByUserId(@Param("id") Long id);
 
-    List<EcoNewsRelevance> findAllByEcoNewsIdIn(List<Long> ecoNewsIds);
+    @Query("""
+            SELECT enr
+            FROM EcoNewsRelevance enr
+            WHERE enr.ecoNews.id IN (:ecoNewsIds)
+                AND enr.isOutdated = false
+        """)
+    List<EcoNewsRelevance> findAllByEcoNewsIdIn(@Param("ecoNewsIds") List<Long> ecoNewsIds);
+
+    @Query("""
+            UPDATE EcoNewsRelevance enr
+            SET enr.isOutdated = true
+            WHERE enr.ecoNews.id = :id
+        """)
+    void setOutdatedTrueByEcoNewsId(@Param("id") Long id);
 }

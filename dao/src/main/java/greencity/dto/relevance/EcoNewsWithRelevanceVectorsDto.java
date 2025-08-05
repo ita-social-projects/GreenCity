@@ -35,7 +35,7 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
         Map<Long, Integer> tagsIndexes) {
         super(ecoNews.getTags(), tagsIndexes);
         this.ecoNews = ecoNews;
-        if (ecoNewsRelevance != null) {
+        if (ecoNewsRelevance != null && !ecoNewsRelevance.getIsOutdated()) {
             this.titleVector = ecoNewsRelevance.getTitleVector();
         }
     }
