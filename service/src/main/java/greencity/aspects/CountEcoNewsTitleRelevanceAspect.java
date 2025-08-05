@@ -7,6 +7,7 @@ import greencity.service.EcoNewsService;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import greencity.dto.econews.UpdateEcoNewsDto;
@@ -15,6 +16,7 @@ import java.util.Objects;
 
 @Aspect
 @Component
+@ConditionalOnProperty(prefix = "greencity.relevance", name = "enabled", havingValue = "true")
 public class CountEcoNewsTitleRelevanceAspect {
     private final AIServiceImpl aiServiceImpl;
     private final EcoNewsService ecoNewsService;

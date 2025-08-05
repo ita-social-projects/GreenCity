@@ -39,6 +39,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -63,6 +64,9 @@ public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
     private final EcoNewsRelevanceService ecoNewsRelevanceService;
+
+    @Value("${greencity.relevance.enabled}")
+    private boolean isRelevanceEnabled;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -210,6 +214,17 @@ public class EcoNewsController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
+    }
+
+    @Operation(summary = "Check if relevance is enabled.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @GetMapping("/relevance-enabled")
+    public ResponseEntity<Boolean> isRelevanceEnabled() {
+        return ResponseEntity.status(HttpStatus.OK).body(isRelevanceEnabled);
     }
 
     @Operation(summary = "Find eco news by relevance.")
