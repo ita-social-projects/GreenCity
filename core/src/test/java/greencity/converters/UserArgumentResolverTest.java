@@ -43,7 +43,7 @@ class UserArgumentResolverTest {
     }
 
     @Test
-    void resolveArgument_shouldReturnUserVO_whenPrincipalExists(){
+    void resolveArgumentShouldReturnUserVOWhenPrincipalExists(){
         when(webRequest.getUserPrincipal()).thenReturn(principal);
         when(userService.findByEmail(EMAIL)).thenReturn(userVO);
         Object result = userArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest, null);
@@ -52,14 +52,14 @@ class UserArgumentResolverTest {
     }
 
     @Test
-    void resolveArgument_shouldThrowUnauthorizedException_whenPrincipalIsNull() {
+    void resolveArgumentShouldThrowUnauthorizedExceptionWhenPrincipalIsNull() {
         when(webRequest.getUserPrincipal()).thenReturn(null);
         assertThrows(UnauthorizedException.class, () ->
             userArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest, null));
     }
 
     @Test
-    void supportsParameter_shouldReturnTrueForUserVO() {
+    void supportsParameterShouldReturnTrueForUserVO() {
         when(methodParameter.getParameterAnnotation(CurrentUser.class)).thenReturn(mock(CurrentUser.class));
         when(methodParameter.getParameterType()).thenReturn((Class) UserVO.class);
         boolean result = userArgumentResolver.supportsParameter(methodParameter);
@@ -67,7 +67,7 @@ class UserArgumentResolverTest {
     }
 
     @Test
-    void supportsParameter_shouldReturnFalse_whenAnnotationMissing() {
+    void supportsParameterShouldReturnFalseWhenAnnotationMissing() {
         when(methodParameter.getParameterAnnotation(CurrentUser.class)).thenReturn(null);
         boolean result = userArgumentResolver.supportsParameter(methodParameter);
         assertThat(result).isFalse();
