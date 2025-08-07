@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.UserLocation;

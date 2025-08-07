@@ -210,7 +210,8 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(ModelUtils.getUserVO()));
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
+            .thenReturn(Optional.of(ModelUtils.getUserVO()));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
 
         assertThrows(EcoNewsCreationException.class, () -> aiService.generateAndSaveEcoNews(language));
@@ -362,7 +363,8 @@ class AIServiceImplTest {
         when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(ModelUtils.getUserVO()));
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
+            .thenReturn(Optional.of(ModelUtils.getUserVO()));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 

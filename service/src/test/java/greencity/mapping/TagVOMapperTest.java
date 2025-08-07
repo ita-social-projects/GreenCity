@@ -46,6 +46,7 @@ class TagVOMapperTest {
                         .languageVO(LanguageDTO.builder()
                             .id(language.getId())
                             .code(language.getCode())
+                            .name(language.getName())
                             .build())
                         .build();
                 })

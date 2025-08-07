@@ -112,7 +112,8 @@ public class AIServiceImpl implements AIService {
      * @param userId   the ID of the user for whom the forecast is generated
      * @param language the language code (e.g. "en", "ua") in which the advice
      *                 should be generated
-     * @return a sanitized string response containing either a personalized forecast or fallback advice
+     * @return a sanitized string response containing either a personalized forecast
+     *         or fallback advice
      * @throws OpenAIRequestException    if the OpenAI API call fails (e.g. no
      *                                   response or internal error)
      * @throws LanguageNotFoundException if the specified language code is not found
@@ -324,7 +325,8 @@ public class AIServiceImpl implements AIService {
      * </p>
      *
      * @param jsonResponse the raw JSON string received from OpenAI
-     * @return a sanitized version of the JSON string, free from formatting characters that might break parsing
+     * @return a sanitized version of the JSON string, free from formatting
+     *         characters that might break parsing
      */
     private String sanitizeJsonResponse(String jsonResponse) {
         jsonResponse = jsonResponse.trim()
@@ -349,7 +351,8 @@ public class AIServiceImpl implements AIService {
      * </p>
      *
      * @param jsonResponse the sanitized JSON string to be parsed
-     * @return the textual content from the {@code "content"} field of the parsed JSON
+     * @return the textual content from the {@code "content"} field of the parsed
+     *         JSON
      * @throws JsonResponseParseException if the JSON is malformed, missing required
      *                                    fields, or cannot be parsed into a valid
      *                                    structure
@@ -401,7 +404,7 @@ public class AIServiceImpl implements AIService {
      *                                    format is invalid
      * @throws JsonResponseParseException if parsing the JSON response fails
      */
-    //TODO redove orElseGet
+    // TODO redove orElseGet
     private EcoNews createEcoNewsInstance(String jsonResponse) {
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
         String title = jsonNode.get(FORMAT_TITLE_KEY).asText();
@@ -455,9 +458,10 @@ public class AIServiceImpl implements AIService {
      * language ("ua"). The user is saved in the repository and returned.
      * </p>
      *
-     * @return the newly created and saved {@link User} entity representing the AI author
+     * @return the newly created and saved {@link User} entity representing the AI
+     *         author
      */
-    //Todo - remove method add to liquibase instead
+    // Todo - remove method add to liquibase instead
     private UserVO createAiGeneratedUser() {
         User user = User.builder()
             .name(AI_USER_NAME)
@@ -481,9 +485,9 @@ public class AIServiceImpl implements AIService {
      * @return a fully built {@link EcoNews} entity ready for persistence
      */
     private EcoNews buildEcoNews(String title,
-                                 String content,
-                                 UserVO aiGeneratedUser,
-                                 Tag tag) {
+        String content,
+        UserVO aiGeneratedUser,
+        Tag tag) {
         return EcoNews.builder()
             .creationDate(ZonedDateTime.now())
             .author(modelMapper.map(aiGeneratedUser, User.class))

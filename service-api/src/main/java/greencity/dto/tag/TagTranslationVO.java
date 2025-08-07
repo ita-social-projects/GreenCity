@@ -7,10 +7,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder

@@ -453,9 +453,10 @@ class EventServiceImplTest {
         assertEquals(event.getTags(), expectedEvent.getTags());
 
         eventToUpdateDto.setTitleImage("New img");
-        eventToUpdateDto.setAdditionalImages(List.of("New addition image"));
+        eventToUpdateDto.setAdditionalImages(new ArrayList<>(List.of("New addition image")));
         expectedEvent.setTitleImage("New img");
-        expectedEvent.setAdditionalImages(List.of(EventImages.builder().link("New addition image").build()));
+        expectedEvent
+            .setAdditionalImages(new ArrayList<>(List.of(EventImages.builder().link("New addition image").build())));
 
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
@@ -464,7 +465,8 @@ class EventServiceImplTest {
 
         List<String> imagesList = new ArrayList<>();
         imagesList.add("New addition image");
-        when(eventRepo.findAllImagesLinksByEventId(anyLong())).thenReturn(List.of("New addition image"));
+        when(eventRepo.findAllImagesLinksByEventId(anyLong()))
+            .thenReturn(new ArrayList<>(List.of("New addition image")));
         doNothing().when(userRemoteClient).deleteFile(any());
 
         method.invoke(eventService, event, eventToUpdateDto, null);
