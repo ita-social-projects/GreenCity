@@ -44,7 +44,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         Principal principal = webRequest.getUserPrincipal();
 
         if (principal == null) {
-            throw new UnauthorizedException("Unauthorized access");
+            throw new UnauthorizedException();
         }
 
         return userService.findByEmail(principal.getName());

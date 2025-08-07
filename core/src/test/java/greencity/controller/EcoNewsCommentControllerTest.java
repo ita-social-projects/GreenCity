@@ -151,6 +151,7 @@ class EcoNewsCommentControllerTest {
             }
             """;
         mockMvc.perform(get(ECONEWS_LINK + "/comments/{id}", 1)
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isOk());
