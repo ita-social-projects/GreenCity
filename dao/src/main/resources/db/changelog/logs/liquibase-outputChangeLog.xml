@@ -146,7 +146,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="description" type="VARCHAR(255)"/>
-            <column name="email" type="VARCHAR(50)"/>
+            <column name="email" type="VARCHAR(75)"/>
             <column name="modified_date" type="datetime(6)"/>
             <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>

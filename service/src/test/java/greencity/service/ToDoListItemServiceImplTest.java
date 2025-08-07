@@ -99,6 +99,7 @@ class ToDoListItemServiceImplTest {
     private List<ToDoListItemTranslation> toDoListItemTranslations = Arrays.asList(
         ToDoListItemTranslation.builder()
             .id(1L)
+
             .languageCode(language)
             .content("TEST")
             .toDoListItem(

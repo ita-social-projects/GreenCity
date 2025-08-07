@@ -230,7 +230,7 @@ public class ModelUtils {
     }
 
     public static LanguageDTO getLanguageDTO() {
-        return new LanguageDTO(1L, "en");
+        return new LanguageDTO(1L, "en", "English");
     }
 
     public static UserAchievementVO getUserAchievementVO() {

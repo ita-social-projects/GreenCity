@@ -47,36 +47,42 @@
                     </a>
                 </div>
                 <div class="button-edit" style="display: flex; gap: 5px">
-                    <div class="button-text id">№[[${econew.id}]]</div>
+                    <div class="button-text id">№[[${ecoNews.id}]]</div>
                     <a href="#editEcoNewsModal" editEcoNewsForm id="editEcoNewsModalBtn"
                        data-toggle="modal" th:onclick="editBtnDisabled()">
                         <img src="/img/habit_advices_dark.png">
                     </a>
-                    <div th:if="${econew.hidden eq false}">
-                        <a class="edit eHideBtn" style="color: #FF9310" th:href="@{/management/eco-news/hide(id=${econew.id})}"><i
+                    <div th:if="${ecoNews.hidden eq false}">
+                        <a class="edit eHideBtn" style="color: #FF9310" th:href="@{/management/eco-news/hide(id=${ecoNews.id})}"><i
                                 class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.hide}">&#xE8F5;</i></a>
                     </div>
-                    <div th:if="${econew.hidden eq true}">
-                        <a class="edit eShowBtn" style="color: #FF9310" th:href="@{/management/eco-news/show(id=${econew.id})}"><i
+                    <div th:if="${ecoNews.hidden eq true}">
+                        <a class="edit eShowBtn" style="color: #FF9310" th:href="@{/management/eco-news/show(id=${ecoNews.id})}"><i
                                 class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.show}">&#xE8F4;</i></a>
                     </div>
                     <a class="delete eDelBtn" style="color: #E02116" data-toggle="modal"
-                       th:href="@{/management/eco-news/delete(id=${econew.id})}"><i class="material-icons"
+                       th:href="@{/management/eco-news/delete(id=${ecoNews.id})}"><i class="material-icons"
                                                                                     data-toggle="tooltip"
                                                                                     th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
                 </div>
             </div>
-            <div style="margin-top: 20px" th:if="${econew.hidden eq true}">
+            <div style="margin-top: 20px" th:if="${ecoNews.hidden eq true}">
                 <h4 style="color: #B21D15; text-align: center">[[#{greenCity.pages.popup.hidden.EcoNews}]]</h4>
             </div>
             <div class="tags">
-                <div class="tags-item ng-star-inserted" th:each="tag, iterStatus :${econew.tagsEn}"
-                     th:text="${tag}"></div>
+                <th:block th:if="${#locale.language == 'en'}">
+                    <div class="tags-item ng-star-inserted" th:each="tag : ${ecoNews.tagsEn}"
+                         th:text="${tag}"></div>
+                </th:block>
+                <th:block th:if="${#locale.language == 'uk'}">
+                    <div class="tags-item ng-star-inserted" th:each="tag : ${ecoNews.tagsUk}"
+                         th:text="${tag}"></div>
+                </th:block>
             </div>
             <div class="news-content">
                 <div class="news-title-container">
                     <div class="news-title word-wrap">
-                        <p>[[${econew.title}]]</p>
+                        <p>[[${ecoNews.title}]]</p>
                     </div>
                 </div>
                 <div class="news-info">
@@ -84,16 +90,16 @@
                     <div class="news-info-dot">
                         <img alt="dot" src="/img/ellipse.svg">
                     </div>
-                    <div class="news-info-author">[[${econew.author.getName()}]]</div>
+                    <div class="news-info-author">[[${ecoNews.author.getName()}]]</div>
                     <div class="like_wr">
                         <img alt="like" class="news_like ng-star-inserted" src="/img/like.png">
-                        <span class="numerosity_likes">[[${econew.likes}]]</span>
+                        <span class="numerosity_likes">[[${ecoNews.likes}]]</span>
                     </div>
                 </div>
-                <div th:if="${econew.imagePath ne null}">
-                    <img alt="news-image" class="news-image-img" th:src="${econew.imagePath}">
+                <div th:if="${ecoNews.imagePath ne null}">
+                    <img alt="news-image" class="news-image-img" th:src="${ecoNews.imagePath}">
                 </div>
-                <div th:if="${econew.imagePath eq null}">
+                <div th:if="${ecoNews.imagePath eq null}">
                     <img alt="news-image" class="news-image-img" src="/img/eco-news-default-large.png">
                 </div>
                 <div class="news-text-container">
@@ -105,7 +111,7 @@
                     <div class="news-text">
                         <div class="news-text-content word-wrap ql-snow">
                             <div class="ql-editor">
-                                <p>[[${econew.content}]]</p>
+                                <p>[[${ecoNews.content}]]</p>
                             </div>
                         </div>
                     </div>
@@ -116,7 +122,7 @@
             <div class="counter ng-star-inserted">
                 <div class="wrapper">
                     <p>[[#{greenCity.econews.page.comments}]]</p>
-                    <p> [[${econew.countComments}]] <span
+                    <p> [[${ecoNews.countComments}]] <span
                             class="ng-star-inserted">[[#{greenCity.econews.page.comment}]] </span></p>
                 </div>
                 <hr>
@@ -135,18 +141,18 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="id">[[#{greenCity.pages.table.id}]]</label>
-                                <input type="text" class="form-control" id="id" name="id" th:value="${econew.id}"
+                                <input type="text" class="form-control" id="id" name="id" th:value="${ecoNews.id}"
                                        readonly required>
                                 <span th:id="errorModalUpdateid" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label for="title">[[#{greenCity.pages.table.title}]]</label>
-                                <textarea type="text" class="form-control" id="title" name="title" required>[[${econew.title}]]</textarea>
+                                <textarea type="text" class="form-control" id="title" name="title" required>[[${ecoNews.title}]]</textarea>
                                 <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
                                 <label for="text">[[#{greenCity.pages.table.text}]]</label>
-                                <textarea type="text" class="form-control" id="text" name="text" required>[[${econew.content}]]</textarea>
+                                <textarea type="text" class="form-control" id="text" name="text" required>[[${ecoNews.content}]]</textarea>
                                 <span th:id="errorModalUpdatetext" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
@@ -168,7 +174,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="source">[[#{greenCity.pages.table.source}]]</label>
-                                <textarea type="text" class="form-control" id="source" name="source">[[${econew.shortInfo}]]</textarea>
+                                <textarea type="text" class="form-control" id="source" name="source">[[${ecoNews.shortInfo}]]</textarea>
                                 <span th:id="errorModalUpdatesource" class="errorSpan"></span>
                             </div>
                             <div class="form-group" style="justify-content: center">

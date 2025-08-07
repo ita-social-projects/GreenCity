@@ -10,7 +10,7 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="email" type="varchar(50)">
+            <column name="email" type="varchar(75)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="unsubscribe_token" type="uuid">

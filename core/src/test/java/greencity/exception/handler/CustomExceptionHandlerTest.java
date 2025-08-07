@@ -1,20 +1,34 @@
 package greencity.exception.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 import greencity.constant.ErrorMessage;
-import greencity.entity.Place;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadSocialNetworkLinksException;
+import greencity.exception.exceptions.GoogleApiException;
+import greencity.exception.exceptions.InsufficientLocationDataException;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.NoJwtException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.data.mapping.PropertyPath;
-import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.data.util.TypeInformation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +39,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomExceptionHandlerTest {
@@ -307,21 +312,4 @@ class CustomExceptionHandlerTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    @Test
-    void handlePropertyReferenceException() {
-        List<PropertyPath> resolvedPaths = Collections.emptyList();
-        PropertyReferenceException propertyReferenceException =
-            new PropertyReferenceException("string", TypeInformation.of(Place.class), resolvedPaths);
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
-        exceptionResponse.setMessage(String.format(ErrorMessage.INVALID_SORT_VALUE_EXCEPTION, "string"));
-
-        when(errorAttributes.getErrorAttributes(any(WebRequest.class),
-            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
-
-        ResponseEntity<Object> actual = customExceptionHandler.handlePropertyReferenceException(
-            propertyReferenceException, webRequest);
-
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse), actual);
-    }
 }

@@ -26,8 +26,8 @@ class LanguageServiceImplTest {
     @Test
     void getAllLanguages() {
         List<LanguageDTO> expectedResult = List.of(
-            new LanguageDTO(1L, "code1"),
-            new LanguageDTO(2L, "code2"));
+            new LanguageDTO(1L, "code1", "English"),
+            new LanguageDTO(2L, "code2", "English"));
         when(userRemoteClient.getAllLanguages())
             .thenReturn(expectedResult);
 
@@ -38,11 +38,11 @@ class LanguageServiceImplTest {
 
     @Test
     void findByCode() {
+
         String languageCode = "en";
         LanguageDTO expectedResult = ModelUtils.getLanguageDTO();
         when(userRemoteClient.findLanguageByCode(languageCode))
             .thenReturn(expectedResult);
-
         LanguageDTO actualResult = languageService.findByCode(languageCode);
 
         assertEquals(expectedResult, actualResult);

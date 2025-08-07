@@ -154,7 +154,6 @@ public class SecurityConfig {
                     "/place/info/{id}",
                     "/place/statuses",
                     "/place/all",
-                    "/habit",
                     "/habit/{id}",
                     "/habit/{id}/to-do-list",
                     "/tags/search",
@@ -234,6 +233,7 @@ public class SecurityConfig {
                     ECO_NEWS + ECO_NEWS_ID + LIKE_V2,
                     "/favorite_place/",
                     "/to-do-list-items",
+                    "/habit",
                     "/habit/assign/allForCurrentUser",
                     "/habit/assign/allMutualHabits/{userId}",
                     "/habit/assign/allUser/{userId}",
@@ -298,7 +298,7 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    "/ai/**")
+                    "/ai/forecast")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -431,7 +431,8 @@ public class SecurityConfig {
                     COMMENTS,
                     COMMENTS + "/{id}",
                     "/user/all",
-                    "/user/roles")
+                    "/user/roles",
+                    "/ai/generate/eco-news")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/place/filter/predicate")

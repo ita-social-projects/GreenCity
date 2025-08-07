@@ -33,7 +33,7 @@ public class UserForListDto {
 
     private LocalDateTime dateOfRegistration;
 
-    @Email(message = ServiceValidationConstants.INVALID_EMAIL)
+    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP, message = ServiceValidationConstants.INVALID_EMAIL)
     @NotBlank
     private String email;
 

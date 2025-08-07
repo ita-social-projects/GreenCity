@@ -133,7 +133,7 @@ public class ManagementEcoNewsController {
      * @param id of {@link EcoNewsVO}.
      * @return {@link EcoNewsDto}.
      */
-    @Operation(summary = "Find econews by id.")
+    @Operation(summary = "Find eco-news by id.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = EcoNewsDto.class))),
@@ -154,7 +154,7 @@ public class ManagementEcoNewsController {
      * @param id of {@link EcoNewsVO}.
      * @return {@link EcoNewsDto}.
      */
-    @Operation(summary = "Find econew's page by id.")
+    @Operation(summary = "Find eco-new's page by id.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = EcoNewsDto.class))),
@@ -165,9 +165,9 @@ public class ManagementEcoNewsController {
     @GetMapping("/{id}")
     public String getEcoNewsPage(@PathVariable("id") Long id,
         @Parameter(hidden = true) Locale locale, Model model) {
-        EcoNewsDto econew = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage());
-        model.addAttribute("econew", econew);
-        ZonedDateTime time = econew.getCreationDate();
+        EcoNewsDto ecoNews = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage());
+        model.addAttribute("ecoNews", ecoNews);
+        ZonedDateTime time = ecoNews.getCreationDate();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd , yyyy");
         model.addAttribute("time", time.format(format));
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
@@ -175,7 +175,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for getting all econews tag.
+     * Method for getting all eco-news tag.
      *
      * @return {@link TagDto} instance.
      */
@@ -216,7 +216,7 @@ public class ManagementEcoNewsController {
      * @param file                 of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @Operation(summary = "Update Econews.")
+    @Operation(summary = "Update Eco-news.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)

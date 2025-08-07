@@ -145,6 +145,7 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
+            .languageVO(getLanguageDTO())
             .build();
     }
 
@@ -188,7 +189,7 @@ public class ModelUtils {
     }
 
     public static LanguageDTO getLanguageDTO() {
-        return new LanguageDTO(1L, "en");
+        return new LanguageDTO(1L, "en", "English");
     }
 
     public static LanguageTranslationDTO getLanguageTranslationDTO() {
@@ -213,9 +214,9 @@ public class ModelUtils {
 
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
         return Arrays.asList(
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "smile"));
     }
 
     public static ToDoListItemPostDto getToDoListItemPostDto() {

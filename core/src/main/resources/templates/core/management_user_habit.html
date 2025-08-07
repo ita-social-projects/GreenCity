@@ -161,7 +161,7 @@
             <!-- To-Do List table-->
             <div class="table-header">
                 <h3>[[#{greenCity.sidebar.habits.toDoList}]]:
-                    <td th:text="${htodos.size()}"/>
+                    <td th:text="${todos.size()}"/>
                 </h3>
                 <div class="hide-button">
                     <button id="button3" value="hide" onclick="hideTable(this.id)">
@@ -198,7 +198,7 @@
                     </thead>
 
                     <tbody id="table3">
-                    <th:block class="list-of" th:each="todoitem, iterStatus :${htodos}">
+                    <th:block class="list-of" th:each="todoitem, iterStatus :${todos}">
                         <tr class="light-text">
                             <td style="width: 20px">
                                     <span class="custom-checkbox" style="">
@@ -237,18 +237,18 @@
         document.getElementById("leftText").value = val + " days"
     }
 
-    var inputLeft = document.getElementById("input-left");
+    let inputLeft = document.getElementById("input-left");
 
-    var thumbLeft = document.querySelector(".slider > .thumb.left");
+    let thumbLeft = document.querySelector(".slider > .thumb.left");
 
     function setLeftValue() {
-        var _this = inputLeft,
+        let _this = inputLeft,
             min = parseInt(_this.min),
             max = parseInt(_this.max);
 
         _this.value = parseInt(_this.value);
 
-        var percent = ((_this.value - min) / (max - min)) * 100;
+        let percent = ((_this.value - min) / (max - min)) * 100;
 
         thumbLeft.style.left = percent + "%";
         range.style.left = percent + "%";

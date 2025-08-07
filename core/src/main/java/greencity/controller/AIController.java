@@ -1,8 +1,9 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.CurrentUserId;
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
+import greencity.dto.user.UserVO;
 import greencity.service.AIService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/ai")
@@ -36,10 +37,9 @@ public class AIController {
     })
     @ApiLocale
     @GetMapping("/forecast")
-    public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUserId Long userId,
-        @Parameter(hidden = true) Locale locale) {
+    public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(aiService.getForecast(userId, locale.getDisplayLanguage()));
+            .body(aiService.getForecast(userVO.getId(), userVO.getLanguageVO().getCode()));
     }
 
     @Operation(summary = "Generates news content based on the specified language and query")
@@ -53,7 +53,7 @@ public class AIController {
     @ApiLocale
     @GetMapping("/generate/eco-news")
     public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) Locale locale,
-        @RequestParam(required = false) String query) {
+                                                  @RequestParam(required = false) String query) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
                 aiService.getNews(locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage(), query));
