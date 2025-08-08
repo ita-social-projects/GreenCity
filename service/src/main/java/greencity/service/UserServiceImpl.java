@@ -77,14 +77,6 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void save(UserVO userVO) {
-        userRepo.save(modelMapper.map(userVO, User.class));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public UserVO findById(Long id) {
         return userRepo.findById(id)
             .map(user -> modelMapper.map(user, UserVO.class))

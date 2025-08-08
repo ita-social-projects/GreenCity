@@ -132,13 +132,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void saveTest() {
-        userService.save(userVO);
-        verify(modelMapper).map(userVO, User.class);
-        verify(userRepo).save(any());
-    }
-
-    @Test
     void checkIfTheUserIsOnlineExceptionTest() {
         assertThrows(WrongIdException.class, () -> userService.checkIfTheUserIsOnline(null));
     }
