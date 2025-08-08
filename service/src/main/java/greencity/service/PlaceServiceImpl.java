@@ -4,6 +4,7 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.PlacesSearchResult;
 import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -614,7 +615,7 @@ public class PlaceServiceImpl implements PlaceService {
                             .user(user)
                             .build();
                     } catch (WebClientRequestException | WebClientResponseException e) {
-                        log.warn("User service is unavailable: {}", e.getMessage());
+                        log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
                     }
                     Photo savedPhoto = photoRepo.save(newPhoto);
                     newPhotos.add(savedPhoto);

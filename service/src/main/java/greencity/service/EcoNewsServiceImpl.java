@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -292,7 +293,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 userRemoteClient.deleteFile(toUpdate.getImagePath());
                 toUpdate.setImagePath(userRemoteClient.uploadFile(image));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
         }
     }
@@ -312,7 +313,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 userRemoteClient.deleteFile(toUpdate.getImagePath());
                 toUpdate.setImagePath(userRemoteClient.uploadFile(image));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
         }
     }
@@ -331,7 +332,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             try {
                 userRemoteClient.deleteFile(toUpdate.getImagePath());
             } catch (WebClientRequestException | WebClientResponseException webException) {
-                log.warn("User service is unavailable: {}", webException.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, webException.getMessage());
             }
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
@@ -652,7 +653,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             try {
                 toSave.setImagePath(userRemoteClient.uploadFile(image));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
         }
 

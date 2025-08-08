@@ -6,6 +6,7 @@ import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
 import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -178,7 +179,7 @@ public class CommentServiceImpl implements CommentService {
                             .link(userRemoteClient.uploadFile(image))
                             .build());
                     } catch (WebClientRequestException | WebClientResponseException e) {
-                        log.warn("User service is unavailable: {}", e.getMessage());
+                        log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
                     }
                 }
             }

@@ -120,7 +120,6 @@ public class UserServiceImpl implements UserService {
      * @deprecated updates like this on User entity should be handled in
      *             GreenCityUser via RestClient.
      */
-    @Deprecated
     @Override
     public UserRoleDto updateRole(Long id, Role role, String email) {
         Map<String, String> body = Map.of("role", role.name());

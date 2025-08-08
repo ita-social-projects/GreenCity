@@ -45,4 +45,5 @@ public class AppConstant {
     public static final String GOOGLE_API = "Google API";
     public static final Double DEFAULT_RATING = 0.0;
     public static final String MESSAGE = "message";
+    public static final String USER_SERVICE_UNAVAILABLE_LOG = "User service is unavailable: {}";
 }

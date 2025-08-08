@@ -187,7 +187,7 @@ public class EventServiceImpl implements EventService {
             try {
                 event.setTitleImage(userRemoteClient.uploadFile(images[0]));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
             List<EventImages> eventImages = new ArrayList<>();
             for (int i = 1; i < images.length; i++) {
@@ -196,7 +196,7 @@ public class EventServiceImpl implements EventService {
                         eventImages.add(EventImages.builder().event(event).link(userRemoteClient.uploadFile(images[i]))
                             .build());
                     } catch (WebClientRequestException | WebClientResponseException e) {
-                        log.warn("User service is unavailable: {}", e.getMessage());
+                        log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
                     }
                 }
             }
@@ -675,7 +675,7 @@ public class EventServiceImpl implements EventService {
         try {
             images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(userRemoteClient::deleteFile);
         } catch (WebClientRequestException | WebClientResponseException e) {
-            log.warn("User service is unavailable: {}", e.getMessage());
+            log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
         }
     }
 
@@ -687,7 +687,7 @@ public class EventServiceImpl implements EventService {
             try {
                 toUpdate.setTitleImage(userRemoteClient.uploadFile(images[imagesCounter++]));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
         }
         List<String> additionalImagesStr = new ArrayList<>();
@@ -698,7 +698,7 @@ public class EventServiceImpl implements EventService {
             try {
                 additionalImagesStr.add(userRemoteClient.uploadFile(images[imagesCounter++]));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
         }
         if (!additionalImagesStr.isEmpty()) {

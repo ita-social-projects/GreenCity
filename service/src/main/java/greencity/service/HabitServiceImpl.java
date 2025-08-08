@@ -355,7 +355,7 @@ public class HabitServiceImpl implements HabitService {
             try {
                 addCustomHabitDtoRequest.setImage(userRemoteClient.uploadFile(image));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
         } else {
             addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
@@ -443,7 +443,7 @@ public class HabitServiceImpl implements HabitService {
             try {
                 toUpdate.setImage(userRemoteClient.uploadFile(image));
             } catch (WebClientRequestException | WebClientResponseException e) {
-                log.warn("User service is unavailable: {}", e.getMessage());
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
             }
         }
         if (isNotEmpty(habitDto.getTagIds())) {

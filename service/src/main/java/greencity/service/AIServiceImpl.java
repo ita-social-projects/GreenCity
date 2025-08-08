@@ -44,6 +44,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
@@ -413,7 +414,7 @@ public class AIServiceImpl implements AIService {
         try {
             aiGeneratedUser = userRemoteClient.findNotDeactivatedByEmail(AI_USER_EMAIL);
         } catch (WebClientRequestException | WebClientResponseException e) {
-            log.warn("User service is unavailable: {}", e.getMessage());
+            log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
         }
         if (aiGeneratedUser.isEmpty()) {
             log.error("AI-generated user not found, cannot create EcoNews");

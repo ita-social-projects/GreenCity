@@ -340,8 +340,7 @@ class AIServiceImplTest {
 
         UsernameNotFoundException exception = assertThrows(
             UsernameNotFoundException.class,
-            () -> aiService.generateAndSaveEcoNews(language)
-        );
+            () -> aiService.generateAndSaveEcoNews(language));
 
         assertEquals("AI-generated user not found, cannot create EcoNews", exception.getMessage());
     }
@@ -349,11 +348,11 @@ class AIServiceImplTest {
     @Test
     void generateAndSaveEcoNews_whenUserServiceUnavailable_shouldThrowUserNotFoundException() {
         String jsonResponse = """
-        {
-            "title": "New Title",
-            "content": "New eco content"
-        }
-        """;
+            {
+                "title": "New Title",
+                "content": "New eco content"
+            }
+            """;
         openAIResponseDTO.setContent(jsonResponse);
 
         when(languageService.findByCode(language)).thenReturn(languageDTO);
@@ -364,8 +363,7 @@ class AIServiceImplTest {
 
         UsernameNotFoundException exception = assertThrows(
             UsernameNotFoundException.class,
-            () -> aiService.generateAndSaveEcoNews(language)
-        );
+            () -> aiService.generateAndSaveEcoNews(language));
 
         assertEquals("AI-generated user not found, cannot create EcoNews", exception.getMessage());
     }
