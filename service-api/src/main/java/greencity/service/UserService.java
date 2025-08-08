@@ -3,9 +3,10 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
-import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -15,15 +16,14 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
-import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     /**
@@ -56,9 +56,8 @@ public interface UserService {
      *
      * @param id   {@link UserVO} id.
      * @param role {@link Role} for user.
-     * @return {@link UserRoleDto}
-     * @deprecated updates like this on User entity should be handled in
-     *             GreenCityUser via RestClient.
+     * @return {@link UserRoleDto} updates like this on User entity should be
+     *         handled in GreenCityUser via RestClient.
      */
     UserRoleDto updateRole(Long id, Role role, String email);
 
@@ -92,7 +91,6 @@ public interface UserService {
      *
      * @param userId - {@link UserVO}'s id
      * @param rate   - new user event organizer rating
-     *
      */
     void updateEventOrganizerRating(Long userId, Double rate);
 
@@ -102,11 +100,9 @@ public interface UserService {
      * @param request  request for searching related data
      * @param pageable pagination information including page number, size, and
      *                 sorting options.
-     *
      * @return a {@link PageableDetailedDto} containing a list of
      *         {@link UserManagementVO} filtered by the given criteria, role, and
      *         status, along with pagination details.
-     *
      * @author Anton Bondar
      */
     PageableDetailedDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable);

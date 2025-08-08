@@ -10,9 +10,10 @@ import greencity.dto.PageInfoDto;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
-import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
@@ -22,7 +23,6 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
-import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
@@ -33,13 +33,19 @@ import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.InsufficientLocationDataException;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.mapping.UserManagementVOMapper;
 import greencity.repository.UserLocationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -51,12 +57,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -116,9 +116,8 @@ public class UserServiceImpl implements UserService {
      *
      * @param id   {@link UserVO} id.
      * @param role {@link Role} for user.
-     * @return {@link UserRoleDto}
-     * @deprecated updates like this on User entity should be handled in
-     *             GreenCityUser via RestClient.
+     * @return {@link UserRoleDto} updates like this on User entity should be
+     *         handled in GreenCityUser via RestClient.
      */
     @Override
     public UserRoleDto updateRole(Long id, Role role, String email) {
