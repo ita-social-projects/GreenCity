@@ -2,7 +2,6 @@ package greencity.service;
 
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
 import static greencity.constant.OpenAIConstants.AI_USER_EMAIL;
-import static greencity.constant.OpenAIConstants.AI_USER_NAME;
 import static greencity.constant.OpenAIConstants.CLOSING_CURLY_BRACE;
 import static greencity.constant.OpenAIConstants.EMPTY_REPLACEMENT;
 import static greencity.constant.OpenAIConstants.ERROR_ECO_NEWS_CREATION_FAILED;
@@ -70,12 +69,16 @@ import greencity.repository.UserRepo;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @Service
@@ -404,13 +407,20 @@ public class AIServiceImpl implements AIService {
      *                                    format is invalid
      * @throws JsonResponseParseException if parsing the JSON response fails
      */
-    // TODO redove orElseGet
     private EcoNews createEcoNewsInstance(String jsonResponse) {
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
+        Optional<UserVO> aiGeneratedUser = Optional.empty();
+        try {
+            aiGeneratedUser = userRemoteClient.findNotDeactivatedByEmail(AI_USER_EMAIL);
+        } catch (WebClientRequestException | WebClientResponseException e) {
+            log.warn("User service is unavailable: {}", e.getMessage());
+        }
+        if (aiGeneratedUser.isEmpty()) {
+            log.error("AI-generated user not found, cannot create EcoNews");
+            throw new UsernameNotFoundException("AI-generated user not found, cannot create EcoNews");
+        }
         String title = jsonNode.get(FORMAT_TITLE_KEY).asText();
         String content = jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
-        UserVO aiGeneratedUser = userRemoteClient.findNotDeactivatedByEmail(AI_USER_EMAIL)
-            .orElseGet(this::createAiGeneratedUser);
         List<Tag> tags = tagsRepo.findTagsByType(TagType.ECO_NEWS);
 
         if (tags.isEmpty()) {
@@ -419,7 +429,7 @@ public class AIServiceImpl implements AIService {
         }
 
         Tag tag = tags.getFirst();
-        return buildEcoNews(title, content, aiGeneratedUser, tag);
+        return buildEcoNews(title, content, aiGeneratedUser.orElse(null), tag);
     }
 
     /**
@@ -447,26 +457,6 @@ public class AIServiceImpl implements AIService {
         } else {
             return parseJsonString(sanitizedResponse);
         }
-    }
-
-    /**
-     * Creates and persists a system user representing the AI-generated content
-     * author.
-     *
-     * <p>
-     * This user has predefined attributes such as a fixed name, email, role, and
-     * language ("ua"). The user is saved in the repository and returned.
-     * </p>
-     *
-     * @return the newly created and saved {@link User} entity representing the AI
-     *         author
-     */
-    // Todo - remove method add to liquibase instead
-    private UserVO createAiGeneratedUser() {
-        User user = User.builder()
-            .name(AI_USER_NAME)
-            .build();
-        return modelMapper.map(userRepo.save(user), UserVO.class);
     }
 
     /**

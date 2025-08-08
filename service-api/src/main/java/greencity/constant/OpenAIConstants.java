@@ -81,6 +81,6 @@ public class OpenAIConstants {
     public static final String REGEX_MARKDOWN_ASTERISKS = "\\*+";
 
     public static final String AI_USER_NAME = "AI Generated";
-    public static final String AI_USER_EMAIL = "ai.generated@example.com";
+    public static final String AI_USER_EMAIL = "ai.generated@gmail.com";
     public static final String AI_MOCKED_REFRESH_TOKEN = "mocked-refresh-token-key";
 }

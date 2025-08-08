@@ -25,6 +25,7 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
+import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,17 +34,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,6 +86,9 @@ class AIServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private WebClientRequestException webClientRequestException;
 
     private final Long id = 1L;
     private final String language = "en";
@@ -318,7 +323,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void generateAndSaveEcoNews_whenAiUserNotExists_shouldCreateAndUseNewUser() {
+    void generateAndSaveEcoNews_whenAiUserIsEmpty_shouldThrowUserNotFoundException() {
         String jsonResponse = """
             {
                 "title": "New Title",
@@ -332,23 +337,37 @@ class AIServiceImplTest {
             .thenReturn(openAIResponseDTO);
 
         when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.empty());
-        when(userRepo.save(any(User.class))).thenReturn(user);
 
-        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        UsernameNotFoundException exception = assertThrows(
+            UsernameNotFoundException.class,
+            () -> aiService.generateAndSaveEcoNews(language)
+        );
 
-        aiService.generateAndSaveEcoNews(language);
+        assertEquals("AI-generated user not found, cannot create EcoNews", exception.getMessage());
+    }
 
-        ArgumentCaptor<EcoNews> newsCaptor = ArgumentCaptor.forClass(EcoNews.class);
-        verify(ecoNewsRepo).save(newsCaptor.capture());
+    @Test
+    void generateAndSaveEcoNews_whenUserServiceUnavailable_shouldThrowUserNotFoundException() {
+        String jsonResponse = """
+        {
+            "title": "New Title",
+            "content": "New eco content"
+        }
+        """;
+        openAIResponseDTO.setContent(jsonResponse);
 
-        EcoNews savedNews = newsCaptor.getValue();
-        assertEquals("New Title", savedNews.getTitle());
-        assertEquals("New eco content", savedNews.getText());
-        assertEquals(user, savedNews.getAuthor());
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
+            .thenReturn(openAIResponseDTO);
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
+            .thenThrow(webClientRequestException);
 
-        verify(userRepo).save(any(User.class));
+        UsernameNotFoundException exception = assertThrows(
+            UsernameNotFoundException.class,
+            () -> aiService.generateAndSaveEcoNews(language)
+        );
+
+        assertEquals("AI-generated user not found, cannot create EcoNews", exception.getMessage());
     }
 
     @Test
