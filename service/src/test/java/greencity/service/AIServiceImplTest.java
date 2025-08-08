@@ -1,5 +1,16 @@
 package greencity.service;
 
+import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.client.UserRemoteClient;
@@ -17,6 +28,7 @@ import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.EcoNewsCreationUserMissingException;
 import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.OpenAIRequestException;
@@ -25,7 +37,9 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
-import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,64 +48,36 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-
-import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {
 
-    @InjectMocks
-    private AIServiceImpl aiService;
-
-    @Mock
-    private OpenAIService openAIService;
-
-    @Mock
-    private LanguageService languageService;
-
-    @Mock
-    private EcoNewsRepo ecoNewsRepo;
-
-    @Mock
-    private HabitAssignRepo habitAssignRepo;
-
-    @Mock
-    private TagsRepo tagsRepo;
-
-    @Mock
-    private UserRepo userRepo;
-
-    @Mock
-    private UserRemoteClient userRemoteClient;
-
-    @Mock
-    private HabitRepo habitRepo;
-
-    @Mock
-    private ModelMapper modelMapper;
-
-    @Mock
-    private WebClientRequestException webClientRequestException;
-
     private final Long id = 1L;
     private final String language = "en";
+    @InjectMocks
+    private AIServiceImpl aiService;
+    @Mock
+    private OpenAIService openAIService;
+    @Mock
+    private LanguageService languageService;
+    @Mock
+    private EcoNewsRepo ecoNewsRepo;
+    @Mock
+    private HabitAssignRepo habitAssignRepo;
+    @Mock
+    private TagsRepo tagsRepo;
+    @Mock
+    private UserRepo userRepo;
+    @Mock
+    private UserRemoteClient userRemoteClient;
+    @Mock
+    private HabitRepo habitRepo;
+    @Mock
+    private ModelMapper modelMapper;
+    @Mock
+    private WebClientRequestException webClientRequestException;
     private LanguageDTO languageDTO;
     private User user;
     private UserVO userVO;
@@ -338,11 +324,11 @@ class AIServiceImplTest {
 
         when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.empty());
 
-        UsernameNotFoundException exception = assertThrows(
-            UsernameNotFoundException.class,
+        EcoNewsCreationUserMissingException exception = assertThrows(
+            EcoNewsCreationUserMissingException.class,
             () -> aiService.generateAndSaveEcoNews(language));
 
-        assertEquals("AI-generated user not found, cannot create EcoNews", exception.getMessage());
+        assertEquals("Required AI-generated user is missing", exception.getMessage());
     }
 
     @Test
@@ -361,11 +347,11 @@ class AIServiceImplTest {
         when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
             .thenThrow(webClientRequestException);
 
-        UsernameNotFoundException exception = assertThrows(
-            UsernameNotFoundException.class,
+        EcoNewsCreationUserMissingException exception = assertThrows(
+            EcoNewsCreationUserMissingException.class,
             () -> aiService.generateAndSaveEcoNews(language));
 
-        assertEquals("AI-generated user not found, cannot create EcoNews", exception.getMessage());
+        assertEquals("Required AI-generated user is missing", exception.getMessage());
     }
 
     @Test

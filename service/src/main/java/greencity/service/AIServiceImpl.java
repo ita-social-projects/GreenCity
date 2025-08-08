@@ -58,6 +58,7 @@ import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.EcoNewsCreationUserMissingException;
 import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
@@ -66,7 +67,6 @@ import greencity.repository.EcoNewsRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.TagsRepo;
-import greencity.repository.UserRepo;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -75,7 +75,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -89,7 +88,6 @@ public class AIServiceImpl implements AIService {
     private final EcoNewsRepo ecoNewsRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final TagsRepo tagsRepo;
-    private final UserRepo userRepo;
     private final UserRemoteClient userRemoteClient;
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
@@ -418,7 +416,7 @@ public class AIServiceImpl implements AIService {
         }
         if (aiGeneratedUser.isEmpty()) {
             log.error("AI-generated user not found, cannot create EcoNews");
-            throw new UsernameNotFoundException("AI-generated user not found, cannot create EcoNews");
+            throw new EcoNewsCreationUserMissingException("Required AI-generated user is missing");
         }
         String title = jsonNode.get(FORMAT_TITLE_KEY).asText();
         String content = jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
