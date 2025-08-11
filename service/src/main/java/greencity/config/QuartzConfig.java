@@ -5,15 +5,10 @@ import greencity.logging.LoggingJobListener;
 import greencity.exception.exceptions.InvalidCronException;
 import greencity.exception.exceptions.TriggerException;
 import greencity.scheduler.EcoNewsGenerationJob;
+import greencity.scheduler.EcoNewsRelevanceJob;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+import org.quartz.*;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -88,6 +83,23 @@ public class QuartzConfig {
         } catch (RuntimeException e) {
             throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
         }
+    }
+
+    @Bean
+    public JobDetail ecoNewsRelevanceJobDetail() {
+        return JobBuilder.newJob(EcoNewsRelevanceJob.class)
+                .withIdentity("ecoNewsRelevanceJob")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger ecoNewsRelevanceTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(ecoNewsRelevanceJobDetail())
+                .withIdentity("ecoNewsRelevanceTrigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 */3 * * ?"))
+                .build();
     }
 
     private String fixCronExpression(String cron) {

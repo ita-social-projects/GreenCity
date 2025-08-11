@@ -5,6 +5,8 @@ import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
 
+import java.util.List;
+
 /**
  * Interface for interacting with the OpenAI API. The purpose of this interface
  * is to send requests to the OpenAI service and receive responses.
@@ -32,4 +34,6 @@ public interface OpenAIService {
      *                                service is unavailable
      */
     OpenAIResponseDTO makeRequestEmbedding(String title);
+
+    List<OpenAIResponseDTO> makeRequestEmbeddings(List<String> titles);
 }

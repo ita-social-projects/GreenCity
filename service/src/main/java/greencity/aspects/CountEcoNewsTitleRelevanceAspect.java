@@ -32,18 +32,18 @@ public class CountEcoNewsTitleRelevanceAspect {
      *
      * @param response the response object returned by the save method
      */
-    @AfterReturning(
-        pointcut = "execution(* greencity.controller.EcoNewsController.save(..))",
-        returning = "response")
-    public void afterSavingEcoNews(Object response) {
-        if (response instanceof ResponseEntity) {
-            Object body = ((ResponseEntity<?>) response).getBody();
-            if (body instanceof EcoNewsGenericDto dto) {
-                Long id = dto.getId();
-                aiServiceImpl.getRelevanceForEcoNews(id);
-            }
-        }
-    }
+//    @AfterReturning(
+//        pointcut = "execution(* greencity.controller.EcoNewsController.save(..))",
+//        returning = "response")
+//    public void afterSavingEcoNews(Object response) {
+//        if (response instanceof ResponseEntity) {
+//            Object body = ((ResponseEntity<?>) response).getBody();
+//            if (body instanceof EcoNewsGenericDto dto) {
+//                Long id = dto.getId();
+//                aiServiceImpl.getRelevanceForEcoNews(id);
+//            }
+//        }
+//    }
 
     /**
      * Around advice that wraps the execution of the {@code update} method in

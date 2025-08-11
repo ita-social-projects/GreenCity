@@ -33,6 +33,9 @@ import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -255,6 +258,38 @@ public class AIServiceImpl implements AIService {
 
         ecoNewsRelevanceRepo.save(relevance);
     }
+
+    @Transactional
+    public void getRelevanceForEcoNewsBatch(Collection<Long> ids) {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
+
+        if (ecoNewsList.isEmpty()) {
+            return;
+        }
+
+        List<String> titles = ecoNewsList.stream()
+                .map(EcoNews::getTitle)
+                .toList();
+
+        List<OpenAIResponseDTO> embeddings = openAIService.makeRequestEmbeddings(titles);
+
+        List<EcoNewsRelevance> relevanceList = new ArrayList<>();
+        for (int i = 0; i < ecoNewsList.size(); i++) {
+            EcoNews news = ecoNewsList.get(i);
+            OpenAIResponseDTO response = embeddings.get(i);
+
+            EcoNewsRelevance relevance = EcoNewsRelevance.builder()
+                    .id(news.getId())
+                    .ecoNews(news)
+                    .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))
+                    .build();
+
+            relevanceList.add(relevance);
+        }
+
+        ecoNewsRelevanceRepo.saveAll(relevanceList);
+    }
+
 
     /**
      * Builds a news generation prompt for the OpenAI service based on an optional
