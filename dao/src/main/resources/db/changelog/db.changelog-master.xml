@@ -95,4 +95,5 @@
     <include file="db/changelog/logs/ch-change-column-language_id-to-language_code.xml"/>
     <include file="db/changelog/logs/ch-drop-table-habit-status-Popovych.xml"/>
     <include file="db/changelog/logs/ch-add-quartz-tables.xml"/>
+    <include file="db/changelog/logs/2025-08-12-ch-insert-into-users-Pohranychnyi.xml"/>
 </databaseChangeLog>

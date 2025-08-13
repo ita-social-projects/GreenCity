@@ -23,7 +23,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
-public class UserRemoteClientConfigTest {
+class UserRemoteClientConfigTest {
     static MockWebServer mockWebServer;
 
     @Mock
