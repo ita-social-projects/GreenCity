@@ -30,6 +30,8 @@ import static greencity.constant.AppConstant.ADMIN;
 import static greencity.constant.AppConstant.USER;
 import static greencity.constant.AppConstant.MODERATOR;
 import static greencity.constant.AppConstant.UBS_EMPLOYEE;
+import static greencity.constant.AppConstant.LOGS_LINKS;
+import static greencity.constant.AppConstant.EXPORT_SETTINGS_LINKS;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -86,7 +88,6 @@ public class SecurityConfig {
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
-    public static final String LOGS = "/logs/**";
     private static final String DISLIKE_V2 = "/dislikeV2";
     private static final String LIKE_V2 = "/likeV2";
     private final JwtTool jwtTool;
@@ -297,6 +298,9 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
+                    "/ai/**",
+                    EXPORT_SETTINGS_LINKS,
+                    LOGS_LINKS,
                     "/ai/forecast")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
@@ -360,7 +364,7 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + DISLIKE_V2,
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS + COMMENTS + LIKE_V2,
-                    LOGS)
+                    LOGS_LINKS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",

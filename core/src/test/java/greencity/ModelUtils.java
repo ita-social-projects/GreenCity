@@ -28,8 +28,6 @@ import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.exportsettings.EnvironmentDto;
-import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -47,10 +45,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.exportsettings.TableRowsDto;
-import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagVO;
@@ -90,13 +85,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.LinkedList;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -623,15 +615,6 @@ public class ModelUtils {
             .build());
     }
 
-    public static LogFileFilterDto getLogFileFilterDto() {
-        return new LogFileFilterDto(
-            "filename",
-            "fileContent",
-            null,
-            null,
-            LogLevel.INFO);
-    }
-
     public static EventResponseDto getEventResponseDto() {
         return new EventResponseDto(
             1L,
@@ -686,44 +669,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static TablesMetadataDto getTablesMetadataDto() {
-        Map<String, List<String>> tables = new HashMap<>();
-        List<String> columns = List.of("id", "name", "email");
-        tables.put("users", columns);
-
-        return new TablesMetadataDto(tables);
-    }
-
-    public static TableRowsDto getTableRowsDto() {
-        List<Map<String, String>> tableData = new LinkedList<>();
-        Map<String, String> row = new LinkedHashMap<>();
-        row.put("id", "1");
-        row.put("date_of_registration", "1970-01-01 00:00:00");
-        row.put("email", "someemail@some.com");
-        row.put("name", "Name");
-        row.put("role", "ROLE_ADMIN");
-        tableData.add(row);
-
-        return new TableRowsDto("users", tableData);
-    }
-
-    public static PageableAdvancedDto<Map<String, String>> getPageableAdvancedDtoForTableRows() {
-        return new PageableAdvancedDto<>(
-            getTableRowsDto().tableData(),
-            1,
-            0,
-            1,
-            0,
-            false,
-            true,
-            true,
-            true);
-    }
-
-    public static TableParamsRequestDto tableParamsRequestDto() {
-        return new TableParamsRequestDto("users", 10, 1);
-    }
-
     public static MockMultipartFile getCreateJsonFile(Object dto, String fieldName) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         return new MockMultipartFile(
@@ -731,12 +676,6 @@ public class ModelUtils {
             "",
             "application/json",
             objectMapper.writeValueAsBytes(dto));
-    }
-
-    public static EnvironmentDto getEnvironmentDto() {
-        Map<String, String> env = new HashMap<>();
-        env.put("TEST_ENV_NAME", "TEST_ENV_VALUE");
-        return new EnvironmentDto(env);
     }
 
     public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
