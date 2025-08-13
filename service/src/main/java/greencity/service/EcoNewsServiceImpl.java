@@ -154,17 +154,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String email) {
         Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
 
-        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) && authorId == null && !favorite
-            ? buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))),
-                currentUserId)
-            : buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
-                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
-                    currentUserId),
-                PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "creationDate"))),
-                currentUserId);
+        return buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
+            (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
+                currentUserId),
+            PageRequest.of(page.getPageNumber(), page.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "creationDate"))),
+            currentUserId);
     }
 
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
@@ -695,6 +690,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             predicates.add(criteriaBuilder.equal(followers.get(ECO_NEWS_AUTHOR_ID), currentUserId));
         }
 
+        predicates.add(criteriaBuilder.equal(root.get("hidden"), false));
+
         Predicate result;
         if (predicates.size() == 1) {
             result = predicates.getFirst();
@@ -801,15 +798,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         removeDislikeIfExists(ecoNews, userVO);
 
+        boolean isLiked = ecoNews.getUsersLikedNews().stream()
+            .noneMatch(u -> u.getId().equals(userVO.getId()));
+
+        sendNotification(ecoNews, userVO, isLiked);
+
         ecoNews.getUsersLikedNews().add(modelMapper.map(userVO, User.class));
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.LIKE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow("LIKE_NEWS"), userVO);
 
-        boolean isLiked = ecoNews.getUsersLikedNews().stream()
-            .noneMatch(u -> u.getId().equals(userVO.getId()));
-
-        sendNotification(ecoNews, userVO, isLiked);
         return modelMapper.map(ecoNews, EcoNewsDto.class);
     }
 

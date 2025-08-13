@@ -23,10 +23,10 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-    <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
-    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
-    <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
-    <script th:src="@{/management/tinymce/tinymce.min.js}" referrerpolicy="origin"></script>
+    <script defer type="text/javascript" th:src="@{/scripts/management/sidebar/sidebar.js}"></script>
+    <script th:src="@{/scripts/management/localization/buttonsAJAX.js}"></script>
+    <script th:src="@{/scripts/management/econews/buttonsAJAX.js}"></script>
+    <script th:src="@{/scripts/management/tinymce/tinymce.min.js}" referrerpolicy="origin"></script>
     <style>
         .text{
             white-space: nowrap;
@@ -329,14 +329,14 @@
                                     <td style = "width: 173px">
                                         <div th:switch="${#locale.language}">
                                             <div th:case="en">
-                                                <div th:switch="${econew.tags.isEmpty()}">
+                                                <div th:switch="${econew.tagsEn.isEmpty()}">
                                                     <div th:case="false">
                                                         <div class="dropdown role" style="position: inherit">
-                                                            <button class="dropbtn role" th:text="${econew.tags.get(0)}">
+                                                            <button class="dropbtn role" th:text="${econew.tagsEn.get(0)}">
                                                             </button>
                                                             <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                                             <div class="dropdown-content role" style="width:173px; height: auto;">
-                                                                <a th:each="tag, iterStatus :${econew.tags.subList(1, econew.tags.size())}" th:text="${tag}"></a>
+                                                                <a th:each="tag, iterStatus :${econew.tagsEn.subList(1, econew.tagsEn.size())}" th:text="${tag}"></a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -345,15 +345,15 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div th:case="ua">
-                                                <div th:switch="${econew.tagsUa.isEmpty()}">
+                                            <div th:case="uk">
+                                                <div th:switch="${econew.tagsUk.isEmpty()}">
                                                     <div th:case="false">
                                                         <div class="dropdown role" style="position: inherit">
-                                                            <button class="dropbtn role" th:text="${econew.tagsUa.get(0)}">
+                                                            <button class="dropbtn role" th:text="${econew.tagsUk.get(0)}">
                                                             </button>
                                                             <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                                             <div class="dropdown-content role" style="width:173px; height: auto;">
-                                                                <a th:each="tag, iterStatus :${econew.tagsUa.subList(1, econew.tagsUa.size())}" th:text="${tag}"></a>
+                                                                <a th:each="tag, iterStatus :${econew.tagsUk.subList(1, econew.tagsUk.size())}" th:text="${tag}"></a>
                                                             </div>
                                                         </div>
                                                     </div>

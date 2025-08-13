@@ -108,7 +108,7 @@ public class ManagementHabitController {
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
         @Parameter(hidden = true) Model model) {
-        model.addAttribute("htodos", toDoListItemService.getToDoListByHabitId(id));
+        model.addAttribute("todos", toDoListItemService.getToDoListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
         model.addAttribute("acquired",
             habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.ACQUIRED));

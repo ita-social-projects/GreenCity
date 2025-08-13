@@ -1,5 +1,6 @@
 package greencity.dto.place;
 
+import greencity.constant.ServiceValidationConstants;
 import greencity.enums.PlaceStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -21,6 +22,6 @@ public class UpdatePlaceStatusWithUserEmailDto {
     @NotBlank
     private String userName;
 
-    @Email
+    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP, message = ServiceValidationConstants.INVALID_EMAIL)
     private String email;
 }

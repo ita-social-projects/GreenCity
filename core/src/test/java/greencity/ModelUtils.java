@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PriceLevel;
 import com.google.maps.model.RankBy;
+import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.PageableDto;
@@ -41,6 +42,7 @@ import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.PlaceByBoundsDto;
@@ -171,7 +173,7 @@ public class ModelUtils {
     }
 
     public static LanguageDTO getLanguageDTO() {
-        return new LanguageDTO(1L, "en");
+        return new LanguageDTO(1L, "en", "English");
     }
 
     public static LanguageTranslationDTO getLanguageTranslationDTO() {
@@ -196,9 +198,9 @@ public class ModelUtils {
 
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
         return Arrays.asList(
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "smile"));
     }
 
     public static ToDoListItemPostDto getToDoListItemPostDto() {
@@ -691,5 +693,9 @@ public class ModelUtils {
             .dislikes(0)
             .countComments(0)
             .build();
+    }
+
+    public static LanguageVO getLanguageVO() {
+        return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
 }

@@ -20,11 +20,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -233,5 +231,16 @@ class CustomExceptionHandlerTest {
             .thenReturn(objectMap);
         assertEquals(customExceptionHandler.handleConversionFailedException(mismatchException, webRequest),
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
+    void handleUnauthorizedShouldReturn401() {
+        UnauthorizedException exception = new UnauthorizedException();
+        Map<String, String> expectedBody = new HashMap<>();
+        expectedBody.put("error", "unauthorized");
+        expectedBody.put("message", "Unauthorized access");
+        ResponseEntity<Map<String, String>> response = customExceptionHandler.handleUnauthorized(exception);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(expectedBody, response.getBody());
     }
 }

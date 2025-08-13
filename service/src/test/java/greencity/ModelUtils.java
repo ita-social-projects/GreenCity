@@ -78,6 +78,8 @@ import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.DurationHabitDto;
+import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
@@ -95,6 +97,7 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
+import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.photo.PhotoVO;
@@ -189,6 +192,7 @@ import greencity.enums.EventType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.enums.InvitationStatus;
+import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.PlaceStatus;
 import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
@@ -688,12 +692,13 @@ public class ModelUtils {
     }
 
     public static Language getLanguage() {
-        return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+        return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+            Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList());
     }
 
     public static Language getLanguageUa() {
-        return new Language(2L, "ua", Collections.emptyList(), Collections.emptyList(),
+        return new Language(2L, "ua", "Ukrainian", Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList());
     }
 
@@ -743,7 +748,8 @@ public class ModelUtils {
         return ToDoListItemTranslation.builder()
             .id(2L)
             .language(
-                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+                    Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
             .toDoListItem(
                 new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -755,8 +761,7 @@ public class ModelUtils {
         return ToDoListItemTranslation.builder()
             .id(1L)
             .language(
-                new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList()))
+                new Language())
             .toDoListItem(
                 new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -1071,7 +1076,8 @@ public class ModelUtils {
         return Arrays.asList(
             ToDoListItemTranslation.builder()
                 .id(2L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
+                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+                    Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .toDoListItem(
@@ -1079,7 +1085,8 @@ public class ModelUtils {
                 .build(),
             ToDoListItemTranslation.builder()
                 .id(11L)
-                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
+                .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, AppConstant.DEFAULT_LANGUAGE_NAME,
+                    Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
                 .toDoListItem(
@@ -1092,7 +1099,7 @@ public class ModelUtils {
             List.of(ModelUtils.getFactOfTheDayTranslation(), FactOfTheDayTranslation.builder()
                 .id(2L)
                 .content("Контент")
-                .language(new Language(2L, "ua", Collections.emptyList(), Collections.emptyList(),
+                .language(new Language(2L, "ua", "Ukrainian", Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList()))
                 .factOfTheDay(null)
                 .build()),
@@ -1196,7 +1203,7 @@ public class ModelUtils {
     }
 
     public static LanguageDTO getLanguageDTO() {
-        return new LanguageDTO(1L, "en");
+        return new LanguageDTO(1L, "en", AppConstant.DEFAULT_LANGUAGE_NAME);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
@@ -1403,9 +1410,9 @@ public class ModelUtils {
 
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
         return Arrays.asList(
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", AppConstant.DEFAULT_LANGUAGE_NAME), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", AppConstant.DEFAULT_LANGUAGE_NAME), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", AppConstant.DEFAULT_LANGUAGE_NAME), "smile"));
     }
 
     public static Habit getHabit() {
@@ -1679,6 +1686,20 @@ public class ModelUtils {
             .tags(new ArrayList<>())
             .habitAssignStatus(HabitAssignStatus.INPROGRESS)
             .isAssigned(true)
+            .build();
+    }
+
+    public static ShortHabitDto getShortHabitDto() {
+        return ShortHabitDto.builder()
+            .id(1L)
+            .description("ShortHabitDto description")
+            .build();
+    }
+
+    public static DurationHabitDto getDurationHabitDto() {
+        return DurationHabitDto.builder()
+            .description("DurationHabitDto description")
+            .duration(1L)
             .build();
     }
 
@@ -2788,7 +2809,8 @@ public class ModelUtils {
                 .name("name")
                 .description("")
                 .habitItem("")
-                .language(new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
+                .language(new Language(1L, "en", AppConstant.DEFAULT_LANGUAGE_NAME, Collections.emptyList(),
+                    Collections.emptyList(),
                     Collections.emptyList()))
                 .build()))
             .usersLiked(new HashSet<>())
@@ -3554,6 +3576,17 @@ public class ModelUtils {
             .habitItem(habitItemUk)
             .name(habitTranslationNameUk)
             .languageCode("ua")
+            .build();
+    }
+
+    public static OpenAIResponseDTO getOpenAIResponseDTO() {
+        return OpenAIResponseDTO.builder()
+            .content("content")
+            .id("id")
+            .responseDateTime(LocalDateTime.now())
+            .responseFormat(OpenAIResponseFormat.TEXT)
+            .usedInputTokens(0)
+            .usedOutputTokens(0)
             .build();
     }
 }

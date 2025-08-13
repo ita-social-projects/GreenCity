@@ -146,14 +146,13 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**")
                 .permitAll()
-                .requestMatchers("/css/**", "/img/**").permitAll()
+                .requestMatchers("/css/**", "/img/**", "/scripts/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
                     "/place/info/{id}",
                     "/place/statuses",
                     "/place/all",
-                    "/habit",
                     "/habit/{id}",
                     "/habit/{id}/to-do-list",
                     "/tags/search",
@@ -234,6 +233,7 @@ public class SecurityConfig {
                     ECO_NEWS + ECO_NEWS_ID + LIKE_V2,
                     "/favorite_place/",
                     "/to-do-list-items",
+                    "/habit",
                     "/habit/assign/allForCurrentUser",
                     "/habit/assign/allMutualHabits/{userId}",
                     "/habit/assign/allUser/{userId}",
@@ -300,7 +300,8 @@ public class SecurityConfig {
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
                     "/ai/**",
                     EXPORT_SETTINGS_LINKS,
-                    LOGS_LINKS)
+                    LOGS_LINKS,
+                    "/ai/forecast")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -434,7 +435,8 @@ public class SecurityConfig {
                     COMMENTS,
                     COMMENTS + "/{id}",
                     "/user/all",
-                    "/user/roles")
+                    "/user/roles",
+                    "/ai/generate/eco-news")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/place/filter/predicate")
@@ -462,7 +464,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE,
                     COMMENTS)
                 .hasAnyRole(ADMIN)
-                .anyRequest().hasAnyRole(ADMIN))
+                .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
                 .clearAuthentication(true)

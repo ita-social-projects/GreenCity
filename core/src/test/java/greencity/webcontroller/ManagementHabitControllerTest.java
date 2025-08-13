@@ -93,7 +93,7 @@ class ManagementHabitControllerTest {
 
     @Test
     void getHabitByIdPage() throws Exception {
-        List<ToDoListItemManagementDto> htodos = toDoListItemService.getToDoListByHabitId(1L);
+        List<ToDoListItemManagementDto> todos = toDoListItemService.getToDoListByHabitId(1L);
         HabitManagementDto habit = managementHabitService.getById(1L);
         Long acquired = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.ACQUIRED);
         Long inProgress = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.INPROGRESS);
@@ -103,7 +103,7 @@ class ManagementHabitControllerTest {
             .param("page", "0")
             .param("size", "5"))
             .andExpect(view().name("core/management_user_habit"))
-            .andExpect(model().attribute("htodos", htodos))
+            .andExpect(model().attribute("todos", todos))
             .andExpect(model().attribute("habit", habit))
             .andExpect(model().attribute("acquired", acquired))
             .andExpect(model().attribute("inProgress", inProgress))
