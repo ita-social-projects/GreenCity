@@ -231,7 +231,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/tags/search")
-    @ApiPageableWithLocale
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
@@ -263,7 +263,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/search")
-    @ApiPageableWithLocale
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) @ValidLanguage Locale locale,

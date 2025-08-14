@@ -44,7 +44,7 @@ public class SearchController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
     @GetMapping("/eco-news")
-    @ApiPageableWithLocale
+    @ApiPageableWithLocale(clazz = SearchNewsDto.class)
     public ResponseEntity<PageableDto<SearchNewsDto>> searchEcoNews(
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @CurrentUser UserVO user,
@@ -68,7 +68,7 @@ public class SearchController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
     @GetMapping("/events")
-    @ApiPageableWithLocale
+    @ApiPageableWithLocale(clazz = SearchEventsDto.class)
     public ResponseEntity<PageableDto<SearchEventsDto>> searchEvents(
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @CurrentUser UserVO user,
@@ -92,7 +92,7 @@ public class SearchController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
     @GetMapping("/places")
-    @ApiPageableWithLocale
+    @ApiPageableWithLocale(clazz = SearchPlacesDto.class)
     public ResponseEntity<PageableDto<SearchPlacesDto>> searchPlaces(
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @CurrentUser UserVO user,
