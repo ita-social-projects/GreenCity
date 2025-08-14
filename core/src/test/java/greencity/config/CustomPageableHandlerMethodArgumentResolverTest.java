@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.context.request.NativeWebRequest;
-
 import static greencity.constant.PageableConstants.DEFAULT_PAGE;
 import static greencity.constant.PageableConstants.DEFAULT_SORT;
 import static greencity.constant.PageableConstants.DEFAULT_PAGE_SIZE;
@@ -31,16 +30,19 @@ class CustomPageableHandlerMethodArgumentResolverTest {
     @Mock
     private NativeWebRequest webRequest;
 
+    @Mock
+    private CustomSortHandlerMethodArgumentResolver customSortHandlerMethodArgumentResolver;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        resolver = new CustomPageableHandlerMethodArgumentResolver();
+        resolver = new CustomPageableHandlerMethodArgumentResolver(customSortHandlerMethodArgumentResolver);
     }
 
     @Test
     void shouldReturnDefaultPageableWhenNoParametersProvidedTest() {
-        when(webRequest.getParameter("page")).thenReturn(null);
-        when(webRequest.getParameter("size")).thenReturn(null);
+        when(webRequest.getParameter(PAGE)).thenReturn(null);
+        when(webRequest.getParameter(SIZE)).thenReturn(null);
 
         Pageable pageable = resolver.resolveArgument(null, null, webRequest, null);
 
