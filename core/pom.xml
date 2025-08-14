@@ -29,7 +29,6 @@
         <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
         <test.containers.version>1.19.3</test.containers.version>
         <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
-        <apache.commons.version>3.18.0</apache.commons.version>
     </properties>
 
     <dependencies>
@@ -220,7 +219,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${apache.commons.version}</version>
+            <version>${commons.lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
