@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@Sortable
+@Sortable(fields = {"id", "name", "createDate"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class FactOfTheDayDTO {

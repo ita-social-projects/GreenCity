@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Sortable
+@Sortable(fields = {"id", "complexity", "defaultDuration", "isDeleted"})
 @Builder
 @Data
 public class HabitManagementDto implements Serializable {

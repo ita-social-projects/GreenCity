@@ -12,7 +12,16 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Sortable
+@Sortable(fields = {
+    "id",
+    "createdDate",
+    "modifiedDate",
+    "parentCommentId",
+    "replies",
+    "likes",
+    "dislikes",
+    "status"
+})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

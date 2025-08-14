@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Sortable
+@Sortable(fields = {"id", "name", "email", "rating", "mutualFriends", "chatId"})
 @SuperBuilder
 @Data
 @SuppressWarnings("java:S107")

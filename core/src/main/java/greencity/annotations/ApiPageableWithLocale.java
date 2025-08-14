@@ -68,21 +68,20 @@ import java.lang.annotation.Target;
     name = "page",
     schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"),
     in = ParameterIn.QUERY,
-    description = "Page index you want to retrieve [0..N]. "
-        + "If page index is less than 0 or not specified then default value is used!")
+    description = "Page index to retrieve [0..N]. Must be an integer greater than or equal to 0. "
+        + "If omitted, defaults to 0. Negative or non-numeric values result in 400 Bad Request.")
 @Parameter(
     name = "size",
-    schema = @Schema(type = "integer", minimum = "1", maximum = "100", defaultValue = "5"),
+    schema = @Schema(type = "integer", minimum = "1", maximum = "100", defaultValue = "20"),
     in = ParameterIn.QUERY,
-    description = "Number of records per page [1..100]. "
-        + "If size is less than 1 or not specified then default value is used!"
-        + "If size is bigger than 100, size becomes 100.")
+    description = "Number of records per page [1..100]. If omitted, defaults to 20. "
+        + "Non-numeric or out-of-range values (less than 1 or greater than 100) result in 400 Bad Request.")
 @Parameter(
     name = "sort",
     in = ParameterIn.QUERY,
     description = "Sorting criteria in the format: property,(asc|desc). "
         + "Default sort order is ascending. Supports multiple sort criteria.",
-    array = @ArraySchema(schema = @Schema(type = "string")),
+    array = @ArraySchema(schema = @Schema(type = "string", example = "createdDate,desc")),
     style = ParameterStyle.FORM,
     explode = Explode.TRUE)
 public @interface ApiPageableWithLocale {

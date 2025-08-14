@@ -6,7 +6,9 @@ import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -24,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -258,6 +261,11 @@ class CustomExceptionHandlerTest {
         expectedResponse.setMessage("Invalid sort parameter");
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
         assertEquals(expectedResponse, response.getBody());
+
+        ExceptionResponse body = (ExceptionResponse) response.getBody();
+        assertNotNull(body);
+        assertEquals("Invalid sort parameter", body.getMessage());
     }
 }

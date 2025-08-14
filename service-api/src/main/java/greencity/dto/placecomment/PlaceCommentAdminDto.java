@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Sortable
+@Sortable(fields = {"id", "createdDate"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceCommentAdminDto {

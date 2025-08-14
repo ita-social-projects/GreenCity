@@ -4,6 +4,7 @@ import greencity.annotations.Sortable;
 import greencity.constant.ErrorMessage;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Component;
  * request are allowed for a given DTO or entity class.
  * <p>
  * This class inspects the target class for {@link Sortable} annotations and
- * determines which fields are permitted to be used in sorting.
+ * determines which fields are permitted to be used in sorting. If the class is
+ * not annotated with {@link Sortable}, no fields are allowed and any sort
+ * property will be rejected.
  * </p>
  * <ul>
  * <li>If the class has a {@link Sortable} annotation with an explicit
@@ -48,7 +51,10 @@ public class SortPageableValidator {
                 String[] classLevelSortableFields = classSortable.fields();
                 if (classLevelSortableFields.length > 0) {
                     // Class-level annotation explicitly lists sortable fields
-                    sortableFields.addAll(Arrays.asList(classLevelSortableFields));
+                    Arrays.stream(classLevelSortableFields)
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .forEach(sortableFields::add);
                 } else {
                     // No explicit fields — check for @Sortable on individual fields
                     for (Field field : type.getDeclaredFields()) {
@@ -65,7 +71,7 @@ public class SortPageableValidator {
                 }
             }
 
-            return sortableFields;
+            return Collections.unmodifiableSet(sortableFields);
         }
     };
 

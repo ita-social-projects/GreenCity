@@ -1,14 +1,12 @@
 package greencity.config;
 
 import greencity.constant.ErrorMessage;
-import greencity.exception.exceptions.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Sort;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +15,8 @@ import static greencity.constant.PageableConstants.DEFAULT_PAGE;
 import static greencity.constant.PageableConstants.DEFAULT_PAGE_SIZE;
 import static greencity.constant.PageableConstants.PAGE;
 import static greencity.constant.PageableConstants.SIZE;
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +33,6 @@ class CustomPageableHandlerMethodArgumentResolverTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         resolver = new CustomPageableHandlerMethodArgumentResolver(customSortHandlerMethodArgumentResolver);
     }
 
@@ -55,8 +52,8 @@ class CustomPageableHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldReturnCustomPageableWhenValidParametersProvidedTest() {
-        when(webRequest.getParameter("page")).thenReturn("2");
-        when(webRequest.getParameter("size")).thenReturn("10");
+        when(webRequest.getParameter(PAGE)).thenReturn("2");
+        when(webRequest.getParameter(SIZE)).thenReturn("10");
         when(customSortHandlerMethodArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(Sort.unsorted());
 
@@ -101,7 +98,7 @@ class CustomPageableHandlerMethodArgumentResolverTest {
 
         MethodParameter methodParameter = mock(MethodParameter.class);
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 resolver.resolveArgument(methodParameter, null, webRequest, null));
 
         assertEquals(ErrorMessage.MAX_PAGE_SIZE_EXCEPTION, exception.getMessage());

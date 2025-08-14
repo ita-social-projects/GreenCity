@@ -18,7 +18,14 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Sortable
+@Sortable(fields = {
+    "id",
+    "defaultDuration",
+    "amountAcquiredUsers",
+    "complexity",
+    "likes",
+    "dislikes"
+})
 @Builder
 @Getter
 @Setter

@@ -292,7 +292,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnsupportedSortException.class)
     public final ResponseEntity<Object> handleUnsupportedSortException(UnsupportedSortException ex,
         WebRequest request) {
-        log.trace(ex.getMessage(), ex);
+        log.warn(ex.getMessage(), ex);
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());

@@ -12,9 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ManagementRatingStatisticsController {
     private final RatingStatisticsService ratingStatisticsService;
     private final RatingExcelExporter ratingExcelExporter;
-    private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateTimeFormatter FILE_DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
      * Returns management page with User rating statistics.
@@ -66,7 +65,7 @@ public class ManagementRatingStatisticsController {
         response.setContentType("application/octet-stream");
         String headerKey = "Content-Disposition";
 
-        String currentDate = dateFormat.format(new Date());
+        String currentDate = LocalDate.now().format(FILE_DATE_FMT);
         String fileName = "user_rating_statistics" + currentDate + ".xlsx";
         String headerValue = "attachment; filename=" + fileName;
 
@@ -88,7 +87,7 @@ public class ManagementRatingStatisticsController {
         response.setContentType("application/octet-stream");
         String headerKey = "Content-Disposition";
 
-        String currentDate = dateFormat.format(new Date());
+        String currentDate = LocalDate.now().format(FILE_DATE_FMT);
         String fileName = "user_rating_statistics" + currentDate + ".xlsx";
         String headerValue = "attachment; filename=" + fileName;
 
@@ -108,9 +107,10 @@ public class ManagementRatingStatisticsController {
      * @param ratingStatisticsViewDto used for receive parameters for filters from
      *                                UI.
      */
+    @ApiPageable(clazz = RatingStatisticsDtoForTables.class)
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
-        @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) Pageable pageable,
         RatingStatisticsViewDto ratingStatisticsViewDto) {
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getFilteredDataForManagementByPage(pageable,

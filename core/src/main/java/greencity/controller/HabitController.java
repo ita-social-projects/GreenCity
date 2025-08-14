@@ -97,7 +97,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    @ApiPageable(clazz = HabitDto.class)
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
@@ -122,7 +122,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/my")
-    @ApiPageable(clazz = HabitDto.class)
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
@@ -149,6 +149,7 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     @GetMapping("/all/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllHabitsOfFriend(
         @PathVariable Long friendId,
@@ -178,6 +179,7 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     @GetMapping("/allMutualHabits/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
         @PathVariable Long friendId,
@@ -525,7 +527,7 @@ public class HabitController {
     })
 
     @GetMapping("/favorites")
-    @ApiPageable(clazz = HabitDto.class)
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAllFavorites(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,

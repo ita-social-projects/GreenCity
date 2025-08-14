@@ -1,7 +1,6 @@
 package greencity.config;
 
 import greencity.constant.ErrorMessage;
-import greencity.exception.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -41,11 +40,12 @@ import static greencity.constant.PageableConstants.DEFAULT_PAGE;
  * <h2>Supported Query Parameters:</h2>
  * <ul>
  * <li><b>{@code page}</b> – 0-based page index. Defaults to
- * {@code DEFAULT_PAGE} if missing or invalid. Must be greater than or equal to
- * 0.</li>
+ * {@code DEFAULT_PAGE} if omitted, but must be greater than or equal to 0. An
+ * invalid value will throw an {@link IllegalArgumentException}.</li>
  * <li><b>{@code size}</b> – Number of items per page. Defaults to
- * {@code DEFAULT_PAGE_SIZE} if missing or invalid. Must be ≥ 1 and ≤
- * {@code MAX_PAGE_SIZE}.</li>
+ * {@code DEFAULT_PAGE_SIZE} if omitted, but must be ≥ 1 and ≤
+ * {@code MAX_PAGE_SIZE}. An invalid value (negative or greater than
+ * {@code MAX_PAGE_SIZE}) will throw an {@link IllegalArgumentException}.</li>
  * <li><b>{@code sort}</b> – Sorting instructions, parsed and validated by the
  * {@link CustomSortHandlerMethodArgumentResolver}.</li>
  * </ul>
@@ -53,7 +53,7 @@ import static greencity.constant.PageableConstants.DEFAULT_PAGE;
  * <h2>Validation Rules:</h2>
  * <ul>
  * <li>If {@code size} exceeds {@code MAX_PAGE_SIZE}, a
- * {@link greencity.exception.exceptions.BadRequestException} is thrown with
+ * {@link IllegalArgumentException} is thrown with
  * {@link greencity.constant.ErrorMessage#MAX_PAGE_SIZE_EXCEPTION}.</li>
  * <li>If {@code page} or {@code size} is negative, an
  * {@link IllegalArgumentException} is thrown.</li>
@@ -123,10 +123,9 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
      * @param binderFactory   the factory for creating WebDataBinders
      * @return a fully configured {@link Pageable} instance with validated
      *         pagination and sorting
-     * @throws BadRequestException      if {@code size} exceeds
-     *                                  {@code MAX_PAGE_SIZE}
-     * @throws IllegalArgumentException if {@code page} or {@code size} is negative
-     *                                  or non-numeric
+     * @throws IllegalArgumentException if {@code page} or {@code size} is less than
+     *                                  0, not a valid number, or if {@code size}
+     *                                  exceeds the {@code MAX_PAGE_SIZE}.
      */
     @NotNull
     @Override
@@ -137,8 +136,11 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
         int page = parseParameter(webRequest, PAGE, DEFAULT_PAGE);
         int size = parseParameter(webRequest, SIZE, DEFAULT_PAGE_SIZE);
 
+        if (size < 1) {
+            throw new IllegalArgumentException(ErrorMessage.MIN_PAGE_SIZE_EXCEPTION);
+        }
         if (size > MAX_PAGE_SIZE) {
-            throw new BadRequestException(ErrorMessage.MAX_PAGE_SIZE_EXCEPTION);
+            throw new IllegalArgumentException(ErrorMessage.MAX_PAGE_SIZE_EXCEPTION);
         }
 
         Sort sort = customSortHandlerMethodArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest,

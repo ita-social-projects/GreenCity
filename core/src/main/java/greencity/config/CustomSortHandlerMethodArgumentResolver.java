@@ -142,24 +142,48 @@ public class CustomSortHandlerMethodArgumentResolver implements SortArgumentReso
 
         List<Sort.Order> orders = new ArrayList<>();
         for (String sortParam : sortParams) {
-            if (sortParam == null || sortParam.isEmpty()) {
-                continue;
-            }
-
-            String[] parts = sortParam.split(",");
-            if (parts.length == 2) {
-                String property = parts[0].trim();
-                String direction = parts[1].trim();
-                Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-                orders.add(new Sort.Order(sortDirection, property));
-            } else if (parts.length == 1) {
-                orders.add(new Sort.Order(Sort.Direction.ASC, parts[0].trim()));
-            } else {
-                throw new IllegalArgumentException(
-                    String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, sortParam));
+            if (isValidSortParam(sortParam)) {
+                orders.add(parseSortOrder(sortParam));
             }
         }
 
         return orders.isEmpty() ? PageableConstants.DEFAULT_SORT : Sort.by(orders);
+    }
+
+    /**
+     * Validates the sort parameter.
+     */
+    private boolean isValidSortParam(String sortParam) {
+        return sortParam != null && !sortParam.isEmpty();
+    }
+
+    /**
+     * Parses a single sort parameter into a Sort.Order.
+     */
+    private Sort.Order parseSortOrder(String sortParam) {
+        String[] parts = sortParam.split(",");
+
+        if (parts.length == 2) {
+            String property = parts[0].trim();
+            String direction = parts[1].trim();
+            Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+            return createSortOrder(property, sortDirection, sortParam);
+        } else if (parts.length == 1) {
+            return createSortOrder(parts[0].trim(), Sort.Direction.ASC, sortParam);
+        }
+
+        throw new IllegalArgumentException(
+            String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, sortParam));
+    }
+
+    /**
+     * Creates a Sort.Order with the given property and direction.
+     */
+    private Sort.Order createSortOrder(String property, Sort.Direction direction, String sortParam) {
+        if (property.isEmpty()) {
+            throw new IllegalArgumentException(
+                String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, sortParam));
+        }
+        return new Sort.Order(direction, property);
     }
 }

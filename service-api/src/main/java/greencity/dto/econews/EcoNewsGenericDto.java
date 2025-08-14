@@ -19,7 +19,14 @@ import java.util.List;
 @Getter
 @ToString(exclude = "author")
 @Builder
-@Sortable
+@Sortable(fields = {
+    "id",
+    "title",
+    "creationDate",
+    "likes",
+    "author",
+    "countComments"
+})
 @EqualsAndHashCode
 public class EcoNewsGenericDto {
     @Min(1)

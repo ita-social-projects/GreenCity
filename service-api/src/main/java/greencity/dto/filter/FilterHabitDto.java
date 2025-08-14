@@ -1,15 +1,15 @@
 package greencity.dto.filter;
 
+import greencity.annotations.Sortable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.Valid;
 
 @Data
+@Sortable
 @AllArgsConstructor
 @NoArgsConstructor
 public class FilterHabitDto {
-    @Valid
     private String searchReg;
     private Integer durationFrom;
     private Integer durationTo;

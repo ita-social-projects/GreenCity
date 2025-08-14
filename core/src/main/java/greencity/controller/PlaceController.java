@@ -236,7 +236,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{status}")
-    @ApiPageable(clazz = AddPlaceDto.class)
+    @ApiPageable(clazz = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> getPlacesByStatus(
         @PathVariable PlaceStatus status,
         @Parameter(hidden = true) Pageable pageable) {
@@ -352,7 +352,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PostMapping("/filter/predicate")
-    @ApiPageable(clazz = AddPlaceDto.class)
+    @ApiPageable(clazz = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> filterPlaceBySearchPredicate(
         @Valid @RequestBody FilterPlaceDto filterDto,
         @Parameter(hidden = true) Pageable pageable) {
@@ -470,9 +470,13 @@ public class PlaceController {
     public ResponseEntity<Long> bulkDelete(
         @Parameter(description = "Ids of places separated by a comma \n e.g. 1,2",
             required = true) @RequestParam String ids) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
-            .map(Long::valueOf)
-            .toList()));
+        return ResponseEntity.status(HttpStatus.OK).body(
+            placeService.bulkDelete(
+                Arrays.stream(ids.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Long::valueOf)
+                    .toList()));
     }
 
     /**
@@ -521,7 +525,7 @@ public class PlaceController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
     })
-    @ApiPageable(clazz = AddPlaceDto.class)
+    @ApiPageable(clazz = AdminPlaceDto.class)
     @GetMapping("all")
     public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@Parameter(hidden = true) Pageable page,
         @Parameter(hidden = true) Principal principal) {

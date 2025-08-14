@@ -17,7 +17,7 @@ public @interface ValidEcoNewsDtoRequest {
      *
      * @return message
      */
-    String message() default "Count of tags should be at least one but not more three or invalid source format";
+    String message() default "Count of tags should be at least one but not more than three or invalid source format";
 
     /**
      * Let you select to split the annotations into different groups to apply

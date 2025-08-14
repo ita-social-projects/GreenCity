@@ -19,7 +19,7 @@ import lombok.Builder;
 @NoArgsConstructor
 @Getter
 @Setter
-@Sortable
+@Sortable(fields = {"id", "name", "status", "author", "modifiedDate"})
 @EqualsAndHashCode
 @Builder
 public class AdminPlaceDto {

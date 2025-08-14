@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Builder
 @Data
-@Sortable
+@Sortable(fields = {"id", "title"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchNewsDto {
