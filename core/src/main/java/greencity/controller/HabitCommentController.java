@@ -113,7 +113,7 @@ public class HabitCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/comments/{parentCommentId}/replies/active")
-    @ApiPageable
+    @ApiPageable(clazz = CommentDto.class)
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long parentCommentId,

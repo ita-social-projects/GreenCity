@@ -97,7 +97,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    @ApiPageable
+    @ApiPageable(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
@@ -122,7 +122,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/my")
-    @ApiPageable
+    @ApiPageable(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
@@ -525,7 +525,7 @@ public class HabitController {
     })
 
     @GetMapping("/favorites")
-    @ApiPageable
+    @ApiPageable(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAllFavorites(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable,
@@ -553,7 +553,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/friends")
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendHabitInviteDto.class)
     public ResponseEntity<PageableDto<UserFriendHabitInviteDto>> findAllFriendsOfUserToBeInvited(
         @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) @Nullable String name,

@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.placecomment.PlaceCommentAdminDto;
 import greencity.dto.placecomment.PlaceCommentRequestDto;
 import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.service.PlaceCommentService;
@@ -97,7 +98,7 @@ public class PlaceCommentController {
      * @return PageableDto
      * @author Rostyslav Khasanov
      */
-    @ApiPageable
+    @ApiPageable(clazz = PlaceCommentAdminDto.class)
     @Operation(summary = "Get comments by page")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
@@ -110,7 +111,7 @@ public class PlaceCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("comments")
-    public ResponseEntity<Object> getAllComments(@Parameter(hidden = true) Pageable pageable) {
+    public ResponseEntity<PageableDto<PlaceCommentAdminDto>> getAllComments(@Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeCommentService.getAllComments(pageable));
     }

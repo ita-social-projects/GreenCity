@@ -212,7 +212,7 @@ public class EventCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @ApiPageable
+    @ApiPageable(clazz = CommentDto.class)
     @GetMapping("/comments/{parentCommentId}/replies/active")
     public ResponseEntity<PageableDto<CommentDto>> findAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
