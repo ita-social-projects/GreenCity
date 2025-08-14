@@ -244,22 +244,23 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles exceptions of type {@link UnsupportedSortException} thrown during request processing.
-     * This method intercepts the {@code UnsupportedSortException}, logs the error, and prepares
-     * a standardized error response containing details about the failed sorting operation.
-     * The client receives a response with HTTP status 400 (Bad Request) and a body that includes
-     * an error message describing the reason for the failure.
+     * Handles exceptions of type {@link UnsupportedSortException} thrown during
+     * request processing. This method intercepts the
+     * {@code UnsupportedSortException}, logs the error, and prepares a standardized
+     * error response containing details about the failed sorting operation. The
+     * client receives a response with HTTP status 400 (Bad Request) and a body that
+     * includes an error message describing the reason for the failure.
      *
-     * @param ex      the {@link UnsupportedSortException} instance containing details about the invalid sorting
-     *                parameter(s)
-     * @param request the {@link WebRequest} providing context about the web request during which
-     *                the exception occurred
-     * @return a {@link ResponseEntity} containing an {@link ExceptionResponse} object with the error details
-     *         and HTTP status 400 (BAD_REQUEST)
+     * @param ex      the {@link UnsupportedSortException} instance containing
+     *                details about the invalid sorting parameter(s)
+     * @param request the {@link WebRequest} providing context about the web request
+     *                during which the exception occurred
+     * @return a {@link ResponseEntity} containing an {@link ExceptionResponse}
+     *         object with the error details and HTTP status 400 (BAD_REQUEST)
      */
     @ExceptionHandler(UnsupportedSortException.class)
     public final ResponseEntity<Object> handleResourceNotFoundException(UnsupportedSortException ex,
-                                                                        WebRequest request) {
+        WebRequest request) {
         log.trace(ex.getMessage(), ex);
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));

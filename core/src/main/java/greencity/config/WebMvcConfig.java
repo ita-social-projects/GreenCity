@@ -26,11 +26,15 @@ import java.util.Locale;
  * <p>
  * This class configures essential MVC components, such as:
  * <ul>
- *     <li>Custom pageable and sort argument resolvers for pagination and sorting.</li>
- *     <li>Locale resolution and switching based on request parameters.</li>
- *     <li>Validation message source for internationalization of validation messages.</li>
- *     <li>Multipart file upload support using {@link StandardServletMultipartResolver}.</li>
- *     <li>Custom argument resolvers for injecting user data into controller methods.</li>
+ * <li>Custom pageable and sort argument resolvers for pagination and
+ * sorting.</li>
+ * <li>Locale resolution and switching based on request parameters.</li>
+ * <li>Validation message source for internationalization of validation
+ * messages.</li>
+ * <li>Multipart file upload support using
+ * {@link StandardServletMultipartResolver}.</li>
+ * <li>Custom argument resolvers for injecting user data into controller
+ * methods.</li>
  * </ul>
  * <p>
  * Implements {@link WebMvcConfigurer} to customize Spring MVC configuration.
@@ -38,22 +42,28 @@ import java.util.Locale;
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
-    /** Custom pageable argument resolver for handling pagination in API requests. */
+    /**
+     * Custom pageable argument resolver for handling pagination in API requests.
+     */
     private final CustomPageableHandlerMethodArgumentResolver customPageableArgumentResolver;
 
     /** Custom sort argument resolver for handling sorting in API requests. */
     private final CustomSortHandlerMethodArgumentResolver customSortHandlerMethodArgumentResolver;
 
-    /** Service for user-related operations, used in {@link UserArgumentResolver}. */
+    /**
+     * Service for user-related operations, used in {@link UserArgumentResolver}.
+     */
     private final UserService userService;
 
     /** ModelMapper instance for converting entities to DTOs and vice versa. */
     private final ModelMapper modelMapper;
 
     /**
-     * Configures the message source for internationalization of application messages.
+     * Configures the message source for internationalization of application
+     * messages.
      *
-     * @return a {@link MessageSource} configured with UTF-8 encoding and message bundle location
+     * @return a {@link MessageSource} configured with UTF-8 encoding and message
+     *         bundle location
      */
     @Bean
     public MessageSource messageSource() {
@@ -89,7 +99,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Configures an interceptor to switch the locale based on the "lang" request parameter.
+     * Configures an interceptor to switch the locale based on the "lang" request
+     * parameter.
      *
      * @return a {@link LocaleChangeInterceptor} for handling dynamic locale changes
      */
@@ -101,7 +112,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Configures multipart file upload support using the standard servlet multipart resolver.
+     * Configures multipart file upload support using the standard servlet multipart
+     * resolver.
      *
      * @return a {@link MultipartResolver} capable of handling file uploads
      */
@@ -113,11 +125,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
     /**
      * Registers interceptors for the application.
      * <p>
-     * Currently, this adds the {@link LocaleChangeInterceptor} to allow switching the locale
-     * via the "lang" request parameter.
+     * Currently, this adds the {@link LocaleChangeInterceptor} to allow switching
+     * the locale via the "lang" request parameter.
      * </p>
      *
-     * @param registry the {@link InterceptorRegistry} to which interceptors are added
+     * @param registry the {@link InterceptorRegistry} to which interceptors are
+     *                 added
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -127,11 +140,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     /**
      * Configures custom argument resolvers for controller method parameters.
      * <p>
-     * Replaces the default {@link PageableHandlerMethodArgumentResolver} with custom pageable
-     * and sort resolvers. Also adds a {@link UserArgumentResolver} to inject user details.
+     * Replaces the default {@link PageableHandlerMethodArgumentResolver} with
+     * custom pageable and sort resolvers. Also adds a {@link UserArgumentResolver}
+     * to inject user details.
      * </p>
      *
-     * @param resolvers the list of {@link HandlerMethodArgumentResolver} instances to configure
+     * @param resolvers the list of {@link HandlerMethodArgumentResolver} instances
+     *                  to configure
      */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

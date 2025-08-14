@@ -22,12 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * The test covers the following scenarios:
  * <ul>
- *     <li>Classes with {@code @Sortable(fields = {...})} at class level.</li>
- *     <li>Classes with {@code @Sortable} at class level and on individual fields.</li>
- *     <li>Classes with {@code @Sortable} but no field-level annotations, allowing all fields.</li>
- *     <li>Classes with no {@code @Sortable} annotations at all.</li>
- *     <li>Empty {@link Sort} instances.</li>
- *     <li>Validation failure cases for invalid sort fields.</li>
+ * <li>Classes with {@code @Sortable(fields = {...})} at class level.</li>
+ * <li>Classes with {@code @Sortable} at class level and on individual
+ * fields.</li>
+ * <li>Classes with {@code @Sortable} but no field-level annotations, allowing
+ * all fields.</li>
+ * <li>Classes with no {@code @Sortable} annotations at all.</li>
+ * <li>Empty {@link Sort} instances.</li>
+ * <li>Validation failure cases for invalid sort fields.</li>
  * </ul>
  * </p>
  */
@@ -54,22 +56,23 @@ class SortPageableValidatorTest {
     }
 
     /**
-     * Validates that sorting by a field not listed on the class-level {@link Sortable}
-     * annotation causes a validation failure with an appropriate exception.
+     * Validates that sorting by a field not listed on the class-level
+     * {@link Sortable} annotation causes a validation failure with an appropriate
+     * exception.
      */
     @Test
     void shouldFailWhenSortFieldNotInClassLevelAnnotation() {
         Sort sort = Sort.by("city").ascending();
         UnsupportedSortException ex = assertThrows(UnsupportedSortException.class,
-                () -> validator.validate(ClassWithClassLevelSortable.class, sort));
+            () -> validator.validate(ClassWithClassLevelSortable.class, sort));
         assertTrue(ex.getMessage().contains(ErrorMessage.INVALID_SORTING_VALUE));
         assertTrue(ex.getMessage().contains("city"));
     }
 
     /**
      * Validates that sorting by fields annotated individually on fields with
-     * {@link Sortable} passes validation when the class-level annotation has
-     * empty fields().
+     * {@link Sortable} passes validation when the class-level annotation has empty
+     * fields().
      */
     @Test
     void shouldPassWhenSortFieldsMatchFieldLevelAnnotation() {
@@ -78,14 +81,14 @@ class SortPageableValidatorTest {
     }
 
     /**
-     * Validates that sorting by a field not annotated with {@link Sortable}
-     * on individual fields causes a validation failure.
+     * Validates that sorting by a field not annotated with {@link Sortable} on
+     * individual fields causes a validation failure.
      */
     @Test
     void shouldFailWhenSortFieldNotInFieldLevelAnnotation() {
         Sort sort = Sort.by("city").ascending();
         UnsupportedSortException ex = assertThrows(UnsupportedSortException.class,
-                () -> validator.validate(ClassWithFieldLevelSortable.class, sort));
+            () -> validator.validate(ClassWithFieldLevelSortable.class, sort));
         assertTrue(ex.getMessage().contains(ErrorMessage.INVALID_SORTING_VALUE));
         assertTrue(ex.getMessage().contains("city"));
     }
@@ -102,21 +105,21 @@ class SortPageableValidatorTest {
     }
 
     /**
-     * Validates that when there is no {@link Sortable} annotation present on the class,
-     * the validator disallows all sort fields and fails validation.
+     * Validates that when there is no {@link Sortable} annotation present on the
+     * class, the validator disallows all sort fields and fails validation.
      */
     @Test
     void shouldFailWhenSortFieldNotPresentInClassWithNoSortableAnnotation() {
         Sort sort = Sort.by("name");
         UnsupportedSortException ex = assertThrows(UnsupportedSortException.class,
-                () -> validator.validate(ClassWithoutSortableAnnotation.class, sort));
+            () -> validator.validate(ClassWithoutSortableAnnotation.class, sort));
         assertTrue(ex.getMessage().contains(ErrorMessage.INVALID_SORTING_VALUE));
         assertTrue(ex.getMessage().contains("name"));
     }
 
     /**
-     * Validates that an empty {@link Sort} (no sorting orders) should always pass validation
-     * regardless of the sortable fields defined on the class.
+     * Validates that an empty {@link Sort} (no sorting orders) should always pass
+     * validation regardless of the sortable fields defined on the class.
      */
     @Test
     void shouldPassWhenSortIsEmpty() {
