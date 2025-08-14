@@ -26,6 +26,7 @@ import static greencity.constant.PageableConstants.DEFAULT_PAGE;
  * This resolver is responsible for converting HTTP request parameters into a
  * {@link org.springframework.data.domain.Pageable} instance, applying both pagination
  * and sorting logic. It extends the default Spring behavior by:
+ * </p>
  * <ul>
  *     <li>Parsing and validating {@code page} and {@code size} query parameters.</li>
  *     <li>Rejecting negative or non-numeric values for pagination parameters.</li>
@@ -93,12 +94,12 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
      * pagination parameters from the HTTP request.
      * <p>
      * This implementation:
+     * </p>
      * <ul>
      *     <li>Parses {@code page} and {@code size} query parameters, applying defaults if missing.</li>
      *     <li>Validates that {@code size} does not exceed {@code MAX_PAGE_SIZE}.</li>
      *     <li>Delegates sort resolution to {@link CustomSortHandlerMethodArgumentResolver}.</li>
      * </ul>
-     *
      * @param methodParameter the method parameter that should be resolved
      * @param mavContainer    the ModelAndViewContainer for the current request
      * @param webRequest      the current web request providing access to query parameters
@@ -130,6 +131,7 @@ public class CustomPageableHandlerMethodArgumentResolver extends PageableHandler
      * <p>
      * If the parameter is absent, the provided {@code defaultValue} is returned.
      * If present, the value is parsed as an integer and validated to ensure it is non-negative.
+     * </p>
      *
      * @param webRequest   the current web request
      * @param param        the name of the query parameter to parse (e.g., {@code "page"} or {@code "size"})
