@@ -1,5 +1,6 @@
 package greencity.dto.econews;
 
+import greencity.annotations.Sortable;
 import greencity.dto.user.EcoNewsAuthorDto;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 @Getter
 @ToString(exclude = "author")
 @Builder
+@Sortable
 @EqualsAndHashCode
 public class EcoNewsGenericDto {
     @Min(1)

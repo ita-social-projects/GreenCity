@@ -1,5 +1,6 @@
 package greencity.dto.habit;
 
+import greencity.annotations.Sortable;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
@@ -17,6 +18,7 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Sortable
 @Builder
 @Getter
 @Setter

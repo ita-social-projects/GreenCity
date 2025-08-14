@@ -1,5 +1,6 @@
 package greencity.dto.comment;
 
+import greencity.annotations.Sortable;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,13 +12,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Sortable
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
 public class CommentDto {
-    @NotNull
     @Min(1)
+    @NotNull
     private Long id;
 
     @NotNull
