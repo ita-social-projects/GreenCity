@@ -43,9 +43,8 @@ import java.lang.annotation.Target;
  * &#64;GetMapping("/articles")
  * &#64;ApiPageableWithLocale(clazz = ArticleDto.class)
  * public Page<ArticleDto> getArticles(
- *         @RequestParam String lang,
- *         Pageable pageable
- * ) {
+ *     @RequestParam String lang,
+ *     Pageable pageable) {
  *     // Implementation that returns localized, paginated articles
  * }
  * }

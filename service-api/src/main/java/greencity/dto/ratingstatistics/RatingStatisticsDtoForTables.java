@@ -1,7 +1,6 @@
 package greencity.dto.ratingstatistics;
 
 import java.time.ZonedDateTime;
-
 import greencity.annotations.Sortable;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;

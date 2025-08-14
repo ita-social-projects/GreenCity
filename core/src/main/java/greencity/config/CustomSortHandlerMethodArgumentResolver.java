@@ -1,6 +1,7 @@
 package greencity.config;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ApiPageableWithLocale;
 import greencity.constant.ErrorMessage;
 import greencity.constant.PageableConstants;
 import greencity.validator.SortPageableValidator;
@@ -77,8 +78,9 @@ public class CustomSortHandlerMethodArgumentResolver implements SortArgumentReso
      * Resolves the {@link Sort} argument for a controller method by parsing the
      * "sort" query parameters from the HTTP request.
      * <p>
-     * If the controller method is annotated with {@link ApiPageable}, the resolved
-     * {@link Sort} object is validated using {@link SortPageableValidator}.
+     * If the controller method is annotated with {@link ApiPageable} or
+     * {@link ApiPageableWithLocale}, the resolved {@link Sort} object is validated
+     * using {@link SortPageableValidator}.
      * </p>
      *
      * @param parameter     the method parameter to resolve
@@ -98,10 +100,20 @@ public class CustomSortHandlerMethodArgumentResolver implements SortArgumentReso
         Sort sort = parseParameter(webRequest);
 
         ApiPageable apiPageable = parameter.getMethodAnnotation(ApiPageable.class);
+        ApiPageableWithLocale apiPageableWithLocale = parameter.getMethodAnnotation(ApiPageableWithLocale.class);
 
-        if (sort.isSorted() && apiPageable != null) {
-            Class<?> clazz = apiPageable.clazz();
-            sortPageableValidator.validate(clazz, sort);
+        Class<?> clazz = null;
+
+        if (sort.isSorted()) {
+            if (apiPageable != null) {
+                clazz = apiPageable.clazz();
+            } else if (apiPageableWithLocale != null) {
+                clazz = apiPageableWithLocale.clazz();
+            }
+
+            if (clazz != null) {
+                sortPageableValidator.validate(clazz, sort);
+            }
         }
 
         return sort;

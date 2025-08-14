@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
  *     public class PersonDto {
  *         &#64;Sortable
  *         private String name;
- *         @Sortable
+ *         &#64;Sortable
  *         private int age;
  *         private String city; // not sortable
  *     }
@@ -62,6 +62,7 @@ public @interface Sortable {
      * Defines the set of allowed sortable fields when applied at the class level.
      * <p>
      * If left empty, the validator will:
+     * </p>
      * <ol>
      * <li>Check for field-level {@code @Sortable} annotations, or</li>
      * <li>If none found, allow all declared fields for sorting.</li>

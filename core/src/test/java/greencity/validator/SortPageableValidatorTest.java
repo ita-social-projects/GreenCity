@@ -65,8 +65,7 @@ class SortPageableValidatorTest {
         Sort sort = Sort.by("city").ascending();
         UnsupportedSortException ex = assertThrows(UnsupportedSortException.class,
             () -> validator.validate(ClassWithClassLevelSortable.class, sort));
-        assertTrue(ex.getMessage().contains(ErrorMessage.INVALID_SORTING_VALUE));
-        assertTrue(ex.getMessage().contains("city"));
+        assertTrue(ex.getMessage().contains(String.format(ErrorMessage.INVALID_SORTING_VALUE, "[city]")));
     }
 
     /**
@@ -89,8 +88,7 @@ class SortPageableValidatorTest {
         Sort sort = Sort.by("city").ascending();
         UnsupportedSortException ex = assertThrows(UnsupportedSortException.class,
             () -> validator.validate(ClassWithFieldLevelSortable.class, sort));
-        assertTrue(ex.getMessage().contains(ErrorMessage.INVALID_SORTING_VALUE));
-        assertTrue(ex.getMessage().contains("city"));
+        assertTrue(ex.getMessage().contains(String.format(ErrorMessage.INVALID_SORTING_VALUE, "[city]")));
     }
 
     /**
@@ -113,8 +111,7 @@ class SortPageableValidatorTest {
         Sort sort = Sort.by("name");
         UnsupportedSortException ex = assertThrows(UnsupportedSortException.class,
             () -> validator.validate(ClassWithoutSortableAnnotation.class, sort));
-        assertTrue(ex.getMessage().contains(ErrorMessage.INVALID_SORTING_VALUE));
-        assertTrue(ex.getMessage().contains("name"));
+        assertTrue(ex.getMessage().contains(String.format(ErrorMessage.INVALID_SORTING_VALUE, "[name]")));
     }
 
     /**

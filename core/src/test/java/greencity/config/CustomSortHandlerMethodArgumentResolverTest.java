@@ -118,12 +118,15 @@ class CustomSortHandlerMethodArgumentResolverTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldValidateSortableFieldsWithApiPageableAnnotation() {
         when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,asc"});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
+        ApiPageable apiPageable = mock(ApiPageable.class);
 
-        when(methodParameter.getMethodAnnotation(ApiPageable.class)).thenReturn(mock(ApiPageable.class));
+        when(methodParameter.getMethodAnnotation(ApiPageable.class)).thenReturn(apiPageable);
+        when(apiPageable.clazz()).thenReturn((Class) String.class);
 
         resolver.resolveArgument(methodParameter, null, webRequest, null);
 

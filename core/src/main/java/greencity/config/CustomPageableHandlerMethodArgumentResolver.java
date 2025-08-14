@@ -75,14 +75,17 @@ import static greencity.constant.PageableConstants.DEFAULT_PAGE;
  * }
  * }</pre>
  *
+ * <p>
  * In the above example, requests like:
+ * </p>
  *
  * <pre>
  * GET /items?page=1&size=20&sort=name,asc
  * </pre>
- *
+ * <p>
  * will be converted into a {@link org.springframework.data.domain.PageRequest}
  * object with validated values and custom sorting rules applied.
+ * </p>
  *
  * @see org.springframework.data.web.PageableHandlerMethodArgumentResolver
  * @see CustomSortHandlerMethodArgumentResolver

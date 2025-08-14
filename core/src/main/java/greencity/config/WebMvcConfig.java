@@ -36,7 +36,7 @@ import java.util.Locale;
  * <li>Custom argument resolvers for injecting user data into controller
  * methods.</li>
  * </ul>
- * <p>
+ * </p>
  * Implements {@link WebMvcConfigurer} to customize Spring MVC configuration.
  */
 @Configuration

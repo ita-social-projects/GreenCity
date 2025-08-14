@@ -243,4 +243,21 @@ class CustomExceptionHandlerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals(expectedBody, response.getBody());
     }
+
+    @Test
+    void handleUnsupportedSortException() {
+        UnsupportedSortException unsupportedSortException = new UnsupportedSortException("Invalid sort parameter");
+
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class), any(ErrorAttributeOptions.class)))
+            .thenReturn(objectMap);
+
+        ResponseEntity<Object> response = customExceptionHandler
+            .handleUnsupportedSortException(unsupportedSortException, webRequest);
+
+        ExceptionResponse expectedResponse = new ExceptionResponse(objectMap);
+        expectedResponse.setMessage("Invalid sort parameter");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
 }

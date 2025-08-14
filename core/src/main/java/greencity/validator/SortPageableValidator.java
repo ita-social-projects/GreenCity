@@ -92,7 +92,7 @@ public class SortPageableValidator {
             .toList();
 
         if (!invalidFields.isEmpty()) {
-            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE + invalidFields);
+            throw new UnsupportedSortException(String.format(ErrorMessage.INVALID_SORTING_VALUE, invalidFields));
         }
     }
 
