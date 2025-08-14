@@ -30,16 +30,11 @@ public class AppConstant {
     public static final String USER_PLACEHOLDER = "{user}";
     public static final String TWO_USERS = "TWO_USERS";
     public static final String THREE_OR_MORE_USERS = "THREE_OR_MORE_USERS";
-    public static final String DOTENV_FILENAME = "secretKeys.env";
-    public static final int SQL_ROW_LIMIT = 10_000;
     public static final String TABLE = "TABLE";
-    public static final String TABLE_NAME = "TABLE_NAME";
-    public static final String COLUMN_NAME = "COLUMN_NAME";
-    public static final String VALID_TABLE_NAME_REGEX = "^(?!_)[a-z]+(?:_[a-z]+){0,10}(?<!_)$";
-    public static final String SELECT_FROM_WITH_LIMIT_AND_OFFSET = "SELECT * FROM %s LIMIT %d OFFSET %d;";
-    public static final String SELECT_COUNT_FROM = "SELECT COUNT(*) FROM %s;";
     public static final Set<String> supportedLanguages = Set.of(
         DEFAULT_LANGUAGE_CODE,
         LANGUAGE_CODE_UA);
     public static final String EMPTY_STRING = "";
+    public static final String LOGS_LINKS = "/logs/**";
+    public static final String EXPORT_SETTINGS_LINKS = "/export/settings/**";
 }

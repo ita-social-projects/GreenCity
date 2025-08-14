@@ -29,7 +29,17 @@
         <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
         <test.containers.version>1.19.3</test.containers.version>
         <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
+        <ldm.version>0.0.5</ldm.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Repository</name>
+            <url>https://maven.pkg.github.com/ita-social-projects/LDM-spring-boot-starter</url>
+        </repository>
+    </repositories>
+
 
     <dependencies>
         <dependency>
@@ -260,6 +270,11 @@
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.18.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.softserve.ldm</groupId>
+            <artifactId>ldm-spring-boot-starter</artifactId>
+            <version>${ldm.version}</version>
         </dependency>
     </dependencies>
     <build>
