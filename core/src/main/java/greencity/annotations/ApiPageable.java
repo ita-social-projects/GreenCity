@@ -33,4 +33,5 @@ import java.lang.annotation.Target;
     style = ParameterStyle.FORM,
     explode = Explode.TRUE)
 public @interface ApiPageable {
+    Class<?> clazz();
 }
