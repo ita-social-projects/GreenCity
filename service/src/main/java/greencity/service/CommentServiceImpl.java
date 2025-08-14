@@ -1,5 +1,9 @@
 package greencity.service;
 
+import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
+import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -35,10 +39,18 @@ import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.HabitRepo;
-import greencity.repository.NotificationRepo;
-import greencity.repository.UserRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.NotificationRepo;
 import greencity.repository.RatingPointsRepo;
+import greencity.repository.UserRepo;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,19 +59,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashSet;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.EVENT_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.USER_NOT_FOUND_BY_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -135,7 +135,7 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
         if (checkUserIsNotAuthor(userVO, articleAuthor) && !isCommentReply) {
-            createCommentNotification(articleType, articleId, userVO, locale);
+            createCommentNotification(comment.getText(), articleType, articleId, userVO, locale);
         }
         sendNotificationToTaggedUser(comment, articleType, locale);
 
@@ -313,12 +313,18 @@ public class CommentServiceImpl implements CommentService {
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      */
-    private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Locale locale) {
+    private void createCommentNotification(String comment, ArticleType articleType, Long articleId, UserVO userVO,
+        Locale locale) {
         UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT), articleId);
-        String message = (commentsCount >= 1) ? (commentsCount + 1) + " COMMENTS" : "COMMENT";
+        String commentMessage = comment.length() > 20
+            ? comment.substring(0, 20)
+            : comment;
+        String message = commentsCount >= 1
+            ? String.format("%d COMMENTS \"%s\"", commentsCount + 1, commentMessage)
+            : String.format("COMMENT \"%s\"", commentMessage);
         userNotificationService.createNotification(
             receiver,
             userVO,
@@ -371,7 +377,12 @@ public class CommentServiceImpl implements CommentService {
                 getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
                 articleId,
                 comment.getParentComment().getId());
-        String message = (replyCount >= 1) ? (replyCount + 1) + " REPLIES" : "REPLY";
+        String commentMessage = comment.getText().length() > 20
+            ? comment.getText().substring(0, 20)
+            : comment.getText();
+        String message = replyCount >= 1
+            ? String.format("%d REPLIES \"%s\"", replyCount + 1, commentMessage)
+            : String.format("REPLY \"%s\"", commentMessage);
         userNotificationService.createNotification(
             receiver,
             sender,
