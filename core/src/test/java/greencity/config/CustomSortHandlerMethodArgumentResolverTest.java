@@ -6,11 +6,15 @@ import greencity.validator.SortPageableValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Sort;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.context.request.NativeWebRequest;
+import java.util.stream.Stream;
 import static greencity.constant.PageableConstants.DEFAULT_SORT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,6 +39,29 @@ class CustomSortHandlerMethodArgumentResolverTest {
     @BeforeEach
     void setUp() {
         resolver = new CustomSortHandlerMethodArgumentResolver(sortPageableValidator);
+    }
+
+    static Stream<Arguments> invalidSortParametersProvider() {
+        return Stream.of(
+            Arguments.of(" ,asc"),
+            Arguments.of(",asc"),
+            Arguments.of(" "),
+            Arguments.of("name,asc,extra"),
+            Arguments.of("title,asc,extra"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidSortParametersProvider")
+    void shouldThrowExceptionForInvalidSortParameters(String sortParam) {
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{sortParam});
+        MethodParameter methodParameter = mock(MethodParameter.class);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> resolver.resolveArgument(methodParameter, null, webRequest, null)
+        );
+
+        assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, sortParam), exception.getMessage());
     }
 
     @Test
@@ -93,18 +120,6 @@ class CustomSortHandlerMethodArgumentResolverTest {
     }
 
     @Test
-    void shouldThrowExceptionForInvalidSortFormat() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"title,asc,extra"});
-
-        MethodParameter methodParameter = mock(MethodParameter.class);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(methodParameter, null, webRequest, null));
-
-        assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, "title,asc,extra"), exception.getMessage());
-    }
-
-    @Test
     void shouldThrowExceptionForInvalidSortDirection() {
         when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"title,wrong"});
 
@@ -131,18 +146,6 @@ class CustomSortHandlerMethodArgumentResolverTest {
         resolver.resolveArgument(methodParameter, null, webRequest, null);
 
         verify(sortPageableValidator).validate(any(), any());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSortParameterHasMoreThanOneComma() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,asc,extra"});
-
-        MethodParameter methodParameter = mock(MethodParameter.class);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(methodParameter, null, webRequest, null));
-
-        assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, "name,asc,extra"), exception.getMessage());
     }
 
     @Test
@@ -198,41 +201,5 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
         verify(sortPageableValidator, never()).validate(any(), any());
         assertEquals(Sort.by(Sort.Order.asc("name")), sort);
-    }
-
-    @Test
-    void shouldThrowExceptionForBlankSortProperty() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{" ,asc"});
-
-        MethodParameter methodParameter = mock(MethodParameter.class);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(methodParameter, null, webRequest, null));
-
-        assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, " ,asc"), exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionForEmptySortProperty() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{",asc"});
-
-        MethodParameter methodParameter = mock(MethodParameter.class);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(methodParameter, null, webRequest, null));
-
-        assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, ",asc"), exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionForMissingSortValue() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{" "});
-
-        MethodParameter methodParameter = mock(MethodParameter.class);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(methodParameter, null, webRequest, null));
-
-        assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, " "), exception.getMessage());
     }
 }

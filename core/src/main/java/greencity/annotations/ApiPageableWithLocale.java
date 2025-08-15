@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * <li><b>page</b> – Page index to retrieve (0-based). Must be ≥ 0. Defaults to
  * {@code 0} if not specified or negative.</li>
  * <li><b>size</b> – Number of records per page. Must be between 1 and 100.
- * Defaults to {@code 5} if not specified, less than 1, or greater than
+ * Defaults to {@code 20} if not specified, less than 1, or greater than
  * 100.</li>
  * <li><b>sort</b> – Sorting criteria in the format:
  * {@code property,(asc|desc)}. Defaults to ascending order if direction is

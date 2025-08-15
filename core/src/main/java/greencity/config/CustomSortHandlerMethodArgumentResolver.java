@@ -142,7 +142,7 @@ public class CustomSortHandlerMethodArgumentResolver implements SortArgumentReso
 
         List<Sort.Order> orders = new ArrayList<>();
         for (String sortParam : sortParams) {
-            if (isValidSortParam(sortParam)) {
+            if (isNonEmptySortParam(sortParam)) {
                 orders.add(parseSortOrder(sortParam));
             }
         }
@@ -151,9 +151,9 @@ public class CustomSortHandlerMethodArgumentResolver implements SortArgumentReso
     }
 
     /**
-     * Validates the sort parameter.
+     * Checks if the sort parameter is not null and not empty.
      */
-    private boolean isValidSortParam(String sortParam) {
+    private boolean isNonEmptySortParam(String sortParam) {
         return sortParam != null && !sortParam.isEmpty();
     }
 

@@ -1,12 +1,10 @@
 package greencity.dto.filter;
 
-import greencity.annotations.Sortable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Sortable
 @AllArgsConstructor
 @NoArgsConstructor
 public class FilterHabitDto {

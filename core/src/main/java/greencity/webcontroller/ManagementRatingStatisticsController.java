@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,7 +45,7 @@ public class ManagementRatingStatisticsController {
     @Operation(summary = "Get management page with User rating statistics.")
     @GetMapping
     public String getUserRatingStatistics(Model model,
-        @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable) {
         Pageable paging =
             PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =

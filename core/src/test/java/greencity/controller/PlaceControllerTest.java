@@ -2,7 +2,9 @@ package greencity.controller;
 
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.filter.FilterPlacesApiDto;
+import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
@@ -23,6 +25,8 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -153,25 +157,25 @@ class PlaceControllerTest {
             .lng(1.0)
             .build();
 
-        Set<DiscountValueDto> discountValuesDtos = new HashSet<>();
+        Set<DiscountValueDto> discountValuesDTOs = new HashSet<>();
         DiscountValueDto discountValueDto = new DiscountValueDto();
         SpecificationNameDto specificationNameDto = new SpecificationNameDto();
         specificationNameDto.setName("test");
         discountValueDto.setSpecification(specificationNameDto);
-        discountValuesDtos.add(discountValueDto);
+        discountValuesDTOs.add(discountValueDto);
 
         BreakTimeDto breakTimeDto = BreakTimeDto.builder()
             .endTime(LocalTime.of(14, 0))
             .startTime(LocalTime.of(13, 0))
             .build();
-        Set<OpeningHoursDto> openingHoursDtos = new HashSet<>();
+        Set<OpeningHoursDto> openingHoursDTOs = new HashSet<>();
         OpeningHoursDto openingHoursDto = OpeningHoursDto.builder()
             .breakTime(breakTimeDto)
             .closeTime(LocalTime.of(20, 0))
             .openTime(LocalTime.of(8, 0))
             .weekDay(DayOfWeek.MONDAY)
             .build();
-        openingHoursDtos.add(openingHoursDto);
+        openingHoursDTOs.add(openingHoursDto);
 
         List<PhotoAddDto> photoAddDtoList = new ArrayList<>();
         PhotoAddDto photoAddDto = new PhotoAddDto();
@@ -180,10 +184,10 @@ class PlaceControllerTest {
 
         PlaceAddDto placeAddDto = PlaceAddDto.builder()
             .category(categoryDto)
-            .discountValues(discountValuesDtos)
+            .discountValues(discountValuesDTOs)
             .location(locationAddressAndGeoDto)
             .name("test")
-            .openingHoursList(openingHoursDtos)
+            .openingHoursList(openingHoursDTOs)
             .photos(photoAddDtoList)
             .build();
 
@@ -453,6 +457,57 @@ class PlaceControllerTest {
     }
 
     @Test
+    void updatePlaceSuccessfulTest() throws Exception {
+        String json = """
+            {
+              "id": 1,
+              "name": "Updated Place Name",
+              "location": {
+                "addressEn": "Updated Address",
+                "addressUk": "Оновлена адреса",
+                "lat": 49.8397,
+                "lng": 24.0297
+              },
+              "status": "APPROVED"
+            }
+            """;
+
+        PlaceUpdateDto requestDto = PlaceUpdateDto.builder()
+            .id(1L)
+            .name("Updated Place Name")
+            .location(LocationAddressAndGeoForUpdateDto.builder()
+                .addressEn("Updated Address")
+                .addressUk("Оновлена адреса")
+                .lat(49.8397)
+                .lng(24.0297)
+                .build())
+            .build();
+
+        PlaceVO updatedPlace = PlaceVO.builder()
+            .id(1L)
+            .name("Updated Place Name")
+            .status(PlaceStatus.APPROVED)
+            .build();
+
+        PlaceUpdateDto responseDto = PlaceUpdateDto.builder()
+            .id(1L)
+            .name("Updated Place Name")
+            .location(requestDto.getLocation())
+            .build();
+
+        when(placeService.update(any(PlaceUpdateDto.class))).thenReturn(updatedPlace);
+        when(modelMapper.map(updatedPlace, PlaceUpdateDto.class)).thenReturn(responseDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.put(placeLink + "/update")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isOk());
+
+        verify(placeService, times(1)).update(any(PlaceUpdateDto.class));
+        verify(modelMapper, times(1)).map(updatedPlace, PlaceUpdateDto.class);
+    }
+
+    @Test
     void getStatuses() throws Exception {
         this.mockMvc.perform(get(placeLink + "/statuses"))
             .andExpect(status().isOk());
@@ -477,6 +532,23 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(placeService).bulkDelete(longList);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "'1,,2', 1, 2",
+        "',1,2,', 1, 2",
+        "'1, ,2', 1, 2"
+    })
+    void bulkDeleteWithEmptyOrMalformedIdsShouldFilterAndCallService(String idsParam, long expectedId1,
+        long expectedId2) throws Exception {
+        List<Long> expectedIds = Arrays.asList(expectedId1, expectedId2);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(placeLink)
+            .param("ids", idsParam))
+            .andExpect(status().isOk());
+
+        verify(placeService).bulkDelete(expectedIds);
     }
 
     @Test

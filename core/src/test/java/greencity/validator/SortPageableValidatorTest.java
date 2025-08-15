@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * all fields.</li>
  * <li>Classes with no {@code @Sortable} annotations at all.</li>
  * <li>Empty {@link Sort} instances.</li>
+ * <li>Entries in {@code fields()} with empty or blank values — are ignored,
+ * ensuring that only meaningful field names are validated.</li>
  * <li>Validation failure cases for invalid sort fields.</li>
  * </ul>
  * </p>
@@ -115,6 +117,23 @@ class SortPageableValidatorTest {
     }
 
     /**
+     * Validates that empty or blank strings in the class-level {@link Sortable}
+     * annotation's {@code fields()} array are ignored when determining valid sort
+     * fields.
+     */
+    @Test
+    void shouldIgnoreEmptyAndBlankSortFieldNamesInClassLevelAnnotation() {
+        Sort sort = Sort.by("name").ascending().and(Sort.by("age").descending());
+
+        assertDoesNotThrow(() -> validator.validate(ClassWithEmptyFieldNamesInAnnotation.class, sort));
+
+        Sort invalidSort = Sort.by("city");
+        UnsupportedSortException ex = assertThrows(UnsupportedSortException.class,
+            () -> validator.validate(ClassWithEmptyFieldNamesInAnnotation.class, invalidSort));
+        assertTrue(ex.getMessage().contains(String.format(ErrorMessage.INVALID_SORTING_VALUE, "[city]")));
+    }
+
+    /**
      * Validates that an empty {@link Sort} (no sorting orders) should always pass
      * validation regardless of the sortable fields defined on the class.
      */
@@ -156,6 +175,14 @@ class SortPageableValidatorTest {
 
     @SuppressWarnings("unused")
     public static class ClassWithoutSortableAnnotation {
+        public String name = "test";
+        public int age = 1;
+        public String city = "Kyiv";
+    }
+
+    @SuppressWarnings("unused")
+    @Sortable(fields = {"name", " ", "", "age"})
+    public static class ClassWithEmptyFieldNamesInAnnotation {
         public String name = "test";
         public int age = 1;
         public String city = "Kyiv";
