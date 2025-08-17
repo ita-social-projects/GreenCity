@@ -319,12 +319,11 @@ public class CommentServiceImpl implements CommentService {
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT), articleId);
-        String commentMessage = comment.length() > 20
-            ? comment.substring(0, 20)
-            : comment;
+        String rawText = comment == null ? "" : comment;
+        String snippet = rawText.length() > 20 ? rawText.substring(0, 20) : rawText;
         String message = commentsCount >= 1
-            ? String.format("%d COMMENTS \"%s\"", commentsCount + 1, commentMessage)
-            : String.format("COMMENT \"%s\"", commentMessage);
+            ? String.format("%d COMMENTS \"%s\"", commentsCount + 1, snippet)
+            : String.format("COMMENT \"%s\"", snippet);
         userNotificationService.createNotification(
             receiver,
             userVO,
@@ -377,12 +376,11 @@ public class CommentServiceImpl implements CommentService {
                 getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
                 articleId,
                 comment.getParentComment().getId());
-        String commentMessage = comment.getText().length() > 20
-            ? comment.getText().substring(0, 20)
-            : comment.getText();
+        String rawText = comment.getText() == null ? "" : comment.getText();
+        String snippet = rawText.length() > 20 ? rawText.substring(0, 20) : rawText;
         String message = replyCount >= 1
-            ? String.format("%d REPLIES \"%s\"", replyCount + 1, commentMessage)
-            : String.format("REPLY \"%s\"", commentMessage);
+            ? String.format("%d REPLIES \"%s\"", replyCount + 1, snippet)
+            : String.format("REPLY \"%s\"", snippet);
         userNotificationService.createNotification(
             receiver,
             sender,
