@@ -229,10 +229,16 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
     @Query("SELECT COUNT(e) FROM EcoNews e WHERE e.creationDate < :date")
     long countEcoNewsBeforeDate(@Param("date") ZonedDateTime date);
 
+    /**
+     * Finds IDs of {@link EcoNews} created on or after the given date.
+     *
+     * @param since the date to filter from
+     * @return list of matching EcoNews IDs, or empty list if none found
+     */
     @Query("""
                 SELECT e.id
                 FROM EcoNews e
                 WHERE e.creationDate >= :since
             """)
-    List<Long> findIdsCreatedAfter(@Param("since") Instant since);
+    List<Long> findIdsCreatedAfter(@Param("since") ZonedDateTime since);
 }
