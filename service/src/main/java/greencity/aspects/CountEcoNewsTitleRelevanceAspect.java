@@ -21,29 +21,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "greencity.relevance", name = "enabled", havingValue = "true")
 public class CountEcoNewsTitleRelevanceAspect {
-    private final AIServiceImpl aiServiceImpl;
     private final EcoNewsService ecoNewsService;
     private final EcoNewsRelevanceService ecoNewsRelevanceService;
-
-    /**
-     * Advice that runs after the successful execution of the {@code save} method in
-     * {@code EcoNewsController}. If the response contains a valid
-     * {@link EcoNewsGenericDto}, it triggers title relevance vector generation.
-     *
-     * @param response the response object returned by the save method
-     */
-//    @AfterReturning(
-//        pointcut = "execution(* greencity.controller.EcoNewsController.save(..))",
-//        returning = "response")
-//    public void afterSavingEcoNews(Object response) {
-//        if (response instanceof ResponseEntity) {
-//            Object body = ((ResponseEntity<?>) response).getBody();
-//            if (body instanceof EcoNewsGenericDto dto) {
-//                Long id = dto.getId();
-//                aiServiceImpl.getRelevanceForEcoNews(id);
-//            }
-//        }
-//    }
 
     /**
      * Around advice that wraps the execution of the {@code update} method in
@@ -68,7 +47,6 @@ public class CountEcoNewsTitleRelevanceAspect {
         Object result = joinPoint.proceed();
 
         if (!Objects.equals(oldTitle, newTitle)) {
-//            aiServiceImpl.getRelevanceForEcoNews(ecoNewsId);
             ecoNewsRelevanceService.markRelevanceAsOutdated(oldNews);
         }
 
