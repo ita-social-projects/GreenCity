@@ -38,6 +38,7 @@ import greencity.repository.RatingPointsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -250,8 +251,18 @@ class CommentServiceImplTest {
             getUserVO(),
             Locale.of("en"));
 
-        verify(userNotificationService)
-            .createNotification(any(), any(), any(), anyLong(), anyString(), anyLong(), anyString());
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userNotificationService).createNotification(
+            any(),
+            any(),
+            eq(NotificationType.EVENT_COMMENT_REPLY),
+            anyLong(),
+            messageCaptor.capture(),
+            anyLong(),
+            anyString());
+
+        String expectedSnippet = comment.getText().substring(0, 20);
+        assertEquals("7 REPLIES \"" + expectedSnippet + "\"", messageCaptor.getValue());
     }
 
     @Test
@@ -514,6 +525,17 @@ class CommentServiceImplTest {
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userNotificationService).createNotification(
+            any(),
+            any(),
+            eq(NotificationType.HABIT_COMMENT),
+            anyLong(),
+            messageCaptor.capture(),
+            anyString());
+
+        String expectedSnippet = comment.getText().substring(0, 20);
+        assertEquals("4 COMMENTS \"" + expectedSnippet + "\"", messageCaptor.getValue());
     }
 
     @Test
@@ -558,6 +580,16 @@ class CommentServiceImplTest {
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userNotificationService).createNotification(
+            any(),
+            any(),
+            eq(NotificationType.HABIT_COMMENT),
+            anyLong(),
+            messageCaptor.capture(),
+            anyString());
+
+        assertEquals("4 COMMENTS \"" + comment.getText() + "\"", messageCaptor.getValue());
     }
 
     @Test

@@ -319,8 +319,7 @@ public class CommentServiceImpl implements CommentService {
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT), articleId);
-        String rawText = comment == null ? "" : comment;
-        String snippet = rawText.length() > 20 ? rawText.substring(0, 20) : rawText;
+        String snippet = getCommentSnippet(comment);
         String message = commentsCount >= 1
             ? String.format("%d COMMENTS \"%s\"", commentsCount + 1, snippet)
             : String.format("COMMENT \"%s\"", snippet);
@@ -376,8 +375,7 @@ public class CommentServiceImpl implements CommentService {
                 getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
                 articleId,
                 comment.getParentComment().getId());
-        String rawText = comment.getText() == null ? "" : comment.getText();
-        String snippet = rawText.length() > 20 ? rawText.substring(0, 20) : rawText;
+        String snippet = getCommentSnippet(comment.getText());
         String message = replyCount >= 1
             ? String.format("%d REPLIES \"%s\"", replyCount + 1, snippet)
             : String.format("REPLY \"%s\"", snippet);
@@ -389,6 +387,11 @@ public class CommentServiceImpl implements CommentService {
             message,
             comment.getParentComment().getId(),
             getArticleTitle(articleType, articleId, locale));
+    }
+
+    private String getCommentSnippet(String commentText) {
+        String rawText = commentText == null ? "" : commentText;
+        return rawText.length() > 20 ? rawText.substring(0, 20) : rawText;
     }
 
     /**
