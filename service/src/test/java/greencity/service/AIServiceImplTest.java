@@ -42,20 +42,12 @@ import java.util.Optional;
 
 import static greencity.constant.OpenAIConstants.*;
 import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {
@@ -416,5 +408,112 @@ class AIServiceImplTest {
         assertEquals(ecoNews, savedRelevance.getEcoNews());
         assertArrayEquals(expectedVector, savedRelevance.getTitleVector());
     }
+    @Test
+    void insertRelevanceBatch_whenIdsNotEmpty_shouldSaveRelevanceList(){
+        List<Long> ids = List.of(1L, 2L);
+        EcoNews news1 = EcoNews.builder().id(1L).title("Title 1").build();
+        EcoNews news2 = EcoNews.builder().id(2L).title("Title 2").build();
 
+        List<EcoNews> ecoNewsList = List.of(news1, news2);
+
+        OpenAIResponseDTO response1 = new OpenAIResponseDTO();
+        response1.setContent("[1.0, 2.0]");
+        OpenAIResponseDTO response2 = new OpenAIResponseDTO();
+        response2.setContent("[3.0, 4.0]");
+
+
+        when(ecoNewsRepo.findAllById(ids)).thenReturn(ecoNewsList);
+        when(openAIService.makeRequestEmbeddings(List.of("Title 1", "Title 2")))
+                .thenReturn(List.of(response1, response2));
+        when(floatArrayConverter.convertToEntityAttribute("[1.0, 2.0]"))
+                .thenReturn(new Float[]{1.0f, 2.0f});
+        when(floatArrayConverter.convertToEntityAttribute("[3.0, 4.0]"))
+                .thenReturn(new Float[]{3.0f, 4.0f});
+
+        aiService.insertRelevanceBatch(ids);
+
+        ArgumentCaptor<List<EcoNewsRelevance>> captor = ArgumentCaptor.forClass(List.class);
+        verify(ecoNewsRelevanceRepo).saveAll(captor.capture());
+
+        List<EcoNewsRelevance> savedList = captor.getValue();
+        assertEquals(2, savedList.size());
+
+        EcoNewsRelevance first = savedList.get(0);
+        assertEquals(news1, first.getEcoNews());
+        assertFalse(first.getIsOutdated());
+
+        EcoNewsRelevance second = savedList.get(1);
+        assertEquals(news2, second.getEcoNews());
+        assertFalse(second.getIsOutdated());
+    }
+
+    @Test
+    void insertRelevanceBatch_whenIdsEmpty_shouldDoNothing() {
+        aiService.insertRelevanceBatch(Collections.emptyList());
+        verifyNoInteractions(ecoNewsRepo, openAIService, floatArrayConverter, ecoNewsRelevanceRepo);
+    }
+
+    @Test
+    void updateRelevanceBatch_whenIdsNotEmpty_shouldUpdateAndSaveRelevanceList() {
+        List<Long> ids = List.of(1L, 2L);
+        EcoNews news1 = EcoNews.builder().id(1L).title("Title 1").build();
+        EcoNews news2 = EcoNews.builder().id(2L).title("Title 2").build();
+
+        List<EcoNews> ecoNewsList = List.of(news1, news2);
+
+        OpenAIResponseDTO response1 = new OpenAIResponseDTO();
+        response1.setContent("[1.0, 2.0]");
+        OpenAIResponseDTO response2 = new OpenAIResponseDTO();
+        response2.setContent("[3.0, 4.0]");
+
+        EcoNewsRelevance rel1 = EcoNewsRelevance.builder()
+                .ecoNews(news1)
+                .titleVector(new Float[]{0.0f, 0.0f})
+                .isOutdated(true)
+                .build();
+
+        EcoNewsRelevance rel2 = EcoNewsRelevance.builder()
+                .ecoNews(news2)
+                .titleVector(new Float[]{0.0f, 0.0f})
+                .isOutdated(true)
+                .build();
+
+        List<EcoNewsRelevance> relevanceList = List.of(rel1, rel2);
+
+        when(ecoNewsRepo.findAllById(ids)).thenReturn(ecoNewsList);
+        when(openAIService.makeRequestEmbeddings(List.of("Title 1", "Title 2")))
+                .thenReturn(List.of(response1, response2));
+        when(ecoNewsRelevanceRepo.findAllById(ids)).thenReturn(relevanceList);
+        when(floatArrayConverter.convertToEntityAttribute("[1.0, 2.0]"))
+                .thenReturn(new Float[]{1.0f, 2.0f});
+        when(floatArrayConverter.convertToEntityAttribute("[3.0, 4.0]"))
+                .thenReturn(new Float[]{3.0f, 4.0f});
+
+        aiService.updateRelevanceBatch(ids);
+
+        ArgumentCaptor<List<EcoNewsRelevance>> captor = ArgumentCaptor.forClass(List.class);
+        verify(ecoNewsRelevanceRepo).saveAll(captor.capture());
+
+        List<EcoNewsRelevance> savedList = captor.getValue();
+        assertEquals(2, savedList.size());
+
+        EcoNewsRelevance first = savedList.get(0);
+        assertEquals(news1, first.getEcoNews());
+        assertArrayEquals(new Float[]{1.0f, 2.0f}, first.getTitleVector());
+        assertFalse(first.getIsOutdated());
+
+        EcoNewsRelevance second = savedList.get(1);
+        assertEquals(news2, second.getEcoNews());
+        assertArrayEquals(new Float[]{3.0f, 4.0f}, second.getTitleVector());
+        assertFalse(second.getIsOutdated());
+    }
+
+    @Test
+    void updateRelevanceBatch_whenIdsEmpty_shouldDoNothing() {
+        List<Long> ids = List.of();
+
+        aiService.updateRelevanceBatch(ids);
+
+        verifyNoInteractions(ecoNewsRepo, openAIService, ecoNewsRelevanceRepo, floatArrayConverter);
+    }
 }

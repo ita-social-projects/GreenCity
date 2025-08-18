@@ -1,105 +1,108 @@
 package greencity.aspects;
 
-import greencity.dto.econews.EcoNewsGenericDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econews.EcoNewsVO;
+import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
-import greencity.service.AIServiceImpl;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CountEcoNewsTitleRelevanceAspectTest {
-    private AIServiceImpl aiService;
+
+    @Mock
     private EcoNewsService ecoNewsService;
+
+    @Mock
+    private EcoNewsRelevanceService ecoNewsRelevanceService;
+
+    @Mock
+    private ProceedingJoinPoint joinPoint;
+
+    @InjectMocks
     private CountEcoNewsTitleRelevanceAspect aspect;
+
+    private final Long ecoNewsId = 42L;
+
+    private UpdateEcoNewsDto updateDto;
+    private EcoNewsVO oldNews;
 
     @BeforeEach
     void setUp() {
-        aiService = mock(AIServiceImpl.class);
-        ecoNewsService = mock(EcoNewsService.class);
-        aspect = new CountEcoNewsTitleRelevanceAspect(aiService, ecoNewsService);
+        updateDto = mock(UpdateEcoNewsDto.class);
+        oldNews = mock(EcoNewsVO.class);
     }
 
     @Test
-    void testAfterSavingEcoNews_WithEcoNewsGenericDto() {
-        EcoNewsGenericDto dto = EcoNewsGenericDto.builder()
-            .id(42L)
-            .build();
-
-        ResponseEntity<EcoNewsGenericDto> response = ResponseEntity.ok(dto);
-
-        aspect.afterSavingEcoNews(response);
-
-        verify(aiService, times(1)).getRelevanceForEcoNews(42L);
-    }
-
-    @Test
-    void testAfterSavingEcoNews_WithNonDtoBody() {
-        ResponseEntity<String> response = ResponseEntity.ok("Not a DTO");
-
-        aspect.afterSavingEcoNews(response);
-
-        verify(aiService, never()).getRelevanceForEcoNews(anyLong());
-    }
-
-    @Test
-    void testAfterSavingEcoNews_NotResponseEntity() {
-        aspect.afterSavingEcoNews("Some Object");
-
-        verify(aiService, never()).getRelevanceForEcoNews(anyLong());
-    }
-
-    @Test
-    void testAroundUpdate_TitleChanged_ShouldInvokeAIService() throws Throwable {
-        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
-
-        UpdateEcoNewsDto updateDto = new UpdateEcoNewsDto();
-        updateDto.setTitle("New Title");
-
-        Long ecoNewsId = 1L;
-        EcoNewsVO oldNews = new EcoNewsVO();
-        oldNews.setTitle("Old Title");
-
-        Object[] args = new Object[] {updateDto, null, null, ecoNewsId};
-        when(joinPoint.getArgs()).thenReturn(args);
+    void aroundUpdate_whenTitleChanged_shouldMarkRelevanceAsOutdated() throws Throwable {
+        when(updateDto.getTitle()).thenReturn("New Title");
+        when(oldNews.getTitle()).thenReturn("Old Title");
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
-        when(joinPoint.proceed()).thenReturn("result");
+
+        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        when(joinPoint.proceed()).thenReturn("controllerResult");
 
         Object result = aspect.aroundUpdate(joinPoint);
 
-        verify(aiService, times(1)).getRelevanceForEcoNews(ecoNewsId);
-        assertEquals("result", result);
+        assertEquals("controllerResult", result);
+        verify(ecoNewsRelevanceService).markRelevanceAsOutdated(oldNews);
+        verify(joinPoint).proceed();
     }
 
     @Test
-    void testAroundUpdate_TitleNotChanged_ShouldNotInvokeAIService() throws Throwable {
-        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
-
-        UpdateEcoNewsDto updateDto = new UpdateEcoNewsDto();
-        updateDto.setTitle("Same Title");
-
-        Long ecoNewsId = 2L;
-        EcoNewsVO oldNews = new EcoNewsVO();
-        oldNews.setTitle("Same Title");
-
-        Object[] args = new Object[] {updateDto, null, null, ecoNewsId};
-        when(joinPoint.getArgs()).thenReturn(args);
+    void aroundUpdate_whenTitleNotChanged_shouldNotMarkRelevanceAsOutdated() throws Throwable {
+        when(updateDto.getTitle()).thenReturn("Same Title");
+        when(oldNews.getTitle()).thenReturn("Same Title");
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
-        when(joinPoint.proceed()).thenReturn("result");
+
+        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        when(joinPoint.proceed()).thenReturn("controllerResult");
 
         Object result = aspect.aroundUpdate(joinPoint);
 
-        verify(aiService, never()).getRelevanceForEcoNews(anyLong());
-        assertEquals("result", result);
+        assertEquals("controllerResult", result);
+        verify(ecoNewsRelevanceService, never()).markRelevanceAsOutdated(any());
+        verify(joinPoint).proceed();
+    }
+
+    @Test
+    void aroundUpdate_whenNewTitleIsNullAndOldIsNotNull_shouldMarkRelevanceAsOutdated() throws Throwable {
+        when(updateDto.getTitle()).thenReturn(null);
+        when(oldNews.getTitle()).thenReturn("Old Title");
+        when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
+
+        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        when(joinPoint.proceed()).thenReturn("controllerResult");
+
+        Object result = aspect.aroundUpdate(joinPoint);
+
+        assertEquals("controllerResult", result);
+        verify(ecoNewsRelevanceService).markRelevanceAsOutdated(oldNews);
+        verify(joinPoint).proceed();
+    }
+
+    @Test
+    void aroundUpdate_whenProceedThrows_shouldPropagateAndNotMarkOutdated() throws Throwable {
+        when(updateDto.getTitle()).thenReturn("New Title");
+        when(oldNews.getTitle()).thenReturn("Old Title");
+        when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
+
+        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        RuntimeException boom = new RuntimeException("boom");
+        when(joinPoint.proceed()).thenThrow(boom);
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> aspect.aroundUpdate(joinPoint));
+        assertEquals("boom", thrown.getMessage());
+        verify(ecoNewsRelevanceService, never()).markRelevanceAsOutdated(any());
+        verify(joinPoint).proceed();
     }
 }
+
