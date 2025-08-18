@@ -88,18 +88,18 @@ public class QuartzConfig {
     @Bean
     public JobDetail ecoNewsRelevanceJobDetail() {
         return JobBuilder.newJob(EcoNewsRelevanceJob.class)
-                .withIdentity("ecoNewsRelevanceJob")
-                .storeDurably()
-                .build();
+            .withIdentity("ecoNewsRelevanceJob")
+            .storeDurably()
+            .build();
     }
 
     @Bean
     public Trigger ecoNewsRelevanceTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(ecoNewsRelevanceJobDetail())
-                .withIdentity("ecoNewsRelevanceTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0/3 * * ?"))
-                .build();
+            .forJob(ecoNewsRelevanceJobDetail())
+            .withIdentity("ecoNewsRelevanceTrigger")
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0/3 * * ?"))
+            .build();
     }
 
     private String fixCronExpression(String cron) {

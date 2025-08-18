@@ -105,4 +105,3 @@ class CountEcoNewsTitleRelevanceAspectTest {
         verify(joinPoint).proceed();
     }
 }
-

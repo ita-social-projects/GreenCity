@@ -171,16 +171,17 @@ public class OpenAIServiceImpl implements OpenAIService {
         throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
     }
 
-    private List<OpenAIResponseDTO> sendBatchEmbeddingRequest(HttpHeaders headers, Map<String, Object> body, int expectedSize)
-            throws OpenAIRequestException {
+    private List<OpenAIResponseDTO> sendBatchEmbeddingRequest(HttpHeaders headers, Map<String, Object> body,
+        int expectedSize)
+        throws OpenAIRequestException {
 
         Map<String, Object> responseBody = restClient.post()
-                .uri(embeddingApiUrl)
-                .headers(headersConsumer -> headersConsumer.addAll(headers))
-                .body(body)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
+            .uri(embeddingApiUrl)
+            .headers(headersConsumer -> headersConsumer.addAll(headers))
+            .body(body)
+            .retrieve()
+            .body(new ParameterizedTypeReference<>() {
+            });
 
         if (responseBody == null) {
             throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
@@ -215,8 +216,6 @@ public class OpenAIServiceImpl implements OpenAIService {
             throw new OpenAIResponseException("Invalid format of batch embedding response.", e);
         }
     }
-
-
 
     /**
      * Creates the request body for the OpenAI API completion request.

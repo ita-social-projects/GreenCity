@@ -25,8 +25,8 @@ public interface EcoNewsRelevanceService {
         UserVO user);
 
     /**
-     * Marks relevance of given eco news as outdated.
-     * This method is used after some changes in eco news.
+     * Marks relevance of given eco news as outdated. This method is used after some
+     * changes in eco news.
      *
      * @param ecoNews eco news to mark relevance as outdated
      */
