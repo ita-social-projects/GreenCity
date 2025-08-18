@@ -507,7 +507,8 @@ class CommentServiceImplTest {
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
         when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
-        when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(), any(), anyLong()))
+        when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
             .thenReturn(3L);
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
@@ -550,14 +551,14 @@ class CommentServiceImplTest {
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
         when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
-        when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(), any(), anyLong()))
+        when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
             .thenReturn(3L);
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
     }
-
 
     @Test
     void sendNotificationIfUserTaggedInEventComment() {
