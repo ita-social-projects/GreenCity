@@ -98,7 +98,7 @@ public class QuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(ecoNewsRelevanceJobDetail())
                 .withIdentity("ecoNewsRelevanceTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 */3 * * ?"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0/3 * * ?"))
                 .build();
     }
 

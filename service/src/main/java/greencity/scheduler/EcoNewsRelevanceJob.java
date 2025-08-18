@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
@@ -21,29 +22,21 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class EcoNewsRelevanceJob implements Job {
 
-    @Autowired
-    private AIServiceImpl aiServiceImpl;
+    private final AIServiceImpl aiServiceImpl;
+    private final EcoNewsRepo ecoNewsRepo;
+    private final EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
 
-    @Autowired
-    private EcoNewsRepo ecoNewsRepo;
-
-    @Autowired
-    private EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
-
-    private static Instant lastRunTime = Instant.now().minus(3, ChronoUnit.HOURS);
+    private static ZonedDateTime lastRunTime = ZonedDateTime.now().minusHours(3);
 
     @Override
     public void execute(JobExecutionContext context) {
-        Instant currentTime = Instant.now();
+        ZonedDateTime currentTime = ZonedDateTime.now();
 
         List<Long> outdatedIds = ecoNewsRelevanceRepo.findOutdatedEcoNewsIds();
         List<Long> recentNewsIds = ecoNewsRepo.findIdsCreatedAfter(lastRunTime);
 
-        Set<Long> uniqueIds = new HashSet<>();
-        uniqueIds.addAll(outdatedIds);
-        uniqueIds.addAll(recentNewsIds);
-
-        aiServiceImpl.getRelevanceForEcoNewsBatch(uniqueIds);
+        aiServiceImpl.updateRelevanceBatch(outdatedIds);
+        aiServiceImpl.insertRelevanceBatch(recentNewsIds);
 
         lastRunTime = currentTime;
     }
