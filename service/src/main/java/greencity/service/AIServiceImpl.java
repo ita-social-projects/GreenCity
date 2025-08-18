@@ -259,17 +259,23 @@ public class AIServiceImpl implements AIService {
         ecoNewsRelevanceRepo.save(relevance);
     }
 
+    /**
+     * Inserts new relevance vectors for a batch of EcoNews entries.
+     * <p>
+     * This method retrieves EcoNews entities by their IDs, generates embeddings
+     * for their titles using the OpenAI service, converts the embeddings into float arrays,
+     * and creates new {@link EcoNewsRelevance} entities. Each relevance entry is marked
+     * as not outdated and persisted in the database.
+     * </p>
+     *
+     * @param ids the collection of EcoNews IDs for which relevance should be created
+     */
     @Transactional
-    public void getRelevanceForEcoNewsBatch(Collection<Long> ids) {
+    public void insertRelevanceBatch(Collection<Long> ids) {
+        if (ids.isEmpty()) return;
+
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
-
-        if (ecoNewsList.isEmpty()) {
-            return;
-        }
-
-        List<String> titles = ecoNewsList.stream()
-                .map(EcoNews::getTitle)
-                .toList();
+        List<String> titles = ecoNewsList.stream().map(EcoNews::getTitle).toList();
 
         List<OpenAIResponseDTO> embeddings = openAIService.makeRequestEmbeddings(titles);
 
@@ -278,18 +284,51 @@ public class AIServiceImpl implements AIService {
             EcoNews news = ecoNewsList.get(i);
             OpenAIResponseDTO response = embeddings.get(i);
 
-            EcoNewsRelevance relevance = EcoNewsRelevance.builder()
-                    .id(news.getId())
-                    .ecoNews(news)
-                    .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))
-                    .build();
-
-            relevanceList.add(relevance);
+            relevanceList.add(
+                    EcoNewsRelevance.builder()
+                            .ecoNews(news)
+                            .titleVector(floatArrayConverter.convertToEntityAttribute(response.getContent()))
+                            .isOutdated(false)
+                            .build()
+            );
         }
 
         ecoNewsRelevanceRepo.saveAll(relevanceList);
     }
 
+    /**
+     * Updates existing relevance vectors for a batch of EcoNews entries.
+     * <p>
+     * This method retrieves EcoNews entities by their IDs and their corresponding
+     * {@link EcoNewsRelevance} entries. It then generates new embeddings for the titles
+     * using the OpenAI service, updates the relevance vectors, and marks each entry
+     * as not outdated. Finally, the updated relevance entries are persisted in the database.
+     * </p>
+     *
+     * @param ids the collection of EcoNews IDs for which relevance should be updated
+     */
+    @Transactional
+    public void updateRelevanceBatch(Collection<Long> ids) {
+        if (ids.isEmpty()) return;
+
+        List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
+        List<String> titles = ecoNewsList.stream()
+                .map(EcoNews::getTitle)
+                .toList();
+
+        List<OpenAIResponseDTO> embeddings = openAIService.makeRequestEmbeddings(titles);
+
+        List<EcoNewsRelevance> relevanceList = ecoNewsRelevanceRepo.findAllById(ids);
+
+        for (int i = 0; i < relevanceList.size(); i++) {
+            relevanceList.get(i).setTitleVector(
+                    floatArrayConverter.convertToEntityAttribute(embeddings.get(i).getContent())
+            );
+            relevanceList.get(i).setIsOutdated(false);
+        }
+        
+        ecoNewsRelevanceRepo.saveAll(relevanceList);
+    }
 
     /**
      * Builds a news generation prompt for the OpenAI service based on an optional
