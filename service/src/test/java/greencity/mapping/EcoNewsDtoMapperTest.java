@@ -25,18 +25,19 @@ class EcoNewsDtoMapperTest {
     @Test
     void convertTest() {
         EcoNews ecoNews = ModelUtils.getEcoNewsForMethodConvertTest();
+        String uaLanguage = AppConstant.LANGUAGE_CODE_UA;
         String defaultLanguage = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         EcoNewsDto expected = EcoNewsDto.builder()
             .id(ecoNews.getId())
             .tagsUk(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguage().getCode().equals("ua"))
+                .filter(t -> t.getLanguageCode().equals(uaLanguage))
                 .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
             .tagsEn(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguage().getCode().equals(defaultLanguage))
+                .filter(t -> t.getLanguageCode().equals(defaultLanguage))
                 .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
             .countComments(commentService.countCommentsForEcoNews(ecoNews.getId()))

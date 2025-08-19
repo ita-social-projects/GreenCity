@@ -39,7 +39,7 @@
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="place_comments"
                                  constraintName="fk_place_comments_user" deferrable="false"
                                  initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id" referencedTableName="users"/>
+                                 referencedColumnNames="id" referencedTableName="greencity_users"/>
     </changeSet>
 
 

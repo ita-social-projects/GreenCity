@@ -32,7 +32,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(Long userId, Pageable pageable, String languageCode);
 
     /**
      * Method returns all habits of the current user.
@@ -104,7 +104,7 @@ public interface HabitService {
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Lilia Mokhnatska
      */
-    PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable, Optional<List<String>> tags,
+    PageableDto<HabitDto> getAllByDifferentParameters(Long userId, Pageable pageable, Optional<List<String>> tags,
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
@@ -149,12 +149,12 @@ public interface HabitService {
      *
      * @param addCustomHabitDtoRequest dto with {@link CustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
-     * @param userEmail                {@link String} - user email.
+     * @param userId                   {@link Long} - user's id.
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
     CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
-        String userEmail);
+        Long userId);
 
     /**
      * Retrieves a list of profile pictures of the user's friends who are associated
@@ -174,22 +174,22 @@ public interface HabitService {
      *
      * @param customHabitDtoRequest dto with {@link CustomHabitDtoRequest} entered
      *                              info about field that need to edit.
-     * @param userEmail             {@link String} - user email.
+     * @param userId                {@link Long} - user's id.
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Olena Sotnik.
      */
     CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest, Long habitId,
-        String userEmail, MultipartFile image);
+        Long userId, MultipartFile image);
 
     /**
      * Method for deleting of custom habit by its id.
      *
      * @param customHabitId - id of custom habit to be deleted.
-     * @param ownerEmail    - email of user who owns the habit.
+     * @param ownerId       - id of user who owns the habit.
      *
      * @author Olena Sotnik.
      */
-    void deleteCustomHabit(Long customHabitId, String ownerEmail);
+    void deleteCustomHabit(Long customHabitId, Long ownerId);
 
     /**
      * Method to like or unlike {@link HabitVO} specified by id.
@@ -211,17 +211,17 @@ public interface HabitService {
      * Method for adding a habit to favorites by habitId.
      *
      * @param habitId - habit id
-     * @param email   - email of user
+     * @param userId  - id of user
      */
-    void addToFavorites(Long habitId, String email);
+    void addToFavorites(Long habitId, Long userId);
 
     /**
      * Method for removing a habit from favorites by habitId.
      *
      * @param habitId - habit id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      */
-    void removeFromFavorites(Long habitId, String email);
+    void removeFromFavorites(Long habitId, Long userId);
 
     /**
      * Method returns all favorite habits.
@@ -229,19 +229,19 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(Long userId, Pageable pageable, String languageCode);
 
     /**
      * Retrieves a paginated list of friends of a user with has invitation status.
      * Optionally filters by friend name.
      *
-     * @param userVO   The current user's details.
+     * @param userId   Current user id.
      * @param name     Optional name filter for friends.
      * @param pageable .
      * @param habitId  The ID of the habit.
      * @return A paginated list of friends (UserFriendHabitInviteDto) who can be
      *         invited to the habit.
      */
-    PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(UserVO userVO, @Nullable String name,
+    PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(Long userId, @Nullable String name,
         Pageable pageable, Long habitId);
 }

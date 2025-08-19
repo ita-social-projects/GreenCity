@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.user.UserVO;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitInvitation;
 import greencity.entity.User;
@@ -56,11 +55,11 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
      * {@inheritDoc}
      */
     @Transactional
-    public void acceptHabitInvitation(Long invitationId, UserVO invitedUser) {
+    public void acceptHabitInvitation(Long invitationId, Long invitedUserId) {
         HabitInvitation invitation = habitInvitationRepo.findById(invitationId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
 
-        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())) {
+        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUserId)) {
             throw new BadRequestException(ErrorMessage.CANNOT_ACCEPT_HABIT_INVITATION);
         }
 
@@ -85,11 +84,11 @@ public class HabitInvitationServiceImpl implements HabitInvitationService {
      * {@inheritDoc}
      */
     @Transactional
-    public void rejectHabitInvitation(Long invitationId, UserVO invitedUser) {
+    public void rejectHabitInvitation(Long invitationId, Long invitedUserId) {
         HabitInvitation invitation = habitInvitationRepo.findById(invitationId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.INVITATION_NOT_FOUND));
 
-        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUser.getId())
+        if (!invitation.getInviteeHabitAssign().getUser().getId().equals(invitedUserId)
             || !InvitationStatus.PENDING.equals(invitation.getStatus())) {
             throw new BadRequestException(ErrorMessage.CANNOT_REJECT_HABIT_INVITATION);
         }

@@ -1,21 +1,34 @@
 package greencity.service;
 
+import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.constant.OpenAIConstants;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.EcoNewsCreationUserMissingException;
 import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.OpenAIRequestException;
@@ -24,6 +37,9 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,58 +49,38 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {
 
-    @InjectMocks
-    private AIServiceImpl aiService;
-
-    @Mock
-    private OpenAIService openAIService;
-
-    @Mock
-    private LanguageService languageService;
-
-    @Mock
-    private EcoNewsRepo ecoNewsRepo;
-
-    @Mock
-    private HabitAssignRepo habitAssignRepo;
-
-    @Mock
-    private TagsRepo tagsRepo;
-
-    @Mock
-    private UserRepo userRepo;
-
-    @Mock
-    private HabitRepo habitRepo;
-
-    @Mock
-    private ModelMapper modelMapper;
-
     private final Long id = 1L;
     private final String language = "en";
+    @InjectMocks
+    private AIServiceImpl aiService;
+    @Mock
+    private OpenAIService openAIService;
+    @Mock
+    private LanguageService languageService;
+    @Mock
+    private EcoNewsRepo ecoNewsRepo;
+    @Mock
+    private HabitAssignRepo habitAssignRepo;
+    @Mock
+    private TagsRepo tagsRepo;
+    @Mock
+    private UserRepo userRepo;
+    @Mock
+    private UserRemoteClient userRemoteClient;
+    @Mock
+    private HabitRepo habitRepo;
+    @Mock
+    private ModelMapper modelMapper;
+    @Mock
+    private WebClientRequestException webClientRequestException;
     private LanguageDTO languageDTO;
     private User user;
+    private UserVO userVO;
     private Tag tag;
     private Habit habit;
     private ShortHabitDto shortHabitDto;
@@ -96,6 +92,7 @@ class AIServiceImplTest {
     void init() {
         languageDTO = ModelUtils.getLanguageDTO();
         user = ModelUtils.getUser();
+        userVO = ModelUtils.getUserVO();
         tag = ModelUtils.getTag();
         habit = ModelUtils.getHabit();
         shortHabitDto = ModelUtils.getShortHabitDto();
@@ -174,8 +171,10 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(user));
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(
+            Optional.ofNullable(ModelUtils.getUserVO()));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         aiService.generateAndSaveEcoNews(language);
 
@@ -202,7 +201,8 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(new User()));
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
+            .thenReturn(Optional.of(ModelUtils.getUserVO()));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
 
         assertThrows(EcoNewsCreationException.class, () -> aiService.generateAndSaveEcoNews(language));
@@ -309,8 +309,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void generateAndSaveEcoNews_whenAiUserNotExists_shouldCreateAndUseNewUser() {
-        Language mappedLanguage = new Language();
+    void generateAndSaveEcoNews_whenAiUserIsEmpty_shouldThrowUserNotFoundException() {
         String jsonResponse = """
             {
                 "title": "New Title",
@@ -323,24 +322,36 @@ class AIServiceImplTest {
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
 
-        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.empty());
-        when(languageService.findByCode("ua")).thenReturn(languageDTO);
-        when(modelMapper.map(languageDTO, Language.class)).thenReturn(mappedLanguage);
-        when(userRepo.save(any(User.class))).thenReturn(user);
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.empty());
 
-        when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
+        EcoNewsCreationUserMissingException exception = assertThrows(
+            EcoNewsCreationUserMissingException.class,
+            () -> aiService.generateAndSaveEcoNews(language));
 
-        aiService.generateAndSaveEcoNews(language);
+        assertEquals("Required AI-generated user is missing", exception.getMessage());
+    }
 
-        ArgumentCaptor<EcoNews> newsCaptor = ArgumentCaptor.forClass(EcoNews.class);
-        verify(ecoNewsRepo).save(newsCaptor.capture());
+    @Test
+    void generateAndSaveEcoNews_whenUserServiceUnavailable_shouldThrowUserNotFoundException() {
+        String jsonResponse = """
+            {
+                "title": "New Title",
+                "content": "New eco content"
+            }
+            """;
+        openAIResponseDTO.setContent(jsonResponse);
 
-        EcoNews savedNews = newsCaptor.getValue();
-        assertEquals("New Title", savedNews.getTitle());
-        assertEquals("New eco content", savedNews.getText());
-        assertEquals(user, savedNews.getAuthor());
+        when(languageService.findByCode(language)).thenReturn(languageDTO);
+        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
+            .thenReturn(openAIResponseDTO);
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
+            .thenThrow(webClientRequestException);
 
-        verify(userRepo).save(any(User.class));
+        EcoNewsCreationUserMissingException exception = assertThrows(
+            EcoNewsCreationUserMissingException.class,
+            () -> aiService.generateAndSaveEcoNews(language));
+
+        assertEquals("Required AI-generated user is missing", exception.getMessage());
     }
 
     @Test
@@ -355,8 +366,10 @@ class AIServiceImplTest {
         when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRepo.findByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.of(user));
+        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
+            .thenReturn(Optional.of(ModelUtils.getUserVO()));
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         aiService.generateAndSaveEcoNews(languageCode);
 

@@ -7,13 +7,16 @@ import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 
+import greencity.TestConst;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
+import greencity.security.jwt.JwtTool;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -65,6 +68,8 @@ class EcoNewsControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    JwtTool jwtTool;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -81,10 +86,18 @@ class EcoNewsControllerTest {
     public void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserIdArgumentResolver(jwtTool))
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, OBJECT_MAPPER, null))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -142,7 +155,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null, true, principal.getName());
+        verify(ecoNewsService).find(pageable, null, null, null, true, TestConst.USER_ID);
     }
 
     @Test
@@ -155,7 +168,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, null, false, null);
+        verify(ecoNewsService).find(pageable, null, null, null, false, TestConst.USER_ID);
     }
 
     @Test
@@ -168,13 +181,13 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(pageable, null, null, 1L, false, null);
+        verify(ecoNewsService).find(pageable, null, null, 1L, false, TestConst.USER_ID);
     }
 
     @Test
     void deleteTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(delete(ecoNewsLink + "/{econewsId}", 1)
             .principal(principal))
@@ -203,7 +216,7 @@ class EcoNewsControllerTest {
     @Test
     void likeTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/likes", 1)
             .principal(principal))
@@ -215,7 +228,7 @@ class EcoNewsControllerTest {
     @Test
     void dislikeTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/dislikes", 1)
             .principal(principal))
             .andExpect(status().isOk());
@@ -242,7 +255,7 @@ class EcoNewsControllerTest {
     @Test
     void checkNewsIsLikedByUserTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/likes/{userId}", 1, 1)
             .principal(principal))
@@ -286,59 +299,59 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+        verify(ecoNewsService).addToFavorites(1L, TestConst.USER_ID);
     }
 
     @Test
     void addToFavoritesNotFoundTest() throws Exception {
         doThrow(new NotFoundException("Resource not found")).when(ecoNewsService).addToFavorites(anyLong(),
-            anyString());
+            anyLong());
 
         mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
 
-        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+        verify(ecoNewsService).addToFavorites(1L, TestConst.USER_ID);
     }
 
     @Test
     void addToFavoritesBadRequestTest() throws Exception {
         doThrow(new IllegalArgumentException("Bad request")).when(ecoNewsService).addToFavorites(anyLong(),
-            anyString());
+            anyLong());
 
         mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
 
-        verify(ecoNewsService).addToFavorites(1L, principal.getName());
+        verify(ecoNewsService).addToFavorites(1L, TestConst.USER_ID);
     }
 
     @Test
     void removeFromFavoritesNotFoundTest() throws Exception {
         doThrow(new NotFoundException("Resource not found")).when(ecoNewsService).removeFromFavorites(anyLong(),
-            anyString());
+            anyLong());
 
         mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
 
-        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+        verify(ecoNewsService).removeFromFavorites(1L, TestConst.USER_ID);
     }
 
     @Test
     void removeFromFavoritesBadRequestTest() throws Exception {
         doThrow(new IllegalArgumentException("Bad request")).when(ecoNewsService).removeFromFavorites(anyLong(),
-            anyString());
+            anyLong());
 
         mockMvc.perform(delete(ecoNewsLink + "/{ecoNewsId}/favorites", 1L)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
 
-        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+        verify(ecoNewsService).removeFromFavorites(1L, TestConst.USER_ID);
     }
 
     @Test
@@ -348,7 +361,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).removeFromFavorites(1L, principal.getName());
+        verify(ecoNewsService).removeFromFavorites(1L, TestConst.USER_ID);
     }
 
     @Test
@@ -357,7 +370,7 @@ class EcoNewsControllerTest {
         long ecoNewsId = 1L;
         UserVO userVO = getUserVO();
         EcoNewsDto ecoNewsDto = getEcoNewsDto();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(ecoNewsService.likeV2(userVO, ecoNewsId)).thenReturn(ecoNewsDto);
         String expectedResponse = OBJECT_MAPPER.writeValueAsString(ecoNewsDto);
         mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/likeV2", ecoNewsId)
@@ -374,7 +387,7 @@ class EcoNewsControllerTest {
         long ecoNewsId = 1L;
         UserVO userVO = getUserVO();
         EcoNewsDto ecoNewsDto = getEcoNewsDto();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(ecoNewsService.dislikeV2(userVO, ecoNewsId)).thenReturn(ecoNewsDto);
         String expectedResponse = OBJECT_MAPPER.writeValueAsString(ecoNewsDto);
         mockMvc.perform(post(ecoNewsLink + "/{ecoNewsId}/dislikeV2", ecoNewsId)

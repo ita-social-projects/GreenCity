@@ -1,12 +1,15 @@
 package greencity.webcontroller;
 
-import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserClaims;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.service.EcoNewsService;
@@ -50,7 +53,7 @@ public class ManagementUserPersonalPageController {
         Model model,
         @PathVariable Long id,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        UserVO user = userService.findById(id);
+        UserVOAdvancedDto user = userService.findByIdAdvanced(id);
 
         List<HabitAssignDto> acquiredHabits = habitAssignService
             .getAllHabitAssignsByUserIdAndStatusAcquired(id, locale.getLanguage());
@@ -81,34 +84,34 @@ public class ManagementUserPersonalPageController {
     /**
      * Method that updates status of a {@link UserVO}.
      *
-     * @param id          Path variable - id of user
-     * @param userStatus  Status that has to be set to user
-     * @param currentUser {@link UserVO} of current user
+     * @param id            Path variable - id of user
+     * @param userStatus    Status that has to be set to user
+     * @param currentUserId {@link Long} id of current user
      *
      * @return View template path {@link String}.
      */
     @PostMapping(value = "/updateUserStatus")
     public String updateUserStatus(@PathVariable Long id, @RequestParam(name = "userStatus") String userStatus,
-        @CurrentUser UserVO currentUser) {
+        @CurrentUserId Long currentUserId) {
         UserStatus status = UserStatus.valueOf(userStatus.toUpperCase());
-        userService.updateStatus(id, status, currentUser.getEmail());
+        userService.updateStatus(id, status, currentUserId);
         return "redirect:/management/users/{id}";
     }
 
     /**
      * Method that updates role of a {@link UserVO}.
      *
-     * @param id          Path variable - id of user
-     * @param userRole    Role that has to be set to user
-     * @param currentUser {@link UserVO} of current user
+     * @param id         Path variable - id of user
+     * @param userRole   Role that has to be set to user
+     * @param userClaims {@link UserClaims} claims of current user
      *
      * @return View template path {@link String}.
      */
     @PostMapping(value = "/updateUserRole")
     public String updateUserRole(@PathVariable Long id, @RequestParam(name = "userRole") String userRole,
-        @CurrentUser UserVO currentUser) {
+        @CurrentUserClaims UserClaims userClaims) {
         Role role = Role.valueOf("ROLE_" + userRole.toUpperCase());
-        userService.updateRole(id, role, currentUser.getEmail());
+        userService.updateRole(id, role, userClaims.userEmail());
         return "redirect:/management/users/{id}";
     }
 }

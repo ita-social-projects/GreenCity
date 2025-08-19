@@ -67,7 +67,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
         + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
         + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
         + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
-        + "OR LOWER(tt.language.code) LIKE LOWER(CONCAT('%', :filter, '%')) "
+        + "OR LOWER(tt.languageCode) LIKE LOWER(CONCAT('%', :filter, '%')) "
         + "OR LOWER(tt.name) LIKE LOWER(CONCAT('%', :filter, '%'))",
         countQuery = "SELECT COUNT(t) FROM Tag t")
     Page<Tag> filterByAllFields(Pageable pageable, String filter);
@@ -79,8 +79,8 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * @param languageCode {@link String}
      * @return list of tag's names.
      */
-    @Query("select tt from TagTranslation tt join fetch tt.tag t join fetch tt.language l "
-        + "where t.type = :tagType and l.code = :languageCode order by tt.id")
+    @Query("select tt from TagTranslation tt join fetch tt.tag t "
+        + "where t.type = :tagType and tt.languageCode = :languageCode order by tt.id")
     List<TagTranslation> findTagsByTypeAndLanguageCode(TagType tagType, String languageCode);
 
     /**
@@ -102,8 +102,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     @Query(nativeQuery = true,
         value = "SELECT DISTINCT tt.name FROM tag_translations tt "
             + "INNER JOIN habits_tags ent ON tt.tag_id = ent.tag_id "
-            + "INNER JOIN languages l ON l.id = tt.language_id "
-            + "WHERE l.code = :languageCode")
+            + "WHERE tt.language_code = :languageCode")
     List<String> findAllHabitsTags(String languageCode);
 
     /**
@@ -129,7 +128,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * Finds the IDs of tags associated with habits that are in progress for the
      * user with the specified email.
      *
-     * @param email the email of the user
+     * @param userId the id of the user
      * @return a set of tag IDs ({@link Long}) associated with the user's
      *         in-progress habits
      */
@@ -138,7 +137,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
             + "INNER JOIN habits_tags ht ON t.id = ht.tag_id "
             + "INNER JOIN habits h ON ht.habit_id = h.id "
             + "INNER JOIN habit_assign ha ON h.id = ha.habit_id "
-            + "INNER JOIN users u ON ha.user_id = u.id AND ha.status = 'INPROGRESS' "
-            + "WHERE u.email = :email")
-    Set<Long> findTagsIdByUserHabitsInProgress(String email);
+            + "INNER JOIN greencity_users u ON ha.user_id = u.id AND ha.status = 'INPROGRESS' "
+            + "WHERE u.id = :userId")
+    Set<Long> findTagsIdByUserHabitsInProgress(Long userId);
 }

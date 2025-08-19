@@ -3,8 +3,10 @@ package greencity.mapping;
 import greencity.dto.comment.CommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
+import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
@@ -15,8 +17,18 @@ import java.util.stream.Collectors;
 
 @Component
 public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
+    private final ModelMapper modelMapper;
+
+    @Lazy
+    public CommentVOMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
     @Override
     public CommentVO convert(Comment comment) {
+        User commentUser = comment.getUser();
+        UserVO commentUserVO = modelMapper.map(commentUser, UserVO.class);
+
         return CommentVO.builder()
             .id(comment.getId())
             .text(comment.getText())
@@ -28,9 +40,9 @@ public class CommentVOMapper extends AbstractConverter<Comment, CommentVO> {
                 .id(comment.getParentComment().getId())
                 .build() : null)
             .user(UserVO.builder()
-                .id(comment.getUser().getId())
-                .role(comment.getUser().getRole())
-                .name(comment.getUser().getName())
+                .id(commentUser.getId())
+                .role(commentUserVO.getRole())
+                .name(commentUser.getName())
                 .build())
             .currentUserLiked(comment.isCurrentUserLiked())
             .usersLiked(comment.getUsersLiked() != null ? comment.getUsersLiked().stream()

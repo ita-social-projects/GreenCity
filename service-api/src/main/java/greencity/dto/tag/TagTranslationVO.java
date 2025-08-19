@@ -1,21 +1,23 @@
 package greencity.dto.tag;
 
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
 public class TagTranslationVO {
     private Long id;
     private String name;
-    private LanguageVO languageVO;
+    private LanguageDTO languageVO;
 }

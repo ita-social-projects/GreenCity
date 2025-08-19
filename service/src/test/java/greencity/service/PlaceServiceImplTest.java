@@ -4,7 +4,9 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
@@ -13,7 +15,7 @@ import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.filter.FilterPlacesApiDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
@@ -34,7 +36,6 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
-import greencity.entity.Language;
 import greencity.entity.Location;
 import greencity.entity.Photo;
 import greencity.entity.Place;
@@ -64,8 +65,6 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import java.security.Principal;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -128,24 +127,11 @@ class PlaceServiceImplTest {
     private final Category category = Category.builder()
         .id(1L)
         .nameEn("test").build();
-    private final Language language = Language.builder()
-        .id(2L)
-        .code("en")
-        .build();
-    private final LanguageVO languageVO = LanguageVO.builder()
-        .id(2L)
-        .code("en")
-        .build();
+    private final LanguageDTO language = ModelUtils.getLanguageDTO();
     private final User user =
         User.builder()
             .id(1L)
-            .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
-            .role(Role.ROLE_USER)
-            .userStatus(UserStatus.ACTIVATED)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
-            .language(language)
             .build();
     private final UserVO userVO =
         UserVO.builder()
@@ -153,10 +139,8 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
-            .languageVO(languageVO)
+            .languageVO(language)
             .build();
     private final UserVO userVOAdmin =
         UserVO.builder()
@@ -164,10 +148,8 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_ADMIN)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
             .userStatus(UserStatus.ACTIVATED)
-            .languageVO(languageVO)
+            .languageVO(language)
             .build();
     Place genericEntity1 = Place.builder()
         .id(1L)
@@ -222,13 +204,13 @@ class PlaceServiceImplTest {
     @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
-    private FileService fileService;
-    @Mock
     private UserNotificationService userNotificationService;
     @Mock
     private RestClient restClient;
     @Mock
     private PhotoRepo photoRepo;
+    @Mock
+    UserRemoteClient userRemoteClient;
     @InjectMocks
     private PlaceServiceImpl placeServiceImpl;
 
@@ -240,8 +222,8 @@ class PlaceServiceImplTest {
 
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
-            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo, fileService,
-            userNotificationService, restClient, photoRepo);
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo,
+            userNotificationService, restClient, photoRepo, userRemoteClient);
     }
 
     @Test
@@ -249,7 +231,7 @@ class PlaceServiceImplTest {
         Place place = getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
-        when(userService.findByEmail(anyString())).thenReturn(userVOAdmin);
+        when(userService.findNotDeactivatedByEmail(TestConst.EMAIL)).thenReturn(userVOAdmin);
         when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
         when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
         when(categoryRepo.findByNameEn(anyString())).thenReturn(new Category());
@@ -258,7 +240,7 @@ class PlaceServiceImplTest {
         when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
             EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
 
-        PlaceVO saved = placeService.save(placeAddDto, user.getEmail());
+        PlaceVO saved = placeService.save(placeAddDto, TestConst.EMAIL);
         assertEquals(placeVO, saved);
 
         verify(userService).getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
@@ -272,15 +254,15 @@ class PlaceServiceImplTest {
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         Place place = getPlace();
-        when(userService.findByEmail(user.getEmail())).thenReturn(userVOAdmin);
+        when(userService.findNotDeactivatedByEmail(TestConst.EMAIL)).thenReturn(userVOAdmin);
         when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
         when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
         when(categoryRepo.findByNameEn(placeAddDto.getCategory().getNameEn())).thenReturn(category);
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
-        PlaceVO savedPlace = placeService.save(placeAddDto, user.getEmail());
+        PlaceVO savedPlace = placeService.save(placeAddDto, TestConst.EMAIL);
         assertEquals(placeVO, savedPlace);
-        verify(userService).findByEmail(user.getEmail());
+        verify(userService).findNotDeactivatedByEmail(TestConst.EMAIL);
         verify(proposePlaceMapper).checkLocationValues(placeAddDto.getLocation());
         verify(categoryRepo).findByNameEn(placeAddDto.getCategory().getNameEn());
         verify(placeRepo).save(place);
@@ -546,15 +528,14 @@ class PlaceServiceImplTest {
     @Test
     void findAllWithPrincipalTest() {
         Pageable pageable = PageRequest.of(0, 1);
-        Principal principal = ModelUtils.getPrincipal();
         Place place = getPlace();
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
 
         when(placeRepo.findAll(pageable)).thenReturn(pages);
-        when(favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(principal.getName()))
+        when(favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserId(TestConst.USER_ID))
             .thenReturn(Collections.singletonList(1L));
 
-        PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal);
+        PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, TestConst.USER_ID);
         AdminPlaceDto actual = resultPageableDto.getPage().getFirst();
 
         AdminPlaceDto expected = modelMapper.map(place, AdminPlaceDto.class);
@@ -570,7 +551,7 @@ class PlaceServiceImplTest {
         assertEquals(expected.getIsFavorite(), actual.getIsFavorite());
 
         verify(placeRepo).findAll(pageable);
-        verify(favoritePlaceRepo).findAllFavoritePlaceLocationIdsByUserEmail(principal.getName());
+        verify(favoritePlaceRepo).findAllFavoritePlaceLocationIdsByUserId(TestConst.USER_ID);
     }
 
     @Test
@@ -758,9 +739,11 @@ class PlaceServiceImplTest {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         Place place = getPlace();
+        User placeUser = ModelUtils.getUser();
 
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findById(placeUser.getId())).thenReturn(Optional.of(placeUser));
+        when(modelMapper.map(placeUser, UserVO.class)).thenReturn(ModelUtils.getUserVO());
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
         when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
         when(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class))
@@ -768,10 +751,10 @@ class PlaceServiceImplTest {
         when(placeRepo.save(place)).thenReturn(place);
         when(modelMapper.map(place, PlaceResponse.class)).thenReturn(placeResponse);
 
-        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, "test@mail.com", null));
+        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, placeUser.getId(), null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findByEmail("test@mail.com");
+        verify(userRepo).findById(placeUser.getId());
         verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
         verify(modelMapper).map(placeResponse, Place.class);
         verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);
@@ -779,17 +762,17 @@ class PlaceServiceImplTest {
         verify(modelMapper).map(place, PlaceResponse.class);
 
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
-        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFile)).thenReturn("/url1");
         assertEquals(placeResponse,
-            placeService.addPlaceFromUi(dto, user.getEmail(),
+            placeService.addPlaceFromUi(dto, placeUser.getId(),
                 new MultipartFile[] {multipartFile}));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
-        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
-        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        when(userRemoteClient.uploadFile(multipartFiles[0])).thenReturn("/url1");
+        when(userRemoteClient.uploadFile(multipartFiles[1])).thenReturn("/url2");
         assertEquals(placeResponse,
-            placeService.addPlaceFromUi(dto, ModelUtils.getUser().getEmail(), multipartFiles));
-        verify(fileService, times(3)).upload(any(MultipartFile.class));
+            placeService.addPlaceFromUi(dto, placeUser.getId(), multipartFiles));
+        verify(userRemoteClient, times(3)).uploadFile(any(MultipartFile.class));
     }
 
     @Test
@@ -797,24 +780,25 @@ class PlaceServiceImplTest {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
         User user = ModelUtils.getUser();
-        user.setUserStatus(UserStatus.BLOCKED);
-        String email = user.getEmail();
+        Long userId = user.getId();
 
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getBlockedUserVO());
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
-        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, email, null));
+        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, userId, null));
 
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(user.getId());
     }
 
     @Test
     void addPlaceFromUiSaveAlreadyExistingLocation() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        String email = user.getEmail();
+        Long userId = user.getId();
 
-        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
         when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
 
@@ -823,10 +807,10 @@ class PlaceServiceImplTest {
 
         when(locationService.existsByLatAndLng(lat, lng)).thenReturn(true);
 
-        assertThrows(PlaceAlreadyExistsException.class, () -> placeService.addPlaceFromUi(dto, email, null));
+        assertThrows(PlaceAlreadyExistsException.class, () -> placeService.addPlaceFromUi(dto, userId, null));
 
         verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findByEmail(user.getEmail());
+        verify(userRepo).findById(userId);
         verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
         verify(locationService).existsByLatAndLng(lat, lng);
 
@@ -958,13 +942,13 @@ class PlaceServiceImplTest {
         place.setName("test1");
         place.setStatus(PlaceStatus.PROPOSED);
         when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
-        when(userRepo.findByEmail(dto.getEmail())).thenReturn(Optional.of(user));
+        when(userRemoteClient.userExistsByEmail(dto.getEmail())).thenReturn(true);
         when(placeRepo.save(any(Place.class))).thenReturn(place);
         UpdatePlaceStatusWithUserEmailDto result = placeService.updatePlaceStatus(dto);
         assertEquals("test1", result.getPlaceName());
         assertEquals(PlaceStatus.APPROVED, place.getStatus());
         verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
-        verify(userRepo).findByEmail(dto.getEmail());
+        verify(userRemoteClient).userExistsByEmail(dto.getEmail());
         verify(placeRepo).save(place);
     }
 
@@ -991,11 +975,11 @@ class PlaceServiceImplTest {
         place.setName("test1");
         place.setStatus(PlaceStatus.PROPOSED);
         when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
-        when(userRepo.findByEmail(dto.getEmail())).thenReturn(Optional.empty());
+        when(userRemoteClient.userExistsByEmail(dto.getEmail())).thenReturn(false);
         NotFoundException exception = assertThrows(NotFoundException.class, () -> placeService.updatePlaceStatus(dto));
         assertEquals("The user does not exist by this email: nonexistent@example.com", exception.getMessage());
         verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
-        verify(userRepo).findByEmail(dto.getEmail());
+        verify(userRemoteClient).userExistsByEmail(dto.getEmail());
         verify(placeRepo, times(0)).save(any(Place.class));
     }
 
@@ -1009,7 +993,7 @@ class PlaceServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () -> placeService.updatePlaceStatus(dto));
         assertEquals("The place does not exist by this name: nonexistentPlace", exception.getMessage());
         verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
-        verify(userRepo, times(0)).findByEmail(dto.getEmail());
+        verify(userRemoteClient, times(0)).userExistsByEmail(dto.getEmail());
         verify(placeRepo, times(0)).save(any(Place.class));
     }
 
@@ -1024,13 +1008,13 @@ class PlaceServiceImplTest {
         place.setName("test1");
         place.setStatus(PlaceStatus.PROPOSED);
         when(placeRepo.findByNameIgnoreCase(dto.getPlaceName())).thenReturn(Optional.of(place));
-        when(userRepo.findByEmail(dto.getEmail())).thenReturn(Optional.of(user));
+        when(userRemoteClient.userExistsByEmail(dto.getEmail())).thenReturn(true);
         when(placeRepo.save(any(Place.class))).thenReturn(place);
         UpdatePlaceStatusWithUserEmailDto result = placeService.updatePlaceStatus(dto);
         assertEquals("test1", result.getPlaceName());
         assertEquals(PlaceStatus.PROPOSED, place.getStatus());
         verify(placeRepo).findByNameIgnoreCase(dto.getPlaceName());
-        verify(userRepo).findByEmail(dto.getEmail());
+        verify(userRemoteClient).userExistsByEmail(dto.getEmail());
         verify(placeRepo).save(place);
         verify(restClient, times(0)).sendEmailNotificationChangesPlaceStatus(dto);
     }
@@ -1128,7 +1112,7 @@ class PlaceServiceImplTest {
             .build();
         when(categoryService.findByName("Test Category")).thenReturn(categoryDtoResponse);
         when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
-        when(userRepo.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
         when(locationService.findById(1L)).thenReturn(locationVO);
         List<GeocodingResult> geocodingResults = new ArrayList<>();
         GeocodingResult ukrLang = new GeocodingResult();
@@ -1142,7 +1126,7 @@ class PlaceServiceImplTest {
         geocodingResults.add(ukrLang);
         geocodingResults.add(engLang);
         when(googleApiService.getResultFromGeoCode("New Address")).thenReturn(geocodingResults);
-        PlaceVO result = placeServiceImpl.updateFromUI(dto, images, "test@example.com");
+        PlaceVO result = placeServiceImpl.updateFromUI(dto, images, user.getId());
 
         assertNotNull(result);
         assertEquals("Updated Place", result.getName());
@@ -1154,10 +1138,10 @@ class PlaceServiceImplTest {
     @Test
     void updateFromUIThrowsNotFoundExceptionForUserTest() {
         PlaceUpdateDto dto = getPlaceUpdateDto();
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepo.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class,
-            () -> placeService.updateFromUI(dto, null, "invalid_email@example.com"));
+            () -> placeService.updateFromUI(dto, null, TestConst.USER_ID));
     }
 
     @Test
@@ -1168,7 +1152,7 @@ class PlaceServiceImplTest {
 
         when(categoryService.findByName("Nonexistent Category"))
             .thenThrow(new NotFoundException("Category not found"));
-        assertThrows(NotFoundException.class, () -> placeServiceImpl.updateFromUI(dto, null, "test@example.com"));
+        assertThrows(NotFoundException.class, () -> placeServiceImpl.updateFromUI(dto, null, TestConst.USER_ID));
     }
 
     @Test

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PriceLevel;
 import com.google.maps.model.RankBy;
-import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.PageableDto;
@@ -42,10 +41,11 @@ import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagVO;
@@ -57,11 +57,13 @@ import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.entity.Comment;
 import greencity.entity.User;
 import greencity.enums.ArticleType;
@@ -125,11 +127,7 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(Role.ROLE_USER)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
             .build();
     }
 
@@ -139,6 +137,16 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
+            .languageVO(getLanguageDTO())
+            .build();
+    }
+
+    public static UserClaims getUserClaims() {
+        UserVO userVO = getUserVO();
+        return UserClaims.builder()
+            .userId(TestConst.USER_ID)
+            .userEmail(TestConst.EMAIL)
+            .roles(List.of(userVO.getRole()))
             .build();
     }
 
@@ -695,7 +703,27 @@ public class ModelUtils {
             .build();
     }
 
-    public static LanguageVO getLanguageVO() {
-        return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
+    public static SocialNetworkImageRequestDTO getSocialNetworkImageRequestDTO() {
+        return SocialNetworkImageRequestDTO.builder()
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .build();
+    }
+
+    public static SocialNetworkImageResponseDTO getSocialNetworkImageResponseDTO() {
+        return SocialNetworkImageResponseDTO.builder()
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .id(5L)
+            .build();
+    }
+
+    public static CreateGreenCityUserDto getCreateGreenCityDto() {
+        return CreateGreenCityUserDto.builder()
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .profilePicturePath(TestConst.PICTURE_PATH)
+            .build();
     }
 }

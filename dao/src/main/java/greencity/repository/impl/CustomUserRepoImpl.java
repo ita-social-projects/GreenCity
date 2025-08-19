@@ -1,6 +1,8 @@
 package greencity.repository.impl;
 
+import greencity.client.UserRemoteClient;
 import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.entity.User;
 import greencity.repository.CustomUserRepo;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 @Repository
 public class CustomUserRepoImpl implements CustomUserRepo {
     private final EntityManager entityManager;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -37,9 +40,21 @@ public class CustomUserRepoImpl implements CustomUserRepo {
 
         List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
 
-        query.setParameter("users", userIds);
+        query.setParameter("greencity_users", userIds);
 
         List<UserFriendDto> resultList = query.getResultList();
+
+        List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
+        Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
+            .collect(Collectors.toMap(
+                UserEmailDto::userId,
+                UserEmailDto::userEmail));
+
+        resultList.forEach(userFriendDto -> {
+            String email = userIdToUserEmailMap.get(userFriendDto.getId());
+            userFriendDto.setEmail(email);
+        });
+
         Map<Long, UserFriendDto> resultMap = resultList.stream()
             .collect(Collectors.toMap(UserFriendDto::getId, dto -> dto));
 

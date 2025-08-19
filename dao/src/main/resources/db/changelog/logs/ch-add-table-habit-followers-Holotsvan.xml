@@ -12,6 +12,8 @@
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+            </column>
         </createTable>
 
         <addPrimaryKey tableName="habits_followers"
@@ -24,7 +26,7 @@
         <addForeignKeyConstraint baseTableName="habits_followers"
                                  baseColumnNames="user_id"
                                  constraintName="fk_habits_followers_user_id"
-                                 referencedTableName="users"
+                                 referencedTableName="greencity_users"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

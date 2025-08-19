@@ -9,8 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.FetchType;
 
 @Data
 @MappedSuperclass
@@ -22,8 +20,8 @@ public class Translation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Language language;
+    @Column(nullable = false, length = 5)
+    private String languageCode;
 
     @Column(nullable = false, unique = true, length = 4000)
     private String content;

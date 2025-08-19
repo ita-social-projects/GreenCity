@@ -46,11 +46,10 @@ public interface FactOfTheDayRepo extends JpaRepository<FactOfTheDay, Long> {
      * @param id the ID of the fact of the day
      * @return a set of {@link TagDto} associated with the fact of the day
      */
-    @Query("SELECT DISTINCT new greencity.dto.tag.TagDto(t.id, tt.name, l.code) "
+    @Query("SELECT DISTINCT new greencity.dto.tag.TagDto(t.id, tt.name, tt.languageCode) "
         + "FROM FactOfTheDay f "
         + "JOIN f.tags t "
         + "JOIN t.tagTranslations tt "
-        + "JOIN tt.language l "
         + "WHERE f.id = :id")
     Set<TagDto> findTagsByFactOfTheDayId(Long id);
 
@@ -60,10 +59,9 @@ public interface FactOfTheDayRepo extends JpaRepository<FactOfTheDay, Long> {
      * @return a set of {@link TagDto} representing tags for Facts of the Day and
      *         Habits
      */
-    @Query("SELECT DISTINCT new greencity.dto.tag.TagDto(t.id, tt.name, l.code) "
+    @Query("SELECT DISTINCT new greencity.dto.tag.TagDto(t.id, tt.name, tt.languageCode) "
         + "FROM Tag t "
         + "JOIN t.tagTranslations tt "
-        + "JOIN tt.language l "
         + "WHERE t.type = 'FACT_OF_THE_DAY' or t.type = 'HABIT'")
     Set<TagDto> findAllFactOfTheDayAndHabitTags();
 }

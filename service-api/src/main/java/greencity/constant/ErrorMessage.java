@@ -33,6 +33,7 @@ public class ErrorMessage {
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
+    public static final String LANGUAGE_NOT_FOUND_BY_CODE = "The language does not exist by this code: ";
 
     public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
     public static final String CATEGORY_NOT_FOUND_BY_NAME = "The category does not exist by this name: ";
@@ -80,6 +81,7 @@ public class ErrorMessage {
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
+    public static final String USERS_NOT_FOUND_BY_IDS = "Users do not exist by these ids: ";
     public static final String USER_ID_NULL = "User ID cannot be null";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
     public static final String USER_HAS_NO_TO_DO_LIST_ITEMS =
@@ -118,10 +120,6 @@ public class ErrorMessage {
     public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
     public static final String USER_CANNOT_ADD_SAME_SOCIAL_NETWORK_LINKS =
         "User cannot add the same social network links";
-    public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
-    public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
-    public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
-        "Bad default social network image host path (Row in database doesn't exists)";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_NOT_FOUND_BY_NAME = "The place does not exist by this name: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
@@ -132,7 +130,7 @@ public class ErrorMessage {
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String PLACE_ALREADY_EXISTS = "Place with lat: %.4f and lng: %.4f already exists";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
-        "Favorite place already exist for this placeId: %d and user with email: %s";
+        "Favorite place already exist for this placeId: %d and user with id: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String USER_TO_DO_LIST_ITEMS_STATUS_IS_ALREADY_DONE =
         "The status of this to-do list item is already done ";
@@ -201,6 +199,7 @@ public class ErrorMessage {
         "Error during processing xss escaping of multipart file";
     public static final String STATUSES_REQUIRE_USER_ID =
         "JOINED, CREATED and SAVED statuses required user-id parameter";
+    public static final String ANNOTATION_ARGUMENT_NOT_SUPPORTED = "Annotation argument not supported";
     public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
     public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
     public static final String RATING_POINTS_NOT_FOUND_BY_NAME =
@@ -243,4 +242,13 @@ public class ErrorMessage {
     public static final String INVALID_SORT_FORMAT_EXCEPTION = "Invalid sort format: '%s'";
     public static final String INVALID_SORT_VALUE_EXCEPTION = "Invalid sort field: '%s'";
     public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
+    public static final String NOT_FOUND_ADDRESS_BY_COORDINATES = "Not found address with such coordinates: ";
+    public static final String INSUFFICIENT_LOCATION_DATA_FOUND =
+        "Insufficient location data found for the provided coordinates.";
+    public static final String USER_DID_NOT_SET_ANY_CITY = "User did not set any city";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_ID = "User with id %s is already registered";
+    public static final String NO_JWT_TOKEN_FOUND = "No JWT found in request header";
+    public static final String UNAUTHORIZED_RESPONSE = "Authorize first.";
+    public static final String USER_APP_UNAVAILABLE = "the User service is unavailable";
+    public static final String INTERNAL_SERVER_ERROR = "Internal server error: ";
 }

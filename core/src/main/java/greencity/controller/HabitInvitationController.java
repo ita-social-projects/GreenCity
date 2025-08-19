@@ -1,8 +1,7 @@
 package greencity.controller;
 
-import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
-import greencity.dto.user.UserVO;
 import greencity.service.HabitInvitationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,7 +30,7 @@ public class HabitInvitationController {
      * Method for accepting a habit invitation.
      *
      * @param invitationId ID of the invitation.
-     * @param userVO       {@link UserVO} representing the authenticated user.
+     * @param userId       {@link Long} representing the authenticated user's id.
      */
     @Operation(summary = "Accept habit invitation")
     @ApiResponses(value = {
@@ -46,8 +45,8 @@ public class HabitInvitationController {
     @PatchMapping("/{invitationId}/accept")
     public ResponseEntity<Void> acceptHabitInvitation(
         @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        habitInvitationService.acceptHabitInvitation(invitationId, userVO);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitInvitationService.acceptHabitInvitation(invitationId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -56,7 +55,7 @@ public class HabitInvitationController {
      * REJECTED.
      *
      * @param invitationId ID of the invitation.
-     * @param userVO       {@link UserVO} representing the authenticated user.
+     * @param userId       {@link Long} representing the authenticated user's id.
      */
     @Operation(summary = "Reject habit invitation")
     @ApiResponses(value = {
@@ -71,8 +70,8 @@ public class HabitInvitationController {
     @DeleteMapping("/{invitationId}/reject")
     public ResponseEntity<Void> rejectHabitInvitation(
         @Parameter(description = "Habit invitation ID. Cannot be empty.") @PathVariable Long invitationId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        habitInvitationService.rejectHabitInvitation(invitationId, userVO);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitInvitationService.rejectHabitInvitation(invitationId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

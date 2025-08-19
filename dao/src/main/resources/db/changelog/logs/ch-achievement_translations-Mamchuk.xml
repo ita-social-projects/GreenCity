@@ -29,8 +29,5 @@
         <addForeignKeyConstraint baseColumnNames="achievement_id" baseTableName="achievement_translations"
                                  constraintName="achievement_translations_achievement_id_fk" referencedColumnNames="id"
                                  referencedTableName="achievements"/>
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="achievement_translations"
-                                 constraintName="achievement_translations_language_id_fk" referencedColumnNames="id"
-                                 referencedTableName="languages"/>
     </changeSet>
 </databaseChangeLog>

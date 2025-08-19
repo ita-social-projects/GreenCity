@@ -15,6 +15,9 @@
             <column name="invitee_habit_assign_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="inviter_id" type="BIGINT"/>
+            <column name="invitee_id" type="BIGINT"/>
         </createTable>
 
         <addForeignKeyConstraint

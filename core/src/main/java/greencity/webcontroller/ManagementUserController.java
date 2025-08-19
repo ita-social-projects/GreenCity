@@ -1,6 +1,7 @@
 package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
@@ -282,12 +283,12 @@ public class ManagementUserController {
     /**
      * Method for creating new filter.
      *
-     * @param currentUser current user.
-     * @param dto         filter's dto.
+     * @param currentUserId current user id.
+     * @param dto           filter's dto.
      */
     @PostMapping(value = "/filter-save")
-    public String saveUserFilter(@CurrentUser UserVO currentUser, UserFilterDtoRequest dto) {
-        filterService.save(currentUser.getId(), dto);
+    public String saveUserFilter(@CurrentUserId Long currentUserId, @RequestBody UserFilterDtoRequest dto) {
+        filterService.save(currentUserId, dto);
         return "redirect:/management/users";
     }
 

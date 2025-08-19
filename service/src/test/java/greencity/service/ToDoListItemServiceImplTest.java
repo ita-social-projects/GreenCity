@@ -13,13 +13,10 @@ import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.todolistitem.ToDoListItemResponseDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.entity.HabitAssign;
-import greencity.entity.Language;
 import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
 import greencity.entity.localization.ToDoListItemTranslation;
-import greencity.enums.EmailNotification;
-import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -47,7 +44,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,7 +51,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static greencity.enums.UserStatus.ACTIVATED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -96,13 +91,7 @@ class ToDoListItemServiceImplTest {
     private User user = User.builder()
         .id(1L)
         .name("Test Testing")
-        .email("test@gmail.com")
-        .role(Role.ROLE_USER)
-        .userStatus(ACTIVATED)
-        .emailNotification(EmailNotification.DISABLED)
-        .lastActivityTime(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
-        .dateOfRegistration(LocalDateTime.now())
-        .socialNetworks(new ArrayList<>())
+        // .email("test@gmail.com")
         .build();
 
     private String language = "uk";
@@ -110,16 +99,15 @@ class ToDoListItemServiceImplTest {
     private List<ToDoListItemTranslation> toDoListItemTranslations = Arrays.asList(
         ToDoListItemTranslation.builder()
             .id(1L)
-            .language(new Language(1L, language, "Ukrainian", Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()))
+
+            .languageCode(language)
             .content("TEST")
             .toDoListItem(
                 new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .build(),
         ToDoListItemTranslation.builder()
             .id(2L)
-            .language(new Language(1L, language, "Ukrainian", Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList()))
+            .languageCode(language)
             .content("TEST")
             .toDoListItem(
                 new ToDoListItem(2L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
