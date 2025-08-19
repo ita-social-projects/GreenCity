@@ -63,15 +63,6 @@ class EventSearchRepoImplTest extends PostgresInitializer {
     @BeforeEach
     @Transactional
     void setup() {
-        entityManager
-            .createNativeQuery(
-                "INSERT INTO user_location values (1, 'abs', 'abs', 'abs', 'abs', 'abs', 'abs', 1.0, 1.0);")
-            .executeUpdate();
-        entityManager
-            .createNativeQuery(
-                "INSERT INTO greencity_users values(1, 'name', 'profile_picture', 'user_credo', 1.0, 1, 1, 2.3);")
-            .executeUpdate();
-
         ModelUtils.getListEventDto().forEach(dto -> {
             var event = MAPPER.map(dto, Event.class);
             event.getDates().forEach(date -> date.setEvent(event));

@@ -264,6 +264,12 @@ spec:
                   name: {{ .Values.externalSecret.secretName }}
                   key: OPEN-AI-API-KEY
 
+            - name: LDM_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: LDM-SECRET-KEY
+
           ports:
             - containerPort: 8080
               name: tomcat

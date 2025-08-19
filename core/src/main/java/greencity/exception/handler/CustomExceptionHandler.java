@@ -8,36 +8,60 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.BadSecretKeyException;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
-import greencity.exception.exceptions.DatabaseMetadataException;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.FileGenerationException;
 import greencity.exception.exceptions.FileReadException;
-import greencity.exception.exceptions.FunctionalityNotAvailableException;
+import greencity.exception.exceptions.GoogleApiException;
+import greencity.exception.exceptions.GreenCityUserServiceException;
+import greencity.exception.exceptions.ImageUrlParseException;
+import greencity.exception.exceptions.InsufficientLocationDataException;
+import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.InvalidUnsubscribeToken;
+import greencity.exception.exceptions.JsonResponseParseException;
+import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.MultipartXSSProcessingException;
+import greencity.exception.exceptions.NoJwtException;
 import greencity.exception.exceptions.NotCurrentUserException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.NotUpdatedException;
-import greencity.exception.exceptions.ToDoListItemNotFoundException;
+import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.exception.exceptions.OpenAIResponseException;
+import greencity.exception.exceptions.PlaceAlreadyExistsException;
+import greencity.exception.exceptions.PlaceStatusException;
+import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
+import greencity.exception.exceptions.ToDoListItemNotFoundException;
+import greencity.exception.exceptions.UnauthorizedException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoToDoListItemsException;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
-import greencity.exception.exceptions.ResourceNotFoundException;
-import greencity.exception.exceptions.*;
-import greencity.exception.helper.EndpointValidationHelper;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.exception.exceptions.PlaceAlreadyExistsException;
+import greencity.exception.helper.EndpointValidationHelper;
 import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -59,13 +83,6 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Custom exception handler.
@@ -73,9 +90,9 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
-    private ErrorAttributes errorAttributes;
     private final ObjectMapper objectMapper;
     private final EndpointValidationHelper endpointValidationHelper;
+    private ErrorAttributes errorAttributes;
 
     public CustomExceptionHandler(ErrorAttributes errorAttributes, ObjectMapper objectMapper,
         EndpointValidationHelper endpointValidationHelper) {
@@ -490,7 +507,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-        HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
@@ -550,7 +568,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-        HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
         List<ValidationExceptionDto> collect =
             ex.getBindingResult().getFieldErrors().stream()
                 .map(ValidationExceptionDto::new)
@@ -630,50 +649,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercepts exception {@link BadSecretKeyException}.
-     *
-     * @param ex      Exception that should be intercepted.
-     * @param request Contains details about the occurred exception.
-     * @return {@code ResponseEntity} which contains the HTTP status and body with
-     *         the exception message.
-     */
-    @ExceptionHandler(BadSecretKeyException.class)
-    public final ResponseEntity<Object> handleBadSecretKeyException(BadSecretKeyException ex,
-        WebRequest request) {
-        log.error(ex.getMessage(), ex);
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        exceptionResponse.setMessage(ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(FunctionalityNotAvailableException.class)
-    public final ResponseEntity<Object> handleFunctionalityNotAvailableException(FunctionalityNotAvailableException ex,
-        WebRequest request) {
-        log.error(ex.getMessage(), ex);
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        exceptionResponse.setMessage(ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
-    }
-
-    /**
-     * Method intercepts exception {@link DatabaseMetadataException}.
-     *
-     * @param request Contains details about the occurred exception.
-     * @return {@code ResponseEntity} which contains the HTTP status and body with
-     *         the exception message.
-     */
-    @ExceptionHandler(DatabaseMetadataException.class)
-    public final ResponseEntity<Object> handleInvalidDataException(WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
@@ -775,5 +750,27 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+    }
+
+    /**
+     * Handles {@link UnauthorizedException} thrown when a user attempts to access a
+     * resource without proper authentication credentials (e.g., missing or invalid
+     * token).
+     *
+     * <p>
+     * Returns a structured JSON response with HTTP status {@code 401 Unauthorized}.
+     * </p>
+     *
+     * @param ex the thrown {@link UnauthorizedException}
+     * @return a {@link ResponseEntity} containing an error description and HTTP 401
+     *         status
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorized(UnauthorizedException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "unauthorized");
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 }

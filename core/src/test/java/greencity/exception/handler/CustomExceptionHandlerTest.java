@@ -13,6 +13,7 @@ import greencity.exception.exceptions.InsufficientLocationDataException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.NoJwtException;
+import greencity.exception.exceptions.UnauthorizedException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
@@ -312,4 +313,14 @@ class CustomExceptionHandlerTest {
         assertEquals(expectedResult, actualResult);
     }
 
+    @Test
+    void handleUnauthorizedShouldReturn401() {
+        UnauthorizedException exception = new UnauthorizedException();
+        Map<String, String> expectedBody = new HashMap<>();
+        expectedBody.put("error", "unauthorized");
+        expectedBody.put("message", "Unauthorized access");
+        ResponseEntity<Map<String, String>> response = customExceptionHandler.handleUnauthorized(exception);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(expectedBody, response.getBody());
+    }
 }

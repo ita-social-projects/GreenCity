@@ -156,6 +156,7 @@ class HabitCommentControllerTest {
             }
             """;
         mockMvc.perform(get(HABIT_LINK + "/comments/{id}", 1)
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
             .andExpect(status().isOk());

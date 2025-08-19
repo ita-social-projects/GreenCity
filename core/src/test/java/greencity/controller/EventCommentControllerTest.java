@@ -192,7 +192,8 @@ class EventCommentControllerTest {
     @Test
     @SneakyThrows
     void getEventCommentById() {
-        mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}", 1))
+        mockMvc.perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{commentId}", 1)
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(commentService).getCommentById(ArticleType.EVENT, 1L, TestConst.USER_ID);

@@ -53,7 +53,6 @@ import greencity.dto.event.UpdateAddressDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -94,8 +93,6 @@ import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
-import greencity.dto.logs.filter.ByteSizeRange;
-import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.notification.NotificationInviteDto;
@@ -114,8 +111,6 @@ import greencity.dto.placecomment.PlaceCommentResponseDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchPlacesDto;
-import greencity.dto.exportsettings.TableRowsDto;
-import greencity.dto.exportsettings.TablesMetadataDto;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
@@ -244,10 +239,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -3504,39 +3495,6 @@ public class ModelUtils {
             .startDate(start)
             .finishDate(finish)
             .build();
-    }
-
-    public static LogFileFilterDto getLogFileFilterDto() {
-        return new LogFileFilterDto("test",
-            null,
-            new ByteSizeRange(0, 1000),
-            null,
-            null);
-    }
-
-    public static TablesMetadataDto getTablesMetadataDto() {
-        Map<String, List<String>> tables = new HashMap<>();
-        List<String> columns = List.of("id", "name", "email");
-        tables.put("users", columns);
-
-        return new TablesMetadataDto(tables);
-    }
-
-    public static TableRowsDto getTableRowsDto() {
-        List<Map<String, String>> tableData = new LinkedList<>();
-        Map<String, String> row = new LinkedHashMap<>();
-        row.put("id", "1");
-        row.put("date_of_registration", "1970-01-01 00:00:00");
-        row.put("email", "someemail@some.com");
-        row.put("name", "Name");
-        row.put("role", "ROLE_ADMIN");
-        tableData.add(row);
-
-        return new TableRowsDto("users", tableData);
-    }
-
-    public static TableParamsRequestDto tableParamsRequestDto() {
-        return new TableParamsRequestDto("users", 10, 1);
     }
 
     public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
