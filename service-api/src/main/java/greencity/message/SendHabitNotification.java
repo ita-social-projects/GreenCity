@@ -13,12 +13,12 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
-public class SendHabitNotification implements Serializable, EmailMessage {
+public class SendHabitNotification implements Serializable, UserIdMessage {
     private String name;
-    private String email;
+    private Long userId;
 
     @Override
-    public String getEmail() {
-        return email;
+    public Long getUserId() {
+        return userId;
     }
 }

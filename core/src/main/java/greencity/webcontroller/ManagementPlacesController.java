@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.annotations.CurrentUserId;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
@@ -12,7 +13,6 @@ import greencity.dto.specification.SpecificationNameDto;
 import greencity.service.CategoryService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -92,7 +92,7 @@ public class ManagementPlacesController {
      * Method which saves {@link PlaceVO}.
      *
      * @param addPlaceDto dto with info for registering place.
-     * @param principal   {@link Principal} is an admin
+     * @param userId      {@link Long} current user id
      * @return {@link GenericResponseDto}
      */
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -100,10 +100,10 @@ public class ManagementPlacesController {
     public GenericResponseDto savePlace(
         @RequestPart("addPlaceDto") @Valid AddPlaceDto addPlaceDto,
         BindingResult bindingResult,
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
-            placeService.addPlaceFromUi(addPlaceDto, principal.getName(), images);
+            placeService.addPlaceFromUi(addPlaceDto, userId, images);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -119,10 +119,10 @@ public class ManagementPlacesController {
     public GenericResponseDto updatePlace(
         @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
         BindingResult bindingResult,
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
-            placeService.updateFromUI(placeUpdateDto, images, principal.getName());
+            placeService.updateFromUI(placeUpdateDto, images, userId);
         }
 
         return buildGenericResponseDto(bindingResult);

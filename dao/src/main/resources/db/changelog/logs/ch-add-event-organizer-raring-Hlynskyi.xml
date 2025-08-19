@@ -11,12 +11,9 @@
                 <constraints foreignKeyName="FK_rate_event_id" references="events (id)"/>
             </column>
             <column name="user_id" type="BIGINT">
-                <constraints foreignKeyName="FK_rate_event_user_id" references="users (id)"/>
+                <constraints foreignKeyName="FK_rate_event_user_id" references="greencity_users (id)"/>
             </column>
             <column name="grade" type="INT"/>
         </createTable>
-        <addColumn tableName="users">
-            <column name="event_organizer_rating" type="DOUBLE"/>
-        </addColumn>
     </changeSet>
 </databaseChangeLog>

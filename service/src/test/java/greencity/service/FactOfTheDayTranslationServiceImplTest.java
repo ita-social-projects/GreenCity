@@ -38,7 +38,7 @@ class FactOfTheDayTranslationServiceImplTest {
         FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
             .id(1L)
             .content("Content")
-            .language(ModelUtils.getLanguage())
+            .languageCode(ModelUtils.getLanguage())
             .factOfTheDay(ModelUtils.getFactOfTheDay())
             .build();
         Optional<FactOfTheDayTranslation> fact = Optional.of(factOfTheDayTranslation);
@@ -53,7 +53,7 @@ class FactOfTheDayTranslationServiceImplTest {
         FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
             .id(1L)
             .content("Content")
-            .language(ModelUtils.getLanguage())
+            .languageCode(ModelUtils.getLanguage())
             .factOfTheDay(ModelUtils.getFactOfTheDay())
             .build();
         when(modelMapper.map(factOfTheDayTranslationVO, FactOfTheDayTranslation.class))
@@ -70,7 +70,7 @@ class FactOfTheDayTranslationServiceImplTest {
         FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
             .id(1L)
             .content("Content")
-            .language(ModelUtils.getLanguage())
+            .languageCode(ModelUtils.getLanguage())
             .factOfTheDay(ModelUtils.getFactOfTheDay())
             .build();
         List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOList =
@@ -91,7 +91,7 @@ class FactOfTheDayTranslationServiceImplTest {
         FactOfTheDayTranslation factOfTheDayTranslation = FactOfTheDayTranslation.builder()
             .id(1L)
             .content("Content")
-            .language(ModelUtils.getLanguage())
+            .languageCode(ModelUtils.getLanguage())
             .factOfTheDay(ModelUtils.getFactOfTheDay())
             .build();
         List<FactOfTheDayTranslationVO> factOfTheDayTranslationVOList =

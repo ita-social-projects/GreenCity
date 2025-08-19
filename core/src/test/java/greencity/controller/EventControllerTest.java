@@ -24,8 +24,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
@@ -37,6 +39,7 @@ import greencity.enums.EventStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.security.jwt.JwtTool;
 import greencity.service.EventService;
 import greencity.service.UserService;
 import java.security.Principal;
@@ -77,6 +80,8 @@ class EventControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    JwtTool jwtTool;
     private static ObjectMapper objectMapper;
 
     @BeforeAll
@@ -88,9 +93,17 @@ class EventControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserIdArgumentResolver(jwtTool))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -187,7 +200,7 @@ class EventControllerTest {
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/favorites", eventId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(eventService).addToFavorites(eventId, principal.getName());
+        verify(eventService).addToFavorites(eventId, TestConst.USER_ID);
     }
 
     @Test
@@ -197,7 +210,7 @@ class EventControllerTest {
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/{eventId}/favorites", eventId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(eventService).removeFromFavorites(eventId, principal.getName());
+        verify(eventService).removeFromFavorites(eventId, TestConst.USER_ID);
     }
 
     @Test
@@ -453,7 +466,7 @@ class EventControllerTest {
         Long eventId = 1L;
 
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/like", eventId)
             .principal(principal))
@@ -465,7 +478,7 @@ class EventControllerTest {
     @Test
     void dislikeTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislike", 1)
             .principal(principal))
             .andExpect(status().isOk());
@@ -477,7 +490,7 @@ class EventControllerTest {
         UserVO userVO = getUserVO();
         EventDto eventDto = getEventDto();
 
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(eventService.dislikeV2(anyLong(), eq(userVO))).thenReturn(eventDto);
         MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/dislike-v2", 2)
             .principal(principal))
@@ -493,7 +506,7 @@ class EventControllerTest {
         UserVO userVO = getUserVO();
         EventDto eventDto = getEventDto();
 
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(eventService.likeV2(anyLong(), eq(userVO))).thenReturn(eventDto);
         MvcResult result = mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/like-v2", 2)
             .principal(principal))
@@ -527,27 +540,21 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void checkIsEventLikedByUserTest() {
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/likes", EVENT_ID)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService).isEventLikedByUser(EVENT_ID, userVO);
+        verify(eventService).isEventLikedByUser(EVENT_ID, TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void checkIsEventDislikedByUserTest() {
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/dislikes", EVENT_ID)
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService).isEventDislikedByUser(EVENT_ID, userVO);
+        verify(eventService).isEventDislikedByUser(EVENT_ID, TestConst.USER_ID);
     }
 
     @Test
@@ -562,7 +569,7 @@ class EventControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(eventService).rateEvent(eventId, principal.getName(), grade);
+        verify(eventService).rateEvent(eventId, TestConst.USER_ID, grade);
     }
 
     @Test
@@ -601,7 +608,7 @@ class EventControllerTest {
 
         doThrow(new NotFoundException("ErrorMessage"))
             .when(eventService)
-            .rateEvent(eventId, principal.getName(), grade);
+            .rateEvent(eventId, TestConst.USER_ID, grade);
 
         assertThatThrownBy(() -> mockMvc
             .perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/ratings", eventId)
@@ -619,7 +626,7 @@ class EventControllerTest {
 
         doThrow(new BadRequestException("ErrorMessage"))
             .when(eventService)
-            .rateEvent(eventId, principal.getName(), grade);
+            .rateEvent(eventId, TestConst.USER_ID, grade);
 
         assertThatThrownBy(() -> mockMvc
             .perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/ratings", eventId)
@@ -879,7 +886,7 @@ class EventControllerTest {
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/addToRequested", eventId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(eventService).addToRequested(eventId, principal.getName());
+        verify(eventService).addToRequested(eventId, TestConst.USER_ID);
     }
 
     @Test
@@ -889,7 +896,7 @@ class EventControllerTest {
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/{eventId}/removeFromRequested", eventId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(eventService).removeFromRequested(eventId, principal.getName());
+        verify(eventService).removeFromRequested(eventId, TestConst.USER_ID);
     }
 
     @Test
@@ -900,7 +907,7 @@ class EventControllerTest {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users", eventId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(eventService).getRequestedUsers(eventId, principal.getName(), pageable);
+        verify(eventService).getRequestedUsers(eventId, TestConst.USER_ID, pageable);
     }
 
     @Test
@@ -1001,23 +1008,20 @@ class EventControllerTest {
     @Test
     @SneakyThrows
     void getAllUserAssignedReturnsPaginatedUserAssignedEventsForValidUserTest() {
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/user-data/getAllUserAssigned")
             .principal(principal)
             .param("page", "0")
             .param("size", "2"))
             .andExpect(status().isOk());
-        verify(userService, times(1)).findByEmail(principal.getName());
         verify(eventService, times(1))
-            .getPageableAllEventsAttendedByUser(PageRequest.of(0, 2), userVO.getId());
+            .getPageableAllEventsAttendedByUser(PageRequest.of(0, 2), TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void getRelevantAddressesTest() {
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        UserVO userVO = ModelUtils.getUserVO();
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses/get-relevant")
             .principal(principal))
             .andExpect(status().isOk());

@@ -45,10 +45,10 @@ class UserArgumentResolverTest {
     @Test
     void resolveArgumentShouldReturnUserVOWhenPrincipalExists(){
         when(webRequest.getUserPrincipal()).thenReturn(principal);
-        when(userService.findByEmail(EMAIL)).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(EMAIL)).thenReturn(userVO);
         Object result = userArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest, null);
         assertThat(result).isEqualTo(userVO);
-        verify(userService).findByEmail(EMAIL);
+        verify(userService).findNotDeactivatedByEmail(EMAIL);
     }
 
     @Test

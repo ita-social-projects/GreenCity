@@ -110,7 +110,6 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
     @Query("""
         SELECT n FROM Notification n
         JOIN FETCH n.targetUser tu
-        JOIN FETCH tu.language
         JOIN FETCH n.actionUsers
         WHERE n.notificationType = :notificationType
         AND n.viewed = false

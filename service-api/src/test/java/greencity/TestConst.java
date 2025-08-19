@@ -4,6 +4,7 @@ public final class TestConst {
     public static final String SITE = "https://google.com/";
     public static final String NAME = "Taras";
     public static final String EMAIL = "taras@gmail.com";
+    public static final String CREDO = "user credo";
     public static final Long USER_ID = 1L;
     public static final String UPDATE_STATUS_URL = "/status";
     public static final String ACCESS_TOKEN = "Bearer token";

@@ -240,25 +240,6 @@ public class RestClient {
     /**
      * Method for getting UserVO by search query.
      *
-     * @param pageable {@link Pageable}.
-     * @param query    query to search
-     * @return {@link PageableAdvancedDto} of {@link UserManagementDto} instances.
-     */
-    public PageableAdvancedDto<UserManagementDto> searchBy(Pageable pageable, String query) {
-        HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.SEARCH_BY)
-            .queryParam("page", pageable.getPageNumber())
-            .queryParam("size", pageable.getPageSize())
-            .queryParam("query", query);
-        return restTemplate.exchange(url.toUriString(), HttpMethod.GET, entity,
-            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
-            }).getBody();
-    }
-
-    /**
-     * Method for getting UserVO by search query.
-     *
      * @param userDto dto with updated fields.
      */
     public void updateUser(UserManagementDto userDto) {

@@ -24,28 +24,64 @@
             <column name="type">ECO_NEWS</column>
         </insert>
         <insert tableName="tags">
-            <column name="id">6</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">7</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">8</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">9</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">10</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
             <column name="id">11</column>
             <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">12</column>
+            <column name="type">EVENT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">13</column>
+            <column name="type">EVENT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">14</column>
+            <column name="type">EVENT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">15</column>
+            <column name="type">PLACES_FILTER</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">16</column>
+            <column name="type">PLACES_FILTER</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">17</column>
+            <column name="type">PLACES_FILTER</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">18</column>
+            <column name="type">PLACES_FILTER</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">19</column>
+            <column name="type">PLACES_FILTER</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">20</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">21</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">22</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">23</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">24</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">27</column>
+            <column name="type">FACT_OF_THE_DAY</column>
         </insert>
     </changeSet>
 </databaseChangeLog>

@@ -17,7 +17,7 @@ public class SearchEventsDtoMapper extends AbstractConverter<Event, SearchEvents
             .title(event.getTitle())
             .tags(event.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(language))
+                .filter(tagTranslation -> tagTranslation.getLanguageCode().equals(language))
                 .map(TagTranslation::getName)
                 .toList())
             .build();

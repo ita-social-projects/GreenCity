@@ -17,6 +17,6 @@
     <changeSet id="addKey" author="Pavlo Hural">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="filters"
                                  constraintName="user_filters_users_id_fk" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
 </databaseChangeLog>

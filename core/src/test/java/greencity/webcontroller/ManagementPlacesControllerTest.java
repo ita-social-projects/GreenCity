@@ -1,5 +1,7 @@
 package greencity.webcontroller;
 
+import greencity.TestConst;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -8,10 +10,10 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.specification.SpecificationNameDto;
+import greencity.security.jwt.JwtTool;
 import greencity.service.CategoryService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.DayOfWeek;
@@ -20,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,10 +40,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -71,10 +72,15 @@ class ManagementPlacesControllerTest {
     @Mock
     private SpecificationService specificationService;
 
+    @Mock
+    JwtTool jwtTool;
+
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementPlacesController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .build();
     }
 
@@ -89,7 +95,8 @@ class ManagementPlacesControllerTest {
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
         this.mockMvc.perform(get("/management/places")
-            .param("page", "0"))
+            .param("page", "0")
+            .param("size", "1"))
             .andExpect(view().name("core/management_places"))
             .andExpect(model().attribute("pageable", adminPlaceDtoPageableDto))
             .andExpect(status().isOk());
@@ -144,13 +151,19 @@ class ManagementPlacesControllerTest {
 
     @Test
     void updatePlaceTest() throws Exception {
+        String jwt = "jwt";
         Principal principal = Mockito.mock(Principal.class);
-        Mockito.when(principal.getName()).thenReturn("testUser");
+        when(principal.getName()).thenReturn("testUser");
 
         PlaceUpdateDto placeUpdateDto = getPlaceUpdateDto();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String json = objectMapper.writeValueAsString(placeUpdateDto);
+
+        when(jwtTool.extractJwtFromNativeWebRequest(any(NativeWebRequest.class)))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
 
         MockMultipartFile placeUpdateDtoPart = new MockMultipartFile(
             "placeUpdateDto",
@@ -172,7 +185,7 @@ class ManagementPlacesControllerTest {
             .characterEncoding("UTF-8"))
             .andExpect(status().isOk());
 
-        verify(placeService).updateFromUI(eq(placeUpdateDto), any(MultipartFile[].class), anyString());
+        verify(placeService).updateFromUI(eq(placeUpdateDto), any(MultipartFile[].class), eq(TestConst.USER_ID));
     }
 
     private PlaceUpdateDto getPlaceUpdateDto() {

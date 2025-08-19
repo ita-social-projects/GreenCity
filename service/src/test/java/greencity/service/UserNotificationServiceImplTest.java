@@ -1,9 +1,11 @@
 package greencity.service;
 
+import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
@@ -52,8 +54,6 @@ import static greencity.ModelUtils.getBaseOfNotificationForEventCommentUserTag;
 import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitTranslation;
-import static greencity.ModelUtils.getLanguage;
-import static greencity.ModelUtils.getLanguageVO;
 import static greencity.ModelUtils.getNotification;
 import static greencity.ModelUtils.getNotificationDto;
 import static greencity.ModelUtils.getNotificationInviteDto;
@@ -78,6 +78,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -100,8 +101,6 @@ class UserNotificationServiceImplTest {
     @Mock
     private HabitInvitationService habitInvitationService;
     @Mock
-    private UserService userService;
-    @Mock
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private HabitAssignRepo habitAssignRepo;
@@ -112,7 +111,6 @@ class UserNotificationServiceImplTest {
     void getNotificationsFilteredTestWhenProjectNameIsNull() {
         Principal principal = getPrincipal();
         String language = "en";
-        String email = "danylo@gmail.com";
         ProjectName projectName = null;
         List<NotificationType> notificationTypes = Collections.emptyList();
         Boolean viewed = false;
@@ -125,7 +123,6 @@ class UserNotificationServiceImplTest {
         PageableAdvancedDto<UbsNotificationDto> countUbsPage = new PageableAdvancedDto<>(
             Collections.emptyList(), 5, 0, 1, 0, false, false, true, true);
 
-        when(userService.findByEmail(email)).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             countPageableGreenCity))
             .thenReturn(countGreenCityPage);
@@ -186,6 +183,7 @@ class UserNotificationServiceImplTest {
         boolean isLast = !hasNext;
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
+            testUserVo.getId(),
             pageable,
             principal,
             language,
@@ -203,7 +201,6 @@ class UserNotificationServiceImplTest {
         assertEquals(isFirst, actualResult.isFirst());
         assertEquals(isLast, actualResult.isLast());
 
-        verify(userService, times(2)).findByEmail(email);
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
             countPageableGreenCity);
         verify(restClient).findAllNotificationsForUserFromUbs(principal, countPageableUbs);
@@ -224,18 +221,16 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = getPageableAdvancedDtoForNotificationDto();
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
-
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page))
             .thenReturn(notificationPage);
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> expected = userNotificationService
-            .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null, true);
+            .getNotificationsFiltered(testUserVo.getId(), page, getPrincipal(), "en", ProjectName.GREENCITY, null,
+                true);
 
         assertEquals(expected, actual);
 
-        verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page);
         verify(modelMapper).map(notification, NotificationDto.class);
     }
@@ -265,6 +260,7 @@ class UserNotificationServiceImplTest {
             .thenReturn(notificationDto);
 
         PageableAdvancedDto<NotificationDto> actualResult = userNotificationService.getNotificationsFiltered(
+            testUserVo.getId(),
             pageable,
             principal,
             language,
@@ -328,7 +324,6 @@ class UserNotificationServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
             ProjectName.GREENCITY,
             null,
@@ -339,6 +334,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = userNotificationService
             .getNotificationsFiltered(
+                testUserVo.getId(),
                 pageRequest,
                 getPrincipal(),
                 "en",
@@ -355,7 +351,6 @@ class UserNotificationServiceImplTest {
 
         assertEquals(expected, actual);
 
-        verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo)
             .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true,
                 pageRequest);
@@ -388,7 +383,6 @@ class UserNotificationServiceImplTest {
         PageImpl<Notification> notificationPage = new PageImpl<>(
             List.of(friendRequestNotification, habitInviteNotification), page, 2);
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
             true, page))
             .thenReturn(notificationPage);
@@ -409,14 +403,13 @@ class UserNotificationServiceImplTest {
             List.of(friendRequestInviteDto, habitInviteInviteDto));
 
         PageableAdvancedDto<NotificationDto> result = userNotificationService
-            .getNotificationsFiltered(page, getPrincipal(), "en", ProjectName.GREENCITY, null,
+            .getNotificationsFiltered(testUserVo.getId(), page, getPrincipal(), "en", ProjectName.GREENCITY, null,
                 true);
 
         NotificationInviteDto notificationInviteDto = (NotificationInviteDto) result.getPage().getFirst();
 
         assertEquals(expected, result);
         assertEquals(InvitationStatus.PENDING.toString(), notificationInviteDto.getStatus());
-        verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
             true, page);
         verify(modelMapper).map(friendRequestNotification, NotificationDto.class);
@@ -481,7 +474,6 @@ class UserNotificationServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
 
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
             ProjectName.GREENCITY,
             null,
@@ -492,6 +484,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = userNotificationService
             .getNotificationsFiltered(
+                testUserVo.getId(),
                 pageRequest,
                 getPrincipal(),
                 "ua",
@@ -507,7 +500,6 @@ class UserNotificationServiceImplTest {
                     actionUserText));
         assertEquals(expected, actual);
 
-        verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo)
             .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, pageRequest);
         verify(modelMapper).map(notification, NotificationDto.class);
@@ -711,24 +703,21 @@ class UserNotificationServiceImplTest {
     @Test
     void deleteNotificationTest() {
         Long notificationId = 1L;
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
         when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(true);
 
-        userNotificationService.deleteNotification(getPrincipal(), notificationId);
+        userNotificationService.deleteNotification(testUserVo.getId(), notificationId);
 
-        verify(userService).findByEmail("danylo@gmail.com");
         verify(notificationRepo).existsByIdAndTargetUserId(notificationId, testUserVo.getId());
     }
 
     @Test
     void deleteNonExistentNotificationAndGetNotFoundExceptionTest() {
         Long notificationId = 1L;
-        when(userService.findByEmail("danylo@gmail.com")).thenReturn(testUserVo);
-        when(notificationRepo.existsByIdAndTargetUserId(notificationId, testUserVo.getId())).thenReturn(false);
+        Long userId = TestConst.USER_ID;
+        when(notificationRepo.existsByIdAndTargetUserId(notificationId, userId)).thenReturn(false);
 
-        Principal principal = getPrincipal();
         assertThrows(NotFoundException.class,
-            () -> userNotificationService.deleteNotification(principal, notificationId));
+            () -> userNotificationService.deleteNotification(userId, notificationId));
     }
 
     @Test
@@ -960,15 +949,16 @@ class UserNotificationServiceImplTest {
     void checkLastDayOfHabitPrimaryDurationToMessageShouldSendNotification() {
         Habit habit = getHabit().setHabitTranslations(List.of(getHabitTranslation()));
         User user = getUser().setId(2L);
-        UserVO userVO = getUserVO().setId(2L);
+        UserVO userVO = spy(getUserVO().setId(2L));
         HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS).setUser(user).setHabit(habit);
+        LanguageDTO language = ModelUtils.getLanguageDTO();
         Notification notification = getNotification();
         notification.setTargetUser(user);
 
         when(habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage())
             .thenReturn(List.of(habitAssign));
-        when(modelMapper.map(getLanguage(), LanguageVO.class)).thenReturn(getLanguageVO());
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(userVO.getLanguageVO()).thenReturn(language);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(notificationRepo.save(any(Notification.class))).thenReturn(notification);
         when(notificationRepo.countByTargetUserIdAndViewedIsFalse(user.getId())).thenReturn(1L);

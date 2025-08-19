@@ -4,6 +4,7 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -19,7 +20,6 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.service.HabitService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -99,11 +99,11 @@ public class HabitController {
     @GetMapping
     @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAll(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -123,11 +123,11 @@ public class HabitController {
     })
     @GetMapping("/my")
     @ApiPageable
-    public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUser UserVO userVO,
+    public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getMyHabits(userVO.getId(), pageable, locale.getLanguage()));
+            habitService.getMyHabits(userId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -136,7 +136,8 @@ public class HabitController {
      * created by the friend.
      *
      * @param friendId the ID of the friend whose habits are to be retrieved.
-     * @param userVO   the current user obtained from the authentication context.
+     * @param userId   the current user's id obtained from the authentication
+     *                 context.
      * @param pageable the pagination information.
      * @return {@link ResponseEntity} containing a pageable list of
      *         {@link HabitDto}.
@@ -152,11 +153,11 @@ public class HabitController {
     @GetMapping("/all/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllHabitsOfFriend(
         @PathVariable Long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsOfFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
+            habitService.getAllHabitsOfFriend(userId, friendId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -165,7 +166,8 @@ public class HabitController {
      * and are either in progress or acquired.
      *
      * @param friendId the ID of the friend with whom to find mutual habits.
-     * @param userVO   the current user obtained from the authentication context.
+     * @param userId   the current user's id obtained from the authentication
+     *                 context.
      * @param pageable the pagination information.
      * @return {@link ResponseEntity} containing a pageable list of
      *         {@link HabitDto}.
@@ -181,11 +183,11 @@ public class HabitController {
     @GetMapping("/allMutualHabits/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
         @PathVariable Long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllMutualHabitsWithFriend(userVO.getId(), friendId, pageable, locale.getLanguage()));
+            habitService.getAllMutualHabitsWithFriend(userId, friendId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -233,14 +235,14 @@ public class HabitController {
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam List<String> tags,
         @RequestParam boolean excludeAssigned,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage(), excludeAssigned,
-                userVO.getId()));
+                userId));
     }
 
     /**
@@ -265,7 +267,7 @@ public class HabitController {
     @GetMapping("/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam(required = false, name = "tags") Optional<List<String>> tags,
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
@@ -273,7 +275,7 @@ public class HabitController {
         @Parameter(hidden = true) Pageable pageable) throws BadRequestException {
         if (isValid(tags, isCustomHabit, complexities)) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                habitService.getAllByDifferentParameters(userVO, pageable, tags,
+                habitService.getAllByDifferentParameters(userId, pageable, tags,
                     isCustomHabit, complexities, locale.getLanguage()));
         } else {
             throw new BadRequestException("You should enter at least one parameter");
@@ -337,10 +339,10 @@ public class HabitController {
         @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
             required = true) @RequestPart @Valid CustomHabitDtoRequest request,
         @Parameter(description = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
-        @Parameter(hidden = true) Principal principal) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(habitService.addCustomHabit(request, image, principal.getName()));
+            .body(habitService.addCustomHabit(request, image, userId));
     }
 
     /**
@@ -350,7 +352,7 @@ public class HabitController {
      * or were invited by the user for the specific habit assignment.
      *
      * @param habitAssignId The ID of the habit assignment.
-     * @param userVO        The current user, represented as a {@link UserVO}.
+     * @param userId        The current user's id.
      * @return A {@link ResponseEntity} containing a list of
      *         {@link UserProfilePictureDto} objects representing the profile
      *         pictures of the friends associated with the habit.
@@ -369,9 +371,9 @@ public class HabitController {
     @GetMapping("/{habitAssignId}/friends/profile-pictures")
     public ResponseEntity<List<UserProfilePictureDto>> getFriendsAssignedToHabitProfilePictures(
         @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userVO.getId()));
+            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitAssignId, userId));
     }
 
     /**
@@ -395,11 +397,11 @@ public class HabitController {
     })
     @PutMapping(value = "/update/{habitId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
-        @RequestPart @Valid CustomHabitDtoRequest request, @Parameter(hidden = true) Principal principal,
+        @RequestPart @Valid CustomHabitDtoRequest request, @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(description = "Image of habit") @ImageValidation @RequestPart(
             required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
+            .body(habitService.updateCustomHabit(request, habitId, userId, image));
     }
 
     /**
@@ -423,8 +425,8 @@ public class HabitController {
     })
     @DeleteMapping(value = "/delete/{customHabitId}")
     public ResponseEntity<Object> deleteCustomHabit(@PathVariable Long customHabitId,
-        @Parameter(hidden = true) Principal principal) {
-        habitService.deleteCustomHabit(customHabitId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitService.deleteCustomHabit(customHabitId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -484,8 +486,8 @@ public class HabitController {
     })
     @PostMapping("/{habitId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long habitId,
-        @Parameter(hidden = true) Principal principal) {
-        habitService.addToFavorites(habitId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitService.addToFavorites(habitId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -504,8 +506,8 @@ public class HabitController {
     })
     @DeleteMapping("/{habitId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long habitId,
-        @Parameter(hidden = true) Principal principal) {
-        habitService.removeFromFavorites(habitId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitService.removeFromFavorites(habitId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -527,11 +529,11 @@ public class HabitController {
     @GetMapping("/favorites")
     @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAllFavorites(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllFavoriteHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllFavoriteHabitsByLanguageCode(userId, pageable, locale.getLanguage()));
     }
 
     /**
@@ -541,7 +543,7 @@ public class HabitController {
      * @param page    The pagination information (page number, size).
      * @param name    Optional name filter for friends.
      * @param habitId The ID of the habit for which friends are being invited.
-     * @param userVO  The current user's details.
+     * @param userId  The current user's id.
      * @return A paginated list of friends (UserFriendHabitInviteDto) to be invited.
      */
     @Operation(summary = "Find all friends to be invited")
@@ -558,9 +560,9 @@ public class HabitController {
         @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) @Nullable String name,
         @RequestParam Long habitId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(habitService.findAllFriendsOfUser(userVO, name, page, habitId));
+            .body(habitService.findAllFriendsOfUser(userId, name, page, habitId));
     }
 }

@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 class EventAttenderMapperTest {
+
     @InjectMocks
     EventAttenderMapper mapper;
 

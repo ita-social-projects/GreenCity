@@ -4,7 +4,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
@@ -22,7 +21,6 @@ import java.util.List;
 public class AchievementCategoryServiceImpl implements AchievementCategoryService {
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final UserAchievementRepo userAchievementRepo;
-    private final UserService userService;
     private final AchievementService achievementService;
     private final ModelMapper modelMapper;
 
@@ -44,17 +42,17 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(String email) {
-        UserVO user = userService.findByEmail(email);
+    public List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(Long userId, String userEmail) {
         return achievementCategoryRepo.findAllWithAtLeastOneAchievement().stream()
             .map(achievementCategory -> modelMapper.map(achievementCategory, AchievementCategoryTranslationDto.class))
             .map(achievementCategory -> {
                 Long achievementCategoryId = achievementCategory.getId();
                 achievementCategory
                     .setTotalQuantity(
-                        achievementService.findAchievementCountByTypeAndCategory(email, null, achievementCategoryId));
+                        achievementService.findAchievementCountByTypeAndCategory(userId, userEmail, null,
+                            achievementCategoryId));
                 achievementCategory.setAchieved(userAchievementRepo
-                    .findAllByUserIdAndAchievement_AchievementCategoryId(user.getId(), achievementCategoryId).size());
+                    .findAllByUserIdAndAchievement_AchievementCategoryId(userId, achievementCategoryId).size());
                 return achievementCategory;
             })
             .toList();

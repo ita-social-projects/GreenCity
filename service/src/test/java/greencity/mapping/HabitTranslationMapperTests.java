@@ -3,9 +3,9 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -99,14 +99,14 @@ class HabitTranslationMapperTests {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDtoUk();
         habitTranslationDto.setLanguageCode(AppConstant.LANGUAGE_CODE_UA);
         Habit habit = ModelUtils.getHabit();
-        Language languageUk = ModelUtils.getLanguageUa();
+        LanguageDTO languageUk = ModelUtils.getUaLanguageDTO();
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
         HabitTranslation expectedHabitTranslation = HabitTranslation.builder()
             .description(habitTranslationDto.getDescription())
             .habitItem(habitTranslationDto.getHabitItem())
             .name(habitTranslationDto.getName())
             .habit(habit)
-            .language(languageUk)
+            .languageCode(languageUk.getCode())
             .build();
 
         List<HabitTranslation> expectedList = List.of(expectedHabitTranslation);
@@ -120,14 +120,14 @@ class HabitTranslationMapperTests {
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         habitTranslationDto.setLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE);
         Habit habit = ModelUtils.getHabit();
-        Language languageEn = ModelUtils.getLanguage();
+        LanguageDTO languageEn = ModelUtils.getLanguageDTO();
         List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto);
         HabitTranslation expectedHabitTranslation = HabitTranslation.builder()
             .description(habitTranslationDto.getDescription())
             .habitItem(habitTranslationDto.getHabitItem())
             .name(habitTranslationDto.getName())
             .habit(habit)
-            .language(languageEn)
+            .languageCode(languageEn.getCode())
             .build();
 
         List<HabitTranslation> expectedList = List.of(expectedHabitTranslation);

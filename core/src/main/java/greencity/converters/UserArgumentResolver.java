@@ -42,11 +42,10 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
-
         if (principal == null) {
             throw new UnauthorizedException();
         }
 
-        return userService.findByEmail(principal.getName());
+        return userService.findNotDeactivatedByEmail(principal.getName());
     }
 }

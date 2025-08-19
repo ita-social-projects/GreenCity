@@ -13,10 +13,7 @@ import greencity.entity.HabitAssign;
 import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
-import greencity.enums.EmailNotification;
-import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
-import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -33,7 +30,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,12 +72,7 @@ class CustomToDoListItemServiceImplTest {
         User.builder()
             .id(1L)
             .name("Test Testing")
-            .email("test@gmail.com")
-            .role(Role.ROLE_USER)
-            .userStatus(UserStatus.ACTIVATED)
-            .emailNotification(EmailNotification.DISABLED)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
+            // .email("test@gmail.com")
             .customToDoListItems(new ArrayList<>())
             .build();
 

@@ -1,10 +1,9 @@
 package greencity.rating;
 
+import greencity.dto.ratingstatistics.RatingPointsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingPoints;
-import greencity.entity.RatingStatistics;
-import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
 import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +24,18 @@ public class RatingCalculation {
      * @param userVo of {@link UserVO}
      */
     public void ratingCalculation(RatingPoints rating, UserVO userVo) {
-        User user = modelMapper.map(userVo, User.class);
-        double newRating = userVo.getRating() + rating.getPoints();
-        userVo.setRating(newRating > 0 ? newRating : 0);
-        userService.updateUserRating(user.getId(), userVo.getRating());
-        RatingStatistics ratingStatistics = RatingStatistics
+        Double userRating = userService.findUserRating(userVo.getId());
+        double newRating = userRating + rating.getPoints();
+        userService.updateUserRating(userVo.getId(), newRating);
+
+        RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO
             .builder()
-            .rating(userVo.getRating())
-            .ratingPoints(rating)
-            .user(user)
+            .rating(userRating)
+            .ratingPoints(modelMapper.map(rating, RatingPointsDto.class))
+            .user(userVo)
             .pointsChanged(rating.getPoints())
             .build();
-        ratingStatisticsService.save(modelMapper.map(ratingStatistics, RatingStatisticsVO.class));
+
+        ratingStatisticsService.save(ratingStatisticsVO);
     }
 }

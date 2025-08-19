@@ -1,22 +1,34 @@
 package greencity.mapping;
 
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserManagementVOMapper extends AbstractConverter<User, UserManagementVO> {
+    private final ModelMapper modelMapper;
+
+    @Lazy
+    public UserManagementVOMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
     @Override
     protected UserManagementVO convert(User user) {
+        UserVO userVO = modelMapper.map(user, UserVO.class);
+
         return UserManagementVO.builder()
             .id(user.getId())
             .name(user.getName())
-            .email(user.getEmail())
+            .email(userVO.getEmail())
             .userCredo(user.getUserCredo())
-            .role(user.getRole())
-            .userStatus(user.getUserStatus())
+            .role(userVO.getRole())
+            .userStatus(userVO.getUserStatus())
             .build();
     }
 

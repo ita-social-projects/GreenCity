@@ -15,14 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface SocialNetworkImageService {
     /**
-     * Method creates or returns existed {@link SocialNetworkImageVO} by given url.
-     *
-     * @param url a well-formed url
-     * @return {@link SocialNetworkImageVO}
-     */
-    SocialNetworkImageVO getSocialNetworkImageByUrl(String url);
-
-    /**
      * Find {@link SocialNetworkImageResponseDTO} for management by page .
      *
      * @param pageable a value with pageable configuration.
@@ -46,14 +38,14 @@ public interface SocialNetworkImageService {
     void deleteAll(List<Long> listId);
 
     /**
-     * Method for creating {@link SocialNetworkImageVO} instance.
+     * Method for creating SocialNetworkImage instance.
      *
      * @param socialNetworkImageRequestDTO - dto with
      *                                     {@link SocialNetworkImageRequestDTO}
-     *                                     title, text, image path.
-     * @return {@link SocialNetworkImageResponseDTO} instance.
+     * @return {@link SocialNetworkImageResponseDTO}
      */
-    SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO, MultipartFile image);
+    SocialNetworkImageResponseDTO save(SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+        MultipartFile image);
 
     /**
      * Method for getting the {@link SocialNetworkImageResponseDTO} instance by its
@@ -65,10 +57,10 @@ public interface SocialNetworkImageService {
     SocialNetworkImageResponseDTO findDtoById(Long id);
 
     /**
-     * Method for updating {@link SocialNetworkImageVO} instance.
+     * Method for updating SocialNetworkImage instance.
      *
-     * @param socialNetworkImageResponseDTO - instance of
-     *                                      {@link SocialNetworkImageVO}.
+     * @param socialNetworkImageResponseDTO - instance of SocialNetworkImage.
      */
-    void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO, MultipartFile multipartFile);
+    void update(SocialNetworkImageResponseDTO socialNetworkImageResponseDTO,
+        MultipartFile multipartFile);
 }

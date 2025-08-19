@@ -1,5 +1,7 @@
 package greencity.repository.impl;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import greencity.ModelUtils;
 import greencity.dto.filter.FilterEventDto;
 import greencity.entity.event.Event;
@@ -9,19 +11,25 @@ import greencity.entity.event.Event_;
 import greencity.enums.EventTime;
 import greencity.repository.util.PostgresInitializer;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.*;
-import org.junit.jupiter.api.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.Root;
+import java.time.ZonedDateTime;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.time.ZonedDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -53,6 +61,7 @@ class EventSearchRepoImplTest extends PostgresInitializer {
     }
 
     @BeforeEach
+    @Transactional
     void setup() {
         ModelUtils.getListEventDto().forEach(dto -> {
             var event = MAPPER.map(dto, Event.class);

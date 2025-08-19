@@ -6,10 +6,8 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
-import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -31,7 +29,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,11 +50,6 @@ class FactOfTheDayServiceImplTest {
     @Mock
     private FactOfTheDayRepo factOfTheDayRepo;
 
-    @Mock
-    private LanguageService languageService;
-
-    @Mock
-    private FactOfTheDayService service;
     @Mock
     private TagsRepo tagsRepo;
 
@@ -124,14 +116,12 @@ class FactOfTheDayServiceImplTest {
 
     @Test
     void updateFactOfTheDayAndTranslationsTest() {
-        LanguageDTO languageDTO = ModelUtils.getLanguageDTO();
         FactOfTheDay dbFact = ModelUtils.getFactOfTheDay();
         Set<Tag> tagDtos = Set.of(ModelUtils.getTag());
 
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(dbFact));
         when(modelMapper.map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class)).thenReturn(
             ModelUtils.getFactOfTheDayTranslationVO());
-        when(languageService.findByCode("en")).thenReturn(languageDTO);
         when(factOfTheDayTranslationService.saveAll(anyList())).thenReturn(null);
         when(tagsRepo.findTagsById(List.of(25L))).thenReturn(tagDtos);
 
@@ -139,8 +129,6 @@ class FactOfTheDayServiceImplTest {
         assertEquals(fact, factOfTheDayService.updateFactOfTheDayAndTranslations(fact));
         verify(factOfTheDayRepo, times(1)).findById(anyLong());
         verify(factOfTheDayTranslationService, times(1)).deleteAll(anyList());
-        verify(languageService, times(1)).findByCode(anyString());
-        verify(modelMapper, times(1)).map(languageDTO, Language.class);
         verify(factOfTheDayRepo, times(1)).save(any(FactOfTheDay.class));
         verify(factOfTheDayTranslationService, times(1)).saveAll(anyList());
         verify(modelMapper, times(1)).map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class);
@@ -287,30 +275,30 @@ class FactOfTheDayServiceImplTest {
 
     @Test
     void getRandomFactOfTheDayForUser_success() {
-        String userEmail = "user@example.com";
+        Long userId = 3L;
         Set<Long> tagIds = Set.of(1L);
         FactOfTheDay factOfTheDay = ModelUtils.getFactOfTheDay();
         FactOfTheDayTranslationDTO expectedDto = ModelUtils.getFactOfTheDayTranslationDTO();
 
         when(factOfTheDayRepo.getRandomFactOfTheDay(tagIds)).thenReturn(Optional.of(factOfTheDay));
         when(modelMapper.map(factOfTheDay, FactOfTheDayTranslationDTO.class)).thenReturn(expectedDto);
-        when(tagsRepo.findTagsIdByUserHabitsInProgress(userEmail)).thenReturn(tagIds);
+        when(tagsRepo.findTagsIdByUserHabitsInProgress(userId)).thenReturn(tagIds);
         when(factOfTheDayService.getRandomFactOfTheDayByTags(tagIds))
             .thenReturn(expectedDto);
 
         FactOfTheDayTranslationDTO result =
-            factOfTheDayService.getRandomFactOfTheDayForUser(userEmail);
+            factOfTheDayService.getRandomFactOfTheDayForUser(userId);
 
         assertEquals(expectedDto, result);
     }
 
     @Test
     void getRandomFactOfTheDayForUser_noUserTags() {
-        String userEmail = "user@example.com";
+        Long userId = 3L;
 
-        when(tagsRepo.findTagsIdByUserHabitsInProgress(userEmail)).thenReturn(Collections.emptySet());
+        when(tagsRepo.findTagsIdByUserHabitsInProgress(userId)).thenReturn(Collections.emptySet());
 
-        FactOfTheDayTranslationDTO result = factOfTheDayService.getRandomFactOfTheDayForUser(userEmail);
+        FactOfTheDayTranslationDTO result = factOfTheDayService.getRandomFactOfTheDayForUser(userId);
 
         assertNull(result);
     }
