@@ -1,11 +1,18 @@
 package greencity.controller;
 
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.converters.UserArgumentResolver;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
 import greencity.service.AIService;
 import greencity.service.UserService;
+import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,11 +26,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.security.Principal;
-import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -34,6 +36,8 @@ class AIControllerTest {
     @Mock
     private UserService userService;
     @Mock
+    private UserRemoteClient userRemoteClient;
+    @Mock
     private ModelMapper modelMapper;
     @InjectMocks
     private AIController aiController;
@@ -41,7 +45,6 @@ class AIControllerTest {
     private MockMvc mockMvc;
     private Principal principal = getPrincipal();
     private UserVO userVO = ModelUtils.getUserVO();
-    private LanguageVO languageVO = ModelUtils.getLanguageVO();
 
     @BeforeEach
     void setup() {
@@ -49,12 +52,12 @@ class AIControllerTest {
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
             .build();
-        userVO.setLanguageVO(languageVO);
     }
 
     @Test
     void forecastReturnsForecastFromAIServiceTest() throws Exception {
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
+        userVO.getLanguageVO().setCode("англійська");
 
         mockMvc.perform(get("/ai/forecast")
             .principal(principal))
@@ -65,7 +68,8 @@ class AIControllerTest {
 
     @Test
     void creatingEcoNewsReturnsEcoNewsFromAIServiceTest() throws Exception {
-        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
+        userVO.getLanguageVO().setCode("English");
 
         mockMvc.perform(get("/ai/generate/eco-news")
             .principal(principal))

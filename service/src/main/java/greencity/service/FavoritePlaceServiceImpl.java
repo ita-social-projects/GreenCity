@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     private final FavoritePlaceRepo favoritePlaceRepo;
-    private final RestClient restClient;
     private final PlaceService placeService;
     private final ModelMapper modelMapper;
 
@@ -35,18 +33,18 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail) {
+    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, Long userId) {
         log.info(LogMessage.IN_SAVE, favoritePlaceDto);
         FavoritePlace favoritePlace = modelMapper.map(favoritePlaceDto, FavoritePlace.class);
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
             throw new WrongIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
-        if (favoritePlaceRepo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail) != null) {
+        if (favoritePlaceRepo.findByPlaceIdAndUserId(favoritePlaceDto.getPlaceId(), userId) != null) {
             throw new WrongIdException(
-                ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS.formatted(favoritePlaceDto.getPlaceId(), userEmail));
+                ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS.formatted(favoritePlaceDto.getPlaceId(), userId));
         }
         favoritePlace
-            .setUser(User.builder().email(userEmail).id(restClient.findIdByEmail(userEmail)).build());
+            .setUser(User.builder().id(userId).build());
         return modelMapper.map(favoritePlaceRepo.save(favoritePlace), FavoritePlaceDto.class);
     }
 
@@ -56,11 +54,11 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, String userEmail) {
+    public FavoritePlaceDto update(FavoritePlaceDto favoritePlaceDto, Long userId) {
         log.info(LogMessage.IN_UPDATE, favoritePlaceDto);
 
         FavoritePlace favoritePlace =
-            favoritePlaceRepo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail);
+            favoritePlaceRepo.findByPlaceIdAndUserId(favoritePlaceDto.getPlaceId(), userId);
         if (favoritePlace == null) {
             throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getPlaceId());
         }
@@ -74,9 +72,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public List<PlaceByBoundsDto> findAllByUserEmail(String email) {
+    public List<PlaceByBoundsDto> findAllByUserId(Long userId) {
         log.info(LogMessage.IN_FIND_ALL);
-        return favoritePlaceRepo.findAllByUserEmail(email).stream()
+        return favoritePlaceRepo.findAllByUserId(userId).stream()
             .map(fp -> modelMapper.map(fp, PlaceByBoundsDto.class))
             .collect(Collectors.toList());
     }
@@ -88,9 +86,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      */
     @Override
     @Transactional
-    public Long deleteByUserEmailAndPlaceId(Long placeId, String userEmail) {
-        log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL, userEmail, placeId);
-        FavoritePlace favoritePlace = favoritePlaceRepo.findByPlaceIdAndUserEmail(placeId, userEmail);
+    public Long deleteByUserIdAndPlaceId(Long placeId, Long userId) {
+        log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL, userId, placeId);
+        FavoritePlace favoritePlace = favoritePlaceRepo.findByPlaceIdAndUserId(placeId, userId);
         if (favoritePlace == null) {
             throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
@@ -139,9 +137,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public PlaceByBoundsDto getFavoritePlaceWithLocation(Long placeId, String email) {
-        log.info(LogMessage.IN_GET_FAVORITE_PLACE_WITH_LOCATION, placeId, email);
-        FavoritePlace favoritePlace = favoritePlaceRepo.findByPlaceIdAndUserEmail(placeId, email);
+    public PlaceByBoundsDto getFavoritePlaceWithLocation(Long placeId, Long userId) {
+        log.info(LogMessage.IN_GET_FAVORITE_PLACE_WITH_LOCATION, placeId, userId);
+        FavoritePlace favoritePlace = favoritePlaceRepo.findByPlaceIdAndUserId(placeId, userId);
         if (favoritePlace == null) {
             throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }

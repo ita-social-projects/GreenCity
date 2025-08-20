@@ -1,13 +1,32 @@
 package greencity.exception.handler;
 
-import greencity.exception.exceptions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
+import greencity.constant.ErrorMessage;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadSocialNetworkLinksException;
+import greencity.exception.exceptions.GoogleApiException;
+import greencity.exception.exceptions.InsufficientLocationDataException;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.InvalidURLException;
+import greencity.exception.exceptions.NoJwtException;
+import greencity.exception.exceptions.UnauthorizedException;
+import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -22,13 +41,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomExceptionHandlerTest {
@@ -234,6 +247,72 @@ class CustomExceptionHandlerTest {
             .thenReturn(objectMap);
         assertEquals(customExceptionHandler.handleConversionFailedException(mismatchException, webRequest),
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
+    void handleGoogleApiException() {
+        GoogleApiException actual = new GoogleApiException("Geocoding result was not found");
+        ValidationExceptionDto validationDto = new ValidationExceptionDto("Google API", actual.getMessage());
+        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.NOT_FOUND);
+        ResponseEntity<Object> body = status.body(validationDto);
+        assertEquals(customExceptionHandler.handleGoogleApiException(actual), body);
+    }
+
+    @Test
+    void handleGoogleApiException_GeocodingResultBadRequest_ReturnsBadRequest() {
+        GoogleApiException actual = new GoogleApiException("Some string");
+        ValidationExceptionDto validationDto = new ValidationExceptionDto("Google API", actual.getMessage());
+        ResponseEntity.BodyBuilder status = ResponseEntity.status(HttpStatus.BAD_REQUEST);
+        ResponseEntity<Object> body = status.body(validationDto);
+        assertEquals(customExceptionHandler.handleGoogleApiException(actual), body);
+    }
+
+    @Test
+    void handleInsufficientLocationDataExceptionTest() {
+        InsufficientLocationDataException actual = new InsufficientLocationDataException("Some string");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        Mockito.when(errorAttributes.getErrorAttributes(eq(webRequest),
+            any(ErrorAttributeOptions.class))).thenReturn(objectMap);
+        assertEquals(customExceptionHandler.handleInsufficientLocationDataException(actual, webRequest),
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));
+    }
+
+    @Test
+    void handleUserAlreadyExistsExceptionTest() {
+        Map<String, Object> objectMapConflict = new HashMap<>();
+        objectMapConflict.put("path", "/ownSecurity/restorePassword");
+        objectMapConflict.put("message", "409 CONFLICT \"Test Error message\"");
+        objectMapConflict.put("timestamp", "2021-02-06T17:27:50.569+0000");
+        objectMapConflict.put("trace", "Conflict");
+
+        UserAlreadyExistsException actualException =
+            new UserAlreadyExistsException(HttpStatus.CONFLICT, "Test Error message");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMapConflict);
+        when(errorAttributes.getErrorAttributes(eq(webRequest), any(ErrorAttributeOptions.class)))
+            .thenReturn(objectMapConflict);
+        ResponseEntity<ExceptionResponse> expectedResponse =
+            ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+        ResponseEntity<ExceptionResponse> actualResponse =
+            customExceptionHandler.handleUserAlreadyExistsException(actualException, webRequest);
+
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    void handleNoJwtExceptionTest() {
+        var noJwtException = new NoJwtException();
+        ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
+        exceptionResponse.setMessage(ErrorMessage.UNAUTHORIZED_RESPONSE);
+        ResponseEntity<ExceptionResponse> expectedResult =
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+
+        when(errorAttributes.getErrorAttributes(eq(webRequest), any(ErrorAttributeOptions.class)))
+            .thenReturn(objectMap);
+
+        ResponseEntity<ExceptionResponse> actualResult =
+            customExceptionHandler.handleNoJwtException(noJwtException, webRequest);
+
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test

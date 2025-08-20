@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -97,9 +98,9 @@ public class EventCommentController {
     })
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<CommentDto> getCommentById(@PathVariable Long commentId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.ok()
-            .body(commentService.getCommentById(ArticleType.EVENT, commentId, userVO));
+            .body(commentService.getCommentById(ArticleType.EVENT, commentId, userId));
     }
 
     /**
@@ -140,9 +141,9 @@ public class EventCommentController {
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveComments(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long eventId,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.ok()
-            .body(commentService.getAllActiveComments(pageable, user, eventId, ArticleType.EVENT));
+            .body(commentService.getAllActiveComments(pageable, userId, eventId, ArticleType.EVENT));
     }
 
     /**
@@ -167,8 +168,8 @@ public class EventCommentController {
     public ResponseEntity<Object> update(
         @PathVariable Long commentId,
         @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        commentService.update(commentText, commentId, user);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        commentService.update(commentText, commentId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -201,7 +202,7 @@ public class EventCommentController {
      * comment id.
      *
      * @param parentCommentId id of parent comment {@link CommentDto}
-     * @param userVO          {@link UserVO} user who want to get replies.
+     * @param userId          {@link Long} id of user who want to get replies.
      * @return Pageable of {@link CommentDto}
      */
     @Operation(description = "Get all active replies to comment.")
@@ -217,9 +218,9 @@ public class EventCommentController {
     public ResponseEntity<PageableDto<CommentDto>> findAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long parentCommentId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.ok()
-            .body(commentService.getAllActiveReplies(pageable, parentCommentId, userVO));
+            .body(commentService.getAllActiveReplies(pageable, parentCommentId, userId));
     }
 
     /**

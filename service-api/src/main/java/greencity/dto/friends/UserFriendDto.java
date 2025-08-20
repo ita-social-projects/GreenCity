@@ -28,13 +28,12 @@ public class UserFriendDto {
     /**
      * Constructor is needed for SqlResultSetMapping.
      */
-    public UserFriendDto(Long id, String name, String email, Double rating, Long ulId, String cityEn,
+    public UserFriendDto(Long id, String name, Double rating, Long ulId, String cityEn,
         String cityUa, String regionEn, String regionUa, String countryEn, String countryUa,
         Double latitude, Double longitude, Long mutualFriends, String profilePicturePath, Long chatId,
         String friendStatus, Long requesterId) {
         this.id = id;
         this.name = name;
-        this.email = email;
         this.rating = rating;
         this.mutualFriends = mutualFriends;
         this.profilePicturePath = profilePicturePath;

@@ -1,11 +1,17 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitDateCount;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.HabitStatusCount;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
@@ -16,11 +22,14 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
-import greencity.dto.habitstatistic.GetHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -31,15 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import greencity.repository.UserRepo;
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @EnableCaching
@@ -50,7 +50,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitRepo habitRepo;
     private final DateService dateService;
     private final ModelMapper modelMapper;
-    private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -200,9 +200,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateUserInterest() {
-        Long totalActiveUsers = userRepo.countActiveUsers();
-        List<Long> creators = habitRepo.countActiveHabitCreators();
-        List<Long> followers = habitRepo.countActiveHabitFollowers();
+        Long totalActiveUsers = userRemoteClient.countActiveUsers();
+        List<Long> creatorsWithExistingHabits = habitRepo.countHabitCreators();
+        List<Long> creators = userRemoteClient.getActivatedUsersIds(creatorsWithExistingHabits);
+        List<Long> followersWithExistingHabits = habitRepo.countHabitFollowers();
+        List<Long> followers = userRemoteClient.getActivatedUsersIds(followersWithExistingHabits);
         Set<Long> participatingUsers = new HashSet<>(followers);
         participatingUsers.addAll(creators);
 
@@ -218,7 +220,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateHabitBehaviorStatistic() {
-        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus();
+        List<Long> activatedUserIds = userRemoteClient.getActivatedUsersIds(null);
+        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus(activatedUserIds);
         Map<HabitAssignStatus, Long> counts = habitStatusCounts.stream()
             .collect(Collectors.toMap(
                 HabitStatusCount::status,

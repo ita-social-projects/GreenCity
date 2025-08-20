@@ -5,6 +5,8 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.PlacesApi;
 import com.google.maps.errors.ApiException;
+import com.google.maps.errors.InvalidRequestException;
+import com.google.maps.model.AddressType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.AddressComponent;
@@ -17,6 +19,7 @@ import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.GoogleApiException;
 import greencity.exception.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -141,13 +145,13 @@ public class GoogleApiService {
      */
     private com.google.maps.model.LatLng getLocationFromUserVO(UserVO userVO) {
         if (userVO == null
-            || userVO.getUserLocationDto() == null
-            || userVO.getUserLocationDto().getLatitude() == null
-            || userVO.getUserLocationDto().getLongitude() == null) {
+            || userVO.getUserLocation() == null
+            || userVO.getUserLocation().getLatitude() == null
+            || userVO.getUserLocation().getLongitude() == null) {
             throw new NotFoundException(ErrorMessage.LOCATION_NOT_FOUND);
         }
-        return new com.google.maps.model.LatLng(userVO.getUserLocationDto().getLatitude(),
-            userVO.getUserLocationDto().getLongitude());
+        return new com.google.maps.model.LatLng(userVO.getUserLocation().getLatitude(),
+            userVO.getUserLocation().getLongitude());
     }
 
     /**
@@ -171,6 +175,33 @@ public class GoogleApiService {
         addressLatLngResponse
             .setAddressEn(getAddressResponseByLocaleAndCoordinates(searchCoordinates, ENGLISH));
         return addressLatLngResponse;
+    }
+
+    /**
+     * Method gets user location by coordinates.
+     *
+     * @param latitude     user's latitude
+     * @param longitude    user's longitude
+     * @param addressTypes preferred result_types that should be included in the
+     *                     result.
+     * @return {@link GeocodingResult}
+     */
+    public GeocodingResult getLocationByCoordinates(Double latitude, Double longitude, String lang,
+        AddressType[] addressTypes) {
+        try {
+            return Arrays.stream(GeocodingApi.newRequest(context).latlng(new LatLng(latitude, longitude))
+                .language(lang)
+                .resultType(addressTypes)
+                .await())
+                .max(Comparator.comparingInt(a -> a.addressComponents.length))
+                .orElseThrow(() -> new GoogleApiException("Geocoding result was not found"));
+        } catch (InvalidRequestException e) {
+            String formattedCoords = "%.8f,%.8f".formatted(latitude, longitude);
+            throw new NotFoundException(ErrorMessage.NOT_FOUND_ADDRESS_BY_COORDINATES + formattedCoords);
+        } catch (IOException | InterruptedException | ApiException e) {
+            Thread.currentThread().interrupt();
+            throw new GoogleApiException(e.getMessage());
+        }
     }
 
     private AddressResponse getAddressResponseByLocaleAndCoordinates(LatLng latLng, Locale locale) {

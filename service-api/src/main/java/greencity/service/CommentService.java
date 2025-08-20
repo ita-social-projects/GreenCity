@@ -35,17 +35,17 @@ public interface CommentService {
      * @param type specifies {@link ArticleType} to which we search for comments
      * @return comment to certain article specified by commentId.
      */
-    CommentDto getCommentById(ArticleType type, Long id, UserVO userVO);
+    CommentDto getCommentById(ArticleType type, Long id, Long userId);
 
     /**
      * Method to get all not deleted replies for to certain {@link CommentVO}
      * specified by id.
      *
      * @param parentCommentId to specify {@link CommentVO}.
-     * @param userVO          {@link UserVO} that want to get replies.
+     * @param userId          {@link Long} id of user that want to get replies.
      * @return replies for comment
      */
-    PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO);
+    PageableDto<CommentDto> getAllActiveReplies(Pageable pageable, Long parentCommentId, Long userId);
 
     /**
      * Method to count not deleted comments for habit.
@@ -87,7 +87,7 @@ public interface CommentService {
      * @param articleId specifies article to which we search comments
      * @return all active comments to certain article specified by articleId.
      */
-    PageableDto<CommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long articleId, ArticleType type);
+    PageableDto<CommentDto> getAllActiveComments(Pageable pageable, Long userId, Long articleId, ArticleType type);
 
     /**
      * Method to like or unlike {@link CommentVO} specified by id.
@@ -117,9 +117,10 @@ public interface CommentService {
      *
      * @param commentText new text of {@link CommentVO}.
      * @param id          to specify {@link CommentVO} that user wants to change.
-     * @param userVO      current {@link UserVO} that wants to change comment.
+     * @param userId      current {@link Long} user's id that wants to change
+     *                    comment.
      */
-    void update(String commentText, Long id, UserVO userVO);
+    void update(String commentText, Long id, Long userId);
 
     /**
      * Method for deleting the {@link CommentVO} instance by its id.

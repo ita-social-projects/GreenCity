@@ -46,7 +46,7 @@ public class ScheduleConfig {
         for (UserVO user : users) {
             int count = habitAssignRepo.countMarkedHabitAssignsByUserIdAndPeriod(user.getId(), start, end);
             if (count == 0) {
-                restClient.sendHabitNotification(new SendHabitNotification(user.getName(), user.getEmail()));
+                restClient.sendHabitNotification(new SendHabitNotification(user.getName(), user.getId()));
             }
         }
     }

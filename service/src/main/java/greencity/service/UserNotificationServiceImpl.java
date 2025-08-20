@@ -4,7 +4,7 @@ import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.notification.NotificationDto;
@@ -68,7 +68,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
-    private final UserService userService;
     private final NotificationService notificationService;
     private final HabitInvitationService habitInvitationService;
     private final NotificationFriendService notificationFriendService;
@@ -83,21 +82,22 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
+    public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Long userId, Pageable page,
+        Principal principal,
         String language, ProjectName projectName, List<NotificationType> notificationTypes, Boolean viewed) {
         if (projectName != null) {
             return projectName == ProjectName.GREENCITY
-                ? getNotificationsForUserFromGreenCity(page, principal, language, projectName, notificationTypes,
+                ? getNotificationsForUserFromGreenCity(page, userId, language, projectName, notificationTypes,
                     viewed)
                 : getNotificationsForUserFromUbs(principal, page, viewed);
         }
 
-        long totalElements = calculateTotalElements(principal, language, notificationTypes, viewed);
+        long totalElements = calculateTotalElements(userId, principal, language, notificationTypes, viewed);
         PageableInfo pageableInfo = new PageableInfo(page, totalElements);
 
         List<NotificationDto> mergedNotifications = isUnreadOnly(viewed)
-            ? getUnreadNotifications(principal, language, notificationTypes, pageableInfo.endIndex())
-            : loadAndMergeNotifications(principal, language, notificationTypes, viewed, pageableInfo);
+            ? getUnreadNotifications(userId, principal, language, notificationTypes, pageableInfo.endIndex())
+            : loadAndMergeNotifications(userId, principal, language, notificationTypes, viewed, pageableInfo);
 
         return buildPagedResult(mergedNotifications, pageableInfo);
     }
@@ -111,12 +111,13 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * @param viewed            whether to filter by viewed status
      * @return the total number of notifications
      */
-    private long calculateTotalElements(Principal principal, String language, List<NotificationType> notificationTypes,
+    private long calculateTotalElements(Long userId, Principal principal, String language,
+        List<NotificationType> notificationTypes,
         Boolean viewed) {
         try (ExecutorService executorService = Executors.newFixedThreadPool(NOTIFICATION_SOURCES_COUNT)) {
             CompletableFuture<Long> greenCityTotalFuture = CompletableFuture.supplyAsync(() -> {
                 Pageable tempPageable = PageRequest.of(0, 1);
-                return getNotificationsForUserFromGreenCity(tempPageable, principal, language, null, notificationTypes,
+                return getNotificationsForUserFromGreenCity(tempPageable, userId, language, null, notificationTypes,
                     viewed).getTotalElements();
             }, executorService).exceptionally(throwable -> {
                 log.error("Failed to fetch GreenCity notifications: {}", throwable.getMessage());
@@ -145,14 +146,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * @param pageableInfo      pagination information
      * @return a list of merged notifications sorted by time (newest first)
      */
-    private List<NotificationDto> loadAndMergeNotifications(Principal principal, String language,
+    private List<NotificationDto> loadAndMergeNotifications(Long userId, Principal principal, String language,
         List<NotificationType> notificationTypes, Boolean viewed, PageableInfo pageableInfo) {
         try (ExecutorService executorService = Executors.newFixedThreadPool(NOTIFICATION_SOURCES_COUNT)) {
             CompletableFuture<List<NotificationDto>> greenCityFuture = CompletableFuture.supplyAsync(
                 () -> loadNotificationsFromSource(
                     pageableInfo.pageSize(),
                     pageableInfo.endIndex(),
-                    pageable -> getNotificationsForUserFromGreenCity(pageable, principal, language, null,
+                    pageable -> getNotificationsForUserFromGreenCity(pageable, userId, language, null,
                         notificationTypes, viewed)),
                 executorService);
 
@@ -268,18 +269,19 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     /**
      * Retrieves unread notifications for a user up to a specified limit.
      *
+     * @param userId            the authenticated user id
      * @param principal         the authenticated user
      * @param language          the language code for localization
      * @param notificationTypes the types of notifications to filter by
      * @param limit             the maximum number of notifications to retrieve
      * @return a list of unread notifications sorted by time (newest first)
      */
-    private List<NotificationDto> getUnreadNotifications(Principal principal, String language,
+    private List<NotificationDto> getUnreadNotifications(Long userId, Principal principal, String language,
         List<NotificationType> notificationTypes, int limit) {
         try (ExecutorService executorService = Executors.newFixedThreadPool(NOTIFICATION_SOURCES_COUNT)) {
             CompletableFuture<List<NotificationDto>> greenCityFuture = CompletableFuture.supplyAsync(
                 () -> loadNotificationsFromSource(limit, limit,
-                    pageable -> getNotificationsForUserFromGreenCity(pageable, principal, language, null,
+                    pageable -> getNotificationsForUserFromGreenCity(pageable, userId, language, null,
                         notificationTypes, Boolean.FALSE)),
                 executorService);
 
@@ -447,8 +449,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteNotification(Principal principal, Long notificationId) {
-        Long userId = userService.findByEmail(principal.getName()).getId();
+    public void deleteNotification(Long userId, Long notificationId) {
         if (!notificationRepo.existsByIdAndTargetUserId(notificationId, userId)) {
             throw new NotFoundException(ErrorMessage.NOTIFICATION_NOT_FOUND_BY_ID + notificationId);
         }
@@ -488,11 +489,11 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage()
             .forEach(habitAssign -> {
                 UserVO targetUser = modelMapper.map(habitAssign.getUser(), UserVO.class);
+                LanguageDTO language = targetUser.getLanguageVO();
                 String habitTitle = habitAssign.getHabit()
                     .getHabitTranslations()
                     .stream()
-                    .filter(ht -> modelMapper.map(ht.getLanguage(), LanguageVO.class).getCode()
-                        .equals(targetUser.getLanguageVO().getCode()))
+                    .filter(ht -> ht.getLanguageCode().equals(language.getCode()))
                     .toList()
                     .getFirst()
                     .getName();
@@ -554,11 +555,10 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     }
 
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable page,
-        Principal principal, String language, ProjectName projectName, List<NotificationType> notificationTypes,
+        Long userId, String language, ProjectName projectName, List<NotificationType> notificationTypes,
         Boolean viewed) {
-        UserVO user = userService.findByEmail(principal.getName());
         Page<Notification> notificationsPage =
-            notificationRepo.findNotificationsByFilter(user.getId(), projectName, notificationTypes, viewed, page);
+            notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
         return buildPageableAdvancedDto(notificationsPage, language);
     }
 

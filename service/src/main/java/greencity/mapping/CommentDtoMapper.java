@@ -4,6 +4,7 @@ import greencity.dto.comment.CommentAuthorDto;
 import greencity.dto.comment.CommentDto;
 import greencity.entity.Comment;
 import greencity.entity.CommentImages;
+import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -38,11 +39,13 @@ public class CommentDtoMapper extends AbstractConverter<Comment, CommentDto> {
         commentDto.setCurrentUserDisliked(comment.isCurrentUserDisliked());
         commentDto.setLikes(comment.getUsersLiked().size());
         commentDto.setDislikes(comment.getUsersDisliked().size());
+        User commentUser = comment.getUser();
+
         commentDto.setAuthor(
             CommentAuthorDto.builder()
-                .id(comment.getUser().getId())
-                .name(comment.getUser().getName())
-                .profilePicturePath(comment.getUser().getProfilePicturePath()).build());
+                .id(commentUser.getId())
+                .name(commentUser.getName())
+                .profilePicturePath(commentUser.getProfilePicturePath()).build());
         return commentDto;
     }
 }

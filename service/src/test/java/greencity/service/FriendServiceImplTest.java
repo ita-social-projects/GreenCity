@@ -746,14 +746,13 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-
-        User userWithLocation = new User();
+        User user = new User();
         UserLocation userLocation = new UserLocation();
         userLocation.setCityUk("testCity");
-        userWithLocation.setUserLocation(userLocation);
+        user.setUserLocation(userLocation);
 
         when(userRepo.existsById(userId)).thenReturn(true);
-        when(userRepo.findById(userId)).thenReturn(Optional.of(userWithLocation));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.findRecommendedFriendsByCity(userId, "testCity", pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
@@ -781,9 +780,11 @@ class FriendServiceImplTest {
         int page = 0;
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
-        User userWithNullLocation = new User();
+        User user = new User();
+        UserLocation nullLocation = null;
+        user.setUserLocation(nullLocation);
 
-        when(userRepo.findById(userId)).thenReturn(Optional.of(userWithNullLocation));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.existsById(userId)).thenReturn(true);
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);
@@ -804,11 +805,11 @@ class FriendServiceImplTest {
         int page = 0;
         int size = 1;
         Pageable pageable = PageRequest.of(page, size);
-        UserLocation userLocation = new UserLocation();
-        User userWithNullCity = new User();
-        userWithNullCity.setUserLocation(userLocation);
+        UserLocation nullCityUserLocation = new UserLocation();
+        User user = new User();
+        user.setUserLocation(nullCityUserLocation);
 
-        when(userRepo.findById(userId)).thenReturn(Optional.of(userWithNullCity));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
         when(userRepo.existsById(userId)).thenReturn(true);
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);

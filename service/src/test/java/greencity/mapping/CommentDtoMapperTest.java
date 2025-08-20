@@ -2,15 +2,18 @@ package greencity.mapping;
 
 import greencity.dto.comment.CommentDto;
 import greencity.entity.Comment;
+import greencity.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
+
 import static greencity.ModelUtils.getComment;
 import static greencity.ModelUtils.getCommentImage;
 import static greencity.ModelUtils.getParentComment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,12 +25,17 @@ class CommentDtoMapperTest {
     @Test
     void convertToDto() {
         Comment comment = getComment();
+        User commentUser = comment.getUser();
+
         CommentDto commentDto = mapper.convert(comment);
 
         assertEquals(comment.getId(), commentDto.getId());
         assertEquals(comment.getText(), commentDto.getText());
         assertEquals(comment.getCreatedDate(), commentDto.getCreatedDate());
         assertEquals(comment.getModifiedDate(), commentDto.getModifiedDate());
+        assertEquals(commentUser.getId(), commentDto.getAuthor().getId());
+        assertEquals(commentUser.getName(), commentDto.getAuthor().getName());
+        assertEquals(commentUser.getProfilePicturePath(), commentDto.getAuthor().getProfilePicturePath());
         assertNull(commentDto.getParentCommentId());
     }
 
@@ -36,14 +44,19 @@ class CommentDtoMapperTest {
         Comment comment = getComment();
         comment.setParentComment(getParentComment());
         comment.setAdditionalImages(List.of(getCommentImage()));
+        User commentUser = comment.getUser();
+
         CommentDto commentDto = mapper.convert(comment);
 
         assertEquals(comment.getId(), commentDto.getId());
         assertEquals(comment.getText(), commentDto.getText());
-        assert commentDto.getAdditionalImages() != null;
+        assertNotNull(commentDto.getAdditionalImages());
         assertEquals(comment.getAdditionalImages().getFirst().getLink(), commentDto.getAdditionalImages().getFirst());
         assertEquals(comment.getCreatedDate(), commentDto.getCreatedDate());
         assertEquals(comment.getModifiedDate(), commentDto.getModifiedDate());
+        assertEquals(commentUser.getId(), commentDto.getAuthor().getId());
+        assertEquals(commentUser.getName(), commentDto.getAuthor().getName());
+        assertEquals(commentUser.getProfilePicturePath(), commentDto.getAuthor().getProfilePicturePath());
         assertEquals(comment.getParentComment().getId(), commentDto.getParentCommentId());
     }
 }

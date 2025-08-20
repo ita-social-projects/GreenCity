@@ -33,7 +33,7 @@ class SearchNewsDtoMapperTest {
             .title(ecoNewsTest.getTitle())
             .tags(ecoNewsTest.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(language))
+                .filter(tagTranslation -> tagTranslation.getLanguageCode().equals(language))
                 .map(TagTranslation::getName)
                 .toList())
             .build();

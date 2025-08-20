@@ -2,7 +2,9 @@ package greencity.webcontroller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import greencity.ModelUtils;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserClaimsArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
@@ -11,6 +13,7 @@ import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.converters.ZonedDateTimeTypeAdapter;
+import greencity.security.jwt.JwtTool;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -21,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,13 +64,17 @@ class ManagementEcoNewsControllerTest {
     private UserService userService;
     @Mock
     private Validator mockValidator;
+    @Mock
+    JwtTool jwtTool;
     private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEcoNewsController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserClaimsArgumentResolver(jwtTool))
             .setValidator(mockValidator)
             .build();
     }
@@ -103,7 +109,7 @@ class ManagementEcoNewsControllerTest {
     @Test
     void delete() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         doNothing().when(ecoNewsService).delete(1L, userVO);
         this.mockMvc.perform(MockMvcRequestBuilders
             .delete(managementEcoNewsLink + "/delete?id=1")
@@ -305,27 +311,35 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void hide() throws Exception {
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, true);
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserClaims(jwt))
+            .thenReturn(ModelUtils.getUserClaims());
+
+        doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), true);
         this.mockMvc.perform(MockMvcRequestBuilders
             .patch(managementEcoNewsLink + "/hide?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, true);
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, ModelUtils.getUserClaims(), true);
     }
 
     @Test
     void show() throws Exception {
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        doNothing().when(ecoNewsService).setHiddenValue(1L, userVO, false);
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserClaims(jwt))
+            .thenReturn(ModelUtils.getUserClaims());
+
+        doNothing().when(ecoNewsService).setHiddenValue(1L, ModelUtils.getUserClaims(), false);
         this.mockMvc.perform(MockMvcRequestBuilders
             .patch(managementEcoNewsLink + "/show?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService, times(1)).setHiddenValue(1L, userVO, false);
+        verify(ecoNewsService, times(1)).setHiddenValue(1L, ModelUtils.getUserClaims(), false);
     }
 }

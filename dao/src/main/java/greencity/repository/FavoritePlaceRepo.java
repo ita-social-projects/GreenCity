@@ -11,21 +11,21 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
     /**
      * Find all favorite places by user email.
      *
-     * @param email - user's email
+     * @param userId - user's id
      * @return list of favorite places
      * @author Zakhar Skaletskyi
      */
-    List<FavoritePlace> findAllByUserEmail(String email);
+    List<FavoritePlace> findAllByUserId(Long userId);
 
     /**
      * Find favorite place existing by place id and user email.
      *
-     * @param id        - favorite place
-     * @param userEmail - user's email
+     * @param id     - favorite place
+     * @param userId - user's id
      * @return FavoritePlace entity
      * @author Zakhar Skaletskyi
      */
-    FavoritePlace findByPlaceIdAndUserEmail(Long id, String userEmail);
+    FavoritePlace findByPlaceIdAndUserId(Long id, Long userId);
 
     /**
      * Find favorite place by place id.
@@ -39,12 +39,12 @@ public interface FavoritePlaceRepo extends JpaRepository<FavoritePlace, Long> {
     /**
      * Find all favorite places locations ids by user email.
      *
-     * @param email - user's email
+     * @param userId - user's id
      * @return list of favorite places locations ids
      * @author Olena Sotnik
      */
     @Query("SELECT fp.place.location.id FROM FavoritePlace AS fp "
         + "WHERE fp.user = "
-        + "(SELECT u FROM User AS u WHERE u.email = :email)")
-    List<Long> findAllFavoritePlaceLocationIdsByUserEmail(String email);
+        + "(SELECT u FROM User AS u WHERE u.id = :userId)")
+    List<Long> findAllFavoritePlaceLocationIdsByUserId(Long userId);
 }

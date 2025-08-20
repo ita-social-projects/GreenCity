@@ -1,6 +1,8 @@
 package greencity.controller;
 
+import greencity.TestConst;
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.place.PlaceAddDto;
@@ -11,6 +13,7 @@ import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.PlaceWithUserDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.enums.PlaceStatus;
+import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.time.DayOfWeek;
@@ -98,13 +101,18 @@ class PlaceControllerTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @Mock
+    JwtTool jwtTool;
+
     private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(placeController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserIdArgumentResolver(jwtTool))
             .build();
     }
 
@@ -239,12 +247,18 @@ class PlaceControllerTest {
 
     @Test
     void saveAsFavoritePlace() throws Exception {
+        String jwt = "jwt";
         String json = """
             {
               "name": "test",
               "placeId": 1
             }
             """;
+
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
 
         FavoritePlaceDto favoritePlaceDto = FavoritePlaceDto.builder().name("test").placeId(1L).build();
         this.mockMvc.perform(post(placeLink + "/save/favorite/")
@@ -253,7 +267,7 @@ class PlaceControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(favoritePlaceService).save(favoritePlaceDto, principal.getName());
+        verify(favoritePlaceService).save(favoritePlaceDto, TestConst.USER_ID);
     }
 
     @Test
@@ -310,7 +324,7 @@ class PlaceControllerTest {
 
     @Test
     void getFilteredPlaces() throws Exception {
-        UserVO userVO = getUserVO();
+        String jwt = "jwt";
         FilterPlaceDto filterPlaceDto = getFilterPlaceDto();
         String json = """
             {
@@ -338,7 +352,10 @@ class PlaceControllerTest {
             }
             """;
 
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
 
         this.mockMvc.perform(post(placeLink + "/filter")
             .content(json)
@@ -346,7 +363,7 @@ class PlaceControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(placeService).getPlacesByFilter(filterPlaceDto, userVO);
+        verify(placeService).getPlacesByFilter(filterPlaceDto, TestConst.USER_ID);
     }
 
     @Test
@@ -367,7 +384,7 @@ class PlaceControllerTest {
               "openNow": true
             }
             """;
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(anyString())).thenReturn(userVO);
         when(placeService.getPlacesByFilter(filterDto, userVO)).thenReturn(getPlaceByBoundsDto());
 
         this.mockMvc.perform(post(placeLink + "/filter/api")
@@ -595,13 +612,19 @@ class PlaceControllerTest {
         int pageNumber = 0;
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        String jwt = "jwt";
+
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
 
         this.mockMvc.perform(get(placeLink + "/all?page=0&&size=5")
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(placeService, times(1))
-            .findAll(pageable, principal);
+            .findAll(pageable, TestConst.USER_ID);
     }
 
     @Test

@@ -1,9 +1,13 @@
 package greencity.controller;
 
 import com.google.gson.Gson;
+import greencity.TestConst;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import static greencity.enums.HabitRate.GOOD;
+
+import greencity.security.jwt.JwtTool;
 import greencity.service.HabitStatisticService;
 import java.time.ZonedDateTime;
 import java.util.Locale;
@@ -12,11 +16,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,6 +33,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class HabitStatisticControllerTest {
 
     private MockMvc mockMvc;
+
+    @Mock
+    JwtTool jwtTool;
 
     @Mock
     HabitStatisticService habitStatisticService;
@@ -37,7 +48,9 @@ class HabitStatisticControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitStatisticController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .build();
     }
 
@@ -50,16 +63,22 @@ class HabitStatisticControllerTest {
               "habitRate": "GOOD"
             }
             """;
-
         AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
         addHabitStatisticDto.setAmountOfItems(1);
         addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z"));
         addHabitStatisticDto.setHabitRate(GOOD);
+        String jwt = "jwt";
+
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
+
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
-        verify(habitStatisticService).saveByHabitIdAndUserId(1L, null, addHabitStatisticDto);
+        verify(habitStatisticService).saveByHabitIdAndUserId(1L, TestConst.USER_ID, addHabitStatisticDto);
     }
 
     @Test
@@ -69,6 +88,13 @@ class HabitStatisticControllerTest {
         habitStatisticForUpdateDto.setHabitRate(GOOD);
         Gson gson = new Gson();
         String json = gson.toJson(habitStatisticForUpdateDto);
+        String jwt = "jwt";
+
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
+
         mockMvc.perform(put(habitLink + "/{id}", 1)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))

@@ -1,15 +1,19 @@
 package greencity.service;
 
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
@@ -18,7 +22,13 @@ import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
-import greencity.repository.UserNotificationPreferenceRepo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,17 +40,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
-import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
 import static greencity.utils.NotificationUtils.localizeMessage;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 
 @Slf4j
 @Service
@@ -52,8 +55,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
+    private final UserRemoteClient userRemoteClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-    private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
     private final UserService userService;
     @Value("${client.address}")
     private String clientAddress;
@@ -213,8 +216,12 @@ public class NotificationServiceImpl implements NotificationService {
                     .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
                     .map(notification -> notification.setEmailSent(true))
                     .forEach(notification -> {
+                        User targetUser = notification.getTargetUser();
+                        UserVO userVO = modelMapper.map(targetUser, UserVO.class);
+                        LanguageDTO language = userVO.getLanguageVO();
+
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-                            notification.getTargetUser().getLanguage().getCode());
+                            language.getCode());
                         restClient.sendScheduledEmailNotification(message);
                     });
                 notificationRepo.saveAll(notifications);
@@ -223,22 +230,22 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference, LocalDateTime now) {
-        boolean timeToSend = userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(userId,
-            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+        boolean timeToSend = userRemoteClient.searchUserNotificationPreference(new EmailPreferenceDto(userId,
+            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY));
         if (now.getHour() < 12) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.DAILY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                    EmailPreferencePeriodicity.DAILY));
         }
         if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.WEEKLY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                    EmailPreferencePeriodicity.WEEKLY));
         }
         if (now.getDayOfMonth() == 1) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.MONTHLY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                    EmailPreferencePeriodicity.MONTHLY));
         }
         return timeToSend;
     }
@@ -250,7 +257,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
-        LanguageVO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguageVO();
+        LanguageDTO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguageVO();
         ScheduledEmailMessage message = createScheduledEmailMessage(notification, userLanguage.getCode());
         List<NotificationType> likes = List.of(
             NotificationType.ECONEWS_COMMENT_LIKE,
@@ -365,7 +372,8 @@ public class NotificationServiceImpl implements NotificationService {
         if (actionUsersSize > 1) {
             actionUserText = actionUsersSize + " " + bundle.getString("USERS");
         } else if (actionUsersSize == 1) {
-            actionUserText = notification.getActionUsers().getFirst().getName();
+            User firstActionUser = notification.getActionUsers().getFirst();
+            actionUserText = firstActionUser.getName();
         } else {
             actionUserText = "";
         }
@@ -384,9 +392,11 @@ public class NotificationServiceImpl implements NotificationService {
             .replace("{secondMessage}", secondMessage)
             .replace("{times}", times);
 
+        User targetUser = notification.getTargetUser();
+
         return ScheduledEmailMessage.builder()
-            .email(notification.getTargetUser().getEmail())
-            .username(notification.getTargetUser().getName())
+            .userId(targetUser.getId())
+            .username(targetUser.getName())
             .baseLink(createBaseLink(notification))
             .subject(subject)
             .body(body)

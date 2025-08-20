@@ -1,6 +1,9 @@
 package greencity.config;
 
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserClaimsArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
+import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -54,9 +57,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * Service for user-related operations, used in {@link UserArgumentResolver}.
      */
     private final UserService userService;
-
-    /** ModelMapper instance for converting entities to DTOs and vice versa. */
     private final ModelMapper modelMapper;
+    private final JwtTool jwtTool;
 
     /**
      * Configures the message source for internationalization of application
@@ -152,6 +154,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.removeIf(PageableHandlerMethodArgumentResolver.class::isInstance);
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
+        resolvers.add(new UserIdArgumentResolver(jwtTool));
+        resolvers.add(new UserClaimsArgumentResolver(jwtTool));
         resolvers.add(customSortHandlerMethodArgumentResolver);
         resolvers.add(customPageableArgumentResolver);
     }

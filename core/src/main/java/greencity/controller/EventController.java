@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
@@ -345,8 +346,8 @@ public class EventController {
     })
     @PostMapping("/{eventId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.addToFavorites(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.addToFavorites(eventId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -367,8 +368,8 @@ public class EventController {
     })
     @DeleteMapping("/{eventId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.removeFromFavorites(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.removeFromFavorites(eventId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -509,8 +510,8 @@ public class EventController {
     })
     @GetMapping("/{eventId}/likes")
     public ResponseEntity<Boolean> isEventLikedByUser(
-        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userVO));
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userId));
     }
 
     /**
@@ -530,8 +531,8 @@ public class EventController {
     })
     @GetMapping("/{eventId}/dislikes")
     public ResponseEntity<Boolean> isEventDislikedByUser(
-        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventDislikedByUser(eventId, userVO));
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventDislikedByUser(eventId, userId));
     }
 
     /**
@@ -553,8 +554,8 @@ public class EventController {
     public ResponseEntity<Object> rateEvent(
         @PathVariable Long eventId,
         @RequestBody @NotNull @Positive @Max(3) Integer grade,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.rateEvent(eventId, principal.getName(), grade);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.rateEvent(eventId, userId, grade);
         return ResponseEntity.ok().build();
     }
 
@@ -648,8 +649,8 @@ public class EventController {
     })
     @PostMapping("/{eventId}/addToRequested")
     public ResponseEntity<Object> addToRequested(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.addToRequested(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.addToRequested(eventId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -669,8 +670,8 @@ public class EventController {
     })
     @DeleteMapping("/{eventId}/removeFromRequested")
     public ResponseEntity<Object> removeFromRequested(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.removeFromRequested(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.removeFromRequested(eventId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -690,10 +691,10 @@ public class EventController {
     @GetMapping("/{eventId}/requested-users")
     public ResponseEntity<PageableDto<UserForListDto>> getRequestedUsers(
         @PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(eventService.getRequestedUsers(eventId, principal.getName(), pageable));
+            .body(eventService.getRequestedUsers(eventId, userId, pageable));
     }
 
     /**
@@ -739,7 +740,7 @@ public class EventController {
     /**
      * Method for retrieving all events, where user is attendee.
      *
-     * @param userVO {@link UserVO} current user information.
+     * @param userId current user id.
      * @return all events, where user is an attendee.
      * @author Andrii Danylenko.
      */
@@ -753,8 +754,8 @@ public class EventController {
     @GetMapping("/user-data/getAllUserAssigned")
     public ResponseEntity<Page<EventResponseDto>> getAllUserAssigned(
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId()));
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userId));
     }
 
     /**

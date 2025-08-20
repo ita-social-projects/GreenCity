@@ -22,7 +22,7 @@ public interface AchievementCategoryService {
      * @return list of {@link AchievementCategoryTranslationDto}.
      * @author Viktoriia Herchanivska
      */
-    List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(String email);
+    List<AchievementCategoryTranslationDto> findAllWithAtLeastOneAchievement(Long userId, String email);
 
     /**
      * Method for finding all {@link AchievementCategoryVO}.
