@@ -142,6 +142,24 @@ public class OpenAIServiceImpl implements OpenAIService {
         throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
     }
 
+    /**
+     * Makes a batch request to the OpenAI API to generate embedding vectors for the
+     * given list of titles.
+     *
+     * <p>
+     * This method attempts to send the batch request up to a maximum number of
+     * attempts ({@code MAX_REQUEST_ATTEMPTS}). It uses the embedding model defined
+     * in the configuration and sets the specified inputs and dimensions.
+     * </p>
+     *
+     * @param titles a list of input texts (typically news titles) for which to
+     *               generate embedding vectors
+     * @return a list of responses from the OpenAI API, each wrapped in
+     *         {@link OpenAIResponseDTO}
+     * @throws OpenAIRequestException if the input list is {@code null} or empty,
+     *                                if the OpenAI server is unavailable, or if the
+     *                                maximum number of request attempts is reached
+     */
     @Override
     public List<OpenAIResponseDTO> makeRequestEmbeddings(List<String> titles) {
         if (titles == null || titles.isEmpty()) {
@@ -171,6 +189,27 @@ public class OpenAIServiceImpl implements OpenAIService {
         throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
     }
 
+    /**
+     * Sends a batch embedding request to the OpenAI API.
+     *
+     * <p>
+     * This method performs a POST request to the configured embedding API URL with
+     * the given request body and headers. It then parses the response into a list
+     * of {@link OpenAIResponseDTO} objects. The response size is validated against
+     * the expected number of embeddings.
+     * </p>
+     *
+     * @param headers      the HTTP headers to include in the request
+     * @param body         the request body containing the input texts, model, and
+     *                     dimensions
+     * @param expectedSize the expected number of embeddings in the response (must
+     *                     match the number of inputs sent)
+     * @return a list of {@link OpenAIResponseDTO} representing the embeddings
+     *         returned by the API
+     * @throws OpenAIResponseException if the response body is {@code null} or
+     *                                 invalid
+     * @throws OpenAIRequestException  if the request to the OpenAI API fails
+     */
     private List<OpenAIResponseDTO> sendBatchEmbeddingRequest(HttpHeaders headers, Map<String, Object> body,
         int expectedSize)
         throws OpenAIRequestException {
@@ -190,6 +229,24 @@ public class OpenAIServiceImpl implements OpenAIService {
         return parseBatchResponseEmbedding(responseBody, expectedSize);
     }
 
+    /**
+     * Parses the response from the OpenAI API for a batch embedding request.
+     *
+     * <p>
+     * This method extracts the embedding vectors, token usage information, and
+     * assigns the current UTC timestamp as the response time. The number of
+     * embeddings in the response is validated against the expected size.
+     * </p>
+     *
+     * @param responseBody the raw response body returned by the OpenAI API
+     * @param expectedSize the expected number of embeddings (must match the number
+     *                     of input texts sent)
+     * @return a list of {@link OpenAIResponseDTO} objects containing the parsed
+     *         embeddings and metadata
+     * @throws OpenAIResponseException if the response body is malformed, missing
+     *                                 required fields, or the number of embeddings
+     *                                 does not match the expected size
+     */
     private List<OpenAIResponseDTO> parseBatchResponseEmbedding(Map<String, Object> responseBody, int expectedSize) {
         try {
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) responseBody.get(RESPONSE_DATA_KEY);
