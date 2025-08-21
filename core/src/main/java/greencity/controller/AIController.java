@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,10 +51,9 @@ public class AIController {
     })
     @ApiLocale
     @GetMapping("/generate/eco-news")
-    public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) Locale locale,
+    public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) @CurrentUser UserVO userVO,
         @RequestParam(required = false) String query) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(
-                aiService.getNews(locale.toString().equals("ua") ? "українська" : locale.getDisplayLanguage(), query));
+            .body(aiService.getNews(userVO.getLanguageVO().getCode(), query));
     }
 }

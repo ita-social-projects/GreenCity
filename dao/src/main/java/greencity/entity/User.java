@@ -177,18 +177,21 @@ import java.util.Set;
     exclude = {"emailPreference", "favoriteHabits", "language", "userLocation", "verifyEmail", "ownSecurity",
         "ecoNewsLiked", "refreshTokenKey", "estimates", "restorePasswordEmail",
         "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
-        "subscribedEvents"})
+        "subscribedEvents", "email"})
 @ToString(
     exclude = {"emailPreference", "favoriteHabits", "language", "userLocation", "verifyEmail", "ownSecurity",
         "refreshTokenKey", "ecoNewsLiked", "estimates", "restorePasswordEmail",
         "customToDoListItems", "eventOrganizerRating", "favoriteEcoNews", "favoriteEvents", "requestedEvents",
-        "subscribedEvents"})
+        "subscribedEvents", "email"})
 public class User {
     @Id
     private Long id;
 
     @Column(nullable = false, length = 30)
     private String name;
+
+    @Column(unique = true, nullable = false, length = 72)
+    private String email;
 
     @Column(name = "profile_picture")
     private String profilePicturePath;

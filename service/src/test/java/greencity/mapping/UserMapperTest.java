@@ -5,6 +5,8 @@ import greencity.ModelUtils;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
+import greencity.repository.UserRepo;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +21,8 @@ class UserMapperTest {
     private UserMapper userMapper;
     @Mock
     ModelMapper modelMapper;
+    @Mock
+    UserRepo userRepo;
 
     @Test
     void convert() {
@@ -32,12 +36,14 @@ class UserMapperTest {
         User expected = User.builder()
             .id(userVO.getId())
             .name(userVO.getName())
+            .email(userVO.getEmail())
             .userCredo(userVO.getUserCredo())
             .profilePicturePath(userVO.getProfilePicturePath())
             .userLocation(expectedLocation)
             .build();
 
         Mockito.when(modelMapper.map(userVO.getUserLocation(), UserLocation.class)).thenReturn(expectedLocation);
+        Mockito.when(userRepo.findByEmail(userVO.getEmail())).thenReturn(Optional.of(expected));
 
         assertEquals(expected, userMapper.convert(userVO));
     }
