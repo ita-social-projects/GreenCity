@@ -69,7 +69,7 @@ class AIControllerTest {
     @Test
     void creatingEcoNewsReturnsEcoNewsFromAIServiceTest() throws Exception {
         when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
-        userVO.getLanguageVO().setCode("English");
+        userVO.getLanguageVO().setCode("англійська");
 
         mockMvc.perform(get("/ai/generate/eco-news")
             .principal(principal))
