@@ -517,6 +517,7 @@ public class UserServiceImpl implements UserService {
         User userToSave = User.builder()
             .id(newUserId)
             .name(createUserDto.getName())
+            .email(createUserDto.getEmail())
             .profilePicturePath(createUserDto.getProfilePicturePath())
             .rating(AppConstant.DEFAULT_RATING)
             .eventOrganizerRating(AppConstant.DEFAULT_RATING)

@@ -96,4 +96,7 @@
     <include file="db/changelog/logs/ch-drop-table-habit-status-Popovych.xml"/>
     <include file="db/changelog/logs/ch-add-quartz-tables.xml"/>
     <include file="db/changelog/logs/2025-08-12-ch-insert-into-users-Pohranychnyi.xml"/>
+    <include file="db/changelog/logs/сh-update-eco_news-drop_not_null_image_path-Zadyraichuk.xml"/>
+    <include file="db/changelog/logs/сh-update-tag_translations-change_ukrainian_code-Zadyraichuk.xml"/>
+    <include file="db/changelog/logs/сh-update-greencity_user-add_email_field-Zadyraichuk.xml"/>
 </databaseChangeLog>

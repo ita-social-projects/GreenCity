@@ -826,4 +826,12 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             WHERE u.id IN :userIds
         """)
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
+
+    /**
+     * Find {@link User} by email.
+     *
+     * @param email user email.
+     * @return {@link User}
+     */
+    Optional<User> findByEmail(String email);
 }

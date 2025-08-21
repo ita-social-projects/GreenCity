@@ -190,6 +190,9 @@ public class User {
     @Column(nullable = false, length = 30)
     private String name;
 
+    @Column(unique = true, nullable = false, length = 72)
+    private String email;
+
     @Column(name = "profile_picture")
     private String profilePicturePath;
 
