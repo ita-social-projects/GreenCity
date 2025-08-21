@@ -1031,9 +1031,21 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createUserAlreadyExistsTest() {
+    void createUserIdAlreadyExistsTest() {
         CreateGreenCityUserDto createGreenCityUserDto = ModelUtils.getCreateGreenCityDto();
         when(userRepo.existsById(createGreenCityUserDto.getId())).thenReturn(true);
+
+        assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(createGreenCityUserDto));
+
+        verify(userRepo).existsById(createGreenCityUserDto.getId());
+        verify(userRepo, never()).save(any(User.class));
+    }
+
+    @Test
+    void createUserEmailAlreadyExistsTest() {
+        CreateGreenCityUserDto createGreenCityUserDto = ModelUtils.getCreateGreenCityDto();
+        when(userRepo.existsById(createGreenCityUserDto.getId())).thenReturn(false);
+        when(userRepo.existsByEmail(createGreenCityUserDto.getEmail())).thenReturn(true);
 
         assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(createGreenCityUserDto));
 

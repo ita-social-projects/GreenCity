@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="update-tag_translations-change_ukrainian_code" author="Rostyslav Zadyraichuk">
+        <update tableName="tag_translations">
+            <column name="language_code" value="uk"/>
+            <where>language_code = 'ua'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

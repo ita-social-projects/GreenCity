@@ -826,4 +826,20 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             WHERE u.id IN :userIds
         """)
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
+
+    /**
+     * Find {@link User} by email.
+     *
+     * @param email user email.
+     * @return {@link User}
+     */
+    Optional<User> findByEmail(String email);
+
+    /**
+     * Checks if a user with the given email exists.
+     *
+     * @param email - email of User.
+     * @return - return true if User exists and false if not.
+     */
+    boolean existsByEmail(String email);
 }
