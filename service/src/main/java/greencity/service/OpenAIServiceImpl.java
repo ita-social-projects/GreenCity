@@ -156,8 +156,8 @@ public class OpenAIServiceImpl implements OpenAIService {
      *               generate embedding vectors
      * @return a list of responses from the OpenAI API, each wrapped in
      *         {@link OpenAIResponseDTO}
-     * @throws OpenAIRequestException if the input list is {@code null} or empty,
-     *                                if the OpenAI server is unavailable, or if the
+     * @throws OpenAIRequestException if the input list is {@code null} or empty, if
+     *                                the OpenAI server is unavailable, or if the
      *                                maximum number of request attempts is reached
      */
     @Override
@@ -213,7 +213,6 @@ public class OpenAIServiceImpl implements OpenAIService {
     private List<OpenAIResponseDTO> sendBatchEmbeddingRequest(HttpHeaders headers, Map<String, Object> body,
         int expectedSize)
         throws OpenAIRequestException {
-
         Map<String, Object> responseBody = restClient.post()
             .uri(embeddingApiUrl)
             .headers(headersConsumer -> headersConsumer.addAll(headers))
@@ -268,7 +267,6 @@ public class OpenAIServiceImpl implements OpenAIService {
                 dto.setResponseDateTime(responseTime);
                 return dto;
             }).toList();
-
         } catch (Exception e) {
             throw new OpenAIResponseException("Invalid format of batch embedding response.", e);
         }

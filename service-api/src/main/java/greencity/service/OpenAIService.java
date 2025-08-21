@@ -4,7 +4,6 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
-
 import java.util.List;
 
 /**

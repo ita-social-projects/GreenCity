@@ -1,16 +1,12 @@
 package greencity.aspects;
 
-import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.service.AIServiceImpl;
 import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import org.aspectj.lang.ProceedingJoinPoint;

@@ -33,7 +33,6 @@ import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -273,9 +272,9 @@ public class AIServiceImpl implements AIService {
      */
     @Transactional
     public void insertRelevanceBatch(Collection<Long> ids) {
-        if (ids.isEmpty())
+        if (ids.isEmpty()) {
             return;
-
+        }
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
         List<String> titles = ecoNewsList.stream().map(EcoNews::getTitle).toList();
 
@@ -312,9 +311,9 @@ public class AIServiceImpl implements AIService {
      */
     @Transactional
     public void updateRelevanceBatch(Collection<Long> ids) {
-        if (ids.isEmpty())
+        if (ids.isEmpty()) {
             return;
-
+        }
         List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
         List<String> titles = ecoNewsList.stream()
             .map(EcoNews::getTitle)
