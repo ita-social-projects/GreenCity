@@ -231,6 +231,82 @@ class OpenAIServiceImplTest {
         verify(requestBodyUriSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).uri(anyString());
         verify(responseSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
     }
+    @Test
+    void makeRequestEmbeddingsWhenValidResponseTest() {
+        List<String> titles = List.of("title1", "title2");
+
+        List<Double> emb1 = List.of(0.1, 0.2);
+        List<Double> emb2 = List.of(0.3, 0.4);
+
+        Map<String, Object> data1 = Map.of("embedding", emb1, "index", 0);
+        Map<String, Object> data2 = Map.of("embedding", emb2, "index", 1);
+
+        Map<String, Object> usage = Map.of("prompt_tokens", 4, "total_tokens", 4);
+
+        Map<String, Object> apiResponse = new HashMap<>();
+        apiResponse.put("data", List.of(data1, data2));
+        apiResponse.put("usage", usage);
+
+        stubEmbeddingRestClient(apiResponse);
+
+        List<OpenAIResponseDTO> result = openAIService.makeRequestEmbeddings(titles);
+
+        assertEquals(2, result.size());
+        assertEquals(emb1.toString(), result.get(0).getContent());
+        assertEquals(4, result.get(0).getUsedInputTokens());
+        assertEquals(4, result.get(0).getUsedOutputTokens());
+
+        verify(restClient).post();
+        verify(requestBodyUriSpec).uri(embeddingApiUrl);
+    }
+    @Test
+    void makeRequestEmbeddingsWhenInputIsNullOrEmptyTest() {
+        assertThrows(OpenAIRequestException.class, () -> openAIService.makeRequestEmbeddings(null));
+        assertThrows(OpenAIRequestException.class, () -> openAIService.makeRequestEmbeddings(Collections.emptyList()));
+
+        verify(restClient, never()).post();
+    }
+    @Test
+    void makeRequestEmbeddingsWhenResponseBodyIsNullTest() {
+        List<String> titles = List.of("title1");
+        stubEmbeddingRestClient(null);
+
+        OpenAIRequestException ex = assertThrows(OpenAIRequestException.class,
+                () -> openAIService.makeRequestEmbeddings(titles));
+
+        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
+        verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
+    }
+    @Test
+    void makeRequestEmbeddingsWhenDataSizeMismatchTest() {
+        List<String> titles = List.of("title1", "title2");
+
+        List<Double> emb1 = List.of(0.1, 0.2);
+
+        Map<String, Object> data1 = Map.of("embedding", emb1, "index", 0);
+        Map<String, Object> usage = Map.of("prompt_tokens", 2, "total_tokens", 2);
+
+        Map<String, Object> apiResponse = new HashMap<>();
+        apiResponse.put("data", List.of(data1)); //
+        apiResponse.put("usage", usage);
+
+        stubEmbeddingRestClient(apiResponse);
+
+        assertThrows(OpenAIRequestException.class,
+                () -> openAIService.makeRequestEmbeddings(titles));
+    }
+    @Test
+    void makeRequestEmbeddingsWhenRestClientThrowsExceptionTest() {
+        List<String> titles = List.of("title1");
+
+        when(restClient.post()).thenThrow(new RestClientException("Connection error"));
+
+        OpenAIRequestException ex = assertThrows(OpenAIRequestException.class,
+                () -> openAIService.makeRequestEmbeddings(titles));
+
+        assertEquals(OpenAIConstants.ERROR_NO_OPENAI_RESPONSE, ex.getMessage());
+        assertInstanceOf(RestClientException.class, ex.getCause());
+    }
 
     private void stubRestClient(Map<String, Object> response) {
         when(restClient.post()).thenReturn(requestBodyUriSpec);
@@ -251,4 +327,5 @@ class OpenAIServiceImplTest {
         when(responseSpec.body(any(ParameterizedTypeReference.class)))
                 .thenReturn(response);
     }
+
 }
