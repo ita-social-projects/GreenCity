@@ -514,10 +514,16 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
                 ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_ID.formatted(newUserId));
         }
+        String newUserEmail = createUserDto.getEmail();
+        if (userRepo.existsByEmail(newUserEmail)) {
+            throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
+                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL.formatted(newUserEmail));
+        }
+
         User userToSave = User.builder()
             .id(newUserId)
             .name(createUserDto.getName())
-            .email(createUserDto.getEmail())
+            .email(newUserEmail)
             .profilePicturePath(createUserDto.getProfilePicturePath())
             .rating(AppConstant.DEFAULT_RATING)
             .eventOrganizerRating(AppConstant.DEFAULT_RATING)

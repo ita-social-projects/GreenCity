@@ -834,4 +834,12 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link User}
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Checks if a user with the given email exists.
+     *
+     * @param email - email of User.
+     * @return - return true if User exists and false if not.
+     */
+    boolean existsByEmail(String email);
 }
