@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.OpenAIConstants;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
@@ -14,7 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +21,15 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-import static greencity.constant.OpenAIConstants.*;
+import static greencity.constant.OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED;
+import static greencity.constant.OpenAIConstants.ERROR_NO_OPENAI_RESPONSE;
+import static greencity.constant.OpenAIConstants.ERROR_PROMPT_MISSING;
+import static greencity.constant.OpenAIConstants.MAX_REQUEST_ATTEMPTS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -216,10 +215,10 @@ class OpenAIServiceImplTest {
             OpenAIRequestException.class,
             () -> openAIService.makeRequestEmbedding("test title"));
 
-        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
-        verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
-        verify(requestBodyUriSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).uri(anyString());
-        verify(responseSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
+        assertEquals(ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
+        verify(restClient, times(MAX_REQUEST_ATTEMPTS)).post();
+        verify(requestBodyUriSpec, times(MAX_REQUEST_ATTEMPTS)).uri(anyString());
+        verify(responseSpec, times(MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
     }
 
     @Test
@@ -233,10 +232,10 @@ class OpenAIServiceImplTest {
             OpenAIRequestException.class,
             () -> openAIService.makeRequestEmbedding("test title"));
 
-        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
-        verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
-        verify(requestBodyUriSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).uri(anyString());
-        verify(responseSpec, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
+        assertEquals(ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
+        verify(restClient, times(MAX_REQUEST_ATTEMPTS)).post();
+        verify(requestBodyUriSpec, times(MAX_REQUEST_ATTEMPTS)).uri(anyString());
+        verify(responseSpec, times(MAX_REQUEST_ATTEMPTS)).body(any(ParameterizedTypeReference.class));
     }
 
     @Test
@@ -279,7 +278,7 @@ class OpenAIServiceImplTest {
     @Test
     void makeRequestEmbeddingsWhenInputIsEmptyTest() {
         assertThrows(OpenAIRequestException.class,
-            () -> openAIService.makeRequestEmbeddings(Collections.emptyList()));
+            () -> openAIService.makeRequestEmbeddings(List.of()));
 
         verify(restClient, never()).post();
     }
@@ -292,8 +291,8 @@ class OpenAIServiceImplTest {
         OpenAIRequestException ex = assertThrows(OpenAIRequestException.class,
             () -> openAIService.makeRequestEmbeddings(titles));
 
-        assertEquals(OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
-        verify(restClient, times(OpenAIConstants.MAX_REQUEST_ATTEMPTS)).post();
+        assertEquals(ERROR_MAX_ATTEMPTS_REACHED, ex.getMessage());
+        verify(restClient, times(MAX_REQUEST_ATTEMPTS)).post();
     }
 
     @Test
@@ -324,7 +323,7 @@ class OpenAIServiceImplTest {
         OpenAIRequestException ex = assertThrows(OpenAIRequestException.class,
             () -> openAIService.makeRequestEmbeddings(titles));
 
-        assertEquals(OpenAIConstants.ERROR_NO_OPENAI_RESPONSE, ex.getMessage());
+        assertEquals(ERROR_NO_OPENAI_RESPONSE, ex.getMessage());
         assertInstanceOf(RestClientException.class, ex.getCause());
     }
 
