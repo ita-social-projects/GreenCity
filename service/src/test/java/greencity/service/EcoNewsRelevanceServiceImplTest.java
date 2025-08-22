@@ -102,7 +102,7 @@ class EcoNewsRelevanceServiceImplTest {
     void init_withValidRatios_shouldInitializeArrays() throws Exception {
         EcoNewsRelevanceServiceImpl service = new EcoNewsRelevanceServiceImpl(null, null, null, null, null, null);
 
-        setPrivateField(service, "relevancePoolsRatioString", "0.3:0.5:0.2");
+        setPrivateField(service, "relevancePoolsRatioString", "3:5:2");
         setPrivateField(service, "relevanceScoresWeightsString", "0.7:0.3");
         setPrivateField(service, "relevanceScoresStrengthString", "0.6:0.4");
 

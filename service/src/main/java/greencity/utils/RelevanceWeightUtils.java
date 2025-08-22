@@ -1,35 +1,60 @@
 package greencity.utils;
 
+import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT;
+import static greencity.constant.ErrorMessage.INVALID_RATIO_SUM;
+import static greencity.constant.ErrorMessage.INVALID_RATIO_VALUE;
 import java.util.Arrays;
+import java.util.Collections;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.BeanInitializationException;
 
 @UtilityClass
 public class RelevanceWeightUtils {
+    private static final double PRECISION = 1e-6;
+
     /**
-     * Converts string ratio divided by ":" to double array.
+     * Parses given ratio string and validates it.
      *
-     * <p>
-     * If sum of the parts of the ratio is not equal to 1, then the parts are
-     * divided by the sum to get the correct ratio.
-     * </p>
+     * @param ratioString         string representing ratio divided by ":"
+     * @param expectedLength      expected length of the ratio array
+     * @param exceptionMessageType    exception message to be thrown if the ratio is invalid
+     * @param checkValuesNormalized flag indicating whether to check if the ratio values are normalized
+     * @param checkSumNormalized flag indicating whether to check if the sum of the ratio values is normalized
      *
-     * @param ratio string ratio
-     * @return double array representation of the ratio
+     * @return validated ratio array
+     * @throws BeanInitializationException if the ratio is invalid
      */
-    public static double[] convertRatioFromString(String ratio) {
+    public static double[] parseAndValidateRatios(String ratioString,
+                                                  int expectedLength,
+                                                  String exceptionMessageType,
+                                                  boolean checkValuesNormalized,
+                                                  boolean checkSumNormalized) {
         try {
-            double[] ratioDoubles = Arrays.stream(ratio.split(":"))
-                .mapToDouble(Double::parseDouble)
-                .toArray();
-            double sum = Arrays.stream(ratioDoubles).sum();
-            return sum <= 1 ? ratioDoubles
-                : Arrays.stream(ratioDoubles)
-                    .map(d -> d / sum)
-                    .toArray();
+            double[] ratios = RelevanceWeightUtils.convertRatioFromString(ratioString);
+
+            if (ratios.length != expectedLength) {
+                throw new BeanInitializationException(String.join(" ", exceptionMessageType,
+                    INVALID_RATIO_FORMAT.formatted(expectedLength,
+                        String.join(":", Collections.nCopies(expectedLength, "n")),
+                        ratioString)));
+            }
+
+            if (checkValuesNormalized && !RelevanceWeightUtils.isRatiosNormalized(ratios)) {
+                throw new BeanInitializationException(String.join(" ", exceptionMessageType,
+                    INVALID_RATIO_VALUE.formatted(Arrays.toString(ratios))));
+            }
+
+            if (checkSumNormalized && !RelevanceWeightUtils.isRatiosSumNormalized(ratios)) {
+                throw new BeanInitializationException(String.join(" ", exceptionMessageType,
+                    INVALID_RATIO_SUM.formatted(Arrays.toString(ratios))));
+            }
+
+            return ratios;
         } catch (NumberFormatException e) {
-            throw new BeanInitializationException(String.format("Invalid ratio parameter value. "
-                + "Expected numeric values separated by ':', but got '%s'.", ratio));
+            throw new BeanInitializationException(String.join(" ", exceptionMessageType,
+                INVALID_RATIO_FORMAT.formatted(expectedLength,
+                    String.join(":", Collections.nCopies(expectedLength, "n")),
+                    ratioString)));
         }
     }
 
@@ -90,5 +115,50 @@ public class RelevanceWeightUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Converts string ratio divided by ":" to double array.
+     *
+     * @param ratio string ratio
+     * @return double array representation of the ratio
+     */
+    private static double[] convertRatioFromString(String ratio) {
+        return Arrays.stream(ratio.split(":"))
+            .mapToDouble(Double::parseDouble)
+            .toArray();
+    }
+
+    /**
+     * Checks if given ratios values are normalized.
+     *
+     * <p>
+     * A valid ratio is an array of doubles where each element is greater than 0
+     * and less than or equal to 1.
+     * </p>
+     *
+     * @param ratios array of ratios to check
+     * @return true if the ratios are valid, false otherwise
+     */
+    private static boolean isRatiosNormalized(double[] ratios) {
+        boolean anyNegative = Arrays.stream(ratios).anyMatch(w -> w < 0);
+        boolean anyGreaterThanOne = Arrays.stream(ratios).anyMatch(w -> w > 1);
+        return !anyNegative && !anyGreaterThanOne;
+    }
+
+    /**
+     * Checks if given ratios array sum is normalized.
+     *
+     * <p>
+     * A normalized ratio sum is an array of doubles where each element is greater than 0
+     * and less than or equal to 1, and the sum of all elements is equal to 1.
+     * </p>
+     *
+     * @param ratios array of ratios to check
+     * @return true if the ratios sum is normalized, false otherwise
+     */
+    private static boolean isRatiosSumNormalized(double[] ratios) {
+        double sum = Arrays.stream(ratios).sum();
+        return Math.abs(sum - 1.0) < PRECISION;
     }
 }

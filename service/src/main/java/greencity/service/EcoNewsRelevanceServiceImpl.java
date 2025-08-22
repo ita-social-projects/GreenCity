@@ -1,8 +1,5 @@
 package greencity.service;
 
-import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT_OF_THREE;
-import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT_OF_TWO;
-import static greencity.constant.ErrorMessage.INVALID_RATIO_SUM;
 import static greencity.constant.ErrorMessage.INVALID_RELEVANCE_POOLS;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_STRENGTH;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_WEIGHTS;
@@ -28,13 +25,11 @@ import greencity.mapping.PageableAdvancedDtoMapper;
 import jakarta.annotation.PostConstruct;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -69,27 +64,13 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
 
     @PostConstruct
     public void init() {
-        this.relevancePoolsRatio = RelevanceWeightUtils.convertRatioFromString(relevancePoolsRatioString);
-        if (relevancePoolsRatio.length != 3) {
-            throw new BeanInitializationException(String.join(" ", INVALID_RELEVANCE_POOLS,
-                INVALID_RATIO_FORMAT_OF_THREE.formatted(relevancePoolsRatioString)));
-        }
-
-        this.relevanceScoresWeights = RelevanceWeightUtils.convertRatioFromString(relevanceScoresWeightsString);
-        double sumOfRatios = Arrays.stream(relevanceScoresWeights).sum();
-        if (relevanceScoresWeights.length != 2) {
-            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_WEIGHTS,
-                INVALID_RATIO_FORMAT_OF_TWO.formatted(relevanceScoresWeightsString)));
-        } else if (sumOfRatios != 1) {
-            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_WEIGHTS,
-                INVALID_RATIO_SUM.formatted(sumOfRatios)));
-        }
-
-        this.relevanceScoresStrength = RelevanceWeightUtils.convertRatioFromString(relevanceScoresStrengthString);
-        if (relevanceScoresStrength.length != 2) {
-            throw new BeanInitializationException(String.join(" ", INVALID_SCORES_STRENGTH,
-                INVALID_RATIO_FORMAT_OF_TWO.formatted(relevanceScoresStrengthString)));
-        }
+        double[] relevancePoolsRatio = RelevanceWeightUtils.parseAndValidateRatios(relevancePoolsRatioString,
+            3, INVALID_RELEVANCE_POOLS, false, false);
+        this.relevancePoolsRatio = RelevanceWeightUtils.normalizeWeights(relevancePoolsRatio);
+        this.relevanceScoresWeights = RelevanceWeightUtils.parseAndValidateRatios(relevanceScoresWeightsString,
+            2, INVALID_SCORES_WEIGHTS, true, true);
+        this.relevanceScoresStrength = RelevanceWeightUtils.parseAndValidateRatios(relevanceScoresStrengthString,
+            2, INVALID_SCORES_STRENGTH, true, false);
     }
 
     /**

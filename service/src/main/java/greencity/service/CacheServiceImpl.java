@@ -1,7 +1,5 @@
 package greencity.service;
 
-import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT_OF_THREE;
-import static greencity.constant.ErrorMessage.INVALID_RATIO_SUM;
 import static greencity.constant.ErrorMessage.INVALID_TAGS_WEIGHTS;
 import com.github.benmanes.caffeine.cache.Cache;
 import greencity.utils.RelevanceWeightUtils;
@@ -37,7 +35,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -64,15 +61,8 @@ public class CacheServiceImpl implements CacheService {
      */
     @PostConstruct
     public void init() {
-        this.tagsWeights = RelevanceWeightUtils.convertRatioFromString(tagsWeightsString);
-        double sumOfRatios = Arrays.stream(tagsWeights).sum();
-        if (tagsWeights.length != 3) {
-            throw new BeanInitializationException(String.join(" ", INVALID_TAGS_WEIGHTS,
-                INVALID_RATIO_FORMAT_OF_THREE.formatted(tagsWeightsString)));
-        } else if (sumOfRatios != 1) {
-            throw new BeanInitializationException(String.join(" ", INVALID_TAGS_WEIGHTS,
-                INVALID_RATIO_SUM.formatted(sumOfRatios)));
-        }
+        this.tagsWeights = RelevanceWeightUtils.parseAndValidateRatios(tagsWeightsString,
+            3, INVALID_TAGS_WEIGHTS, true, true);
     }
 
     /**

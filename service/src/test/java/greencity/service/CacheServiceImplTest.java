@@ -1,7 +1,6 @@
 package greencity.service;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import greencity.ModelUtils;
-import greencity.utils.RelevanceWeightUtils;
 import greencity.dto.cache.CachedRelevancePools;
 import greencity.dto.cache.CachedTagsWithCoherence;
 import greencity.dto.cache.CachedUserRelevanceProfile;
@@ -33,6 +31,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.TagsCoherenceRepo;
 import greencity.repository.TagsRepo;
+import java.lang.reflect.Field;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -89,13 +88,22 @@ class CacheServiceImplTest {
         cachedTagsWithCoherence = ModelUtils.getCachedTagsWithCoherence();
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"0.6:0.2:0.2", "1.0:1.0:1.0"})
-    void initWithValidWeightsTest(String weightsString) {
-        ReflectionTestUtils.setField(cacheService, "tagsWeightsString", weightsString);
-        assertDoesNotThrow(() -> cacheService.init());
-        assertArrayEquals(RelevanceWeightUtils.convertRatioFromString(weightsString),
-            (double[]) ReflectionTestUtils.getField(cacheService, "tagsWeights"));
+    @Test
+    void initWithValidWeightsWithValidRatioTest() throws Exception {
+        setRatioValueField(cacheService, "0.6:0.2:0.2");
+
+        cacheService.init();
+
+        double[] tagsWeights = (double[]) getRatioValueField(cacheService);
+
+        assertArrayEquals(new double[] {0.6, 0.2, 0.2}, tagsWeights);
+    }
+
+    @Test
+    void initWithValidWeightsWithInvalidRatioTest() throws Exception {
+        setRatioValueField(cacheService, "1.0:1.0:1.0");
+
+        assertThrows(BeanInitializationException.class, () -> cacheService.init());
     }
 
     @ParameterizedTest
@@ -308,6 +316,18 @@ class CacheServiceImplTest {
         assertEquals(1, result.habitTagsIndexes().size());
         assertTrue(result.tagsCoherenceIds().isEmpty());
         verify(tagsCoherenceCache).put(any(), any());
+    }
+
+    private void setRatioValueField(Object target, Object value) throws Exception {
+        Field field = target.getClass().getDeclaredField("tagsWeightsString");
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private Object getRatioValueField(Object target) throws Exception {
+        Field field = target.getClass().getDeclaredField("tagsWeights");
+        field.setAccessible(true);
+        return field.get(target);
     }
 
     private void prepareTagsCollections(EcoNews ecoNews, Event event, Habit habit) {
