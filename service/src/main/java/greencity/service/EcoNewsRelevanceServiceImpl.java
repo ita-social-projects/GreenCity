@@ -64,9 +64,9 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
 
     @PostConstruct
     public void init() {
-        double[] relevancePoolsRatio = RelevanceWeightUtils.parseAndValidateRatios(relevancePoolsRatioString,
+        double[] parsedRatio = RelevanceWeightUtils.parseAndValidateRatios(relevancePoolsRatioString,
             3, INVALID_RELEVANCE_POOLS, false, false);
-        this.relevancePoolsRatio = RelevanceWeightUtils.normalizeWeights(relevancePoolsRatio);
+        this.relevancePoolsRatio = RelevanceWeightUtils.normalizeWeights(parsedRatio);
         this.relevanceScoresWeights = RelevanceWeightUtils.parseAndValidateRatios(relevanceScoresWeightsString,
             2, INVALID_SCORES_WEIGHTS, true, true);
         this.relevanceScoresStrength = RelevanceWeightUtils.parseAndValidateRatios(relevanceScoresStrengthString,
