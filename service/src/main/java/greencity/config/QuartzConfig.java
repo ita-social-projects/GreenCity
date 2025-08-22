@@ -12,6 +12,7 @@ import org.quartz.*;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,9 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 @RequiredArgsConstructor
 public class QuartzConfig {
     @Value("${cron.generateEcoNews}")
-    private String cronExpression;
+    private String generateEcoNewsCron;
+    @Value("${cron.calculateRelevance}")
+    private String calculateRelevanceCron;
     private final ApplicationContext applicationContext;
 
     @Bean
@@ -73,7 +76,7 @@ public class QuartzConfig {
 
     @Bean
     public Trigger ecoNewsGenerationTrigger(JobDetail ecoNewsGenerationJobDetail) {
-        String fixedCron = fixCronExpression(cronExpression);
+        String fixedCron = fixCronExpression(generateEcoNewsCron);
         try {
             return TriggerBuilder.newTrigger()
                 .forJob(ecoNewsGenerationJobDetail)
@@ -86,6 +89,7 @@ public class QuartzConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "true")
     public JobDetail ecoNewsRelevanceJobDetail() {
         return JobBuilder.newJob(EcoNewsRelevanceJob.class)
             .withIdentity("ecoNewsRelevanceJob")
@@ -94,12 +98,18 @@ public class QuartzConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "true")
     public Trigger ecoNewsRelevanceTrigger() {
-        return TriggerBuilder.newTrigger()
-            .forJob(ecoNewsRelevanceJobDetail())
-            .withIdentity("ecoNewsRelevanceTrigger")
-            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0/3 * * ?"))
-            .build();
+        String fixedCron = fixCronExpression(calculateRelevanceCron);
+        try {
+            return TriggerBuilder.newTrigger()
+                .forJob(ecoNewsRelevanceJobDetail())
+                .withIdentity("ecoNewsRelevanceTrigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
+                .build();
+        } catch (RuntimeException e) {
+            throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
+        }
     }
 
     private String fixCronExpression(String cron) {
