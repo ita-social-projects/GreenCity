@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -57,6 +59,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         this.random = new SecureRandom();
         this.monthYearFormat = DateTimeFormatter.ofPattern("yyyy-MM");
         this.fullDateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        OpenAIRequestType.initializeUrls(apiUrl, embeddingApiUrl);
     }
 
     /**
@@ -78,23 +81,10 @@ public class OpenAIServiceImpl implements OpenAIService {
         }
 
         HttpHeaders headers = createHttpHeaders();
-        Map<String, Object> body = createRequestBody(language, request, responseFormat);
-
-        for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
-            try {
-                return sendRequest(headers, body);
-            } catch (OpenAIResponseException e) {
-                log.error(e.getMessage());
-                log.error(MESSAGE_CURRENT_ATTEMPT, i);
-            } catch (RestClientException e) {
-                log.error(e.getMessage());
-                log.error(ERROR_ATTEMPTING_STOPPED);
-                throw new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE, e);
-            }
-        }
-
-        log.error(ERROR_MAX_ATTEMPTS_REACHED);
-        throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
+        Map<String, Object> body = createRequestBodyForChatCompletion(language, request, responseFormat);
+        List<OpenAIResponseDTO> response = sendRequest(headers, body, 1,
+            OpenAIRequestType.CHAT_COMPLETION);
+        return response.get(0);
     }
 
     /**
@@ -119,27 +109,11 @@ public class OpenAIServiceImpl implements OpenAIService {
             throw new OpenAIRequestException(OPEN_AI_EMBEDDING_INPUT_MISSING);
         }
 
-        Map<String, Object> body = new HashMap<>();
-        body.put(REQUEST_INPUT_KEY, title);
-        body.put(REQUEST_MODEL_KEY, embeddingApiModel);
-        body.put(REQUEST_DIMENSIONS_KEY, dimensionsTokens);
         HttpHeaders headers = createHttpHeaders();
-
-        for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
-            try {
-                return sendEmbeddingRequest(headers, body);
-            } catch (OpenAIResponseException e) {
-                log.error(e.getMessage());
-                log.error(MESSAGE_CURRENT_ATTEMPT, i);
-            } catch (RestClientException e) {
-                log.error(e.getMessage());
-                log.error(ERROR_ATTEMPTING_STOPPED);
-                throw new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE, e);
-            }
-        }
-
-        log.error(ERROR_MAX_ATTEMPTS_REACHED);
-        throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
+        Map<String, Object> body = createRequestBodyForEmbedding(List.of(title));
+        List<OpenAIResponseDTO> response = sendRequest(headers, body, 1,
+            OpenAIRequestType.EMBEDDING);
+        return response.get(0);
     }
 
     /**
@@ -166,110 +140,10 @@ public class OpenAIServiceImpl implements OpenAIService {
             throw new OpenAIRequestException("Input list for batch embedding is empty.");
         }
 
-        Map<String, Object> body = new HashMap<>();
-        body.put(REQUEST_INPUT_KEY, titles);
-        body.put(REQUEST_MODEL_KEY, embeddingApiModel);
-        body.put(REQUEST_DIMENSIONS_KEY, dimensionsTokens);
         HttpHeaders headers = createHttpHeaders();
-
-        for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
-            try {
-                return sendBatchEmbeddingRequest(headers, body, titles.size());
-            } catch (OpenAIResponseException e) {
-                log.error(e.getMessage());
-                log.error(MESSAGE_CURRENT_ATTEMPT, i);
-            } catch (RestClientException e) {
-                log.error(e.getMessage());
-                log.error(ERROR_ATTEMPTING_STOPPED);
-                throw new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE, e);
-            }
-        }
-
-        log.error(ERROR_MAX_ATTEMPTS_REACHED);
-        throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
-    }
-
-    /**
-     * Sends a batch embedding request to the OpenAI API.
-     *
-     * <p>
-     * This method performs a POST request to the configured embedding API URL with
-     * the given request body and headers. It then parses the response into a list
-     * of {@link OpenAIResponseDTO} objects. The response size is validated against
-     * the expected number of embeddings.
-     * </p>
-     *
-     * @param headers      the HTTP headers to include in the request
-     * @param body         the request body containing the input texts, model, and
-     *                     dimensions
-     * @param expectedSize the expected number of embeddings in the response (must
-     *                     match the number of inputs sent)
-     * @return a list of {@link OpenAIResponseDTO} representing the embeddings
-     *         returned by the API
-     * @throws OpenAIResponseException if the response body is {@code null} or
-     *                                 invalid
-     * @throws OpenAIRequestException  if the request to the OpenAI API fails
-     */
-    private List<OpenAIResponseDTO> sendBatchEmbeddingRequest(HttpHeaders headers, Map<String, Object> body,
-        int expectedSize)
-        throws OpenAIRequestException {
-        Map<String, Object> responseBody = restClient.post()
-            .uri(embeddingApiUrl)
-            .headers(headersConsumer -> headersConsumer.addAll(headers))
-            .body(body)
-            .retrieve()
-            .body(new ParameterizedTypeReference<>() {
-            });
-
-        if (responseBody == null) {
-            throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
-        }
-
-        return parseBatchResponseEmbedding(responseBody, expectedSize);
-    }
-
-    /**
-     * Parses the response from the OpenAI API for a batch embedding request.
-     *
-     * <p>
-     * This method extracts the embedding vectors, token usage information, and
-     * assigns the current UTC timestamp as the response time. The number of
-     * embeddings in the response is validated against the expected size.
-     * </p>
-     *
-     * @param responseBody the raw response body returned by the OpenAI API
-     * @param expectedSize the expected number of embeddings (must match the number
-     *                     of input texts sent)
-     * @return a list of {@link OpenAIResponseDTO} objects containing the parsed
-     *         embeddings and metadata
-     * @throws OpenAIResponseException if the response body is malformed, missing
-     *                                 required fields, or the number of embeddings
-     *                                 does not match the expected size
-     */
-    private List<OpenAIResponseDTO> parseBatchResponseEmbedding(Map<String, Object> responseBody, int expectedSize) {
-        try {
-            List<Map<String, Object>> dataList = (List<Map<String, Object>>) responseBody.get(RESPONSE_DATA_KEY);
-            if (dataList == null || dataList.size() != expectedSize) {
-                throw new OpenAIResponseException("Mismatch in number of embeddings returned.");
-            }
-
-            Map<String, Object> usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
-            int promptTokens = (Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY);
-            int totalTokens = (Integer) usage.get(RESPONSE_TOTAL_TOKENS_KEY);
-
-            LocalDateTime responseTime = LocalDateTime.now(ZoneOffset.UTC);
-
-            return dataList.stream().map(entry -> {
-                OpenAIResponseDTO dto = new OpenAIResponseDTO();
-                dto.setContent(entry.get(RESPONSE_EMBEDDING_KEY).toString());
-                dto.setUsedInputTokens(promptTokens);
-                dto.setUsedOutputTokens(totalTokens);
-                dto.setResponseDateTime(responseTime);
-                return dto;
-            }).toList();
-        } catch (Exception e) {
-            throw new OpenAIResponseException("Invalid format of batch embedding response.", e);
-        }
+        Map<String, Object> body = createRequestBodyForEmbedding(titles);
+        return sendRequest(headers, body, titles.size(),
+            OpenAIRequestType.BATCH_EMBEDDING);
     }
 
     /**
@@ -291,7 +165,7 @@ public class OpenAIServiceImpl implements OpenAIService {
      * @return a map representing the structured request body to be sent to the
      *         OpenAI API
      */
-    private Map<String, Object> createRequestBody(LanguageDTO language,
+    private Map<String, Object> createRequestBodyForChatCompletion(LanguageDTO language,
         String prompt,
         OpenAIResponseFormat responseFormat) {
         Map<String, Object> body = new HashMap<>();
@@ -323,6 +197,26 @@ public class OpenAIServiceImpl implements OpenAIService {
         body.put(REQUEST_TEMPERATURE_KEY, temperature);
         body.put(REQUEST_RESPONSE_FORMAT_KEY, responseFormat.getFormat());
 
+        return body;
+    }
+
+    /**
+     * Creates the request body for the OpenAI API embedding request.
+     *
+     * <p>
+     * The body includes the input texts, model name, and dimensions.
+     * </p>
+     *
+     * @param titles a list of input texts (typically news titles) for which to
+     *               generate embedding vectors
+     * @return a map representing the structured request body to be sent to the
+     *         OpenAI API
+     */
+    private Map<String, Object> createRequestBodyForEmbedding(List<String> titles) {
+        Map<String, Object> body = new HashMap<>();
+        body.put(REQUEST_INPUT_KEY, titles.size() == 1 ? titles.get(0) : titles);
+        body.put(REQUEST_MODEL_KEY, embeddingApiModel);
+        body.put(REQUEST_DIMENSIONS_KEY, dimensionsTokens);
         return body;
     }
 
@@ -375,138 +269,183 @@ public class OpenAIServiceImpl implements OpenAIService {
             .orElse(null);
     }
 
-    /**
-     * Sends a request to the OpenAI API using the provided headers and body.
-     *
-     * @param headers the headers to include in the request
-     * @param body    the body of the request
-     * @return the response from the OpenAI API as a String
-     * @throws OpenAIRequestException if the request is invalid or the OpenAI
-     *                                service is unavailable
-     */
-    private OpenAIResponseDTO sendRequest(HttpHeaders headers, Map<String, Object> body) throws OpenAIRequestException {
-        Map<String, Object> responseBody = restClient.post()
-            .uri(apiUrl)
-            .headers(headersConsumer -> headersConsumer.addAll(headers))
-            .body(body)
-            .retrieve()
-            .body(new ParameterizedTypeReference<>() {
-            });
+    private List<OpenAIResponseDTO> sendRequest(HttpHeaders headers,
+        Map<String, Object> body,
+        int bodySize,
+        OpenAIRequestType requestType) {
+        for (int i = 1; i <= MAX_REQUEST_ATTEMPTS; i++) {
+            try {
+                Map<String, Object> responseBody = restClient.post()
+                    .uri(requestType.getUrl())
+                    .headers(headersConsumer -> headersConsumer.addAll(headers))
+                    .body(body)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {
+                    });
 
-        if (responseBody == null) {
-            throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
+                if (responseBody == null) {
+                    throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
+                }
+
+                return requestType.parseResponse(responseBody, bodySize);
+            } catch (OpenAIResponseException e) {
+                log.error(e.getMessage());
+                log.error(MESSAGE_CURRENT_ATTEMPT, i);
+            } catch (RestClientException e) {
+                log.error(e.getMessage());
+                log.error(ERROR_ATTEMPTING_STOPPED);
+                throw new OpenAIRequestException(ERROR_NO_OPENAI_RESPONSE, e);
+            }
         }
 
-        return parseResponse(responseBody);
+        log.error(ERROR_MAX_ATTEMPTS_REACHED);
+        throw new OpenAIRequestException(ERROR_MAX_ATTEMPTS_REACHED);
     }
 
-    /**
-     * Sends an HTTP POST request to the OpenAI API to retrieve an embedding vector.
-     *
-     * <p>
-     * Uses the provided headers and request body to call the embedding endpoint.
-     * The response is expected to be a structured JSON object, which is then parsed
-     * into a {@link OpenAIResponseDTO} using {@code parseResponseEmbedding()}.
-     * </p>
-     *
-     * @param headers the HTTP headers including authorization and content type
-     * @param body    the request body containing input text and model parameters
-     * @return a parsed {@link OpenAIResponseDTO} containing the embedding result
-     * @throws OpenAIRequestException if the response from OpenAI is invalid or
-     *                                cannot be retrieved
-     */
-    private OpenAIResponseDTO sendEmbeddingRequest(HttpHeaders headers, Map<String, Object> body)
-        throws OpenAIRequestException {
-        Map<String, Object> responseBody = restClient.post()
-            .uri(embeddingApiUrl)
-            .headers(headersConsumer -> headersConsumer.addAll(headers))
-            .body(body)
-            .retrieve()
-            .body(new ParameterizedTypeReference<>() {
-            });
+    private enum OpenAIRequestType {
+        CHAT_COMPLETION((responseBody, expectedSize) -> List.of(parseChatResponse(responseBody))),
+        EMBEDDING((responseBody, expectedSize) -> List.of(parseResponseEmbedding(responseBody))),
+        BATCH_EMBEDDING(OpenAIRequestType::parseBatchResponseEmbedding);
 
-        if (responseBody == null) {
-            throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE);
+        @Getter
+        private String url;
+        private final BiFunction<Map<String, Object>, Integer, List<OpenAIResponseDTO>> parser;
+
+        OpenAIRequestType(BiFunction<Map<String, Object>, Integer, List<OpenAIResponseDTO>> parser) {
+            this.parser = parser;
         }
 
-        return parseResponseEmbedding(responseBody);
-    }
-
-    /**
-     * Parses the response from the OpenAI API into a {@link OpenAIResponseDTO}
-     * object.
-     *
-     * @param responseBody the response from the OpenAI API as a Map
-     * @return the parsed response as an {@link OpenAIResponseDTO} object
-     * @throws OpenAIRequestException if the response is invalid
-     */
-    private OpenAIResponseDTO parseResponse(Map<String, Object> responseBody) {
-        OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
-
-        try {
-            openAIResponseDTO.setId((String) responseBody.get(RESPONSE_ID_KEY));
-
-            var choices = (List<Map<String, Object>>) responseBody.get(RESPONSE_CHOICES_KEY);
-            var choice = choices.get(0);
-            var message = (Map<String, Object>) choice.get(RESPONSE_MESSAGE_KEY);
-            openAIResponseDTO.setContent((String) message.get(RESPONSE_JSON_CONTENT_KEY));
-
-            var usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
-            openAIResponseDTO.setUsedInputTokens((Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY));
-            openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_COMPLETION_TOKENS_KEY));
-
-            openAIResponseDTO.setResponseDateTime(LocalDateTime.ofEpochSecond(
-                ((Integer) responseBody.get(RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC));
-        } catch (NullPointerException | ClassCastException e) {
-            throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE, e);
+        public List<OpenAIResponseDTO> parseResponse(Map<String, Object> responseBody, int expectedSize) {
+            return parser.apply(responseBody, expectedSize);
         }
 
-        return openAIResponseDTO;
-    }
+        public static void initializeUrls(String apiUrl, String embeddingApiUrl) {
+            CHAT_COMPLETION.url = apiUrl;
+            EMBEDDING.url = embeddingApiUrl;
+            BATCH_EMBEDDING.url = embeddingApiUrl;
+        }
 
-    /**
-     * Parses the response body from the OpenAI embedding API into an
-     * {@link OpenAIResponseDTO}.
-     *
-     * <p>
-     * This method extracts the embedding vector, token usage statistics, and the
-     * response timestamp. The embedding is converted to a string and set as the
-     * content of the DTO.
-     * </p>
-     *
-     * <p>
-     * If the response structure is invalid, missing required fields, or has
-     * unexpected types, an {@link OpenAIResponseException} is thrown.
-     * </p>
-     *
-     * @param responseBody the raw response map returned by the OpenAI embedding API
-     * @return a populated {@link OpenAIResponseDTO} containing the embedding data
-     *         and usage info
-     * @throws OpenAIResponseException if the response is malformed or cannot be
-     *                                 parsed
-     */
-    private OpenAIResponseDTO parseResponseEmbedding(Map<String, Object> responseBody) {
-        OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
+        /**
+         * Parses the response from the OpenAI API into a {@link OpenAIResponseDTO}
+         * object.
+         *
+         * @param responseBody the response from the OpenAI API as a Map
+         * @return the parsed response as an {@link OpenAIResponseDTO} object
+         * @throws OpenAIRequestException if the response is invalid
+         */
+        private static OpenAIResponseDTO parseChatResponse(Map<String, Object> responseBody) {
+            OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
 
-        try {
-            var dataList = (List<Map<String, Object>>) responseBody.get(RESPONSE_DATA_KEY);
-            if (dataList == null || dataList.isEmpty()) {
-                throw new OpenAIResponseException(ERROR_NO_EMBEDDING_FOUND);
+            try {
+                openAIResponseDTO.setId((String) responseBody.get(RESPONSE_ID_KEY));
+
+                var choices = (List<Map<String, Object>>) responseBody.get(RESPONSE_CHOICES_KEY);
+                var choice = choices.get(0);
+                var message = (Map<String, Object>) choice.get(RESPONSE_MESSAGE_KEY);
+                openAIResponseDTO.setContent((String) message.get(RESPONSE_JSON_CONTENT_KEY));
+
+                var usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
+                openAIResponseDTO.setUsedInputTokens((Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY));
+                openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_COMPLETION_TOKENS_KEY));
+
+                openAIResponseDTO.setResponseDateTime(LocalDateTime.ofEpochSecond(
+                    ((Integer) responseBody.get(RESPONSE_CREATED_KEY)).longValue(), 0, ZoneOffset.UTC));
+            } catch (NullPointerException | ClassCastException e) {
+                throw new OpenAIResponseException(ERROR_INVALID_OPENAI_RESPONSE, e);
             }
 
-            var embeddingEntry = dataList.get(0);
-            var embedding = (List<Double>) embeddingEntry.get(RESPONSE_EMBEDDING_KEY);
-            openAIResponseDTO.setContent(embedding.toString());
-
-            var usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
-            openAIResponseDTO.setUsedInputTokens((Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY));
-            openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_TOTAL_TOKENS_KEY));
-
-            openAIResponseDTO.setResponseDateTime(LocalDateTime.now(ZoneOffset.UTC));
-        } catch (NullPointerException | ClassCastException e) {
-            throw new OpenAIResponseException(ERROR_INVALID_EMBEDDING_FORMAT, e);
+            return openAIResponseDTO;
         }
 
-        return openAIResponseDTO;
+        /**
+         * Parses the response body from the OpenAI embedding API into an
+         * {@link OpenAIResponseDTO}.
+         *
+         * <p>
+         * This method extracts the embedding vector, token usage statistics, and the
+         * response timestamp. The embedding is converted to a string and set as the
+         * content of the DTO.
+         * </p>
+         *
+         * <p>
+         * If the response structure is invalid, missing required fields, or has
+         * unexpected types, an {@link OpenAIResponseException} is thrown.
+         * </p>
+         *
+         * @param responseBody the raw response map returned by the OpenAI embedding API
+         * @return a populated {@link OpenAIResponseDTO} containing the embedding data
+         *         and usage info
+         * @throws OpenAIResponseException if the response is malformed or cannot be
+         *                                 parsed
+         */
+        private static OpenAIResponseDTO parseResponseEmbedding(Map<String, Object> responseBody) {
+            OpenAIResponseDTO openAIResponseDTO = new OpenAIResponseDTO();
+
+            try {
+                var dataList = (List<Map<String, Object>>) responseBody.get(RESPONSE_DATA_KEY);
+                if (dataList == null || dataList.isEmpty()) {
+                    throw new OpenAIResponseException(ERROR_NO_EMBEDDING_FOUND);
+                }
+
+                var embeddingEntry = dataList.get(0);
+                var embedding = (List<Double>) embeddingEntry.get(RESPONSE_EMBEDDING_KEY);
+                openAIResponseDTO.setContent(embedding.toString());
+
+                var usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
+                openAIResponseDTO.setUsedInputTokens((Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY));
+                openAIResponseDTO.setUsedOutputTokens((Integer) usage.get(RESPONSE_TOTAL_TOKENS_KEY));
+
+                openAIResponseDTO.setResponseDateTime(LocalDateTime.now(ZoneOffset.UTC));
+            } catch (NullPointerException | ClassCastException e) {
+                throw new OpenAIResponseException(ERROR_INVALID_EMBEDDING_FORMAT, e);
+            }
+
+            return openAIResponseDTO;
+        }
+
+        /**
+         * Parses the response from the OpenAI API for a batch embedding request.
+         *
+         * <p>
+         * This method extracts the embedding vectors, token usage information, and
+         * assigns the current UTC timestamp as the response time. The number of
+         * embeddings in the response is validated against the expected size.
+         * </p>
+         *
+         * @param responseBody the raw response body returned by the OpenAI API
+         * @param expectedSize the expected number of embeddings (must match the number
+         *                     of input texts sent)
+         * @return a list of {@link OpenAIResponseDTO} objects containing the parsed
+         *         embeddings and metadata
+         * @throws OpenAIResponseException if the response body is malformed, missing
+         *                                 required fields, or the number of embeddings
+         *                                 does not match the expected size
+         */
+        private static List<OpenAIResponseDTO> parseBatchResponseEmbedding(Map<String, Object> responseBody,
+            int expectedSize) {
+            try {
+                List<Map<String, Object>> dataList = (List<Map<String, Object>>) responseBody.get(RESPONSE_DATA_KEY);
+                if (dataList == null || dataList.size() != expectedSize) {
+                    throw new OpenAIResponseException("Mismatch in number of embeddings returned.");
+                }
+
+                Map<String, Object> usage = (Map<String, Object>) responseBody.get(RESPONSE_USAGE_KEY);
+                int promptTokens = (Integer) usage.get(RESPONSE_PROMPT_TOKENS_KEY);
+                int totalTokens = (Integer) usage.get(RESPONSE_TOTAL_TOKENS_KEY);
+
+                LocalDateTime responseTime = LocalDateTime.now(ZoneOffset.UTC);
+
+                return dataList.stream().map(entry -> {
+                    OpenAIResponseDTO dto = new OpenAIResponseDTO();
+                    dto.setContent(entry.get(RESPONSE_EMBEDDING_KEY).toString());
+                    dto.setUsedInputTokens(promptTokens);
+                    dto.setUsedOutputTokens(totalTokens);
+                    dto.setResponseDateTime(responseTime);
+                    return dto;
+                }).toList();
+            } catch (Exception e) {
+                throw new OpenAIResponseException("Invalid format of batch embedding response.", e);
+            }
+        }
     }
 }

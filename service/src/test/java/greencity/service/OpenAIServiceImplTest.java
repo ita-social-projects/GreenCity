@@ -6,6 +6,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +23,10 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -62,7 +66,7 @@ class OpenAIServiceImplTest {
     private OpenAIServiceImpl openAIService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         openAIService.setApiKey(apiKey);
         openAIService.setApiUrl(apiUrl);
         openAIService.setModel(model);
@@ -71,6 +75,9 @@ class OpenAIServiceImplTest {
         openAIService.setEmbeddingApiModel(embeddingApiModel);
         openAIService.setEmbeddingApiUrl(embeddingApiUrl);
 
+        Class<?> enumClass = Class.forName("greencity.service.OpenAIServiceImpl$OpenAIRequestType");
+        Method method = enumClass.getDeclaredMethod("initializeUrls", String.class, String.class);
+        method.invoke(enumClass, apiUrl, embeddingApiUrl);
     }
 
     @Test
