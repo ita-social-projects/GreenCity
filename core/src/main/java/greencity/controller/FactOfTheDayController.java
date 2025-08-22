@@ -1,11 +1,11 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.service.FactOfTheDayService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,7 +56,7 @@ public class FactOfTheDayController {
     })
     @GetMapping("/random/by-tags")
     public ResponseEntity<FactOfTheDayTranslationDTO> getRandomFactOfTheDayByTags(
-        @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.ok(factOfTheDayService.getRandomFactOfTheDayForUser(principal.getName()));
+        @CurrentUserId Long userId) {
+        return ResponseEntity.ok(factOfTheDayService.getRandomFactOfTheDayForUser(userId));
     }
 }

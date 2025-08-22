@@ -26,7 +26,7 @@ public interface ToDoListItemTranslationRepo extends JpaRepository<ToDoListItemT
      */
     @Query(nativeQuery = true, value = "SELECT * FROM to_do_list_item_translations as it "
         + "where it.to_do_list_item_id = (SELECT utdl.to_do_list_item_id FROM user_to_do_list as utdl WHERE "
-        + "utdl.id=:itemId) AND it.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
+        + "utdl.id=:itemId) AND it.language_code =:languageCode")
     ToDoListItemTranslation findByLangAndUserToDoListItemId(String languageCode, Long itemId);
 
     /**
@@ -40,7 +40,7 @@ public interface ToDoListItemTranslationRepo extends JpaRepository<ToDoListItemT
      */
     @Query("SELECT it FROM ToDoListItemTranslation it JOIN ToDoListItem i ON i.id = it.toDoListItem.id "
         + "JOIN i.habits h ON h.id = :habitId"
-        + " WHERE it.language.code = :languageCode")
+        + " WHERE it.languageCode = :languageCode")
     List<ToDoListItemTranslation> findToDoListByHabitIdAndByLanguageCode(String languageCode,
         @Param(value = "habitId") Long habitId);
 }

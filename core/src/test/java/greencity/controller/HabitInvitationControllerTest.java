@@ -1,7 +1,9 @@
 package greencity.controller;
 
+import greencity.TestConst;
 import greencity.config.SecurityConfig;
-import greencity.dto.user.UserVO;
+import greencity.converters.UserIdArgumentResolver;
+import greencity.security.jwt.JwtTool;
 import greencity.service.HabitInvitationService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,35 +43,44 @@ class HabitInvitationControllerTest {
     @Mock
     private HabitInvitationService habitInvitationService;
 
+    @Mock
+    private JwtTool jwtTool;
+
     @InjectMocks
     private HabitInvitationController habitInvitationController;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(habitInvitationController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(habitInvitationController)
+            .setCustomArgumentResolvers(new UserIdArgumentResolver(jwtTool))
+            .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void acceptHabitInvitationShouldReturn200() {
         Long invitationId = 1L;
-        UserVO userVO = new UserVO();
-        doNothing().when(habitInvitationService).acceptHabitInvitation(invitationId, userVO);
+        doNothing().when(habitInvitationService).acceptHabitInvitation(invitationId, TestConst.USER_ID);
         mockMvc.perform(patch("/habit/invite/{invitationId}/accept", invitationId)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitInvitationService, times(1)).acceptHabitInvitation(invitationId, userVO);
+        verify(habitInvitationService, times(1)).acceptHabitInvitation(invitationId, TestConst.USER_ID);
     }
 
     @Test
     @SneakyThrows
     void rejectHabitInvitationShouldReturn200() {
         Long invitationId = 2L;
-        UserVO userVO = new UserVO();
-        doNothing().when(habitInvitationService).rejectHabitInvitation(invitationId, userVO);
+        doNothing().when(habitInvitationService).rejectHabitInvitation(invitationId, TestConst.USER_ID);
         mockMvc.perform(delete("/habit/invite/{invitationId}/reject", invitationId)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitInvitationService, times(1)).rejectHabitInvitation(invitationId, userVO);
+        verify(habitInvitationService, times(1)).rejectHabitInvitation(invitationId, TestConst.USER_ID);
     }
 }

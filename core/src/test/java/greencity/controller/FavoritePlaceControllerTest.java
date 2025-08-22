@@ -1,7 +1,10 @@
 package greencity.controller;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.security.jwt.JwtTool;
 import greencity.service.FavoritePlaceService;
 
 import java.security.Principal;
@@ -39,6 +42,9 @@ class FavoritePlaceControllerTest {
     @Mock
     ModelMapper modelMapper;
 
+    @Mock
+    JwtTool jwtTool;
+
     @InjectMocks
     FavoritePlaceController favoritePlaceController;
 
@@ -48,8 +54,16 @@ class FavoritePlaceControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(favoritePlaceController)
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserIdArgumentResolver(jwtTool))
             .build();
+
+        String jwt = "jwt";
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
     }
 
     @Test
@@ -57,7 +71,7 @@ class FavoritePlaceControllerTest {
         mockMvc.perform(get(favoritePlaceLink + "/")
             .principal(ModelUtils.getPrincipal())).andExpect(status().isOk());
 
-        verify(favoritePlaceService, times(1)).findAllByUserEmail("test@gmail.com");
+        verify(favoritePlaceService, times(1)).findAllByUserId(TestConst.USER_ID);
     }
 
     @Test
@@ -71,7 +85,7 @@ class FavoritePlaceControllerTest {
             """;
 
         when(
-            modelMapper.map(favoritePlaceService.update(favoritePlaceDto, principal.getName()), FavoritePlaceDto.class))
+            modelMapper.map(favoritePlaceService.update(favoritePlaceDto, TestConst.USER_ID), FavoritePlaceDto.class))
             .thenReturn(favoritePlaceDto);
 
         mockMvc.perform(put(favoritePlaceLink + "/")
@@ -79,7 +93,7 @@ class FavoritePlaceControllerTest {
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
-        verify(favoritePlaceService, times(1)).update(favoritePlaceDto, principal.getName());
+        verify(favoritePlaceService, times(1)).update(favoritePlaceDto, TestConst.USER_ID);
     }
 
     @Test
@@ -89,7 +103,7 @@ class FavoritePlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(favoritePlaceService, times(1))
-            .deleteByUserEmailAndPlaceId(1L, principal.getName());
+            .deleteByUserIdAndPlaceId(1L, TestConst.USER_ID);
     }
 
     @Test
@@ -98,6 +112,6 @@ class FavoritePlaceControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(favoritePlaceService, times(1)).getFavoritePlaceWithLocation(1L, principal.getName());
+        verify(favoritePlaceService, times(1)).getFavoritePlaceWithLocation(1L, TestConst.USER_ID);
     }
 }

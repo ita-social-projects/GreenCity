@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="add-users" author="Pohranychnyi Oleksandr">
+        <insert tableName="greencity_users">
+            <column name="name" value="UBS"/>
+            <column name="language_id" value="2"/>
+            <column name="rating" value="0"/>
+        </insert>
+
+        <insert tableName="greencity_users">
+            <column name="name" value="GREENCITY"/>
+            <column name="language_id" value="2"/>
+            <column name="rating" value="0"/>
+        </insert>
+
+        <insert tableName="greencity_users">
+            <column name="name" value="AI Generated"/>
+            <column name="language_id" value="2"/>
+            <column name="rating" value="0"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

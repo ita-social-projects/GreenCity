@@ -5,11 +5,28 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.enums.AchievementStatus;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface AchievementService {
+    /**
+     * Retrieves a list of UserAchievement objects associated with a given user ID.
+     *
+     * @param userId The unique identifier of the user for whom to fetch the
+     *               achievements.
+     * @return A list of UserAchievement objects related to the specified user ID.
+     */
+    List<UserAchievementVO> findAllUserAchievementsByUserId(Long userId);
+
+    /**
+     * Method for finding all the achievements.
+     *
+     * @return list of all{@link AchievementVO}.
+     */
+    List<AchievementVO> findAll();
+
     /**
      * Find {@link AchievementVO} for management by page .
      *
@@ -88,7 +105,8 @@ public interface AchievementService {
      * @return List AchievementVO Returns a list of achievements matching the given
      *         criteria.
      */
-    List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+    List<AchievementVO> findAllByTypeAndCategory(Long userId, String principalEmail,
+        AchievementStatus achievementStatus,
         Long achievementCategoryId);
 
     /**
@@ -110,7 +128,8 @@ public interface AchievementService {
      * @return Integer Returns a quantity of achievements matching the given
      *         criteria.
      */
-    Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+    Integer findAchievementCountByTypeAndCategory(Long userId, String principalEmail,
+        AchievementStatus achievementStatus,
         Long achievementCategoryId);
 
     /**

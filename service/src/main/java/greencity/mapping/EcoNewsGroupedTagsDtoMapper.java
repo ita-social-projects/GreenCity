@@ -6,6 +6,7 @@ import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
 import org.modelmapper.AbstractConverter;
@@ -38,10 +39,12 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
         if (ecoNews == null) {
             throw new NullPointerException("EcoNews cannot be null");
         }
+        User author = ecoNews.getAuthor();
+
         return EcoNewsGroupedTagsDto.builder()
             .author(EcoNewsAuthorDto.builder()
-                .id(ecoNews.getAuthor().getId())
-                .name(ecoNews.getAuthor().getName())
+                .id(author.getId())
+                .name(author.getName())
                 .build())
             .id(ecoNews.getId())
             .content(ecoNews.getText())
@@ -68,12 +71,12 @@ public class EcoNewsGroupedTagsDtoMapper extends AbstractConverter<EcoNews, EcoN
      */
     private TagUkEnNamesDto mapToTagUkEnNamesDto(Tag tag) {
         String nameEn = tag.getTagTranslations().stream()
-            .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
+            .filter(t -> t.getLanguageCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
             .map(TagTranslation::getName)
             .findFirst().orElse("");
 
         String nameUk = tag.getTagTranslations().stream()
-            .filter(t -> t.getLanguage().getCode().equals("ua"))
+            .filter(t -> t.getLanguageCode().equals(AppConstant.LANGUAGE_CODE_UA))
             .map(TagTranslation::getName)
             .findFirst().orElse("");
 

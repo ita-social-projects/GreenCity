@@ -212,7 +212,7 @@
 
                             <td id="translations3" style="width: 300px">
                                 <div th:each="translation : ${todoitem.getTranslations()}">
-                                    <h5 th:if="${translation.getLanguage().getCode()==('uk'==#locale.getLanguage() ?
+                                    <h5 th:if="${translation.getLanguageCode()==('uk'==#locale.getLanguage() ?
                                     'ua' : #locale.getLanguage())}"
                                         th:text="${translation.getContent()}">
                                     </h5>

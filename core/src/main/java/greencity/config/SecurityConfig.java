@@ -1,5 +1,6 @@
 package greencity.config;
 
+import greencity.constant.ErrorMessage;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.filters.XSSFilter;
 import greencity.security.jwt.JwtTool;
@@ -30,6 +31,8 @@ import static greencity.constant.AppConstant.ADMIN;
 import static greencity.constant.AppConstant.USER;
 import static greencity.constant.AppConstant.MODERATOR;
 import static greencity.constant.AppConstant.UBS_EMPLOYEE;
+import static greencity.constant.AppConstant.LOGS_LINKS;
+import static greencity.constant.AppConstant.EXPORT_SETTINGS_LINKS;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -86,7 +89,7 @@ public class SecurityConfig {
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
-    public static final String LOGS = "/logs/**";
+    public static final String USERS = "/users";
     private static final String DISLIKE_V2 = "/dislikeV2";
     private static final String LIKE_V2 = "/likeV2";
     private final JwtTool jwtTool;
@@ -130,7 +133,7 @@ public class SecurityConfig {
             .addFilterBefore(new XSSFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
-                .sendError(SC_UNAUTHORIZED, "Authorize first."))
+                .sendError(SC_UNAUTHORIZED, ErrorMessage.UNAUTHORIZED_RESPONSE))
                 .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities.")))
             .authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -152,7 +155,6 @@ public class SecurityConfig {
                     "/place/info/{id}",
                     "/place/statuses",
                     "/place/all",
-                    "/habit",
                     "/habit/{id}",
                     "/habit/{id}/to-do-list",
                     "/tags/search",
@@ -198,7 +200,6 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID,
                     EVENTS + "/v2" + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
-                    "/languages/codes",
                     SEARCH + ECO_NEWS,
                     SEARCH + EVENTS,
                     SEARCH + PLACES,
@@ -234,6 +235,7 @@ public class SecurityConfig {
                     ECO_NEWS + ECO_NEWS_ID + LIKE_V2,
                     "/favorite_place/",
                     "/to-do-list-items",
+                    "/habit",
                     "/habit/assign/allForCurrentUser",
                     "/habit/assign/allMutualHabits/{userId}",
                     "/habit/assign/allUser/{userId}",
@@ -298,6 +300,9 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
+                    "/ai/**",
+                    EXPORT_SETTINGS_LINKS,
+                    LOGS_LINKS,
                     "/ai/forecast")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
@@ -329,7 +334,6 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
-                    "/files",
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
@@ -361,7 +365,7 @@ public class SecurityConfig {
                     ECO_NEWS + COMMENTS + DISLIKE_V2,
                     ECO_NEWS + COMMENTS + LIKE,
                     ECO_NEWS + COMMENTS + LIKE_V2,
-                    LOGS)
+                    LOGS_LINKS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
@@ -450,16 +454,29 @@ public class SecurityConfig {
                     "/place")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
-                    "/user/filter")
+                    "/user/filter",
+                    USERS + "/create")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
                     "/user/status",
                     "/user/role",
-                    "/user/update/role")
+                    "/user/update/role",
+                    USERS + "/{id}/location",
+                    USERS + "/rating",
+                    USERS + "/credo",
+                    USERS + "/{userId}/name")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     COMMENTS)
+                .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.GET,
+                    ACHIEVEMENTS + "/all",
+                    ACHIEVEMENTS + "/user-achievements/**",
+                    USERS + "/**")
+                .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.PUT,
+                    USERS + "/picturePath")
                 .hasAnyRole(ADMIN)
                 .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")

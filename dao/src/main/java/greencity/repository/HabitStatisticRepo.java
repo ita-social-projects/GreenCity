@@ -74,7 +74,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         + "     INNER JOIN HabitTranslation ht ON ht.habit.id = hs.habitAssign.habit.id "
         + "     WHERE upper(hs.habitAssign.status) <> 'CANCELLED' "
         + "     AND cast(hs.createDate as date) = cast(:statisticCreationDate as date)"
-        + "     AND ht.language.code = :languageCode "
+        + "     AND ht.languageCode = :languageCode "
         + "GROUP BY ht.habitItem "
         + "ORDER BY COUNT(hs.habitAssign.habit) DESC")
     List<Tuple> getStatisticsForAllHabitItemsByDate(

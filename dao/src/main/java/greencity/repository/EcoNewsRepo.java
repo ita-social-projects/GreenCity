@@ -93,7 +93,7 @@ public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, L
     @Query(nativeQuery = true,
         value = "SELECT DISTINCT e.* "
             + "FROM eco_news e "
-            + "JOIN users u on u.id = e.author_id "
+            + "JOIN greencity_users u on u.id = e.author_id "
             + "JOIN eco_news_tags ent on e.id = ent.eco_news_id "
             + "JOIN tag_translations tt on tt.tag_id = ent.tags_id "
             + "WHERE concat(e.id,'') like :query or "

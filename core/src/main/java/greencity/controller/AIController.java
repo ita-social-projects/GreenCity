@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.user.UserVO;
@@ -33,13 +34,14 @@ public class AIController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
+    @ApiLocale
     @GetMapping("/forecast")
     public ResponseEntity<String> forecast(@Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(aiService.getForecast(userVO.getId(), userVO.getLanguageVO().getCode()));
     }
 
-    @Operation(summary = "Generates news content based on query")
+    @Operation(summary = "Generates news content based on the specified language and query")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -47,10 +49,11 @@ public class AIController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
+    @ApiLocale
     @GetMapping("/generate/eco-news")
     public ResponseEntity<String> creatingEcoNews(@Parameter(hidden = true) @CurrentUser UserVO userVO,
         @RequestParam(required = false) String query) {
-        String news = aiService.getNews(userVO.getLanguageVO().getCode(), query);
-        return ResponseEntity.status(HttpStatus.OK).body(news);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(aiService.getNews(userVO.getLanguageVO().getCode(), query));
     }
 }

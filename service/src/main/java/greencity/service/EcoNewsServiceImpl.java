@@ -2,25 +2,28 @@ package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsGroupedTagsDto;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsGroupedTagsDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNews_;
@@ -41,20 +44,16 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
+import greencity.rating.constant.RatingPointsNames;
 import greencity.repository.EcoNewsRepo;
+import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -68,16 +67,26 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final RestClient restClient;
     private final ModelMapper modelMapper;
     private final TagsService tagService;
-    private final FileService fileService;
+    private final UserRemoteClient userRemoteClient;
     private final AchievementCalculation achievementCalculation;
     private final RatingCalculation ratingCalculation;
     private final List<String> languageCode = List.of("en", "ua");
@@ -118,7 +127,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
         final EcoNewsGenericDto ecoNewsDto = modelMapper.map(toSave, EcoNewsGenericDto.class);
-        UserVO user = userService.findByEmail(email);
+        UserVO user = userService.findNotDeactivatedByEmail(email);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(RatingPointsNames.CREATE_NEWS), user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
@@ -151,9 +160,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String title,
         Long authorId,
         boolean favorite,
-        String email) {
-        Long currentUserId = (email != null && !email.isEmpty()) ? getUserIdByEmail(email) : null;
-
+        Long currentUserId) {
         return buildPageableAdvancedGenericDto(ecoNewsRepo.findAll(
             (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title, authorId, favorite,
                 currentUserId),
@@ -218,7 +225,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         List<String> tags = new ArrayList<>();
         for (String lang : languageCode) {
             tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(lang))
+                .filter(tagTranslation -> tagTranslation.getLanguageCode().equals(lang))
                 .map(TagTranslation::getName)
                 .toList());
         }
@@ -283,8 +290,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 new TypeToken<List<Tag>>() {
                 }.getType()));
         if (image != null) {
-            fileService.delete(toUpdate.getImagePath());
-            toUpdate.setImagePath(fileService.upload(image));
+            try {
+                userRemoteClient.deleteFile(toUpdate.getImagePath());
+                toUpdate.setImagePath(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
         }
     }
 
@@ -299,8 +310,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
-            fileService.delete(toUpdate.getImagePath());
-            toUpdate.setImagePath(fileService.upload(image));
+            try {
+                userRemoteClient.deleteFile(toUpdate.getImagePath());
+                toUpdate.setImagePath(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
         }
     }
 
@@ -315,7 +330,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         try {
             ecoNewsRepo.save(toUpdate);
         } catch (Exception e) {
-            fileService.delete(toUpdate.getImagePath());
+            try {
+                userRemoteClient.deleteFile(toUpdate.getImagePath());
+            } catch (WebClientRequestException | WebClientResponseException webException) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, webException.getMessage());
+            }
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
     }
@@ -325,27 +344,28 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserVO user) {
+    public EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile image, UserClaims userClaims) {
         EcoNews toUpdate = findEcoNewsById(updateEcoNewsDto.getId());
-        if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
+        if (!userClaims.roles().contains(Role.ROLE_ADMIN)
+            && !userClaims.userId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
         try {
             ecoNewsRepo.save(toUpdate);
         } catch (Exception e) {
-            fileService.delete(toUpdate.getImagePath());
+            userRemoteClient.deleteFile(toUpdate.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return modelMapper.map(toUpdate, EcoNewsGenericDto.class);
     }
 
     @Override
-    public void addToFavorites(Long ecoNewsId, String email) {
+    public void addToFavorites(Long ecoNewsId, Long userId) {
         EcoNews ecoNews = findEcoNewsById(ecoNewsId);
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (ecoNews.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES);
@@ -356,11 +376,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     @Override
-    public void removeFromFavorites(Long ecoNewsId, String email) {
+    public void removeFromFavorites(Long ecoNewsId, Long userId) {
         EcoNews ecoNews = findEcoNewsById(ecoNewsId);
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!ecoNews.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.ECO_NEW_NOT_IN_FAVORITES);
@@ -543,8 +563,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsDto getEcoNewsDto(EcoNews ecoNews, List<String> list) {
         User author = ecoNews.getAuthor();
-        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
-            author.getName());
+        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
 
         return EcoNewsDto.builder()
             .id(ecoNews.getId())
@@ -583,7 +602,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         User user = modelMapper.map(byEmail, User.class);
         toSave.setAuthor(user);
         if (image != null) {
-            toSave.setImagePath(fileService.upload(image));
+            try {
+                toSave.setImagePath(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
         }
 
         Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());
@@ -601,7 +624,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         try {
             ecoNewsRepo.save(toSave);
         } catch (Exception e) {
-            fileService.delete(toSave.getImagePath());
+            userRemoteClient.deleteFile(toSave.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return toSave;
@@ -663,19 +686,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
-    private Long getUserIdByEmail(String email) {
-        return userRepo.findByEmail(email)
-            .map(User::getId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-    }
-
     /**
      * {@inheritDoc}
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
-    public void setHiddenValue(Long id, UserVO user, boolean value) {
-        if (user.getRole() != Role.ROLE_ADMIN) {
+    public void setHiddenValue(Long id, UserClaims userClaims, boolean value) {
+        if (!userClaims.roles().contains(Role.ROLE_ADMIN)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         EcoNews ecoNews = findEcoNewsById(id);

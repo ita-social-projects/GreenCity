@@ -222,28 +222,6 @@ class RestClientTest {
     }
 
     @Test
-    void searchBy() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        String query = "Search";
-        Pageable pageable = PageRequest.of(0, 10);
-        List<UserManagementDto> ecoNewsDtos = Collections.singletonList(new UserManagementDto());
-        PageableAdvancedDto<UserManagementDto> pageableAdvancedDto =
-            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize()
-            + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
-            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
-            })).thenReturn(ResponseEntity.ok(pageableAdvancedDto));
-
-        assertEquals(pageableAdvancedDto, restClient.searchBy(pageable, query));
-    }
-
-    @Test
     void updateUser() {
         // given
         UserManagementDto userManagementDto = new UserManagementDto();

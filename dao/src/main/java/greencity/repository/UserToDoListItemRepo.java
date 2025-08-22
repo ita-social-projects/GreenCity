@@ -124,11 +124,4 @@ public interface UserToDoListItemRepo extends JpaRepository<UserToDoListItem, Lo
     List<UserToDoListItem> getAllByUserToDoListIdAndUserId(
         @Param(value = "userToDoListItemId") Long userToDoListItemId,
         @Param(value = "userId") Long userId);
-
-    /*
-     * @Query(nativeQuery = true, value =
-     * "SELECT utdl.duration, utdl.working_days, utdl.status FROM user_to_do_list utdl "
-     * + "JOIN habit_assign ha ON ha.id = utdl.habit_assign_id " +
-     * "JOIN to_do_list_item tdli ON tdli.id = utdl.to_do_list_item " + "JOIN  "
-     */
 }

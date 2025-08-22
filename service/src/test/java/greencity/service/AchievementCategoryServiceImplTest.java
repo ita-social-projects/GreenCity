@@ -1,10 +1,10 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.user.UserVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.repository.AchievementCategoryRepo;
@@ -30,9 +30,6 @@ class AchievementCategoryServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
-
-    @Mock
-    private UserService userService;
 
     @Mock
     private AchievementService achievementService;
@@ -102,24 +99,25 @@ class AchievementCategoryServiceImplTest {
 
     @Test
     void findAllWithAtLeastOneAchievementTest() {
+        String email = "email@gmail.com";
         List<AchievementCategory> list = List.of(ModelUtils.getAchievementCategory());
         AchievementCategoryTranslationDto expectedDto = ModelUtils.getAchievementCategoryTranslationDto();
         expectedDto.setAchieved(0);
         expectedDto.setTotalQuantity(0);
         List<AchievementCategoryTranslationDto> expected = List.of(expectedDto);
-        UserVO userVO = ModelUtils.getUserVO();
+        Long userId = TestConst.USER_ID;
 
         when(achievementCategoryRepo.findAllWithAtLeastOneAchievement()).thenReturn(list);
         when(modelMapper.map(ModelUtils.getAchievementCategory(), AchievementCategoryTranslationDto.class))
             .thenReturn(ModelUtils.getAchievementCategoryTranslationDto());
-        when(userService.findByEmail("email@gmail.com")).thenReturn(userVO);
-        when(achievementService.findAchievementCountByTypeAndCategory("email@gmail.com", null, list.getFirst().getId()))
+        when(achievementService.findAchievementCountByTypeAndCategory(userId, email, null,
+            list.getFirst().getId()))
             .thenReturn(0);
-        when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userVO.getId(),
+        when(userAchievementRepo.findAllByUserIdAndAchievement_AchievementCategoryId(userId,
             expectedDto.getId())).thenReturn(Collections.emptyList());
 
         List<AchievementCategoryTranslationDto> actual =
-            achievementCategoryService.findAllWithAtLeastOneAchievement("email@gmail.com");
+            achievementCategoryService.findAllWithAtLeastOneAchievement(userId, email);
 
         assertEquals(expected, actual);
     }

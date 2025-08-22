@@ -91,7 +91,7 @@
                                  constraintName="fk_user_id"
                                  onDelete="RESTRICT" onUpdate="RESTRICT"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet id="Beshlei-20" author="Taras Beshlei">
         <dropTable tableName="habits_habit_statuses"/>

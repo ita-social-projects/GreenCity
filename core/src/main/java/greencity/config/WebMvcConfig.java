@@ -1,6 +1,9 @@
 package greencity.config;
 
 import greencity.converters.UserArgumentResolver;
+import greencity.converters.UserClaimsArgumentResolver;
+import greencity.converters.UserIdArgumentResolver;
+import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -26,6 +29,7 @@ import java.util.Locale;
 public class WebMvcConfig implements WebMvcConfigurer {
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final JwtTool jwtTool;
 
     /**
      * Method for configuring message source.
@@ -99,6 +103,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.removeIf(resolver -> resolver instanceof PageableHandlerMethodArgumentResolver);
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
+        resolvers.add(new UserIdArgumentResolver(jwtTool));
+        resolvers.add(new UserClaimsArgumentResolver(jwtTool));
         resolvers.add(new CustomPageableHandlerMethodArgumentResolver());
     }
 }

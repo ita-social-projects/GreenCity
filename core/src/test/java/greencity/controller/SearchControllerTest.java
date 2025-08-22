@@ -5,6 +5,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.service.SearchService;
 import greencity.service.UserService;
 import jakarta.servlet.ServletException;
+import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +40,7 @@ class SearchControllerTest {
     private static final String ecoNewsSearchLinkPart = "/eco-news";
     private static final String eventsSearchLinkPart = "/events";
     private static final String placesSearchLinkPart = "/places";
+    private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setup() {
@@ -51,6 +54,7 @@ class SearchControllerTest {
     void searchEcoNewsTest() throws Exception {
         mockMvc.perform(get(mainSearchLink +
             ecoNewsSearchLinkPart + "?searchQuery={query}", "Eco news title")
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
@@ -59,6 +63,7 @@ class SearchControllerTest {
     void searchEventsTest() throws Exception {
         mockMvc.perform(get(mainSearchLink +
             eventsSearchLinkPart + "?searchQuery={query}", "Events title")
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
@@ -67,6 +72,7 @@ class SearchControllerTest {
     void searchPlacesTest() throws Exception {
         mockMvc.perform(get(mainSearchLink +
             placesSearchLinkPart + "?searchQuery={query}", "Places title")
+            .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
@@ -76,6 +82,7 @@ class SearchControllerTest {
         ServletException exception = assertThrows(ServletException.class, () -> {
             mockMvc.perform(get(mainSearchLink +
                 placesSearchLinkPart + "?searchQuery={query}&isFavorite=true", "Places title")
+                .principal(principal)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
         });

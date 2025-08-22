@@ -4,6 +4,8 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserClaims;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.annotations.ValidLanguage;
@@ -21,6 +23,7 @@ import greencity.dto.econews.EcoNewContentSourceDto;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
@@ -110,8 +113,8 @@ public class EcoNewsController {
     })
     @PostMapping("/{ecoNewsId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long ecoNewsId,
-        @Parameter(hidden = true) Principal principal) {
-        ecoNewsService.addToFavorites(ecoNewsId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        ecoNewsService.addToFavorites(ecoNewsId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -130,8 +133,8 @@ public class EcoNewsController {
     })
     @DeleteMapping("/{ecoNewsId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long ecoNewsId,
-        @Parameter(hidden = true) Principal principal) {
-        ecoNewsService.removeFromFavorites(ecoNewsId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        ecoNewsService.removeFromFavorites(ecoNewsId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -156,12 +159,12 @@ public class EcoNewsController {
             required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
         @Parameter(description = "Image of eco news") @ImageValidation @RequestPart(
             required = false) MultipartFile image,
-        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims,
         @PathVariable Long ecoNewsId) {
         if (!ecoNewsId.equals(updateEcoNewsDto.getId())) {
             throw new WrongIdException(ErrorMessage.ECO_NEWS_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL);
         }
-        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, user));
+        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, userClaims));
     }
 
     /**
@@ -209,11 +212,9 @@ public class EcoNewsController {
         @RequestParam(required = false, name = "author-id") Long authorId,
         @Parameter(description = "Search for favorite news") @RequestParam(required = false, name = "favorite",
             defaultValue = "false") boolean favorite,
-        @Parameter(hidden = true) Principal principal) {
-        String userEmail = principal != null ? principal.getName() : null;
-
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
+            ecoNewsService.find(page, tags, title, authorId, favorite, userId));
     }
 
     @Operation(summary = "Check if relevance is enabled.")

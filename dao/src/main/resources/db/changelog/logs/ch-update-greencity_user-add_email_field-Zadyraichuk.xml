@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="update-greencity_user-add_email_field" author="Rostyslav Zadyraichuk">
+        <addColumn tableName="greencity_users">
+            <column name="email" type="VARCHAR(72)">
+                <constraints unique="true"/>
+            </column>
+        </addColumn>
+        <sql>
+            UPDATE greencity_users
+            SET email = (
+                SELECT email
+                FROM users
+                WHERE greencity_users.name = users.name
+                LIMIT 1
+            );
+        </sql>
+        <addNotNullConstraint tableName="greencity_users" columnName="email"/>
+
+        <rollback>
+            <dropColumn tableName="greencity_users" columnName="email"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

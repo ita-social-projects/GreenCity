@@ -1,36 +1,47 @@
 package greencity.mapping;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import greencity.ModelUtils;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
-import java.util.stream.Collectors;
-
+import greencity.entity.User;
+import greencity.enums.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsVOMapperTest {
+
+    @Mock
+    ModelMapper modelMapper;
+
     @InjectMocks
     EcoNewsVOMapper ecoNewsVOMapper;
 
     @Test
     void convert() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
+        User author = ecoNews.getAuthor();
+        UserVO authorVO = mock(UserVO.class);
+        Role role = Role.ROLE_USER;
 
         EcoNewsVO expected = EcoNewsVO.builder()
             .id(ecoNews.getId())
             .author(UserVO.builder()
                 .id(ecoNews.getAuthor().getId())
                 .name(ecoNews.getAuthor().getName())
-                .email(ecoNews.getAuthor().getEmail())
-                .userStatus(ecoNews.getAuthor().getUserStatus())
-                .role(ecoNews.getAuthor().getRole())
+                .email(authorVO.getEmail())
+                .role(role)
                 .build())
             .creationDate(ecoNews.getCreationDate())
             .imagePath(ecoNews.getImagePath())
@@ -53,6 +64,11 @@ class EcoNewsVOMapperTest {
                     .build())
                 .collect(Collectors.toSet()))
             .build();
+
+        when(modelMapper.map(author, UserVO.class))
+            .thenReturn(authorVO);
+        when(authorVO.getRole())
+            .thenReturn(role);
 
         assertEquals(expected, ecoNewsVOMapper.convert(ecoNews));
     }

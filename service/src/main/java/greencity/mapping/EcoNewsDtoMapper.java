@@ -4,7 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import java.util.stream.Collectors;
+import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import greencity.service.CommentService;
 import org.modelmapper.AbstractConverter;
@@ -34,10 +34,12 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
      */
     @Override
     public EcoNewsDto convert(EcoNews ecoNews) {
+        User author = ecoNews.getAuthor();
+
         return EcoNewsDto.builder()
             .author(EcoNewsAuthorDto.builder()
-                .id(ecoNews.getAuthor().getId())
-                .name(ecoNews.getAuthor().getName())
+                .id(author.getId())
+                .name(author.getName())
                 .build())
             .id(ecoNews.getId())
             .content(ecoNews.getText())
@@ -47,12 +49,12 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
             .shortInfo(ecoNews.getShortInfo())
             .tagsEn(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+                .filter(t -> t.getLanguageCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
+                .map(TagTranslation::getName).toList())
             .tagsUk(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguage().getCode().equals("ua"))
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+                .filter(t -> t.getLanguageCode().equals("ua"))
+                .map(TagTranslation::getName).toList())
             .likes(ecoNews.getUsersLikedNews().size())
             .dislikes(ecoNews.getUsersDislikedNews().size())
             .title(ecoNews.getTitle())

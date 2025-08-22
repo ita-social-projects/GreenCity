@@ -1,25 +1,66 @@
 package greencity.service;
 
+import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
+import static greencity.constant.OpenAIConstants.AI_USER_EMAIL;
+import static greencity.constant.OpenAIConstants.CLOSING_CURLY_BRACE;
+import static greencity.constant.OpenAIConstants.EMPTY_REPLACEMENT;
+import static greencity.constant.OpenAIConstants.ERROR_ECO_NEWS_CREATION_FAILED;
+import static greencity.constant.OpenAIConstants.ERROR_INVALID_TITLE_OR_CONTENT;
+import static greencity.constant.OpenAIConstants.ERROR_JSON_INVALID_FORMAT;
+import static greencity.constant.OpenAIConstants.ERROR_JSON_KEY_NOT_FOUND;
+import static greencity.constant.OpenAIConstants.ERROR_JSON_PARSE_FAILURE;
+import static greencity.constant.OpenAIConstants.ERROR_MAX_ATTEMPTS_REACHED;
+import static greencity.constant.OpenAIConstants.ERROR_NO_OPENAI_RESPONSE;
+import static greencity.constant.OpenAIConstants.ERROR_NO_TAGS_FOUND;
+import static greencity.constant.OpenAIConstants.FORMAT_ASTERISKS_ESCAPE;
+import static greencity.constant.OpenAIConstants.FORMAT_BOLD_PATTERN;
+import static greencity.constant.OpenAIConstants.FORMAT_CODE_BLOCK_PATTERN;
+import static greencity.constant.OpenAIConstants.FORMAT_EMPTY_STRING;
+import static greencity.constant.OpenAIConstants.FORMAT_ITALIC_PATTERN;
+import static greencity.constant.OpenAIConstants.FORMAT_JSON_BLOCK_PATTERN;
+import static greencity.constant.OpenAIConstants.FORMAT_JSON_CODE_BLOCK_END;
+import static greencity.constant.OpenAIConstants.FORMAT_JSON_CODE_BLOCK_START;
+import static greencity.constant.OpenAIConstants.FORMAT_NEW_LINE;
+import static greencity.constant.OpenAIConstants.FORMAT_QUOTES_PATTERN;
+import static greencity.constant.OpenAIConstants.FORMAT_TITLE_KEY;
+import static greencity.constant.OpenAIConstants.FORMAT_TITLE_PREFIX;
+import static greencity.constant.OpenAIConstants.MAX_REQUEST_ATTEMPTS;
+import static greencity.constant.OpenAIConstants.MESSAGE_CURRENT_ATTEMPT;
+import static greencity.constant.OpenAIConstants.MESSAGE_JSON_VALIDATION_HINT;
+import static greencity.constant.OpenAIConstants.OPENING_CURLY_BRACE;
+import static greencity.constant.OpenAIConstants.OPEN_AI_REQUEST_FAILURE;
+import static greencity.constant.OpenAIConstants.QUOTES_REPLACEMENT;
+import static greencity.constant.OpenAIConstants.REGEX_ASTERISKS;
+import static greencity.constant.OpenAIConstants.REGEX_MARKDOWN_ASTERISKS;
+import static greencity.constant.OpenAIConstants.REGEX_MD_HEADERS;
+import static greencity.constant.OpenAIConstants.RESPONSE_JSON_CONTENT_KEY;
+import static greencity.constant.OpenAIConstants.TEXT_FORMAT_REPLACEMENT;
+import static greencity.constant.OpenAIRequest.ADVICE;
+import static greencity.constant.OpenAIRequest.FORECAST;
+import static greencity.constant.OpenAIRequest.NEWS_BY_QUERY;
+import static greencity.constant.OpenAIRequest.NEWS_WITHOUT_QUERY;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
 import greencity.converters.FloatArrayConverter;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
+import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsRelevance;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
-import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.EcoNewsCreationUserMissingException;
 import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
@@ -29,23 +70,21 @@ import greencity.repository.EcoNewsRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.TagsRepo;
-import greencity.repository.UserRepo;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import jakarta.validation.constraints.NotNull;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import static greencity.constant.ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID;
-import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
-import static greencity.constant.OpenAIRequest.*;
-import static greencity.constant.OpenAIConstants.*;
 
 @Slf4j
 @Service
@@ -55,7 +94,7 @@ public class AIServiceImpl implements AIService {
     private final EcoNewsRepo ecoNewsRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final TagsRepo tagsRepo;
-    private final UserRepo userRepo;
+    private final UserRemoteClient userRemoteClient;
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
@@ -260,6 +299,7 @@ public class AIServiceImpl implements AIService {
 
     /**
      * Inserts new relevance vectors for a batch of EcoNews entries.
+     *
      * <p>
      * This method retrieves EcoNews entities by their IDs, generates embeddings for
      * their titles using the OpenAI service, converts the embeddings into float
@@ -298,6 +338,7 @@ public class AIServiceImpl implements AIService {
 
     /**
      * Updates existing relevance vectors for a batch of EcoNews entries.
+     *
      * <p>
      * This method retrieves EcoNews entities by their IDs and their corresponding
      * {@link EcoNewsRelevance} entries. It then generates new embeddings for the
@@ -498,10 +539,18 @@ public class AIServiceImpl implements AIService {
      */
     private EcoNews createEcoNewsInstance(String jsonResponse) {
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
+        Optional<UserVO> aiGeneratedUser = Optional.empty();
+        try {
+            aiGeneratedUser = userRemoteClient.findNotDeactivatedByEmail(AI_USER_EMAIL);
+        } catch (WebClientRequestException | WebClientResponseException e) {
+            log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+        }
+        if (aiGeneratedUser.isEmpty()) {
+            log.error("AI-generated user not found, cannot create EcoNews");
+            throw new EcoNewsCreationUserMissingException("Required AI-generated user is missing");
+        }
         String title = jsonNode.get(FORMAT_TITLE_KEY).asText();
         String content = jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();
-        User aiGeneratedUser = userRepo.findByEmail(AI_USER_EMAIL)
-            .orElseGet(this::createAiGeneratedUser);
         List<Tag> tags = tagsRepo.findTagsByType(TagType.ECO_NEWS);
 
         if (tags.isEmpty()) {
@@ -510,7 +559,7 @@ public class AIServiceImpl implements AIService {
         }
 
         Tag tag = tags.getFirst();
-        return buildEcoNews(title, content, aiGeneratedUser, tag);
+        return buildEcoNews(title, content, aiGeneratedUser.orElse(null), tag);
     }
 
     /**
@@ -541,30 +590,6 @@ public class AIServiceImpl implements AIService {
     }
 
     /**
-     * Creates and persists a system user representing the AI-generated content
-     * author.
-     *
-     * <p>
-     * This user has predefined attributes such as a fixed name, email, role, and
-     * language ("ua"). The user is saved in the repository and returned.
-     * </p>
-     *
-     * @return the newly created and saved {@link User} entity representing the AI
-     *         author
-     */
-    private User createAiGeneratedUser() {
-        User user = User.builder()
-            .name(AI_USER_NAME)
-            .dateOfRegistration(LocalDateTime.now())
-            .email(AI_USER_EMAIL)
-            .role(Role.ROLE_USER)
-            .refreshTokenKey(AI_MOCKED_REFRESH_TOKEN)
-            .language(modelMapper.map(languageService.findByCode("ua"), Language.class))
-            .build();
-        return userRepo.save(user);
-    }
-
-    /**
      * Constructs a new {@link EcoNews} entity with the specified title, content,
      * author, and tag.
      *
@@ -581,11 +606,11 @@ public class AIServiceImpl implements AIService {
      */
     private EcoNews buildEcoNews(String title,
         String content,
-        User aiGeneratedUser,
+        UserVO aiGeneratedUser,
         Tag tag) {
         return EcoNews.builder()
             .creationDate(ZonedDateTime.now())
-            .author(aiGeneratedUser)
+            .author(modelMapper.map(aiGeneratedUser, User.class))
             .title(title)
             .text(content)
             .tags(List.of(tag))

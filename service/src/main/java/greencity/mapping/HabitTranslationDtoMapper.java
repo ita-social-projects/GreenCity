@@ -15,7 +15,7 @@ public class HabitTranslationDtoMapper extends AbstractConverter<HabitTranslatio
             .description(habitTranslation.getDescription())
             .habitItem(habitTranslation.getHabitItem())
             .name(habitTranslation.getName())
-            .languageCode(habitTranslation.getLanguage().getCode())
+            .languageCode(habitTranslation.getLanguageCode())
             .build();
     }
 

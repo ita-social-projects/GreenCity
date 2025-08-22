@@ -21,9 +21,7 @@ public class RepoConstants {
     public static final String ROLE = "role";
     public static final String ADDRESS = "address";
     public static final String VALUE = "value";
-    public static final String EMAIL = "email";
     public static final String NAME = "name";
-    public static final String AUTHOR = "author";
     public static final String ID = "id";
     public static final String FAVORITE_PLACES = "favoritePlaces";
     public static final String USER = "user";
