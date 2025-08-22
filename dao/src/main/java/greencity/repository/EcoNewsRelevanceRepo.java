@@ -1,8 +1,10 @@
 package greencity.repository;
 
 import greencity.entity.EcoNewsRelevance;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,13 +29,14 @@ public interface EcoNewsRelevanceRepo extends JpaRepository<EcoNewsRelevance, Lo
             WHERE enr.ecoNews.id IN (:ecoNewsIds)
                 AND enr.isOutdated = false
         """)
-    List<EcoNewsRelevance> findAllByEcoNewsIdIn(@Param("ecoNewsIds") List<Long> ecoNewsIds);
+    List<EcoNewsRelevance> findAllByEcoNewsIdIn(@Param("ecoNewsIds") Collection<Long> ecoNewsIds);
 
     @Query("""
             UPDATE EcoNewsRelevance enr
             SET enr.isOutdated = true
             WHERE enr.ecoNews.id = :id
         """)
+    @Modifying
     void setOutdatedTrueByEcoNewsId(@Param("id") Long id);
 
     @Query("""

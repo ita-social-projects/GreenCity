@@ -239,9 +239,9 @@ public class EcoNewsController {
     public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findRelevantNews(
         @Parameter(hidden = true) Pageable page,
         @Parameter(description = "Tags to filter (if do not input tags get all)") @RequestParam(
-            required = false, defaultValue = "") List<String> tags,
-        @RequestParam(required = false, defaultValue = "") String title,
-        @RequestParam(required = false, defaultValue = "", name = "author-name") String author,
+            required = false) List<String> tags,
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false, name = "author-name") String author,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsRelevanceService.findRelevantEcoNews(page, tags, title, author, userVO));

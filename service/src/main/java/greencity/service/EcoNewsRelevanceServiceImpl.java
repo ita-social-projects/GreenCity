@@ -263,10 +263,12 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         CachedTagsWithCoherence tags) {
         List<EcoNews> news = getFilteredNews(requestMetadata, cachedUserNews.getLastRequestedDate());
         cachedUserNews.setLastRequestedDate(cachedUserNews.getLastRequestedDate().minusWeeks(1));
-        List<EcoNewsRelevance> ecoNewsRelevanceList = ecoNewsRelevanceRepo.findAllByEcoNewsIdIn(
-            news.stream()
-                .map(EcoNews::getId)
-                .toList());
+        List<Long> ecoNewsIds = news.stream()
+            .map(EcoNews::getId)
+            .toList();
+        List<EcoNewsRelevance> ecoNewsRelevanceList = ecoNewsIds.isEmpty()
+            ? List.of()
+            : ecoNewsRelevanceRepo.findAllByEcoNewsIdIn(ecoNewsIds);
         Map<Long, EcoNewsRelevance> ecoNewsRelevanceMap = ecoNewsRelevanceList.stream()
             .collect(Collectors.toMap(relevance -> relevance.getEcoNews().getId(),
                 Function.identity()));

@@ -38,5 +38,6 @@ public class EcoNewsRelevance {
     private Float[] titleVector;
 
     @Column(name = "outdated", nullable = false)
-    private Boolean isOutdated;
+    @Builder.Default
+    private Boolean isOutdated = Boolean.FALSE;
 }
