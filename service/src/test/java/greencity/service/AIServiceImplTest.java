@@ -474,7 +474,7 @@ class AIServiceImplTest {
     @Test
     void insertRelevanceBatch_whenIdsEmpty_shouldDoNothing() {
         aiService.insertRelevanceBatch(Collections.emptyList());
-        verifyNoInteractions(ecoNewsRepo, openAIService, floatArrayConverter, ecoNewsRelevanceRepo);
+        verifyNoInteractions(openAIService, floatArrayConverter, ecoNewsRelevanceRepo);
     }
 
     @Test
@@ -538,6 +538,6 @@ class AIServiceImplTest {
 
         aiService.updateRelevanceBatch(ids);
 
-        verifyNoInteractions(ecoNewsRepo, openAIService, ecoNewsRelevanceRepo, floatArrayConverter);
+        verifyNoInteractions(openAIService, ecoNewsRelevanceRepo, floatArrayConverter);
     }
 }

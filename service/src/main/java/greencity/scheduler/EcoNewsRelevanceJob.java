@@ -22,14 +22,16 @@ public class EcoNewsRelevanceJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        ZonedDateTime currentTime = ZonedDateTime.now();
+        EcoNewsRelevanceJob.updateLastRunTime();
 
         List<Long> outdatedIds = ecoNewsRelevanceRepo.findOutdatedEcoNewsIds();
         List<Long> recentNewsIds = ecoNewsRepo.findIdsCreatedAfter(lastRunTime);
 
         aiServiceImpl.updateRelevanceBatch(outdatedIds);
         aiServiceImpl.insertRelevanceBatch(recentNewsIds);
+    }
 
-        lastRunTime = currentTime;
+    private static void updateLastRunTime() {
+        lastRunTime = ZonedDateTime.now();
     }
 }

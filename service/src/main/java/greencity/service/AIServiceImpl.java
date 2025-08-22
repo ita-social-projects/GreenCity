@@ -312,13 +312,11 @@ public class AIServiceImpl implements AIService {
      */
     @Transactional
     public void insertRelevanceBatch(Collection<Long> ids) {
-        if (ids.isEmpty()) {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
+        List<OpenAIResponseDTO> embeddings = makeRequestEmbeddings(ecoNewsList);
+        if (embeddings.isEmpty()) {
             return;
         }
-        List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
-        List<String> titles = ecoNewsList.stream().map(EcoNews::getTitle).toList();
-
-        List<OpenAIResponseDTO> embeddings = openAIService.makeRequestEmbeddings(titles);
 
         List<EcoNewsRelevance> relevanceList = new ArrayList<>();
         for (int i = 0; i < ecoNewsList.size(); i++) {
@@ -352,15 +350,11 @@ public class AIServiceImpl implements AIService {
      */
     @Transactional
     public void updateRelevanceBatch(Collection<Long> ids) {
-        if (ids.isEmpty()) {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
+        List<OpenAIResponseDTO> embeddings = makeRequestEmbeddings(ecoNewsList);
+        if (embeddings.isEmpty()) {
             return;
         }
-        List<EcoNews> ecoNewsList = ecoNewsRepo.findAllById(ids);
-        List<String> titles = ecoNewsList.stream()
-            .map(EcoNews::getTitle)
-            .toList();
-
-        List<OpenAIResponseDTO> embeddings = openAIService.makeRequestEmbeddings(titles);
 
         List<EcoNewsRelevance> relevanceList = ecoNewsRelevanceRepo.findAllById(ids);
 
@@ -371,6 +365,26 @@ public class AIServiceImpl implements AIService {
         }
 
         ecoNewsRelevanceRepo.saveAll(relevanceList);
+    }
+
+    /**
+     * Sends a batch request to the OpenAI service to generate embedding vectors for
+     * the titles of the specified EcoNews entities.
+     *
+     * @param ecoNews the list of EcoNews entities for which to generate embeddings
+     * @return a list of OpenAIResponseDTO objects containing the embedding vectors
+     *         for the titles, or an empty list if no titles are found
+     */
+    private List<OpenAIResponseDTO> makeRequestEmbeddings(List<EcoNews> ecoNews) {
+        if (ecoNews.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> titles = ecoNews.stream()
+            .map(EcoNews::getTitle)
+            .toList();
+
+        return openAIService.makeRequestEmbeddings(titles);
     }
 
     /**

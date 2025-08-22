@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static greencity.ModelUtils.getEcoNewsDto;
 import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUserClaims;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 
@@ -14,6 +15,7 @@ import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
@@ -61,11 +63,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static greencity.ModelUtils.getEcoNewsDto;
-import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUpdateEcoNewsDto;
-import static greencity.ModelUtils.getUserVO;
-import static greencity.ModelUtils.getEcoNewsGroupedTagsDto;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -453,13 +451,14 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).update(any(UpdateEcoNewsDto.class), isNull(), eq(userVO));
+        verify(ecoNewsService).update(any(UpdateEcoNewsDto.class), isNull(), any(UserClaims.class));
     }
 
     @Test
     void updateEcoNewsWithWrongIdTest() throws Exception {
         UserVO userVO = getUserVO();
         UpdateEcoNewsDto updateEcoNewsDto = getUpdateEcoNewsDto();
+        UserClaims userClaims = getUserClaims();
         long ecoNewsId = updateEcoNewsDto.getId() + 1;
 
         when(userService.findNotDeactivatedByEmail(anyString()))
@@ -475,7 +474,7 @@ class EcoNewsControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
 
-        verify(ecoNewsService, never()).update(any(UpdateEcoNewsDto.class), isNull(), eq(userVO));
+        verify(ecoNewsService, never()).update(any(UpdateEcoNewsDto.class), isNull(), eq(userClaims));
     }
 
     @Test

@@ -262,9 +262,17 @@ class OpenAIServiceImplTest {
     }
 
     @Test
-    void makeRequestEmbeddingsWhenInputIsNullOrEmptyTest() {
-        assertThrows(OpenAIRequestException.class, () -> openAIService.makeRequestEmbeddings(null));
-        assertThrows(OpenAIRequestException.class, () -> openAIService.makeRequestEmbeddings(Collections.emptyList()));
+    void makeRequestEmbeddingsWhenInputIsNullTest() {
+        assertThrows(OpenAIRequestException.class,
+            () -> openAIService.makeRequestEmbeddings(null));
+
+        verify(restClient, never()).post();
+    }
+
+    @Test
+    void makeRequestEmbeddingsWhenInputIsEmptyTest() {
+        assertThrows(OpenAIRequestException.class,
+            () -> openAIService.makeRequestEmbeddings(Collections.emptyList()));
 
         verify(restClient, never()).post();
     }
