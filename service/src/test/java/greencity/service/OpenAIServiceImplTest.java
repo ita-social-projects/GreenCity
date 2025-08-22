@@ -277,8 +277,10 @@ class OpenAIServiceImplTest {
 
     @Test
     void makeRequestEmbeddingsWhenInputIsEmptyTest() {
+        List<String> titles = List.of();
+
         assertThrows(OpenAIRequestException.class,
-            () -> openAIService.makeRequestEmbeddings(List.of()));
+            () -> openAIService.makeRequestEmbeddings(titles));
 
         verify(restClient, never()).post();
     }
