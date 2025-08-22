@@ -169,8 +169,7 @@ class RelevanceWeightUtilsTest {
             Arguments.of("-0.1:1.1", 2, false),
             Arguments.of("0.7:1.2", 2, false),
             Arguments.of("-0.1:0.2", 2, false),
-            Arguments.of("", 0, false)
-        );
+            Arguments.of("", 0, false));
     }
 
     private static Stream<Arguments> prepareForNormalizedRatiosSum() {
@@ -180,7 +179,6 @@ class RelevanceWeightUtilsTest {
             Arguments.of("0.333333:0.333333:0.333334", 3, true),
             Arguments.of("0.6:0.5", 2, false),
             Arguments.of("0.3:0.3", 2, false),
-            Arguments.of("", 0, false)
-        );
+            Arguments.of("", 0, false));
     }
 }

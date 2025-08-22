@@ -15,20 +15,23 @@ public class RelevanceWeightUtils {
     /**
      * Parses given ratio string and validates it.
      *
-     * @param ratioString         string representing ratio divided by ":"
-     * @param expectedLength      expected length of the ratio array
-     * @param exceptionMessageType    exception message to be thrown if the ratio is invalid
-     * @param checkValuesNormalized flag indicating whether to check if the ratio values are normalized
-     * @param checkSumNormalized flag indicating whether to check if the sum of the ratio values is normalized
+     * @param ratioString           string representing ratio divided by ":"
+     * @param expectedLength        expected length of the ratio array
+     * @param exceptionMessageType  exception message to be thrown if the ratio is
+     *                              invalid
+     * @param checkValuesNormalized flag indicating whether to check if the ratio
+     *                              values are normalized
+     * @param checkSumNormalized    flag indicating whether to check if the sum of
+     *                              the ratio values is normalized
      *
      * @return validated ratio array
      * @throws BeanInitializationException if the ratio is invalid
      */
     public static double[] parseAndValidateRatios(String ratioString,
-                                                  int expectedLength,
-                                                  String exceptionMessageType,
-                                                  boolean checkValuesNormalized,
-                                                  boolean checkSumNormalized) {
+        int expectedLength,
+        String exceptionMessageType,
+        boolean checkValuesNormalized,
+        boolean checkSumNormalized) {
         try {
             double[] ratios = RelevanceWeightUtils.convertRatioFromString(ratioString);
 
@@ -133,8 +136,8 @@ public class RelevanceWeightUtils {
      * Checks if given ratios values are normalized.
      *
      * <p>
-     * A valid ratio is an array of doubles where each element is greater than 0
-     * and less than or equal to 1.
+     * A valid ratio is an array of doubles where each element is greater than 0 and
+     * less than or equal to 1.
      * </p>
      *
      * @param ratios array of ratios to check
@@ -150,8 +153,9 @@ public class RelevanceWeightUtils {
      * Checks if given ratios array sum is normalized.
      *
      * <p>
-     * A normalized ratio sum is an array of doubles where each element is greater than 0
-     * and less than or equal to 1, and the sum of all elements is equal to 1.
+     * A normalized ratio sum is an array of doubles where each element is greater
+     * than 0 and less than or equal to 1, and the sum of all elements is equal to
+     * 1.
      * </p>
      *
      * @param ratios array of ratios to check

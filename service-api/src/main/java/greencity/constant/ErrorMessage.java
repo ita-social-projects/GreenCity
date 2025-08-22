@@ -258,5 +258,6 @@ public class ErrorMessage {
     public static final String INVALID_TAGS_WEIGHTS = "Invalid tags weights parameter value.";
     public static final String INVALID_RATIO_FORMAT = "Expected %d values in format '%s', but got %s.";
     public static final String INVALID_RATIO_VALUE = "Expected value in range [0.0, 1.0], but provided value are '%s'.";
-    public static final String INVALID_RATIO_SUM = "Sum of all elements must be equal 1.0, but provided value are '%s'.";
+    public static final String INVALID_RATIO_SUM =
+        "Sum of all elements must be equal 1.0, but provided value are '%s'.";
 }
