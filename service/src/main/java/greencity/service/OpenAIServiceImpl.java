@@ -34,10 +34,6 @@ import static greencity.constant.OpenAIConstants.*;
 public class OpenAIServiceImpl implements OpenAIService {
     @Value("${openai.api.key}")
     private String apiKey;
-    @Value("${openai.api.url}")
-    private String apiUrl;
-    @Value("${openai.api.url.embedding}")
-    private String embeddingApiUrl;
     @Value("${openai.api.model}")
     private String model;
     @Value("${openai.api.model.embedding}")
@@ -49,12 +45,16 @@ public class OpenAIServiceImpl implements OpenAIService {
     @Value("${openai.api.temperature}")
     private Double temperature;
 
+    private final String apiUrl;
     private final RestClient restClient;
     private final SecureRandom random;
     private final DateTimeFormatter monthYearFormat;
     private final DateTimeFormatter fullDateTimeFormat;
 
-    public OpenAIServiceImpl(RestClient restClient) {
+    public OpenAIServiceImpl(@Value("${openai.api.url}") String apiUrl,
+        @Value("${openai.api.url.embedding}") String embeddingApiUrl,
+        RestClient restClient) {
+        this.apiUrl = apiUrl;
         this.restClient = restClient;
         this.random = new SecureRandom();
         this.monthYearFormat = DateTimeFormatter.ofPattern("yyyy-MM");
