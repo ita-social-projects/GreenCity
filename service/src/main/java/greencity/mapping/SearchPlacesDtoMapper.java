@@ -14,7 +14,7 @@ public class SearchPlacesDtoMapper extends AbstractConverter<Place, SearchPlaces
         return SearchPlacesDto.builder()
             .id(place.getId())
             .name(place.getName())
-            .category(language.equals("ua") ? place.getCategory().getNameUk() : place.getCategory().getNameEn())
+            .category(language.equals("uk") ? place.getCategory().getNameUk() : place.getCategory().getNameEn())
             .build();
     }
 }

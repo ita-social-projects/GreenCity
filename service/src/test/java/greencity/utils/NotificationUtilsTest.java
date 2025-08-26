@@ -1,5 +1,6 @@
 package greencity.utils;
 
+import java.util.Locale;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -10,8 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NotificationUtilsTest {
-    private static final ResourceBundle uaBundle = ResourceBundle.getBundle("notification_ua");
-    private static final ResourceBundle defaultBundle = ResourceBundle.getBundle("notification");
+    private static final ResourceBundle uaBundle = ResourceBundle.getBundle("notification_uk",
+        Locale.forLanguageTag("uk"), ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+    private static final ResourceBundle defaultBundle = ResourceBundle.getBundle("notification",
+        Locale.forLanguageTag("en"), ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
 
     @ParameterizedTest(name = "Test resolveTimeInUkrainian with input {0}")
     @MethodSource("provideUkrainianTestCases")

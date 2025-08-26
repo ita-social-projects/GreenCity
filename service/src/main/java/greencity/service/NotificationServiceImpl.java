@@ -383,7 +383,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
         String secondMessage = notification.getSecondMessage() != null ? notification.getSecondMessage() : "";
         int messagesCount = notification.getActionUsers().size();
-        String times = language.equals("ua")
+        String times = language.equals("uk")
             ? resolveTimesInUkrainian(messagesCount)
             : resolveTimesInEnglish(messagesCount);
         String body = bodyTemplate

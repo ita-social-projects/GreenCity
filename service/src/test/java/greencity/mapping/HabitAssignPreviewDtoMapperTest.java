@@ -41,7 +41,7 @@ class HabitAssignPreviewDtoMapperTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .languageCode("ua")
+                .languageCode("uk")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
@@ -52,7 +52,7 @@ class HabitAssignPreviewDtoMapperTest {
                 .build()));
         Habit habit = habitAssign.getHabit();
         HabitTranslation habitTranslationUk = habit.getHabitTranslations().stream()
-            .filter(translation -> translation.getLanguageCode().equalsIgnoreCase("ua"))
+            .filter(translation -> translation.getLanguageCode().equalsIgnoreCase("uk"))
             .findFirst().orElse(null);
         HabitTranslation habitTranslationEn = habit.getHabitTranslations().stream()
             .filter(translation -> !translation.getLanguageCode().equalsIgnoreCase("en"))

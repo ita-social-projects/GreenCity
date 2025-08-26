@@ -351,7 +351,7 @@ public class ModelUtils {
             .startDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
             .finishDate(ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()))
             .onlineLink(null)
-            .coordinates(getAddressDtoWithNullCountryUa()).build()))
+            .coordinates(getAddressDtoWithNullCountryUk()).build()))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
@@ -414,7 +414,7 @@ public class ModelUtils {
 
     public static List<TagTranslation> getTagTranslations() {
         return Arrays.asList(
-            TagTranslation.builder().id(1L).name("Новини").languageCode(getLanguageUa())
+            TagTranslation.builder().id(1L).name("Новини").languageCode(getLanguageUk())
                 .build(),
             TagTranslation.builder().id(2L).name("News").languageCode(getLanguage())
                 .build());
@@ -423,7 +423,7 @@ public class ModelUtils {
     public static List<TagTranslation> getHabitTagTranslations() {
         return Arrays.asList(
             TagTranslation.builder().id(1L).name("Багаторазове використання")
-                .languageCode(getLanguageUa())
+                .languageCode(getLanguageUk())
                 .build(),
             TagTranslation.builder().id(2L).name("Reusable").languageCode(getLanguage())
                 .build());
@@ -431,7 +431,7 @@ public class ModelUtils {
 
     public static List<TagTranslation> getEventTagTranslations() {
         return Arrays.asList(
-            TagTranslation.builder().id(1L).name("Соціальний").languageCode(getLanguageUa()).build(),
+            TagTranslation.builder().id(1L).name("Соціальний").languageCode(getLanguageUk()).build(),
             TagTranslation.builder().id(2L).name("Social").languageCode(getLanguage()).build(),
             TagTranslation.builder().id(3L).name("Соціальний").languageCode(getLanguage()).build());
     }
@@ -620,14 +620,14 @@ public class ModelUtils {
         return AppConstant.DEFAULT_LANGUAGE_CODE;
     }
 
-    public static String getLanguageUa() {
+    public static String getLanguageUk() {
         return AppConstant.LANGUAGE_CODE_UA;
     }
 
     public static EcoNews getEcoNews() {
         Tag tag = new Tag();
         tag.setTagTranslations(
-            List.of(TagTranslation.builder().name("Новини").languageCode(getLanguageUa()).build(),
+            List.of(TagTranslation.builder().name("Новини").languageCode(getLanguageUk()).build(),
                 TagTranslation.builder().name("News").languageCode(getLanguage()).build()));
         return EcoNews.builder()
             .id(1L)
@@ -647,7 +647,7 @@ public class ModelUtils {
     public static EcoNews getEcoNewsForMethodConvertTest() {
         Tag tag = new Tag();
         tag.setTagTranslations(
-            List.of(TagTranslation.builder().name("Новини").languageCode(getLanguageUa()).build(),
+            List.of(TagTranslation.builder().name("Новини").languageCode(getLanguageUk()).build(),
                 TagTranslation.builder().name("News").languageCode(getLanguage()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", false, Collections.singletonList(tag), Collections.emptySet(),
@@ -679,7 +679,7 @@ public class ModelUtils {
     public static ToDoListItemTranslation getToDoListItemTranslations1() {
         return ToDoListItemTranslation.builder()
             .id(1L)
-            .languageCode(getLanguageUa())
+            .languageCode(getLanguageUk())
             .toDoListItem(
                 new ToDoListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -1032,7 +1032,7 @@ public class ModelUtils {
             List.of(ModelUtils.getFactOfTheDayTranslation(), FactOfTheDayTranslation.builder()
                 .id(2L)
                 .content("Контент")
-                .languageCode(getLanguageUa())
+                .languageCode(getLanguageUk())
                 .factOfTheDay(null)
                 .build()),
             ZonedDateTime.now(),
@@ -1136,7 +1136,7 @@ public class ModelUtils {
     }
 
     public static LanguageDTO getUaLanguageDTO() {
-        return new LanguageDTO(2L, "ua", "Ukrainian");
+        return new LanguageDTO(2L, "uk", "Ukrainian");
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
@@ -1228,7 +1228,7 @@ public class ModelUtils {
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
-            .languageVO(LanguageDTO.builder().id(1L).code("ua").build()).build(),
+            .languageVO(LanguageDTO.builder().id(1L).code("uk").build()).build(),
             TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageDTO.builder().id(2L).code("en").build())
                 .build());
     }
@@ -1244,7 +1244,7 @@ public class ModelUtils {
     public static List<TagTranslationDto> getTagTranslationDtos() {
         return Arrays.asList(
             TagTranslationDto.builder().name("Новини")
-                .language(LanguageDTO.builder().id(2L).code("ua").build()).build(),
+                .language(LanguageDTO.builder().id(2L).code("uk").build()).build(),
             TagTranslationDto.builder().name("News")
                 .language(LanguageDTO.builder().id(1L).code("en").build()).build());
     }
@@ -1417,7 +1417,7 @@ public class ModelUtils {
                 .name("Пийте воду")
                 .habitItem("Вода бутильована")
                 .description("Пийте не менше 8 склянок води щодня.")
-                .languageCode("ua")
+                .languageCode("uk")
                 .build(),
             HabitTranslationManagementDto.builder()
                 .id(2L)
@@ -1977,7 +1977,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddressDto getAddressDtoWithNullCountryUa() {
+    public static AddressDto getAddressDtoWithNullCountryUk() {
         return AddressDto.builder()
             .latitude(13.4567236)
             .longitude(98.2354469)
@@ -2699,7 +2699,7 @@ public class ModelUtils {
                 List.of(HabitTranslationDto.builder()
                     .description(habitTranslationDescriptionEn)
                     .habitItem(habitItemEn)
-                    .languageCode("ua")
+                    .languageCode("uk")
                     .name(habitTranslationNameEn)
                     .build()))
             .tagIds(Set.of(20L))
@@ -2721,7 +2721,7 @@ public class ModelUtils {
                 List.of(HabitTranslationDto.builder()
                     .description(habitTranslationDescriptionEn)
                     .habitItem(habitItemEn)
-                    .languageCode("ua")
+                    .languageCode("uk")
                     .name(habitTranslationNameEn)
                     .build(),
 
@@ -2920,7 +2920,7 @@ public class ModelUtils {
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
             null, false,
             true, true, true};
-        Object[] row2 = new Object[] {1L, "test1", "<p>description</p>", 1L, "ua", "Соціальний", true, "ONLINE", 1L,
+        Object[] row2 = new Object[] {1L, "test1", "<p>description</p>", 1L, "uk", "Соціальний", true, "ONLINE", 1L,
             "Test", "image.png", Date.valueOf("2024-04-16"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
@@ -2933,7 +2933,7 @@ public class ModelUtils {
             null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 0L, 2L, new BigDecimal("3.5"),
             null, false,
             true, true, true};
-        Object[] row4 = new Object[] {3L, "test3", "<p>description</p>", 2L, "ua", "Соціальний1", true,
+        Object[] row4 = new Object[] {3L, "test3", "<p>description</p>", 2L, "uk", "Соціальний1", true,
             "ONLINE_OFFLINE", 2L,
             "Test3", "image.png", Date.valueOf("2024-04-14"), Instant.parse("2025-05-15T00:00:03Z"),
             Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
@@ -3519,7 +3519,7 @@ public class ModelUtils {
             .description(habitTranslationDescriptionUk)
             .habitItem(habitItemUk)
             .name(habitTranslationNameUk)
-            .languageCode("ua")
+            .languageCode("uk")
             .build();
     }
 

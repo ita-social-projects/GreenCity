@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 @Component
 public class EventResponseDtoMapper extends AbstractConverter<Event, EventResponseDto> {
-    private static final String LANGUAGE_UA = "ua";
+    private static final String LANGUAGE_UA = "uk";
     private static final String LANGUAGE_EN = "en";
     private static final int MAX_ADDITIONAL_IMAGES = 4;
 

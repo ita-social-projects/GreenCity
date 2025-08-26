@@ -27,7 +27,7 @@ class SearchPlacesDtoMapperTest {
         SearchPlacesDto searchedPlace = SearchPlacesDto.builder()
             .id(1L)
             .name(place.getName())
-            .category(language.equals("ua") ? place.getCategory().getNameUk() : place.getCategory().getNameEn())
+            .category(language.equals("uk") ? place.getCategory().getNameUk() : place.getCategory().getNameEn())
             .build();
 
         assertEquals(searchedPlace, searchPlacesDtoMapper.convert(place));
