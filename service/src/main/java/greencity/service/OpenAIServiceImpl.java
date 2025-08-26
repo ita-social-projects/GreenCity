@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import static greencity.constant.OpenAIConstants.*;
 
-@Setter
 @Slf4j
 @Service
 public class OpenAIServiceImpl implements OpenAIService {

@@ -23,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -66,13 +67,12 @@ class OpenAIServiceImplTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        openAIService.setApiKey(apiKey);
-        openAIService.setApiUrl(apiUrl);
-        openAIService.setModel(model);
-        openAIService.setMaxCompletionTokens(maxCompletionTokens);
-        openAIService.setTemperature(temperature);
-        openAIService.setEmbeddingApiModel(embeddingApiModel);
-        openAIService.setEmbeddingApiUrl(embeddingApiUrl);
+        ReflectionTestUtils.setField(openAIService, "apiKey", apiKey);
+        ReflectionTestUtils.setField(openAIService, "apiUrl", apiUrl);
+        ReflectionTestUtils.setField(openAIService, "model", model);
+        ReflectionTestUtils.setField(openAIService, "maxCompletionTokens", maxCompletionTokens);
+        ReflectionTestUtils.setField(openAIService, "temperature", temperature);
+        ReflectionTestUtils.setField(openAIService, "embeddingApiModel", embeddingApiModel);
 
         Class<?> enumClass = Class.forName("greencity.service.OpenAIServiceImpl$OpenAIRequestType");
         Method method = enumClass.getDeclaredMethod("initializeUrls", String.class, String.class);
