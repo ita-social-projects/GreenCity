@@ -12,9 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NotificationUtilsTest {
     private static final ResourceBundle uaBundle = ResourceBundle.getBundle("notification_uk",
-        Locale.forLanguageTag("uk"), ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+        Locale.forLanguageTag("uk"),
+        ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
     private static final ResourceBundle defaultBundle = ResourceBundle.getBundle("notification",
-        Locale.forLanguageTag("en"), ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+        Locale.forLanguageTag("en"),
+        ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
 
     @ParameterizedTest(name = "Test resolveTimeInUkrainian with input {0}")
     @MethodSource("provideUkrainianTestCases")
