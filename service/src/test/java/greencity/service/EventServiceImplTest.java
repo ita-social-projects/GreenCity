@@ -2641,6 +2641,7 @@ class EventServiceImplTest {
             .when(userRemoteClient).uploadFile(images[1]);
 
         assertDoesNotThrow(() -> eventService.save(addEventDtoRequest, testUserVo.getEmail(), images));
+        verify(eventRepo).save(any());
     }
 
     @Test
@@ -2648,6 +2649,7 @@ class EventServiceImplTest {
         AddEventDtoRequest invalidCoordinatesRequest = ModelUtils.getAddEventDtoRequest();
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getUser();
+        String email = testUserVo.getEmail();
         MultipartFile[] images = ModelUtils.getMultipartFiles();
         invalidCoordinatesRequest.getDatesLocations().get(0).getCoordinates().setLatitude(91.0);
         invalidCoordinatesRequest.getDatesLocations().get(0).getCoordinates().setLongitude(45.0);
@@ -2656,11 +2658,11 @@ class EventServiceImplTest {
         when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
         when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
 
-        BadRequestException ex = assertThrows(BadRequestException.class, () -> {
-            eventService.save(invalidCoordinatesRequest, testUserVo.getEmail(), images);
-        });
+        BadRequestException ex =
+            assertThrows(BadRequestException.class, () -> eventService.save(invalidCoordinatesRequest, email, images));
 
         assertEquals(ErrorMessage.INVALID_COORDINATES, ex.getMessage());
+        verify(eventRepo, never()).save(any());
     }
 
     @Test
@@ -2689,6 +2691,7 @@ class EventServiceImplTest {
             eq(event.getTitle()),
             eq(NotificationType.EVENT_UPDATED),
             eq(event.getId()));
+        verify(eventRepo).save(any());
     }
 
     @Test
@@ -2724,6 +2727,7 @@ class EventServiceImplTest {
         assertEquals(2, event.getAdditionalImages().size());
         assertEquals("url1", event.getAdditionalImages().get(0).getLink());
         assertEquals("url2", event.getAdditionalImages().get(1).getLink());
+        verify(eventRepo).save(any());
     }
 
     @Test
@@ -2733,6 +2737,7 @@ class EventServiceImplTest {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getUser();
         UserVO userVO = mock(UserVO.class);
+        String email = testUserVo.getEmail();
         MultipartFile[] images = ModelUtils.getMultipartFiles();
         updateEventDto.setTitleImage(null);
 
@@ -2752,7 +2757,9 @@ class EventServiceImplTest {
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(eventRepo.save(event)).thenReturn(event);
 
-        eventService.update(updateEventRequestDto, testUserVo.getEmail(), images);
+        assertDoesNotThrow(() -> eventService.update(updateEventRequestDto, email, images));
+
+        verify(eventRepo).save(any());
     }
 
     @Test
