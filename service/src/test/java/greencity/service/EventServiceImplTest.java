@@ -105,9 +105,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -2322,8 +2320,8 @@ class EventServiceImplTest {
         when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(Collections.emptyList());
         when(userRepo.existsById(userId)).thenReturn(false);
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-            eventService.getAllEventsOrganizedByUser(userId));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.getAllEventsOrganizedByUser(userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -2334,8 +2332,8 @@ class EventServiceImplTest {
 
     @Test
     void getAllEventsOrganizedByUser_NullUserId_ThrowsIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            eventService.getAllEventsOrganizedByUser(null));
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> eventService.getAllEventsOrganizedByUser(null));
 
         assertEquals(ErrorMessage.USER_ID_NULL, exception.getMessage());
 
@@ -2349,8 +2347,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllUserEventsByUserId(userId)).thenThrow(new DataAccessException("Database error") {
         });
 
-        assertThrows(DataAccessException.class, () ->
-            eventService.getAllEventsOrganizedByUser(userId));
+        assertThrows(DataAccessException.class, () -> eventService.getAllEventsOrganizedByUser(userId));
 
         verify(eventRepo).findAllUserEventsByUserId(userId);
         verifyNoInteractions(userRepo, modelMapper);
@@ -2475,8 +2472,8 @@ class EventServiceImplTest {
         when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(Collections.emptyList());
         when(userRepo.existsById(userId)).thenReturn(false);
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () ->
-            eventService.getAllEventsAttendedByUser(userId));
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.getAllEventsAttendedByUser(userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -2487,8 +2484,8 @@ class EventServiceImplTest {
 
     @Test
     void getAllEventsAttendedByUser_NullUserId_ThrowsIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            eventService.getAllEventsAttendedByUser(null));
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> eventService.getAllEventsAttendedByUser(null));
 
         assertEquals(ErrorMessage.USER_ID_NULL, exception.getMessage());
 
@@ -2502,8 +2499,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllAttendedEventsByUserId(userId)).thenThrow(new DataAccessException("Database error") {
         });
 
-        assertThrows(DataAccessException.class, () ->
-            eventService.getAllEventsAttendedByUser(userId));
+        assertThrows(DataAccessException.class, () -> eventService.getAllEventsAttendedByUser(userId));
 
         verify(eventRepo).findAllAttendedEventsByUserId(userId);
         verifyNoInteractions(userRepo, modelMapper);
@@ -2524,8 +2520,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(attendedEvents);
         when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenThrow(new RuntimeException("Mapping error"));
 
-        assertThrows(RuntimeException.class, () ->
-            eventService.getAllEventsAttendedByUser(userId));
+        assertThrows(RuntimeException.class, () -> eventService.getAllEventsAttendedByUser(userId));
 
         verify(eventRepo).findAllAttendedEventsByUserId(userId);
         verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
@@ -2785,8 +2780,7 @@ class EventServiceImplTest {
 
         EventDto likedEvent = eventService.likeV2(event.getId(), userVO);
 
-        assertTrue(event.getUsersLikedEvents().stream().anyMatch(u ->
-            u.getId().equals(userVO.getId())));
+        assertTrue(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
         assertEquals(eventDto, likedEvent);
         verify(userNotificationService, times(1))
             .createOrUpdateLikeNotification(any(LikeNotificationDto.class));
