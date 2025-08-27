@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import greencity.annotations.Sortable;
 import greencity.constant.ServiceValidationConstants;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -14,6 +15,7 @@ import jakarta.validation.constraints.Size;
 
 @Data
 @Builder
+@Sortable
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserManagementDto {

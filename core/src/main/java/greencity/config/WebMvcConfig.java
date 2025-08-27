@@ -24,17 +24,48 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Web MVC configuration class for the application.
+ * <p>
+ * This class configures essential MVC components, such as:
+ * <ul>
+ * <li>Custom pageable and sort argument resolvers for pagination and
+ * sorting.</li>
+ * <li>Locale resolution and switching based on request parameters.</li>
+ * <li>Validation message source for internationalization of validation
+ * messages.</li>
+ * <li>Multipart file upload support using
+ * {@link StandardServletMultipartResolver}.</li>
+ * <li>Custom argument resolvers for injecting user data into controller
+ * methods.</li>
+ * </ul>
+ * </p>
+ * Implements {@link WebMvcConfigurer} to customize Spring MVC configuration.
+ */
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
+    /**
+     * Custom pageable argument resolver for handling pagination in API requests.
+     */
+    private final CustomPageableHandlerMethodArgumentResolver customPageableArgumentResolver;
+
+    /** Custom sort argument resolver for handling sorting in API requests. */
+    private final CustomSortHandlerMethodArgumentResolver customSortHandlerMethodArgumentResolver;
+
+    /**
+     * Service for user-related operations, used in {@link UserArgumentResolver}.
+     */
     private final UserService userService;
     private final ModelMapper modelMapper;
     private final JwtTool jwtTool;
 
     /**
-     * Method for configuring message source.
+     * Configures the message source for internationalization of application
+     * messages.
      *
-     * @return {@link MessageSource}
+     * @return a {@link MessageSource} configured with UTF-8 encoding and message
+     *         bundle location
      */
     @Bean
     public MessageSource messageSource() {
@@ -45,9 +76,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Method for getting LocalValidatorFactoryBean.
+     * Provides the validator bean configured with the message source for i18n.
      *
-     * @return {@link LocalValidatorFactoryBean}
+     * @return a {@link LocalValidatorFactoryBean} used for bean validation
      */
     @Bean
     @Override
@@ -58,9 +89,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Method for determining which locale is going to be used.
+     * Configures the locale resolver to determine the current locale.
      *
-     * @return {@link SessionLocaleResolver}
+     * @return a {@link SessionLocaleResolver} with default locale set to English
      */
     @Bean
     public LocaleResolver localeResolver() {
@@ -70,10 +101,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Method for switching to a new locale based on the value of the lang parameter
-     * appended to a request.
+     * Configures an interceptor to switch the locale based on the "lang" request
+     * parameter.
      *
-     * @return {@link LocaleChangeInterceptor}
+     * @return a {@link LocaleChangeInterceptor} for handling dynamic locale changes
      */
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
@@ -83,28 +114,49 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Method that returns MultipartResolver as CommonsMultipartyResolver has been
-     * superseded by StandardServletMultipartResolver after migration to SpringBoot
-     * 3.1.5.
+     * Configures multipart file upload support using the standard servlet multipart
+     * resolver.
      *
-     * @return {@link MultipartResolver}
+     * @return a {@link MultipartResolver} capable of handling file uploads
      */
     @Bean
     public MultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();
     }
 
+    /**
+     * Registers interceptors for the application.
+     * <p>
+     * Currently, this adds the {@link LocaleChangeInterceptor} to allow switching
+     * the locale via the "lang" request parameter.
+     * </p>
+     *
+     * @param registry the {@link InterceptorRegistry} to which interceptors are
+     *                 added
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
 
+    /**
+     * Configures custom argument resolvers for controller method parameters.
+     * <p>
+     * Replaces the default {@link PageableHandlerMethodArgumentResolver} with
+     * custom pageable and sort resolvers. Also adds a {@link UserArgumentResolver}
+     * to inject user details.
+     * </p>
+     *
+     * @param resolvers the list of {@link HandlerMethodArgumentResolver} instances
+     *                  to configure
+     */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.removeIf(resolver -> resolver instanceof PageableHandlerMethodArgumentResolver);
+        resolvers.removeIf(PageableHandlerMethodArgumentResolver.class::isInstance);
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
         resolvers.add(new UserIdArgumentResolver(jwtTool));
         resolvers.add(new UserClaimsArgumentResolver(jwtTool));
-        resolvers.add(new CustomPageableHandlerMethodArgumentResolver());
+        resolvers.add(customSortHandlerMethodArgumentResolver);
+        resolvers.add(customPageableArgumentResolver);
     }
 }

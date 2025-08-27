@@ -2,7 +2,12 @@ package greencity.webcontroller;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-import greencity.dto.todolistitem.*;
+import greencity.dto.todolistitem.ToDoListItemManagementDto;
+import greencity.dto.todolistitem.ToDoListItemPostDto;
+import greencity.dto.todolistitem.ToDoListItemResponseDto;
+import greencity.dto.todolistitem.ToDoListItemTranslationVO;
+import greencity.dto.todolistitem.ToDoListItemVO;
+import greencity.dto.todolistitem.ToDoListItemViewDto;
 import greencity.service.HabitToDoListItemService;
 import greencity.service.ToDoListItemService;
 import greencity.service.LanguageService;
@@ -13,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -153,7 +157,7 @@ public class ManagementToDoListItemsController {
      * @return View template path {@link String}.
      */
     @PostMapping(value = "/filter")
-    public String filterData(Model model, @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable,
+    public String filterData(Model model, @Parameter(hidden = true) Pageable pageable,
         ToDoListItemViewDto goal) {
         PageableAdvancedDto<ToDoListItemManagementDto> pageableDto =
             toDoListItemService.getFilteredDataForManagementByPage(

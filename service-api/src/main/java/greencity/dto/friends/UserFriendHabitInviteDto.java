@@ -1,5 +1,6 @@
 package greencity.dto.friends;
 
+import greencity.annotations.Sortable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Sortable
 @SuperBuilder
 public class UserFriendHabitInviteDto extends UserFriendDto {
     private Boolean hasInvitation;

@@ -1,5 +1,6 @@
 package greencity.dto.habit;
 
+import greencity.annotations.Sortable;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Sortable(fields = {"id", "complexity", "defaultDuration", "isDeleted"})
 @Builder
 @Data
 public class HabitManagementDto implements Serializable {
