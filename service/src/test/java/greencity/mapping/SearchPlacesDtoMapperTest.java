@@ -3,8 +3,11 @@ package greencity.mapping;
 import greencity.dto.search.SearchPlacesDto;
 import greencity.entity.Category;
 import greencity.entity.Place;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -16,18 +19,36 @@ class SearchPlacesDtoMapperTest {
     @InjectMocks
     private SearchPlacesDtoMapper searchPlacesDtoMapper;
 
-    @Test
-    void convertTest() {
+    @ParameterizedTest
+    @ValueSource(strings = {"en", "other"})
+    void convertTest(String language) {
         Place place = getPlace();
+        LocaleContextHolder.setLocale(Locale.of(language));
         place.setCategory(Category.builder()
             .nameEn("Name")
             .nameUk("Назва")
             .build());
-        String language = LocaleContextHolder.getLocale().getLanguage();
         SearchPlacesDto searchedPlace = SearchPlacesDto.builder()
             .id(1L)
             .name(place.getName())
-            .category(language.equals("uk") ? place.getCategory().getNameUk() : place.getCategory().getNameEn())
+            .category(place.getCategory().getNameEn())
+            .build();
+
+        assertEquals(searchedPlace, searchPlacesDtoMapper.convert(place));
+    }
+
+    @Test
+    void convertWithUkLanguageTest() {
+        Place place = getPlace();
+        LocaleContextHolder.setLocale(Locale.of("uk"));
+        place.setCategory(Category.builder()
+            .nameEn("Name")
+            .nameUk("Назва")
+            .build());
+        SearchPlacesDto searchedPlace = SearchPlacesDto.builder()
+            .id(1L)
+            .name(place.getName())
+            .category(place.getCategory().getNameUk())
             .build();
 
         assertEquals(searchedPlace, searchPlacesDtoMapper.convert(place));
