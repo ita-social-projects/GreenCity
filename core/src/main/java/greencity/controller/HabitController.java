@@ -97,7 +97,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    @ApiPageable
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
@@ -122,7 +122,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/my")
-    @ApiPageable
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getMyHabits(@Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
@@ -150,6 +150,7 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     @GetMapping("/all/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllHabitsOfFriend(
         @PathVariable Long friendId,
@@ -180,6 +181,7 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     @GetMapping("/allMutualHabits/{friendId}")
     public ResponseEntity<PageableDto<HabitDto>> getAllMutualHabitsWithFriend(
         @PathVariable Long friendId,
@@ -233,7 +235,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/tags/search")
-    @ApiPageableWithLocale
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
         @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
@@ -265,7 +267,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/search")
-    @ApiPageableWithLocale
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
         @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
@@ -527,7 +529,7 @@ public class HabitController {
     })
 
     @GetMapping("/favorites")
-    @ApiPageable
+    @ApiPageableWithLocale(clazz = HabitDto.class)
     public ResponseEntity<PageableDto<HabitDto>> getAllFavorites(
         @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable,
@@ -555,7 +557,7 @@ public class HabitController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/friends")
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendHabitInviteDto.class)
     public ResponseEntity<PageableDto<UserFriendHabitInviteDto>> findAllFriendsOfUserToBeInvited(
         @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) @Nullable String name,

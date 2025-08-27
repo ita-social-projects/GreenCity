@@ -1,5 +1,6 @@
 package greencity.dto.friends;
 
+import greencity.annotations.Sortable;
 import greencity.dto.location.UserLocationDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Sortable(fields = {"id", "name", "email", "rating", "mutualFriends", "chatId"})
 @SuperBuilder
 @Data
 @SuppressWarnings("java:S107")

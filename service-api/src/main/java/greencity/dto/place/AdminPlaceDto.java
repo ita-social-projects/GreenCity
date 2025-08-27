@@ -1,5 +1,6 @@
 package greencity.dto.place;
 
+import greencity.annotations.Sortable;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.openhours.OpenHoursDto;
@@ -18,6 +19,7 @@ import lombok.Builder;
 @NoArgsConstructor
 @Getter
 @Setter
+@Sortable(fields = {"id", "name", "status", "author", "modifiedDate"})
 @EqualsAndHashCode
 @Builder
 public class AdminPlaceDto {

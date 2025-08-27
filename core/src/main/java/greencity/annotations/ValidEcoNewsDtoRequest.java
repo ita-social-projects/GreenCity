@@ -13,11 +13,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface ValidEcoNewsDtoRequest {
     /**
-     * Defines the message that will be showed when the input data is not valid.
+     * Defines the message that will be shown when the input data is not valid.
      *
      * @return message
      */
-    String message() default "Count of tags should be at least one but not more three or invalid source format";
+    String message() default "Count of tags should be at least one but not more than three or invalid source format";
 
     /**
      * Let you select to split the annotations into different groups to apply

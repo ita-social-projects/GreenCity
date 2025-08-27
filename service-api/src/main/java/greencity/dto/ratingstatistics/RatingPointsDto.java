@@ -1,5 +1,6 @@
 package greencity.dto.ratingstatistics;
 
+import greencity.annotations.Sortable;
 import greencity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Sortable
 @Builder
 public class RatingPointsDto {
     private Long id;
