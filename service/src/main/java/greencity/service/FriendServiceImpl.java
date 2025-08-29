@@ -1,10 +1,12 @@
 package greencity.service;
 
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -14,9 +16,9 @@ import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import java.util.Collections;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -35,10 +37,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
-    private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
-    private final NotificationService notificationService;
     private final UserNotificationService userNotificationService;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -125,9 +126,8 @@ public class FriendServiceImpl implements FriendService {
         validateUserExistence(userId);
         Page<User> friends = userRepo.getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId);
 
-        List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
-                friends.getContent());
+        List<UserFriendDto> userFriendDtoList = findUserFriendsWithMutualCountAndChatId(currentUserId,
+            friends.getContent());
 
         return new PageableDto<>(
             userFriendDtoList,
@@ -151,8 +151,7 @@ public class FriendServiceImpl implements FriendService {
 
         Page<User> users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name,
             filterByFriendsOfFriends, filterByCity, pageable);
-        List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+        List<UserFriendDto> userFriendDtoList = findUserFriendsWithMutualCountAndChatId(userId, users.getContent());
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),
@@ -184,9 +183,8 @@ public class FriendServiceImpl implements FriendService {
         } else {
             mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
         }
-        List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
-                mutualFriends.getContent());
+        List<UserFriendDto> userFriendDtoList = findUserFriendsWithMutualCountAndChatId(userId,
+            mutualFriends.getContent());
         return new PageableDto<>(
             userFriendDtoList,
             mutualFriends.getTotalElements(),
@@ -199,8 +197,7 @@ public class FriendServiceImpl implements FriendService {
         validateUserAndFriends(userId, friendId);
         Page<User> users =
             userRepo.getMutualFriends(userId, friendId, pageable);
-        List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+        List<UserFriendDto> userFriendDtoList = findUserFriendsWithMutualCountAndChatId(userId, users.getContent());
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),
@@ -218,8 +215,7 @@ public class FriendServiceImpl implements FriendService {
 
         validateUserExistence(userId);
         Page<User> users = userRepo.getAllUserFriendRequests(userId, name, filterByCity, pageable);
-        List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+        List<UserFriendDto> userFriendDtoList = findUserFriendsWithMutualCountAndChatId(userId, users.getContent());
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),
@@ -239,8 +235,7 @@ public class FriendServiceImpl implements FriendService {
         validateUserExistence(userId);
 
         Page<User> users = userRepo.findAllFriendsOfUser(userId, name, filterByCity, pageable);
-        List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+        List<UserFriendDto> userFriendDtoList = findUserFriendsWithMutualCountAndChatId(userId, users.getContent());
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),
@@ -281,6 +276,35 @@ public class FriendServiceImpl implements FriendService {
             userAsFriend.setRequesterId(tuple.get(FriendTupleConstant.REQUESTER_ID, Long.class));
         }
         return userAsFriend;
+    }
+
+    private List<UserFriendDto> findUserFriendsWithMutualCountAndChatId(long userId, List<User> users) {
+        Objects.requireNonNull(users);
+        if (users.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        List<UserFriendDto> resultList = userRepo.findUserFriendsWithMutualCountAndChatId(userId, userIds);
+
+        List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
+        Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
+            .collect(Collectors.toMap(
+                UserEmailDto::userId,
+                UserEmailDto::userEmail));
+
+        resultList.forEach(userFriendDto -> {
+            String email = userIdToUserEmailMap.get(userFriendDto.getId());
+            userFriendDto.setEmail(email);
+        });
+
+        Map<Long, UserFriendDto> resultMap = resultList.stream()
+            .collect(Collectors.toMap(UserFriendDto::getId, dto -> dto));
+
+        return userIds.stream()
+            .map(resultMap::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     private void validateUserAndFriends(Long userId, Long friendId) {

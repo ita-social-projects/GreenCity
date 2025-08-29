@@ -7,6 +7,7 @@ import greencity.entity.User_;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -31,7 +32,9 @@ public class NotificationSpecification implements MySpecification<Notification> 
     public Predicate toPredicate(@NotNull Root<Notification> root,
         @NotNull CriteriaQuery<?> criteriaQuery,
         @NotNull CriteriaBuilder criteriaBuilder) {
-        return toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
+        Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get(Notification_.TIME)));
+        return allPredicates;
     }
 
     private Predicate getTargetUserPredicate(Root<Notification> root, CriteriaBuilder criteriaBuilder,
