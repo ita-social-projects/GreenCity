@@ -37,6 +37,7 @@ import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
+import static greencity.utils.SpecificationUtils.setValueIfNotEmpty;
 import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
@@ -74,8 +75,10 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
+import greencity.entity.event.Event_;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.EventStatus;
 import greencity.enums.EventType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
@@ -83,6 +86,10 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.filters.EventIdsManagementSpecification;
+import greencity.filters.EventIdsSpecification;
+import greencity.filters.EventSearchSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.mapping.events.EventDateLocationDtoMapper;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
@@ -116,6 +123,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -306,16 +314,19 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<EventDto> getEvents(Pageable page, FilterEventDto filterEventDto, Long userId) {
+    public PageableAdvancedDto<EventDto> getEvents(Pageable pageable, FilterEventDto filterEventDto, Long userId) {
         if (userId != null) {
             restClient.findById(userId);
         }
 
-        Page<Long> eventIds = eventRepo.findEventsIds(page, filterEventDto, userId);
+        List<SearchCriteria> searchCriteriaList = createEventSearchCriteria(filterEventDto);
+        Specification<Event> specification = new EventIdsSpecification(searchCriteriaList, userId);
+        Page<Long> eventIds = eventRepo.findAll(specification, pageable)
+            .map(Event::getId);
 
-        if (page.getPageNumber() >= eventIds.getTotalPages() && eventIds.getTotalPages() > 0) {
+        if (pageable.getPageNumber() >= eventIds.getTotalPages() && eventIds.getTotalPages() > 0) {
             throw new BadRequestException(
-                String.format(ErrorMessage.PAGE_NOT_FOUND_MESSAGE, page.getPageNumber(), eventIds.getTotalPages()));
+                String.format(ErrorMessage.PAGE_NOT_FOUND_MESSAGE, pageable.getPageNumber(), eventIds.getTotalPages()));
         }
 
         List<Tuple> tuples;
@@ -324,27 +335,31 @@ public class EventServiceImpl implements EventService {
         } else {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent());
         }
-        return buildPageableAdvancedDto(eventIds, tuples, page);
+        return buildPageableAdvancedDto(eventIds, tuples, pageable);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<EventDto> getEventsManagement(Pageable page, FilterEventDto filterEventDto,
+    public PageableAdvancedDto<EventDto> getEventsManagement(Pageable pageable, FilterEventDto filterEventDto,
         Long userId) {
         if (userId != null) {
             restClient.findById(userId);
         }
 
-        Page<Long> eventIds = eventRepo.findEventsIdsManagement(page, filterEventDto, userId);
+        List<SearchCriteria> searchCriteriaList = createEventSearchCriteria(filterEventDto);
+        Specification<Event> specification = new EventIdsManagementSpecification(searchCriteriaList, userId);
+        Page<Long> eventIds = eventRepo.findAll(specification, pageable)
+            .map(Event::getId);
+
         List<Tuple> tuples;
         if (userId != null) {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent(), userId);
         } else {
             tuples = eventRepo.loadEventDataByIds(eventIds.getContent());
         }
-        return buildPageableAdvancedDto(eventIds, tuples, page);
+        return buildPageableAdvancedDto(eventIds, tuples, pageable);
     }
 
     /**
@@ -898,7 +913,13 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
-        return getSearchNewsDtoPageableDto(eventRepo.find(pageable, searchQuery, isFavorite, userId));
+        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
+        setValueIfNotEmpty(searchCriteriaList, "text", searchQuery);
+        setValueIfNotEmpty(searchCriteriaList, "isFavorite", isFavorite.toString());
+
+        Specification<Event> specification = new EventSearchSpecification(searchCriteriaList, userId);
+        Page<Event> events = eventRepo.findAll(specification, pageable);
+        return getSearchNewsDtoPageableDto(events);
     }
 
     private PageableDto<SearchEventsDto> getSearchNewsDtoPageableDto(Page<Event> page) {
@@ -1453,5 +1474,24 @@ public class EventServiceImpl implements EventService {
                 .amountOfEvents(eventCityDtoProjection.getAmountOfEvents())
                 .build())
             .toList();
+    }
+
+    private List<SearchCriteria> createEventSearchCriteria(FilterEventDto filter) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        setValueIfNotEmpty(criteriaList, "eventTime", filter.getTime().name());
+        setValueIfNotEmpty(criteriaList, "cities", String.join(",", filter.getCities()));
+        setValueIfNotEmpty(criteriaList, "statuses", filter.getStatuses().stream()
+            .map(EventStatus::name)
+            .collect(Collectors.joining()));
+        setValueIfNotEmpty(criteriaList, Event_.TAGS, String.join(",", filter.getTags()));
+        setValueIfNotEmpty(criteriaList, Event_.TITLE, filter.getTitle());
+        String dateFrom = Optional.of(filter.getFrom())
+            .map(ZonedDateTime::toString)
+            .orElse("");
+        String dateTo = Optional.of(filter.getTo())
+            .map(ZonedDateTime::toString)
+            .orElse("");
+        setValueIfNotEmpty(criteriaList, "dateRange", String.join(",", dateFrom, dateTo));
+        return criteriaList;
     }
 }

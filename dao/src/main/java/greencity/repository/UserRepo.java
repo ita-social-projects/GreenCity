@@ -661,7 +661,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method for getting all users who made request for joining the event.
      *
-     * @param eventId  - id of the event
+     * @param eventId - id of the event
      *
      */
     @Query(nativeQuery = true, value = "SELECT greencity_users.* FROM greencity_users "
@@ -845,10 +845,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
 
     @Query(
         nativeQuery = true,
-        name = "User.findListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser"
-    )
+        name = "User.findListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser")
     List<UserFriendDto> findUserFriendsWithMutualCountAndChatId(
         @Param("userId") Long userId,
-        @Param("greencity_users") List<Long> userIds
-    );
+        @Param("greencity_users") List<Long> userIds);
 }

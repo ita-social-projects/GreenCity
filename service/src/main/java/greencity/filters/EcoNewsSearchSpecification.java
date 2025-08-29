@@ -6,9 +6,9 @@ import greencity.entity.User;
 import greencity.entity.User_;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.SetJoin;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
         }
 
         Boolean isFavorite = Boolean.parseBoolean(isFavoriteString);
-        SetJoin<EcoNews, User> followersJoin = root.join(EcoNews_.followers);
+        Join<EcoNews, User> followersJoin = root.join(EcoNews_.FOLLOWERS);
         if (Boolean.TRUE.equals(isFavorite)) {
             return criteriaBuilder.equal(followersJoin.get(User_.ID), userId);
         } else {
