@@ -1,5 +1,6 @@
 package greencity.service;
 
+import static greencity.utils.SpecificationUtils.setValueIfNotEmpty;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
@@ -543,16 +544,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
 
         return criteriaList;
-    }
-
-    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (StringUtils.isNotEmpty(value)) {
-            searchCriteria.add(SearchCriteria.builder()
-                .key(key)
-                .type(key)
-                .value(value)
-                .build());
-        }
     }
 
     private List<EcoNewsDto> mapEcoNewsListToEcoNewsDtoList(List<EcoNews> ecoNewsList) {

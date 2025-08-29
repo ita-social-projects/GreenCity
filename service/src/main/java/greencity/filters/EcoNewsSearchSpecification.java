@@ -26,8 +26,9 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
             "isFavorite", this::getIsFavoritePredicate);
 
     @Override
-    public Predicate toPredicate(@NotNull Root<EcoNews> root, @NotNull CriteriaQuery<?> criteriaQuery,
-        CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(@NotNull Root<EcoNews> root,
+        @NotNull CriteriaQuery<?> criteriaQuery,
+        @NotNull CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
         criteriaQuery.distinct(true);
         return allPredicates;

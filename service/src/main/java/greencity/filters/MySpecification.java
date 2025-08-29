@@ -1,7 +1,5 @@
 package greencity.filters;
 
-import greencity.entity.EcoNews;
-import jakarta.persistence.criteria.CriteriaQuery;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.function.TriFunction;
@@ -88,13 +86,13 @@ public interface MySpecification<T> extends Specification<T> {
      * Builds predicate from list of {@link SearchCriteria} using predicates
      * mapping.
      */
-    default Predicate toPredicateFromMap(Root<EcoNews> root,
+    default Predicate toPredicateFromMap(Root<T> root,
         CriteriaBuilder criteriaBuilder,
         List<SearchCriteria> searchCriteriaList,
-        Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> predicatesMapping) {
+        Map<String, TriFunction<Root<T>, CriteriaBuilder, SearchCriteria, Predicate>> predicatesMapping) {
         Predicate allPredicates = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
-            TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
+            TriFunction<Root<T>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
                 predicatesMapping.get(searchCriteria.getType());
             if (predicateCreator != null) {
                 Predicate predicate = predicateCreator.apply(root, criteriaBuilder, searchCriteria);

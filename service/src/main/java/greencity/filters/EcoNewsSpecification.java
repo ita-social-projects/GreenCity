@@ -29,20 +29,21 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
     // Predicate Creators
     private final Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
-            "id", this::getNumericPredicate,
-            "title", this::getStringPredicate,
-            "text", this::getStringPredicate,
-            "imagePath", this::getStringPredicate,
-            "source", this::getStringPredicate,
-            "author", this::getAuthorPredicate,
+            EcoNews_.ID, this::getNumericPredicate,
+            EcoNews_.TITLE, this::getStringPredicate,
+            EcoNews_.TEXT, this::getStringPredicate,
+            EcoNews_.IMAGE_PATH, this::getStringPredicate,
+            EcoNews_.SOURCE, this::getStringPredicate,
+            EcoNews_.AUTHOR, this::getAuthorPredicate,
             "dateRange", this::getDataRangePredicate,
-            "creationDate", this::getCreationDatePredicate,
-            "tags", this::getTagsPredicate,
-            "hidden", this::getBooleanPredicate);
+            EcoNews_.CREATION_DATE, this::getCreationDatePredicate,
+            EcoNews_.TAGS, this::getTagsPredicate,
+            EcoNews_.HIDDEN, this::getBooleanPredicate);
 
     @Override
-    public Predicate toPredicate(@NotNull Root<EcoNews> root, @NotNull CriteriaQuery<?> criteriaQuery,
-        CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(@NotNull Root<EcoNews> root,
+        @NotNull CriteriaQuery<?> criteriaQuery,
+        @NotNull CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
         criteriaQuery.orderBy(getOrderList(root, criteriaQuery, criteriaBuilder));
         return allPredicates;

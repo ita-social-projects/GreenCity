@@ -12,19 +12,24 @@ import greencity.dto.notification.NotificationInviteDto;
 import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
+import greencity.entity.Notification_;
 import greencity.entity.User;
 import greencity.enums.InvitationStatus;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.filters.NotificationSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.NotificationRepo;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -53,6 +58,7 @@ import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
 import static greencity.utils.NotificationUtils.localizeMessage;
 import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
 import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
+import static greencity.utils.SpecificationUtils.setValueIfNotEmpty;
 
 /**
  * Implementation of {@link UserNotificationService}.
@@ -554,11 +560,18 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         }
     }
 
-    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable page,
+    private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable pageable,
         Long userId, String language, ProjectName projectName, List<NotificationType> notificationTypes,
         Boolean viewed) {
-        Page<Notification> notificationsPage =
-            notificationRepo.findNotificationsByFilter(userId, projectName, notificationTypes, viewed, page);
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        setValueIfNotEmpty(criteriaList, Notification_.TARGET_USER, userId.toString());
+        setValueIfNotEmpty(criteriaList, Notification_.PROJECT_NAME, projectName.name());
+        setValueIfNotEmpty(criteriaList, Notification_.NOTIFICATION_TYPE,
+            notificationTypes.stream().map(NotificationType::name).collect(Collectors.joining(",")));
+        setValueIfNotEmpty(criteriaList, Notification_.VIEWED, viewed.toString());
+        Specification<Notification> specification = new NotificationSpecification(criteriaList);
+
+        Page<Notification> notificationsPage = notificationRepo.findAll(specification, pageable);
         return buildPageableAdvancedDto(notificationsPage, language);
     }
 
