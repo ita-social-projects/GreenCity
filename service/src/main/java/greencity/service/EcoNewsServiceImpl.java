@@ -38,6 +38,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.filters.EcoNewsSearchSpecification;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
@@ -61,6 +62,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -257,7 +259,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
-        return getSearchNewsDtoPageableDto(ecoNewsRepo.find(pageable, searchQuery, isFavorite, userId));
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        setValueIfNotEmpty(criteriaList, "text", searchQuery);
+        setValueIfNotEmpty(criteriaList, "isFavorite", isFavorite.toString());
+        Specification<EcoNews> specification = new EcoNewsSearchSpecification(criteriaList, userId);
+        return getSearchNewsDtoPageableDto(ecoNewsRepo.findAll(specification, pageable));
     }
 
     private PageableDto<SearchNewsDto> getSearchNewsDtoPageableDto(Page<EcoNews> page) {

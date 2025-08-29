@@ -1,5 +1,10 @@
 package greencity.filters;
 
+import greencity.entity.EcoNews;
+import jakarta.persistence.criteria.CriteriaQuery;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.function.TriFunction;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
@@ -77,5 +82,25 @@ public interface MySpecification<T> extends Specification<T> {
         String value = searchCriteria.getValue().toString().trim();
         return value.isEmpty() ? criteriaBuilder.conjunction()
             : criteriaBuilder.equal(root.get(searchCriteria.getKey()), Boolean.parseBoolean(value));
+    }
+
+    /**
+     * Builds predicate from list of {@link SearchCriteria} using predicates
+     * mapping.
+     */
+    default Predicate toPredicateFromMap(Root<EcoNews> root,
+        CriteriaBuilder criteriaBuilder,
+        List<SearchCriteria> searchCriteriaList,
+        Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> predicatesMapping) {
+        Predicate allPredicates = criteriaBuilder.conjunction();
+        for (SearchCriteria searchCriteria : searchCriteriaList) {
+            TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
+                predicatesMapping.get(searchCriteria.getType());
+            if (predicateCreator != null) {
+                Predicate predicate = predicateCreator.apply(root, criteriaBuilder, searchCriteria);
+                allPredicates = criteriaBuilder.and(allPredicates, predicate);
+            }
+        }
+        return allPredicates;
     }
 }

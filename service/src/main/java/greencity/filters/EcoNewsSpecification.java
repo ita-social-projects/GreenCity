@@ -19,25 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-/**
- * Scope {@code prototype} is used for creation new bean
- * {@link EcoNewsSpecification} every time after new request.
- */
-@Component
-@Scope("prototype")
-@Slf4j
 @RequiredArgsConstructor
 public class EcoNewsSpecification implements MySpecification<EcoNews> {
-    private final transient List<SearchCriteria> searchCriteriaList;
+    private final List<SearchCriteria> searchCriteriaList;
 
     // Predicate Creators
-    private final transient Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
+    private final Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
             "id", this::getNumericPredicate,
             "title", this::getStringPredicate,
@@ -53,15 +43,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
     @Override
     public Predicate toPredicate(@NotNull Root<EcoNews> root, @NotNull CriteriaQuery<?> criteriaQuery,
         CriteriaBuilder criteriaBuilder) {
-        Predicate allPredicates = criteriaBuilder.conjunction();
-        for (SearchCriteria searchCriteria : searchCriteriaList) {
-            TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
-                pred.get(searchCriteria.getType());
-            if (predicateCreator != null) {
-                Predicate predicate = predicateCreator.apply(root, criteriaBuilder, searchCriteria);
-                allPredicates = criteriaBuilder.and(allPredicates, predicate);
-            }
-        }
+        Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
         criteriaQuery.orderBy(getOrderList(root, criteriaQuery, criteriaBuilder));
         return allPredicates;
     }
