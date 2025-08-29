@@ -17,7 +17,7 @@ public class AppConstant {
     public static final String JWT_USER_ID_CLAIM = "userId";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final String DEFAULT_LANGUAGE_NAME = "English";
-    public static final String LANGUAGE_CODE_UA = "ua";
+    public static final String LANGUAGE_CODE_UA = "uk";
     public static final Integer MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER = 6;
     public static final int MIN_DAYS_DURATION = 7;
     public static final int MAX_DAYS_DURATION = 56;

@@ -63,10 +63,10 @@ class ToDoListItemControllerTest {
     @Test
     void updateUserToDoListItemStatusWithLanguageParamTest() throws Exception {
         mockMvc.perform(patch(toDoListItemLink + "/{userToDoListItemId}", 1, 1)
-            .locale(Locale.of("ua")))
+            .locale(Locale.of("uk")))
             .andExpect(status().isCreated());
 
-        verify(toDoListItemService).updateUserToDoListItemStatus(null, 1L, "ua");
+        verify(toDoListItemService).updateUserToDoListItemStatus(null, 1L, "uk");
     }
 
     @Test
@@ -138,11 +138,11 @@ class ToDoListItemControllerTest {
     void findAllByUserTest() throws Exception {
         Long id = 1L;
         this.mockMvc.perform(get(toDoListItemLink + "/" + id + "/" + "get-all-inprogress")
-            .param("lang", "ua")
+            .param("lang", "uk")
             .principal(principal)).andExpect(status().isOk());
-        when(toDoListItemService.findInProgressByUserIdAndLanguageCode(id, "ua"))
+        when(toDoListItemService.findInProgressByUserIdAndLanguageCode(id, "uk"))
             .thenReturn(new ArrayList<>());
-        verify(toDoListItemService).findInProgressByUserIdAndLanguageCode(id, "ua");
-        assertTrue(toDoListItemController.findInProgressByUserId(id, "ua").getBody().isEmpty());
+        verify(toDoListItemService).findInProgressByUserIdAndLanguageCode(id, "uk");
+        assertTrue(toDoListItemController.findInProgressByUserId(id, "uk").getBody().isEmpty());
     }
 }

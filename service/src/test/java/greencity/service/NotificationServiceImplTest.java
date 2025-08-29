@@ -12,6 +12,7 @@ import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;
@@ -29,10 +30,12 @@ import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +46,8 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -241,7 +246,7 @@ class NotificationServiceImplTest {
         User user = getUser();
         UserVO userVO = getUserVO();
         notification.setTargetUser(user);
-        notification.setNotificationType(NotificationType.ECONEWS_COMMENT);
+        notification.setNotificationType(NotificationType.EVENT_COMMENT);
 
         when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
         when(userService.findById(user.getId())).thenReturn(userVO);
@@ -275,6 +280,29 @@ class NotificationServiceImplTest {
         ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotificationLikes(captor.capture()));
+        ScheduledEmailMessage capturedMessage = captor.getValue();
+        assertEquals(notificationDto.getTargetUser().getId(), capturedMessage.getUserId());
+        assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
+    }
+
+    @Test
+    void sendEmailNotificationPlacesToOneUserTest() {
+        EmailNotificationDto notificationDto = getEmailNotificationDto();
+        Notification notification = getNotification();
+        User user = getUser();
+        UserVO userVO = getUserVO();
+        notification.setTargetUser(user);
+        notification.setNotificationType(NotificationType.PLACE_ADDED);
+
+        when(modelMapper.map(notificationDto, Notification.class)).thenReturn(notification);
+        when(userService.findById(user.getId())).thenReturn(userVO);
+        when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
+
+        notificationService.sendEmailNotification(notificationDto);
+
+        ArgumentCaptor<ScheduledEmailMessage> captor = ArgumentCaptor.forClass(ScheduledEmailMessage.class);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotificationPlaces(captor.capture()));
         ScheduledEmailMessage capturedMessage = captor.getValue();
         assertEquals(notificationDto.getTargetUser().getId(), capturedMessage.getUserId());
         assertEquals(notificationDto.getTargetUser().getName(), capturedMessage.getUsername());
@@ -558,5 +586,54 @@ class NotificationServiceImplTest {
             assertEquals(notification.getTargetUser().getId(), capturedMessage.getUserId());
             assertEquals(notification.getTargetUser().getName(), capturedMessage.getUsername());
         }
+    }
+
+    @Test
+    void sendEmailNotificationWhenActionUsersMoreThanOneAndLanguageUaTest() {
+        EmailNotificationDto emailNotificationDto = Mockito.mock(EmailNotificationDto.class);
+        Notification notification = Mockito.mock(Notification.class);
+        User targetUser = Mockito.mock(User.class);
+        UserVO targetUserVO = Mockito.mock(UserVO.class);
+        LanguageDTO languageDTO = Mockito.mock(LanguageDTO.class);
+        User user1 = new User();
+        user1.setName("User1");
+        User user2 = new User();
+        user2.setName("User2");
+        List<User> actionUsers = Arrays.asList(user1, user2);
+
+        when(notification.getNotificationType()).thenReturn(NotificationType.ECONEWS_LIKE);
+        when(notification.getActionUsers()).thenReturn(actionUsers);
+        when(notification.getTargetUser()).thenReturn(targetUser);
+        when(userService.findById(anyLong())).thenReturn(targetUserVO);
+        when(targetUserVO.getLanguageVO()).thenReturn(languageDTO);
+        when(languageDTO.getCode()).thenReturn("uk");
+        when(modelMapper.map(emailNotificationDto, Notification.class)).thenReturn(notification);
+        when(notificationRepo.save(notification)).thenReturn(notification);
+
+        assertDoesNotThrow(() -> notificationService.sendEmailNotification(emailNotificationDto));
+
+        verify(notificationRepo).save(notification);
+    }
+
+    @Test
+    void sendEmailNotificationWhenZeroActionUsersTest() {
+        EmailNotificationDto emailNotificationDto = Mockito.mock(EmailNotificationDto.class);
+        Notification notification = Mockito.mock(Notification.class);
+        User targetUser = Mockito.mock(User.class);
+        UserVO targetUserVO = Mockito.mock(UserVO.class);
+        LanguageDTO languageDTO = Mockito.mock(LanguageDTO.class);
+
+        when(notification.getNotificationType()).thenReturn(NotificationType.EVENT_CREATED);
+        when(notification.getActionUsers()).thenReturn(Collections.emptyList());
+        when(notification.getTargetUser()).thenReturn(targetUser);
+        when(userService.findById(anyLong())).thenReturn(targetUserVO);
+        when(targetUserVO.getLanguageVO()).thenReturn(languageDTO);
+        when(languageDTO.getCode()).thenReturn("en");
+        when(modelMapper.map(emailNotificationDto, Notification.class)).thenReturn(notification);
+        doThrow(new RuntimeException("DB error")).when(notificationRepo).save(notification);
+
+        assertDoesNotThrow(() -> notificationService.sendEmailNotification(emailNotificationDto));
+
+        verify(notificationRepo).save(notification);
     }
 }

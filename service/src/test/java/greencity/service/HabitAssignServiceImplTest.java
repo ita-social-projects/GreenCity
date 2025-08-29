@@ -911,7 +911,7 @@ class HabitAssignServiceImplTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .languageCode("ua")
+                .languageCode("uk")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
@@ -955,7 +955,7 @@ class HabitAssignServiceImplTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .languageCode("ua")
+                .languageCode("uk")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
@@ -999,7 +999,7 @@ class HabitAssignServiceImplTest {
                 .name("name")
                 .habitItem("habitItem")
                 .description("description")
-                .languageCode("ua")
+                .languageCode("uk")
                 .build(),
             HabitTranslation.builder()
                 .id(2L)
@@ -1564,7 +1564,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, "ua"));
+            .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, "uk"));
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
     }
@@ -1581,7 +1581,7 @@ class HabitAssignServiceImplTest {
 
         UserHasNoPermissionToAccessException exception =
             assertThrows(UserHasNoPermissionToAccessException.class, () -> habitAssignService
-                .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, "ua"));
+                .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, "uk"));
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
     }

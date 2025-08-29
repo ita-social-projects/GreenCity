@@ -355,7 +355,7 @@ $(document).ready(function () {
     $('#generateEcoNewsContent').on('click', function (event) {
         const query = $('#generateQueryInput').val().trim();
         const language = localStorage.getItem("language") || "en";
-        const locale = language === "ua" ? "uk-UA" : "en-US";
+        const locale = language === "uk" ? "uk-UA" : "en-US";
 
         const $button = $(this);
         $button.prop('disabled', true);

@@ -1289,10 +1289,10 @@ public class EventServiceImpl implements EventService {
                 tagList.stream()
                     .filter(tag -> !uaEnMap.containsKey(tag.getLanguageCode()))
                     .forEach(tag -> uaEnMap.put(tag.getLanguageCode(), tag));
-                if (uaEnMap.containsKey("ua") && uaEnMap.containsKey("en")) {
+                if (uaEnMap.containsKey("uk") && uaEnMap.containsKey("en")) {
                     TagUkEnDto tagUaEnDto = TagUkEnDto.builder()
                         .id(tagId)
-                        .nameUk(uaEnMap.get("ua").getName())
+                        .nameUk(uaEnMap.get("uk").getName())
                         .nameEn(uaEnMap.get("en").getName())
                         .build();
                     tagUaEnDtos.add(tagUaEnDto);
