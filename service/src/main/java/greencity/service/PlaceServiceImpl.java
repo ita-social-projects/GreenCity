@@ -49,7 +49,12 @@ import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.PlaceAlreadyExistsException;
+import greencity.exception.exceptions.PlaceStatusException;
+import greencity.exception.exceptions.UserBlockedException;
+import greencity.filters.PlaceSearchSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PhotoRepo;
@@ -82,6 +87,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+import static greencity.utils.SpecificationUtils.setValueIfNotEmpty;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -656,7 +662,12 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
-        return getSearchPlacesDtoPageableDto(placeRepo.find(pageable, searchQuery, isFavorite, userId));
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        setValueIfNotEmpty(criteriaList, "places", searchQuery);
+        setValueIfNotEmpty(criteriaList, "isFavorite", isFavorite.toString());
+        org.springframework.data.jpa.domain.Specification<Place> specification =
+            new PlaceSearchSpecification(criteriaList, userId);
+        return getSearchPlacesDtoPageableDto(placeRepo.findAll(specification, pageable));
     }
 
     private PageableDto<SearchPlacesDto> getSearchPlacesDtoPageableDto(Page<Place> page) {
