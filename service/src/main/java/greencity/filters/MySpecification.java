@@ -65,16 +65,6 @@ public interface MySpecification<T> extends Specification<T> {
                 "%" + searchCriteria.getValue() + "%");
     }
 
-    /**
-     * Used for build predicate for author filter.
-     */
-    default Predicate getAuthorPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
-        SearchCriteria searchCriteria) {
-        return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
-            : criteriaBuilder.like(root.get(searchCriteria.getKey()).get("name"),
-                "%" + searchCriteria.getValue() + "%");
-    }
-
     default Predicate getBooleanPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
         String value = searchCriteria.getValue().toString().trim();
