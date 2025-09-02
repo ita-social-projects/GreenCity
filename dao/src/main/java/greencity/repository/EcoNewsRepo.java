@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EcoNewsRepo extends EcoNewsSearchRepo, JpaRepository<EcoNews, Long>,
-    JpaSpecificationExecutor<EcoNews> {
+public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificationExecutor<EcoNews> {
     /**
      * Method for deleting eco news by list of ids.
      *

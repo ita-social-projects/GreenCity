@@ -9,8 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<Notification, Long>,
-    JpaSpecificationExecutor<Notification> {
+public interface NotificationRepo extends JpaRepository<Notification, Long>, JpaSpecificationExecutor<Notification> {
     /**
      * Checks if there are any unread notifications for the specified user.
      *
