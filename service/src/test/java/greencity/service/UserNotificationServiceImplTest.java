@@ -39,6 +39,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.security.Principal;
 import java.time.ZoneId;
@@ -123,8 +124,7 @@ class UserNotificationServiceImplTest {
         PageableAdvancedDto<UbsNotificationDto> countUbsPage = new PageableAdvancedDto<>(
             Collections.emptyList(), 5, 0, 1, 0, false, false, true, true);
 
-        when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
-            countPageableGreenCity))
+        when(notificationRepo.findAll(any(Specification.class), eq(countPageableGreenCity)))
             .thenReturn(countGreenCityPage);
         when(restClient.findAllNotificationsForUserFromUbs(principal, countPageableUbs))
             .thenReturn(countUbsPage);
@@ -144,8 +144,7 @@ class UserNotificationServiceImplTest {
         PageableAdvancedDto<UbsNotificationDto> ubsNotificationsPage = new PageableAdvancedDto<>(
             List.of(ubsNotificationDto1, ubsNotificationDto2), 2, 0, 1, 0, false, false, true, true);
 
-        when(notificationRepo.findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
-            greenCityPageable))
+        when(notificationRepo.findAll(any(Specification.class), eq(greenCityPageable)))
             .thenReturn(greenCityNotificationsPage);
         when(restClient.findAllNotificationsForUserFromUbs(principal, ubsPageable))
             .thenReturn(ubsNotificationsPage);
@@ -201,11 +200,9 @@ class UserNotificationServiceImplTest {
         assertEquals(isFirst, actualResult.isFirst());
         assertEquals(isLast, actualResult.isLast());
 
-        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
-            countPageableGreenCity);
+        verify(notificationRepo).findAll(any(Specification.class), eq(countPageableGreenCity));
         verify(restClient).findAllNotificationsForUserFromUbs(principal, countPageableUbs);
-        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), projectName, notificationTypes, viewed,
-            greenCityPageable);
+        verify(notificationRepo).findAll(any(Specification.class), eq(greenCityPageable));
         verify(restClient).findAllNotificationsForUserFromUbs(principal, ubsPageable);
         verify(modelMapper, times(2)).map(any(Notification.class), eq(NotificationDto.class));
         verify(modelMapper, times(2)).map(any(UbsNotificationDto.class), eq(NotificationDto.class));
@@ -221,7 +218,7 @@ class UserNotificationServiceImplTest {
 
         PageableAdvancedDto<NotificationDto> actual = getPageableAdvancedDtoForNotificationDto();
 
-        when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page))
+        when(notificationRepo.findAll(any(Specification.class), eq(page)))
             .thenReturn(notificationPage);
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
@@ -231,7 +228,7 @@ class UserNotificationServiceImplTest {
 
         assertEquals(expected, actual);
 
-        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, page);
+        verify(notificationRepo).findAll(any(Specification.class), eq(page));
         verify(modelMapper).map(notification, NotificationDto.class);
     }
 
@@ -324,11 +321,7 @@ class UserNotificationServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
 
-        when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
-            ProjectName.GREENCITY,
-            null,
-            true,
-            pageRequest))
+        when(notificationRepo.findAll(any(Specification.class), eq(pageRequest)))
             .thenReturn(page);
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
@@ -351,9 +344,7 @@ class UserNotificationServiceImplTest {
 
         assertEquals(expected, actual);
 
-        verify(notificationRepo)
-            .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true,
-                pageRequest);
+        verify(notificationRepo).findAll(any(Specification.class), eq(pageRequest));
         verify(modelMapper).map(notification, NotificationDto.class);
     }
 
@@ -383,8 +374,7 @@ class UserNotificationServiceImplTest {
         PageImpl<Notification> notificationPage = new PageImpl<>(
             List.of(friendRequestNotification, habitInviteNotification), page, 2);
 
-        when(notificationRepo.findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
-            true, page))
+        when(notificationRepo.findAll(any(Specification.class), eq(page)))
             .thenReturn(notificationPage);
         when(modelMapper.map(friendRequestNotification, NotificationDto.class)).thenReturn(friendRequestDto);
         when(modelMapper.map(habitInviteNotification, NotificationDto.class)).thenReturn(habitInviteDto);
@@ -410,8 +400,7 @@ class UserNotificationServiceImplTest {
 
         assertEquals(expected, result);
         assertEquals(InvitationStatus.PENDING.toString(), notificationInviteDto.getStatus());
-        verify(notificationRepo).findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null,
-            true, page);
+        verify(notificationRepo).findAll(any(Specification.class), eq(page));
         verify(modelMapper).map(friendRequestNotification, NotificationDto.class);
         verify(modelMapper).map(habitInviteNotification, NotificationDto.class);
         verify(notificationFriendService).getFriendRequestStatus(1L, 2L);
@@ -474,11 +463,7 @@ class UserNotificationServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         PageImpl<Notification> page = new PageImpl<>(list, pageRequest, 1);
 
-        when(notificationRepo.findNotificationsByFilter(testUserVo.getId(),
-            ProjectName.GREENCITY,
-            null,
-            true,
-            pageRequest))
+        when(notificationRepo.findAll(any(Specification.class), eq(pageRequest)))
             .thenReturn(page);
         when(modelMapper.map(notification, NotificationDto.class)).thenReturn(notificationDto);
 
@@ -500,8 +485,7 @@ class UserNotificationServiceImplTest {
                     actionUserText));
         assertEquals(expected, actual);
 
-        verify(notificationRepo)
-            .findNotificationsByFilter(testUser.getId(), ProjectName.GREENCITY, null, true, pageRequest);
+        verify(notificationRepo).findAll(any(Specification.class), eq(pageRequest));
         verify(modelMapper).map(notification, NotificationDto.class);
     }
 

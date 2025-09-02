@@ -262,7 +262,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
         setValueIfNotEmpty(criteriaList, "text", searchQuery);
-        setValueIfNotEmpty(criteriaList, "isFavorite", isFavorite.toString());
+        setValueIfNotEmpty(criteriaList, "isFavorite", isFavorite);
         Specification<EcoNews> specification = new EcoNewsSearchSpecification(criteriaList, userId);
         return getSearchNewsDtoPageableDto(ecoNewsRepo.findAll(specification, pageable));
     }

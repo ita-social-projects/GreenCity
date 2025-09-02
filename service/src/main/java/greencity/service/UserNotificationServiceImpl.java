@@ -22,7 +22,6 @@ import greencity.filters.NotificationSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.NotificationRepo;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -564,10 +563,9 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         Long userId, String language, ProjectName projectName, List<NotificationType> notificationTypes,
         Boolean viewed) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
-        setValueIfNotEmpty(criteriaList, Notification_.TARGET_USER, userId.toString());
-        setValueIfNotEmpty(criteriaList, Notification_.PROJECT_NAME, projectName.name());
-        setValueIfNotEmpty(criteriaList, Notification_.NOTIFICATION_TYPE,
-            notificationTypes.stream().map(NotificationType::name).collect(Collectors.joining(",")));
+        setValueIfNotEmpty(criteriaList, Notification_.TARGET_USER, userId);
+        setValueIfNotEmpty(criteriaList, Notification_.PROJECT_NAME, projectName);
+        setValueIfNotEmpty(criteriaList, Notification_.NOTIFICATION_TYPE, notificationTypes);
         setValueIfNotEmpty(criteriaList, Notification_.VIEWED, viewed.toString());
         Specification<Notification> specification = new NotificationSpecification(criteriaList);
 

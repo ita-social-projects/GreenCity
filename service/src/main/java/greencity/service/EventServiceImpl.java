@@ -915,7 +915,7 @@ public class EventServiceImpl implements EventService {
     public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
         setValueIfNotEmpty(searchCriteriaList, "text", searchQuery);
-        setValueIfNotEmpty(searchCriteriaList, "isFavorite", isFavorite.toString());
+        setValueIfNotEmpty(searchCriteriaList, "isFavorite", isFavorite);
 
         Specification<Event> specification = new EventSearchSpecification(searchCriteriaList, userId);
         Page<Event> events = eventRepo.findAll(specification, pageable);
@@ -1478,20 +1478,12 @@ public class EventServiceImpl implements EventService {
 
     private List<SearchCriteria> createEventSearchCriteria(FilterEventDto filter) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
-        setValueIfNotEmpty(criteriaList, "eventTime", filter.getTime().name());
-        setValueIfNotEmpty(criteriaList, "cities", String.join(",", filter.getCities()));
-        setValueIfNotEmpty(criteriaList, "statuses", filter.getStatuses().stream()
-            .map(EventStatus::name)
-            .collect(Collectors.joining()));
-        setValueIfNotEmpty(criteriaList, Event_.TAGS, String.join(",", filter.getTags()));
+        setValueIfNotEmpty(criteriaList, "eventTime", filter.getTime());
+        setValueIfNotEmpty(criteriaList, "cities", filter.getCities().toArray());
+        setValueIfNotEmpty(criteriaList, "statuses", filter.getStatuses().toArray());
+        setValueIfNotEmpty(criteriaList, Event_.TAGS, filter.getTags().toArray());
         setValueIfNotEmpty(criteriaList, Event_.TITLE, filter.getTitle());
-        String dateFrom = Optional.of(filter.getFrom())
-            .map(ZonedDateTime::toString)
-            .orElse("");
-        String dateTo = Optional.of(filter.getTo())
-            .map(ZonedDateTime::toString)
-            .orElse("");
-        setValueIfNotEmpty(criteriaList, "dateRange", String.join(",", dateFrom, dateTo));
+        setValueIfNotEmpty(criteriaList, "dateRange", new ZonedDateTime[] {filter.getFrom(), filter.getTo()});
         return criteriaList;
     }
 }
