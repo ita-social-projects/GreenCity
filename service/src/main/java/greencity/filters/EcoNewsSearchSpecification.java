@@ -21,8 +21,7 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
     private final Long userId;
 
     private final Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
-        Map.of(
-            "text", this::getTextPredicate,
+        Map.of("text", this::getTextPredicate,
             "isFavorite", this::getIsFavoritePredicate);
 
     @Override
@@ -41,19 +40,19 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
             return criteriaBuilder.conjunction();
         }
 
-        Predicate titlePredicate = criteriaBuilder.like(root.join(EcoNews_.title).as(String.class),
+        Predicate titlePredicate = criteriaBuilder.like(root.get(EcoNews_.TITLE),
             "%" + text + "%");
-        Predicate textPredicate = criteriaBuilder.like(root.join(EcoNews_.text).as(String.class),
+        Predicate textPredicate = criteriaBuilder.like(root.get(EcoNews_.TEXT),
             "%" + text + "%");
-        Predicate shortInfoPredicate = criteriaBuilder.like(root.join(EcoNews_.shortInfo).as(String.class),
+        Predicate shortInfoPredicate = criteriaBuilder.like(root.get(EcoNews_.SHORT_INFO),
             "%" + text + "%");
         return criteriaBuilder.or(titlePredicate, textPredicate, shortInfoPredicate);
     }
 
     private Predicate getIsFavoritePredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String isFavoriteString = searchCriteria.getValue().toString();
-        if (isFavoriteString == null) {
+        String isFavoriteString = searchCriteria.getValue().toString().trim();
+        if (isFavoriteString.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
 

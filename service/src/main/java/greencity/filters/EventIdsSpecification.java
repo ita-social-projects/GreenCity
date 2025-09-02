@@ -7,8 +7,8 @@ import greencity.entity.event.EventDateLocation_;
 import greencity.entity.event.Event_;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -41,7 +41,7 @@ public class EventIdsSpecification extends EventIdsManagementSpecification {
             addSortByAttendersOrder(root, criteriaBuilder, orders);
         }
 
-        ListJoin<Event, EventDateLocation> datesJoin = root.join(Event_.dates, JoinType.LEFT);
+        Join<Event, EventDateLocation> datesJoin = root.join(Event_.DATES, JoinType.LEFT);
         addSortByCurrentDateOrder(criteriaBuilder, orders, datesJoin);
         addSortByOneWeekOrder(criteriaBuilder, orders, datesJoin);
         addSortByDateOrder(criteriaBuilder, orders, datesJoin);
@@ -52,26 +52,26 @@ public class EventIdsSpecification extends EventIdsManagementSpecification {
     private void addSortByOrganizerOrder(Root<Event> root, CriteriaBuilder criteriaBuilder, List<Order> orders) {
         orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
             .when(criteriaBuilder.equal(
-                root.get(Event_.organizer).get(User_.ID), userId), 1)
+                root.get(Event_.ORGANIZER).get(User_.ID), userId), 1)
             .otherwise(0)));
     }
 
     private void addSortByFollowersOrder(Root<Event> root, CriteriaBuilder criteriaBuilder, List<Order> orders) {
         orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
             .when(criteriaBuilder.equal(
-                root.join(Event_.followers, JoinType.LEFT).get(User_.ID), userId), 1)
+                root.join(Event_.FOLLOWERS, JoinType.LEFT).get(User_.ID), userId), 1)
             .otherwise(0)));
     }
 
     private void addSortByAttendersOrder(Root<Event> root, CriteriaBuilder criteriaBuilder, List<Order> orders) {
         orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
             .when(criteriaBuilder.equal(
-                root.join(Event_.attenders, JoinType.LEFT).get(User_.ID), userId), 1)
+                root.join(Event_.ATTENDERS, JoinType.LEFT).get(User_.ID), userId), 1)
             .otherwise(0)));
     }
 
     private void addSortByOneWeekOrder(CriteriaBuilder criteriaBuilder,
-        List<Order> orders, ListJoin<Event, EventDateLocation> datesJoin) {
+        List<Order> orders, Join<Event, EventDateLocation> datesJoin) {
         ZonedDateTime currentDate = ZonedDateTime.now();
         ZonedDateTime oneWeekLater = currentDate.plusWeeks(1);
         orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
@@ -82,7 +82,7 @@ public class EventIdsSpecification extends EventIdsManagementSpecification {
     }
 
     private void addSortByCurrentDateOrder(CriteriaBuilder criteriaBuilder,
-        List<Order> orders, ListJoin<Event, EventDateLocation> datesJoin) {
+        List<Order> orders, Join<Event, EventDateLocation> datesJoin) {
         orders.add(criteriaBuilder.desc(criteriaBuilder.selectCase()
             .when(criteriaBuilder.equal(
                 criteriaBuilder.function("DATE", Date.class, datesJoin.get(EventDateLocation_.START_DATE)),
@@ -91,7 +91,7 @@ public class EventIdsSpecification extends EventIdsManagementSpecification {
     }
 
     private void addSortByDateOrder(CriteriaBuilder criteriaBuilder,
-        List<Order> orders, ListJoin<Event, EventDateLocation> datesJoin) {
+        List<Order> orders, Join<Event, EventDateLocation> datesJoin) {
         orders.add(criteriaBuilder.desc(datesJoin.get(EventDateLocation_.START_DATE)));
     }
 }

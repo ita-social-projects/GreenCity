@@ -20,10 +20,8 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.SetJoin;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,8 +72,9 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getCitiesPredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String[] cities = searchCriteria.getValue().toString().trim().split(",");
-        if (cities.length == 0) {
+        String citiesString = searchCriteria.getValue().toString().trim();
+        String[] cities = citiesString.split(",");
+        if (citiesString.isEmpty() || cities.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
@@ -89,8 +88,9 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getStatusesPredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String[] statuses = searchCriteria.getValue().toString().trim().split(",");
-        if (statuses.length == 0) {
+        String statusesString = searchCriteria.getValue().toString().trim();
+        String[] statuses = statusesString.split(",");
+        if (statusesString.isEmpty() || statuses.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
@@ -101,13 +101,13 @@ public class EventSpecification implements MySpecification<Event> {
             } else if (status.equals(EventStatus.CLOSED.name())) {
                 statusesPredicate.add(criteriaBuilder.isFalse(root.get(Event_.IS_OPEN)));
             } else if (status.equals(EventStatus.CREATED.name()) && userId != null) {
-                Join<Event, User> organizerJoin = root.join(Event_.organizer, JoinType.LEFT);
+                Join<Event, User> organizerJoin = root.join(Event_.ORGANIZER, JoinType.LEFT);
                 statusesPredicate.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
             } else if (status.equals(EventStatus.JOINED.name()) && userId != null) {
-                SetJoin<Event, User> attendersJoin = root.join(Event_.attenders, JoinType.LEFT);
+                Join<Event, User> attendersJoin = root.join(Event_.ATTENDERS, JoinType.LEFT);
                 statusesPredicate.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
             } else if (status.equals(EventStatus.SAVED.name()) && userId != null) {
-                SetJoin<Event, User> followersJoin = root.join(Event_.followers, JoinType.LEFT);
+                Join<Event, User> followersJoin = root.join(Event_.FOLLOWERS, JoinType.LEFT);
                 statusesPredicate.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
             }
         });
@@ -121,8 +121,9 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getTagsPredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String[] tags = searchCriteria.getValue().toString().trim().split(",");
-        if (tags.length == 0) {
+        String tagsString = searchCriteria.getValue().toString().trim();
+        String[] tags = tagsString.split(",");
+        if (tagsString.isEmpty() || tags.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
@@ -133,21 +134,21 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getDatePredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String[] dateRange = searchCriteria.getValue().toString().trim().split(",");
-        if (dateRange.length == 0) {
+        String datesString = searchCriteria.getValue().toString().trim();
+        String[] dateRange = datesString.split(",");
+        if (datesString.isEmpty() || dateRange.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
         Join<Event, EventDateLocation> datesJoin = root.join(Event_.DATES, JoinType.LEFT);
         Predicate finalPredicate = criteriaBuilder.conjunction();
-        if (dateRange.length == 1) {
-            ZonedDateTime from = ZonedDateTime.parse(dateRange[0]).withHour(0);
-            Predicate startDatePredicate =
-                criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), from);
-            finalPredicate = criteriaBuilder.and(finalPredicate, startDatePredicate);
-        }
-        if (dateRange.length == 2) {
-            ZonedDateTime to = ZonedDateTime.parse(dateRange[1]).withHour(0);
+        ZonedDateTime from = ZonedDateTime.parse(dateRange[0]).truncatedTo(ChronoUnit.DAYS);
+        Predicate startDatePredicate =
+            criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), from);
+        finalPredicate = criteriaBuilder.and(finalPredicate, startDatePredicate);
+
+        if (dateRange.length > 1) {
+            ZonedDateTime to = ZonedDateTime.parse(dateRange[1]).truncatedTo(ChronoUnit.DAYS);
             Predicate finishDatePredicate =
                 criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.FINISH_DATE), to);
             finalPredicate = criteriaBuilder.and(finalPredicate, finishDatePredicate);

@@ -7,7 +7,6 @@ import greencity.entity.User_;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -44,21 +43,22 @@ public class NotificationSpecification implements MySpecification<Notification> 
             return criteriaBuilder.conjunction();
         }
 
-        Join<Notification, User> targetUserJoin = root.join(Notification_.targetUser);
+        Join<Notification, User> targetUserJoin = root.join(Notification_.TARGET_USER);
         return criteriaBuilder.equal(targetUserJoin.get(User_.ID), targetUserId);
     }
 
     private Predicate getNotificationTypePredicate(Root<Notification> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String[] types = searchCriteria.getValue().toString().split(",");
-        if (types.length == 0) {
+        String typesString = searchCriteria.getValue().toString().trim();
+        String[] types = typesString.split(",");
+        if (typesString.isEmpty() || types.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
         List<Predicate> typePredicates = new ArrayList<>();
         for (String type : types) {
             Predicate typePredicate = criteriaBuilder.equal(
-                root.get(Notification_.notificationType).as(String.class), "%" + type.trim() + "%");
+                root.get(Notification_.NOTIFICATION_TYPE).as(String.class), "%" + type.trim() + "%");
             typePredicates.add(typePredicate);
         }
         return criteriaBuilder.or(typePredicates.toArray(new Predicate[0]));

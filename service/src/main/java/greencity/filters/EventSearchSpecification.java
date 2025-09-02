@@ -33,13 +33,13 @@ public class EventSearchSpecification extends EventSpecification {
 
     private Predicate getTextPredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String[] text = searchCriteria.getValue().toString().trim().split(" ");
-        if (text.length == 0) {
+        String text = searchCriteria.getValue().toString().trim();
+        if (text.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
 
         ArrayList<Predicate> eachWordLikePredicates = new ArrayList<>();
-        Arrays.stream(text).forEach(word -> eachWordLikePredicates.add(
+        Arrays.stream(text.split(" ")).forEach(word -> eachWordLikePredicates.add(
             criteriaBuilder.or(
                 criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.TITLE)),
                     "%" + word.toLowerCase() + "%"),

@@ -44,9 +44,10 @@ public class PlaceSearchSpecification implements MySpecification<Place> {
     }
 
     private Predicate getPlacesLikePredicate(Root<Place> root, CriteriaBuilder criteriaBuilder,
-                                        SearchCriteria searchCriteria) {
-        String[] places = searchCriteria.getValue().toString().trim().split(" ");
-        if (places.length == 0) {
+        SearchCriteria searchCriteria) {
+        String placesString = searchCriteria.getValue().toString().trim();
+        String[] places = placesString.split(" ");
+        if (placesString.isEmpty() || places.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
@@ -71,7 +72,7 @@ public class PlaceSearchSpecification implements MySpecification<Place> {
     }
 
     private Predicate getIsFavoritePredicate(Root<Place> root, CriteriaBuilder criteriaBuilder,
-                                             SearchCriteria searchCriteria) {
+        SearchCriteria searchCriteria) {
         String isFavoriteString = searchCriteria.getValue().toString().trim();
         if (isFavoriteString.isEmpty()) {
             return criteriaBuilder.conjunction();

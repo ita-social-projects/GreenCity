@@ -51,9 +51,7 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
 
     private Predicate getAuthorPredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String authorString = searchCriteria.getValue() == null
-                              ? ""
-                              : searchCriteria.getValue().toString().trim();
+        String authorString = searchCriteria.getValue().toString().trim();
         if (authorString.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
