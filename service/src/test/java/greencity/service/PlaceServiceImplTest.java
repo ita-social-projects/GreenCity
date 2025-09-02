@@ -923,7 +923,7 @@ class PlaceServiceImplTest {
         PageImpl<Place> page = new PageImpl<>(places, pageRequest, places.size());
         SearchPlacesDto searchPlacesDto = getSearchPlacesDto();
 
-        when(placeRepo.find(pageRequest, "text", null, null)).thenReturn(page);
+        when(placeRepo.findAll(any(Specification.class), eq(pageRequest))).thenReturn(page);
         when(modelMapper.map(place, SearchPlacesDto.class)).thenReturn(searchPlacesDto);
 
         PageableDto<SearchPlacesDto> result = placeService.search(pageRequest, "text", null, null);

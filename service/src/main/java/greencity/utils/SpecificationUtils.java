@@ -7,8 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 
 @UtilityClass
 public class SpecificationUtils {
-    public static void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (StringUtils.isNotEmpty(value.trim())) {
+    public static void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, Object value) {
+        boolean isInvalid = value == null
+            || (value instanceof String && StringUtils.isEmpty(((String) value).trim()));
+        if (!isInvalid) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)

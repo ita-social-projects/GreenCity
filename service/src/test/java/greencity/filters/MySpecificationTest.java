@@ -122,6 +122,14 @@ class MySpecificationTest {
     }
 
     @Test
+    void getStringPredicateNullValue() {
+        when(searchCriteriaEmpty.getValue()).thenReturn(null);
+        when(criteriaBuilder.conjunction()).thenReturn(expected);
+        Predicate actual = ecoNewsSpecification.getStringPredicate(newsRoot, criteriaBuilder, searchCriteriaEmpty);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void getEnumPredicate() {
         when(root.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
         when(objectPath.as(String.class)).thenReturn(this.as);
@@ -133,6 +141,14 @@ class MySpecificationTest {
     @Test
     void getEnumPredicateEmptyValue() {
         when(searchCriteriaEmpty.getValue()).thenReturn("");
+        when(criteriaBuilder.conjunction()).thenReturn(expected);
+        Predicate actual = tagSpecification.getEnumPredicate(root, criteriaBuilder, searchCriteriaEmpty);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getEnumPredicateNullValue() {
+        when(searchCriteriaEmpty.getValue()).thenReturn(null);
         when(criteriaBuilder.conjunction()).thenReturn(expected);
         Predicate actual = tagSpecification.getEnumPredicate(root, criteriaBuilder, searchCriteriaEmpty);
         assertEquals(expected, actual);

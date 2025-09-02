@@ -664,7 +664,7 @@ public class PlaceServiceImpl implements PlaceService {
     public PageableDto<SearchPlacesDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
         setValueIfNotEmpty(criteriaList, "places", searchQuery);
-        setValueIfNotEmpty(criteriaList, "isFavorite", isFavorite.toString());
+        setValueIfNotEmpty(criteriaList, "isFavorite", isFavorite);
         org.springframework.data.jpa.domain.Specification<Place> specification =
             new PlaceSearchSpecification(criteriaList, userId);
         return getSearchPlacesDtoPageableDto(placeRepo.findAll(specification, pageable));

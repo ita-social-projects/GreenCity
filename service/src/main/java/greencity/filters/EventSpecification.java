@@ -55,15 +55,15 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getEventTimePredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String eventTime = searchCriteria.getValue().toString().trim();
-        if (eventTime.isEmpty()) {
+        EventTime eventTime = (EventTime) searchCriteria.getValue();
+        if (eventTime == null) {
             return criteriaBuilder.conjunction();
         }
 
         Join<Event, EventDateLocation> datesJoin = root.join(Event_.DATES, JoinType.LEFT);
-        if (eventTime.equals(EventTime.UPCOMING.name())) {
+        if (eventTime.equals(EventTime.UPCOMING)) {
             return criteriaBuilder.greaterThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now());
-        } else if (eventTime.equals(EventTime.PAST.name())) {
+        } else if (eventTime.equals(EventTime.PAST)) {
             return criteriaBuilder.lessThan(datesJoin.get(EventDateLocation_.FINISH_DATE), ZonedDateTime.now());
         } else {
             return criteriaBuilder.disjunction();
@@ -72,41 +72,39 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getCitiesPredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String citiesString = searchCriteria.getValue().toString().trim();
-        String[] cities = citiesString.split(",");
-        if (citiesString.isEmpty() || cities.length == 0) {
+        String[] cities = (String[]) searchCriteria.getValue();
+        if (cities == null || cities.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
-        String[] citiesInUpperCase = listToUpperCase(cities);
+        cities = arrayToUpperCase(cities);
         Join<EventDateLocation, Address> addressJoin = root.join(Event_.DATES, JoinType.LEFT)
             .join(EventDateLocation_.ADDRESS);
-        Predicate citiesEn = criteriaBuilder.upper(addressJoin.get(Address_.CITY_EN)).in((Object[]) citiesInUpperCase);
-        Predicate citiesUk = criteriaBuilder.upper(addressJoin.get(Address_.CITY_UK)).in((Object[]) citiesInUpperCase);
+        Predicate citiesEn = criteriaBuilder.upper(addressJoin.get(Address_.CITY_EN)).in((Object[]) cities);
+        Predicate citiesUk = criteriaBuilder.upper(addressJoin.get(Address_.CITY_UK)).in((Object[]) cities);
         return criteriaBuilder.or(citiesEn, citiesUk);
     }
 
     private Predicate getStatusesPredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String statusesString = searchCriteria.getValue().toString().trim();
-        String[] statuses = statusesString.split(",");
-        if (statusesString.isEmpty() || statuses.length == 0) {
+        EventStatus[] statuses = (EventStatus[]) searchCriteria.getValue();
+        if (statuses == null || statuses.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
         List<Predicate> statusesPredicate = new ArrayList<>();
         Arrays.stream(statuses).forEach(status -> {
-            if (status.equals(EventStatus.OPEN.name())) {
+            if (status.equals(EventStatus.OPEN)) {
                 statusesPredicate.add(criteriaBuilder.isTrue(root.get(Event_.IS_OPEN)));
-            } else if (status.equals(EventStatus.CLOSED.name())) {
+            } else if (status.equals(EventStatus.CLOSED)) {
                 statusesPredicate.add(criteriaBuilder.isFalse(root.get(Event_.IS_OPEN)));
-            } else if (status.equals(EventStatus.CREATED.name()) && userId != null) {
+            } else if (status.equals(EventStatus.CREATED) && userId != null) {
                 Join<Event, User> organizerJoin = root.join(Event_.ORGANIZER, JoinType.LEFT);
                 statusesPredicate.add(criteriaBuilder.equal(organizerJoin.get(User_.ID), userId));
-            } else if (status.equals(EventStatus.JOINED.name()) && userId != null) {
+            } else if (status.equals(EventStatus.JOINED) && userId != null) {
                 Join<Event, User> attendersJoin = root.join(Event_.ATTENDERS, JoinType.LEFT);
                 statusesPredicate.add(criteriaBuilder.equal(attendersJoin.get(User_.ID), userId));
-            } else if (status.equals(EventStatus.SAVED.name()) && userId != null) {
+            } else if (status.equals(EventStatus.SAVED) && userId != null) {
                 Join<Event, User> followersJoin = root.join(Event_.FOLLOWERS, JoinType.LEFT);
                 statusesPredicate.add(criteriaBuilder.equal(followersJoin.get(User_.ID), userId));
             }
@@ -121,34 +119,34 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getTagsPredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String tagsString = searchCriteria.getValue().toString().trim();
-        String[] tags = tagsString.split(",");
-        if (tagsString.isEmpty() || tags.length == 0) {
+        String[] tags = (String[]) searchCriteria.getValue();
+        if (tags == null || tags.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
-        String[] tagsInUpperCase = listToUpperCase(tags);
+        tags = arrayToUpperCase(tags);
         Join<Tag, TagTranslation> tagsJoin = root.join(Event_.TAGS).join(Tag_.TAG_TRANSLATIONS);
-        return criteriaBuilder.upper(tagsJoin.get(TagTranslation_.NAME)).in((Object[]) tagsInUpperCase);
+        return criteriaBuilder.upper(tagsJoin.get(TagTranslation_.NAME)).in((Object[]) tags);
     }
 
     private Predicate getDatePredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String datesString = searchCriteria.getValue().toString().trim();
-        String[] dateRange = datesString.split(",");
-        if (datesString.isEmpty() || dateRange.length == 0) {
+        ZonedDateTime[] dates = (ZonedDateTime[]) searchCriteria.getValue();
+        if (dates == null || dates.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
         Join<Event, EventDateLocation> datesJoin = root.join(Event_.DATES, JoinType.LEFT);
         Predicate finalPredicate = criteriaBuilder.conjunction();
-        ZonedDateTime from = ZonedDateTime.parse(dateRange[0]).truncatedTo(ChronoUnit.DAYS);
-        Predicate startDatePredicate =
-            criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), from);
-        finalPredicate = criteriaBuilder.and(finalPredicate, startDatePredicate);
+        if (dates[0] != null) {
+            ZonedDateTime from = dates[0].truncatedTo(ChronoUnit.DAYS);
+            Predicate startDatePredicate =
+                criteriaBuilder.greaterThanOrEqualTo(datesJoin.get(EventDateLocation_.START_DATE), from);
+            finalPredicate = criteriaBuilder.and(finalPredicate, startDatePredicate);
+        }
 
-        if (dateRange.length > 1) {
-            ZonedDateTime to = ZonedDateTime.parse(dateRange[1]).truncatedTo(ChronoUnit.DAYS);
+        if (dates.length > 1 && dates[1] != null) {
+            ZonedDateTime to = dates[1].truncatedTo(ChronoUnit.DAYS);
             Predicate finishDatePredicate =
                 criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.FINISH_DATE), to);
             finalPredicate = criteriaBuilder.and(finalPredicate, finishDatePredicate);
@@ -159,19 +157,18 @@ public class EventSpecification implements MySpecification<Event> {
 
     private Predicate getIsFavoritePredicate(Root<Event> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String isFavoriteString = searchCriteria.getValue().toString().trim();
-        if (isFavoriteString.isEmpty()) {
+        Boolean isFavorite = (Boolean) searchCriteria.getValue();
+        if (isFavorite == null) {
             return criteriaBuilder.conjunction();
         }
 
-        boolean isFavorite = Boolean.parseBoolean(isFavoriteString);
         Join<Event, User> followersJoin = root.join(Event_.FOLLOWERS);
         return isFavorite
             ? criteriaBuilder.equal(followersJoin.get(User_.ID), userId)
             : criteriaBuilder.notEqual(followersJoin.get(User_.ID), userId);
     }
 
-    private String[] listToUpperCase(String[] objects) {
+    private String[] arrayToUpperCase(String[] objects) {
         return Arrays.stream(objects)
             .map(String::toUpperCase)
             .toArray(String[]::new);

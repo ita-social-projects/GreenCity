@@ -51,12 +51,11 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
 
     private Predicate getIsFavoritePredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String isFavoriteString = searchCriteria.getValue().toString().trim();
-        if (isFavoriteString.isEmpty()) {
+        Boolean isFavorite = (Boolean) searchCriteria.getValue();
+        if (isFavorite == null) {
             return criteriaBuilder.conjunction();
         }
 
-        Boolean isFavorite = Boolean.parseBoolean(isFavoriteString);
         Join<EcoNews, User> followersJoin = root.join(EcoNews_.FOLLOWERS);
         if (Boolean.TRUE.equals(isFavorite)) {
             return criteriaBuilder.equal(followersJoin.get(User_.ID), userId);

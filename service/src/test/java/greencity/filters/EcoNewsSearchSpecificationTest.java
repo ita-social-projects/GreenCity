@@ -1,7 +1,6 @@
 package greencity.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -55,7 +53,7 @@ class EcoNewsSearchSpecificationTest {
         "text,true",
         "text,false"
     })
-    void toPredicateTest(String text, String isFavorite) {
+    void toPredicateTest(String text, Boolean isFavorite) {
         List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(text, isFavorite);
         ecoNewsSearchSpecification = new EcoNewsSearchSpecification(searchCriteriaList, userId);
 
@@ -83,7 +81,7 @@ class EcoNewsSearchSpecificationTest {
     @Test
     void toPredicateWithAllEmptyValuesTest() {
         String emptyValue = "";
-        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(emptyValue, emptyValue);
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(emptyValue, null);
         ecoNewsSearchSpecification = new EcoNewsSearchSpecification(searchCriteriaList, userId);
 
         when(criteriaBuilderMock.conjunction()).thenReturn(expected);
@@ -111,7 +109,7 @@ class EcoNewsSearchSpecificationTest {
         verify(criteriaBuilderMock, times(1)).conjunction();
     }
 
-    private List<SearchCriteria> createSearchCriteriaList(String text, String isFavorite) {
+    private List<SearchCriteria> createSearchCriteriaList(String text, Boolean isFavorite) {
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
         SpecificationTestUtils.setValue(searchCriteriaList, "text", text);
         SpecificationTestUtils.setValue(searchCriteriaList, "isFavorite", isFavorite);

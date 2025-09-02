@@ -19,6 +19,9 @@ import greencity.entity.event.EventDateLocation_;
 import greencity.entity.event.Event_;
 import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
+import greencity.enums.EventStatus;
+import greencity.enums.EventTime;
+import greencity.enums.EventType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -28,12 +31,12 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -75,16 +78,16 @@ class EventSpecificationTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-        "UPCOMING;test;OPEN,CLOSED,JOINED,CREATED,SAVED;test;test;ONLINE;2011-12-03T10:15:30+01:00;true;1",
-        "PAST;test;UNKNOWN;test;test;OFFLINE;2011-12-03T10:15:30+01:00,2011-12-04T10:15:30+01:00;false;1",
-        "else;test;JOINED,CREATED,SAVED;test;test;ONLINE_OFFLINE;2011-12-03T10:15:30+01:00;true;"
+        "UPCOMING;test;OPEN,CLOSED,JOINED;test;test;ONLINE;2011-12-03T10:15:30+01:00;true;1",
+        "PAST;test;CREATED,SAVED;test;test;OFFLINE;2011-12-03T10:15:30+01:00,2011-12-04T10:15:30+01:00;false;1",
+        "UPCOMING;test;JOINED,CREATED,SAVED;test;test;ONLINE_OFFLINE;2011-12-03T10:15:30+01:00;true;"
     }, delimiter = ';')
-    void toPredicateTest(String eventTime, String cities, String statuses, String tags, String title,
-        String type, String dateRange, String isFavorite, String userId) {
-        Long id = userId == null ? null : Long.parseLong(userId);
-        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(eventTime, cities, statuses, tags,
-            title, type, dateRange, isFavorite);
-        eventSpecification = new EventSpecification(searchCriteriaList, id);
+    void toPredicateTest(EventTime eventTime, String cities, String statuses, String tags, String title,
+        EventType type, String dateRange, Boolean isFavorite, Long userId) {
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(eventTime, toStringArray(cities),
+            toEventStatusArray(statuses), toStringArray(tags), title, type, toZonedDateTimeArray(dateRange),
+            isFavorite);
+        eventSpecification = new EventSpecification(searchCriteriaList, userId);
 
         doReturn(datesJoin).when(rootMock).join(Event_.DATES, JoinType.LEFT);
         doReturn(addressJoin).when(datesJoin).join(EventDateLocation_.ADDRESS);
@@ -134,8 +137,8 @@ class EventSpecificationTest {
         when(criteriaBuilderMock.or(any(Predicate[].class))).thenReturn(expected);
         when(criteriaBuilderMock.isTrue(booleanPathMock)).thenReturn(expected);
         when(criteriaBuilderMock.isFalse(booleanPathMock)).thenReturn(expected);
-        when(criteriaBuilderMock.equal(longPathMock, id)).thenReturn(expected);
-        when(criteriaBuilderMock.notEqual(longPathMock, id)).thenReturn(expected);
+        when(criteriaBuilderMock.equal(longPathMock, userId)).thenReturn(expected);
+        when(criteriaBuilderMock.notEqual(longPathMock, userId)).thenReturn(expected);
 
         when(stringPathMock.in(any(Object[].class))).thenReturn(expected);
 
@@ -145,13 +148,25 @@ class EventSpecificationTest {
         assertEquals(expected, predicate);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"", ","})
-    void toPredicateWithAllEmptyValuesTest(String emptyArray) {
-        String emptyValue = "";
-        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(emptyValue, emptyArray, emptyArray,
-            emptyArray, emptyValue, emptyValue, emptyArray, emptyValue);
+    @Test
+    void toPredicateWithAllNullValuesTest() {
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(null, null, null,
+            null, null, null, null, null);
         eventSpecification = new EventSpecification(searchCriteriaList, userId);
+
+        when(criteriaBuilderMock.conjunction()).thenReturn(expected);
+        when(criteriaBuilderMock.and(expected, expected)).thenReturn(expected);
+
+        Predicate predicate = eventSpecification.toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
+
+        assertEquals(expected, predicate);
+    }
+
+    @Test
+    void toPredicateWithAllEmptyValuesTest() {
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(null, new String[0],
+            new EventStatus[0], new String[0], "", null, new ZonedDateTime[0], null);
+        eventSpecification = new EventSpecification(searchCriteriaList, null);
 
         when(criteriaBuilderMock.conjunction()).thenReturn(expected);
         when(criteriaBuilderMock.and(expected, expected)).thenReturn(expected);
@@ -175,8 +190,8 @@ class EventSpecificationTest {
         verify(criteriaBuilderMock, times(1)).conjunction();
     }
 
-    private List<SearchCriteria> createSearchCriteriaList(String eventTime, String cities, String statuses,
-        String tags, String title, String type, String dateRange, String isFavorite) {
+    private List<SearchCriteria> createSearchCriteriaList(EventTime eventTime, String[] cities, EventStatus[] statuses,
+        String[] tags, String title, EventType type, ZonedDateTime[] dateRange, Boolean isFavorite) {
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
         SpecificationTestUtils.setValue(searchCriteriaList, "eventTime", eventTime);
         SpecificationTestUtils.setValue(searchCriteriaList, "cities", cities);
@@ -187,5 +202,21 @@ class EventSpecificationTest {
         SpecificationTestUtils.setValue(searchCriteriaList, "dateRange", dateRange);
         SpecificationTestUtils.setValue(searchCriteriaList, "isFavorite", isFavorite);
         return searchCriteriaList;
+    }
+
+    private String[] toStringArray(String stringValue) {
+        return stringValue.split(",");
+    }
+
+    private EventStatus[] toEventStatusArray(String stringValue) {
+        return Arrays.stream(stringValue.split(","))
+            .map(EventStatus::valueOf)
+            .toArray(EventStatus[]::new);
+    }
+
+    private ZonedDateTime[] toZonedDateTimeArray(String stringValue) {
+        return Arrays.stream(stringValue.split(","))
+            .map(ZonedDateTime::parse)
+            .toArray(ZonedDateTime[]::new);
     }
 }

@@ -73,12 +73,11 @@ public class PlaceSearchSpecification implements MySpecification<Place> {
 
     private Predicate getIsFavoritePredicate(Root<Place> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String isFavoriteString = searchCriteria.getValue().toString().trim();
-        if (isFavoriteString.isEmpty()) {
+        Boolean isFavorite = (Boolean) searchCriteria.getValue();
+        if (isFavorite == null) {
             return criteriaBuilder.conjunction();
         }
 
-        boolean isFavorite = Boolean.parseBoolean(isFavoriteString);
         Join<FavoritePlace, User> favoritePlaceUserJoin = root.join(Place_.FAVORITE_PLACES).join(FavoritePlace_.USER);
         if (Boolean.TRUE.equals(isFavorite)) {
             return criteriaBuilder.equal(favoritePlaceUserJoin.get(User_.ID), userId);

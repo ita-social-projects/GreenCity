@@ -10,6 +10,7 @@ import greencity.entity.Notification;
 import greencity.entity.Notification_;
 import greencity.entity.User;
 import greencity.entity.User_;
+import greencity.enums.NotificationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -22,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -53,9 +52,9 @@ class NotificationSpecificationTest {
 
     @Test
     void toPredicateTest() {
-        String userId = "1";
-        String type = "test";
-        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(userId, type);
+        Long userId = 1L;
+        NotificationType type = NotificationType.PLACE_STATUS;
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(userId, List.of(type));
         notificationSpecification = new NotificationSpecification(searchCriteriaList);
 
         doReturn(datePathMock).when(rootMock).get(Notification_.TIME);
@@ -69,7 +68,7 @@ class NotificationSpecificationTest {
         when(criteriaBuilderMock.or(any(Predicate[].class))).thenReturn(expected);
         when(criteriaBuilderMock.desc(datePathMock)).thenReturn(orderMock);
         when(criteriaBuilderMock.equal(longPathMock, userId)).thenReturn(expected);
-        when(criteriaBuilderMock.equal(stringPathMock, '%' + type + '%')).thenReturn(expected);
+        when(criteriaBuilderMock.equal(stringPathMock, '%' + type.name() + '%')).thenReturn(expected);
 
         Predicate predicate = notificationSpecification
             .toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
@@ -78,11 +77,9 @@ class NotificationSpecificationTest {
         verify(criteriaQueryMock).orderBy(any(Order.class));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"", ","})
-    void toPredicateWithAllEmptyValuesTest(String emptyArray) {
-        String emptyValue = "";
-        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(emptyValue, emptyArray);
+    @Test
+    void toPredicateWithAllEmptyValuesTest() {
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(null, null);
         notificationSpecification = new NotificationSpecification(searchCriteriaList);
 
         doReturn(datePathMock).when(rootMock).get(Notification_.TIME);
@@ -94,7 +91,14 @@ class NotificationSpecificationTest {
         Predicate predicate = notificationSpecification.toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
 
         assertEquals(expected, predicate);
-        verify(criteriaQueryMock).orderBy(any(Order.class));
+
+        searchCriteriaList = createSearchCriteriaList(null, List.of());
+        notificationSpecification = new NotificationSpecification(searchCriteriaList);
+
+        predicate = notificationSpecification.toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
+
+        assertEquals(expected, predicate);
+        verify(criteriaQueryMock, times(2)).orderBy(any(Order.class));
     }
 
     @Test
@@ -115,10 +119,10 @@ class NotificationSpecificationTest {
         verify(criteriaBuilderMock, times(1)).conjunction();
     }
 
-    private List<SearchCriteria> createSearchCriteriaList(String userId, String type) {
+    private List<SearchCriteria> createSearchCriteriaList(Long userId, List<NotificationType> types) {
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
         SpecificationTestUtils.setValue(searchCriteriaList, Notification_.TARGET_USER, userId);
-        SpecificationTestUtils.setValue(searchCriteriaList, Notification_.NOTIFICATION_TYPE, type);
+        SpecificationTestUtils.setValue(searchCriteriaList, Notification_.NOTIFICATION_TYPE, types);
         return searchCriteriaList;
     }
 }

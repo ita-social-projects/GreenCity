@@ -50,7 +50,9 @@ public interface MySpecification<T> extends Specification<T> {
      */
     default Predicate getStringPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
+        String stringValue = (String) searchCriteria.getValue();
+        return stringValue == null || stringValue.trim().isEmpty()
+            ? criteriaBuilder.conjunction()
             : criteriaBuilder.like(root.get(searchCriteria.getKey()),
                 "%" + searchCriteria.getValue() + "%");
     }
@@ -60,7 +62,9 @@ public interface MySpecification<T> extends Specification<T> {
      */
     default Predicate getEnumPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
+        Object enumObject = searchCriteria.getValue();
+        return enumObject == null || searchCriteria.getValue().toString().trim().isEmpty()
+            ? criteriaBuilder.conjunction()
             : criteriaBuilder.like(root.get(searchCriteria.getKey()).as(String.class),
                 "%" + searchCriteria.getValue() + "%");
     }

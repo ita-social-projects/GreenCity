@@ -64,7 +64,7 @@ class PlaceSearchSpecificationTest {
 
     @ParameterizedTest
     @CsvSource({"test,true", "test,false"})
-    void toPredicateTest(String place, String isFavorite) {
+    void toPredicateTest(String place, Boolean isFavorite) {
         List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(place, isFavorite);
         placeSearchSpecification = new PlaceSearchSpecification(searchCriteriaList, userId);
 
@@ -98,7 +98,7 @@ class PlaceSearchSpecificationTest {
     @Test
     void toPredicateWithAllEmptyValuesTest() {
         String emptyValue = "";
-        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(emptyValue, emptyValue);
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(emptyValue, null);
         placeSearchSpecification = new PlaceSearchSpecification(searchCriteriaList, userId);
 
         when(criteriaBuilderMock.conjunction()).thenReturn(expected);
@@ -126,7 +126,7 @@ class PlaceSearchSpecificationTest {
         verify(criteriaBuilderMock, times(1)).conjunction();
     }
 
-    private List<SearchCriteria> createSearchCriteriaList(String places, String isFavorite) {
+    private List<SearchCriteria> createSearchCriteriaList(String places, Boolean isFavorite) {
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
         SpecificationTestUtils.setValue(searchCriteriaList, "places", places);
         SpecificationTestUtils.setValue(searchCriteriaList, "isFavorite", isFavorite);

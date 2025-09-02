@@ -6,7 +6,7 @@ import java.util.List;
 
 @UtilityClass
 public class SpecificationTestUtils {
-    public static void setValue(List<SearchCriteria> searchCriteria, String key, String value) {
+    public static void setValue(List<SearchCriteria> searchCriteria, String key, Object value) {
         searchCriteria.add(SearchCriteria.builder()
             .key(key)
             .type(key)

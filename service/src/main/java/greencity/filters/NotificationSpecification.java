@@ -4,6 +4,7 @@ import greencity.entity.Notification;
 import greencity.entity.Notification_;
 import greencity.entity.User;
 import greencity.entity.User_;
+import greencity.enums.NotificationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -38,8 +39,8 @@ public class NotificationSpecification implements MySpecification<Notification> 
 
     private Predicate getTargetUserPredicate(Root<Notification> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String targetUserId = searchCriteria.getValue().toString().trim();
-        if (targetUserId.isEmpty()) {
+        Long targetUserId = (Long) searchCriteria.getValue();
+        if (targetUserId == null) {
             return criteriaBuilder.conjunction();
         }
 
@@ -49,16 +50,15 @@ public class NotificationSpecification implements MySpecification<Notification> 
 
     private Predicate getNotificationTypePredicate(Root<Notification> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        String typesString = searchCriteria.getValue().toString().trim();
-        String[] types = typesString.split(",");
-        if (typesString.isEmpty() || types.length == 0) {
+        List<NotificationType> types = (List<NotificationType>) searchCriteria.getValue();
+        if (types == null || types.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
 
         List<Predicate> typePredicates = new ArrayList<>();
-        for (String type : types) {
+        for (NotificationType type : types) {
             Predicate typePredicate = criteriaBuilder.equal(
-                root.get(Notification_.NOTIFICATION_TYPE).as(String.class), "%" + type.trim() + "%");
+                root.get(Notification_.NOTIFICATION_TYPE).as(String.class), "%" + type.name() + "%");
             typePredicates.add(typePredicate);
         }
         return criteriaBuilder.or(typePredicates.toArray(new Predicate[0]));
