@@ -19,9 +19,9 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class NotificationSpecification implements MySpecification<Notification> {
-    private final List<SearchCriteria> searchCriteriaList;
+    private final transient List<SearchCriteria> searchCriteriaList;
 
-    private final Map<String, TriFunction<Root<Notification>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
+    private final transient Map<String, TriFunction<Root<Notification>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
             Notification_.TARGET_USER, this::getTargetUserPredicate,
             Notification_.PROJECT_NAME, this::getEnumPredicate,

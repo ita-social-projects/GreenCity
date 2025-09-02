@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public class SpecificationUtils {
     public static void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, Object value) {
         boolean isInvalid = value == null
-            || (value instanceof String && StringUtils.isEmpty(((String) value).trim()));
+            || (value instanceof String valueString && StringUtils.isEmpty(valueString.trim()));
         if (!isInvalid) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)

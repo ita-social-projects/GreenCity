@@ -32,10 +32,10 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class EventSpecification implements MySpecification<Event> {
-    protected final List<SearchCriteria> searchCriteriaList;
-    protected final Long userId;
+    protected final transient List<SearchCriteria> searchCriteriaList;
+    protected final transient Long userId;
 
-    private final Map<String, TriFunction<Root<Event>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
+    private final transient Map<String, TriFunction<Root<Event>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
             "eventTime", this::getEventTimePredicate,
             "cities", this::getCitiesPredicate,

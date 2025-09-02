@@ -24,10 +24,10 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class EcoNewsSpecification implements MySpecification<EcoNews> {
-    private final List<SearchCriteria> searchCriteriaList;
+    private final transient List<SearchCriteria> searchCriteriaList;
 
     // Predicate Creators
-    private final Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
+    private final transient Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
             EcoNews_.ID, this::getNumericPredicate,
             EcoNews_.TITLE, this::getStringPredicate,

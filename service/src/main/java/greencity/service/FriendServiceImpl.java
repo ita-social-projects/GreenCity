@@ -284,7 +284,7 @@ public class FriendServiceImpl implements FriendService {
             return Collections.emptyList();
         }
 
-        List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        List<Long> userIds = users.stream().map(User::getId).toList();
         List<UserFriendDto> resultList = userRepo.findUserFriendsWithMutualCountAndChatId(userId, userIds);
 
         List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
@@ -304,7 +304,7 @@ public class FriendServiceImpl implements FriendService {
         return userIds.stream()
             .map(resultMap::get)
             .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private void validateUserAndFriends(Long userId, Long friendId) {

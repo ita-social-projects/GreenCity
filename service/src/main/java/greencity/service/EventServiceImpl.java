@@ -78,7 +78,6 @@ import greencity.entity.event.EventImages;
 import greencity.entity.event.Event_;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.EventStatus;
 import greencity.enums.EventType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;

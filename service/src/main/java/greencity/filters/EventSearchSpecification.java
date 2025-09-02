@@ -14,7 +14,7 @@ import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
 public class EventSearchSpecification extends EventSpecification {
-    private final Map<String, TriFunction<Root<Event>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
+    private final transient Map<String, TriFunction<Root<Event>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of("text", this::getTextPredicate);
 
     public EventSearchSpecification(List<SearchCriteria> searchCriteriaList, Long userId) {

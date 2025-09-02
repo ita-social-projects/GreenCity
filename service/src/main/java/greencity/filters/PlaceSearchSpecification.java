@@ -26,10 +26,10 @@ import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
 public class PlaceSearchSpecification implements MySpecification<Place> {
-    protected final List<SearchCriteria> searchCriteriaList;
-    protected final Long userId;
+    private final transient List<SearchCriteria> searchCriteriaList;
+    private final transient Long userId;
 
-    private final Map<String, TriFunction<Root<Place>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
+    private final transient Map<String, TriFunction<Root<Place>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
             "places", this::getPlacesLikePredicate,
             "isFavorite", this::getIsFavoritePredicate);
