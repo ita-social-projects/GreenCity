@@ -7,6 +7,8 @@ import greencity.dto.tag.TagViewDto;
 import greencity.entity.EcoNews;
 import greencity.entity.RatingStatistics_;
 import greencity.entity.Tag;
+import java.util.Map;
+import org.apache.commons.lang3.function.TriFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +44,8 @@ class MySpecificationTest {
     private Expression<String> as;
     @Mock
     private SearchCriteria searchCriteriaEmpty;
+    @Mock
+    private Map<String, TriFunction<Root<Tag>, CriteriaBuilder, SearchCriteria, Predicate>> predicatesMapping;
     TagSpecification tagSpecification;
     List<SearchCriteria> searchCriteriaList;
     TagViewDto tagViewDto;
@@ -83,10 +88,20 @@ class MySpecificationTest {
     @Test
     void getNumericPredicate() {
         when(root.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
-        when(criteriaBuilder.equal(objectPath, searchCriteriaForAll.getValue())).thenThrow(NumberFormatException.class)
-            .thenReturn(expected);
+        when(criteriaBuilder.equal(objectPath, searchCriteriaForAll.getValue()))
+            .thenThrow(NumberFormatException.class);
         when(criteriaBuilder.disjunction()).thenReturn(expected);
         Predicate actual = tagSpecification.getNumericPredicate(root, criteriaBuilder, searchCriteriaForAll);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getNumericPredicateEmptyValue() {
+        when(searchCriteriaEmpty.getValue()).thenReturn("");
+        when(criteriaBuilder.equal(any(), any(String.class)))
+            .thenThrow(NumberFormatException.class);
+        when(criteriaBuilder.conjunction()).thenReturn(expected);
+        Predicate actual = tagSpecification.getNumericPredicate(root, criteriaBuilder, searchCriteriaEmpty);
         assertEquals(expected, actual);
     }
 
@@ -95,6 +110,14 @@ class MySpecificationTest {
         when(newsRoot.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
         when(criteriaBuilder.like(any(), eq("%" + searchCriteriaForAll.getValue() + "%"))).thenReturn(expected);
         Predicate actual = ecoNewsSpecification.getStringPredicate(newsRoot, criteriaBuilder, searchCriteriaForAll);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getStringPredicateEmptyValue() {
+        when(searchCriteriaEmpty.getValue()).thenReturn("");
+        when(criteriaBuilder.conjunction()).thenReturn(expected);
+        Predicate actual = ecoNewsSpecification.getStringPredicate(newsRoot, criteriaBuilder, searchCriteriaEmpty);
         assertEquals(expected, actual);
     }
 
@@ -108,10 +131,10 @@ class MySpecificationTest {
     }
 
     @Test
-    void getAuthorPredicate() {
-        when(newsRoot.get(searchCriteriaForAll.getKey())).thenReturn(objectPath);
-        when(criteriaBuilder.like(any(), eq("%" + searchCriteriaForAll.getValue() + "%"))).thenReturn(expected);
-        Predicate actual = ecoNewsSpecification.getAuthorPredicate(newsRoot, criteriaBuilder, searchCriteriaForAll);
+    void getEnumPredicateEmptyValue() {
+        when(searchCriteriaEmpty.getValue()).thenReturn("");
+        when(criteriaBuilder.conjunction()).thenReturn(expected);
+        Predicate actual = tagSpecification.getEnumPredicate(root, criteriaBuilder, searchCriteriaEmpty);
         assertEquals(expected, actual);
     }
 
@@ -130,5 +153,61 @@ class MySpecificationTest {
         when(criteriaBuilder.conjunction()).thenReturn(expected);
         Predicate actual = ecoNewsSpecification.getBooleanPredicate(newsRoot, criteriaBuilder, searchCriteriaEmpty);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void toPredicateFromMap() {
+        SearchCriteria sc1 = SearchCriteria.builder()
+            .key("id")
+            .type("numeric")
+            .value("1")
+            .build();
+        SearchCriteria sc2 = SearchCriteria.builder()
+            .key("name")
+            .type("string")
+            .value("test")
+            .build();
+        List<SearchCriteria> testList = List.of(sc1, sc2);
+
+        TriFunction<Root<Tag>, CriteriaBuilder, SearchCriteria, Predicate> func1 = mock(TriFunction.class);
+        TriFunction<Root<Tag>, CriteriaBuilder, SearchCriteria, Predicate> func2 = mock(TriFunction.class);
+
+        when(predicatesMapping.get("numeric")).thenReturn(func1);
+        when(predicatesMapping.get("string")).thenReturn(func2);
+
+        Predicate conj = mock(Predicate.class);
+        Predicate p1 = mock(Predicate.class);
+        Predicate p2 = mock(Predicate.class);
+        Predicate and1 = mock(Predicate.class);
+        Predicate and2 = mock(Predicate.class);
+
+        when(criteriaBuilder.conjunction()).thenReturn(conj);
+        when(func1.apply(root, criteriaBuilder, sc1)).thenReturn(p1);
+        when(func2.apply(root, criteriaBuilder, sc2)).thenReturn(p2);
+        when(criteriaBuilder.and(conj, p1)).thenReturn(and1);
+        when(criteriaBuilder.and(and1, p2)).thenReturn(and2);
+
+        Predicate actual = tagSpecification.toPredicateFromMap(root, criteriaBuilder, testList, predicatesMapping);
+
+        assertEquals(and2, actual);
+    }
+
+    @Test
+    void toPredicateFromMapWithUnknownType() {
+        SearchCriteria sc1 = SearchCriteria.builder()
+            .key("id")
+            .type("unknown")
+            .value("1")
+            .build();
+        List<SearchCriteria> testList = List.of(sc1);
+
+        when(predicatesMapping.get("unknown")).thenReturn(null);
+
+        Predicate conj = mock(Predicate.class);
+        when(criteriaBuilder.conjunction()).thenReturn(conj);
+
+        Predicate actual = tagSpecification.toPredicateFromMap(root, criteriaBuilder, testList, predicatesMapping);
+
+        assertEquals(conj, actual);
     }
 }
