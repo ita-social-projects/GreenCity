@@ -54,20 +54,22 @@ public class PlaceSearchSpecification implements MySpecification<Place> {
         ArrayList<Predicate> placesLikePredicates = new ArrayList<>();
         Join<Place, Location> locationJoin = root.join(Place_.LOCATION, JoinType.LEFT);
         Join<Place, Category> categoryJoin = root.join(Place_.CATEGORY, JoinType.LEFT);
-        Arrays.stream(places).forEach(place -> placesLikePredicates.add(
-            criteriaBuilder.or(
-                criteriaBuilder.like(criteriaBuilder.lower(root.get(Place_.NAME)),
-                    "%" + place.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(root.get(Place_.DESCRIPTION)),
-                    "%" + place.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS_EN)),
-                    "%" + place.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS_UK)),
-                    "%" + place.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME_EN)),
-                    "%" + place.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME_UK)),
-                    "%" + place.toLowerCase() + "%"))));
+        Arrays.stream(places)
+            .map(String::toLowerCase)
+            .forEach(place -> placesLikePredicates.add(
+                criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(Place_.NAME)),
+                        "%" + place + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(Place_.DESCRIPTION)),
+                        "%" + place + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS_EN)),
+                        "%" + place + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(locationJoin.get(Location_.ADDRESS_UK)),
+                        "%" + place + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME_EN)),
+                        "%" + place + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get(Category_.NAME_UK)),
+                        "%" + place + "%"))));
         return criteriaBuilder.or(placesLikePredicates.toArray(new Predicate[0]));
     }
 
@@ -78,7 +80,8 @@ public class PlaceSearchSpecification implements MySpecification<Place> {
             return criteriaBuilder.conjunction();
         }
 
-        Join<FavoritePlace, User> favoritePlaceUserJoin = root.join(Place_.FAVORITE_PLACES).join(FavoritePlace_.USER);
+        Join<Place, FavoritePlace> favoritePlaceJoin = root.join(Place_.FAVORITE_PLACES, JoinType.LEFT);
+        Join<FavoritePlace, User> favoritePlaceUserJoin = favoritePlaceJoin.join(FavoritePlace_.USER, JoinType.LEFT);
         return isFavorite
             ? criteriaBuilder.equal(favoritePlaceUserJoin.get(User_.ID), userId)
             : criteriaBuilder.notEqual(favoritePlaceUserJoin.get(User_.ID), userId);

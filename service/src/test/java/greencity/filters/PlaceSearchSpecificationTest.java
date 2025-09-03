@@ -70,8 +70,8 @@ class PlaceSearchSpecificationTest {
 
         doReturn(locationJoin).when(rootMock).join(Place_.LOCATION, JoinType.LEFT);
         doReturn(categoryJoin).when(rootMock).join(Place_.CATEGORY, JoinType.LEFT);
-        doReturn(favoritePlaceJoin).when(rootMock).join(Place_.FAVORITE_PLACES);
-        doReturn(favoritePlaceUserJoin).when(favoritePlaceJoin).join(FavoritePlace_.USER);
+        doReturn(favoritePlaceJoin).when(rootMock).join(Place_.FAVORITE_PLACES, JoinType.LEFT);
+        doReturn(favoritePlaceUserJoin).when(favoritePlaceJoin).join(FavoritePlace_.USER, JoinType.LEFT);
         doReturn(stringPathMock).when(rootMock).get(Place_.NAME);
         doReturn(stringPathMock).when(rootMock).get(Place_.DESCRIPTION);
         doReturn(stringPathMock).when(locationJoin).get(Location_.ADDRESS_EN);

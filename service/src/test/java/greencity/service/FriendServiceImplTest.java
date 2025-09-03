@@ -913,7 +913,6 @@ class FriendServiceImplTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
         verify(userRepo).existsById(userId);
-        verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(anyLong(), anyString(), any());
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(anyLong(), anyString(),
             anyBoolean(), anyBoolean(), any());
     }
@@ -930,7 +929,6 @@ class FriendServiceImplTest {
                 filterByFriendsOfFriends, filterByCity, null));
 
         verify(userRepo, never()).existsById(anyLong());
-        verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(anyLong(), anyString(), any());
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(anyLong(), anyString(),
             anyBoolean(), anyBoolean(), any());
     }
