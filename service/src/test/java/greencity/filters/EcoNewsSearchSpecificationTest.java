@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -60,7 +61,7 @@ class EcoNewsSearchSpecificationTest {
         doReturn(stringPathMock).when(rootMock).get(EcoNews_.TITLE);
         doReturn(stringPathMock).when(rootMock).get(EcoNews_.TEXT);
         doReturn(stringPathMock).when(rootMock).get(EcoNews_.SHORT_INFO);
-        doReturn(followersJoin).when(rootMock).join(EcoNews_.FOLLOWERS);
+        doReturn(followersJoin).when(rootMock).join(EcoNews_.FOLLOWERS, JoinType.LEFT);
         doReturn(longPathMock).when(followersJoin).get(User_.ID);
 
         when(criteriaBuilderMock.conjunction()).thenReturn(expected);

@@ -54,21 +54,19 @@ class NotificationSpecificationTest {
     void toPredicateTest() {
         Long userId = 1L;
         NotificationType type = NotificationType.PLACE_STATUS;
-        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(userId, List.of(type));
+        List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(userId, new NotificationType[] {type});
         notificationSpecification = new NotificationSpecification(searchCriteriaList);
 
         doReturn(datePathMock).when(rootMock).get(Notification_.TIME);
         doReturn(usersJoin).when(rootMock).join(Notification_.TARGET_USER);
         doReturn(longPathMock).when(usersJoin).get(User_.ID);
         doReturn(stringPathMock).when(rootMock).get(Notification_.NOTIFICATION_TYPE);
-        doReturn(stringPathMock).when(stringPathMock).as(String.class);
 
         when(criteriaBuilderMock.conjunction()).thenReturn(expected);
         when(criteriaBuilderMock.and(expected, expected)).thenReturn(expected);
-        when(criteriaBuilderMock.or(any(Predicate[].class))).thenReturn(expected);
         when(criteriaBuilderMock.desc(datePathMock)).thenReturn(orderMock);
         when(criteriaBuilderMock.equal(longPathMock, userId)).thenReturn(expected);
-        when(criteriaBuilderMock.equal(stringPathMock, '%' + type.name() + '%')).thenReturn(expected);
+        when(stringPathMock.in(any(Object[].class))).thenReturn(expected);
 
         Predicate predicate = notificationSpecification
             .toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
@@ -92,7 +90,7 @@ class NotificationSpecificationTest {
 
         assertEquals(expected, predicate);
 
-        searchCriteriaList = createSearchCriteriaList(null, List.of());
+        searchCriteriaList = createSearchCriteriaList(null, new NotificationType[0]);
         notificationSpecification = new NotificationSpecification(searchCriteriaList);
 
         predicate = notificationSpecification.toPredicate(rootMock, criteriaQueryMock, criteriaBuilderMock);
@@ -119,7 +117,7 @@ class NotificationSpecificationTest {
         verify(criteriaBuilderMock, times(1)).conjunction();
     }
 
-    private List<SearchCriteria> createSearchCriteriaList(Long userId, List<NotificationType> types) {
+    private List<SearchCriteria> createSearchCriteriaList(Long userId, NotificationType[] types) {
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
         SpecificationTestUtils.setValue(searchCriteriaList, Notification_.TARGET_USER, userId);
         SpecificationTestUtils.setValue(searchCriteriaList, Notification_.NOTIFICATION_TYPE, types);

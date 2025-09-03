@@ -914,7 +914,8 @@ class FriendServiceImplTest {
 
         verify(userRepo).existsById(userId);
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(anyLong(), anyString(), any());
-        verify(userRepo, never()).findUserFriendsWithMutualCountAndChatId(anyLong(), any());
+        verify(userRepo, never()).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(anyLong(), anyString(),
+            anyBoolean(), anyBoolean(), any());
     }
 
     @Test
@@ -930,7 +931,8 @@ class FriendServiceImplTest {
 
         verify(userRepo, never()).existsById(anyLong());
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(anyLong(), anyString(), any());
-        verify(userRepo, never()).findUserFriendsWithMutualCountAndChatId(anyLong(), any());
+        verify(userRepo, never()).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(anyLong(), anyString(),
+            anyBoolean(), anyBoolean(), any());
     }
 
     @Test

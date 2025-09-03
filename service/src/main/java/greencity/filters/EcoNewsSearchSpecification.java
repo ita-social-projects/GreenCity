@@ -4,9 +4,11 @@ import greencity.entity.EcoNews;
 import greencity.entity.EcoNews_;
 import greencity.entity.User;
 import greencity.entity.User_;
+import greencity.utils.SpecificationUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
@@ -40,6 +42,7 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
             return criteriaBuilder.conjunction();
         }
 
+        text = SpecificationUtils.escapeSpecialCharacters(text);
         Predicate titlePredicate = criteriaBuilder.like(root.get(EcoNews_.TITLE),
             "%" + text + "%");
         Predicate textPredicate = criteriaBuilder.like(root.get(EcoNews_.TEXT),
@@ -56,11 +59,9 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
             return criteriaBuilder.conjunction();
         }
 
-        Join<EcoNews, User> followersJoin = root.join(EcoNews_.FOLLOWERS);
-        if (Boolean.TRUE.equals(isFavorite)) {
-            return criteriaBuilder.equal(followersJoin.get(User_.ID), userId);
-        } else {
-            return criteriaBuilder.notEqual(followersJoin.get(User_.ID), userId);
-        }
+        Join<EcoNews, User> followersJoin = root.join(EcoNews_.FOLLOWERS, JoinType.LEFT);
+        return isFavorite
+            ? criteriaBuilder.equal(followersJoin.get(User_.ID), userId)
+            : criteriaBuilder.notEqual(followersJoin.get(User_.ID), userId);
     }
 }

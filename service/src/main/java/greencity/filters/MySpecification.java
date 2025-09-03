@@ -85,6 +85,11 @@ public interface MySpecification<T> extends Specification<T> {
         List<SearchCriteria> searchCriteriaList,
         Map<String, TriFunction<Root<T>, CriteriaBuilder, SearchCriteria, Predicate>> predicatesMapping) {
         Predicate allPredicates = criteriaBuilder.conjunction();
+        if (searchCriteriaList == null || searchCriteriaList.isEmpty()
+            || predicatesMapping == null || predicatesMapping.isEmpty()) {
+            return allPredicates;
+        }
+
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             TriFunction<Root<T>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
                 predicatesMapping.get(searchCriteria.getType());

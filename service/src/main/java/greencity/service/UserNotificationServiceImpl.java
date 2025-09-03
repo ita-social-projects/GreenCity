@@ -562,10 +562,13 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     private PageableAdvancedDto<NotificationDto> getNotificationsForUserFromGreenCity(Pageable pageable,
         Long userId, String language, ProjectName projectName, List<NotificationType> notificationTypes,
         Boolean viewed) {
+        NotificationType[] notificationTypesArray = notificationTypes == null
+            ? null
+            : notificationTypes.toArray(new NotificationType[0]);
         List<SearchCriteria> criteriaList = new ArrayList<>();
         setValueIfNotEmpty(criteriaList, Notification_.TARGET_USER, userId);
         setValueIfNotEmpty(criteriaList, Notification_.PROJECT_NAME, projectName);
-        setValueIfNotEmpty(criteriaList, Notification_.NOTIFICATION_TYPE, notificationTypes);
+        setValueIfNotEmpty(criteriaList, Notification_.NOTIFICATION_TYPE, notificationTypesArray);
         setValueIfNotEmpty(criteriaList, Notification_.VIEWED, viewed.toString());
         Specification<Notification> specification = new NotificationSpecification(criteriaList);
 
@@ -687,13 +690,11 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * Saves a notification and sends an email and WebSocket notification.
      *
      * @param notification the notification to save and notify
-     * @return the saved notification
      */
-    private Notification saveAndNotify(Notification notification) {
+    private void saveAndNotify(Notification notification) {
         Notification savedNotification = notificationRepo.save(notification);
         notificationService.sendEmailNotification(modelMapper.map(savedNotification, EmailNotificationDto.class));
         sendNotification(savedNotification.getTargetUser().getId());
-        return savedNotification;
     }
 
     /**

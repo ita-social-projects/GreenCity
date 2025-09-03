@@ -10,7 +10,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 public class NotificationSpecification implements MySpecification<Notification> {
     private final transient List<SearchCriteria> searchCriteriaList;
 
-    private final transient Map<String, TriFunction<Root<Notification>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
+    private transient Map<String, TriFunction<Root<Notification>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
             Notification_.TARGET_USER, this::getTargetUserPredicate,
             Notification_.PROJECT_NAME, this::getEnumPredicate,
@@ -50,17 +49,11 @@ public class NotificationSpecification implements MySpecification<Notification> 
 
     private Predicate getNotificationTypePredicate(Root<Notification> root, CriteriaBuilder criteriaBuilder,
         SearchCriteria searchCriteria) {
-        List<NotificationType> types = (List<NotificationType>) searchCriteria.getValue();
-        if (types == null || types.isEmpty()) {
+        NotificationType[] types = (NotificationType[]) searchCriteria.getValue();
+        if (types == null || types.length == 0) {
             return criteriaBuilder.conjunction();
         }
 
-        List<Predicate> typePredicates = new ArrayList<>();
-        for (NotificationType type : types) {
-            Predicate typePredicate = criteriaBuilder.equal(
-                root.get(Notification_.NOTIFICATION_TYPE).as(String.class), "%" + type.name() + "%");
-            typePredicates.add(typePredicate);
-        }
-        return criteriaBuilder.or(typePredicates.toArray(new Predicate[0]));
+        return root.get(Notification_.NOTIFICATION_TYPE).in((Object[]) types);
     }
 }

@@ -2,6 +2,7 @@ package greencity.filters;
 
 import greencity.entity.event.Event;
 import greencity.entity.event.Event_;
+import greencity.utils.SpecificationUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -39,12 +40,15 @@ public class EventSearchSpecification extends EventSpecification {
         }
 
         ArrayList<Predicate> eachWordLikePredicates = new ArrayList<>();
-        Arrays.stream(text.split(" ")).forEach(word -> eachWordLikePredicates.add(
-            criteriaBuilder.or(
-                criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.TITLE)),
-                    "%" + word.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.DESCRIPTION)),
-                    "%" + word.toLowerCase() + "%"))));
+        Arrays.stream(text.split(" "))
+            .map(SpecificationUtils::escapeSpecialCharacters)
+            .map(String::toLowerCase)
+            .forEach(word -> eachWordLikePredicates.add(
+                criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.TITLE)),
+                        "%" + word + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get(Event_.DESCRIPTION)),
+                        "%" + word + "%"))));
         return criteriaBuilder.or(eachWordLikePredicates.toArray(new Predicate[0]));
     }
 }

@@ -69,7 +69,7 @@ class EventSpecificationTest {
     @Mock
     private Join<Event, User> usersJoin;
     @Mock
-    private Join<Tag, Tag> tagsJoin;
+    private Join<Event, Tag> tagsJoin;
     @Mock
     private Join<Tag, TagTranslation> tagTranslationsJoin;
 
@@ -80,8 +80,8 @@ class EventSpecificationTest {
     @CsvSource(value = {
         "UPCOMING;test;OPEN,CLOSED,JOINED;test;test;ONLINE;2011-12-03T10:15:30+01:00;true;1",
         "PAST;test;CREATED,SAVED;test;test;OFFLINE;2011-12-03T10:15:30+01:00,2011-12-04T10:15:30+01:00;false;1",
-        "UPCOMING;test;JOINED,CREATED,SAVED;test;test;ONLINE_OFFLINE;2011-12-03T10:15:30+01:00;true;"
-    }, delimiter = ';')
+        "UPCOMING;test;JOINED,CREATED,SAVED;test;test;ONLINE_OFFLINE;2011-12-03T10:15:30+01:00;true;null"
+    }, delimiter = ';', nullValues = "null")
     void toPredicateTest(EventTime eventTime, String cities, String statuses, String tags, String title,
         EventType type, String dateRange, Boolean isFavorite, Long userId) {
         List<SearchCriteria> searchCriteriaList = createSearchCriteriaList(eventTime, toStringArray(cities),

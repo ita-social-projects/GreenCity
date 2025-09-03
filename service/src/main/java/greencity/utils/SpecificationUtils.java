@@ -18,4 +18,10 @@ public class SpecificationUtils {
                 .build());
         }
     }
+
+    public static String escapeSpecialCharacters(String value) {
+        return value.replace("!", "\\!")
+            .replace("%", "\\%")
+            .replace("_", "\\_");
+    }
 }

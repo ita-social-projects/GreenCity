@@ -226,4 +226,40 @@ class MySpecificationTest {
 
         assertEquals(conj, actual);
     }
+
+    @Test
+    void toPredicateFromMapWithNullOrEmptyList() {
+        Predicate conj = mock(Predicate.class);
+        when(criteriaBuilder.conjunction()).thenReturn(conj);
+
+        Predicate actual = tagSpecification.toPredicateFromMap(root, criteriaBuilder, null,
+            predicatesMapping);
+
+        assertEquals(conj, actual);
+
+        actual = tagSpecification.toPredicateFromMap(root, criteriaBuilder, List.of(), predicatesMapping);
+
+        assertEquals(conj, actual);
+    }
+
+    @Test
+    void toPredicateFromMapWithNullOrEmptyPredicatesMap() {
+        SearchCriteria sc1 = SearchCriteria.builder()
+            .key("id")
+            .type("unknown")
+            .value("1")
+            .build();
+        List<SearchCriteria> testList = List.of(sc1);
+
+        Predicate conj = mock(Predicate.class);
+        when(criteriaBuilder.conjunction()).thenReturn(conj);
+
+        Predicate actual = tagSpecification.toPredicateFromMap(root, criteriaBuilder, testList, null);
+
+        assertEquals(conj, actual);
+
+        actual = tagSpecification.toPredicateFromMap(root, criteriaBuilder, testList, Map.of());
+
+        assertEquals(conj, actual);
+    }
 }

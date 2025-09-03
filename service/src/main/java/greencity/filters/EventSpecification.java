@@ -146,7 +146,7 @@ public class EventSpecification implements MySpecification<Event> {
         }
 
         if (dates.length > 1 && dates[1] != null) {
-            ZonedDateTime to = dates[1].truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime to = dates[1].truncatedTo(ChronoUnit.DAYS).plusDays(1);
             Predicate finishDatePredicate =
                 criteriaBuilder.lessThanOrEqualTo(datesJoin.get(EventDateLocation_.FINISH_DATE), to);
             finalPredicate = criteriaBuilder.and(finalPredicate, finishDatePredicate);
@@ -162,7 +162,7 @@ public class EventSpecification implements MySpecification<Event> {
             return criteriaBuilder.conjunction();
         }
 
-        Join<Event, User> followersJoin = root.join(Event_.FOLLOWERS);
+        Join<Event, User> followersJoin = root.join(Event_.FOLLOWERS, JoinType.LEFT);
         return isFavorite
             ? criteriaBuilder.equal(followersJoin.get(User_.ID), userId)
             : criteriaBuilder.notEqual(followersJoin.get(User_.ID), userId);

@@ -79,10 +79,8 @@ public class PlaceSearchSpecification implements MySpecification<Place> {
         }
 
         Join<FavoritePlace, User> favoritePlaceUserJoin = root.join(Place_.FAVORITE_PLACES).join(FavoritePlace_.USER);
-        if (Boolean.TRUE.equals(isFavorite)) {
-            return criteriaBuilder.equal(favoritePlaceUserJoin.get(User_.ID), userId);
-        } else {
-            return criteriaBuilder.notEqual(favoritePlaceUserJoin.get(User_.ID), userId);
-        }
+        return isFavorite
+            ? criteriaBuilder.equal(favoritePlaceUserJoin.get(User_.ID), userId)
+            : criteriaBuilder.notEqual(favoritePlaceUserJoin.get(User_.ID), userId);
     }
 }
