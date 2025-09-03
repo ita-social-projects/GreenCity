@@ -769,7 +769,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
             if (econewsAuthor != null) {
                 userNotificationService.removeActionUserFromNotification(
-                    modelMapper.map(econewsAuthor, UserVO.class), userVO, ecoNews.getId(), NotificationType.ECONEWS_LIKE);
+                    modelMapper.map(econewsAuthor, UserVO.class), userVO, ecoNews.getId(),
+                    NotificationType.ECONEWS_LIKE);
             }
             return true;
         }
