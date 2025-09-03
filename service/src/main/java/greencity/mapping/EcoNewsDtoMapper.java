@@ -53,7 +53,7 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
                 .map(TagTranslation::getName).toList())
             .tagsUk(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguageCode().equals("ua"))
+                .filter(t -> t.getLanguageCode().equals("uk"))
                 .map(TagTranslation::getName).toList())
             .likes(ecoNews.getUsersLikedNews().size())
             .dislikes(ecoNews.getUsersDislikedNews().size())

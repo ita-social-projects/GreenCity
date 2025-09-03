@@ -472,7 +472,7 @@ class UserNotificationServiceImplTest {
                 testUserVo.getId(),
                 pageRequest,
                 getPrincipal(),
-                "ua",
+                "uk",
                 ProjectName.GREENCITY,
                 null,
                 true);

@@ -574,9 +574,9 @@ class ToDoListItemServiceImplTest {
 
     @Test
     void findInProgressByUserIdAndLanguageCodeTest() {
-        when(toDoListItemService.findInProgressByUserIdAndLanguageCode(1L, "ua"))
+        when(toDoListItemService.findInProgressByUserIdAndLanguageCode(1L, "uk"))
             .thenReturn(new ArrayList<>());
-        assertEquals(0, toDoListItemRepo.findInProgressByUserIdAndLanguageCode(1L, "ua").size());
+        assertEquals(0, toDoListItemRepo.findInProgressByUserIdAndLanguageCode(1L, "uk").size());
     }
 
     @Test

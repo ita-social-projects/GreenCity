@@ -46,6 +46,7 @@ import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
+import java.net.URI;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +63,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,9 +78,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static greencity.ModelUtils.getAuthorVO;
 import static greencity.ModelUtils.getEvent;
+import static greencity.ModelUtils.getEventDto;
 import static greencity.ModelUtils.getEventPreviewDtos;
 import static greencity.ModelUtils.getFilterEventDto;
 import static greencity.ModelUtils.getTupleElements;
@@ -91,6 +97,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -100,6 +107,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -464,8 +472,6 @@ class EventServiceImplTest {
             event.getAdditionalImages().getFirst().getLink());
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
 
-        List<String> imagesList = new ArrayList<>();
-        imagesList.add("New addition image");
         when(eventRepo.findAllImagesLinksByEventId(anyLong()))
             .thenReturn(new ArrayList<>(List.of("New addition image")));
         doNothing().when(userRemoteClient).deleteFile(any());
@@ -2325,9 +2331,8 @@ class EventServiceImplTest {
         when(eventRepo.findAllUserEventsByUserId(userId)).thenReturn(Collections.emptyList());
         when(userRepo.existsById(userId)).thenReturn(false);
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            eventService.getAllEventsOrganizedByUser(userId);
-        });
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.getAllEventsOrganizedByUser(userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -2338,9 +2343,8 @@ class EventServiceImplTest {
 
     @Test
     void getAllEventsOrganizedByUser_NullUserId_ThrowsIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            eventService.getAllEventsOrganizedByUser(null);
-        });
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> eventService.getAllEventsOrganizedByUser(null));
 
         assertEquals(ErrorMessage.USER_ID_NULL, exception.getMessage());
 
@@ -2354,9 +2358,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllUserEventsByUserId(userId)).thenThrow(new DataAccessException("Database error") {
         });
 
-        assertThrows(DataAccessException.class, () -> {
-            eventService.getAllEventsOrganizedByUser(userId);
-        });
+        assertThrows(DataAccessException.class, () -> eventService.getAllEventsOrganizedByUser(userId));
 
         verify(eventRepo).findAllUserEventsByUserId(userId);
         verifyNoInteractions(userRepo, modelMapper);
@@ -2481,9 +2483,8 @@ class EventServiceImplTest {
         when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(Collections.emptyList());
         when(userRepo.existsById(userId)).thenReturn(false);
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            eventService.getAllEventsAttendedByUser(userId);
-        });
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> eventService.getAllEventsAttendedByUser(userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -2494,9 +2495,8 @@ class EventServiceImplTest {
 
     @Test
     void getAllEventsAttendedByUser_NullUserId_ThrowsIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            eventService.getAllEventsAttendedByUser(null);
-        });
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> eventService.getAllEventsAttendedByUser(null));
 
         assertEquals(ErrorMessage.USER_ID_NULL, exception.getMessage());
 
@@ -2510,9 +2510,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllAttendedEventsByUserId(userId)).thenThrow(new DataAccessException("Database error") {
         });
 
-        assertThrows(DataAccessException.class, () -> {
-            eventService.getAllEventsAttendedByUser(userId);
-        });
+        assertThrows(DataAccessException.class, () -> eventService.getAllEventsAttendedByUser(userId));
 
         verify(eventRepo).findAllAttendedEventsByUserId(userId);
         verifyNoInteractions(userRepo, modelMapper);
@@ -2533,9 +2531,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllAttendedEventsByUserId(userId)).thenReturn(attendedEvents);
         when(modelMapper.map(any(Event.class), eq(EventDto.class))).thenThrow(new RuntimeException("Mapping error"));
 
-        assertThrows(RuntimeException.class, () -> {
-            eventService.getAllEventsAttendedByUser(userId);
-        });
+        assertThrows(RuntimeException.class, () -> eventService.getAllEventsAttendedByUser(userId));
 
         verify(eventRepo).findAllAttendedEventsByUserId(userId);
         verify(modelMapper, times(1)).map(any(Event.class), eq(EventDto.class));
@@ -2631,5 +2627,206 @@ class EventServiceImplTest {
                 return amountOfEvents;
             }
         };
+    }
+
+    @Test
+    void saveWhenImagesExceptionsTest() {
+        AddEventDtoRequest addEventDtoRequest = ModelUtils.getAddEventDtoRequest();
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        MultipartFile[] images = ModelUtils.getMultipartFiles();
+
+        when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(event, EventDto.class))
+            .thenReturn(ModelUtils.getEventDto());
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(eventRepo.save(event)).thenReturn(event);
+        doThrow(new WebClientRequestException(
+            mock(Throwable.class),
+            HttpMethod.GET,
+            mock(URI.class),
+            HttpHeaders.EMPTY))
+            .when(userRemoteClient).uploadFile(images[0]);
+        doThrow(new WebClientResponseException("fail", 500, "status", null, null, null))
+            .when(userRemoteClient).uploadFile(images[1]);
+
+        assertDoesNotThrow(() -> eventService.save(addEventDtoRequest, testUserVo.getEmail(), images));
+        verify(eventRepo).save(any());
+    }
+
+    @Test
+    void saveWithInvalidCoordinatesTest() {
+        AddEventDtoRequest invalidCoordinatesRequest = ModelUtils.getAddEventDtoRequest();
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        String email = testUserVo.getEmail();
+        MultipartFile[] images = ModelUtils.getMultipartFiles();
+        invalidCoordinatesRequest.getDatesLocations().get(0).getCoordinates().setLatitude(91.0);
+        invalidCoordinatesRequest.getDatesLocations().get(0).getCoordinates().setLongitude(45.0);
+
+        when(modelMapper.map(invalidCoordinatesRequest, Event.class)).thenReturn(event);
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+
+        BadRequestException ex =
+            assertThrows(BadRequestException.class, () -> eventService.save(invalidCoordinatesRequest, email, images));
+
+        assertEquals(ErrorMessage.INVALID_COORDINATES, ex.getMessage());
+        verify(eventRepo, never()).save(any());
+    }
+
+    @Test
+    void updateWhenTitleUnchangedTest() {
+        UpdateEventRequestDto updateEventRequestDto = ModelUtils.getUpdateEventRequestDto();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        UserVO userVO = mock(UserVO.class);
+        updateEventDto.setTitle(event.getTitle());
+
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(modelMapper.map(updateEventRequestDto, UpdateEventDto.class))
+            .thenReturn(updateEventDto);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(ModelUtils.getEventDto());
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.update(updateEventRequestDto, testUserVo.getEmail(), null);
+
+        verify(userNotificationService).createNotificationForAttenders(
+            anyList(),
+            eq(event.getTitle()),
+            eq(NotificationType.EVENT_UPDATED),
+            eq(event.getId()));
+        verify(eventRepo).save(any());
+    }
+
+    @Test
+    void updateWithNotNullAdditionalImagesTest() {
+        UpdateEventRequestDto updateEventRequestDto = ModelUtils.getUpdateEventRequestDto();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.setTitleImage("test");
+        updateEventDto.setAdditionalImages(List.of("image1", "image2"));
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        UserVO userVO = mock(UserVO.class);
+        List<String> additionalImages = List.of("url1", "url2");
+        updateEventDto.setAdditionalImages(additionalImages);
+
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(modelMapper.map(updateEventRequestDto, UpdateEventDto.class))
+            .thenReturn(updateEventDto);
+        when(modelMapper.map(event, EventDto.class))
+            .thenReturn(ModelUtils.getEventDto());
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
+        doThrow(new WebClientResponseException("fail", 500, "status", null, null, null))
+            .when(userRemoteClient).deleteFile(anyString());
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(eventRepo.findAllImagesLinksByEventId(anyLong()))
+            .thenReturn(List.of("oldUrl"));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.update(updateEventRequestDto, testUserVo.getEmail(), null);
+
+        assertNotNull(event.getAdditionalImages());
+        assertEquals(2, event.getAdditionalImages().size());
+        assertEquals("url1", event.getAdditionalImages().get(0).getLink());
+        assertEquals("url2", event.getAdditionalImages().get(1).getLink());
+        verify(eventRepo).save(any());
+    }
+
+    @Test
+    void updateWhenImageUploadExceptionTest() {
+        UpdateEventRequestDto updateEventRequestDto = ModelUtils.getUpdateEventRequestDto();
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        UserVO userVO = mock(UserVO.class);
+        String email = testUserVo.getEmail();
+        MultipartFile[] images = ModelUtils.getMultipartFiles();
+        updateEventDto.setTitleImage(null);
+
+        when(modelMapper.map(testUserVo, User.class)).thenReturn(user);
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+        when(modelMapper.map(updateEventRequestDto, UpdateEventDto.class))
+            .thenReturn(updateEventDto);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(ModelUtils.getEventDto());
+        when(restClient.findByEmail(anyString())).thenReturn(testUserVo);
+        when(userVO.getRole()).thenReturn(Role.ROLE_USER);
+        doThrow(new WebClientRequestException(
+            mock(Throwable.class),
+            HttpMethod.POST,
+            mock(URI.class),
+            HttpHeaders.EMPTY))
+            .when(userRemoteClient).uploadFile(any(MultipartFile.class));
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        assertDoesNotThrow(() -> eventService.update(updateEventRequestDto, email, images));
+
+        verify(eventRepo).save(any());
+    }
+
+    @Test
+    void likeV2Test() {
+        UserVO userVO = ModelUtils.getUserVO();
+        UserVO eventAuthorVO = ModelUtils.getAuthorVO();
+        User user = ModelUtils.getUser();
+        User eventAuthor = ModelUtils.getUser()
+            .setId(2L);
+        Event event = ModelUtils.getEvent()
+            .setOrganizer(eventAuthor);
+        EventDto eventDto = getEventDto();
+        RatingPoints ratingPoints = RatingPoints.builder()
+            .id(1L)
+            .name("LIKE_EVENT")
+            .points(1)
+            .build();
+
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventAuthor, UserVO.class)).thenReturn(eventAuthorVO);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        when(eventRepo.findById(event.getId())).thenReturn(Optional.of(event));
+        when(userRepo.findById(eventAuthor.getId())).thenReturn(Optional.of(eventAuthor));
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_EVENT")).thenReturn(ratingPoints);
+
+        EventDto likedEvent = eventService.likeV2(event.getId(), userVO);
+
+        assertTrue(event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId())));
+        assertEquals(eventDto, likedEvent);
+        verify(userNotificationService, times(1))
+            .createOrUpdateLikeNotification(any(LikeNotificationDto.class));
+        verify(eventRepo).findById(event.getId());
+        verify(userRepo).findById(eventAuthor.getId());
+        verify(modelMapper).map(userVO, User.class);
+        verify(modelMapper).map(eventAuthor, UserVO.class);
+    }
+
+    @Test
+    void dislikeV2Test() {
+        UserVO userVO = ModelUtils.getUserVO();
+        User eventAuthor = ModelUtils.getUser()
+            .setId(2L);
+        Event event = ModelUtils.getEvent()
+            .setOrganizer(eventAuthor);
+        EventDto eventDto = ModelUtils.getEventDto();
+        event.setUsersDislikedEvents(new HashSet<>());
+
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(userRepo.findById(event.getOrganizer().getId()))
+            .thenReturn(Optional.of(eventAuthor));
+
+        EventDto dislikedEvent = eventService.dislikeV2(event.getId(), userVO);
+
+        assertEquals(1L, event.getUsersDislikedEvents().size());
+        assertEquals(eventDto, dislikedEvent);
+        verify(eventRepo).save(event);
     }
 }

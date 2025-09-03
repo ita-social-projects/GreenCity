@@ -281,9 +281,9 @@ class HabitAssignControllerTest {
 
         mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId)
             .principal(principal)
-            .locale(Locale.forLanguageTag("ua")))
+            .locale(Locale.forLanguageTag("uk")))
             .andExpect(status().isOk());
-        verify(habitAssignService).getUserToDoAndCustomToDoLists(userVO.getId(), habitAssignId, "ua");
+        verify(habitAssignService).getUserToDoAndCustomToDoLists(userVO.getId(), habitAssignId, "uk");
     }
 
     @Test
@@ -302,11 +302,11 @@ class HabitAssignControllerTest {
         String json = gson.toJson(dto);
         mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
             .principal(principal)
-            .locale(Locale.forLanguageTag("ua"))
+            .locale(Locale.forLanguageTag("uk"))
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).fullUpdateUserAndCustomToDoLists(userVO.getId(), 1L, dto, "ua");
+        verify(habitAssignService).fullUpdateUserAndCustomToDoLists(userVO.getId(), 1L, dto, "uk");
     }
 
     @Test
@@ -326,10 +326,10 @@ class HabitAssignControllerTest {
         mockMvc.perform(post(habitLink + "/{habitId}/invite", 1L)
                         .param("friendsIds", "2", "3", "4")
                         .principal(principal)
-                        .locale(Locale.forLanguageTag("ua")))
+                        .locale(Locale.forLanguageTag("uk-UA")))
                 .andExpect(status().isOk());
         verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, List.of(2L,3L,4L), 1L,
-            Locale.forLanguageTag("ua"));
+            Locale.forLanguageTag("uk-UA"));
     }
 
     @Test

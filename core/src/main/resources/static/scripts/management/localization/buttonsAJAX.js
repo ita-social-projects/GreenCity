@@ -22,13 +22,13 @@ function setLanguageEn() {
     }
 }
 
-function setLanguageUa() {
+function setLanguageUk() {
     let localStorage = window.localStorage;
-    localStorage.setItem("language", "ua")
+    localStorage.setItem("language", "uk")
     var currentUrl = window.location.href;
     let check = currentUrl.toString();
     if (check.includes("?")){
-        let url = "&lang=ua";
+        let url = "&lang=uk";
         $.ajax({
             url: currentUrl + url,
             success: function (res) {
@@ -36,7 +36,7 @@ function setLanguageUa() {
             }
         })
     }else {
-        let url = "?lang=ua";
+        let url = "?lang=uk";
         $.ajax({
             url: currentUrl + url,
             success: function (res) {
