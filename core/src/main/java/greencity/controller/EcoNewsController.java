@@ -69,7 +69,7 @@ public class EcoNewsController {
     private final EcoNewsRelevanceService ecoNewsRelevanceService;
 
     @Value("${greencity.relevance.enabled}")
-    private boolean isRelevanceEnabled;
+    private String relevanceServiceStatus;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -225,6 +225,7 @@ public class EcoNewsController {
     })
     @GetMapping("/relevance-enabled")
     public ResponseEntity<Boolean> isRelevanceEnabled() {
+        boolean isRelevanceEnabled = relevanceServiceStatus.equals("enabled");
         return ResponseEntity.status(HttpStatus.OK).body(isRelevanceEnabled);
     }
 
