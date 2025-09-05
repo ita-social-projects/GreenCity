@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserClaims;
 import greencity.annotations.CurrentUserId;
@@ -26,6 +27,7 @@ import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +42,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -63,6 +66,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
+    private final EcoNewsRelevanceService ecoNewsRelevanceService;
+
+    @Value("${greencity.relevance.enabled}")
+    private boolean isRelevanceEnabled;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -208,6 +215,36 @@ public class EcoNewsController {
         @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.find(page, tags, title, authorId, favorite, userId));
+    }
+
+    @Operation(summary = "Check if relevance is enabled.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @GetMapping("/relevance-enabled")
+    public ResponseEntity<Boolean> isRelevanceEnabled() {
+        return ResponseEntity.status(HttpStatus.OK).body(isRelevanceEnabled);
+    }
+
+    @Operation(summary = "Find eco news by relevance.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/relevant")
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findRelevantNews(
+        @Parameter(hidden = true) Pageable page,
+        @Parameter(description = "Tags to filter (if do not input tags get all)") @RequestParam(
+            required = false) List<String> tags,
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false, name = "author-name") String author,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ecoNewsRelevanceService.findRelevantEcoNews(page, tags, title, author, userVO));
     }
 
     /**

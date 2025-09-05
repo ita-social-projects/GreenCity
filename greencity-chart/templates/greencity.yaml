@@ -276,6 +276,12 @@ spec:
                   name: {{ .Values.externalSecret.secretName }}
                   key: SPRING-LIQUIBASE-PARAMETERS-SERVICE-EMAIL
 
+            - name: ECONEWS_RELEVANCE_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: ECONEWS-RELEVANCE-ENABLED
+
           ports:
             - containerPort: 8080
               name: tomcat
