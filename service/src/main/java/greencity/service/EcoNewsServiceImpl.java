@@ -35,15 +35,16 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
+import greencity.mapping.PageableAdvancedDtoMapper;
+import greencity.rating.constant.RatingPointsNames;
+import greencity.repository.RatingPointsRepo;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
-import greencity.rating.constant.RatingPointsNames;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.RatingPointsRepo;
 import greencity.repository.UserRepo;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
@@ -56,8 +57,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -75,7 +76,6 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
-@EnableCaching
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
@@ -90,9 +90,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final List<String> languageCode = List.of("en", "uk");
     private final UserService userService;
     private final UserRepo userRepo;
-    private final CommentService commentService;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
+    private final PageableAdvancedDtoMapper<EcoNewsGenericDto> pageableAdvancedDtoMapper;
 
     private static final String ECO_NEWS_TITLE = "title";
     private static final String ECO_NEWS_JOIN_TAG = "tags";
@@ -124,7 +124,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
-        final EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
+        final EcoNewsGenericDto ecoNewsDto = modelMapper.map(toSave, EcoNewsGenericDto.class);
         UserVO user = userService.findNotDeactivatedByEmail(email);
         ratingCalculation.ratingCalculation(ratingPointsRepo.findByNameOrThrow(RatingPointsNames.CREATE_NEWS), user);
         achievementCalculation.calculateAchievement(user,
@@ -187,19 +187,18 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGenericDto(Page<EcoNews> ecoNewsPage,
         Long currentUserId) {
         List<EcoNewsGenericDto> ecoNewsDtos = ecoNewsPage.stream()
-            .map(ecoNews -> getEcoNewsGenericDtoWithEnTags(ecoNews, currentUserId))
-            .collect(Collectors.toList());
+            .map(ecoNews -> {
+                EcoNewsGenericDto dto = modelMapper.map(ecoNews, EcoNewsGenericDto.class);
+                if (isCurrentUserFollower(ecoNews, currentUserId)) {
+                    dto.setFavorite(true);
+                }
+                return dto;
+            })
+            .toList();
 
-        return new PageableAdvancedDto<>(
-            ecoNewsDtos,
-            ecoNewsPage.getTotalElements(),
-            ecoNewsPage.getPageable().getPageNumber(),
-            ecoNewsPage.getTotalPages(),
-            ecoNewsPage.getNumber(),
-            ecoNewsPage.hasPrevious(),
-            ecoNewsPage.hasNext(),
-            ecoNewsPage.isFirst(),
-            ecoNewsPage.isLast());
+        Page<EcoNewsGenericDto> pageResult = new PageImpl<>(ecoNewsDtos, ecoNewsPage.getPageable(),
+            ecoNewsPage.getTotalElements());
+        return pageableAdvancedDtoMapper.convert(pageResult);
     }
 
     /**
@@ -356,7 +355,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             userRemoteClient.deleteFile(toUpdate.getImagePath());
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
-        return getEcoNewsGenericDtoWithAllTags(toUpdate);
+        return modelMapper.map(toUpdate, EcoNewsGenericDto.class);
     }
 
     @Override
@@ -553,55 +552,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return ecoNewsList.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .toList();
-    }
-
-    private EcoNewsGenericDto getEcoNewsGenericDtoWithAllTags(EcoNews ecoNews) {
-        List<String> tags = ecoNews.getTags().stream()
-            .flatMap(t -> t.getTagTranslations().stream())
-            .map(TagTranslation::getName)
-            .collect(Collectors.toList());
-
-        return buildEcoNewsGenericDto(ecoNews, tags, null);
-    }
-
-    private EcoNewsGenericDto getEcoNewsGenericDtoWithEnTags(EcoNews ecoNews, Long currentUserId) {
-        List<String> tags = new ArrayList<>();
-        for (String language : languageCode) {
-            tags.addAll(ecoNews.getTags().stream()
-                .flatMap(t -> t.getTagTranslations().stream())
-                .filter(t -> t.getLanguageCode().equals(language))
-                .map(TagTranslation::getName)
-                .toList());
-        }
-
-        return buildEcoNewsGenericDto(ecoNews, tags, currentUserId);
-    }
-
-    private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags, Long currentUserId) {
-        User author = ecoNews.getAuthor();
-        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
-
-        int countOfComments = commentService.countCommentsForEcoNews(ecoNews.getId());
-        int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
-
-        boolean isFavorite = isCurrentUserFollower(ecoNews, currentUserId);
-
-        return EcoNewsGenericDto.builder()
-            .id(ecoNews.getId())
-            .imagePath(ecoNews.getImagePath())
-            .author(ecoNewsAuthorDto)
-            .tagsEn(tags.stream().filter(tag -> tag.matches("^([A-Za-z-])+$")).collect(Collectors.toList()))
-            .tagsUk(tags.stream().filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$")).collect(Collectors.toList()))
-            .shortInfo(ecoNews.getShortInfo())
-            .content(ecoNews.getText())
-            .title(ecoNews.getTitle())
-            .creationDate(ecoNews.getCreationDate())
-            .source(ecoNews.getSource())
-            .likes(ecoNews.getUsersLikedNews() != null ? ecoNews.getUsersLikedNews().size() : 0)
-            .countComments(countOfComments)
-            .countOfEcoNews(countOfEcoNews)
-            .isFavorite(isFavorite)
-            .build();
     }
 
     private boolean isCurrentUserFollower(EcoNews ecoNews, Long currentUserId) {
