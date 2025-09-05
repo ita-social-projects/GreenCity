@@ -279,7 +279,7 @@ spec:
             - name: ECONEWS_RELEVANCE_ENABLED
               valueFrom:
                 secretKeyRef:
-                  name: { { .Values.externalSecret.secretName } }
+                  name: {{ .Values.externalSecret.secretName }}
                   key: ECONEWS-RELEVANCE-ENABLED
 
           ports:
