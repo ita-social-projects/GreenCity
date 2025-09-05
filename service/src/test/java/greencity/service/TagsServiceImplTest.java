@@ -55,7 +55,7 @@ class TagsServiceImplTest {
     @InjectMocks
     private TagsServiceImpl tagsService;
 
-    private static final String UKRAINIAN_LANGUAGE = "ua";
+    private static final String UKRAINIAN_LANGUAGE = "uk";
     private static final String ENGLISH_LANGUAGE = "en";
 
     @Test

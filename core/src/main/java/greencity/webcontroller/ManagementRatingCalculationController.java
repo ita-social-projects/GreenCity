@@ -38,7 +38,7 @@ public class ManagementRatingCalculationController {
      * @param pageable Pageable configuration for pagination
      * @return the name of the view
      */
-    @ApiPageable
+    @ApiPageable(clazz = RatingPointsDto.class)
     @Operation(summary = "Retrieve the management page with Rating Points.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
@@ -107,6 +107,7 @@ public class ManagementRatingCalculationController {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
+    @ApiPageable(clazz = RatingPointsDto.class)
     @GetMapping("/deleted")
     public String getDeletedRatingPoints(@RequestParam(required = false, name = "query") String query,
         Model model, @Parameter(hidden = true) Pageable pageable) {

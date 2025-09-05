@@ -624,7 +624,7 @@ class EcoNewsServiceImplTest {
         EcoNews ecoNewsForFindDtoByIdAndLanguage = ModelUtils.getEcoNewsForFindDtoByIdAndLanguage();
         EcoNewsDto expected = ModelUtils.getEcoNewsDtoForFindDtoByIdAndLanguage();
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNewsForFindDtoByIdAndLanguage));
-        assertEquals(expected, ecoNewsService.findDtoByIdAndLanguage(1L, "ua"));
+        assertEquals(expected, ecoNewsService.findDtoByIdAndLanguage(1L, "uk"));
     }
 
     @Test

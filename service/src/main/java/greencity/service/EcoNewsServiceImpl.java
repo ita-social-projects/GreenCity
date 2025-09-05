@@ -87,7 +87,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final UserRemoteClient userRemoteClient;
     private final AchievementCalculation achievementCalculation;
     private final RatingCalculation ratingCalculation;
-    private final List<String> languageCode = List.of("en", "ua");
+    private final List<String> languageCode = List.of("en", "uk");
     private final UserService userService;
     private final UserRepo userRepo;
     private final UserNotificationService userNotificationService;

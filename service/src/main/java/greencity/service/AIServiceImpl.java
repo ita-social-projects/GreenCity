@@ -120,7 +120,7 @@ public class AIServiceImpl implements AIService {
      * </p>
      *
      * @param userId   the ID of the user for whom the forecast is generated
-     * @param language the language code (e.g. "en", "ua") in which the advice
+     * @param language the language code (e.g. "en", "uk") in which the advice
      *                 should be generated
      * @return a sanitized string response containing either a personalized forecast
      *         or fallback advice
@@ -164,7 +164,7 @@ public class AIServiceImpl implements AIService {
      *
      * @param userId   the ID of the user requesting advice (not used internally but
      *                 part of the method signature for consistency)
-     * @param language the language code (e.g. "en", "ua") in which the advice
+     * @param language the language code (e.g. "en", "uk") in which the advice
      *                 should be generated
      * @return a sanitized string containing the generated ecological advice
      * @throws OpenAIRequestException    if the OpenAI service fails to generate a
@@ -200,7 +200,7 @@ public class AIServiceImpl implements AIService {
      * before parsing.
      * </p>
      *
-     * @param language the language code (e.g. "en", "ua") in which the news content
+     * @param language the language code (e.g. "en", "uk") in which the news content
      *                 should be generated
      * @param query    an optional keyword or phrase to guide news generation; if
      *                 {@code null}, a generic request is used
@@ -228,7 +228,7 @@ public class AIServiceImpl implements AIService {
      * generated news is then saved to the database via {@link EcoNewsRepo}.
      * </p>
      *
-     * @param language the language code (e.g. "en", "ua") in which the eco-news
+     * @param language the language code (e.g. "en", "uk") in which the eco-news
      *                 should be generated
      * @throws LanguageNotFoundException  if the specified language code is not
      *                                    recognized
@@ -424,7 +424,7 @@ public class AIServiceImpl implements AIService {
      * {@link JsonResponseParseException} is thrown.
      * </p>
      *
-     * @param language the language code (e.g. "en", "ua") for the news generation
+     * @param language the language code (e.g. "en", "uk") for the news generation
      *                 request
      * @param query    an optional keyword or phrase to customize the news content;
      *                 if {@code null}, a generic prompt is used

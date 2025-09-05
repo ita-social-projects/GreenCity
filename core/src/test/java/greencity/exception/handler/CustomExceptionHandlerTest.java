@@ -14,6 +14,7 @@ import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.NoJwtException;
 import greencity.exception.exceptions.UnauthorizedException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ValidationException;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class CustomExceptionHandlerTest {
@@ -322,5 +324,27 @@ class CustomExceptionHandlerTest {
         ResponseEntity<Map<String, String>> response = customExceptionHandler.handleUnauthorized(exception);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals(expectedBody, response.getBody());
+    }
+
+    @Test
+    void handleUnsupportedSortException() {
+        UnsupportedSortException unsupportedSortException = new UnsupportedSortException("Invalid sort parameter");
+
+        when(errorAttributes.getErrorAttributes(any(WebRequest.class), any(ErrorAttributeOptions.class)))
+            .thenReturn(objectMap);
+
+        ResponseEntity<Object> response = customExceptionHandler
+            .handleUnsupportedSortException(unsupportedSortException, webRequest);
+
+        ExceptionResponse expectedResponse = new ExceptionResponse(objectMap);
+        expectedResponse.setMessage("Invalid sort parameter");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        assertEquals(expectedResponse, response.getBody());
+
+        ExceptionResponse body = (ExceptionResponse) response.getBody();
+        assertNotNull(body);
+        assertEquals("Invalid sort parameter", body.getMessage());
     }
 }

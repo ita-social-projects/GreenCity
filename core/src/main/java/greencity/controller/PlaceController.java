@@ -57,7 +57,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/place")
@@ -238,7 +237,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{status}")
-    @ApiPageable
+    @ApiPageable(clazz = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> getPlacesByStatus(
         @PathVariable PlaceStatus status,
         @Parameter(hidden = true) Pageable pageable) {
@@ -354,7 +353,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PostMapping("/filter/predicate")
-    @ApiPageable
+    @ApiPageable(clazz = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> filterPlaceBySearchPredicate(
         @Valid @RequestBody FilterPlaceDto filterDto,
         @Parameter(hidden = true) Pageable pageable) {
@@ -454,8 +453,8 @@ public class PlaceController {
      * The method which delete array of {@link PlaceVO}'s from DB(change
      * {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to
-     *            be deleted
+     * @param ids - list of id's of {@link PlaceVO}'s, split by "," which need to be
+     *            deleted
      * @return count of deleted {@link PlaceVO}'s
      */
     @Operation(summary = "Bulk delete places")
@@ -472,9 +471,13 @@ public class PlaceController {
     public ResponseEntity<Long> bulkDelete(
         @Parameter(description = "Ids of places separated by a comma \n e.g. 1,2",
             required = true) @RequestParam String ids) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
-            .map(Long::valueOf)
-            .collect(Collectors.toList())));
+        return ResponseEntity.status(HttpStatus.OK).body(
+            placeService.bulkDelete(
+                Arrays.stream(ids.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Long::valueOf)
+                    .toList()));
     }
 
     /**
@@ -523,7 +526,7 @@ public class PlaceController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
     })
-    @ApiPageable
+    @ApiPageable(clazz = AdminPlaceDto.class)
     @GetMapping("all")
     public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@Parameter(hidden = true) Pageable page,
         @Parameter(hidden = true) @CurrentUserId Long userId) {

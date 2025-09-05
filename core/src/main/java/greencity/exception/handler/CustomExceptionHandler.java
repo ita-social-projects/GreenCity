@@ -41,6 +41,7 @@ import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.UnauthorizedException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
@@ -100,6 +101,37 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         this.errorAttributes = errorAttributes;
         this.objectMapper = objectMapper;
         this.endpointValidationHelper = endpointValidationHelper;
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
+        List<ValidationExceptionDto> collect =
+            ex.getBindingResult().getFieldErrors().stream()
+                .map(ValidationExceptionDto::new)
+                .toList();
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+        HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ResponseEntity<Object> response = endpointValidationHelper.response(ex, headers, request);
+        if (response == null) {
+            return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
+        }
+        return response;
     }
 
     /**
@@ -249,6 +281,32 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    /**
+     * Handles exceptions of type {@link UnsupportedSortException} thrown during
+     * request processing. This method intercepts the
+     * {@code UnsupportedSortException}, logs the error, and prepares a standardized
+     * error response containing details about the failed sorting operation. The
+     * client receives a response with HTTP status 400 (Bad Request) and a body that
+     * includes an error message describing the reason for the failure.
+     *
+     * @param ex      the {@link UnsupportedSortException} instance containing
+     *                details about the invalid sorting parameter(s)
+     * @param request the {@link WebRequest} providing context about the web request
+     *                during which the exception occurred
+     * @return a {@link ResponseEntity} containing an {@link ExceptionResponse}
+     *         object with the error details and HTTP status 400 (BAD_REQUEST)
+     */
+    @ExceptionHandler(UnsupportedSortException.class)
+    public final ResponseEntity<Object> handleUnsupportedSortException(UnsupportedSortException ex,
+        WebRequest request) {
+        log.warn(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
@@ -506,15 +564,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-        HttpHeaders headers, HttpStatusCode status,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
     /**
      * Method interceptor exception {@link GoogleApiException}.
      *
@@ -567,18 +616,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-        HttpHeaders headers, HttpStatusCode status,
-        WebRequest request) {
-        List<ValidationExceptionDto> collect =
-            ex.getBindingResult().getFieldErrors().stream()
-                .map(ValidationExceptionDto::new)
-                .collect(Collectors.toList());
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
-    }
-
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         Map<String, Object> attributes = new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
             ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE,
@@ -621,16 +658,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         exceptionResponse.setMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
-        HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ResponseEntity<Object> response = endpointValidationHelper.response(ex, headers, request);
-        if (response == null) {
-            return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
-        }
-        return response;
     }
 
     /**

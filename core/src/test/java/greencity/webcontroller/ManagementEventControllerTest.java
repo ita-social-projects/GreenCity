@@ -140,7 +140,7 @@ class ManagementEventControllerTest {
 
         when(eventService.getEventsManagement(pageable, filterEventDto, null))
             .thenReturn(eventsDtoPageableDto);
-        when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "ua"))
+        when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "uk"))
             .thenReturn(tagDtoList);
         when(eventService.getAllEventsAddresses())
             .thenReturn(ModelUtils.getAddressesDtoList());
@@ -148,7 +148,7 @@ class ManagementEventControllerTest {
         this.mockMvc.perform(get(MANAGEMENT_EVENTS_LINK)
             .param("page", "0")
             .param("size", "10")
-            .locale(Locale.of("UA", "ua")))
+            .locale(Locale.of("uk", "UA")))
             .andExpect(view().name("core/management_events"))
             .andExpect(model().attribute("pageable", eventsDtoPageableDto))
             .andExpect(model().attribute("filterEventDto", filterEventDto))
@@ -157,7 +157,7 @@ class ManagementEventControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).getEventsManagement(pageable, filterEventDto, null);
-        verify(tagsService).findByTypeAndLanguageCode(TagType.EVENT, "ua");
+        verify(tagsService).findByTypeAndLanguageCode(TagType.EVENT, "uk");
     }
 
     @Test

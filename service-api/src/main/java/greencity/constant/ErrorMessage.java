@@ -238,9 +238,10 @@ public class ErrorMessage {
     public static final String DATES_COULD_NOT_BE_NULL = "Dates could not be null";
     public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";
     public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
+    public static final String MIN_PAGE_SIZE_EXCEPTION = "Page size must be greater than or equal to 1";
     public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
     public static final String INVALID_SORT_FORMAT_EXCEPTION = "Invalid sort format: '%s'";
-    public static final String INVALID_SORT_VALUE_EXCEPTION = "Invalid sort field: '%s'";
+    public static final String INVALID_SORTING_VALUE = "Unsupported value for sorting: %s";
     public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
     public static final String NOT_FOUND_ADDRESS_BY_COORDINATES = "Not found address with such coordinates: ";
     public static final String INSUFFICIENT_LOCATION_DATA_FOUND =

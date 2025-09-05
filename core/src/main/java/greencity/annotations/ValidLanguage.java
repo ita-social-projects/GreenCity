@@ -14,7 +14,7 @@ import jakarta.validation.Payload;
 @Target(ElementType.PARAMETER)
 public @interface ValidLanguage {
     /**
-     * Defines the message that will be showed when the input data is not valid.
+     * Defines the message that will be shown when the input data is not valid.
      *
      * @return message
      */
