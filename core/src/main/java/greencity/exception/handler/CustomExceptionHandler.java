@@ -11,6 +11,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.DuplicatedTagException;
+import greencity.exception.exceptions.EcoNewsRelevanceCalculationException;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.FileGenerationException;
 import greencity.exception.exceptions.FileReadException;
@@ -799,5 +800,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
+    @ExceptionHandler(EcoNewsRelevanceCalculationException.class)
+    public final ResponseEntity<Object> handleEcoNewsRelevanceCalculationException(
+        EcoNewsRelevanceCalculationException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 }

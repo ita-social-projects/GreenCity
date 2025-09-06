@@ -227,6 +227,7 @@ public class SecurityConfig {
                     CUSTOM_TO_DO_LIST,
                     CUSTOM_TO_DO_LIST_URL,
                     "/custom/to-do-list-items/{userId}/{habitId}",
+                    ECO_NEWS + "/relevant",
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",

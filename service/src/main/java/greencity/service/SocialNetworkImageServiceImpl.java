@@ -8,7 +8,6 @@ import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Slf4j
 @AllArgsConstructor
-@EnableCaching
 public class SocialNetworkImageServiceImpl implements SocialNetworkImageService {
     private final UserRemoteClient userRemoteClient;
 

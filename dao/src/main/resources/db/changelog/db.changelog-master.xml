@@ -102,4 +102,7 @@
     <include file="db/changelog/logs/ch-update-fact_of_the_day_translations-change_ukrainian_code-Zadyraichuk.xml"/>
     <include file="db/changelog/logs/ch-update-habit_translation-change_ukrainian_code-Zadyraichuk.xml"/>
     <include file="db/changelog/logs/ch-update-to_do_list_item_translations-change_ukrainian_code-Zadyraichuk.xml"/>
+    <include file="db/changelog/logs/ch-add-table-tags-coherence-Zadyraichuk.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tags-coherence-Zadyraichuk.xml"/>
+    <include file="db/changelog/logs/ch-add-table-eco-news-relevance-Yukhno.xml"/>
 </databaseChangeLog>
