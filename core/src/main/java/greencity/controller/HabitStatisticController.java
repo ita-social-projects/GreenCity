@@ -1,7 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habit.HabitAssignVO;
@@ -93,7 +93,7 @@ public class HabitStatisticController {
      * assigned for current user.
      *
      * @param addHabitStatisticDto dto for {@link HabitStatisticDto} entity.
-     * @param userVO               {@link UserVO} instance.
+     * @param userId               current user id.
      * @param habitId              {@link HabitVO} id.
      * @return dto {@link AddHabitStatisticDto} instance.
      * @author Yuriy Olkhovskyi.
@@ -113,10 +113,10 @@ public class HabitStatisticController {
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ResponseEntity<HabitStatisticDto> saveHabitStatistic(
         @Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitStatisticService.saveByHabitIdAndUserId(habitId, userVO.getId(), addHabitStatisticDto));
+            .body(habitStatisticService.saveByHabitIdAndUserId(habitId, userId, addHabitStatisticDto));
     }
 
     /**
@@ -142,10 +142,10 @@ public class HabitStatisticController {
     @PutMapping("/{id}")
     public ResponseEntity<UpdateHabitStatisticDto> updateStatistic(
         @PathVariable Long id,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Valid @RequestBody UpdateHabitStatisticDto habitStatisticForUpdateDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService
-            .update(id, userVO.getId(), habitStatisticForUpdateDto));
+            .update(id, userId, habitStatisticForUpdateDto));
     }
 
     /**
@@ -155,7 +155,7 @@ public class HabitStatisticController {
      * value is not taken amount of these items. Language of habit items is defined
      * by the `language` parameter.
      *
-     * @param locale - Name of habit item localization language(e.x. "en" or "ua").
+     * @param locale - Name of habit item localization language(e.x. "en" or "uk").
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
      *         key-value pairs.
      */

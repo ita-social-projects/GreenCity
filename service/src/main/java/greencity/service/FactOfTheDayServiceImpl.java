@@ -10,7 +10,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.tag.TagDto;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -40,7 +39,6 @@ import static greencity.enums.TagType.FACT_OF_THE_DAY;
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final FactOfTheDayRepo factOfTheDayRepo;
     private final ModelMapper modelMapper;
-    private final LanguageService languageService;
     private final FactOfTheDayTranslationService factOfTheDayTranslationService;
     private final TagsRepo tagsRepo;
     @Resource
@@ -82,7 +80,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                 factPost.getFactOfTheDayTranslations().stream()
                     .map(el -> FactOfTheDayTranslation.builder()
                         .content(el.getContent())
-                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
+                        .languageCode(el.getLanguageCode())
                         .build())
                     .collect(Collectors.toList()))
             .tags(tagsRepo.findTagsById(factPost.getTags()))
@@ -117,7 +115,7 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
                 factPost.getFactOfTheDayTranslations().stream()
                     .map(el -> FactOfTheDayTranslation.builder()
                         .content(el.getContent())
-                        .language(modelMapper.map(languageService.findByCode(el.getLanguageCode()), Language.class))
+                        .languageCode(el.getLanguageCode())
                         .build())
                     .collect(Collectors.toList()))
             .createDate(ZonedDateTime.now())
@@ -202,8 +200,8 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      * {@inheritDoc}
      */
     @Override
-    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(String userEmail) {
-        Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userEmail);
+    public FactOfTheDayTranslationDTO getRandomFactOfTheDayForUser(Long userId) {
+        Set<Long> userTagIds = tagsRepo.findTagsIdByUserHabitsInProgress(userId);
         try {
             return getRandomFactOfTheDayByTags(userTagIds);
         } catch (NotFoundException e) {

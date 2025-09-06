@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,14 +25,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.validation.Valid;
 import java.util.List;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -42,7 +42,8 @@ public class ManagementSocialNetworkImagesController {
     private final SocialNetworkImageService socialNetworkImageService;
 
     /**
-     * Method that returns management page with all {@link SocialNetworkImageVO}.
+     * Method that returns management page with all
+     * {@link SocialNetworkImageResponseDTO}.
      *
      * @param model    Model that will be configured and returned to user.
      * @param pageable {@link Pageable}.
@@ -58,12 +59,12 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method for creating {@link SocialNetworkImageVO}.
+     * Method for creating SocialNetworkImage.
      *
-     * @param socialNetworkImageRequestDTO dto for {@link SocialNetworkImageVO}
-     *                                     entity.
+     * @param socialNetworkImageRequestDTO dto for SocialNetworkImage entity.
      * @param file                         of {@link MultipartFile}
-     * @return {@link GenericResponseDto} with of operation and errors fields.
+     * @return {@link ResponseEntity} with {@link SocialNetworkImageResponseDTO} or
+     *         error fields.
      */
     @Operation(summary = "Save SocialNetworkImages.")
     @ApiResponses(value = {
@@ -73,17 +74,18 @@ public class ManagementSocialNetworkImagesController {
     })
     @ResponseBody
     @PostMapping("/")
-    public GenericResponseDto save(@Valid @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
+    public ResponseEntity<Object> save(@Valid @RequestPart SocialNetworkImageRequestDTO socialNetworkImageRequestDTO,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
-            socialNetworkImageService.save(socialNetworkImageRequestDTO, file);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(socialNetworkImageService.save(socialNetworkImageRequestDTO, file));
         }
-        return buildGenericResponseDto(bindingResult);
+        return ResponseEntity.badRequest().body(buildGenericResponseDto(bindingResult));
     }
 
     /**
-     * Method which deteles {@link SocialNetworkImageVO} by given id.
+     * Method which deletes SocialNetworkImage by given id.
      *
      * @param id of Social Network Images
      * @return {@link ResponseEntity}
@@ -118,16 +120,17 @@ public class ManagementSocialNetworkImagesController {
     }
 
     /**
-     * Method which updates {@link SocialNetworkImageVO}.
+     * Method which updates SocialNetworkImage.
      *
      * @param socialNetworkImageResponseDTO of
      *                                      {@link SocialNetworkImageResponseDTO}.
      * @param file                          of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @Operation(summary = "Update Econews.")
+    @Operation(summary = "Update SocialNetworkImage")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody

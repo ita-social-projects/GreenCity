@@ -36,7 +36,7 @@ class HabitManagementDtoMapperTest {
                 .description(ht.getDescription())
                 .habitItem(ht.getHabitItem())
                 .name(ht.getName())
-                .languageCode(ht.getLanguage().getCode())
+                .languageCode(ht.getLanguageCode())
                 .build())
                 .collect(Collectors.toList()))
             .build();

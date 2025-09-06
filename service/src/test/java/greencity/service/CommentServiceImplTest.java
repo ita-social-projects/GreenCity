@@ -1,7 +1,9 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDtoRequest;
@@ -105,7 +107,7 @@ class CommentServiceImplTest {
     @Mock
     HabitRepo habitRepo;
     @Mock
-    private FileService fileService;
+    private UserRemoteClient userRemoteClient;
     @Mock
     private HabitTranslationRepo habitTranslationRepo;
     @InjectMocks
@@ -404,9 +406,9 @@ class CommentServiceImplTest {
         CommentServiceImpl spyCommentService = spy(commentService);
         doReturn(null).when(spyCommentService).getArticleAuthor(articleType, articleId);
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            spyCommentService.save(articleType, articleId, addCommentDtoRequest, images, userVO, locale);
-        });
+        NotFoundException exception = assertThrows(
+            NotFoundException.class,
+            () -> spyCommentService.save(articleType, articleId, addCommentDtoRequest, images, userVO, locale));
 
         assertEquals("Article author not found", exception.getMessage());
     }
@@ -469,14 +471,14 @@ class CommentServiceImplTest {
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
             .id(5L)
-            .email("test@email.com")
+            // .email("test@email.com")
             .build()));
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
@@ -618,12 +620,11 @@ class CommentServiceImplTest {
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
             .id(5L)
-            .email("test@email.com")
             .build()));
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(eventRepo.findById(anyLong())).thenReturn(Optional.ofNullable(event));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
@@ -656,12 +657,12 @@ class CommentServiceImplTest {
         when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
             .id(5L)
-            .email("test@email.com")
+            // .email("test@email.com")
             .build()));
         when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
         when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
         when(econewsRepo.findById(anyLong())).thenReturn(Optional.ofNullable(ecoNews));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList(anyString()));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList(anyString()));
 
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
@@ -790,7 +791,7 @@ class CommentServiceImplTest {
         when(commentRepo.findById(1L)).thenReturn(Optional.of(comment));
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
 
-        assertEquals(commentDto, commentService.getCommentById(comment.getArticleType(), 1L, getUserVO()));
+        assertEquals(commentDto, commentService.getCommentById(comment.getArticleType(), 1L, getUserVO().getId()));
 
         verify(commentRepo).findById(1L);
         verify(modelMapper).map(comment, CommentDto.class);
@@ -802,12 +803,11 @@ class CommentServiceImplTest {
         ArticleType articleType = ArticleType.ECO_NEWS;
         Comment comment = new Comment();
         comment.setArticleType(ArticleType.HABIT);
-        UserVO userVO = getUserVO();
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
 
-        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> {
-            commentService.getCommentById(articleType, commentId, userVO);
-        });
+        BadRequestException badRequestException = assertThrows(
+            BadRequestException.class,
+            () -> commentService.getCommentById(articleType, commentId, TestConst.USER_ID));
 
         assertEquals(badRequestException.getMessage(),
             "Comment with id: " + 1 + " doesn't belong to " + articleType.getLink());
@@ -904,7 +904,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
 
         PageableDto<CommentDto> allComments = commentService.getAllActiveComments(
-            pageable, userVO, habitId, ArticleType.HABIT);
+            pageable, userVO.getId(), habitId, ArticleType.HABIT);
         assertEquals(commentDto, allComments.getPage().getFirst());
         assertEquals(4, allComments.getTotalElements());
         assertEquals(1, allComments.getCurrentPage());
@@ -935,7 +935,7 @@ class CommentServiceImplTest {
         when(modelMapper.map(comment, CommentDto.class)).thenReturn(commentDto);
 
         PageableDto<CommentDto> allComments = commentService.getAllActiveComments(
-            pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS);
+            pageable, userVO.getId(), ecoNewsId, ArticleType.ECO_NEWS);
 
         assertEquals(commentDto, allComments.getPage().getFirst());
         assertEquals(4, allComments.getTotalElements());
@@ -953,13 +953,12 @@ class CommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = getUserVO();
         Long habitId = 1L;
 
         when(habitRepo.findById(habitId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> commentService.getAllActiveComments(pageable, userVO, habitId, ArticleType.HABIT));
+            () -> commentService.getAllActiveComments(pageable, TestConst.USER_ID, habitId, ArticleType.HABIT));
 
         assertEquals(HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
 
@@ -971,13 +970,12 @@ class CommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = getUserVO();
         Long ecoNewsId = 1L;
 
         when(econewsRepo.findById(ecoNewsId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> commentService.getAllActiveComments(pageable, userVO, ecoNewsId, ArticleType.ECO_NEWS));
+            () -> commentService.getAllActiveComments(pageable, TestConst.USER_ID, ecoNewsId, ArticleType.ECO_NEWS));
 
         assertEquals(ECO_NEW_NOT_FOUND_BY_ID + ecoNewsId, exception.getMessage());
 
@@ -994,7 +992,7 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.ofNullable(comment));
 
-        commentService.update(editedText, commentId, userVO);
+        commentService.update(editedText, commentId, userVO.getId());
 
         assertEquals(CommentStatus.EDITED, comment.getStatus());
 
@@ -1003,7 +1001,6 @@ class CommentServiceImplTest {
 
     @Test
     void updateCommentThatDoesntExistsThrowException() {
-        UserVO userVO = getUserVO();
         Long commentId = 1L;
         String editedText = "edited text";
 
@@ -1011,7 +1008,7 @@ class CommentServiceImplTest {
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class,
-                () -> commentService.update(editedText, commentId, userVO));
+                () -> commentService.update(editedText, commentId, TestConst.USER_ID));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
 
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
@@ -1020,7 +1017,6 @@ class CommentServiceImplTest {
     @Test
     void updateCommentThatDoesntBelongsToUserThrowException() {
         User user = ModelUtils.getUser();
-        UserVO userVO = getUserVO();
         user.setId(2L);
 
         Long commentId = 1L;
@@ -1031,11 +1027,11 @@ class CommentServiceImplTest {
         when(commentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.of(comment));
 
-        UserHasNoPermissionToAccessException noAccessException =
-            assertThrows(UserHasNoPermissionToAccessException.class,
-                () -> commentService.update(editedText, commentId, userVO));
-        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, noAccessException.getMessage());
+        UserHasNoPermissionToAccessException noAccessException = assertThrows(
+            UserHasNoPermissionToAccessException.class,
+            () -> commentService.update(editedText, commentId, TestConst.USER_ID));
 
+        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, noAccessException.getMessage());
         verify(commentRepo).findByIdAndStatusNot(commentId, CommentStatus.DELETED);
     }
 
@@ -1060,7 +1056,6 @@ class CommentServiceImplTest {
     @Test
     void deleteCommentUserHasNoPermissionThrowException() {
         Long commentId = 1L;
-
         User user = getUser();
         user.setId(2L);
         UserVO userToDeleteVO = getUserVO();
@@ -1115,7 +1110,7 @@ class CommentServiceImplTest {
             .thenReturn(page);
 
         PageableDto<CommentDto> commentDtos =
-            commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
+            commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId());
         assertEquals(getComment().getId(), commentDtos.getPage().getFirst().getId());
         assertEquals(4, commentDtos.getTotalElements());
         assertEquals(1, commentDtos.getCurrentPage());
@@ -1150,7 +1145,7 @@ class CommentServiceImplTest {
             .thenReturn(page);
         when(modelMapper.map(childComment, CommentDto.class)).thenReturn(getCommentDto());
 
-        PageableDto<CommentDto> result = commentService.getAllActiveReplies(pageable, parentCommentId, userVO);
+        PageableDto<CommentDto> result = commentService.getAllActiveReplies(pageable, parentCommentId, userVO.getId());
 
         assertTrue(result.getPage().getFirst().isCurrentUserLiked());
         assertFalse(result.getPage().getFirst().isCurrentUserDisliked());
@@ -1166,12 +1161,11 @@ class CommentServiceImplTest {
         int pageNumber = 1;
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
 
         when(commentRepo.findById(parentCommentId)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class,
-            () -> commentService.getAllActiveReplies(pageable, parentCommentId, userVO));
+            () -> commentService.getAllActiveReplies(pageable, parentCommentId, TestConst.USER_ID));
         verify(commentRepo).findById(parentCommentId);
     }
 
@@ -1529,9 +1523,9 @@ class CommentServiceImplTest {
 
         when(eventRepo.findById(eventId)).thenReturn(Optional.empty());
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            commentService.checkArticleExists(articleType, eventId);
-        });
+        NotFoundException exception = assertThrows(
+            NotFoundException.class,
+            () -> commentService.checkArticleExists(articleType, eventId));
 
         assertEquals("Event doesn't exist by this id: " + eventId, exception.getMessage());
     }

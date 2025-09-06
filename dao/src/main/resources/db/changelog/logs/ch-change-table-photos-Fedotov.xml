@@ -30,21 +30,4 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="Dmytro Fedotov" id="photos3">
-        <dropForeignKeyConstraint
-                constraintName="FKsm3nsiqunp5ke6cmkundcw4a1"
-                baseTableName="photos"/>
-    </changeSet>
-
-    <changeSet author="Dmytro Fedotov" id="photos4">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="1">
-                SELECT COUNT(*) FROM pg_indexes WHERE indexname = 'FKsm3nsiqunp5ke6cmkundcw4a1';
-            </sqlCheck>
-        </preConditions>
-        <dropIndex
-                indexName="FKsm3nsiqunp5ke6cmkundcw4a1"
-                tableName="photos"/>
-    </changeSet>
-
 </databaseChangeLog>

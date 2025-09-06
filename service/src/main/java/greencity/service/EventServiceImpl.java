@@ -1,85 +1,5 @@
 package greencity.service;
 
-import com.google.maps.model.LatLng;
-import greencity.achievement.AchievementCalculation;
-import greencity.client.RestClient;
-import greencity.constant.AppConstant;
-import greencity.constant.ErrorMessage;
-import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddressDto;
-import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventAuthorDto;
-import greencity.dto.event.EventCityDto;
-import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.EventResponseDto;
-import greencity.dto.event.EventVO;
-import greencity.dto.event.UpdateEventDto;
-import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.filter.FilterEventDto;
-import greencity.dto.geocoding.AddressLatLngResponse;
-import greencity.dto.location.UserLocationDto;
-import greencity.dto.notification.LikeNotificationDto;
-import greencity.dto.search.SearchEventsDto;
-import greencity.dto.tag.TagDto;
-import greencity.dto.tag.TagUkEnDto;
-import greencity.dto.tag.TagVO;
-import greencity.dto.user.UserForListDto;
-import greencity.dto.user.UserProfilePictureDto;
-import greencity.dto.user.UserVO;
-import greencity.entity.Tag;
-import greencity.entity.User;
-import greencity.entity.event.Event;
-import greencity.entity.event.EventDateLocation;
-import greencity.entity.event.EventGrade;
-import greencity.entity.event.EventImages;
-import greencity.enums.AchievementAction;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.EventType;
-import greencity.enums.NotificationType;
-import greencity.enums.Role;
-import greencity.enums.TagType;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.mapping.events.EventDateLocationDtoMapper;
-import greencity.rating.RatingCalculation;
-import greencity.repository.EventRepo;
-import greencity.repository.RatingPointsRepo;
-import greencity.repository.UserRepo;
-import jakarta.persistence.Tuple;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import java.math.BigDecimal;
-import java.security.Principal;
-import java.sql.Date;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import static greencity.constant.EventTupleConstant.cityEn;
 import static greencity.constant.EventTupleConstant.cityUk;
 import static greencity.constant.EventTupleConstant.countComments;
@@ -117,6 +37,90 @@ import static greencity.constant.EventTupleConstant.tagName;
 import static greencity.constant.EventTupleConstant.title;
 import static greencity.constant.EventTupleConstant.titleImage;
 import static greencity.constant.EventTupleConstant.type;
+import com.google.maps.model.LatLng;
+import greencity.achievement.AchievementCalculation;
+import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
+import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventCityDto;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.EventResponseDto;
+import greencity.dto.event.EventVO;
+import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.UpdateEventRequestDto;
+import greencity.dto.filter.FilterEventDto;
+import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.location.UserLocationDto;
+import greencity.dto.notification.LikeNotificationDto;
+import greencity.dto.search.SearchEventsDto;
+import greencity.dto.tag.TagDto;
+import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserForListDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventGrade;
+import greencity.entity.event.EventImages;
+import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.EventType;
+import greencity.enums.NotificationType;
+import greencity.enums.Role;
+import greencity.enums.TagType;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.mapping.events.EventDateLocationDtoMapper;
+import greencity.rating.RatingCalculation;
+import greencity.repository.EventRepo;
+import greencity.repository.RatingPointsRepo;
+import greencity.repository.UserRepo;
+import jakarta.persistence.Tuple;
+import java.math.BigDecimal;
+import java.security.Principal;
+import java.sql.Date;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @Service
@@ -128,7 +132,7 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper modelMapper;
     private final EventDateLocationDtoMapper eventDateLocationDtoMapper;
     private final RestClient restClient;
-    private final FileService fileService;
+    private final UserRemoteClient userRemoteClient;
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
     private final UserService userService;
@@ -137,6 +141,12 @@ public class EventServiceImpl implements EventService {
     private final AchievementCalculation achievementCalculation;
     private final UserNotificationService userNotificationService;
     private final RatingPointsRepo ratingPointsRepo;
+
+    public static List<String> getImagesLinksToDelete(List<String> existingLinks, List<String> newLinks) {
+        return existingLinks.stream()
+            .filter(existingLink -> !newLinks.contains(existingLink))
+            .collect(Collectors.toList());
+    }
 
     /**
      * {@inheritDoc}
@@ -174,11 +184,20 @@ public class EventServiceImpl implements EventService {
 
     private void setEventImages(Event event, MultipartFile[] images) {
         if (images != null && images.length > 0 && images[0] != null) {
-            event.setTitleImage(fileService.upload(images[0]));
+            try {
+                event.setTitleImage(userRemoteClient.uploadFile(images[0]));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
             List<EventImages> eventImages = new ArrayList<>();
             for (int i = 1; i < images.length; i++) {
                 if (images[i] != null) {
-                    eventImages.add(EventImages.builder().event(event).link(fileService.upload(images[i])).build());
+                    try {
+                        eventImages.add(EventImages.builder().event(event).link(userRemoteClient.uploadFile(images[i]))
+                            .build());
+                    } catch (WebClientRequestException | WebClientResponseException e) {
+                        log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+                    }
                 }
             }
             event.setAdditionalImages(eventImages);
@@ -378,12 +397,12 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public void addToFavorites(Long eventId, String email) {
+    public void addToFavorites(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (event.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES);
@@ -397,12 +416,12 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public void removeFromFavorites(Long eventId, String email) {
+    public void removeFromFavorites(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!event.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_FAVORITES);
@@ -463,7 +482,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private void validateOrganizerPermissions(User organizer, Event toUpdate) {
-        if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
+        UserVO organizerVO = modelMapper.map(organizer, UserVO.class);
+        if (organizerVO.getRole() != Role.ROLE_ADMIN && organizerVO.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
@@ -493,11 +513,11 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public void rateEvent(Long eventId, String email, int grade) {
+    public void rateEvent(Long eventId, Long userId, int grade) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (event.getOrganizer().getId().equals(currentUser.getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_RIGHTS_TO_RATE_EVENT);
@@ -620,12 +640,6 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public static List<String> getImagesLinksToDelete(List<String> existingLinks, List<String> newLinks) {
-        return existingLinks.stream()
-            .filter(existingLink -> !newLinks.contains(existingLink))
-            .collect(Collectors.toList());
-    }
-
     private void changeOldImagesWithoutRemovingAndAdding(Event toUpdate, UpdateEventDto updateEventDto) {
         if (updateEventDto.getTitleImage() != null) {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
@@ -658,7 +672,11 @@ public class EventServiceImpl implements EventService {
     }
 
     private void deleteImagesFromServer(List<String> images) {
-        images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(fileService::delete);
+        try {
+            images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(userRemoteClient::deleteFile);
+        } catch (WebClientRequestException | WebClientResponseException e) {
+            log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+        }
     }
 
     private void addNewImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
@@ -666,14 +684,22 @@ public class EventServiceImpl implements EventService {
         if (updateEventDto.getTitleImage() != null) {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
         } else {
-            toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
+            try {
+                toUpdate.setTitleImage(userRemoteClient.uploadFile(images[imagesCounter++]));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
         }
         List<String> additionalImagesStr = new ArrayList<>();
         if (updateEventDto.getAdditionalImages() != null) {
             additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
         }
         for (int i = imagesCounter; i < images.length; i++) {
-            additionalImagesStr.add(fileService.upload(images[imagesCounter++]));
+            try {
+                additionalImagesStr.add(userRemoteClient.uploadFile(images[imagesCounter++]));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
         }
         if (!additionalImagesStr.isEmpty()) {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
@@ -947,20 +973,20 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isEventLikedByUser(Long eventId, UserVO userVO) {
+    public boolean isEventLikedByUser(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        return event.getUsersLikedEvents().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isEventDislikedByUser(Long eventId, UserVO userVO) {
+    public boolean isEventDislikedByUser(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
-        return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        return event.getUsersDislikedEvents().stream().anyMatch(u -> u.getId().equals(userId));
     }
 
     /**
@@ -986,12 +1012,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void addToRequested(Long eventId, String email) {
+    public void addToRequested(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (event.getRequesters().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_REQUESTED);
@@ -1005,12 +1031,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void removeFromRequested(Long eventId, String email) {
+    public void removeFromRequested(Long eventId, Long userId) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!event.getRequesters().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_REQUESTED);
@@ -1021,9 +1047,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable) {
-        User user = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, Long userId, Pageable pageable) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
@@ -1263,10 +1289,10 @@ public class EventServiceImpl implements EventService {
                 tagList.stream()
                     .filter(tag -> !uaEnMap.containsKey(tag.getLanguageCode()))
                     .forEach(tag -> uaEnMap.put(tag.getLanguageCode(), tag));
-                if (uaEnMap.containsKey("ua") && uaEnMap.containsKey("en")) {
+                if (uaEnMap.containsKey("uk") && uaEnMap.containsKey("en")) {
                     TagUkEnDto tagUaEnDto = TagUkEnDto.builder()
                         .id(tagId)
-                        .nameUk(uaEnMap.get("ua").getName())
+                        .nameUk(uaEnMap.get("uk").getName())
                         .nameEn(uaEnMap.get("en").getName())
                         .build();
                     tagUaEnDtos.add(tagUaEnDto);
@@ -1408,9 +1434,11 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public List<EventCityDto> getAllRelevantEventsCityByUser(UserVO userVO) {
-        String userLocale = userVO.getLanguageVO().getCode();
+        LanguageDTO language = userVO.getLanguageVO();
+
+        String userLocale = language.getCode();
         String userCity = AppConstant.EMPTY_STRING;
-        UserLocationDto locationDto = userVO.getUserLocationDto();
+        UserLocationDto locationDto = userVO.getUserLocation();
         if (locationDto != null) {
             if (AppConstant.DEFAULT_LANGUAGE_CODE.equals(userLocale)) {
                 userCity = locationDto.getCityEn() != null ? locationDto.getCityEn() : userCity;

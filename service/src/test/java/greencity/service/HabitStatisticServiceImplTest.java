@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.UserRemoteClient;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.*;
@@ -26,7 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import greencity.repository.UserRepo;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,7 @@ class HabitStatisticServiceImplTest {
     @InjectMocks
     private HabitStatisticServiceImpl habitStatisticService;
     @Mock
-    private UserRepo userRepo;
+    private UserRemoteClient userRemoteClient;
 
     private ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -237,9 +238,13 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void testCalculateUserInterest() {
-        when(userRepo.countActiveUsers()).thenReturn(100L);
-        when(habitRepo.countActiveHabitCreators()).thenReturn(List.of(1L, 2L, 3L));
-        when(habitRepo.countActiveHabitFollowers()).thenReturn(List.of(4L, 5L));
+        when(userRemoteClient.countActiveUsers()).thenReturn(100L);
+        List<Long> habitCreators = List.of(1L, 2L, 3L, 7L, 9L);
+        List<Long> habitFollowers = List.of(4L, 5L, 25L);
+        when(habitRepo.countHabitCreators()).thenReturn(habitCreators);
+        when(userRemoteClient.getActivatedUsersIds(habitCreators)).thenReturn(List.of(1L, 2L, 3L));
+        when(habitRepo.countHabitFollowers()).thenReturn(habitFollowers);
+        when(userRemoteClient.getActivatedUsersIds(habitFollowers)).thenReturn(List.of(4L, 5L));
 
         Map<String, Long> result = habitStatisticService.calculateUserInterest();
 
@@ -256,7 +261,10 @@ class HabitStatisticServiceImplTest {
             new HabitStatusCount(HabitAssignStatus.CANCELLED, 5L),
             new HabitStatusCount(HabitAssignStatus.EXPIRED, 3L),
             new HabitStatusCount(HabitAssignStatus.INPROGRESS, 8L));
-        when(habitAssignRepo.countHabitAssignsByStatus()).thenReturn(habitStatusCounts);
+
+        List<Long> activatedUserIds = List.of(1L, 2L, 3L, 7L, 9L, 10L);
+        when(userRemoteClient.getActivatedUsersIds(null)).thenReturn(activatedUserIds);
+        when(habitAssignRepo.countHabitAssignsByStatus(activatedUserIds)).thenReturn(habitStatusCounts);
 
         Map<String, Long> result = habitStatisticService.calculateHabitBehaviorStatistic();
 

@@ -1,5 +1,6 @@
 package greencity.config;
 
+import greencity.constant.ErrorMessage;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.filters.XSSFilter;
 import greencity.security.jwt.JwtTool;
@@ -88,6 +89,7 @@ public class SecurityConfig {
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
+    public static final String USERS = "/users";
     private static final String DISLIKE_V2 = "/dislikeV2";
     private static final String LIKE_V2 = "/likeV2";
     private final JwtTool jwtTool;
@@ -131,7 +133,7 @@ public class SecurityConfig {
             .addFilterBefore(new XSSFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
-                .sendError(SC_UNAUTHORIZED, "Authorize first."))
+                .sendError(SC_UNAUTHORIZED, ErrorMessage.UNAUTHORIZED_RESPONSE))
                 .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities.")))
             .authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -198,7 +200,6 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID,
                     EVENTS + "/v2" + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
-                    "/languages/codes",
                     SEARCH + ECO_NEWS,
                     SEARCH + EVENTS,
                     SEARCH + PLACES,
@@ -226,6 +227,7 @@ public class SecurityConfig {
                     CUSTOM_TO_DO_LIST,
                     CUSTOM_TO_DO_LIST_URL,
                     "/custom/to-do-list-items/{userId}/{habitId}",
+                    ECO_NEWS + "/relevant",
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
@@ -332,7 +334,6 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
-                    "/files",
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
@@ -453,16 +454,29 @@ public class SecurityConfig {
                     "/place")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
-                    "/user/filter")
+                    "/user/filter",
+                    USERS + "/create")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
                     "/user/status",
                     "/user/role",
-                    "/user/update/role")
+                    "/user/update/role",
+                    USERS + "/{id}/location",
+                    USERS + "/rating",
+                    USERS + "/credo",
+                    USERS + "/{userId}/name")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     COMMENTS)
+                .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.GET,
+                    ACHIEVEMENTS + "/all",
+                    ACHIEVEMENTS + "/user-achievements/**",
+                    USERS + "/**")
+                .hasAnyRole(ADMIN)
+                .requestMatchers(HttpMethod.PUT,
+                    USERS + "/picturePath")
                 .hasAnyRole(ADMIN)
                 .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")

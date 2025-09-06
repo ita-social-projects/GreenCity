@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add-greencity-user-table" author="Maksym Kozak">
+        <createTable tableName="greencity_users">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_picture" type="VARCHAR(300)" />
+            <column name="user_credo" type="varchar(255)" />
+            <column name="rating" type="double" />
+            <column name="user_location" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="language_id" type="BIGINT" />
+            <column name="event_organizer_rating" type="DOUBLE" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="greencity_users"
+                                 baseColumnNames="user_location"
+                                 constraintName="fk_greencity_user_location"
+                                 referencedTableName="user_location"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

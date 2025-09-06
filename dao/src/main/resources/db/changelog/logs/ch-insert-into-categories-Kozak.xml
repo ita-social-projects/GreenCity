@@ -5,43 +5,43 @@
     <changeSet id="Natalia-2" author="Kozak">
         <insert tableName="categories">
             <column name="id">1</column>
-            <column name="name">Vegan products</column>
+            <column name="name_en">Vegan products</column>
         </insert>
         <insert tableName="categories">
             <column name="id">2</column>
-            <column name="name">Charging station</column>
+            <column name="name_en">Charging station</column>
         </insert>
         <insert tableName="categories">
             <column name="id">3</column>
-            <column name="name">Bike parking</column>
+            <column name="name_en">Bike parking</column>
         </insert>
         <insert tableName="categories">
             <column name="id">4</column>
-            <column name="name">Cycling routes</column>
+            <column name="name_en">Cycling routes</column>
         </insert>
         <insert tableName="categories">
             <column name="id">5</column>
-            <column name="name">Hotels</column>
+            <column name="name_en">Hotels</column>
         </insert>
         <insert tableName="categories">
             <column name="id">6</column>
-            <column name="name">Shops</column>
+            <column name="name_en">Shops</column>
         </insert>
         <insert tableName="categories">
             <column name="id">7</column>
-            <column name="name">Restaurants</column>
+            <column name="name_en">Restaurants</column>
         </insert>
         <insert tableName="categories">
             <column name="id">8</column>
-            <column name="name">Recycling points</column>
+            <column name="name_en">Recycling points</column>
         </insert>
         <insert tableName="categories">
             <column name="id">9</column>
-            <column name="name">Events</column>
+            <column name="name_en">Events</column>
         </insert>
         <insert tableName="categories">
             <column name="id">10</column>
-            <column name="name">Bike rentals</column>
+            <column name="name_en">Bike rentals</column>
         </insert>
     </changeSet>
 </databaseChangeLog>

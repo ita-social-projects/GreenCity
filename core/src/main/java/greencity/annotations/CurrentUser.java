@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation is used for injecting {@link greencity.entity.User} into
+ * Annotation is used for injecting {@link greencity.dto.user.UserVO} into
  * controller by {@link greencity.converters.UserArgumentResolver}.
  */
 @Retention(RetentionPolicy.RUNTIME)

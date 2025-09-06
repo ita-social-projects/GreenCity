@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.user.UserVO;
 import greencity.enums.InvitationStatus;
 import java.util.List;
 
@@ -37,18 +36,18 @@ public interface HabitInvitationService {
     /**
      * Accepts a habit invitation for a user.
      *
-     * @param invitationId the ID of the habit invitation to be accepted
-     * @param invitedUser  the user who is accepting the invitation
+     * @param invitationId  the ID of the habit invitation to be accepted
+     * @param invitedUserId the id of user who is accepting the invitation
      */
-    void acceptHabitInvitation(Long invitationId, UserVO invitedUser);
+    void acceptHabitInvitation(Long invitationId, Long invitedUserId);
 
     /**
      * Rejects a habit invitation for a user.
      *
-     * @param invitationId the ID of the habit invitation to be rejected
-     * @param invitedUser  the user who is rejecting the invitation
+     * @param invitationId  the ID of the habit invitation to be rejected
+     * @param invitedUserId id of the user who is rejecting the invitation
      */
-    void rejectHabitInvitation(Long invitationId, UserVO invitedUser);
+    void rejectHabitInvitation(Long invitationId, Long invitedUserId);
 
     /**
      * Retrieves a status of the invitation.

@@ -17,7 +17,7 @@ public class SearchNewsDtoMapper extends AbstractConverter<EcoNews, SearchNewsDt
             .title(ecoNews.getTitle())
             .tags(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(language))
+                .filter(tagTranslation -> tagTranslation.getLanguageCode().equals(language))
                 .map(TagTranslation::getName)
                 .toList())
             .build();

@@ -3,6 +3,7 @@ package greencity.exception.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.exception.exceptions.BadCategoryRequestException;
@@ -10,10 +11,14 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.DuplicatedTagException;
+import greencity.exception.exceptions.EcoNewsRelevanceCalculationException;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.FileGenerationException;
 import greencity.exception.exceptions.FileReadException;
+import greencity.exception.exceptions.GoogleApiException;
+import greencity.exception.exceptions.GreenCityUserServiceException;
 import greencity.exception.exceptions.ImageUrlParseException;
+import greencity.exception.exceptions.InsufficientLocationDataException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.InvalidURLException;
@@ -22,6 +27,7 @@ import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.MultipartXSSProcessingException;
+import greencity.exception.exceptions.NoJwtException;
 import greencity.exception.exceptions.NotCurrentUserException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -35,6 +41,8 @@ import greencity.exception.exceptions.ResourceNotFoundException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.exception.exceptions.ToDoListItemNotFoundException;
 import greencity.exception.exceptions.UnauthorizedException;
+import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
@@ -74,6 +82,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
@@ -91,6 +101,37 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         this.errorAttributes = errorAttributes;
         this.objectMapper = objectMapper;
         this.endpointValidationHelper = endpointValidationHelper;
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+        HttpHeaders headers, HttpStatusCode status,
+        WebRequest request) {
+        List<ValidationExceptionDto> collect =
+            ex.getBindingResult().getFieldErrors().stream()
+                .map(ValidationExceptionDto::new)
+                .toList();
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+        HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ResponseEntity<Object> response = endpointValidationHelper.response(ex, headers, request);
+        if (response == null) {
+            return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
+        }
+        return response;
     }
 
     /**
@@ -240,6 +281,32 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(exceptionResponse.getMessage(), exceptionResponse.getTrace());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    /**
+     * Handles exceptions of type {@link UnsupportedSortException} thrown during
+     * request processing. This method intercepts the
+     * {@code UnsupportedSortException}, logs the error, and prepares a standardized
+     * error response containing details about the failed sorting operation. The
+     * client receives a response with HTTP status 400 (Bad Request) and a body that
+     * includes an error message describing the reason for the failure.
+     *
+     * @param ex      the {@link UnsupportedSortException} instance containing
+     *                details about the invalid sorting parameter(s)
+     * @param request the {@link WebRequest} providing context about the web request
+     *                during which the exception occurred
+     * @return a {@link ResponseEntity} containing an {@link ExceptionResponse}
+     *         object with the error details and HTTP status 400 (BAD_REQUEST)
+     */
+    @ExceptionHandler(UnsupportedSortException.class)
+    public final ResponseEntity<Object> handleUnsupportedSortException(UnsupportedSortException ex,
+        WebRequest request) {
+        log.warn(ex.getMessage(), ex);
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
@@ -497,12 +564,40 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-        HttpHeaders headers, HttpStatusCode status,
-        WebRequest request) {
+    /**
+     * Method interceptor exception {@link GoogleApiException}.
+     *
+     * @param googleApiException Exception witch should be intercepted
+     * @return ResponseEntity witch contain http status and body with message of
+     *         exception.
+     */
+    @ExceptionHandler(GoogleApiException.class)
+    public ResponseEntity<Object> handleGoogleApiException(GoogleApiException googleApiException) {
+        ValidationExceptionDto validationExceptionDto =
+            new ValidationExceptionDto(AppConstant.GOOGLE_API, googleApiException.getMessage());
+        if (googleApiException.getMessage() != null
+            && googleApiException.getMessage().contains("Geocoding result was not found")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(validationExceptionDto);
+        } else {
+            validationExceptionDto.setMessage(googleApiException.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationExceptionDto);
+        }
+    }
+
+    /**
+     * Exception handler for InsufficientLocationDataException.
+     *
+     * @param exception which is being intercepted
+     * @param request   contains details about occurred exception
+     * @return ResponseEntity which contains details about exception and 400 status
+     *         code
+     */
+    @ExceptionHandler(InsufficientLocationDataException.class)
+    public final ResponseEntity<Object> handleInsufficientLocationDataException(
+        InsufficientLocationDataException exception, WebRequest request) {
+        log.error(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.warn(ex.getMessage(), ex);
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
@@ -519,18 +614,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-        HttpHeaders headers, HttpStatusCode status,
-        WebRequest request) {
-        List<ValidationExceptionDto> collect =
-            ex.getBindingResult().getFieldErrors().stream()
-                .map(ValidationExceptionDto::new)
-                .collect(Collectors.toList());
-        log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(collect);
     }
 
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
@@ -577,16 +660,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
-        HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ResponseEntity<Object> response = endpointValidationHelper.response(ex, headers, request);
-        if (response == null) {
-            return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
-        }
-        return response;
-    }
-
     /**
      * Method intercepts exception {@link FileReadException}.
      *
@@ -620,6 +693,55 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
 
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link UserAlreadyExistsException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public final ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex,
+        WebRequest request) {
+        log.warn(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(NoJwtException.class)
+    public ResponseEntity<ExceptionResponse> handleNoJwtException(NoJwtException ex, WebRequest webRequest) {
+        log.warn(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(webRequest));
+        exceptionResponse.setMessage(ErrorMessage.UNAUTHORIZED_RESPONSE);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+    }
+
+    /**
+     * Method interceptor for server errors-related exceptions which can be thrown
+     * by WebClient during making and receiving requests to the User app such as
+     * {@link GreenCityUserServiceException}, {@link WebClientRequestException} ,
+     * {@link WebClientResponseException}.
+     *
+     * @param request Contains details about the occurred exception.
+     * @return ResponseEntity which contains the HTTP status and body with the
+     *         message of the exception.
+     */
+    @ExceptionHandler({GreenCityUserServiceException.class, WebClientRequestException.class,
+        WebClientResponseException.class})
+    public final ResponseEntity<Object> handleUserServiceException(Exception ex, WebRequest request) {
+        if (ex instanceof WebClientRequestException) {
+            Map<String, String> errorBody = Map.of(AppConstant.MESSAGE, ErrorMessage.USER_APP_UNAVAILABLE);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorBody);
+        }
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.error(exceptionResponse.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionResponse);
     }
 
@@ -678,5 +800,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
+    @ExceptionHandler(EcoNewsRelevanceCalculationException.class)
+    public final ResponseEntity<Object> handleEcoNewsRelevanceCalculationException(
+        EcoNewsRelevanceCalculationException ex,
+        WebRequest request) {
+        log.error(ex.getMessage(), ex);
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 }

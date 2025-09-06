@@ -34,7 +34,7 @@ class FactOfTheDayTranslationDTOMapperTest {
 
         FactOfTheDayTranslationEmbeddedPostDTO embeddedDTO1 = dto.getFactOfTheDayTranslations().get(1);
         assertThat(embeddedDTO1.getContent()).isEqualTo("Контент");
-        assertThat(embeddedDTO1.getLanguageCode()).isEqualTo("ua");
+        assertThat(embeddedDTO1.getLanguageCode()).isEqualTo("uk");
     }
 
     @Test

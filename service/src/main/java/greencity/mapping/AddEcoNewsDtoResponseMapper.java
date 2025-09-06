@@ -3,7 +3,7 @@ package greencity.mapping;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import java.util.stream.Collectors;
+import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -23,6 +23,8 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
      */
     @Override
     protected AddEcoNewsDtoResponse convert(EcoNews ecoNews) {
+        User author = ecoNews.getAuthor();
+
         return AddEcoNewsDtoResponse.builder()
             .id(ecoNews.getId())
             .text(ecoNews.getText())
@@ -32,11 +34,11 @@ public class AddEcoNewsDtoResponseMapper extends AbstractConverter<EcoNews, AddE
             .creationDate(ecoNews.getCreationDate())
             .shortInfo(ecoNews.getShortInfo())
             .ecoNewsAuthorDto(EcoNewsAuthorDto.builder()
-                .id(ecoNews.getAuthor().getId())
-                .name(ecoNews.getAuthor().getName())
+                .id(author.getId())
+                .name(author.getName())
                 .build())
             .tags(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+                .map(TagTranslation::getName).toList())
             .build();
     }
 }
