@@ -519,7 +519,7 @@ class CommentServiceImplTest {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
         when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
             any(), anyLong()))
             .thenReturn(3L);
@@ -574,7 +574,7 @@ class CommentServiceImplTest {
         when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
             .thenReturn(Optional.of(habitTranslation));
-        when(fileService.upload(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
         when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
             any(), anyLong()))
             .thenReturn(3L);
