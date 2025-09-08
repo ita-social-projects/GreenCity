@@ -141,7 +141,7 @@ public class CommentServiceImpl implements CommentService {
             commentRepo.save(comment), AddCommentDtoResponse.class);
         addCommentDtoResponse.setAuthor(modelMapper.map(userVO, CommentAuthorDto.class));
         if (checkUserIsNotAuthor(userVO, articleAuthor) && !isCommentReply) {
-            createCommentNotification(articleType, articleId, userVO, locale);
+            createCommentNotification(comment.getText(), articleType, articleId, userVO, locale);
         }
         sendNotificationToTaggedUser(comment, articleType, locale);
 
@@ -323,12 +323,16 @@ public class CommentServiceImpl implements CommentService {
      * @param locale      the locale used for localization of the notification,
      *                    {@link Locale}.
      */
-    private void createCommentNotification(ArticleType articleType, Long articleId, UserVO userVO, Locale locale) {
+    private void createCommentNotification(String comment, ArticleType articleType, Long articleId, UserVO userVO,
+        Locale locale) {
         UserVO receiver = modelMapper.map(getArticleAuthor(articleType, articleId), UserVO.class);
         long commentsCount = notificationRepo
             .countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(receiver.getId(),
                 getNotificationType(articleType, CommentActionType.COMMENT), articleId);
-        String message = (commentsCount >= 1) ? (commentsCount + 1) + " COMMENTS" : "COMMENT";
+        String snippet = getCommentSnippet(comment);
+        String message = commentsCount >= 1
+            ? String.format("%d COMMENTS \"%s\"", commentsCount + 1, snippet)
+            : String.format("COMMENT \"%s\"", snippet);
         userNotificationService.createNotification(
             receiver,
             userVO,
@@ -381,7 +385,10 @@ public class CommentServiceImpl implements CommentService {
                 getNotificationType(articleType, CommentActionType.COMMENT_REPLY),
                 articleId,
                 comment.getParentComment().getId());
-        String message = (replyCount >= 1) ? (replyCount + 1) + " REPLIES" : "REPLY";
+        String snippet = getCommentSnippet(comment.getText());
+        String message = replyCount >= 1
+            ? String.format("%d REPLIES \"%s\"", replyCount + 1, snippet)
+            : String.format("REPLY \"%s\"", snippet);
         userNotificationService.createNotification(
             receiver,
             sender,
@@ -390,6 +397,11 @@ public class CommentServiceImpl implements CommentService {
             message,
             comment.getParentComment().getId(),
             getArticleTitle(articleType, articleId, locale));
+    }
+
+    private String getCommentSnippet(String commentText) {
+        String rawText = commentText == null ? "" : commentText;
+        return rawText.length() > 20 ? rawText.substring(0, 20) : rawText;
     }
 
     /**
