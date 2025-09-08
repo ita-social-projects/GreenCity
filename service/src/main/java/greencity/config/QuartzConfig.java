@@ -89,7 +89,7 @@ public class QuartzConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "true")
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "enabled")
     public JobDetail ecoNewsRelevanceJobDetail() {
         return JobBuilder.newJob(EcoNewsRelevanceJob.class)
             .withIdentity("ecoNewsRelevanceJob")
@@ -98,7 +98,7 @@ public class QuartzConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "true")
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "enabled")
     public Trigger ecoNewsRelevanceTrigger() {
         String fixedCron = fixCronExpression(calculateRelevanceCron);
         try {
