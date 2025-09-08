@@ -63,7 +63,6 @@ import java.util.Set;
                     @ColumnResult(name = "longitude", type = Double.class),
                     @ColumnResult(name = "mutualFriends", type = Long.class),
                     @ColumnResult(name = "profilePicturePath", type = String.class),
-                    @ColumnResult(name = "chatId", type = Long.class),
                     @ColumnResult(name = "friendStatus", type = String.class),
                     @ColumnResult(name = "requesterId", type = Long.class)
                 })
@@ -119,13 +118,6 @@ import java.util.Set;
                         )
                     ) AS mutualFriends,
                     u.profile_picture AS profilePicturePath,
-                    (
-                        SELECT p.room_id
-                        FROM chat_rooms_participants p
-                        WHERE p.participant_id IN (u.id, :userId)
-                        GROUP BY p.room_id
-                        HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1
-                    ) AS chatId,
                     (
                         SELECT uf2.status
                         FROM users_friends uf2
