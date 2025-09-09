@@ -644,20 +644,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Tuple findUsersFriendByUserIdAndFriendId(Long userId, Long friendId);
 
     /**
-     * Method finds chatId of two users.
-     *
-     * @param userId   {@link Long} current user's id.
-     * @param friendId {@link Long} friend`s id.
-     * @return {@link Long}.
-     */
-    @Query(nativeQuery = true, value = "SELECT crp.room_id FROM chat_rooms r "
-        + "INNER JOIN chat_rooms_participants crp on r.id = crp.room_id "
-        + "WHERE r.type = 'PRIVATE' AND crp.participant_id in (:userId,:friendId) "
-        + "GROUP BY crp.room_id "
-        + "HAVING COUNT(crp) = 2 LIMIT 1;")
-    Long findIdOfPrivateChatOfUsers(Long userId, Long friendId);
-
-    /**
      * Method for getting all users who made request for joining the event.
      *
      * @param eventId  - id of the event
