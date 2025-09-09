@@ -2883,7 +2883,6 @@ public class ModelUtils {
             .rating(10.0)
             .mutualFriends(3L)
             .profilePicturePath("path-to-picture")
-            .chatId(4L)
             .build();
     }
 
@@ -2896,7 +2895,6 @@ public class ModelUtils {
             .rating(10.0)
             .mutualFriends(3L)
             .profilePicturePath("path-to-picture")
-            .chatId(4L)
             .build();
     }
 
