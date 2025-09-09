@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Sortable(fields = {"id", "name", "email", "rating", "mutualFriends", "chatId"})
+@Sortable(fields = {"id", "name", "email", "rating", "mutualFriends"})
 @SuperBuilder
 @Data
 @SuppressWarnings("java:S107")
@@ -20,7 +20,6 @@ public class UserFriendDto {
     private Double rating;
     private Long mutualFriends;
     private String profilePicturePath;
-    private Long chatId;
     private String friendStatus;
     private Long requesterId;
     private UserLocationDto userLocationDto;
@@ -30,14 +29,13 @@ public class UserFriendDto {
      */
     public UserFriendDto(Long id, String name, Double rating, Long ulId, String cityEn,
         String cityUa, String regionEn, String regionUa, String countryEn, String countryUa,
-        Double latitude, Double longitude, Long mutualFriends, String profilePicturePath, Long chatId,
+        Double latitude, Double longitude, Long mutualFriends, String profilePicturePath,
         String friendStatus, Long requesterId) {
         this.id = id;
         this.name = name;
         this.rating = rating;
         this.mutualFriends = mutualFriends;
         this.profilePicturePath = profilePicturePath;
-        this.chatId = chatId;
         this.friendStatus = friendStatus;
         this.requesterId = requesterId;
         if (ulId != null) {
