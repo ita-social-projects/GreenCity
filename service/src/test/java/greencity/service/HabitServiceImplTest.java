@@ -1665,8 +1665,6 @@ class HabitServiceImplTest {
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
             .thenReturn(tuples);
-        when(userRemoteClient.findUserEmailsByUserIds(userIds))
-            .thenReturn(userEmailDtos);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO.getId(), null, pageable, habitId);
@@ -1705,8 +1703,6 @@ class HabitServiceImplTest {
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "Jo", habitId, pageable))
             .thenReturn(tuples);
-        when(userRemoteClient.findUserEmailsByUserIds(userIds))
-            .thenReturn(userEmailDtos);
 
         PageableDto<UserFriendHabitInviteDto> result =
             habitService.findAllFriendsOfUser(userVO.getId(), "Jo", pageable, habitId);

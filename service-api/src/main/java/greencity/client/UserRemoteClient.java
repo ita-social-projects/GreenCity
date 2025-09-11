@@ -6,7 +6,6 @@ import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
-import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
@@ -44,7 +43,6 @@ public class UserRemoteClient {
 
     private static final String PAGE_QUERY_PARAM = "page";
     private static final String PAGE_SIZE_QUERY_PARAM = "size";
-    private static final String USER_EMAIL_QUERY_PARAM = "email";
     private static final String ID_QUERY_PARAM = "id";
 
     /**
@@ -121,24 +119,7 @@ public class UserRemoteClient {
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
         UserVO userVO = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByEmail")
-                .queryParam(USER_EMAIL_QUERY_PARAM, email)
-                .build())
-            .retrieve()
-            .bodyToMono(UserVO.class)
-            .block();
-        return Optional.ofNullable(userVO);
-    }
-
-    /**
-     * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by id.
-     *
-     * @param id - {@link UserVO}'s id
-     * @return {@link Optional} of found {@link UserVO}.
-     */
-    public Optional<UserVO> findNotDeactivatedById(Long id) {
-        UserVO userVO = webClient.get()
-            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedById")
-                .queryParam(ID_QUERY_PARAM, id)
+                .pathSegment(email)
                 .build())
             .retrieve()
             .bodyToMono(UserVO.class)
@@ -331,15 +312,15 @@ public class UserRemoteClient {
 
     /**
      * Finds {@link UserVOAdvancedDto} that is not 'DEACTIVATED' by
-     * {@link UserVOAdvancedDto}'s id.
+     * {@link UserVOAdvancedDto}'s email.
      *
-     * @param id {@link UserVOAdvancedDto}'s id.
+     * @param email {@link UserVOAdvancedDto}'s email.
      * @return {@link Optional} of {@link UserVOAdvancedDto}.
      */
-    public Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(Long id) {
+    public Optional<UserVOAdvancedDto> findNotDeactivatedByEmailAdvanced(String email) {
         UserVOAdvancedDto userVO = webClient.get()
-            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByIdAdvanced")
-                .queryParam(ID_QUERY_PARAM, id)
+            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByEmailAdvanced")
+                .pathSegment(email)
                 .build())
             .retrieve()
             .bodyToMono(UserVOAdvancedDto.class)
@@ -537,24 +518,6 @@ public class UserRemoteClient {
     public boolean userExistsByEmail(String email) {
         Optional<UserVO> userVOOptional = findNotDeactivatedByEmail(email);
         return userVOOptional.isPresent();
-    }
-
-    /**
-     * Method to find all {@link UserEmailDto} user emails by user ids.
-     *
-     * @param userIds list of user ids
-     * @return list of {@link UserEmailDto} containing information about user's
-     *         email
-     */
-    public List<UserEmailDto> findUserEmailsByUserIds(List<Long> userIds) {
-        return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path("/user/email/findByIds")
-                .queryParam("userIds", userIds)
-                .build())
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<List<UserEmailDto>>() {
-            })
-            .block();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(MultipartFile... multipartFiles) {
