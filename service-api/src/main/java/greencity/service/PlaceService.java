@@ -9,10 +9,8 @@ import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.FilterAdminPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
-import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
@@ -78,15 +76,6 @@ public interface PlaceService {
     Optional<PlaceVO> findByIdOptional(Long id);
 
     /**
-     * Method for saving proposed {@link PlaceVO} to database.
-     *
-     * @param dto - dto for Place entity
-     * @return place {@code Place}
-     * @author Kateryna Horokh
-     */
-    PlaceVO save(PlaceAddDto dto, String email);
-
-    /**
      * Method to find all created {@link PlaceVO}'s by user id.
      *
      * @param userId - {@code User}'s id.
@@ -95,22 +84,11 @@ public interface PlaceService {
     List<PlaceVO> getAllCreatedPlacesByUserId(Long userId);
 
     /**
-     * Method for updating from admin panel {@link PlaceVO}.
-     *
-     * @param dto    - dto for Place entity
-     * @param images - array of photos
-     * @param userId - admin user id
-     * @return place {@link PlaceVO}
-     */
-    PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, Long userId);
-
-    /**
      * Method for updating {@link PlaceVO}.
      *
      * @param dto - dto for Place entity
-     * @return place {@link PlaceVO}
      */
-    PlaceVO update(PlaceUpdateDto dto);
+    void update(PlaceUpdateDto dto, MultipartFile[] images, Long userId);
 
     /**
      * Find all places from DB.
@@ -262,10 +240,7 @@ public interface PlaceService {
      */
     List<FilterPlaceCategory> getAllPlaceCategories();
 
-    /**
-     * Method to create new place From UI.
-     */
-    PlaceResponse addPlaceFromUi(AddPlaceDto dto, Long userId, MultipartFile[] images);
+    void save(AddPlaceDto dto, Long userId, MultipartFile[] images);
 
     /**
      * Method for getting Places by searchQuery.

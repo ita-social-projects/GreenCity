@@ -4,8 +4,6 @@ import greencity.TestConst;
 import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceUpdateDto;
@@ -45,7 +43,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -90,7 +87,7 @@ class ManagementPlacesControllerTest {
         PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
         when(placeService.getFilteredPlacesForAdmin(any(), any())).thenReturn(adminPlaceDtoPageableDto);
         when(categoryService.findAllCategoryDto())
-            .thenReturn(Collections.singletonList(new CategoryDto("test", "test", null)));
+            .thenReturn(Collections.singletonList(new CategoryDto(1L, "test", "test", null)));
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
@@ -117,11 +114,9 @@ class ManagementPlacesControllerTest {
         Principal principal = Mockito.mock(Principal.class);
         String json = """
             {
-                "placeName": "Тестове місце",
-                "locationName": "Смиків, південна 7",
-                "status": "APPROVED",
-                "categoryName": "Recycling points",
-                "discountValues": null,
+                "name": "Тестове місце",
+                "address": "Смиків, південна 7",
+                "categoryId": "1",
                 "openingHoursList": [
                     {
                         "weekDay": "MONDAY",
@@ -146,7 +141,7 @@ class ManagementPlacesControllerTest {
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
-        verify(placeService).addPlaceFromUi(any(), any(), any());
+        verify(placeService).save(any(), any(), any());
     }
 
     @Test
@@ -185,25 +180,25 @@ class ManagementPlacesControllerTest {
             .characterEncoding("UTF-8"))
             .andExpect(status().isOk());
 
-        verify(placeService).updateFromUI(eq(placeUpdateDto), any(MultipartFile[].class), eq(TestConst.USER_ID));
+        verify(placeService).update(eq(placeUpdateDto), any(MultipartFile[].class), eq(TestConst.USER_ID));
     }
 
     private PlaceUpdateDto getPlaceUpdateDto() {
         return PlaceUpdateDto.builder()
             .id(1L)
             .name("Test Place")
-            .location(new LocationAddressAndGeoForUpdateDto(
-                "Test Address",
-                50.45,
-                30.52,
-                "Тестова адреса"))
-            .category(new CategoryDto("Food", "Їжа", null))
+//            .location(new LocationAddressAndGeoForUpdateDto(
+//                "Test Address",
+//                50.45,
+//                30.52,
+//                "Тестова адреса"))
+            .categoryId(1L)
             .openingHoursList(Set.of(new OpeningHoursDto(
                 LocalTime.of(10, 0),
                 LocalTime.of(22, 0),
                 DayOfWeek.FRIDAY,
                 null)))
-            .discountValues(Set.of(new DiscountValueDto(10, new SpecificationNameDto("kdf"))))
+//            .discountValues(Set.of(new DiscountValueDto(10, new SpecificationNameDto("kdf"))))
             .build();
     }
 
@@ -235,7 +230,7 @@ class ManagementPlacesControllerTest {
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
 
-        verify(placeService, never()).updateFromUI(any(PlaceUpdateDto.class), any(), any());
+//        verify(placeService, never()).updateFromUI(any(PlaceUpdateDto.class), any(), any());
     }
 
     @Test

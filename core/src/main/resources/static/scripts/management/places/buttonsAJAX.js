@@ -102,11 +102,6 @@ $(document).ready(function () {
         $('.modal-title').text("Add Place");
     });
 
-    $('#addDiscount').on('click', addDiscountValue);
-    $(document).on('click', '.remove', function () {
-        $(this).closest('.discount').remove();
-    });
-
     $(document).on('click', '.add-break', function (event) {
         event.preventDefault();
         $(this).hide();
@@ -118,21 +113,6 @@ $(document).ready(function () {
         $(this).closest('.break-hours').find('input').val('');
         $(this).closest('.break-time').find('.break-hours').hide();
     });
-
-    function addDiscountValue(event) {
-        event.preventDefault();
-        let specificationOption = '';
-        for (let i = 0; i < discountSpecifications.length; i++) {
-            specificationOption += '<option value="' + discountSpecifications[i] + '">' + discountSpecifications[i] + '</option>';
-        }
-        let discountValueInput = "<input name='discountValue' class='form-control' type='number'>";
-        let removeButton = "<button class='btn btn-warning remove'>remove</button>"
-        let discDiv = "<div class='discount form-inline'>" +
-            "<select class='form-control'>" + specificationOption + "</select>" +
-            discountValueInput +
-            removeButton + "</div>"
-        $('#discounts').append(discDiv);
-    }
 
 // Submit button in addPlaceModal
     $('#submitAddBtn').on('click', function (event) {
@@ -156,11 +136,9 @@ $(document).ready(function () {
 
     function handlePostRequest(formData) {
         const place = {
-            "placeName": formData.get('name'),
-            "locationName": formData.get('address'),
-            "status": formData.get('status'),
-            "categoryName": formData.get('category'),
-            "discountValues": getDiscountValues(),
+            "name": formData.get('name'),
+            "address": formData.get('address'),
+            "categoryId": formData.get('category'),
             "openingHoursList": getOpeningHours()
         };
 
@@ -171,16 +149,8 @@ $(document).ready(function () {
         const place = {
             id: formData.get('id'),
             name: formData.get('name'),
-            location: {
-                address: formData.get('address'),
-                lat: formData.get('lat'),
-                lng: formData.get('lng'),
-                addressUa: formData.get('addressUa'),
-            },
-            category: {
-                name: formData.get('category'),
-            },
-            discountValues: getDiscountValues(),
+            address: formData.get('address'),
+            categoryId: formData.get("category"),
             openingHoursList: getOpeningHours(),
         };
 
@@ -216,6 +186,7 @@ $(document).ready(function () {
             processData: false,
             contentType: false,
             success: function (data) {
+                console.log('Success:', data);
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
                         $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError).show();
@@ -296,23 +267,6 @@ $(document).ready(function () {
         return hours * 60 + minutes;
     }
 
-    function getDiscountValues() {
-        let discounts = [];
-        $('#discounts').find('.discount').each(function () {
-            let specification = {
-                name: $(this).find(':selected').text()
-            };
-            let discount = {};
-            discount.specification = specification;
-            discount.value = $(this).find('input[name="discountValue"]').val();
-            discounts.push(discount);
-        });
-        if (!discounts.length) {
-            discounts = null;
-        }
-        return discounts;
-    }
-
     function getOpeningHours() {
         let openingHours = [];
         $("input:checkbox[name=day]:checked").each(function () {
@@ -384,7 +338,6 @@ $(document).ready(function () {
         $('#addPlaceModal').find('input').not('input[name=status]').not('#submitAddBtn').val('');
         $('#empty-category').prop("selected", true);
         deleteMarkers();
-        $('.discount').remove();
     }
 
     // Button edit
@@ -397,11 +350,9 @@ $(document).ready(function () {
         let href = $(this).attr('href');
         $.get(href, function (place) {
             $('#id').val(place.id)
+            $('#address').val(place.address);
             $('#placeName').val(place.name);
-            $('#lng').val(place.location.lng);
-            $('#lat').val(place.location.lat);
-            $('#addressUa').val(place.location.addressUa);
-            $('#address').val(place.location.address);
+            $('#category').val(place.categoryId);
             addMarker(location);
             place.openingHoursList.forEach(function (day) {
                 let dayElement = $(`#${day.weekDay}`);
@@ -415,32 +366,8 @@ $(document).ready(function () {
                     dayElement.closest('div.form-row').find('input[name=endTime]').val(day.breakTime.endTime);
                 }
             });
-            $('#category').val(place.category.name);
-            place.discountValues.forEach(value => {
-                addDiscountValueForUpdate(value);
-            });
         });
     });
-
-    function addDiscountValueForUpdate(discount) {
-        let specificationOption = '';
-        for (let i = 0; i < discountSpecifications.length; i++) {
-            if (discountSpecifications[i] === discount.specification.name) {
-                specificationOption += `<option value=${discountSpecifications[i]} selected="true">${discountSpecifications[i]}</option>`
-            } else {
-                specificationOption += `<option value=${discountSpecifications[i]}>${discountSpecifications[i]}</option>`
-            }
-        }
-        let discValue = discount.value;
-        let discountValueInput = '<input name="discountValue" class="form-control" type="number" value="' + discValue + '"/>';
-
-        let removeButton = "<button class='btn btn-warning remove'>remove</button>"
-        let discDiv = "<div class='discount form-inline'>" +
-            "<select class='form-control'>" + specificationOption + "</select>" +
-            discountValueInput +
-            removeButton + "</div>"
-        $('#discounts').append(discDiv);
-    }
 });
 
 $(document).ready(function () {

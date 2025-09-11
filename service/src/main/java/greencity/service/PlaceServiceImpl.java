@@ -13,24 +13,19 @@ import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationDto;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
-import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpenHoursDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.place.AddPlaceDto;
-import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.FilterAdminPlaceDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchPlacesDto;
@@ -93,14 +88,12 @@ import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
-    private final CategoryService categoryService;
     private final LocationService locationService;
     private final SpecificationService specificationService;
     private final OpenHoursService openingHoursService;
     private final UserService userService;
     private final DiscountService discountService;
     private final ZoneId datasourceTimezone;
-    private final ProposePlaceService proposePlaceService;
     private final CategoryRepo categoryRepo;
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
@@ -119,37 +112,6 @@ public class PlaceServiceImpl implements PlaceService {
         List<AdminPlaceDto> list = createAdminPageableDtoList(places);
         return new PageableDto<>(list, places.getTotalElements(), places.getPageable().getPageNumber(),
             places.getTotalPages());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public PlaceVO save(PlaceAddDto dto, String email) {
-        UserVO user = userService.findNotDeactivatedByEmail(email);
-        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
-            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
-        }
-        log.info(LogMessage.IN_SAVE, dto.getName(), email);
-
-        proposePlaceService.checkLocationValues(dto.getLocation());
-        if (dto.getOpeningHoursList() != null) {
-            proposePlaceService.checkInputTime(dto.getOpeningHoursList());
-        }
-        PlaceVO placeVO = modelMapper.map(dto, PlaceVO.class);
-        setUserToPlace(user, placeVO);
-        if (placeVO.getDiscountValues() != null) {
-            proposePlaceService.saveDiscountValuesWithPlace(placeVO.getDiscountValues(), placeVO);
-        }
-        if (placeVO.getPhotos() != null) {
-            proposePlaceService.savePhotosWithPlace(placeVO.getPhotos(), placeVO);
-        }
-        Place place = modelMapper.map(placeVO, Place.class);
-        place.setCategory(categoryRepo.findByNameEn(dto.getCategory().getNameEn()));
-        place.getOpeningHoursList().forEach(openingHours -> openingHours.setPlace(place));
-
-        return modelMapper.map(placeRepo.save(place), PlaceVO.class);
     }
 
     /**
@@ -374,7 +336,26 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceUpdateDto getInfoForUpdatingById(Long id) {
         Place place = placeRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(place, PlaceUpdateDto.class);
+
+        Set<OpeningHoursDto> openingHoursDtos = place
+                .getOpeningHoursList()
+                .stream()
+                .map(i -> OpeningHoursDto
+                        .builder()
+                        .openTime(i.getOpenTime())
+                        .closeTime(i.getCloseTime())
+                        .weekDay(i.getWeekDay())
+                        .build())
+                .collect(Collectors.toSet());
+
+        return PlaceUpdateDto
+                .builder()
+                .id(place.getId())
+                .openingHoursList(openingHoursDtos)
+                .categoryId(place.getCategory().getId())
+                .address(place.getLocation().getAddressEn())
+                .name(place.getName())
+                .build();
     }
 
     /**
@@ -548,60 +529,6 @@ public class PlaceServiceImpl implements PlaceService {
         }.getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, Long userId, MultipartFile[] images) {
-        User user = userRepo.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-        UserVO userVO = modelMapper.map(user, UserVO.class);
-
-        if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
-            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
-        }
-        PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
-        List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
-        if (geocodingResults.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.GEOCODING_RESULT_IS_EMPTY);
-        }
-        double lat = geocodingResults.getFirst().geometry.location.lat;
-        double lng = geocodingResults.getFirst().geometry.location.lng;
-        if (locationService.existsByLatAndLng(lat, lng)) {
-            throw new PlaceAlreadyExistsException(ErrorMessage.PLACE_ALREADY_EXISTS.formatted(lat, lng));
-        }
-        placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
-        Place place = modelMapper.map(placeResponse, Place.class);
-        place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
-        place.setAuthor(user);
-        place.setLocation(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class));
-        Optional.ofNullable(place.getOpeningHoursList()).orElse(Collections.emptySet())
-            .forEach(openingHours -> openingHours.setPlace(place));
-        mapMultipartFilesToPhotos(images, place, user);
-        return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
-    }
-
-    AddPlaceLocation getLocationDetailsFromGeocode(String locationName) {
-        List<GeocodingResult> geocodingResults = Optional
-            .ofNullable(googleApiService.getResultFromGeoCode(locationName))
-            .filter(results -> !results.isEmpty())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION + locationName));
-
-        return initializeGeoCodingResults(geocodingResults);
-    }
-
-    private AddPlaceLocation initializeGeoCodingResults(
-        List<GeocodingResult> geocodingResults) {
-        GeocodingResult ukrLang = geocodingResults.getFirst();
-        GeocodingResult engLang = geocodingResults.get(1);
-        return AddPlaceLocation.builder()
-            .addressUk(ukrLang.formattedAddress)
-            .addressEn(engLang.formattedAddress)
-            .lat(ukrLang.geometry.location.lat)
-            .lng(ukrLang.geometry.location.lng)
-            .build();
-    }
-
     private void mapMultipartFilesToPhotos(MultipartFile[] images, Place place, User user) {
         if (images != null && images.length > 0 && images[0] != null) {
             List<Photo> newPhotos = new ArrayList<>();
@@ -698,67 +625,96 @@ public class PlaceServiceImpl implements PlaceService {
         return dto;
     }
 
-    void updateLocation(PlaceUpdateDto dto, Place updatedPlace, LocationVO updatable) {
-        AddPlaceLocation geoDetails = getLocationDetailsFromGeocode(dto.getLocation().getAddressEn());
+    @Transactional
+    @Override
+    public void update(PlaceUpdateDto dto, MultipartFile[] images, Long userId) {
+        User user = getUser(userId);
+        Place place = findPlaceById(dto.getId());
+        Category category = getCategory(dto.getCategoryId());
 
-        LocationAddressAndGeoForUpdateDto sourceDto = geoDetails != null
-            ? new LocationAddressAndGeoForUpdateDto(
-                geoDetails.getAddressEn(),
-                geoDetails.getLat(),
-                geoDetails.getLng(),
-                geoDetails.getAddressUk())
-            : dto.getLocation();
+        Location location = buildLocation(dto.getName());
+        Set<OpeningHours> openingHours = mapOpeningHours(dto.getOpeningHoursList());
 
-        LocationVO updatedLocation = createLocationVO(updatable.getId(), sourceDto);
+        place
+            .setName(dto.getName())
+            .setLocation(location)
+            .setCategory(category)
+            .setOpeningHoursList(openingHours);
 
-        locationService.update(updatedPlace.getLocation().getId(), updatedLocation);
-    }
-
-    private LocationVO createLocationVO(Long id, LocationAddressAndGeoForUpdateDto dto) {
-        return LocationVO.builder()
-            .id(id)
-            .addressEn(dto.getAddressEn())
-            .lat(dto.getLat())
-            .lng(dto.getLng())
-            .addressUk(dto.getAddressUk())
-            .build();
-    }
-
-    private void updatePlaceProperties(PlaceUpdateDto dto, Place updatedPlace, Category updatedCategory) {
-        updatedPlace.setName(dto.getName());
-        updatedPlace.setCategory(updatedCategory);
-        placeRepo.save(updatedPlace);
-        updateOpening(dto.getOpeningHoursList(), updatedPlace);
-        updateDiscount(dto.getDiscountValues(), updatedPlace);
+        linkOpeningHoursToPlace(place);
+        mapMultipartFilesToPhotos(images, place, user);
+        placeRepo.save(place);
     }
 
     @Transactional
     @Override
-    public PlaceVO update(PlaceUpdateDto dto) {
-        log.info(LogMessage.IN_UPDATE, dto.getName());
-        Category updatedCategory = modelMapper.map(
-            categoryService.findByName(dto.getCategory().getNameEn()), Category.class);
-        Place updatedPlace = findPlaceById(dto.getId());
-        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
-        updateLocation(dto, updatedPlace, updatable);
-        updatePlaceProperties(dto, updatedPlace, updatedCategory);
-        return modelMapper.map(updatedPlace, PlaceVO.class);
+    public void save(AddPlaceDto dto, Long userId, MultipartFile[] images) {
+        User user = getUser(userId);
+
+        Category category = getCategory(dto.getCategoryId());
+        Location location = buildLocation(dto.getAddress());
+
+        if (locationService.existsByLatAndLng(location.getLat(), location.getLng())) {
+            throw new PlaceAlreadyExistsException(
+                    ErrorMessage.PLACE_ALREADY_EXISTS.formatted(location.getLat(), location.getLng()));
+        }
+
+        Set<OpeningHours> openingHours = mapOpeningHours(dto.getOpeningHoursList());
+
+        Place place = Place.builder()
+                .name(dto.getName())
+                .location(location)
+                .category(category)
+                .author(user)
+                .openingHoursList(openingHours)
+                .build();
+
+        linkOpeningHoursToPlace(place);
+        mapMultipartFilesToPhotos(images, place, user);
+        placeRepo.save(place);
     }
 
-    @Transactional
-    @Override
-    public PlaceVO updateFromUI(PlaceUpdateDto dto, MultipartFile[] images, Long userId) {
-        log.info(LogMessage.IN_UPDATE, dto.getName());
-        Category updatedCategory = modelMapper.map(
-            categoryService.findByName(dto.getCategory().getNameEn()), Category.class);
-        Place updatedPlace = findPlaceById(dto.getId());
-        LocationVO updatable = locationService.findById(updatedPlace.getLocation().getId());
-        updateLocation(dto, updatedPlace, updatable);
-        updatePlaceProperties(dto, updatedPlace, updatedCategory);
-        Place place = modelMapper.map(updatedPlace, Place.class);
-        Optional<User> user = userRepo.findById(userId);
-        mapMultipartFilesToPhotos(images, place, user.orElse(null));
-        placeRepo.save(updatedPlace);
-        return modelMapper.map(updatedPlace, PlaceVO.class);
+    private User getUser(Long userId) {
+        return userRepo
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+    }
+
+    private Category getCategory(Long categoryId) {
+        return categoryRepo.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + categoryId));
+    }
+
+    private Location buildLocation(String searchString) {
+        List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(searchString);
+        if (geocodingResults.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.GEOCODING_RESULT_IS_EMPTY);
+        }
+
+        GeocodingResult ukrLang = geocodingResults.getFirst();
+        GeocodingResult engLang = geocodingResults.get(1);
+
+        return Location.builder()
+                .addressUk(ukrLang.formattedAddress)
+                .addressEn(engLang.formattedAddress)
+                .lat(ukrLang.geometry.location.lat)
+                .lng(ukrLang.geometry.location.lng)
+                .build();
+    }
+
+    private Set<OpeningHours> mapOpeningHours(Set<OpeningHoursDto> dtos) {
+        return dtos.stream()
+                .map(i -> OpeningHours.builder()
+                        .openTime(i.getOpenTime())
+                        .closeTime(i.getCloseTime())
+                        .weekDay(i.getWeekDay())
+                        .build())
+                .collect(Collectors.toSet());
+    }
+
+    private void linkOpeningHoursToPlace(Place place) {
+        Optional.ofNullable(place.getOpeningHoursList())
+                .orElse(Collections.emptySet())
+                .forEach(i -> i.setPlace(place));
     }
 }

@@ -89,7 +89,6 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoDto;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.location.UserLocationDto;
@@ -101,7 +100,6 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoVO;
 import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceUpdateDto;
@@ -1140,20 +1138,18 @@ public class ModelUtils {
         return placeVO;
     }
 
-    public static PlaceAddDto getPlaceAddDto() {
-        PlaceAddDto placeAddDto = new PlaceAddDto();
-        placeAddDto.setName("Test");
+    public static AddPlaceDto getPlaceAddDto() {
+        AddPlaceDto addPlaceDto = new AddPlaceDto();
+        addPlaceDto.setName("Test");
         CategoryDto category = new CategoryDto();
         category.setNameEn("category");
-        placeAddDto.setCategory(category);
-        placeAddDto.setLocation(getLocationAddressAndGeoDto());
+        addPlaceDto.setCategoryId(1L);
         HashSet<OpeningHoursDto> openingHoursDtos = new HashSet<>();
         openingHoursDtos.add(getOpeningHoursDto());
-        placeAddDto.setOpeningHoursList(openingHoursDtos);
+        addPlaceDto.setOpeningHoursList(openingHoursDtos);
         HashSet<DiscountValueDto> discountValueDtos = new HashSet<>();
         discountValueDtos.add(getDiscountValueDto());
-        placeAddDto.setDiscountValues(discountValueDtos);
-        return placeAddDto;
+        return addPlaceDto;
     }
 
     public static LanguageTranslationDTO getLanguageTranslationDTO() {
@@ -2129,9 +2125,9 @@ public class ModelUtils {
 
     public static AddPlaceDto getAddPlaceDto() {
         return AddPlaceDto.builder()
-            .categoryName("category")
-            .placeName("test")
-            .locationName("Test")
+            .categoryId(1L)
+//            .placeName("test")
+//            .locationName("Test")
             .openingHoursList(Set.of(OpeningHoursDto.builder()
                 .openTime(LocalTime.now())
                 .closeTime(LocalTime.now())
@@ -3462,21 +3458,12 @@ public class ModelUtils {
         return PlaceUpdateDto.builder()
             .id(1L)
             .name("Updated Place")
-            .category(getCategoryDto())
-            .location(getLocationAddressAndGeoForUpdateDto())
             .build();
-    }
-
-    public static LocationAddressAndGeoForUpdateDto getLocationAddressAndGeoForUpdateDto() {
-        return new LocationAddressAndGeoForUpdateDto(
-            "Test Address",
-            50.4501,
-            30.5236,
-            "Тестова адреса");
     }
 
     public static CategoryDto getCategoryDto() {
         return new CategoryDto(
+            1L,
             "Category",
             "Category Ua",
             1L);

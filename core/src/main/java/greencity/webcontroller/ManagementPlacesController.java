@@ -103,7 +103,7 @@ public class ManagementPlacesController {
         @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
-            placeService.addPlaceFromUi(addPlaceDto, userId, images);
+            placeService.save(addPlaceDto, userId, images);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -122,7 +122,7 @@ public class ManagementPlacesController {
         @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         if (!bindingResult.hasErrors()) {
-            placeService.updateFromUI(placeUpdateDto, images, userId);
+            placeService.update(placeUpdateDto, images, userId);
         }
 
         return buildGenericResponseDto(bindingResult);
