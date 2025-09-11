@@ -10,7 +10,6 @@ import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
-import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
@@ -89,7 +88,7 @@ class UserRemoteClientTest {
         String email = "email@email.com";
         UserVO userVO = ModelUtils.getUserVO();
         String userVOJson = toJson(userVO);
-        String expectedRequestPath = "/user/findNotDeactivatedByEmail?email=" + email;
+        String expectedRequestPath = "/user/findNotDeactivatedByEmail/" + email;
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
@@ -104,34 +103,6 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
-        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
-    }
-
-    @Test
-    @SneakyThrows
-    void findNotDeactivatedByIdTest() {
-        Long id = 1L;
-        UserVO userVO = ModelUtils.getUserVO();
-        String userVOJson = toJson(userVO);
-        String expectedRequestPath = "/user/findNotDeactivatedById?id=" + id;
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(userVOJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        Optional<UserVO> actualResult = userRemoteClient.findNotDeactivatedById(id);
-
-        assertTrue(actualResult.isPresent());
-        UserVO actualUserVO = actualResult.get();
-        assertEquals(userVO, actualUserVO);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertNotNull(recordedRequest.getRequestUrl().queryParameter(idQueryParam));
-        assertEquals(id.toString(), recordedRequest.getRequestUrl().queryParameter(idQueryParam));
     }
 
     @Test
@@ -424,18 +395,18 @@ class UserRemoteClientTest {
 
     @Test
     @SneakyThrows
-    void findNotDeactivatedByIdAdvancedTest() {
-        Long id = 1L;
+    void findNotDeactivatedByEmailAdvancedTest() {
+        String email = "email@email.com";
         UserVOAdvancedDto userVOAdvanced = ModelUtils.getUserVOAdvancedDto();
         String userVOAdvancedJson = toJson(userVOAdvanced);
-        String expectedRequestPath = "/user/findNotDeactivatedByIdAdvanced?id=" + id;
+        String expectedRequestPath = "/user/findNotDeactivatedByEmailAdvanced/" + email;
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
             .setBody(userVOAdvancedJson)
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
-        Optional<UserVOAdvancedDto> actualResult = userRemoteClient.findNotDeactivatedByIdAdvanced(id);
+        Optional<UserVOAdvancedDto> actualResult = userRemoteClient.findNotDeactivatedByEmailAdvanced(email);
 
         assertTrue(actualResult.isPresent());
         UserVOAdvancedDto actualUserVOAdvanced = actualResult.get();
@@ -444,8 +415,6 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertNotNull(recordedRequest.getRequestUrl().queryParameter(idQueryParam));
-        assertEquals(id.toString(), recordedRequest.getRequestUrl().queryParameter(idQueryParam));
     }
 
     @Test
@@ -701,7 +670,7 @@ class UserRemoteClientTest {
     @SneakyThrows
     void userExistsByEmailTest() {
         String email = "email@email.com";
-        String expectedRequestPath = "/user/findNotDeactivatedByEmail?email=" + email;
+        String expectedRequestPath = "/user/findNotDeactivatedByEmail/" + email;
         UserVO userVO = ModelUtils.getUserVO();
         String userVOJson = toJson(userVO);
 
@@ -716,33 +685,6 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(HttpMethod.GET.name(), recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
-    }
-
-    @Test
-    @SneakyThrows
-    void findUserEmailsByUserIdsTest() {
-        List<Long> userIds = List.of(1L, 2L, 3L);
-        List<UserEmailDto> userEmails = List.of(
-            new UserEmailDto(1L, "email1"),
-            new UserEmailDto(2L, "email2"));
-        String userEmailsJson = toJson(userEmails);
-        String expectedRequestPath = "/user/email/findByIds?userIds="
-            + String.join("&userIds=", userIds.stream().map(String::valueOf).toArray(String[]::new));
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(userEmailsJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        List<UserEmailDto> actualResult = userRemoteClient.findUserEmailsByUserIds(userIds);
-
-        assertEquals(userEmails, actualResult);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertNotNull(recordedRequest.getRequestUrl().queryParameter("userIds"));
     }
 
     private String toJson(Object o) {

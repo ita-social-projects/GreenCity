@@ -64,6 +64,7 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
         filtered_friends AS (
             SELECT u.id,
                    u.name,
+                   u.email,
                    u.profile_picture
             FROM greencity_users u
             WHERE u.id IN (SELECT id FROM friends)
@@ -98,6 +99,7 @@ public interface HabitInvitationRepo extends JpaRepository<HabitInvitation, Long
         )
         SELECT f.id,
                f.name,
+               f.email,
                f.profile_picture,
                COALESCE(inv.has_invitation, FALSE) AS has_invitation,
                COALESCE(inv.has_accepted_invitation, FALSE) AS has_accepted_invitation

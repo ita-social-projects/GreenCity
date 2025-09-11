@@ -82,8 +82,6 @@
 | DIALECT | "org.hibernate.dialect.PostgreSQLDialect" |
 | DRIVER | "org.postgresql.Driver" |
 | ECO_NEWS_ADDRESS |  |
-| FACEBOOK_APP_ID |  |
-| FACEBOOK_APP_SECRET |  |
 | GREENCITYUSER_SERVER_ADDRESS |  |
 | HIBERNATE_CONFIG |  |
 | JAWSDB_URL |  |
