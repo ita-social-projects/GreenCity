@@ -1654,14 +1654,6 @@ class HabitServiceImplTest {
         Long habitId = 100L;
         UserVO userVO = getUserVO();
         List<Tuple> tuples = getUserFriendInviteHabitDtoTuple2();
-        List<Long> userIds = tuples.stream()
-            .map(tuple -> tuple.get("id", Long.class))
-            .toList();
-        List<UserEmailDto> userEmailDtos = tuples.stream()
-            .map(tuple -> new UserEmailDto(
-                tuple.get("id", Long.class),
-                tuple.get("email", String.class)))
-            .toList();
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "", habitId, pageable))
             .thenReturn(tuples);
@@ -1692,14 +1684,6 @@ class HabitServiceImplTest {
         Long habitId = 100L;
         UserVO userVO = getUserVO();
         List<Tuple> tuples = getUserFriendInviteHabitDtoTuple1();
-        List<Long> userIds = tuples.stream()
-            .map(tuple -> tuple.get("id", Long.class))
-            .toList();
-        List<UserEmailDto> userEmailDtos = tuples.stream()
-            .map(tuple -> new UserEmailDto(
-                tuple.get("id", Long.class),
-                tuple.get("email", String.class)))
-            .toList();
 
         when(habitInvitationRepo.findUserFriendsWithHabitInvites(1L, "Jo", habitId, pageable))
             .thenReturn(tuples);

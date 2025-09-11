@@ -2,7 +2,6 @@ package greencity.repository.impl;
 
 import greencity.ModelUtils;
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.user.UserEmailDto;
 import greencity.entity.User;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
