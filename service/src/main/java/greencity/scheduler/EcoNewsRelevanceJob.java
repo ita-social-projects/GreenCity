@@ -3,6 +3,7 @@ package greencity.scheduler;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.service.AIServiceImpl;
+import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -18,7 +19,7 @@ public class EcoNewsRelevanceJob implements Job {
     private final AIServiceImpl aiServiceImpl;
     private final EcoNewsRepo ecoNewsRepo;
     private final EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
-    private static ZonedDateTime lastRunTime = ZonedDateTime.now().minusHours(3);
+    private static ZonedDateTime lastRunTime = ZonedDateTime.now(ZoneId.of("UTC")).minusHours(3);
 
     @Override
     public void execute(JobExecutionContext context) {

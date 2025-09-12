@@ -43,6 +43,7 @@ public class UserRemoteClient {
 
     private static final String PAGE_QUERY_PARAM = "page";
     private static final String PAGE_SIZE_QUERY_PARAM = "size";
+    private static final String USER_EMAIL_QUERY_PARAM = "email";
     private static final String ID_QUERY_PARAM = "id";
 
     /**
@@ -119,7 +120,24 @@ public class UserRemoteClient {
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
         UserVO userVO = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByEmail")
-                .pathSegment(email)
+                .queryParam(USER_EMAIL_QUERY_PARAM, email)
+                .build())
+            .retrieve()
+            .bodyToMono(UserVO.class)
+            .block();
+        return Optional.ofNullable(userVO);
+    }
+
+    /**
+     * Finds {@link UserVO} by {@link UserVO}'s Email.
+     *
+     * @param email {@link UserVO}'s Email.
+     * @return {@link Optional} of {@link UserVO}.
+     */
+    public Optional<UserVO> findByEmail(String email) {
+        UserVO userVO = webClient.get()
+            .uri(uriBuilder -> uriBuilder.path("/user/findByEmail")
+                .queryParam(USER_EMAIL_QUERY_PARAM, email)
                 .build())
             .retrieve()
             .bodyToMono(UserVO.class)
@@ -516,7 +534,7 @@ public class UserRemoteClient {
      * @return boolean of whether user by that email exists
      */
     public boolean userExistsByEmail(String email) {
-        Optional<UserVO> userVOOptional = findNotDeactivatedByEmail(email);
+        Optional<UserVO> userVOOptional = findByEmail(email);
         return userVOOptional.isPresent();
     }
 

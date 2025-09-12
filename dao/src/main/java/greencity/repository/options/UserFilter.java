@@ -35,12 +35,21 @@ public class UserFilter implements Specification<User> {
         if (filterUserDto != null) {
             predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getQuery()));
         }
-        if (filterUserDto != null && filterUserDto.getStatus() != null) {
-            predicates.add(hasStatusLike(root, criteriaBuilder, filterUserDto.getStatus()));
-        }
-        if (filterUserDto != null && filterUserDto.getRole() != null) {
-            predicates.add(hasRoleLike(root, criteriaBuilder, filterUserDto.getRole()));
-        }
+        // status will be fixed later after user status split
+        // if (filterUserDto != null && filterUserDto.getStatus() != null) {
+        // predicates.add(hasStatusLike(root, criteriaBuilder,
+        // filterUserDto.getStatus()));
+        // }
+
+        // filtering by role isn't supported anymore and will be removed later, unless
+        // user role will be split
+        // it's not possible because role is stored in GreenCityUser and only way left
+        // to filter by role is
+        // decompose page, filter by role and compose it again manually, that is
+        // complicated
+        // if (filterUserDto != null && filterUserDto.getRole() != null) {
+        // predicates.add(hasRoleLike(root, criteriaBuilder, filterUserDto.getRole()));
+        // }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[] {}));
     }

@@ -88,7 +88,7 @@ class UserRemoteClientTest {
         String email = "email@email.com";
         UserVO userVO = ModelUtils.getUserVO();
         String userVOJson = toJson(userVO);
-        String expectedRequestPath = "/user/findNotDeactivatedByEmail/" + email;
+        String expectedRequestPath = "/user/findNotDeactivatedByEmail?email=" + email;
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
@@ -96,6 +96,29 @@ class UserRemoteClientTest {
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Optional<UserVO> actualResult = userRemoteClient.findNotDeactivatedByEmail(email);
+        assertTrue(actualResult.isPresent());
+        UserVO actualUserVO = actualResult.get();
+        assertEquals(userVO, actualUserVO);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void findByEmailTest() {
+        String email = "email@email.com";
+        UserVO userVO = ModelUtils.getUserVO();
+        String userVOJson = toJson(userVO);
+        String expectedRequestPath = "/user/findByEmail?email=" + email;
+        String expectedRequestMethod = HttpMethod.GET.name();
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(userVOJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        Optional<UserVO> actualResult = userRemoteClient.findByEmail(email);
         assertTrue(actualResult.isPresent());
         UserVO actualUserVO = actualResult.get();
         assertEquals(userVO, actualUserVO);
@@ -670,7 +693,7 @@ class UserRemoteClientTest {
     @SneakyThrows
     void userExistsByEmailTest() {
         String email = "email@email.com";
-        String expectedRequestPath = "/user/findNotDeactivatedByEmail/" + email;
+        String expectedRequestPath = "/user/findByEmail?email=" + email;
         UserVO userVO = ModelUtils.getUserVO();
         String userVOJson = toJson(userVO);
 
