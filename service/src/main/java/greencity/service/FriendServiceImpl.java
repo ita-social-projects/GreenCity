@@ -273,8 +273,7 @@ public class FriendServiceImpl implements FriendService {
 
     private UserAsFriendDto getUserAsFriendDto(Long id, Long friendId) {
         var tuple = userRepo.findUsersFriendByUserIdAndFriendId(id, friendId);
-        var chatId = userRepo.findIdOfPrivateChatOfUsers(id, friendId);
-        var userAsFriend = new UserAsFriendDto(friendId, chatId);
+        var userAsFriend = new UserAsFriendDto(friendId);
 
         if (Objects.nonNull(tuple)) {
             userAsFriend.setFriendStatus(tuple.get(FriendTupleConstant.STATUS, String.class));

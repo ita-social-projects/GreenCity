@@ -1196,8 +1196,6 @@ class FriendServiceImplTest {
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.findUsersFriendByUserIdAndFriendId(userId, friendId))
             .thenReturn(tuple);
-        when(userRepo.findIdOfPrivateChatOfUsers(userId, friendId))
-            .thenReturn(expected.getChatId());
 
         when(tuple.get(FriendTupleConstant.STATUS, String.class)).thenReturn(expected.getFriendStatus());
         when(tuple.get(FriendTupleConstant.REQUESTER_ID, Long.class)).thenReturn(expected.getRequesterId());
@@ -1206,26 +1204,23 @@ class FriendServiceImplTest {
 
         verify(userRepo).existsById(anyLong());
         verify(userRepo).findUsersFriendByUserIdAndFriendId(anyLong(), anyLong());
-        verify(userRepo).findIdOfPrivateChatOfUsers(anyLong(), anyLong());
         verify(tuple).get(FriendTupleConstant.STATUS, String.class);
         verify(tuple).get(FriendTupleConstant.REQUESTER_ID, Long.class);
     }
 
     @Test
-    void getUserAsFriendIfUsersAreNotFriendsAndDoNotHaveChatTest() {
-        UserAsFriendDto expected = new UserAsFriendDto(1L, null);
+    void getUserAsFriendIfUsersAreNotFriendsTest() {
+        UserAsFriendDto expected = new UserAsFriendDto(1L);
 
         Long userId = 2L;
         Long friendId = expected.getId();
 
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.findUsersFriendByUserIdAndFriendId(userId, friendId)).thenReturn(null);
-        when(userRepo.findIdOfPrivateChatOfUsers(userId, friendId)).thenReturn(null);
 
         assertEquals(expected, friendService.getUserAsFriend(userId, friendId));
         verify(userRepo).existsById(anyLong());
         verify(userRepo).findUsersFriendByUserIdAndFriendId(anyLong(), anyLong());
-        verify(userRepo).findIdOfPrivateChatOfUsers(anyLong(), anyLong());
     }
 
     @Test
