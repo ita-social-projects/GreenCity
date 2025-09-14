@@ -60,7 +60,6 @@ class UserRemoteClientTest {
     ObjectMapper objectMapper = new ObjectMapper()
         .registerModule(new JavaTimeModule())
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    String emailQueryParam = "email";
     String idQueryParam = "id";
     String pageQueryParam = "page";
     String pageSizeQueryParam = "size";
