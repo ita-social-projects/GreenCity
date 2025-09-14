@@ -338,7 +338,7 @@ public class UserRemoteClient {
     public Optional<UserVOAdvancedDto> findNotDeactivatedByEmailAdvanced(String email) {
         UserVOAdvancedDto userVO = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByEmailAdvanced")
-                .pathSegment(email)
+                .queryParam(USER_EMAIL_QUERY_PARAM, email)
                 .build())
             .retrieve()
             .bodyToMono(UserVOAdvancedDto.class)

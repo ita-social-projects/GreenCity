@@ -60,6 +60,7 @@ class UserRemoteClientTest {
     ObjectMapper objectMapper = new ObjectMapper()
         .registerModule(new JavaTimeModule())
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    String emailQueryParam = "email";
     String idQueryParam = "id";
     String pageQueryParam = "page";
     String pageSizeQueryParam = "size";
@@ -102,6 +103,9 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
+        assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
+        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
     }
 
     @Test
@@ -125,6 +129,9 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
+        assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
+        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
     }
 
     @Test
@@ -336,6 +343,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
         assertEquals(emailPreference.name(), recordedRequest.getRequestUrl().queryParameter("email-preference"));
         assertEquals(periodicity.name(), recordedRequest.getRequestUrl().queryParameter("email-periodicity"));
     }
@@ -365,6 +373,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
         assertEquals(startDate.toString(), recordedRequest.getRequestUrl().queryParameter("start-date"));
         assertEquals(endDate.toString(), recordedRequest.getRequestUrl().queryParameter("end-date"));
         assertEquals(granularity.name(), recordedRequest.getRequestUrl().queryParameter("granularity"));
@@ -391,6 +400,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter("ids"));
     }
 
@@ -421,7 +431,7 @@ class UserRemoteClientTest {
         String email = "email@email.com";
         UserVOAdvancedDto userVOAdvanced = ModelUtils.getUserVOAdvancedDto();
         String userVOAdvancedJson = toJson(userVOAdvanced);
-        String expectedRequestPath = "/user/findNotDeactivatedByEmailAdvanced/" + email;
+        String expectedRequestPath = "/user/findNotDeactivatedByEmailAdvanced?email=" + email;
         String expectedRequestMethod = HttpMethod.GET.name();
 
         mockWebServer.enqueue(new MockResponse()
@@ -437,6 +447,9 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
+        assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
+        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
     }
 
     @Test
@@ -465,6 +478,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
         assertEquals(String.valueOf(pageable.getPageNumber()),
             recordedRequest.getRequestUrl().queryParameter(pageQueryParam));
         assertEquals(String.valueOf(pageable.getPageSize()),
@@ -492,6 +506,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE));
         assertTrue(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE).startsWith(MediaType.MULTIPART_FORM_DATA_VALUE));
     }
 
@@ -513,6 +528,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter(idQueryParam));
         assertEquals(id.toString(), recordedRequest.getRequestUrl().queryParameter(idQueryParam));
     }
@@ -559,6 +575,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter(idQueryParam));
         assertEquals(id.toString(), recordedRequest.getRequestUrl().queryParameter(idQueryParam));
     }
@@ -661,6 +678,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE));
         assertTrue(recordedRequest.getHeader(HttpHeaders.CONTENT_TYPE).startsWith(MediaType.MULTIPART_FORM_DATA_VALUE));
     }
 
@@ -685,6 +703,7 @@ class UserRemoteClientTest {
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter("emails"));
     }
 
