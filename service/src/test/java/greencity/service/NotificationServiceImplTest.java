@@ -104,13 +104,13 @@ class NotificationServiceImplTest {
         when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
             .thenReturn(List.of(testPlace1, testPlace2));
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name", new CategoryDto(1L, "category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto(1L, "category1", "test", null)));
         when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category", "test", null));
+            .thenReturn(new CategoryDto(1L, "category", "test", null));
         when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category1", "test", null));
+            .thenReturn(new CategoryDto(1L, "category1", "test", null));
 
         notificationService.sendDailyReport();
 
@@ -143,13 +143,13 @@ class NotificationServiceImplTest {
         when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
             .thenReturn(List.of(testPlace1, testPlace2));
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name", new CategoryDto(1L, "category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto(1L, "category1", "test", null)));
         when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category", "test", null));
+            .thenReturn(new CategoryDto(1L, "category", "test", null));
         when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category1", "test", null));
+            .thenReturn(new CategoryDto(1L, "category1", "test", null));
 
         notificationService.sendWeeklyReport();
 
@@ -181,13 +181,13 @@ class NotificationServiceImplTest {
         when(placeRepo.findAllByModifiedDateBetweenAndStatus(any(ZonedDateTime.class), any(ZonedDateTime.class), any()))
             .thenReturn(List.of(testPlace1, testPlace2));
         when(modelMapper.map(testPlace1, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name", new CategoryDto("category", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name", new CategoryDto(1L, "category", "test", null)));
         when(modelMapper.map(testPlace2, PlaceNotificationDto.class))
-            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto("category1", "test", null)));
+            .thenReturn(new PlaceNotificationDto("name1", new CategoryDto(1L, "category1", "test", null)));
         when(modelMapper.map(testPlace1.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category", "test", null));
+            .thenReturn(new CategoryDto(1L, "category", "test", null));
         when(modelMapper.map(testPlace2.getCategory(), CategoryDto.class))
-            .thenReturn(new CategoryDto("category1", "test", null));
+            .thenReturn(new CategoryDto(1L, "category1", "test", null));
 
         notificationService.sendMonthlyReport();
 
