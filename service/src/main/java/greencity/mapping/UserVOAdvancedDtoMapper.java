@@ -31,8 +31,10 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
     @Override
     protected UserVOAdvancedDto convert(User user) {
         String email = user.getEmail();
-        UserVOAdvancedDto userVOAdvancedDto = userRemoteClient.findNotDeactivatedByEmailAdvanced(email)
+        UserVOAdvancedDto userVOAdvancedDto = userRemoteClient.findByEmailAdvanced(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        userVOAdvancedDto.setId(user.getId());
+        userVOAdvancedDto.setUserCredo(user.getUserCredo());
 
         userVOAdvancedDto.setUserAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
             .stream().map(userAchievement -> UserAchievementVO.builder()

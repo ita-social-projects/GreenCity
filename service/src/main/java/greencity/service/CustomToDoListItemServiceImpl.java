@@ -19,6 +19,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.UserToDoListItemRepo;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +47,7 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
     private ModelMapper modelMapper;
     private RestClient restClient;
     private HabitAssignRepo habitAssignRepo;
+    private UserRepo userRepo;
 
     /**
      * {@inheritDoc}
@@ -230,6 +232,16 @@ public class CustomToDoListItemServiceImpl implements CustomToDoListItemService 
             customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(userId, habitId),
             new TypeToken<List<CustomToDoListItemResponseDto>>() {
             }.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CustomToDoListItemResponseDto> findAllAvailableCustomToDoListItems(String email, Long habitId) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return findAllAvailableCustomToDoListItems(user.getId(), habitId);
     }
 
     @Override

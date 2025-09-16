@@ -32,6 +32,7 @@ import static greencity.enums.AchievementStatus.UNACHIEVED;
 
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
+import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -42,6 +43,7 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.UserAchievementRepo;
 import greencity.repository.UserActionRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -95,6 +97,8 @@ class AchievementServiceImplTest {
     private HabitTranslationRepo habitTranslationRepo;
     @Mock
     private RatingPointsService ratingPointsService;
+    @Mock
+    private UserRepo userRepo;
 
     @Test
     void findAllUserAchievementsByUserIdTest() {
@@ -112,6 +116,31 @@ class AchievementServiceImplTest {
         List<UserAchievementVO> actualResult = achievementService.findAllUserAchievementsByUserId(userId);
 
         assertEquals(userAchievementVOs, actualResult);
+        verify(userAchievementRepo).getUserAchievementByUserId(userId);
+        verify(modelMapper, times(userAchievements.size())).map(any(UserAchievement.class),
+            eq(UserAchievementVO.class));
+    }
+
+    @Test
+    void findAllUserAchievementsByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        List<UserAchievement> userAchievements =
+            List.of(ModelUtils.getUserAchievement(), ModelUtils.getUserAchievement());
+        UserAchievementVO userAchievementVO = ModelUtils.getUserAchievementVO();
+        List<UserAchievementVO> userAchievementVOs = List.of(userAchievementVO, userAchievementVO);
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userAchievementRepo.getUserAchievementByUserId(userId))
+            .thenReturn(userAchievements);
+        when(modelMapper.map(any(UserAchievement.class), eq(UserAchievementVO.class)))
+            .thenReturn(userAchievementVO);
+
+        List<UserAchievementVO> actualResult = achievementService.findAllUserAchievementsByEmail(email);
+
+        assertEquals(userAchievementVOs, actualResult);
+        verify(userRepo).findByEmail(email);
         verify(userAchievementRepo).getUserAchievementByUserId(userId);
         verify(modelMapper, times(userAchievements.size())).map(any(UserAchievement.class),
             eq(UserAchievementVO.class));

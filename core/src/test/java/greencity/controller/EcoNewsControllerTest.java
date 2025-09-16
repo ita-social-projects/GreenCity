@@ -290,6 +290,15 @@ class EcoNewsControllerTest {
     }
 
     @Test
+    void findAmountOfPublishedNewsExternal() throws Exception {
+        mockMvc.perform(get(ecoNewsLink + "/count/external")
+            .param("authorEmail", "test@email"))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).getAmountOfPublishedNews("test@email");
+    }
+
+    @Test
     void getContentAndSourceForEcoNewsById() throws Exception {
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/summary", 1L))
             .andExpect(status().isOk());

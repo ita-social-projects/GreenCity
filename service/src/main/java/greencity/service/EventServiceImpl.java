@@ -935,8 +935,28 @@ public class EventServiceImpl implements EventService {
      * {@inheritDoc}
      */
     @Override
+    public Long getCountOfAttendedEventsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return eventRepo.countDistinctByAttendersId(user.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Long getCountOfOrganizedEventsByUserId(Long userId) {
         return eventRepo.countDistinctByOrganizerId(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getCountOfOrganizedEventsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return eventRepo.countDistinctByOrganizerId(user.getId());
     }
 
     @Override

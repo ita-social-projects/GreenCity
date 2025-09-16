@@ -279,6 +279,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return authorId == null ? ecoNewsRepo.count() : ecoNewsRepo.countByAuthorId(authorId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfPublishedNews(String authorEmail) {
+        User author = userRepo.findByEmail(authorEmail)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + authorEmail));
+        return ecoNewsRepo.countByAuthorId(author.getId());
+    }
+
     private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,
         MultipartFile image) {
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.dto.PageableDto;
 import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
@@ -24,6 +25,7 @@ import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.LanguageNotFoundException;
+import greencity.service.UserService;
 import lombok.SneakyThrows;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -33,6 +35,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,11 +55,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserRemoteClientTest {
     static MockWebServer mockWebServer;
     UserRemoteClient userRemoteClient;
+    UserService userService;
     ObjectMapper objectMapper = new ObjectMapper()
         .registerModule(new JavaTimeModule())
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -79,7 +84,8 @@ class UserRemoteClientTest {
     @BeforeEach
     void initialize() {
         String baseUrl = "http://localhost:%s".formatted(mockWebServer.getPort());
-        userRemoteClient = new UserRemoteClient(WebClient.builder().baseUrl(baseUrl).build());
+        userService = Mockito.mock(UserService.class);
+        userRemoteClient = new UserRemoteClient(WebClient.builder().baseUrl(baseUrl).build(), userService);
     }
 
     @Test
@@ -164,13 +170,15 @@ class UserRemoteClientTest {
     @SneakyThrows
     void updateUserRoleTest() {
         Long id = 1L;
+        UserVO userVO = ModelUtils.getUserVO();
         Map<String, String> body = Map.of("role", "ADMIN");
         UserRoleDto userRoleDto = new UserRoleDto(Role.ROLE_USER);
         String bodyJson = toJson(body);
         String userRoleDtoJson = toJson(userRoleDto);
-        String expectedRequestPath = "/user/" + id + "/role";
+        String expectedRequestPath = "/user/role?email=" + userVO.getEmail();
         String expectedRequestMethod = HttpMethod.PATCH.name();
 
+        when(userService.findById(id)).thenReturn(userVO);
         mockWebServer.enqueue(new MockResponse()
             .setBody(userRoleDtoJson)
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
@@ -279,7 +287,7 @@ class UserRemoteClientTest {
     @SneakyThrows
     void searchUserNotificationPreferenceTest() {
         EmailPreferenceDto emailPreferenceDto =
-            new EmailPreferenceDto(10L, EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY);
+            new EmailPreferenceDto(TestConst.EMAIL, EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY);
         Boolean searchResult = true;
         String emailPreferenceDtoJson = toJson(emailPreferenceDto);
         String expectedRequestPath = "/user-notification-preference/search";
@@ -304,9 +312,11 @@ class UserRemoteClientTest {
     void checkIfTheUserIsOnlineTest() {
         Long userId = 1L;
         Boolean isOnline = true;
-        String expectedRequestPath = "/user/isOnline/" + userId + "/";
+        UserVO userVO = ModelUtils.getUserVO();
+        String expectedRequestPath = "/user/isOnline?email=" + userVO.getEmail();
         String expectedRequestMethod = HttpMethod.GET.name();
 
+        when(userService.findById(userId)).thenReturn(userVO);
         mockWebServer.enqueue(new MockResponse()
             .setBody(isOnline.toString())
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
@@ -439,6 +449,33 @@ class UserRemoteClientTest {
             .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         Optional<UserVOAdvancedDto> actualResult = userRemoteClient.findNotDeactivatedByEmailAdvanced(email);
+
+        assertTrue(actualResult.isPresent());
+        UserVOAdvancedDto actualUserVOAdvanced = actualResult.get();
+        assertEquals(userVOAdvanced, actualUserVOAdvanced);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+        assertNotNull(recordedRequest.getRequestUrl());
+        assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
+        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
+    }
+
+    @Test
+    @SneakyThrows
+    void findByEmailAdvancedTest() {
+        String email = "email@email.com";
+        UserVOAdvancedDto userVOAdvanced = ModelUtils.getUserVOAdvancedDto();
+        String userVOAdvancedJson = toJson(userVOAdvanced);
+        String expectedRequestPath = "/user/findByEmailAdvanced?email=" + email;
+        String expectedRequestMethod = HttpMethod.GET.name();
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(userVOAdvancedJson)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        Optional<UserVOAdvancedDto> actualResult = userRemoteClient.findByEmailAdvanced(email);
 
         assertTrue(actualResult.isPresent());
         UserVOAdvancedDto actualUserVOAdvanced = actualResult.get();

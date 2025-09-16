@@ -21,6 +21,15 @@ public interface AchievementService {
     List<UserAchievementVO> findAllUserAchievementsByUserId(Long userId);
 
     /**
+     * Retrieves a list of UserAchievement objects associated with a given user
+     * email.
+     *
+     * @param email The email of the user for whom to fetch the achievements.
+     * @return A list of UserAchievement objects related to the specified user ID.
+     */
+    List<UserAchievementVO> findAllUserAchievementsByEmail(String email);
+
+    /**
      * Method for finding all the achievements.
      *
      * @return list of all{@link AchievementVO}.

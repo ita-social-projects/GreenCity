@@ -136,10 +136,26 @@ class HabitStatisticControllerTest {
     }
 
     @Test
+    void findAmountOfAcquiredHabitsExternal() throws Exception {
+        mockMvc.perform(get(habitLink + "/acquired/count/external")
+            .param("email", "test@email"))
+            .andExpect(status().isOk());
+        verify(habitStatisticService).getAmountOfAcquiredHabitsByEmail("test@email");
+    }
+
+    @Test
     void findAmountOfHabitsInProgress() throws Exception {
         mockMvc.perform(get(habitLink + "/in-progress/count")
             .param("userId", "1"))
             .andExpect(status().isOk());
         verify(habitStatisticService).getAmountOfHabitsInProgressByUserId(1L);
+    }
+
+    @Test
+    void findAmountOfHabitsInProgressExternal() throws Exception {
+        mockMvc.perform(get(habitLink + "/in-progress/count/external")
+            .param("email", "test@email"))
+            .andExpect(status().isOk());
+        verify(habitStatisticService).getAmountOfHabitsInProgressByEmail("test@email");
     }
 }

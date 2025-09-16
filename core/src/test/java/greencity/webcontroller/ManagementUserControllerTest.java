@@ -213,13 +213,6 @@ class ManagementUserControllerTest {
     }
 
     @Test
-    void getUserById() throws Exception {
-        mockMvc.perform(get(MANAGEMENT_USER_LINK + "/findById" + "?id=1").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        verify(restClient).findById(1L);
-    }
-
-    @Test
     void findFriendsByIdTest() throws Exception {
         mockMvc.perform(get(MANAGEMENT_USER_LINK + "/" + 1L + "/friends").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());

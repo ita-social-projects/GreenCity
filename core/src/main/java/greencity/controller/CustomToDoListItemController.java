@@ -60,6 +60,31 @@ public class CustomToDoListItemController {
     }
 
     /**
+     * For external services usage. Method for finding all custom to-do list items.
+     *
+     * @param email user email
+     * @return list of {@link CustomToDoListItemVO}
+     */
+    @Operation(summary = "Get all available custom to-do-list-items", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping
+    public ResponseEntity<List<CustomToDoListItemResponseDto>> getAllAvailableCustomToDoListItems(
+        @RequestParam String email, @RequestParam Long habitId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(customToDoListItemService.findAllAvailableCustomToDoListItems(email, habitId));
+    }
+
+    /**
      * Method saves custom to-do list items for user.
      *
      * @param dto    {@link BulkSaveCustomToDoListItemDto} with list objects to save

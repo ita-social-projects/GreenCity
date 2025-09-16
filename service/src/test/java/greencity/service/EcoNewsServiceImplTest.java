@@ -309,6 +309,15 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void getAmountOfPublishedNewsExternalTest() {
+        User user = ModelUtils.getUser();
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(ecoNewsRepo.countByAuthorId(user.getId())).thenReturn(10L);
+        Long actual = ecoNewsService.getAmountOfPublishedNews(user.getEmail());
+        assertEquals(10L, actual);
+    }
+
+    @Test
     void getAllByUserTest() {
         UserVO userVO = ModelUtils.getUserVO();
         List<EcoNews> ecoNewsList = Collections.singletonList(getEcoNews());
