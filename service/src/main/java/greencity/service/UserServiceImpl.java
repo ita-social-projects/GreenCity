@@ -727,7 +727,6 @@ public class UserServiceImpl implements UserService {
         return userRepo.findUserIdsByEmails(emails).stream()
             .collect(Collectors.toMap(
                 UserEmailDto::userEmail,
-                UserEmailDto::userId
-            ));
+                UserEmailDto::userId));
     }
 }
