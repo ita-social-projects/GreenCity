@@ -1769,7 +1769,7 @@ public class ModelUtils {
 
     private static UserStatusDto createUserStatusDto() {
         return UserStatusDto.builder()
-            .id(2L)
+            .email("test@email")
             .userStatus(UserStatus.CREATED)
             .build();
     }
@@ -3705,6 +3705,7 @@ public class ModelUtils {
     public static GreenCityUserProfileDtoResponse getGreenCityUserProfileDtoResponse(Long userId) {
         return new GreenCityUserProfileDtoResponse(
             userId,
+            "test@email",
             TestConst.PICTURE_PATH,
             "user credo",
             0.);

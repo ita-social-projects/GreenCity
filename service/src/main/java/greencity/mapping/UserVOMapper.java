@@ -28,6 +28,8 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
         String email = user.getEmail();
         UserVO userVO = userRemoteClient.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        userVO.setId(user.getId());
+        userVO.setUserCredo(user.getUserCredo());
 
         UserLocation userLocation = user.getUserLocation();
         if (userLocation != null) {

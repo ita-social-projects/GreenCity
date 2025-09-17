@@ -15,6 +15,7 @@ import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
+import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -22,6 +23,7 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
+import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -49,6 +51,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final DateService dateService;
     private final ModelMapper modelMapper;
     private final UserRemoteClient userRemoteClient;
+    private final UserRepo userRepo;
 
     /**
      * {@inheritDoc}
@@ -181,8 +184,28 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * {@inheritDoc}
      */
     @Override
+    public Long getAmountOfHabitsInProgressByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(user.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Long getAmountOfAcquiredHabitsByUserId(Long userId) {
         return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfAcquiredHabitsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(user.getId());
     }
 
     /**

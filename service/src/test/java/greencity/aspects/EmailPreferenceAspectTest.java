@@ -8,6 +8,7 @@ import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.ScheduledEmailMessage;
+import greencity.service.UserService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,8 @@ class EmailPreferenceAspectTest {
     private CheckEmailPreference checkEmailPreference;
     @Mock
     ProceedingJoinPoint proceedingJoinPoint;
+    @Mock
+    UserService userService;
 
     @InjectMocks
     EmailPreferenceAspect emailPreferenceAspect;
@@ -43,13 +46,15 @@ class EmailPreferenceAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         EmailPreferenceDto emailPreferenceDto =
-            new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
+            new EmailPreferenceDto(user.getEmail(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
 
         when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(true);
 
         Object expectedResult = new Object();
         when(proceedingJoinPoint.proceed()).thenReturn(expectedResult);
+
+        when(userService.findById(user.getId())).thenReturn(user);
 
         Object result = emailPreferenceAspect.checkEmailPreference(proceedingJoinPoint, checkEmailPreference);
 
@@ -69,10 +74,12 @@ class EmailPreferenceAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         EmailPreferenceDto emailPreferenceDto =
-            new EmailPreferenceDto(user.getId(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
+            new EmailPreferenceDto(user.getEmail(), emailPreference, EmailPreferencePeriodicity.IMMEDIATELY);
 
         when(userRemoteClient.searchUserNotificationPreference(emailPreferenceDto))
             .thenReturn(false);
+
+        when(userService.findById(user.getId())).thenReturn(user);
 
         Object result = emailPreferenceAspect.checkEmailPreference(proceedingJoinPoint, checkEmailPreference);
 

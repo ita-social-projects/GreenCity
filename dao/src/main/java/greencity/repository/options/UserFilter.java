@@ -35,21 +35,6 @@ public class UserFilter implements Specification<User> {
         if (filterUserDto != null) {
             predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getQuery()));
         }
-        // status will be fixed later after user status split
-        // if (filterUserDto != null && filterUserDto.getStatus() != null) {
-        // predicates.add(hasStatusLike(root, criteriaBuilder,
-        // filterUserDto.getStatus()));
-        // }
-
-        // filtering by role isn't supported anymore and will be removed later, unless
-        // user role will be split
-        // it's not possible because role is stored in GreenCityUser and only way left
-        // to filter by role is
-        // decompose page, filter by role and compose it again manually, that is
-        // complicated
-        // if (filterUserDto != null && filterUserDto.getRole() != null) {
-        // predicates.add(hasRoleLike(root, criteriaBuilder, filterUserDto.getRole()));
-        // }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[] {}));
     }
@@ -66,33 +51,5 @@ public class UserFilter implements Specification<User> {
         reg = replaceCriteria(reg);
         return cb.or(
             cb.like(r.get(RepoConstants.NAME), reg));
-    }
-
-    /**
-     * return a predicate where {@link User} has status defined in the incoming
-     * object.
-     *
-     * @param r      must not be {@literal null}.
-     * @param cb     must not be {@literal null}.
-     * @param status status which defined in object.
-     * @return a {@link Predicate}, may be {@literal null}.
-     */
-    private Predicate hasStatusLike(Root<User> r, CriteriaBuilder cb, String status) {
-        status = replaceCriteria(status);
-        return cb.or(cb.like(r.get(RepoConstants.STATUS).as(String.class), status));
-    }
-
-    /**
-     * return a predicate where {@link User} has status defined in the incoming
-     * object.
-     *
-     * @param r    must not be {@literal null}.
-     * @param cb   must not be {@literal null}.
-     * @param role role which defined in object.
-     * @return a {@link Predicate}, may be {@literal null}.
-     */
-    private Predicate hasRoleLike(Root<User> r, CriteriaBuilder cb, String role) {
-        role = replaceCriteria(role);
-        return cb.like(r.get(RepoConstants.ROLE).as(String.class), role);
     }
 }

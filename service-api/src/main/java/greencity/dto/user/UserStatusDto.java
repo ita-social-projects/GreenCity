@@ -17,7 +17,7 @@ import lombok.Setter;
 @Builder
 public class UserStatusDto {
     @NotNull
-    private Long id;
+    private String email;
 
     @NotNull
     private UserStatus userStatus;

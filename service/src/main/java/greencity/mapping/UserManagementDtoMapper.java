@@ -20,6 +20,8 @@ public class UserManagementDtoMapper extends AbstractConverter<User, UserManagem
         String email = user.getEmail();
         UserVO userVO = userRemoteClient.findNotDeactivatedByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        userVO.setId(user.getId());
+        userVO.setUserCredo(user.getUserCredo());
 
         return UserManagementDto.builder()
             .id(userVO.getId())

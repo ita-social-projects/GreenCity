@@ -289,8 +289,8 @@
                             </td>
                             <td>
                                 <a th:if="${user.getId()} != ${currentUser.getId()}"
-                                   th:href="'#editUserModal'+${user.getId()}"
-                                   id="editUserModalBtn" class="edit eBtn" data-toggle="modal">
+                                   th:href="@{/management/users/user/{id}(id=${user.getId()})}"
+                                   id="editUserModalBtn" class="edit eBtn" data-toggle="modal" th:user-id="${user.getId()}">
                                     <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
                                 </a>
                                 <!--Edit user Modal HTML -->
@@ -316,14 +316,14 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Email</label>
-                                                        <input th:value="${user.getEmail()}" type="email" class="form-control" id="email" name="email" required>
+                                                        <input th:value="${user.getEmail()}" type="email" class="form-control" id="email" name="email" readonly required>
                                                         <div class="invalid-feedback">
                                                             [[#{greenCity.user.page.email.validation.error}]]
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Credo</label>
-                                                        <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo" required>
+                                                        <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Role</label>

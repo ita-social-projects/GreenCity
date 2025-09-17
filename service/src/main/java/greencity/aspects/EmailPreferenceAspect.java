@@ -3,10 +3,12 @@ package greencity.aspects;
 import greencity.annotations.CheckEmailPreference;
 import greencity.client.UserRemoteClient;
 import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.message.UserIdMessage;
+import greencity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,16 +24,17 @@ import org.springframework.stereotype.Component;
 public class EmailPreferenceAspect {
     private final UserRemoteClient userRemoteClient;
     private final ModelMapper modelMapper;
+    private final UserService userService;
 
     @Around("@annotation(checkEmailPreference)")
     public Object checkEmailPreference(ProceedingJoinPoint proceedingJoinPoint,
         CheckEmailPreference checkEmailPreference) throws Throwable {
         Object[] args = proceedingJoinPoint.getArgs();
         EmailPreference emailPreference = checkEmailPreference.value();
-        Long userId = extractUserIdFromArgs(args);
+        String userEmail = extractUserEmailFromArgs(args);
 
         EmailPreferenceDto emailPreferenceDto = new EmailPreferenceDto(
-            userId,
+            userEmail,
             emailPreference,
             EmailPreferencePeriodicity.IMMEDIATELY);
 
@@ -44,20 +47,22 @@ public class EmailPreferenceAspect {
         }
     }
 
-    private Long extractUserId(Object message) {
+    private String extractUserEmail(Object message) {
         if (message instanceof UserIdMessage) {
-            return ((UserIdMessage) message).getUserId();
+            Long userId = ((UserIdMessage) message).getUserId();
+            UserVO user = userService.findById(userId);
+            return user.getEmail();
         } else if (message instanceof Notification) {
-            return ((Notification) message).getTargetUser().getId();
+            return ((Notification) message).getTargetUser().getEmail();
         }
         return null;
     }
 
-    private Long extractUserIdFromArgs(Object[] args) {
+    private String extractUserEmailFromArgs(Object[] args) {
         for (Object arg : args) {
-            Long userId = extractUserId(arg);
-            if (userId != null) {
-                return userId;
+            String userEmail = extractUserEmail(arg);
+            if (userEmail != null) {
+                return userEmail;
             }
         }
         return null;

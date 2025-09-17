@@ -331,6 +331,25 @@ public class EcoNewsController {
     }
 
     /**
+     * For external services usage. The method find count of published eco news.
+     *
+     * @return count of published eco news.
+     */
+    @Operation(summary = "Find count of published eco news", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/count/external")
+    public ResponseEntity<Long> findAmountOfPublishedNews(
+        @RequestParam(name = "authorEmail") String authorEmail) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNews(authorEmail));
+    }
+
+    /**
      * Method to like/remove like on EcoNews.
      */
     @Operation(summary = "Like/remove like on eco news")
