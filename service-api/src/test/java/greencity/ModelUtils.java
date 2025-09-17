@@ -49,7 +49,6 @@ import java.util.Set;
 
 import static greencity.TestConst.ACCESS_TOKEN;
 import static greencity.TestConst.EMAIL;
-import static greencity.TestConst.USER_ID;
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
