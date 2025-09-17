@@ -144,7 +144,11 @@ public class RestClient {
             + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
-        return exchange.getBody();
+        List<UserVO> users = exchange.getBody();
+        if (users != null) {
+            userService.setInternalUserVOIds(users);
+        }
+        return users;
     }
 
     /**
@@ -184,8 +188,12 @@ public class RestClient {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
-        return restTemplate.exchange(url.toUriString(), HttpMethod.GET,
+        UserVO user = restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();
+        if (user != null) {
+            userService.setInternalUserVOIds(List.of(user));
+        }
+        return user;
     }
 
     /**
@@ -214,6 +222,7 @@ public class RestClient {
             new ParameterizedTypeReference<UserManagementDto>() {
             }).getBody();
         if (dto != null) {
+            dto.setId(user.getId());
             dto.setUserCredo(user.getUserCredo());
         }
         return dto;
@@ -234,7 +243,7 @@ public class RestClient {
             }
         }
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        return restTemplate.exchange(greenCityUserServerAddress
+        PageableAdvancedDto<UserManagementDto> usersPage = restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_USERS_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
                 .getPageNumber()
             + RestTemplateLinks.SIZE + pageable
@@ -243,6 +252,10 @@ public class RestClient {
             HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
+        if (usersPage != null) {
+            userService.setInternalUserManagementDtoIds(usersPage.getPage());
+        }
+        return usersPage;
     }
 
     /**
@@ -314,8 +327,12 @@ public class RestClient {
         ResponseEntity<UserVO[]> exchange = restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_ALL, HttpMethod.GET, entity, UserVO[].class);
         UserVO[] responseDtos = exchange.getBody();
-        assert responseDtos != null;
-        return Arrays.asList(responseDtos);
+        if (responseDtos != null) {
+            List<UserVO> users = Arrays.asList(responseDtos);
+            userService.setInternalUserVOIds(users);
+            return users;
+        }
+        return List.of();
     }
 
     /**
@@ -330,8 +347,12 @@ public class RestClient {
             + RestTemplateLinks.USER + RestTemplateLinks.FRIENDS + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
             entity, UserManagementDto[].class);
         UserManagementDto[] responseDtos = exchange.getBody();
-        assert responseDtos != null;
-        return Arrays.asList(responseDtos);
+        if (responseDtos != null) {
+            List<UserManagementDto> users = Arrays.asList(responseDtos);
+            userService.setInternalUserManagementDtoIds(users);
+            return users;
+        }
+        return List.of();
     }
 
     /**
@@ -342,24 +363,14 @@ public class RestClient {
      */
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UserVO body = restTemplate.exchange(greenCityUserServerAddress
+        UserVO user = restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_NOT_DEACTIVATED_BY_EMAIL + RestTemplateLinks.EMAIL
             + email, HttpMethod.GET, entity, UserVO.class)
             .getBody();
-        assert body != null;
-        return Optional.of(body);
-    }
-
-    /**
-     * Method find user id by email.
-     *
-     * @param email of {@link UserVO}
-     */
-    public Long findIdByEmail(String email) {
-        HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
-        return restTemplate.exchange(url.toUriString(), HttpMethod.GET, entity, Long.class).getBody();
+        if (user != null) {
+            userService.setInternalUserVOIds(List.of(user));
+        }
+        return Optional.ofNullable(user);
     }
 
     /**
@@ -531,7 +542,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, headers);
-        return restTemplate.exchange(
+        PageableAdvancedDto<UserManagementVO> usersPage = restTemplate.exchange(
             greenCityUserServerAddress + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE
                 + pageable.getPageNumber()
                 + RestTemplateLinks.SIZE + pageable.getPageSize()
@@ -539,6 +550,10 @@ public class RestClient {
             HttpMethod.POST, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
             }).getBody();
+        if (usersPage != null) {
+            userService.setInternalUserManagementVOIds(usersPage.getPage());
+        }
+        return usersPage;
     }
 
     /**

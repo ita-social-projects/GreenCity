@@ -6,6 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserClaims;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
+import greencity.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -36,15 +38,18 @@ import org.springframework.web.context.request.NativeWebRequest;
 public class JwtTool {
     private final Integer accessTokenValidTimeInMinutes;
     private final String accessTokenKey;
+    private final UserService userService;
 
     /**
      * Constructor.
      */
     public JwtTool(
         @Value("${accessTokenValidTimeInMinutes}") Integer accessTokenValidTimeInMinutes,
-        @Value("${tokenKey}") String accessTokenKey) {
+        @Value("${tokenKey}") String accessTokenKey,
+        @Lazy UserService userService) {
         this.accessTokenValidTimeInMinutes = accessTokenValidTimeInMinutes;
         this.accessTokenKey = accessTokenKey;
+        this.userService = userService;
     }
 
     /**
@@ -160,7 +165,8 @@ public class JwtTool {
     }
 
     private Long extractUserId(Claims claims) {
-        return claims.get(AppConstant.JWT_USER_ID_CLAIM, Long.class);
+        String userEmail = claims.getSubject();
+        return userService.findNotDeactivatedByEmail(userEmail).getId();
     }
 
     private Claims extractClaims(String jwt) {

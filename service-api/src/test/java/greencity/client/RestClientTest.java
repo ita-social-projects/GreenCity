@@ -211,23 +211,6 @@ class RestClientTest {
         assertEquals(userVO, restClient.findById(1L));
     }
 
-//    @Test
-//    void findUserForAchievement() {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-//        HttpEntity<String> entity = new HttpEntity<>(headers);
-//        UserVOAchievement userVOAchievement = new UserVOAchievement();
-//        UserVO userVO = ModelUtils.getUserVO();
-//
-//        when(userService.findById(1L)).thenReturn(userVO);
-//        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-//        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-//            + RestTemplateLinks.USER_FIND_BY_EMAIL_FOR_ACHIEVEMENT + RestTemplateLinks.EMAIL + userVO.getEmail(),
-//            HttpMethod.GET, entity, UserVOAchievement.class)).thenReturn(ResponseEntity.ok(userVOAchievement));
-//
-//        assertEquals(userVOAchievement, restClient.findUserForAchievement(1L));
-//    }
-
     @Test
     void updateUser() {
         UserManagementDto userManagementDto = new UserManagementDto();
@@ -349,22 +332,6 @@ class RestClientTest {
             + email, HttpMethod.GET, entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
 
         assertEquals(Optional.of(userVO), restClient.findNotDeactivatedByEmail(email));
-    }
-
-    @Test
-    void findIdByEmail() {
-        String email = "test@gmail.com";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL
-            + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, Long.class))
-            .thenReturn(ResponseEntity.ok(1L));
-
-        assertEquals(1L, restClient.findIdByEmail(email));
     }
 
     @Test

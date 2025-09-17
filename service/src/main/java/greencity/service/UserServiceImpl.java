@@ -17,7 +17,9 @@ import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserFilterDto;
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
@@ -44,6 +46,7 @@ import greencity.repository.options.UserFilter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -682,5 +685,49 @@ public class UserServiceImpl implements UserService {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
         return modelMapper.map(userLocation, clazz);
+    }
+
+    @Override
+    public void setInternalUserVOIds(List<UserVO> users) {
+        List<String> emails = users.stream()
+            .filter(Objects::nonNull)
+            .map(UserVO::getEmail)
+            .toList();
+        Map<String, Long> internalIds = findInternalIdsByEmails(emails);
+        users.stream()
+            .filter(Objects::nonNull)
+            .forEach(user -> user.setId(internalIds.get(user.getEmail())));
+    }
+
+    @Override
+    public void setInternalUserManagementDtoIds(List<UserManagementDto> users) {
+        List<String> emails = users.stream()
+            .filter(Objects::nonNull)
+            .map(UserManagementDto::getEmail)
+            .toList();
+        Map<String, Long> internalIds = findInternalIdsByEmails(emails);
+        users.stream()
+            .filter(Objects::nonNull)
+            .forEach(user -> user.setId(internalIds.get(user.getEmail())));
+    }
+
+    @Override
+    public void setInternalUserManagementVOIds(List<UserManagementVO> users) {
+        List<String> emails = users.stream()
+            .filter(Objects::nonNull)
+            .map(UserManagementVO::getEmail)
+            .toList();
+        Map<String, Long> internalIds = findInternalIdsByEmails(emails);
+        users.stream()
+            .filter(Objects::nonNull)
+            .forEach(user -> user.setId(internalIds.get(user.getEmail())));
+    }
+
+    private Map<String, Long> findInternalIdsByEmails(List<String> emails) {
+        return userRepo.findUserIdsByEmails(emails).stream()
+            .collect(Collectors.toMap(
+                UserEmailDto::userEmail,
+                UserEmailDto::userId
+            ));
     }
 }

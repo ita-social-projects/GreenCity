@@ -132,6 +132,9 @@ public class UserRemoteClient {
             .retrieve()
             .bodyToMono(UserVO.class)
             .block();
+        if (userVO != null) {
+            userService.setInternalUserVOIds(List.of(userVO));
+        }
         return Optional.ofNullable(userVO);
     }
 
@@ -149,6 +152,9 @@ public class UserRemoteClient {
             .retrieve()
             .bodyToMono(UserVO.class)
             .block();
+        if (userVO != null) {
+            userService.setInternalUserVOIds(List.of(userVO));
+        }
         return Optional.ofNullable(userVO);
     }
 
@@ -284,7 +290,7 @@ public class UserRemoteClient {
      */
     public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
         EmailPreference emailPreference, EmailPreferencePeriodicity periodicity) {
-        return webClient.get()
+        List<UserVO> users = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/email")
                 .queryParam("email-preference", emailPreference.name())
                 .queryParam("email-periodicity", periodicity.name())
@@ -293,6 +299,10 @@ public class UserRemoteClient {
             .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {
             })
             .block();
+        if (users != null) {
+            userService.setInternalUserVOIds(users);
+        }
+        return users;
     }
 
     /**
@@ -547,8 +557,7 @@ public class UserRemoteClient {
      */
     public List<UserVO> findAllByEmailIn(List<String> emails) {
         String emailsListQueryParam = "emails";
-
-        return webClient.get()
+        List<UserVO> users = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/email/findAll")
                 .queryParam(emailsListQueryParam, emails)
                 .build())
@@ -556,6 +565,10 @@ public class UserRemoteClient {
             .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {
             })
             .block();
+        if (users != null) {
+            userService.setInternalUserVOIds(users);
+        }
+        return users;
     }
 
     /**

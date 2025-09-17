@@ -11,6 +11,7 @@ import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
@@ -331,4 +332,25 @@ public interface UserService {
      *         information about user
      */
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByEmails(List<String> emails);
+
+    /**
+     * Method to set internal GreenCity ids for {@link UserVO}.
+     *
+     * @param users users for whom to set internal ids
+     */
+    void setInternalUserVOIds(List<UserVO> users);
+
+    /**
+     * Method to set internal GreenCity ids for {@link UserManagementDto}.
+     *
+     * @param users users for whom to set internal ids
+     */
+    void setInternalUserManagementDtoIds(List<UserManagementDto> users);
+
+    /**
+     * Method to set internal GreenCity ids for {@link UserManagementVO}.
+     *
+     * @param users users for whom to set internal ids
+     */
+    void setInternalUserManagementVOIds(List<UserManagementVO> users);
 }

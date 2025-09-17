@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -260,7 +261,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                     '_', '\\_'),
                                     '#', '\\#'), '%')
                       )
-                  )
                   OR LOWER(u.user_credo) LIKE LOWER(
                       CONCAT('%',
                              REPLACE(REPLACE(REPLACE(
@@ -290,6 +290,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                                    '#', '\\#'), '%')
                                                         )
                           )
+                      )
                   )
             """)
 
@@ -842,4 +843,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return - return true if User exists and false if not.
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Method to find list of user ids by emails.
+     *
+     * @param emails emails of users for whom to fetch the data
+     * @return list of {@link UserEmailDto}
+     */
+    @Query("""
+            SELECT new greencity.dto.user.UserEmailDto(u.id, u.email)
+            FROM User u
+            WHERE u.email IN :emails
+        """)
+    List<UserEmailDto> findUserIdsByEmails(@Param("emails") List<String> emails);
 }
