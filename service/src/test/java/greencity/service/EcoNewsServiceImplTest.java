@@ -295,9 +295,12 @@ class EcoNewsServiceImplTest {
         List<SearchNewsDto> searchNewsDtos = Collections.singletonList(searchNewsDto);
         PageableDto<SearchNewsDto> actual = new PageableDto<>(searchNewsDtos, page.getTotalElements(),
             page.getPageable().getPageNumber(), page.getTotalPages());
-        when(ecoNewsRepo.find(pageable, "query", null, null)).thenReturn(page);
+
+        when(ecoNewsRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
         when(modelMapper.map(ecoNewsList, SearchNewsDto.class)).thenReturn(searchNewsDto);
-        PageableDto<SearchNewsDto> expected = ecoNewsService.search(pageable, "query", null, null);
+
+        PageableDto<SearchNewsDto> expected = ecoNewsService.search(pageable, "query",
+            null, null);
         assertEquals(expected.getTotalPages(), actual.getTotalPages());
     }
 
